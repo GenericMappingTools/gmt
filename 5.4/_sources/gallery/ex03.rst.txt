@@ -1,0 +1,50 @@
+.. _example_03:
+
+(3) Spectral estimation and xy-plots
+------------------------------------
+
+In this example we will show how to use the GMT programs
+:doc:`fitcircle </fitcircle>`, :doc:`project </project>`,
+:doc:`sample1d </sample1d>`, :doc:`spectrum1d </spectrum1d>`,
+:doc:`psxy </psxy>`, and
+:doc:`pstext </pstext>`. Suppose you have (lon, lat,
+gravity) along a satellite track in a file called ``sat.xyg``, and (lon, lat,
+gravity) along a ship track in a file called ``ship.xyg``. You want to make a
+cross-spectral analysis of these data. First, you will have to get the
+two data sets into equidistantly sampled time-series form. To do this,
+it will be convenient to project these along the great circle that best
+fits the sat track. We must use
+:doc:`fitcircle </fitcircle>` to find this great circle
+and choose the L\ :sub:`2` estimates of best pole. We project the data
+using :doc:`project </project>` to find out what their
+ranges are in the projected coordinate. The
+:doc:`gmtinfo </gmtinfo>` utility will report the minimum
+and maximum values for multi-column ASCII tables. Use this information
+to select the range of the projected distance coordinate they have in
+common. The script prompts you for that information after reporting the
+values. We decide to make a file of equidistant sampling points spaced 1
+km apart from -1167 to +1169, and use the UNIX utility **awk** to
+accomplish this step. We can then resample the projected data, and carry
+out the cross-spectral calculations, assuming that the ship is the input
+and the satellite is the output data. There are several intermediate
+steps that produce helpful plots showing the effect of the various
+processing steps (``example_03[a-f].ps``), while the final plot ``example_03.ps`` shows the ship and sat power
+in one diagram and the coherency on another diagram, both on the same
+page. Note the extended use of :doc:`pstext </pstext>`
+and :doc:`psxy </psxy>` to put labels and legends
+directly on the plots. For that purpose we often use **-Jx**\ 1i and
+specify positions in inches directly. Thus, the complete automated script reads:
+
+.. literalinclude:: /_verbatim/example_03.txt
+   :language: bash
+
+The final illustration shows that the
+ship gravity anomalies have more power than altimetry derived gravity
+for short wavelengths and that the coherency between the two signals
+improves dramatically for wavelengths > 20 km.
+
+.. figure:: /_images/example_03.*
+   :width: 500 px
+   :align: center
+
+   Spectral estimation and x=y-plots.

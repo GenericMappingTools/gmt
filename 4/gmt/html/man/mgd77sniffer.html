@@ -1,0 +1,934 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:37 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>MGD77SNIFFER</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>MGD77SNIFFER</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#REQUIREMENTS">REQUIREMENTS</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#MGD77 FIELD INFO">MGD77 FIELD INFO</a><br>
+<a href="#GRID FILE INFO">GRID FILE INFO</a><br>
+<a href="#E77 ERROR FORMAT">E77 ERROR FORMAT</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">mgd77sniffer
+&minus; Scan for errors in MGD77 data</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77sniffer</b>
+<i>NGDC-ids</i> [
+<b>&minus;A</b><i>fieldabbrev</i>,<i>scale</i>,<i>offset</i>
+] [ <b>&minus;C</b><i>maxspd</i> ] [
+<b>&minus;Dd</b>|<b>e</b>|<b>E</b>|<b>f</b>|<b>l</b>|<b>m</b>|<b>s</b>|<b>v</b>[<i>r</i>]
+] [ <b>&minus;E</b> ] [
+<b>&minus;g</b><i>fieldabbrev</i>,<i>imggrid</i>,<i>scale</i>,<i>mode</i>
+] [ <b>&minus;G</b><i>fieldabbrev</i>,<i>grid</i> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;I</b><i>fieldabbrev</i>,<i>rec1</i>,<i>recN</i> ]
+[ <b>&minus;L</b><i>custom limits file</i> ] [
+<b>&minus;M</b> ] [ <b>&minus;N</b> ] [
+<b>&minus;Q</b>[<b>b</b>|<b>c</b>|<b>l</b>|<b>n</b>][[<b>/</b>]<i>threshold</i>]
+] [
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;Sd</b>|<b>s</b>|<b>t</b> ] [
+<b>&minus;T</b><i>gap</i> ] [ <b>&minus;V</b> ] [
+<b>&minus;Wc</b>|<b>g</b>|<b>o</b>|<b>s</b>|<b>t</b>|<b>v</b>|<b>x</b>
+] [ <b>&minus;Z</b><i>level</i> ] [
+<b>&minus;bo</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77sniffer</b>
+scans old (pre-Y2K) and new format ASCII MGD77 files for
+errors using point-by-point sanity checking, along-track
+detection of excessive slopes, and optional comparison of
+cruise data with global gravity and predicted bathymetry
+grids. Detected data problems are output by default as
+verbose descriptions of each detected error, often resulting
+in multiple messages per scanned record. Data problems are
+optionally output (<b>&minus;De</b> option) using a
+computer-parseable format (see E77 ERROR FORMAT description
+below). Default error thresholds are derived from histograms
+of all MGD77 geophysical data collected between 1952 and
+January, 2006. Thresholds are adjustable with the
+<b>&minus;L</b> option. <i><br>
+NGDC-ids</i></p>
+
+<p style="margin-left:22%;">Can be one or more of five
+kinds of specifiers: <br>
+1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.
+<br>
+2) 2-character &lt;agency&gt; codes which will return all
+cruises from each agency. <br>
+3) 4-character &lt;agency&gt;&lt;vessel&gt; codes, which
+will return all cruises from those vessels. <br>
+4) =&lt;list&gt;, where &lt;list&gt; is a table with NGDC
+IDs, one per line. <br>
+5) If nothing is specified we return all cruises in the data
+base. <br>
+(See mgd77info <b>&minus;L</b> for agency and vessel codes).
+File extensions, if missing, will automatically be appended
+by searching for files in the following order: MGD77+
+(&quot;.nc&quot;), MGD77T (&quot;.m77t&quot;), MGD77
+(&quot;.mgd77&quot;), plain table (&quot;.dat&quot;). Use
+<b>&minus;I</b> to ignore one or more of these file types).
+Cruise files will be looked for first in the current
+directory and second in all directories listed in
+<b>$MGD77_HOME</b>/mgd77_paths.txt [If <b>$MGD77_HOME</b> is
+not set it will default to <b>$GMT_SHAREDIR</b>/mgd77].</p>
+
+<a name="REQUIREMENTS"></a>
+<h2>REQUIREMENTS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The
+mgd77sniffer links with Generic Mapping Tools 4.0 or later
+along with the supplemental GMT packages x2sys and mgd77.
+See http://gmt.soest.hawaii.edu for GMT details. Grids for
+comparison with cruise data may be downloaded via the
+web.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Apply scale factor
+and DC adjustment to specified data field. Allows adjustment
+of cruise data prior to along-track analysis. CAUTION: data
+must be thoroughly examined before applying these global
+data adjustments. May not be used for multiple cruises.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set maximum ship
+speed in m/s, or knots with <b>&minus;N</b> option. Ship
+speeds exceeding 10 m/s (~20 knots) are flagged as excessive
+by default.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Suppress default
+warning output and only dump cruise data row-by-row such as
+values, gradients, grid-cruise differences, E77 error
+summaries for each record, re-created MGD77 records or
+sniffer limits. Append r to include all records (default
+omits records where navigation errors were detected).</p></td>
+</table>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Dd</b>
+output differences between cruise and grid data. Requires
+<b>&minus;G</b> option. Output columns include:</p>
+
+<p style="margin-left:22%; margin-top: 1em"><i>lat lon dist
+cruiseZ gridZ diff [cruiseZ2 gridZ2 diff2 ...]</i></p>
+
+<p style="margin-left:22%; margin-top: 1em">Note: grid
+values are subtracted from cruise data so a positive
+difference implies cruise &gt; grid. For multiple grid
+comparison, <i>cruiseZ gridZ diff</i> are repeated for each
+grid comparison in command line order.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;De</b>
+output E77 error classification format. Error output is
+divided into (1) a header containing information globally
+applicable to the cruise and (2) individual error records
+summarizing all errors encountered in each cruise record.
+mgd77sniffer writes E77 directly to &lt;ngdc_id.e77&gt; file
+handle. See <b>E77 ERROR FORMAT</b> below for additional
+details.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;DE</b>
+Same as <b>&minus;De</b> but no regression tests will be
+carried out.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Df</b>
+output delta Z (change in geophysical field) column and
+delta S (change in distance) for each geophysical field.
+Distance between observations often differ for different
+fields depending on instrument sampling rate, so ds is
+included for each geophysical observation. Output columns
+include:</p>
+
+<p style="margin-left:22%; margin-top: 1em"><i>d[twt] ds
+d[depth] ds d[mtf1] ds d[mtf2] ds d[mag] ds d[diur] ds
+d[msd] ds d[gobs] ds d[eot] ds d[faa] ds</i></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Dl</b>
+display mgd77sniffer limits. Customize this output to create
+a custom limits file for the <b>&minus;L</b> option. No
+additional arguments are required. Output columns
+include:</p>
+
+<p style="margin-left:22%; margin-top: 1em"><i>fieldabbrev
+min max maxSlope maxArea</i></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Dm</b>
+output MGD77 format records in Y2K-compliant MGD77
+format</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Dn</b>
+output distance to coast for each record. Requires
+<b>&minus;Gnav</b> or <b>&minus;gnav</b> option. Output
+columns include:</p>
+
+<p style="margin-left:22%; margin-top: 1em"><i>lat lon dist
+distToCoast</i></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Ds</b>
+output calculated gradients for speed and geophysical
+fields. Gradients correspond to the gradient type selected
+in the <b>&minus;S</b> option (spatial derivatives by
+default). Output columns include:</p>
+
+<p style="margin-left:22%; margin-top: 1em"><i>speed d[twt]
+d[depth] d[mtf1] d[mtf2] d[mag] d[diur] d[msd] d[gobs]
+d[eot] d[faa]</i></p>
+
+<p style="margin-left:22%; margin-top: 1em">See <b>MGD77
+FIELD INFO</b> below for field and abbreviations
+descriptions.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Dv</b>
+display values for the twelve position and geophysical
+fields for each MGD77 data record (in this order):</p>
+
+<p style="margin-left:22%; margin-top: 1em"><i>lat lon twt
+depth mtf1 mtf2 mag diur msens gobs eot faa</i></p>
+
+<p style="margin-left:22%; margin-top: 1em">See below for
+<b>MGD77 FIELD INFO</b>.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Reverse navigation
+quality flags (good to bad and vice versa). May be necessary
+when a majority of navigation fixes are erroneously flagged
+bad, which can happen when a cruise&rsquo;s first navigation
+fix is extremely erroneous. Caution! This will affect
+sniffer output and should only be attempted after careful
+manual navigation review.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;g</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Compare cruise data
+to the specified grid in Sandwell/Smith Mercator format.
+Requires a valid MGD77 field abbreviation (see <b>MGD77
+FIELD INFO</b> below) followed by a comma, the path (if not
+in current directory) and grid filename, a scale to multiply
+the data (1 or 0.1), and mode which stand for the following:
+(0) Img files with no constraint code, returns data at all
+points, (1) Img file with constraints coded, return data at
+all points, (2) Img file with constraints coded, return data
+only at constrained points and NaN elsewhere, and (3) Img
+file with constraints coded, return 1 at constraints and 0
+elsewhere.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Compare cruise data
+to the specified grid. Requires a valid MGD77 field
+abbreviation (see <b>MGD77 FIELD INFO</b> below) followed by
+a comma, then the path (if not in current directory) and
+grid filename. Multiple grid comparison is supported by
+using separate <b>&minus;g</b> or <b>&minus;G</b> calls for
+each grid. See <b>GRID FILE INFO</b> below.</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Grid comparison
+activates several additional error checks. (1) Re-weighted
+Least Squares Regression of ship versus grid data determines
+slope and DC shift, which when differing from expected 1 and
+0, respectively, may indicate incorrectly scaled ship data,
+including incorrect units or instrument drift as well as
+erroneous gravity tie-in. (2) Accumulated ship grid offsets
+are computed along-track and excessive offsets are flagged
+according to <i>maxArea</i> threshold (use <b>&minus;L</b>
+option to adjust <i>maxArea</i>). Warning: predicted
+bathymetry grids are constrained by cruise data so grids and
+cruise data are not always independent. Comparison of cruise
+bathymetry with predicted bathymetry grids also activates a
+&quot;navigation crossing over land&quot; check.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">(with
+<b>&minus;G</b>|<b>g</b> only) disable (or force) decimation
+during RLS analysis of ship and gridded data. By default
+mgd77sniffer analyses both the full and decimated data sets
+then reports RLS statistics for the higher correlation
+regression.</p> </td>
+</table>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Hb</b>
+analyze both (default), report better of two.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Hd</b>
+to disable data decimation (equivalent to -H with no
+argument).</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Hf</b>
+to force data decimation.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Append a field
+abbreviation and the first and last record in a range of
+records that should be flagged as bad (and set to NaN prior
+to the analysis). Repeat as many times as needed. May not be
+used for multiple cruises.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Override
+mgd77sniffer default error detection limits. Supply path and
+filename to the custom limits file. Rows not beginning with
+a valid MGD77 field abbreviation are ignored. Field
+abbreviations are listed below in exact form under MGD77
+FIELD INFO. Multiple field limits may be modified using one
+default file, one field per line. Field min, max, max slope
+and max area may be changed for each field. Max slope
+pertains to the gradient type selected using the
+<b>&minus;S</b> option. Max area is used by the
+<b>&minus;G</b> option as the threshold for flagging
+excessive offsets from the specified grid. Dump defaults
+<b>&minus;Dl</b> to view syntax or to quickly create an
+editable custom limits file.</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Example custom
+default file contents (see below for units): <br>
+# abbrev min max maxSlope maxArea <br>
+twt 0 15 1 0 <br>
+depth 0 11000 500 5000 <br>
+mag -800 800 - - <br>
+faa -300 300 100 2500</p>
+
+<p style="margin-left:22%; margin-top: 1em">Use a dash
+&rsquo;-&rsquo; to retain a default limit. Hint: to test
+your custom limits, try: mgd77sniffer <b>&minus;Dl
+&minus;L</b>&lt;yourlimitsfile&gt;</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Adjust navigation
+on land threshold (meters inland) [100].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Use nautical
+units.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Quick mode, use
+bilinear rather than bicubic interpolation [Default].
+Alternatively, select the interpolation mode by adding
+<b>b</b> for B-spline smoothing, <b>c</b> for bicubic
+interpolation, <b>l</b> for bilinear interpolation or
+<b>n</b> for nearest-neighbor value. Optionally, append
+<i>threshold</i> in the range [0,1]. This parameter controls
+how close to nodes with NaN values the interpolation will
+go. E.g., a <i>threshold</i> of 0.5 will interpolate about
+half way from a non-NaN to a NaN node, whereas 0.1 will go
+about 90% of the way, etc. [Default is 1, which means none
+of the (4 or 16) nearby nodes may be NaN]. <b>&minus;Q0</b>
+will just return the value of the nearest node instead of
+interpolating. This is the same as using
+<b>&minus;Qn</b>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> specify the Region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify gradient
+type for along-track excessive slope checking.</p></td>
+</table>
+
+<p style="margin-left:22%;"><b>&minus;Sd</b> Calculate
+change in z values along track (dz). Output is given in
+geophysical units, e.g., mGal. <b><br>
+&minus;Ss</b> Calculate spatial gradients (dz/ds). Output is
+given in geophysical units per km along the survey track,
+e.g., mGal/km. <b><br>
+&minus;St</b> Calculate time gradients (dz/dt) [default].
+Output is given in geophysical units per second along the
+survey track, e.g., mGal/sec.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Adjusts
+mgd77sniffer gap handling. By default, data gaps greater
+than 5 km are skipped. Set to zero to de-activate gap
+skipping.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Print out only
+certain warning types for verbose error messages. Comma
+delimit any combination of <b>c|g|o|s|t|v|x</b>: where
+(<b>c</b>) type code warnings, (<b>g</b>)radient out of
+range, (<b>o</b>)ffsets from grid (requires
+<b>&minus;G</b>|<b>g</b>), (<b>s</b>)peed out of range,
+(<b>t</b>)ime warnings, (<b>v</b>)alue out of range,
+(<b>x</b>) warning summaries. By default ALL warning
+messages are printed.Not compatible with any <b>&minus;D</b>
+options.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Flag regression
+statistics that are outside the specified confidence level.
+(i.e., -Z5 flags coefficients m, b, rms, and r that fall
+outside 95%.)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;b</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">output binary data
+for <b>&minus;D</b> d|f|s|v option. Append <b>s</b> for
+single and <b>d</b> for double precision [Default is
+double].</p> </td>
+</table>
+
+<a name="MGD77 FIELD INFO"></a>
+<h2>MGD77 FIELD INFO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i>Field
+Abbreviation Units</i> <br>
+Two-way Travel Time twt sec <br>
+Corrected Depth depth m <br>
+Mag Total Field1 mtf1 nT <br>
+Mag Total Field2 mtf2 nT <br>
+Residual Magnetic mag nT <br>
+Diurnal Correction diur nT <br>
+Mag Sensor Depth/Alt msens m <br>
+Observed Gravity gobs mGal <br>
+Eotvos Correction eot mGal <br>
+Free Air Anomaly faa mGal</p>
+
+<a name="GRID FILE INFO"></a>
+<h2>GRID FILE INFO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">For
+<b>&minus;g</b> the grids must be in the format used by
+Sandwell &amp; Smith, which is a spherical Mercator 2-byte
+grid with no header. For <b>&minus;G</b> the grid files can
+be of any grid type supported by GMT and therefore must
+contain a GMT header. A correctly formatted *.i2 grid file
+can be generated using grdraster as shown below.</p>
+
+<p style="margin-left:11%; margin-top: 1em">gmtset
+GRIDFILE_SHORTHAND TRUE</p>
+
+<p style="margin-left:11%; margin-top: 1em">Create/edit
+.gmt_io file to include the following rows: <br>
+# GMT I/O shorthand file <br>
+# suffix format_id scale offset NaN <br>
+grd 0 - - - <br>
+i2 2 - - 32767</p>
+
+<p style="margin-left:11%; margin-top: 1em">grdraster 1
+-R0/359:55/-90/90 -Getopo5_hdr.i2</p>
+
+<p style="margin-left:11%; margin-top: 1em">The new grid,
+etopo5_hdr.i2 in this example, contains a GMT header and can
+be used in the <b>&minus;G</b> option to compare cruise
+depth with grid values.</p>
+
+<a name="E77 ERROR FORMAT"></a>
+<h2>E77 ERROR FORMAT</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em" valign="top"><b>Header</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Information
+pertaining to an entire cruise, such as NGDC and survey
+institution identification codes, cruise examination time,
+two-way travel time corrector information, data precision
+warnings, as well as systematic scales, DC shifts and
+correlation coefficients from global grid comparisons are
+reported as E77 header information.</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em"><b>Sample</b>
+<br>
+# Cruise 08010039 ID 74010908 MGD77 FILE VERSION: 19801230
+N_RECS: 3066 <br>
+# Examined: Wed Oct 3 16:30:13 2007 by mtchandl <br>
+# Arguments: -De -Gdepth,/data/GRIDS/etopo5_hdr.i2 <br>
+N Errata table verification status <br>
+# mgd77manage applies corrections if the errata table is
+verified (toggle &rsquo;N&rsquo; above to &rsquo;Y&rsquo;
+after review) <br>
+# For instructions on E77 format and usage, see
+http://gmt.soest.hawaii.edu/mgd77/errata.php <br>
+# Verified by: <br>
+# Comments: <br>
+# Errata: Header <br>
+Y-E-08010039-H13-02: Invalid Magnetics Sampling Rate: (99) [
+] <br>
+Y-W-08010039-H13-10: Survey year (1975) outside magnetic
+reference field IGRF 1965 time range (1965-1970) <br>
+Y-I-08010039-depth-00: RLS m: 1.00053 b: 0 rms: 127.851 r:
+0.973422 significant: 1 decimation: 0 <br>
+Y-W-08010039-twt-09: More recent bathymetry correction table
+available <br>
+Y-W-08010039-mtf1-10: Integer precision <br>
+Y-W-08010039-mag-10: Integer precision</p>
+
+<p style="margin-left:11%;"><b>Error Record</b></p>
+
+<p style="margin-left:22%;">Individual error records have
+strict format. Included is a time or distance column
+followed by record number, a formatted error code string,
+and finally a verbose description of errors detected in the
+record. Three error classes are encoded into the error code
+string with different alphabetic characters representing
+unique error types. See below for error code format
+description.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>Format</b>
+<br>
+&lt;time/distance&gt; &lt;record number&gt; &lt;error code
+string&gt; &lt;description&gt;</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>Sample</b>
+<br>
+# Errata: Data</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p valign="top">Y</p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="30%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="5%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p valign="top">08010039</p></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">1975-05-10T22:16:05.88</p></td>
+<td width="30%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">74</p></td>
+<td width="7%"></td>
+<td width="5%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="30%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">C-0-0</p></td>
+<td width="7%"></td>
+<td width="5%">
+
+
+<p valign="top">NAV: excessive speed</p></td>
+</table>
+
+<p style="margin-left:11%;"><b>Error Code
+Description</b></p>
+
+<p style="margin-left:22%;">Each of the three error classes
+is separated by a dash &rsquo;-&rsquo; and described by a
+combination of alphabetic characters or 0 signifying no
+detected problems.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Error classes:
+NAV-VAL-GRAD</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>Error Class
+Descriptions</b> <br>
+NAV (navigation): <br>
+0 - fine <br>
+A - time out of range <br>
+B - time decreasing <br>
+C - excessive speed <br>
+D - above sea level <br>
+E - lat undefined <br>
+F - lon undefined</p>
+
+<p style="margin-left:22%; margin-top: 1em">VAL (value):
+<br>
+0 - fine <br>
+K - twt invalid <br>
+L - depth invalid <br>
+O - mtf1 invalid <br>
+etc.</p>
+
+<p style="margin-left:22%; margin-top: 1em">GRAD
+(gradient): <br>
+0 - fine <br>
+K - d[twt] excessive <br>
+L - d[depth] excessive <br>
+O - d[mtf1] excessive <br>
+etc.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The NAV error
+class has unique cases while VAL and GRAD classes are
+described by alphabetic characters for each of the 24
+numeric fields in MGD77 format order.</p>
+
+<p style="margin-left:22%; margin-top: 1em">MGD77
+bit-pattern w/ E77 alpha characters <br>
+
+|-------------------------------------------------|----------|
+<br>
+| X W V U T S R Q P O N M L K J I H G F E D C B A | E77 Code
+| <br>
+| - - - - - - - - - - - - - - - - - - - - - - - - | - - - -
+-| <br>
+| n f e g m d m m m m b b d t p l l m h d m y t d | F I |
+<br>
+| q a o o s i s a t t t c e w t o a i o a o e z r | i D |
+<br>
+| c a t b d u e g f f c c p t c n t n u y n a t | e | <br>
+| s r n 2 1 t r t r | l | <br>
+| s h h | d | <br>
+| - - - - - - - - - - - - - - - - - - - - - - - - | - - - -
+-| <br>
+| 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 | Bit
+place| <br>
+| - G C G C C - G G G - - G G - - - T T T T T - - | Bit type
+| <br>
+
+|-------------------------------------------------|----------|
+<br>
+Bit types: (G)eophysical, (C)orrection, (T)ime</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To scan for
+excessive values or gradients, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77sniffer</b>
+08010001</p>
+
+<p style="margin-left:11%; margin-top: 1em">To dump cruise
+gradients, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77sniffer</b>
+08010001 -Ds</p>
+
+<p style="margin-left:11%; margin-top: 1em">To compare
+cruise depth with ETOPO5 bathymetry and gravity with
+Sandwell/Smith 2 min gravity version 11, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77sniffer</b>
+08010001 <b>&minus;G</b> depth,/data/GRIDS/etopo5_hdr.i2
+<b>&minus;g</b> faa,/data/GRIDS/grav.11.2.img,0.1,1</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="mgd77list.html">mgd77list</A></i>(1),
+<i><A HREF="mgd77track.html">mgd77track</A></i>(1) <i><A HREF="x2sys_init.html">x2sys_init</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P., and
+W. H. F. Smith, 2018, The Generic Mapping Tools (GMT)
+version 4.5.18 Technical Reference &amp; Cookbook,
+SOEST/NOAA. <br>
+Wessel, P., and W. H. F. Smith, 1998, New, Improved Version
+of Generic Mapping Tools Released, EOS Trans., AGU, 79 (47),
+p. 579. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released, EOS Trans., AGU, 76 (33), p.
+329. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released,
+http://www.agu.org/eos_elec/95154e.html, Copyright 1995 by
+the American Geophysical Union. <br>
+Wessel, P., and W. H. F. Smith, 1991, Free Software Helps
+Map and Display Data, EOS Trans., AGU, 72 (41), p. 441. <br>
+The Marine Geophysical Data Exchange Format -
+&quot;MGD77&quot;, see
+<i>http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt</i></p>
+<hr>
+</body>
+</html>

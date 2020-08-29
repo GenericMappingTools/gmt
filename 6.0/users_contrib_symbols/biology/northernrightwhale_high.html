@@ -1,0 +1,422 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>A Northern Right Whale (high) &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="A Northern Right Whale (low)" href="northernrightwhale_low.html" />
+    <link rel="prev" title="A Northern Right Whale" href="northernrightwhale.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../users_contrib_symbols.html">Users Symbol Contributions</a> &raquo;</li>
+        
+      <li>A Northern Right Whale (high)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/users_contrib_symbols/biology/northernrightwhale_high.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="a-northern-right-whale-high">
+<span id="northernrightwhale-high"></span><h1>A Northern Right Whale (high)<a class="headerlink" href="#a-northern-right-whale-high" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#Eubalaena glacialis (Northern Right whale)</span>
+<span class="c1">#E. glacialis is externally identical to E. australis, but you can wish to show both species in a map and in this case you&#39;ll need a symbol different for each one, so this inverted version is provided. Both are interchangeable.</span>
+<span class="c1">#high</span>
+<span class="c1">#Pablo Valdés - May 2008</span>
+<span class="c1">#comment the lines 78-83 and 97 AND uncomment the lines 85-90 and 99 if you want w/b symbols </span>
+<span class="m">0</span>      <span class="m">0</span>      M -G80
+<span class="m">0</span>      <span class="m">24</span>      D
+-1      <span class="m">24</span>      D
+-4      <span class="m">24</span>.6    D
+-6      <span class="m">25</span>.2    D
+-7      <span class="m">25</span>.6    D
+-9      <span class="m">26</span>.8    D
+-10     <span class="m">27</span>.6    D
+-11     <span class="m">28</span>      D
+-13     <span class="m">29</span>.2    D
+-14     <span class="m">29</span>.8    D
+-14.4   <span class="m">30</span>     D
+-16     <span class="m">29</span>.4    D
+-16     <span class="m">32</span>.8   D
+-13.6   <span class="m">31</span>.8   D
+-7    <span class="m">31</span>.5     D
+-6      <span class="m">31</span>.8   D
+-2      <span class="m">32</span>     D
+<span class="m">2</span>     <span class="m">32</span>     D
+<span class="m">5</span>.6   <span class="m">31</span>.6   D
+<span class="m">6</span>     <span class="m">31</span>.2   D
+<span class="m">7</span>     <span class="m">31</span>.6   D
+<span class="m">9</span>.2   <span class="m">31</span>.8   D
+<span class="m">10</span>.5  <span class="m">31</span>.4   D
+<span class="m">11</span>    <span class="m">31</span>.8   D
+<span class="m">12</span>    <span class="m">31</span>.4   D
+<span class="m">12</span>.8  <span class="m">31</span>     D
+<span class="m">12</span>.8  <span class="m">30</span>.4   D
+<span class="m">12</span>.6  <span class="m">30</span>.2   D
+<span class="c1">#mouth</span>
+<span class="m">12</span>   <span class="m">30</span>.6	D
+<span class="m">10</span>.6  <span class="m">31</span>	D
+<span class="m">8</span>.4    <span class="m">30</span>.2	D
+<span class="m">8</span>      <span class="m">29</span>.6	D
+<span class="m">7</span>.6    <span class="m">27</span>.6	D
+<span class="m">7</span>      <span class="m">26</span>.4	D
+<span class="m">6</span>.5    <span class="m">26</span>	D
+<span class="m">5</span>.3	<span class="m">26</span>.2	D
+<span class="m">6</span>.5    <span class="m">26</span>	D
+<span class="m">7</span>      <span class="m">26</span>.4	D
+<span class="m">7</span>.6    <span class="m">27</span>.6	D
+<span class="m">8</span>      <span class="m">29</span>.6	D
+<span class="m">8</span>.4    <span class="m">30</span>.2	D
+<span class="m">10</span>.6  <span class="m">31</span>	D
+<span class="m">12</span>    <span class="m">30</span>.6	D
+<span class="c1">#</span>
+<span class="m">13</span>    <span class="m">30</span>     D
+<span class="m">12</span>    <span class="m">28</span>.2    D
+<span class="m">11</span>    <span class="m">27</span>      D
+<span class="m">9</span>.6   <span class="m">26</span>      D
+<span class="m">8</span>     <span class="m">25</span>      D
+<span class="m">6</span>     <span class="m">24</span>.2    D
+<span class="c1">#flipper</span>
+<span class="m">4</span>.4	<span class="m">24</span>	D
+<span class="m">3</span>	<span class="m">23</span>	D
+<span class="m">2</span>	<span class="m">22</span>.4	D
+<span class="m">1</span>     <span class="m">22</span>      D
+<span class="m">0</span>.6    <span class="m">22</span>.2   D
+<span class="m">1</span>.1   <span class="m">23</span>      D
+<span class="m">1</span>     <span class="m">24</span>      D
+<span class="m">1</span>.3   <span class="m">25</span>      D
+<span class="m">2</span>     <span class="m">25</span>.4    D
+<span class="m">3</span>.6   <span class="m">25</span>.4    D
+<span class="m">4</span>     <span class="m">25</span>      D
+<span class="m">3</span>.6   <span class="m">25</span>.4    D
+<span class="m">2</span>     <span class="m">25</span>.4    D
+<span class="m">1</span>.3   <span class="m">25</span>      D
+<span class="m">1</span>     <span class="m">24</span>      D
+<span class="m">0</span>      <span class="m">24</span>      D
+<span class="m">0</span>      <span class="m">0</span>      <span class="m">0</span>.6	c	-Gblack
+<span class="m">6</span>.5	<span class="m">27</span>      <span class="m">0</span>.5 c	-W0.1pt/white -Gblack
+
+<span class="m">8</span>.2    <span class="m">26</span>.7    <span class="m">0</span>.3 c -G244/199/199 -W0.1pt/black
+<span class="m">9</span>.4    <span class="m">27</span>.4    <span class="m">0</span>.4 c -G244/199/199 -W0.1pt/black
+<span class="m">10</span>.3   <span class="m">28</span>.2    <span class="m">0</span>.5 c -G244/199/199 -W0.1pt/black
+<span class="m">11</span>.2	<span class="m">29</span>.2    <span class="m">0</span>.6 c -G244/199/199 -W0.1pt/black
+<span class="m">12</span>.1	<span class="m">29</span>.7    <span class="m">1</span>.0 c -G244/199/199 -W0.1pt/black
+<span class="m">6</span>.0    <span class="m">27</span>.8    M     -G244/199/199 -W0.1pt/black
+<span class="c1">#comment the former lines and uncomment the next six lines if you want white instead rose</span>
+<span class="c1">#8.2    26.7    0.3 c -Gwhite -W0.1pt/black</span>
+<span class="c1">#9.4    27.4    0.4 c -Gwhite -W0.1pt/black</span>
+<span class="c1">#10.3   28.2    0.5 c -Gwhite -W0.1pt/black</span>
+<span class="c1">#11.2	29.2    0.6 c -Gwhite -W0.1pt/black</span>
+<span class="c1">#12.1	29.7    1.0 c -Gwhite -W0.1pt/black</span>
+<span class="c1">#6.0    27.8    M     -Gwhite -W0.1pt/black</span>
+<span class="m">5</span>.6    <span class="m">27</span>.6    D
+<span class="m">5</span>.6    <span class="m">27</span>.2    D
+<span class="m">5</span>.8    <span class="m">27</span>      D
+<span class="m">6</span>      <span class="m">27</span>.4    D
+<span class="m">6</span>.6    <span class="m">27</span>.6    D
+<span class="m">6</span>      <span class="m">27</span>.8    D
+<span class="m">10</span>.5  <span class="m">31</span>.4   M -G244/199/199 -W0.1pt/black
+<span class="c1">#comment the line above and uncomment also the next line if you want white instead rose</span>
+<span class="c1">#10.5  31.4   M -Gwhite -W0.1pt/black</span>
+<span class="m">11</span>    <span class="m">31</span>.8   D
+<span class="m">12</span>    <span class="m">31</span>.4   D
+<span class="m">12</span>.8  <span class="m">31</span>     D
+<span class="m">12</span>.8  <span class="m">30</span>.4   D
+<span class="m">11</span>.8  <span class="m">31</span>.2   D
+<span class="m">10</span>.5  <span class="m">31</span>.4   D
+<span class="c1">#belly</span>
+-5.2	<span class="m">25</span>      M -Gwhite -W0.2pt/200
+-8	<span class="m">26</span>.2    D
+-8.6	<span class="m">27</span>      D
+-7.3	<span class="m">27</span>      D
+-7.8	<span class="m">27</span>.6    D
+-6	<span class="m">26</span>.7    D
+-6.8	<span class="m">27</span>.4    D
+-5	<span class="m">26</span>.6    D
+-5.8	<span class="m">27</span>.6    D
+-3.8	<span class="m">26</span>      D
+-5.2	<span class="m">26</span>.1    D
+-4.6	<span class="m">25</span>.4    D
+-6	<span class="m">25</span>.8    D
+-5.2	<span class="m">25</span>      D
+<span class="c1">#tail</span>
+-14.4   <span class="m">30</span>     M -G50
+-16     <span class="m">29</span>.4   D
+-16.7   <span class="m">29</span>     D
+-18.6   <span class="m">28</span>.1   D
+-20     <span class="m">27</span>.8   D
+-20.4   <span class="m">27</span>.8   D
+-20     <span class="m">28</span>     D
+-19.2   <span class="m">28</span>.6   D
+-18     <span class="m">30</span>     D
+-17.2   <span class="m">31</span>.4   D
+-16     <span class="m">31</span>.4   D
+-14.3   <span class="m">31</span>.1   D
+-13.6   <span class="m">30</span>.6   D
+-13.6   <span class="m">30</span>.4   D
+-14.4   <span class="m">30</span>     D
+-15     <span class="m">31</span>.8   M -G50
+-13.6   <span class="m">31</span>.8   D
+-14.8   <span class="m">32</span>.6   D
+-16     <span class="m">32</span>.8   D
+-17.2   <span class="m">33</span>     D
+-18     <span class="m">33</span>.1   D
+-18.7   <span class="m">33</span>.1   D
+-18.7   <span class="m">32</span>.8   D
+-18     <span class="m">32</span>.7   D
+-17.3   <span class="m">32</span>.2   D
+-17.3   <span class="m">31</span>.6   D
+-16     <span class="m">31</span>.5   D
+-15     <span class="m">31</span>.8   D
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="northernrightwhale_low.html" class="btn btn-neutral float-right" title="A Northern Right Whale (low)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="northernrightwhale.html" class="btn btn-neutral float-left" title="A Northern Right Whale" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

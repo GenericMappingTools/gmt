@@ -1,0 +1,823 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>18. Annotation of Contours and “Quoted Lines” &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="19. The GMT Vector Data Format for OGR Compatibility" href="ogrgmt_format.html" />
+    <link rel="prev" title="17. Custom Plot Symbols" href="custom_symbols.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preface.html">1. Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html">2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">3. General Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="options.html">4. Standardized command line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinate_transformations.html">5. GMT Coordinate Transformations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="map_projections.html">6. GMT Map Projections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplemental_packages.html">7. GMT Supplemental Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html">8. GMT File Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="include_figures.html">9. Including GMT Graphics into your Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predefined_patterns.html">10. Predefined Bit and Hachure Patterns in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="octal_codes.html">11. Chart of Octal Codes for Characters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postscript_fonts.html">12. PostScript Fonts Used by GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">13. Color Space: The Final Frontier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_filtering.html">14. Filtering of Data in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_unix_platforms.html">15. GMT on non-UNIX Platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpts.html">16. Of Colors and Color Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_symbols.html">17. Custom Plot Symbols</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">18. Annotation of Contours and “Quoted Lines”</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#label-placement">18.1. Label Placement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#label-attributes">18.2. Label Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples-of-contour-label-placement">18.3. Examples of Contour Label Placement</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#equidistant-labels">18.3.1. Equidistant labels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fixed-number-of-labels">18.3.2. Fixed number of labels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#prescribed-label-placements">18.3.3. Prescribed label placements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#label-placement-at-simple-line-intersections">18.3.4. Label placement at simple line intersections</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#label-placement-at-general-line-intersections">18.3.5. Label placement at general line intersections</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#examples-of-label-attributes">18.4. Examples of Label Attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#label-placement-by-along-track-distances-1">18.4.1. Label placement by along-track distances, 1</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#label-placement-by-along-track-distances-2">18.4.2. Label placement by along-track distances, 2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-a-different-data-set-for-labels">18.4.3. Using a different data set for labels</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#putting-it-all-together">18.5. Putting it all together</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ogrgmt_format.html">19. The GMT Vector Data Format for OGR Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="one-liner.html">20. GMT Modern Mode One-line Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../cookbook.html">GMT Cookbook</a> &raquo;</li>
+        
+      <li>18. Annotation of Contours and “Quoted Lines”</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/cookbook/contour_annotations.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="annotation-of-contours-and-quoted-lines">
+<h1>18. Annotation of Contours and “Quoted Lines”<a class="headerlink" href="#annotation-of-contours-and-quoted-lines" title="Permalink to this headline">¶</a></h1>
+<p>The GMT programs <a class="reference internal" href="../grdcontour.html"><span class="doc">grdcontour</span></a> (for
+data given as 2-dimensional grids) and
+<a class="reference internal" href="../contour.html"><span class="doc">contour</span></a> (for <em>x,y,z</em> tables) allow
+for contouring of data sets, while <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a>
+and <a class="reference internal" href="../plot3d.html"><span class="doc">plot3d</span></a> can plot lines based on <em>x,y</em>-
+and <em>x,y,z</em>-tables, respectively. In both cases it may be necessary to
+attach labels to these lines. Clever or optimal placements of labels is
+a very difficult topic, and GMT provides several algorithms for this
+placement as well as complete freedom in specifying the attributes of
+the labels. Because of the richness of these choices we present this
+Chapter which summarizes the various options and gives several examples
+of their use.</p>
+<div class="section" id="label-placement">
+<h2>18.1. Label Placement<a class="headerlink" href="#label-placement" title="Permalink to this headline">¶</a></h2>
+<p>While the previous GMT versions 1–3 allowed for a single algorithm
+that determined where labels would be placed, GMT 4 allows for five
+different algorithms. Furthermore, a new “symbol” option (<strong>-Sq</strong> for
+“quoted line”) has been added to <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> and
+<a class="reference internal" href="../plot3d.html"><span class="doc">plot3d</span></a> and hence the new label placement
+mechanisms apply to those programs as well. The contouring programs
+expect the algorithm to be specified as arguments to <strong>-G</strong> while the
+line plotting programs expect the same arguments to follow <strong>-Sq</strong>. The
+information appended to these options is the same in both cases and is
+of the form [<strong>code</strong>]<em>info</em>. The five algorithms correspond to the
+five codes below (some codes will appear in both upper and lower case;
+they share the same algorithm but differ in some other ways). In what
+follows, the phrase “line segment” is taken to mean either a contour or
+a line to be labeled. The codes are:</p>
+<dl class="docutils">
+<dt><strong>d</strong>:</dt>
+<dd>Full syntax is
+<strong>d</strong><em>dist</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>][/<em>frac</em>].
+Place labels according to the distance measured along the projected
+line on the map. Append the unit you want to measure distances in
+[Default is taken from <a class="reference internal" href="../gmt.conf.html#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a>]. Starting at the
+beginning of a line, place labels every <em>dist</em> increment of distance
+along the line. To ensure that closed lines whose total length is
+less than <em>dist</em> get annotated, we may append <em>frac</em> which will
+place the first label at the distance <em>d = dist</em>
+<span class="math notranslate nohighlight">\(\times\)</span> <em>frac</em> from the start of a closed line (and every
+<em>dist</em> thereafter). If not given, <em>frac</em> defaults to 0.25.</dd>
+<dt><strong>D</strong>:</dt>
+<dd>Full syntax is
+<strong>D</strong><em>dist</em>[<strong>d</strong>|<strong>m</strong>|<strong>s</strong>|<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>][/<em>frac</em>].
+This option is similar to <strong>d</strong> except the original data must be
+referred to geographic coordinates (and a map projection must have
+been chosen) and actual Earth <a class="footnote-reference" href="#id3" id="id1">[36]</a> surface distances along the
+lines are considered. Append the unit you want to measure distances
+in; choose among arc <strong>d</strong>egree, <strong>m</strong>inute, and <strong>s</strong>econd,
+or m<strong>e</strong>ter [Default], <strong>f</strong>eet, <strong>k</strong>ilometer, statute
+<strong>M</strong>iles, or <strong>n</strong>autical miles. Other aspects are similar to
+code <strong>d</strong>.</dd>
+<dt><strong>f</strong>:</dt>
+<dd>Full syntax is
+<strong>f</strong><em>fix.txt</em>[/<em>slop</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>]].
+Here, an ASCII file <em>fix.txt</em> is given which must contain records
+whose first two columns hold the coordinates of points along the
+lines at which locations the labels should be placed. Labels will
+only be placed if the coordinates match the line coordinates to
+within a distance of <em>slop</em> (append unit or we use
+<a class="reference internal" href="../gmt.conf.html#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a>). The default <em>slop</em> is zero, meaning only
+exact coordinate matches will do.</dd>
+<dt><strong>l</strong>:</dt>
+<dd>Full syntax is <strong>l</strong><em>line1</em>[,<em>line2</em>[, …]]. One or more
+straight line segments are specified separated by commas, and labels
+will be placed at the intersections between these lines and our line
+segments. Each <em>line</em> specification implies a <em>start</em> and <em>stop</em>
+point, each corresponding to a coordinate pair. These pairs can be
+regular coordinate pairs (i.e., longitude/latitude separated by a
+slash), or they can be two-character codes that refer to
+predetermined points relative to the map region. These codes are
+taken from the <a class="reference internal" href="../text.html"><span class="doc">text</span></a> justification keys
+[<strong>L</strong>|<strong>C</strong>|<strong>R</strong>][<strong>B</strong>|<strong>M</strong>|<strong>T</strong>]
+so that the first character determines the <em>x</em>-coordinate and
+the second determines the <em>y</em>-coordinate. In
+<a class="reference internal" href="../grdcontour.html"><span class="doc">grdcontour</span></a>, you can also use
+the two codes <strong>Z+</strong> and <strong>Z-</strong> as shorthands for the location of
+the grid’s global maximum and minimum, respectively. For example,
+the <em>line</em> <strong>LT</strong>/<strong>RB</strong> is a diagonal from the upper left to the
+lower right map corner, while <strong>Z-</strong>/135W/15S is a line from the
+grid minimum to the point (135ºW, 15ºS).</dd>
+<dt><strong>L</strong>:</dt>
+<dd>Same as <strong>l</strong> except we will treat the lines given as great circle
+start/stop coordinates and fill in the points between before looking
+for intersections.  You must make sure not to give antipodal start and
+stop coordinates since the great circle path would be undefined.</dd>
+<dt><strong>n</strong>:</dt>
+<dd>Full syntax is
+<strong>n</strong><em>number</em>[/<em>minlength</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>]].
+Place <em>number</em> of labels along each line regardless of total line
+length. The line is divided into <em>number</em> segments and the labels
+are placed at the centers of these segments. Optionally, you may
+give a <em>minlength</em> distance to ensure that no labels are placed
+closer than this distance to its neighbors.</dd>
+<dt><strong>N</strong>:</dt>
+<dd>Full syntax is
+<strong>N</strong><em>number</em>[/<em>minlength</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>]].
+Similar to code <strong>n</strong> but here labels are placed at the ends of each
+segment (for <em>number</em> &gt;= 2). A special case arises for
+<em>number = 1</em> when a single label will be placed according to
+the sign of <em>number</em>: -1 places one label justified at the
+start of the line, while +1 places one label justified at
+the end of the line.</dd>
+<dt><strong>s</strong>:</dt>
+<dd>Similar to <strong>n</strong> but splits input lines into a series of two-point
+line segments first.  The rest of the algorithm them operates on
+these sets of lines.  This code (and <strong>S</strong>) are specific to
+quoted lines.</dd>
+<dt><strong>S</strong>:</dt>
+<dd>Similar to <strong>N</strong> but with the modification described for <strong>s</strong>.</dd>
+<dt><strong>x</strong>:</dt>
+<dd>Full syntax is <strong>x</strong><em>cross.d</em>. Here, an ASCII file <em>cross.d</em> is a
+multi-segment file whose lines will intersect our segment lines;
+labels will be placed at these intersections.</dd>
+<dt><strong>X</strong>:</dt>
+<dd>Same as <strong>x</strong> except we treat the lines given as great circle
+start/stop coordinates and fill in the points between before looking
+for intersections.</dd>
+</dl>
+<p>Only one algorithm can be specified at any given time.</p>
+</div>
+<div class="section" id="label-attributes">
+<h2>18.2. Label Attributes<a class="headerlink" href="#label-attributes" title="Permalink to this headline">¶</a></h2>
+<p>Determining where to place labels is half the battle. The other half is
+to specify exactly what are the attributes of the labels. It turns out
+that there are quite a few possible attributes that we may want to
+control, hence understanding how to specify these attributes becomes
+important. In the contouring programs, one or more attributes may be
+appended to the <strong>-A</strong> option using the format +<em>code</em>[<em>args</em>] for
+each attribute, whereas for the line plotting programs these attributes
+are appended to the <strong>-Sq</strong> option following a colon (:) that separates
+the label codes from the placement algorithm. Several of the attributes
+do not apply to contours so we start off with listing those that apply
+universally. These codes are:</p>
+<dl class="docutils">
+<dt><strong>+a</strong>:</dt>
+<dd>Controls the angle of the label relative to the angle of the line.
+Append <strong>n</strong> for normal to the line, give a fixed <em>angle</em> measured
+counter-clockwise relative to the horizontal. or append <strong>p</strong> for
+parallel to the line [Default]. If using
+<a class="reference internal" href="../grdcontour.html"><span class="doc">grdcontour</span></a> the latter option
+you may further append <strong>u</strong> or <strong>d</strong> to get annotations whose upper
+edge always face the next higher or lower contour line.</dd>
+<dt><strong>+c</strong>:</dt>
+<dd>Surrounding each label is an imaginary label “textbox” which defines
+a region in which no segment lines should be visible. The initial
+box provides an exact fit to the enclosed text but clearance may be
+extended in both the horizontal and vertical directions (relative to
+the label baseline) by the given amounts. If these should be
+different amounts please separate them by a slash; otherwise the
+single value applies to both directions. Append the distance units
+of your choice (<strong>c|i|m|p</strong>), or
+give % to indicate that the clearance should be this fixed
+percentage of the label font size in use. The default is 15%.</dd>
+<dt><strong>+d</strong>:</dt>
+<dd>Debug mode. This is useful when testing contour placement as it will
+draw the normally invisible helper lines and points in the label
+placement algorithms above.</dd>
+<dt><strong>+e</strong>:</dt>
+<dd>Delayed mode, to delay the plotting of the text as text clipping is set instead.</dd>
+<dt><strong>+f</strong>:</dt>
+<dd>Specifies the desired label font, including size or color. See
+<a class="reference internal" href="../text.html"><span class="doc">text</span></a> for font names or numbers.
+The default font is given by <a class="reference internal" href="../gmt.conf.html#font-annot-primary"><span class="std std-ref">FONT_ANNOT_PRIMARY</span></a>.</dd>
+<dt><strong>+g</strong>:</dt>
+<dd>Selects opaque rather than the default transparent text boxes. You
+may optionally append the color you want to fill the label boxes;
+the default is the same as <a class="reference internal" href="../gmt.conf.html#ps-page-color"><span class="std std-ref">PS_PAGE_COLOR</span></a>.</dd>
+<dt><strong>+j</strong>:</dt>
+<dd>Selects the justification of the label relative to the placement
+points determined above. Normally this is center/mid justified
+(<strong>CM</strong> in <a class="reference internal" href="../text.html"><span class="doc">text</span></a> justification
+parlance) and this is indeed the default setting. Override by using
+this option and append another justification key code from
+[<strong>L</strong>|<strong>C</strong>|<strong>R</strong>][<strong>B</strong>|<strong>M</strong>|<strong>T</strong>].
+Note for curved text (<strong>+v</strong>) only vertical justification will be
+affected.</dd>
+<dt><strong>+o</strong>:</dt>
+<dd>Request a rounded, rectangular label box shape; the default is
+rectangular. This is only manifested if the box is filled or
+outlined, neither of which is implied by this option alone (see
+<strong>+g</strong> and <strong>+p</strong>). As this option only applies to straight text, it
+is ignored if <strong>+v</strong> is given.</dd>
+<dt><strong>+p</strong>:</dt>
+<dd>Selects the drawing of the label box outline; append your preferred
+<em>pen</em> unless you want the default GMT pen [0.25p,black].</dd>
+<dt><strong>+r</strong>:</dt>
+<dd>Do <em>not</em> place labels at points along the line whose local radius of
+curvature falls below the given threshold value. Append the radius
+unit of your choice (<strong>c</strong>|<strong>i</strong>|<strong>p</strong>) [Default is 0].</dd>
+<dt><strong>+u</strong>:</dt>
+<dd>Append the chosen <em>unit</em> to the label. Normally a space will
+separate the label and the unit. If you want to close this gap,
+append a <em>unit</em> that begins with a hyphen (-). If you are contouring
+with <a class="reference internal" href="../grdcontour.html"><span class="doc">grdcontour</span></a> and you specify
+this option without appending a unit, the unit will be taken from
+the <em>z</em>-unit attribute of the grid header.</dd>
+<dt><strong>+v</strong>:</dt>
+<dd>Place curved labels that follow the wiggles of the line segments.
+This is especially useful if the labels are long relative to the
+length-scale of the wiggles. The default places labels on an
+invisible straight line at the angle determined.</dd>
+<dt><strong>+w</strong>:</dt>
+<dd>The angle of the line at the point of straight label placement is
+calculated by a least-squares fit to the <em>width</em> closest points. If
+not specified, <em>width</em> defaults to 10.</dd>
+<dt><strong>+=</strong>:</dt>
+<dd>Similar in most regards to <strong>+u</strong> but applies instead to a label
+<em>prefix</em> which you must append.</dd>
+</dl>
+<p>For contours, the label will be the value of the contour (possibly
+modified by <strong>+u</strong> or <strong>+=</strong>). However, for quoted lines other options apply:</p>
+<dl class="docutils">
+<dt><strong>+l</strong>:</dt>
+<dd>Append a fixed <em>label</em> that will be placed at all label locations.
+If the label contains spaces you must place it inside matching
+quotes.</dd>
+<dt><strong>+L</strong>:</dt>
+<dd><p class="first">Append a code <em>flag</em> that will determine the label. Available codes
+are:</p>
+<dl class="last docutils">
+<dt><strong>+Lh</strong>:</dt>
+<dd>Take the label from the current multi-segment header (hence it
+is assumed that the input line segments are given in the
+multi-segment file format; if not we pick the single label from
+the file’s header record). We first scan the header for an
+embedded <strong>-L</strong><em>label</em> option; if none is found we instead use
+the first word following the segment marker [&gt;].</dd>
+<dt><strong>+Ld</strong>:</dt>
+<dd>Take the Cartesian plot distances along the line as the label;
+append <strong>c</strong>|<strong>i</strong>|<strong>p</strong> as the unit [Default is
+<a class="reference internal" href="../gmt.conf.html#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a>]. The label will be formatted according
+to the <a class="reference internal" href="../gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a> string, <em>unless</em> label placement
+was determined from map distances along the segment lines, in
+which case we determine the appropriate format from the distance
+value itself.</dd>
+<dt><strong>+LD</strong>:</dt>
+<dd>Calculate actual Earth surface distances and use the distance at
+the label placement point as the label; append
+<strong>d</strong>|<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>m</strong>|<strong>M</strong>|<strong>n</strong>|<strong>s</strong>
+to specify the unit [If not given we default to <strong>d</strong>egrees,
+<em>unless</em> label placement was determined from map distances along
+the segment lines, in which case we use the same unit specified
+for that algorithm]. Requires a map projection to be used.</dd>
+<dt><strong>+Lf</strong>:</dt>
+<dd>Use all text after the 2nd column in the fixed label location
+file <em>fix.txt</em> as labels. This choice obviously requires the
+fixed label location algorithm (code <strong>f</strong>) to be in effect.</dd>
+<dt><strong>+Ln</strong>:</dt>
+<dd>Use the running number of the current multi-segment as label.</dd>
+<dt><strong>+LN</strong>:</dt>
+<dd>Use a slash-separated combination of the current file number and
+the current multi-segment number as label.</dd>
+<dt><strong>+Lx</strong>:</dt>
+<dd>As <strong>h</strong> but use the multi-segment headers in the <em>cross.d</em> file
+instead. This choice obviously requires the crossing segments
+location algorithm (code <strong>x|X</strong>) to be in effect.</dd>
+</dl>
+</dd>
+</dl>
+</div>
+<div class="section" id="examples-of-contour-label-placement">
+<h2>18.3. Examples of Contour Label Placement<a class="headerlink" href="#examples-of-contour-label-placement" title="Permalink to this headline">¶</a></h2>
+<p>We will demonstrate the use of these options with a few simple examples.
+First, we will contour a subset of the global geoid data used in
+Example <a class="reference internal" href="../gallery/ex01.html#example-01"><span class="std std-ref">(1) Contour maps</span></a>; the region selected encompasses the world’s strongest
+“geoid dipole”: the Indian Low and the New Guinea High.</p>
+<div class="section" id="equidistant-labels">
+<h3>18.3.1. Equidistant labels<a class="headerlink" href="#equidistant-labels" title="Permalink to this headline">¶</a></h3>
+<p>Our first example uses the default placement algorithm. Because of the
+size of the map we request contour labels every 1.5 inches along the
+lines:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_O_1
+	gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+	gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+f8p -Gd1.5i -S10 -T+lLH 
+gmt end show
+</pre></div>
+</div>
+<p>As seen in Figure <a class="reference internal" href="#contour-label-1"><span class="std std-ref">Contour label 1</span></a>, the contours are
+placed rather arbitrary. The string of contours for -40 to
+60 align well but that is a fortuitous consequence of reaching
+the 1.5 inch distance from the start at the bottom of the map.</p>
+<div class="figure align-center" id="id5">
+<span id="contour-label-1"></span><a class="reference internal image-reference" href="../_images/GMT_App_O_1.png"><img alt="../_images/GMT_App_O_1.png" src="../_images/GMT_App_O_1.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Equidistant contour label placement with <strong>-Gd</strong>, the only algorithm
+available in previous GMT versions.</span></p>
+</div>
+</div>
+<div class="section" id="fixed-number-of-labels">
+<h3>18.3.2. Fixed number of labels<a class="headerlink" href="#fixed-number-of-labels" title="Permalink to this headline">¶</a></h3>
+<p>We now exercise the option for specifying exactly how many labels each
+contour line should have:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_O_2
+	gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+	gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+f8p -Gn1/1i -S10 -T+lLH
+gmt end show
+</pre></div>
+</div>
+<p>By selecting only one label per contour and requiring that labels only
+be placed on contour lines whose length exceed 1 inch, we achieve the
+effect shown in Figure <a class="reference internal" href="#contour-label-2"><span class="std std-ref">Contour label 2</span></a>.</p>
+<div class="figure align-center" id="id6">
+<span id="contour-label-2"></span><a class="reference internal image-reference" href="../_images/GMT_App_O_2.png"><img alt="../_images/GMT_App_O_2.png" src="../_images/GMT_App_O_2.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Placing one label per contour that exceed 1 inch in length, centered on the segment with <strong>-Gn</strong>.</span></p>
+</div>
+</div>
+<div class="section" id="prescribed-label-placements">
+<h3>18.3.3. Prescribed label placements<a class="headerlink" href="#prescribed-label-placements" title="Permalink to this headline">¶</a></h3>
+<p>Here, we specify four points where we would like contour labels to be
+placed. Our points are not exactly on the contour lines so we give a
+nonzero “slop” to be used in the distance calculations: The point on the
+contour closest to our fixed points and within the given maximum
+distance will host the label.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat <span class="s">&lt;&lt; EOF &gt; fix.txt</span>
+<span class="s">80      -8.5</span>
+<span class="s">55      -7.5</span>
+<span class="s">102     0</span>
+<span class="s">130     10.5</span>
+<span class="s">EOF</span>
+gmt begin GMT_App_O_3
+	gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+	gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -Gffix.txt/0.1i -S10 -T+lLH 
+gmt end show
+</pre></div>
+</div>
+<p>The angle of the label is evaluated from the contour line geometry, and
+the final result is shown in Figure <a class="reference internal" href="#contour-label-3"><span class="std std-ref">Contour label 3</span></a>.
+To aid in understanding the algorithm we chose to specify “debug” mode
+(<strong>+d</strong>) which placed a small circle at each of the fixed points.</p>
+<div class="figure align-center" id="id7">
+<span id="contour-label-3"></span><a class="reference internal image-reference" href="../_images/GMT_App_O_3.png"><img alt="../_images/GMT_App_O_3.png" src="../_images/GMT_App_O_3.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Four labels are positioned on the points along the contours that are
+closest to the locations given in the file fix.txt in the <strong>-Gf</strong> option.</span></p>
+</div>
+</div>
+<div class="section" id="label-placement-at-simple-line-intersections">
+<h3>18.3.4. Label placement at simple line intersections<a class="headerlink" href="#label-placement-at-simple-line-intersections" title="Permalink to this headline">¶</a></h3>
+<p>Often, it will suffice to place contours at the imaginary intersections
+between the contour lines and a well-placed straight line segment. The
+<strong>-Gl</strong> or <strong>-GL</strong> algorithms work well in those cases:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_O_4
+	gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+	gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -GLZ-/Z+ -S10 -T+lLH 
+gmt end show
+</pre></div>
+</div>
+<p>The obvious choice in this example is to specify a great circle between
+the high and the low, thus placing all labels between these extrema.</p>
+<div class="figure align-center" id="id8">
+<span id="contour-label-4"></span><a class="reference internal image-reference" href="../_images/GMT_App_O_4.png"><img alt="../_images/GMT_App_O_4.png" src="../_images/GMT_App_O_4.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Labels are placed at the intersections between contours and the great circle specified in the <strong>-GL</strong> option.</span></p>
+</div>
+<p>The thin debug line in Figure <a class="reference internal" href="#contour-label-4"><span class="std std-ref">Contour label 4</span></a> shows
+the great circle and the intersections where labels are plotted. Note
+that any number of such lines could be specified; here we are content
+with just one.</p>
+</div>
+<div class="section" id="label-placement-at-general-line-intersections">
+<h3>18.3.5. Label placement at general line intersections<a class="headerlink" href="#label-placement-at-general-line-intersections" title="Permalink to this headline">¶</a></h3>
+<p>If (1) the number of intersecting straight line segments needed to pick
+the desired label positions becomes too large to be given conveniently
+on the command line, or (2) we have another data set or lines whose
+intersections we wish to use, the general crossing algorithm makes more
+sense:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_O_5
+	gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+	gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -GX@App_O_cross.txt -S10 -T+lLH 
+gmt end show
+</pre></div>
+</div>
+<div class="figure align-center" id="id9">
+<span id="contour-label-5"></span><a class="reference internal image-reference" href="../_images/GMT_App_O_5.png"><img alt="../_images/GMT_App_O_5.png" src="../_images/GMT_App_O_5.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Labels are placed at the intersections between contours and the
+multi-segment lines specified in the <strong>-GX</strong> option.</span></p>
+</div>
+<p>In this case, we have created three strands of lines whose intersections
+with the contours define the label placements, presented in
+Figure <a class="reference internal" href="#contour-label-5"><span class="std std-ref">Contour label 5</span></a>.</p>
+</div>
+</div>
+<div class="section" id="examples-of-label-attributes">
+<h2>18.4. Examples of Label Attributes<a class="headerlink" href="#examples-of-label-attributes" title="Permalink to this headline">¶</a></h2>
+<p>We will now demonstrate some of the ways to play with the label
+attributes. To do so we will use <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> on
+a great-circle line connecting the geoid extrema, along which we have
+sampled the ETOPO5 relief data set. The file thus contains <em>lon, lat,
+dist, geoid, relief</em>, with distances in km.</p>
+<div class="section" id="label-placement-by-along-track-distances-1">
+<h3>18.4.1. Label placement by along-track distances, 1<a class="headerlink" href="#label-placement-by-along-track-distances-1" title="Permalink to this headline">¶</a></h3>
+<p>This example will change the orientation of labels from along-track to
+across-track, and surrounds the labels with an opaque, outlined text box
+so that the label is more readable. We choose the place the labels every
+1000 km along the line and use that distance as the label. The labels
+are placed normal to the line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_O_6
+	gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+	gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -Gl50/10S/160/10S -S10 -T+l 
+	gmt plot -SqD1000k:+g+LD+an+p -Wthick @App_O_transect.txt
+gmt end show
+</pre></div>
+</div>
+<div class="figure align-center" id="id10">
+<span id="contour-label-6"></span><a class="reference internal image-reference" href="../_images/GMT_App_O_6.png"><img alt="../_images/GMT_App_O_6.png" src="../_images/GMT_App_O_6.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Labels attributes are controlled with the arguments to the <strong>-Sq</strong> option.</span></p>
+</div>
+<p>The composite illustration in Figure <a class="reference internal" href="#contour-label-6"><span class="std std-ref">Contour label 6</span></a>
+shows the new effects. Note that the line connecting the extrema does
+not end exactly at the ‘-‘ and ‘+’ symbols. This is because the
+placements of those symbols are based on the mean coordinates of the
+contour and not the locations of the (local or global) extrema.</p>
+</div>
+<div class="section" id="label-placement-by-along-track-distances-2">
+<h3>18.4.2. Label placement by along-track distances, 2<a class="headerlink" href="#label-placement-by-along-track-distances-2" title="Permalink to this headline">¶</a></h3>
+<p>A small variation on this theme is to place the labels parallel to the
+line, use spherical degrees for placement, append the degree symbol as a
+unit for the labels, choose a rounded rectangular text box, and
+inverse-video the label:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_O_7
+	gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+	gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+u<span class="s2">&quot; m&quot;</span>+f8p -Gl50/10S/160/10S -S10 -T+l
+	gmt plot -SqD15d:+gblack+fwhite+Ld+o+u@. -Wthick @App_O_transect.txt
+gmt end show
+</pre></div>
+</div>
+<p>The output is presented as Figure <a class="reference internal" href="#contour-label-7"><span class="std std-ref">Contour label 7</span></a>.</p>
+<div class="figure align-center" id="id11">
+<span id="contour-label-7"></span><a class="reference internal image-reference" href="../_images/GMT_App_O_7.png"><img alt="../_images/GMT_App_O_7.png" src="../_images/GMT_App_O_7.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Another label attribute example.</span></p>
+</div>
+</div>
+<div class="section" id="using-a-different-data-set-for-labels">
+<h3>18.4.3. Using a different data set for labels<a class="headerlink" href="#using-a-different-data-set-for-labels" title="Permalink to this headline">¶</a></h3>
+<p>In the next example we will use the bathymetry values along the transect
+as our label, with placement determined by the distance along track. We
+choose to place labels every 1500 km. To do this we need to pull out
+those records whose distances are multiples of 1500 km and create a
+“fixed points” file that can be used to place labels and specify the
+labels. This is done with <strong>awk</strong>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_O_8
+	gmt convert -i0,1,4 -Em150 @App_O_transect.txt <span class="p">|</span> <span class="nv">$AWK</span> <span class="s1">&#39;{print $1,$2,int($3)}&#39;</span> &gt; fix2.txt
+	gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 
+	gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+u<span class="s2">&quot; m&quot;</span>+f8p -Gl50/10S/160/10S -S10 -T+l 
+	gmt plot -Sqffix2.txt:+g+an+p+Lf+u<span class="s2">&quot; m&quot;</span>+f8p -Wthick @App_O_transect.txt
+gmt end show
+</pre></div>
+</div>
+<p>The output is presented as Figure <a class="reference internal" href="#contour-label-8"><span class="std std-ref">Contour label 8</span></a>.</p>
+<div class="figure align-center" id="id12">
+<span id="contour-label-8"></span><a class="reference internal image-reference" href="../_images/GMT_App_O_8.png"><img alt="../_images/GMT_App_O_8.png" src="../_images/GMT_App_O_8.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Labels based on another data set (here bathymetry) while the placement is based on distances.</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="putting-it-all-together">
+<h2>18.5. Putting it all together<a class="headerlink" href="#putting-it-all-together" title="Permalink to this headline">¶</a></h2>
+<p>Finally, we will make a more complex composite illustration that uses
+several of the label placement and label attribute settings discussed in
+the previous sections. We make a map showing the tsunami travel times
+(in hours) from a hypothetical catastrophic landslide in the Canary
+Islands <a class="footnote-reference" href="#id4" id="id2">[37]</a>. We lay down a color map based on the travel times and the
+shape of the seafloor, and travel time contours with curved labels as
+well as a few quoted lines. The final script is</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_O_9
+<span class="nv">R</span><span class="o">=</span>-R-85/5/10/55
+gmt grdgradient @App_O_topo5.nc -Nt1 -A45 -Gtopo5_int.nc
+gmt <span class="nb">set</span> FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p FONT_TITLE 22p
+gmt project -E-74/41 -C-17/28 -G10 -Q &gt; great_NY_Canaries.txt
+gmt project -E-74/41 -C2.33/48.87 -G100 -Q &gt; great_NY_Paris.txt
+<span class="nv">km</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> -17 <span class="m">28</span> <span class="p">|</span> gmt mapproject -G-74/41+uk -fg --FORMAT_FLOAT_OUT<span class="o">=</span>%.0f -o2<span class="sb">`</span>
+gmt makecpt -Clightred,lightyellow,lightgreen -T0,3,6,100 -N
+gmt grdimage @App_O_ttt.nc -Itopo5_int.nc -C <span class="nv">$R</span> -JM5.3i -nc+t1 
+gmt grdcontour @App_O_ttt.nc -C0.5 -A1+u<span class="s2">&quot; hour&quot;</span>+v+f8p,Bookman-Demi <span class="se">\</span>
+	-GL80W/31N/17W/26N,17W/28N/17W/50N -S2
+gmt plot -Wfatter,white great_NY_Canaries.txt
+gmt coast -B20f5 -BWSne+t<span class="s2">&quot;Tsunami travel times from the Canaries&quot;</span> -N1/thick <span class="se">\</span>
+	-Glightgray -Wfaint -A500 
+gmt convert great_NY_*.txt -E <span class="p">|</span> gmt plot <span class="nv">$R</span> -Sa0.15i -Gred -Wthin
+gmt plot -Wthick great_NY_Canaries.txt <span class="se">\</span>
+	-Sqn1:+f8p,Times-Italic+l<span class="s2">&quot;Distance Canaries to New York = </span><span class="nv">$km</span><span class="s2"> km&quot;</span>+ap+v 
+gmt plot great_NY_Paris.txt -Sc0.08c -Gblack
+gmt plot -Wthinner great_NY_Paris.txt -SqD1000k:+an+o+gblue+LDk+f7p,Helvetica-Bold,white 
+cat <span class="s">&lt;&lt; EOF | gmt text -Gwhite -Wthin -Dj0.1i -F+f8p,Bookman-Demi+j </span>
+<span class="s">74W	41N	RT	New York</span>
+<span class="s">2.33E	48.87N	CT	Paris</span>
+<span class="s">17W	28N	CT	Canaries</span>
+<span class="s">EOF</span>
+gmt end show
+</pre></div>
+</div>
+<p>with the complete illustration presented as Figure
+<a class="reference internal" href="#contour-label-9"><span class="std std-ref">Contour label 9</span></a>.</p>
+<div class="figure align-center" id="id13">
+<span id="contour-label-9"></span><a class="reference internal image-reference" href="../_images/GMT_App_O_9.png"><img alt="../_images/GMT_App_O_9.png" src="../_images/GMT_App_O_9.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Tsunami travel times from the Canary Islands to places in the Atlantic,
+in particular New York. Should a catastrophic landslide occur it is possible
+that New York will experience a large tsunami about 8 hours after the event.</span></p>
+</div>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[36]</a></td><td>or whatever planet we are dealing with.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[37]</a></td><td>Travel times were calculated using Geoware’s travel time calculator,
+<strong>ttt</strong>; see <a class="reference external" href="http://www.geoware-online.com/">http://www.geoware-online.com/</a>.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ogrgmt_format.html" class="btn btn-neutral float-right" title="19. The GMT Vector Data Format for OGR Compatibility" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="custom_symbols.html" class="btn btn-neutral float-left" title="17. Custom Plot Symbols" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

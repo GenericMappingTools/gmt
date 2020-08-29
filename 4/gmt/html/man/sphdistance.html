@@ -1,0 +1,448 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:41 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>SPHDISTANCE</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>SPHDISTANCE</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#ASCII FORMAT PRECISION">ASCII FORMAT PRECISION</a><br>
+<a href="#GRID VALUES PRECISION">GRID VALUES PRECISION</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">sphdistance
+&minus; Calculate nearest distances from Voronoi
+construction of spherical data</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>sphdistance</b>
+<i>infiles</i> <b>&minus;G</b><i>grdfile</i> [
+<b>&minus;C</b> ] [ <b>&minus;D</b> ] [ <b>&minus;E</b> ] [
+<b>&minus;F</b> ] [ <b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ]
+[
+<b>&minus;I</b><i>xinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>][/<i>yinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>]]
+] [ <b>&minus;L</b><i>unit</i> ] [
+<b>&minus;Q</b><i>voronoi.d</i> ] [
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;V</b> ] [ <b>&minus;:</b>[<b>i</b>|<b>o</b>] ]
+[
+<b>&minus;b</b>[<b>i</b>|<b>o</b>][<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;m</b>[<b>i</b>|<b>o</b>][<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>sphdistance</b>
+reads one or more ASCII [or binary] files (or standard
+input) containing lon, lat and performs the construction of
+Voronoi polygons. These polygons are then processed to
+calculate the nearest distance to each node of the lattice
+and written to the specified grid. The Voronoi algorithm
+used is STRIPACK. As an option, you may provide
+pre-calculated Voronoi polygon file in the format written by
+<b><A HREF="sphtriangulate.html">sphtriangulate</A></b>, thus bypassing the memory- and
+time-consuming triangularization. <i><br>
+infiles</i></p>
+
+<p style="margin-left:22%;">Data files with the point
+coordinates in ASCII (or binary; see <b>&minus;b</b>). If no
+files are given the standard input is read.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Name of the output
+grid to hold the computed distances.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">For large data set
+you can save some memory (at the expense of more processing)
+by only storing one form of location coordinates (geographic
+or Cartesian 3-D vectors) at any given time, translating
+from one form to the other when necessary [Default keeps
+both arrays in memory]. Not applicable with
+<b>&minus;Q</b>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Used with
+<b>&minus;m</b> to skip the last (repeated) input vertex at
+the end of a closed segment if it equals the first point in
+the segment. Requires <b>&minus;m</b> [Default uses all
+points].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Instead of
+computing distances, return the ID numbers of the Voronoi
+polygons that each grid node is inside [Default computes
+distances].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force pixel node
+registration [Default is gridline registration]. (Node
+registrations are defined in <b><A HREF="GMT.html">GMT</A></b> Cookbook Appendix B
+on grid file formats.)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>x_inc</i> [and
+optionally <i>y_inc</i>] is the grid spacing. Optionally,
+append a suffix modifier. <b>Geographical (degrees)
+coordinates</b>: Append <b>m</b> to indicate arc minutes or
+<b>c</b> to indicate arc seconds. If one of the units
+<b>e</b>, <b>k</b>, <b>i</b>, or <b>n</b> is appended
+instead, the increment is assumed to be given in meter, km,
+miles, or nautical miles, respectively, and will be
+converted to the equivalent degrees longitude at the middle
+latitude of the region (the conversion depends on
+<b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b>). If /<i>y_inc</i> is given but set to 0 it
+will be reset equal to <i>x_inc</i>; otherwise it will be
+converted to degrees latitude. <b>All coordinates</b>: If
+<b>=</b> is appended then the corresponding max <i>x</i>
+(<i>east</i>) or <i>y</i> (<i>north</i>) may be slightly
+adjusted to fit exactly the given increment [by default the
+increment may be adjusted slightly to fit the given domain].
+Finally, instead of giving an increment you may specify the
+<i>number of nodes</i> desired by appending <b>+</b> to the
+supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The
+resulting increment value depends on whether you have
+selected a gridline-registered or pixel-registered grid; see
+Appendix B for details. Note: if
+<b>&minus;R</b><i>grdfile</i> is used then grid spacing has
+already been initialized; use <b>&minus;I</b> to override
+the values.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify the unit
+used for distance calculations. Choose among <b>e</b> (m),
+<b>k</b> (km), <b>m</b> (mile), <b>n</b> (nautical mile), or
+<b>d</b> (spherical degree). A spherical approximation is
+used unless <b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b> is set to an actual ellipsoid.
+<b>&minus;N</b> Read the information pertaining to each
+Voronoi polygon (the unique node lon, lat and polygon area)
+from a separate file [Default acquires this information from
+the ASCII segment headers of the output file]. Required if
+binary input via <b>&minus;Q</b> is used.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Append the name of
+a file with pre-calculated Voronoi polygons [Default
+performs the Voronoi construction on input data]. For binary
+data <b>&minus;bi</b> you must specify the node information
+separately (via <b>&minus;N</b>).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> specify the Region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 2 input columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.
+[Default is same as input].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file(s). Segments are separated by a special record. For
+ASCII files the first character must be <i>flag</i> [Default
+is &rsquo;&gt;&rsquo;]. For binary files all fields must be
+NaN and <b>&minus;b</b> must set the number of output
+columns explicitly. By default the <b>&minus;m</b> setting
+applies to both input and output. Use <b>&minus;mi</b> and
+<b>&minus;mo</b> to give separate settings to input and
+output.</p> </td>
+</table>
+
+<a name="ASCII FORMAT PRECISION"></a>
+<h2>ASCII FORMAT PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ASCII
+output formats of numerical data are controlled by
+parameters in your .gmtdefaults4 file. Longitude and
+latitude are formatted according to
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>, whereas other values are
+formatted according to <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>. Be aware that the
+format in effect can lead to loss of precision in the
+output, which can lead to various problems downstream. If
+you find the output is not written with enough precision,
+consider switching to binary output (<b>&minus;bo</b> if
+available) or specify more decimals using the
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> setting.</p>
+
+<a name="GRID VALUES PRECISION"></a>
+<h2>GRID VALUES PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Regardless of
+the precision of the input data, GMT programs that create
+grid files will internally hold the grids in 4-byte floating
+point arrays. This is done to conserve memory and
+furthermore most if not all real data can be stored using
+4-byte floating point values. Data with higher precision
+(i.e., double precision values) will lose that precision
+once GMT operates on the grid or writes out new grids. To
+limit loss of precision when processing data you should
+always consider normalizing the data prior to
+processing.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To construct
+Voronoi polygons from the points in the file testdata.txt
+and then calculate distances from the data to a global 1x1
+degree grid, use</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>sphdistance</b>
+testdata.txt <b>&minus;Rg &minus;I</b>1
+<b>&minus;G</b>globedist.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">To generate the
+same grid in two steps using <b><A HREF="sphtriangulate.html">sphtriangulate</A></b>
+separately, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="sphtriangulate.html">sphtriangulate</A></b>
+testdata.txt <b>&minus;Qv</b> &gt; voronoi.d <b><br>
+sphdistance &minus;Q</b>voronoi.d <b>&minus;Rg &minus;I</b>1
+<b>&minus;G</b>globedist.grd</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="sphinterpolate.html">sphinterpolate</A></i>(1) <i><A HREF="sphtriangulate.html">sphtriangulate</A></i>(1)
+<i><A HREF="triangulate.html">triangulate</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Renka, R, J.,
+1997, Algorithm 772: STRIPACK: Delaunay Triangulation and
+Voronoi Diagram on the Surface of a Sphere, <i>AMC Trans.
+Math. Software, 23</i> (3), 416&minus;434.</p>
+<hr>
+</body>
+</html>

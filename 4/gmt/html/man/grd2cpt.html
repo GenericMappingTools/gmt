@@ -1,0 +1,396 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:17 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GRD2CPT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GRD2CPT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#GRID FILE FORMATS">GRID FILE FORMATS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">grd2cpt &minus;
+Make a color palette table from grid files</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grd2cpt</b>
+<i>grdfiles</i> [ <b>&minus;C</b><i>cptmaster</i> ] [
+<b>&minus;D</b> ] [ <b>&minus;E</b><i>nlevels</i> ] [
+<b>&minus;I</b> ] [ <b>&minus;L</b><i>minlimit/maxlimit</i>
+] [ <b>&minus;M</b> ] [ <b>&minus;N</b> ] [
+<b>&minus;Q</b>[<b>i|o</b>] ] [
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;S</b><i>zstart/zstop/zinc</i> ] [
+<b>&minus;T-</b>|<b>+</b>|<b>_</b>|<b>=</b> ] [
+<b>&minus;V</b> ] [ <b>&minus;Z</b> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grd2cpt</b>
+reads one or more grid files and writes a color palette
+(cpt) file to standard output. The cpt file is based on an
+existing master cpt file of your choice, and the mapping
+from data value to colors is through the data&rsquo;s
+cumulative distribution function (CDF), so that the colors
+are histogram equalized. Thus if the grid(s) and the
+resulting cpt file are used in <b><A HREF="grdimage.html">grdimage</A></b> with a linear
+projection, the colors will be uniformly distributed in area
+on the plot. Let z be the data values in the grid. Define
+CDF(Z) = (# of z &lt; Z) / (# of z in grid). (NaNs are
+ignored). These z-values are then normalized to the master
+cpt file and colors are sampled at the desired intervals.
+<br>
+The color palette includes three additional colors beyond
+the range of z-values. These are the background color (B)
+assigned to values lower than the lowest <i>z</i>-value, the
+foreground color (F) assigned to values higher than the
+highest <i>z</i>-value, and the NaN color (N) painted
+whereever values are undefined. <br>
+If the master cpt file includes B, F, and N entries, these
+will be copied into the new master file. If not, the
+parameters <b><A HREF="gmtdefaults.html#COLOR_BACKGROUND">COLOR_BACKGROUND</A></b>, <b><A HREF="gmtdefaults.html#COLOR_FOREGROUND">COLOR_FOREGROUND</A></b>,
+and <b><A HREF="gmtdefaults.html#COLOR_NAN">COLOR_NAN</A></b> from the .gmtdefaults4 file or the
+command line will be used. This default behavior can be
+overruled using the options <b>&minus;D</b>, <b>&minus;M</b>
+or <b>&minus;N</b>. <br>
+The color model (RGB, HSV or CMYK) of the palette created by
+<b><A HREF="makecpt.html">makecpt</A></b> will be the same as specified in the header
+of the master cpt file. When there is no <b><A HREF="gmtdefaults.html#COLOR_MODEL">COLOR_MODEL</A></b>
+entry in the master cpt file, the <b><A HREF="gmtdefaults.html#COLOR_MODEL">COLOR_MODEL</A></b>
+specified in the .gmtdefaults4 file or on the command line
+will be used. <i><br>
+grdfiles</i></p>
+
+<p style="margin-left:22%;">Names of one or more 2-D binary
+grid files used to derive the color palette table. All grids
+need to have the same size and dimensions. (See GRID FILE
+FORMATS below).</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects the master
+color table to use in the interpolation. Choose among the
+built-in tables (type <b>grd2cpt</b> to see the list) or
+give the name of an existing cpt file [Default gives a
+rainbow cpt file].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Select the colors
+for lowest and highest <i>z</i>-values in the output cpt
+file as the back- and foreground colors that will be written
+to the cpt file [Default uses the colors specified in the
+master file, or those defined by the parameters
+<b><A HREF="gmtdefaults.html#COLOR_BACKGROUND">COLOR_BACKGROUND</A></b>, <b><A HREF="gmtdefaults.html#COLOR_FOREGROUND">COLOR_FOREGROUND</A></b>, and
+<b><A HREF="gmtdefaults.html#COLOR_NAN">COLOR_NAN</A></b>].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Create a linear
+color table by dividing the grid z-range into <i>nlevels</i>
+equidistant slices.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Reverses the sense
+of color progression in the master cpt file. Also exchanges
+the foreground and background colors, including those
+specified by the parameters <b><A HREF="gmtdefaults.html#COLOR_BACKGROUND">COLOR_BACKGROUND</A></b> and
+<b><A HREF="gmtdefaults.html#COLOR_FOREGROUND">COLOR_FOREGROUND</A></b>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Limit range of cpt
+file to <i>minlimit/maxlimit</i>, and don&rsquo;t count data
+outside range when estimating CDF(Z). [Default uses min and
+max of data.]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Overrule
+background, foreground, and NaN colors specified in the
+master cpt file with the values of the parameters
+<b><A HREF="gmtdefaults.html#COLOR_BACKGROUND">COLOR_BACKGROUND</A></b>, <b><A HREF="gmtdefaults.html#COLOR_FOREGROUND">COLOR_FOREGROUND</A></b>, and
+<b><A HREF="gmtdefaults.html#COLOR_NAN">COLOR_NAN</A></b> specified in the .gmtdefaults4 file or on
+the command line. When combined with <b>&minus;D</b>, only
+<b><A HREF="gmtdefaults.html#COLOR_NAN">COLOR_NAN</A></b> is considered.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not write out
+the background, foreground, and NaN-color fields [Default
+will write them].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects a
+logarithmic interpolation scheme [Default is linear].
+<b>&minus;Qi</b> expects input z-values to be log10(z),
+assigns colors, and writes out z [Default]. <b>&minus;Qo</b>
+takes log10(z) first, assigns colors, and writes out z.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xmin</i>,
+<i>xmax</i>, <i>ymin</i>, and <i>ymax</i> specify the Region
+of interest. For geographic regions, these limits correspond
+to <i>west, east, south,</i> and <i>north</i> and you may
+specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+calendar time coordinates you may either give (a) relative
+time (relative to the selected <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and in the
+selected <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>; append <b>t</b> to
+<b>&minus;JX</b>|<b>x</b>), or (b) absolute time of the form
+[<i>date</i>]<b>T</b>[<i>clock</i>] (append <b>T</b> to
+<b>&minus;JX</b>|<b>x</b>). At least one of <i>date</i> and
+<i>clock</i> must be present; the <b>T</b> is always
+required. The <i>date</i> string must be of the form
+[-]yyyy[-mm[-dd]] (Gregorian calendar) or yyyy[-Www[-d]]
+(ISO week calendar), while the <i>clock</i> string must be
+of the form hh:mm:ss[.xxx]. The use of delimiters and their
+type and positions must be exactly as indicated (however,
+input, output and plot formats are customizable; see
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b>).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set steps in cpt
+file. Calculate entries in cpt file from <i>zstart</i> to
+<i>zstop</i> in steps of (<i>zinc</i>). [Default chooses
+arbitrary values by a crazy scheme.]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force the color
+table to be symmetric about zero (from -R to +R). Append
+flag to set the range R: <b>-</b> for R =|zmin|, <b>+</b>
+for R = |zmax|, <b>_</b> for R = min(|zmin|, |zmax|), or
+<b>=</b> for R = max(|zmin|, |zmax|).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Verbose operation.
+This will write CDF(Z) estimates to stderr. [Default is
+silent.]</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Will create a
+continuous color palette. [Default is discontinuous, i.e.,
+constant color intervals]</p></td>
+</table>
+
+<a name="GRID FILE FORMATS"></a>
+<h2>GRID FILE FORMATS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="GMT.html">GMT</A></b> is
+able to recognize many of the commonly used grid file
+formats, as well as the precision, scale and offset of the
+values contained in the grid file. When <b><A HREF="GMT.html">GMT</A></b> needs a
+little help with that, you can add the suffix
+<b>=</b><i>id</i>[<b>/</b><i>scale</i><b>/</b><i>offset</i>[<b>/</b><i>nan</i>]],
+where <i>id</i> is a two-letter identifier of the grid type
+and precision, and <i>scale</i> and <i>offset</i> are
+optional scale factor and offset to be applied to all grid
+values, and <i>nan</i> is the value used to indicate missing
+data. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and Section 4.17 of the GMT
+Technical Reference and Cookbook for more information.</p>
+
+<p style="margin-left:11%; margin-top: 1em">When reading a
+netCDF file that contains multiple grids, <b><A HREF="GMT.html">GMT</A></b> will
+read, by default, the first 2-dimensional grid that can find
+in that file. To coax <b><A HREF="GMT.html">GMT</A></b> into reading another
+multi-dimensional variable in the grid file, append
+<b>?</b><i>varname</i> to the file name, where
+<i>varname</i> is the name of the variable. Note that you
+may need to escape the special meaning of <b>?</b> in your
+shell program by putting a backslash in front of it, or by
+placing the filename and suffix between quotes or double
+quotes. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and Section 4.18 of the
+GMT Technical Reference and Cookbook for more information,
+particularly on how to read splices of 3-, 4-, or
+5-dimensional grids.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Sometimes you
+don&rsquo;t want to make a cpt file (yet) but would find it
+helpful to know that 90% of your data lie between z1 and z2,
+something you cannot learn from <b><A HREF="grdinfo.html">grdinfo</A></b>. So you can
+do this to see some points on the CDF(Z) curve (use
+<b>&minus;V</b> option to see more):</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grd2cpt</b>
+mydata.grd <b>&minus;V</b> &gt; /dev/null</p>
+
+<p style="margin-left:11%; margin-top: 1em">To make a cpt
+file with entries from 0 to 200 in steps of 20, and ignore
+data below zero in computing CDF(Z), and use the built-in
+master cpt file relief, run</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grd2cpt</b>
+mydata.grd <b>&minus;C</b><i>relief</i> <b>-L</b>0/10000
+<b>-S</b>0/200/20 &gt; mydata.cpt</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="gmtdefaults.html">gmtdefaults</A></i>(1),
+<i><A HREF="GMT.html">GMT</A></i>(1), <i><A HREF="grdhisteq.html">grdhisteq</A></i>(1), <i><A HREF="grdinfo.html">grdinfo</A></i>(1),
+<i><A HREF="makecpt.html">makecpt</A></i>(1)</p>
+<hr>
+</body>
+</html>

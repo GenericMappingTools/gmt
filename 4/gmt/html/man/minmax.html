@@ -1,0 +1,344 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:24 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>MINMAX</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>MINMAX</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#ASCII FORMAT PRECISION">ASCII FORMAT PRECISION</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">minmax &minus;
+Find extreme values in data tables</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>minmax</b> [
+<i>files</i>] [ <b>&minus;C</b> ] [
+<b>&minus;EL</b>|<b>l</b>|<b>H</b>|<b>h</b><i>col</i> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;I</b>[<b>p</b>]<i>dx</i>[/<i>dy</i>[/<i>dz</i>...]
+] [ <b>&minus;S</b>[<b>x</b>][<b>y</b>] ] [
+<b>&minus;T</b><i>dz</i>[/<i>col</i>] ] [
+<b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;bi</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ] [
+<b>&minus;m</b>[<b>i</b>|<b>o</b>][<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>minmax</b>
+reads its standard input [or from files] and finds the
+extreme values in each of the columns reported as
+slash-separated min/max pairs. It recognizes NaNs and will
+print warnings if the number of columns vary from record to
+record. As an option, <b>minmax</b> will find the extent of
+the first two columns rounded up and down to the nearest
+multiple of the supplied increments given via
+<b>&minus;I</b>. Such output will be in the form
+<b>&minus;R</b><i>w/e/s/n</i> which can be used directly on
+the command line for other programs (hence only <i>dx</i>
+and <i>dy</i> are needed). If <b>&minus;C</b> is given then
+the output will be in column form for as many columns as
+there are increments provided. A similar option
+(<b>&minus;T</b>) will provide a
+<b>&minus;T</b><i>zmin/zmax/dz</i> string for makecpt.
+<i><br>
+xyzfile</i></p>
+
+<p style="margin-left:22%;">ASCII [or binary, see
+<b>&minus;b</b>] file(s) holding a fixed number of data
+columns.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Report the min/max
+values per column in separate columns [Default uses
+&lt;min/max&gt; format].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Returns the record
+whose column <i>col</i> contains the minimum (<b>l</b>) or
+maximum (<b>h</b>) value. Upper case (<b>L|H</b>) works on
+absolute value of the data. In case of multiple matches,
+only the first record is returned.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Report the min/max
+of the first <i>n</i> columns to the nearest multiple of the
+provided increments (separate the <i>n</i> increments by
+slashes), and output results in the form
+<b>&minus;R</b><i>w/e/s/n</i> (unless <b>&minus;C</b> is
+set). If only one increment is given we also use it for the
+second column (for backwards compatibility). To override
+this behavior, use <b>&minus;Ip</b><i>dx</i>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Add extra space for
+error bars. Useful together with <b>&minus;I</b> option and
+when later plotting with <b>psxy &minus;E</b>.
+<b>&minus;Sx</b> leaves space for horizontal error bars
+using the values in third (2) column. <b>&minus;Sy</b>
+leaves space for vertical error bars using the values in
+third (2) column. <b>&minus;S</b> or <b>&minus;Sxy</b>
+leaves space for both error bars using the values in third
+and fourth (2 and 3) columns.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Report the min/max
+of the first (0&rsquo;th) column to the nearest multiple of
+<i>dz</i> and output this in the form
+<b>&minus;T</b><i>zmin/zmax/dz</i>. To use another column,
+append /<i>col</i>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both]. Only works when <b>&minus;I</b> is
+selected.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 2 input columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file(s). Segments are separated by a special record. For
+ASCII files the first character must be <i>flag</i> [Default
+is &rsquo;&gt;&rsquo;]. For binary files all fields must be
+NaN and <b>&minus;b</b> must set the number of output
+columns explicitly. By default the <b>&minus;m</b> setting
+applies to both input and output. Use <b>&minus;mi</b> and
+<b>&minus;mo</b> to give separate settings to input and
+output.</p> </td>
+</table>
+
+<a name="ASCII FORMAT PRECISION"></a>
+<h2>ASCII FORMAT PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ASCII
+output formats of numerical data are controlled by
+parameters in your .gmtdefaults4 file. Longitude and
+latitude are formatted according to
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>, whereas other values are
+formatted according to <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>. Be aware that the
+format in effect can lead to loss of precision in the
+output, which can lead to various problems downstream. If
+you find the output is not written with enough precision,
+consider switching to binary output (<b>&minus;bo</b> if
+available) or specify more decimals using the
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> setting.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To find the
+extreme values in the file ship_gravity.xygd:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>minmax</b>
+ship_gravity.xygd</p>
+
+<p style="margin-left:11%; margin-top: 1em">Output should
+look like</p>
+
+
+<p style="margin-left:11%; margin-top: 1em">ship_gravity.xygd:
+N = 6992 &lt;326.125/334.684&gt; &lt;-28.0711/-8.6837&gt;
+&lt;-47.7/177.6&gt; &lt;0.6/3544.9&gt;</p>
+
+<p style="margin-left:11%; margin-top: 1em">To find the
+extreme values in the file track.xy to the nearest 5 units
+and use this region to draw a line using psxy, run</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="psxy.html">psxy</A></b>
+&lsquo;<b>minmax &minus;I</b> 5 track.xy&lsquo; track.xy
+<b>&minus;Jx</b> 1 <b>&minus;B</b> 5 <b>&minus;P</b> &gt;
+track.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">To find the min
+and max values for each of the first 4 columns, but rounded
+to integers, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>minmax</b>
+junkfile <b>&minus;C &minus;I</b> 1/1/1/1</p>
+
+<a name="BUGS"></a>
+<h2>BUGS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The
+<b>&minus;I</b> option does not yet work properly with time
+series data (e.g., <b>&minus;f</b> 0T). Thus, such variable
+intervals as months and years are not calculated. Instead,
+specify your interval in the same units as the current
+setting of <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1)</p>
+<hr>
+</body>
+</html>

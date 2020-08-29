@@ -1,0 +1,325 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>(24) Data selection based on geospatial criteria &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(25) Global distribution of antipodes" href="ex25.html" />
+    <link rel="prev" title="(23) All great-circle paths lead to Rome" href="ex23.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+        
+      <li>(24) Data selection based on geospatial criteria</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/gallery/ex24.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="data-selection-based-on-geospatial-criteria">
+<span id="example-24"></span><h1>(24) Data selection based on geospatial criteria<a class="headerlink" href="#data-selection-based-on-geospatial-criteria" title="Permalink to this headline">¶</a></h1>
+<p>Although we are not seismologists, we have yet another example involving
+seismicity. We use seismicity data for the Australia/New Zealand region
+to demonstrate how we can extract subsets of data using geospatial
+criteria. In particular, we wish to plot the epicenters given in the remote
+file <code class="docutils literal notranslate"><span class="pre">oz_quakes_24.txt</span></code> as red or green circles. Green circles should only be used for
+epicenters that satisfy the following three criteria:</p>
+<ol class="arabic simple">
+<li>They are located in the ocean and not on land</li>
+<li>They are within 3000 km of Hobart</li>
+<li>They are more than 1000 km away from the International Dateline</li>
+</ol>
+<p>All remaining earthquakes should be plotted in red. Rather that doing
+the selection process twice we simply plot all quakes as red circles and
+then replot those that pass our criteria. Most of the work here is done
+by <a class="reference internal" href="../gmtselect.html"><span class="doc">gmtselect</span></a>; the rest is carried
+out by the usual <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> and
+<a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> workhorses. Note for our purposes
+the Dateline is just a line along the 180 meridian.</p>
+<p>The script produces the plot in Figure. Note
+that the horizontal distance from the dateline seems to increase as we
+go south; however that is just the projected distance (Mercator
+distortion) and not the actual distance which remains constant at 1000 km.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#		GMT EXAMPLE 24</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Extract subsets of data based on geospatial criteria</span>
+<span class="c1"># GMT modules:	select, coast, plot, info</span>
+<span class="c1"># Unix progs:	echo, cat, rm</span>
+<span class="c1">#</span>
+<span class="c1"># Highlight oceanic earthquakes within 3000 km of Hobart and &gt; 1000 km from dateline</span>
+gmt begin ex24
+	<span class="nb">echo</span> <span class="s2">&quot;147:13 -42:48 6000&quot;</span> &gt; point.txt
+	cat <span class="s">&lt;&lt;- END &gt; dateline.txt</span>
+<span class="s">	&gt; Our proxy for the dateline</span>
+<span class="s">	180	0</span>
+<span class="s">	180	-90</span>
+<span class="s">	END</span>
+	<span class="nv">R</span><span class="o">=</span><span class="sb">`</span>gmt info -I10 @oz_quakes_24.txt<span class="sb">`</span>
+	gmt coast <span class="nv">$R</span> -JM9i -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10 -BWeSn
+	gmt plot @oz_quakes_24.txt -Sc0.05i -Gred
+	gmt <span class="k">select</span> @oz_quakes_24.txt -Ldateline.txt+d1000k -Nk/s -Cpoint.txt+d3000k -fg -Il <span class="se">\</span>
+		<span class="p">|</span> gmt plot -Sc0.05i -Ggreen
+	gmt plot point.txt -SE- -Wfat,white
+	gmt text point.txt -F+f14p,Helvetica-Bold,white+jLT+tHobart -D0.1i/-0.1i
+	gmt plot point.txt -Wfat,white -S+0.2i
+	gmt plot dateline.txt -Wfat,white -A
+	rm -f point.txt dateline.txt
+gmt end show
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/ex24.png"><img alt="../_images/ex24.png" src="../_images/ex24.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Data selection based on geospatial criteria.</span></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ex25.html" class="btn btn-neutral float-right" title="(25) Global distribution of antipodes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ex23.html" class="btn btn-neutral float-left" title="(23) All great-circle paths lead to Rome" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

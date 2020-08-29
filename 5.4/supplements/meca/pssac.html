@@ -1,0 +1,409 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>pssac &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mgd77convert" href="../mgd77/mgd77convert.html" />
+    <link rel="prev" title="psvelo" href="psvelo.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../mgd77/mgd77convert.html" title="mgd77convert"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="psvelo.html" title="psvelo"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pssac">
+<span id="index-0"></span><h1>pssac<a class="headerlink" href="#pssac" title="Permalink to this headline">¶</a></h1>
+<p>pssac - Plot seismograms in SAC format on maps</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>pssac</strong> [ <em>saclist</em>|<em>SACfiles</em> ] <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em>
+<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
+[ <a class="reference internal" href="#b"><span> <strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong>[<em>t0/t1</em>] ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>dx</em>[/<em>dy</em>] ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><strong>a</strong>|<strong>b</strong>|<strong>k</strong>|<strong>d</strong>|<strong>n</strong>[<em>n</em>]|<strong>u</strong>[<em>n</em>] ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>i</strong>][<strong>q</strong>][<strong>r</strong>] ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong>[<strong>p</strong>|<strong>n</strong>][<strong>+g</strong><em>fill</em>][<strong>+z</strong><em>zero</em>][<strong>+t</strong><em>t0/t1</em>] ]
+[ <a class="reference internal" href="#k"><span> <strong>-K</strong></span></a></strong> ]
+[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong><em>size</em>[<em>u</em>][/<em>alpha</em>] ]
+[ <a class="reference internal" href="#o"><span> <strong>-O</strong></span></a></strong> ]
+[ <a class="reference internal" href="#p"><span> <strong>-P</strong></span></a></strong> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong>[<strong>i</strong>]<em>scale</em>[<em>unit</em>] ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong>[<strong>+t</strong><em>n</em>][<strong>+r</strong><em>reduce_vel</em>][<strong>+s</strong><em>shift</em>] ]
+[ <a class="reference internal" href="#u"><span> <strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong><em>pen</em> ]
+[ <a class="reference internal" href="#x"><span> <strong>-X</strong></span></a></strong><em>x_offset</em> ]
+[ <a class="reference internal" href="#y"><span> <strong>-Y</strong></span></a></strong><em>y_offset</em> ]
+[ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="../../gmt.html#t-full"><span class="std std-ref">transp</span></a> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>pssac</strong> reads <em>SACfiles</em> in SAC format or reads filenames and controlling parameters
+from <em>saclist</em> [or standard input] and generates PostScript that will plot seismograms on a map.
+The PostScript code is written to standard output.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>SACfiles</em></dt>
+<dd>SAC files to plot on a map. Only evenly spaced SAC data is supported.</dd>
+<dt><em>saclist</em></dt>
+<dd><p class="first">One ASCII data table file holding a number of data columns. If <em>saclist</em> is not given then we read from standard input.
+Parameters are expected to be in the following columns:</p>
+<blockquote>
+<div><em>filename</em> [<em>X</em> <em>Y</em> [<em>pen</em>]]</div></blockquote>
+<p class="last"><em>filename</em> is the name of SAC file to plot.
+<em>X</em> and <em>Y</em> are the position of seismograms to plot on a map.
+On linear plots, the default <em>X</em> is the begin time of SAC file, which will be adjusted if <strong>-T</strong> option is used,
+the default <em>Y</em> is determined by <strong>-E</strong> option.
+On geographic plots, the default <em>X</em> and <em>Y</em> are station longitude and latitude specified in SAC header.
+The <em>X</em> and <em>Y</em> given here will override the position determined by command line options.
+<em>pen</em>, if given, will override the pen from <strong>-W</strong> option for current SAC file only.</p>
+</dd>
+</dl>
+<dl class="docutils" id="j">
+<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="../../gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select map projection.  </dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
+Append <strong>+r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Alternatively for grid creation, give <strong>R</strong><em>code</em><em>lon</em>/<em>lat</em>/<em>nx</em>/<em>ny</em>, where
+<em>code</em> is a 2-character combination of L, C, R (for left, center, or right)
+and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
+indicates which point on a rectangular region the <em>lon</em>/<em>lat</em> coordinate
+refers to, and the grid dimensions <em>nx</em> and <em>ny</em> with grid spacings via
+<strong>-I</strong> is used to create the corresponding region.
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing, if applicable) are copied from
+the grid. Appending <strong>+u</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.
+For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.
+In case of perspective view (<strong>-p</strong>), a z-range (<em>zmin</em>, <em>zmax</em>)
+can be appended to indicate the third dimension. This needs to be
+done only when using the <strong>-Jz</strong> option, not when using only the
+<strong>-p</strong> option. In the latter case a perspective view of the plane is
+plotted, with no third dimension.  </dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> <a class="reference internal" href="../../gmt.html#b-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set map boundary frame and axes attributes.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong>[<em>t0/t1</em>]</dt>
+<dd>Read and plot seismograms in timewindow between <em>t0</em> and <em>t1</em> only.
+<em>t0</em> and <em>t1</em> are relative to a reference time specified by <strong>-T</strong>.
+If <strong>-T</strong> option is not specified, use the reference time (kzdate and kztime) defined in SAC header instead.
+If only <strong>-C</strong> is used, <em>t0/t1</em> is determined as <em>xmin/xmax</em> from <strong>-R</strong> option.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>dx</em>[<strong>/</strong><em>dy</em>]</dt>
+<dd>Offset seismogram positions by the given mount <em>dx/dy</em> [Default is no offset].
+If <em>dy</em> is not given it is set equal to <em>dx</em>.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-Ea</strong>|<strong>b</strong>|<strong>k</strong>|<strong>d</strong>|<strong>n</strong>[<em>n</em>]|<strong>u</strong>[<em>n</em>]</dt>
+<dd><p class="first">Choose profile type (the type of Y axis).</p>
+<blockquote class="last">
+<div><p><strong>a</strong>: azimuth profile.</p>
+<p><strong>b</strong>: back-azimuth profile.</p>
+<p><strong>k</strong>: epicentral distance (in km) profile.</p>
+<p><strong>d</strong>: epicentral distance (in degree) profile.</p>
+<p><strong>n</strong>: trace number profile. The <em>Y</em> position of first trace is numbered as <em>n</em> [Default <em>n</em> is 0].</p>
+<p><strong>u</strong>: user defined profile. The <em>Y</em> positions are determined by SAC header variable user<em>n</em>, default using user0.</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong>[<strong>i</strong>][<strong>q</strong>][<strong>r</strong>]</dt>
+<dd><p class="first">Data preprocess before plotting.</p>
+<blockquote>
+<div><p><strong>i</strong>: integral</p>
+<p><strong>q</strong>: square</p>
+<p><strong>r</strong>: remove mean value</p>
+</div></blockquote>
+<p class="last"><strong>i|q|r</strong> can repeat multiple times. For example, <strong>-Frii</strong> will convert acceleration to displacement.
+The order of <strong>i|q|r</strong> controls the order of the data processing.</p>
+</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong>[<strong>p</strong>|<strong>n</strong>][<strong>+g</strong><em>fill</em>][<strong>+z</strong><em>zero</em>][<strong>+t</strong><em>t0/t1</em>]</dt>
+<dd><p class="first">Paint positive or negative portion of traces.
+If only <strong>-G</strong> is used, default to fill the positive portion black.</p>
+<blockquote class="last">
+<div><p><strong>p</strong>|<strong>n</strong> controls the painting of positive <strong>p</strong>ortion or <strong>n</strong>egative portion.
+Repeat <strong>-G</strong> option to specify fills for positive and negative portions, respectively.</p>
+<p><strong>+g</strong><em>fill</em>: color to fill</p>
+<p><strong>+t</strong><em>t0/t1</em>: paint traces between t0 and t1 only. The reference time of <em>t0</em> and <em>t1</em> is determined by <strong>-T</strong> option.</p>
+<p><strong>+z</strong><em>zero</em>: define zero line. From <em>zero</em> to top is positive portion, from <em>zero</em> to bottom is negative portion.</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="docutils" id="k">
+<dt><strong>-K</strong> <a class="reference internal" href="../../gmt.html#k-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Do not finalize the PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-M</strong><em>size</em>[<em>u</em>][<em>/alpha</em>]</dt>
+<dd><p class="first">Vertical scaling.</p>
+<blockquote class="last">
+<div><p><em>size</em>[<em>u</em>]: scale all traces <em>size</em>[<em>u</em>] on a map. The default unit is PROJ_LENGTH_UNIT.
+The scaling factor is defined as <code class="docutils literal notranslate"><span class="pre">yscale</span> <span class="pre">=</span> <span class="pre">size*(north-south)/(depmax-depmin)/map_height</span></code>.</p>
+<p><em>size</em>/<em>alpha</em>:</p>
+<blockquote>
+<div><p><em>alpha</em> &lt; 0, use the same scaling factor for all traces. The scaling factor will scale the first trace to <em>size</em>[<em>u</em>].</p>
+<p><em>alpha</em> = 0, multiply all traces by <em>size</em>. No unit is allowed.</p>
+<p><em>alpha</em> &gt; 0, multiply all traces by <code class="docutils literal notranslate"><span class="pre">size*r^alpha</span></code>, r is the distance range in km.</p>
+</div></blockquote>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="docutils" id="o">
+<dt><strong>-O</strong> <a class="reference internal" href="../../gmt.html#o-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Append to existing PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="p">
+<dt><strong>-P</strong> <a class="reference internal" href="../../gmt.html#p-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select “Portrait” plot orientation.</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong></dt>
+<dd>Plot traces vertically.</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong>[<strong>i</strong>]<em>scale</em>[<em>unit</em>]</dt>
+<dd>Sets time scale in seconds per &lt;unit&gt; while plotting on geographic plots.
+Append c, i, or p to indicate cm, inch or points as the unit. Use PROJ_LENGTH_UNIT if <em>unit</em> is omitted.
+Use -S<strong>i</strong><em>scale</em><em>unit</em> to give the reciprocal scale, i.e. cm per second or inch per second.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong>[<strong>+t</strong><em>n</em>][<strong>+r</strong><em>reduce_vel</em>][<strong>+s</strong><em>shift</em>]</dt>
+<dd><p class="first">Time alignment and shift.</p>
+<blockquote class="last">
+<div><p><strong>+t</strong><em>tmark</em>: align all trace along time mark. <em>tmark</em> are -5(b), -4(e), -3(o), -2(a), 0-9(t0-t9).</p>
+<p><strong>+r</strong><em>reduce_vel</em>: reduce velocity in km/s.</p>
+<p><strong>+s</strong><em>shift</em>: shift all traces by <em>shift</em> seconds.</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="docutils" id="u">
+<dt><strong>-U</strong>[[<em>just</em>]/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] <a class="reference internal" href="../../gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Draw GMT time stamp logo on plot.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong><em>pen</em></dt>
+<dd>Set pen attributes for all traces unless overruled by <em>pen</em> specified in <em>saclist</em>.
+[Defaults: width = default, color = black, style = solid].</dd>
+</dl>
+<p id="x"><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]</p>
+<dl class="docutils">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]] <a class="reference internal" href="../../gmt.html#xy-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Shift plot origin.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="../../gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set PDF transparency level in percent.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To plot a single seismogram seis.SAC (generated by SAC command <code class="docutils literal notranslate"><span class="pre">funcgen</span> <span class="pre">seismogram</span></code>)
+and paint positive portion black and negative portion red:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">pssac</span> <span class="n">seis</span><span class="o">.</span><span class="n">SAC</span> <span class="o">-</span><span class="n">JX10c</span><span class="o">/</span><span class="mi">5</span><span class="n">c</span> <span class="o">-</span><span class="n">R9</span><span class="o">/</span><span class="mi">20</span><span class="o">/-</span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span><span class="n">Baf</span> <span class="o">-</span><span class="n">Fr</span> <span class="o">-</span><span class="n">Gp</span><span class="o">+</span><span class="n">gblack</span> <span class="o">-</span><span class="n">Gn</span><span class="o">+</span><span class="n">gred</span> <span class="o">&gt;</span> <span class="n">single</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+<p>To plot several seismograms (generated by SAC command <code class="docutils literal notranslate"><span class="pre">datagen</span> <span class="pre">sub</span> <span class="pre">tele</span> <span class="pre">*.z</span></code>) on a distance profile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">pssac</span> <span class="o">*.</span><span class="n">z</span> <span class="o">-</span><span class="n">R200</span><span class="o">/</span><span class="mi">1600</span><span class="o">/</span><span class="mi">12</span><span class="o">/</span><span class="mi">45</span> <span class="o">-</span><span class="n">JX15c</span><span class="o">/</span><span class="mi">5</span><span class="n">c</span> <span class="o">-</span><span class="n">Bx200</span><span class="o">+</span><span class="n">l</span><span class="s1">&#39;T(s)&#39;</span> <span class="o">-</span><span class="n">By5</span><span class="o">+</span><span class="n">lDegree</span> <span class="o">-</span><span class="n">BWSen</span> \
+    <span class="o">-</span><span class="n">Ed</span> <span class="o">-</span><span class="n">M1</span><span class="o">.</span><span class="mi">5</span><span class="n">c</span> <span class="o">-</span><span class="n">W0</span><span class="o">.</span><span class="mi">5</span><span class="n">p</span><span class="p">,</span><span class="n">red</span> <span class="o">&gt;</span> <span class="n">distance_profile</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+<p>To plot seismograms (generated by SAC command <code class="docutils literal notranslate"><span class="pre">datagen</span> <span class="pre">sub</span> <span class="pre">tele</span> <span class="pre">*.z</span></code>) on a geographic map:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">pssac</span> <span class="o">*.</span><span class="n">z</span> <span class="o">-</span><span class="n">JM15c</span> <span class="o">-</span><span class="n">R</span><span class="o">-</span><span class="mi">120</span><span class="o">/-</span><span class="mi">40</span><span class="o">/</span><span class="mi">35</span><span class="o">/</span><span class="mi">65</span> <span class="o">-</span><span class="n">Baf</span> <span class="o">-</span><span class="n">M1i</span> <span class="o">-</span><span class="n">S300c</span> <span class="o">-</span><span class="n">K</span> <span class="o">&gt;</span> <span class="nb">map</span><span class="o">.</span><span class="n">ps</span>
+<span class="n">saclst</span> <span class="n">stlo</span> <span class="n">stla</span> <span class="n">f</span> <span class="o">*.</span><span class="n">z</span> <span class="o">|</span> <span class="n">gmt</span> <span class="n">psxy</span> <span class="o">-</span><span class="n">J</span> <span class="o">-</span><span class="n">R</span> <span class="o">-</span><span class="n">St0</span><span class="o">.</span><span class="mi">4</span><span class="n">c</span> <span class="o">-</span><span class="n">Gblack</span> <span class="o">-</span><span class="n">i1</span><span class="p">,</span><span class="mi">2</span> <span class="o">-</span><span class="n">O</span> <span class="o">&gt;&gt;</span> <span class="nb">map</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="psmeca.html"><span class="doc">psmeca</span></a>,
+<a class="reference internal" href="pspolar.html"><span class="doc">pspolar</span></a>,
+<a class="reference internal" href="pscoupe.html"><span class="doc">pscoupe</span></a>,
+<a class="reference internal" href="psvelo.html"><span class="doc">psvelo</span></a>,
+<a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="../../psbasemap.html"><span class="doc">psbasemap</span></a>, <a class="reference internal" href="../../psxy.html"><span class="doc">psxy</span></a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Refer to <a class="reference external" href="http://ds.iris.edu/files/sac-manual/">SAC User Manual</a> for more details
+on SAC format and SAC header variables.</p>
+</div>
+<div class="section" id="authors">
+<h2>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h2>
+<p>Dongdong Tian, School of Earth and Space Sciences,
+University of Science and Technology of China, Hefei, Anhui, China</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pssac</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#authors">Authors</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="psvelo.html"
+                        title="previous chapter">psvelo</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../mgd77/mgd77convert.html"
+                        title="next chapter">mgd77convert</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/meca/pssac.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../mgd77/mgd77convert.html" title="mgd77convert"
+             >next</a> </li>
+        <li class="right" >
+          <a href="psvelo.html" title="psvelo"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

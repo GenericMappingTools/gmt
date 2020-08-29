@@ -1,0 +1,207 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(5) Control spline gridding via eigenvalues &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Users Script Contributions" href="../Users_contrib_script.html" />
+    <link rel="prev" title="(4) Flying over topography" href="anim04.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../Users_contrib_script.html" title="Users Script Contributions"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="anim04.html" title="(4) Flying over topography"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="control-spline-gridding-via-eigenvalues">
+<span id="anim-05"></span><h1>(5) Control spline gridding via eigenvalues<a class="headerlink" href="#control-spline-gridding-via-eigenvalues" title="Permalink to this headline">¶</a></h1>
+<p>Our next animation performs gridding using cubic splines but
+restricts the solution to using only the first <em>k</em> eigenvalues
+of the 52 that are required for an exact interpolation of this
+data set consisting of 52 points.  We use
+<a class="reference internal" href="../greenspline.html"><span class="doc">greenspline</span></a> to grid the data and select
+an ever-increasing number of eigenvalues, then show a contour
+map of the evolving surface.  The data misfits are indicated
+by the colored circles; as we approach the full solution these
+all become white (no misfit). These 52 frames are well suited
+for an animated GIF.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT ANIMATION 05</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Make web page with simple animated GIF of gridding</span>
+<span class="c1"># GMT modules:  grdcontour, greenspline, psxy, pstext, psconvert</span>
+<span class="c1"># Unix progs:   mkdir, rm, mv, echo, convert, cat</span>
+<span class="c1"># Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.</span>
+<span class="c1">#</span>
+<span class="c1"># 1. Initialization</span>
+<span class="c1"># 1a) Assign movie parameters</span>
+. gmt_shell_functions.sh
+<span class="nv">n_eigen</span><span class="o">=</span><span class="sb">`</span>gmt_get_ndatarecords <span class="si">${</span><span class="nv">src</span><span class="k">:-</span><span class="p">.</span><span class="si">}</span>/table_5.11<span class="sb">`</span>
+<span class="nv">dpi</span><span class="o">=</span><span class="m">100</span>
+<span class="nv">name</span><span class="o">=</span>anim_05
+<span class="nv">ps</span><span class="o">=</span><span class="si">${</span><span class="nv">name</span><span class="si">}</span>.ps
+mkdir -p <span class="nv">$$</span>
+gmt makecpt -Cpolar -T-25/25 &gt; t.cpt
+<span class="nv">frame</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">let</span> <span class="nv">k</span><span class="o">=</span><span class="m">1</span>
+<span class="k">while</span> <span class="o">[</span> <span class="nv">$k</span> -le <span class="nv">$n_eigen</span> <span class="o">]</span><span class="p">;</span> <span class="k">do</span>
+	<span class="nv">file</span><span class="o">=</span><span class="sb">`</span>gmt_set_framename <span class="si">${</span><span class="nv">name</span><span class="si">}</span> <span class="si">${</span><span class="nv">frame</span><span class="si">}</span><span class="sb">`</span>
+	gmt greenspline <span class="si">${</span><span class="nv">src</span><span class="k">:-</span><span class="p">.</span><span class="si">}</span>/table_5.11 -R0/6.5/0/6.5 -I0.05 -Sc -Gt.nc -D1 -Cn<span class="si">${</span><span class="nv">k</span><span class="si">}</span> -Emisfit.txt <span class="m">2</span>&gt; /dev/null
+	gmt grdcontour t.nc -C25 -A50 -Baf -BWsNE -JX4i -P -K -Gl3.6/6.5/4.05/0.75 -X0.25i -Y0.4i --PS_MEDIA<span class="o">=</span><span class="m">4</span>.5ix5.0i &gt; <span class="nv">$$</span>.ps
+	gmt psxy misfit.txt -R -J -O -K -Ct.cpt -Sc0.15c -Wfaint -i0,1,4 &gt;&gt; <span class="nv">$$</span>.ps
+	<span class="nb">echo</span> <span class="nv">$k</span> <span class="p">|</span> gmt pstext -R -J -O -K -F+cTR+jTR+f18p -Dj0.1i &gt;&gt; <span class="nv">$$</span>.ps
+	gmt psscale -R -J -O -Ct.cpt -DJBC+e -Bxaf -By+l<span class="s2">&quot;misfit&quot;</span> &gt;&gt; <span class="nv">$$</span>.ps
+	<span class="o">[[</span> <span class="si">${</span><span class="nv">frame</span><span class="si">}</span> -eq <span class="m">0</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> cp <span class="nv">$$</span>.ps <span class="si">${</span><span class="nv">ps</span><span class="si">}</span>
+	<span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -eq <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+		gmt_cleanup .gmt
+		gmt_abort <span class="s2">&quot;</span><span class="si">${</span><span class="nv">0</span><span class="si">}</span><span class="s2">: First frame plotted to </span><span class="si">${</span><span class="nv">name</span><span class="si">}</span><span class="s2">.ps&quot;</span>
+	<span class="k">fi</span>
+	gmt psconvert <span class="nv">$$</span>.ps -Tt -E<span class="si">${</span><span class="nv">dpi</span><span class="si">}</span>
+	mv <span class="nv">$$</span>.tif <span class="nv">$$</span>/<span class="si">${</span><span class="nv">file</span><span class="si">}</span>.tif
+	<span class="nb">let</span> <span class="nv">k</span><span class="o">=</span>k+1
+        <span class="nb">echo</span> <span class="s2">&quot;Frame </span><span class="si">${</span><span class="nv">frame</span><span class="si">}</span><span class="s2"> completed&quot;</span>
+	<span class="nv">frame</span><span class="o">=</span><span class="sb">`</span>gmt_set_framenext <span class="si">${</span><span class="nv">frame</span><span class="si">}</span><span class="sb">`</span>
+<span class="k">done</span>
+<span class="si">${</span><span class="nv">GRAPHICSMAGICK</span><span class="p">-gm</span><span class="si">}</span> convert -delay <span class="m">10</span> -loop <span class="m">0</span> +dither <span class="nv">$$</span>/<span class="si">${</span><span class="nv">name_</span><span class="si">}</span>*.tif <span class="si">${</span><span class="nv">name</span><span class="si">}</span>.gif
+cat <span class="s">&lt;&lt; END &gt; ${name}.html</span>
+<span class="s">&lt;HTML&gt;</span>
+<span class="s">&lt;TITLE&gt;GMT Spline gridding as function of number of eigenvalues&lt;/TITLE&gt;</span>
+<span class="s">&lt;BODY bgcolor=&quot;#ffffff&quot;&gt;</span>
+<span class="s">&lt;CENTER&gt;</span>
+<span class="s">&lt;H1&gt;GMT Spline gridding as function of number of eigenvalues&lt;/H1&gt;</span>
+<span class="s">&lt;IMG src=&quot;${name}.gif&quot; border=1&gt;</span>
+<span class="s">&lt;/CENTER&gt;</span>
+<span class="s">&lt;HR&gt;</span>
+<span class="s">Here we show how gridding with splines are affected by the number of eigenvalues</span>
+<span class="s">used in the construction of the final solution.</span>
+<span class="s">&lt;I&gt;${name}.sh: Created by ${USER} on `date`&lt;/I&gt;</span>
+<span class="s">&lt;/BODY&gt;      </span>
+<span class="s">&lt;/HTML&gt;</span>
+<span class="s">END</span>
+<span class="c1"># 4. Clean up temporary files</span>
+gmt_cleanup .gmt
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/anim_05.gif"><img alt="../_images/anim_05.gif" src="../_images/anim_05.gif" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Evolution of a splined grid.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="anim04.html"
+                        title="previous chapter">(4) Flying over topography</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../Users_contrib_script.html"
+                        title="next chapter">Users Script Contributions</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/anim05.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../Users_contrib_script.html" title="Users Script Contributions"
+             >next</a> </li>
+        <li class="right" >
+          <a href="anim04.html" title="(4) Flying over topography"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

@@ -1,0 +1,205 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(4) A 3-D perspective mesh plot &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(5) A 3-D illuminated surface (in bw)" href="ex05.html" />
+    <link rel="prev" title="(3) Spectral estimation and xy-plots" href="ex03.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex05.html" title="(5) A 3-D illuminated surface (in bw)"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex03.html" title="(3) Spectral estimation and xy-plots"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="a-3-d-perspective-mesh-plot">
+<span id="example-04"></span><h1>(4) A 3-D perspective mesh plot<a class="headerlink" href="#a-3-d-perspective-mesh-plot" title="Permalink to this headline">¶</a></h1>
+<p>This example will illustrate how to make a fairly complicated composite
+figure. We need a subset of the ETOPO5 bathymetry <a class="footnote-reference" href="#id2" id="id1">[1]</a> and Geosat geoid
+data sets which we will extract from the local data bases using
+<a class="reference internal" href="../grdraster.html"><span class="doc">grdraster</span></a>. We would like to show a
+2-layer perspective plot where layer one shows a contour map of the
+marine geoid with the location of the Hawaiian islands superposed, and a
+second layer showing the 3-D mesh plot of the topography. We also add an
+arrow pointing north and some text. The first part of this script shows
+how to do it:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 04</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	3-D mesh and color plot of Hawaiian topography and geoid</span>
+<span class="c1"># GMT modules:	grdcontour, grdimage, grdview, psbasemap, pscoast, pstext</span>
+<span class="c1"># Unix progs:	echo, rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_04.ps
+gmt makecpt -C255,100 -T-10/10/10 -N &gt; zero.cpt
+gmt grdcontour HI_geoid4.nc -R195/210/18/25 -Jm0.45i -p60/30 -C1 -A5+o -Gd4i -K -P <span class="se">\</span>
+	-X1.25i -Y1.25i &gt; <span class="nv">$ps</span>
+gmt pscoast -R -J -p -B2 -BNEsw -Gblack -O -K -TdjBR+o0.1i+w1i+l &gt;&gt; <span class="nv">$ps</span>
+gmt grdview HI_topo4.nc -R195/210/18/25/-6/4 -J -Jz0.34i -p -Czero.cpt -O -K <span class="se">\</span>
+	-N-6+glightgray -Qsm -B2 -Bz2+l<span class="s2">&quot;Topo (km)&quot;</span> -BneswZ -Y2.2i &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="s1">&#39;3.25 5.75 H@#awaiian@# R@#idge@#&#39;</span> <span class="p">|</span> gmt pstext -R0/10/0/10 -Jx1i <span class="se">\</span>
+	-F+f60p,ZapfChancery-MediumItalic+jCB -O &gt;&gt; <span class="nv">$ps</span>
+rm -f zero.cpt
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_04c.ps
+gmt grdimage HI_geoid4.nc -I+a0+nt0.75 -R195/210/18/25 -JM6.75i -p60/30 -Cgeoid.cpt -E100 <span class="se">\</span>
+	-K -P -X1.25i -Y1.25i &gt; <span class="nv">$ps</span>
+gmt pscoast -R -J -p -B2 -BNEsw -Gblack -O -K &gt;&gt; <span class="nv">$ps</span>
+gmt psbasemap -R -J -p -O -K -TdjBR+o0.1i+w1i+l --COLOR_BACKGROUND<span class="o">=</span>red --FONT<span class="o">=</span>red <span class="se">\</span>
+	--MAP_TICK_PEN_PRIMARY<span class="o">=</span>thinner,red &gt;&gt; <span class="nv">$ps</span>
+gmt psscale -R -J -p240/30 -DJBC+o0/0.5i+w5i/0.3i+h -Cgeoid.cpt -I -O -K -Bx2+l<span class="s2">&quot;Geoid (m)&quot;</span> &gt;&gt; <span class="nv">$ps</span>
+gmt grdview HI_topo4.nc -I+a0+nt0.75 -R195/210/18/25/-6/4 -J -JZ3.4i -p60/30 -Ctopo.cpt <span class="se">\</span>
+	-O -K -N-6+glightgray -Qc100 -B2 -Bz2+l<span class="s2">&quot;Topo (km)&quot;</span> -BneswZ -Y2.2i &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="s1">&#39;3.25 5.75 H@#awaiian@# R@#idge@#&#39;</span> <span class="p">|</span> gmt pstext -R0/10/0/10 -Jx1i <span class="se">\</span>
+	-F+f60p,ZapfChancery-MediumItalic+jCB -O &gt;&gt; <span class="nv">$ps</span>
+</pre></div>
+</div>
+<p>The purpose of the CPT <code class="docutils literal notranslate"><span class="pre">zero.cpt</span></code> is to have the positive topography
+mesh painted light gray (the remainder is white). The left side of
+Figure shows the complete illustration.</p>
+<div class="figure align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/example_04.png"><img alt="../_images/example_04.png" src="../_images/example_04.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">3-D perspective mesh plot (left) and colored version (right).</span></p>
+</div>
+<p>The second part of the script shows how to make the color version of
+this figure that was printed in our first article in <em>EOS Trans. AGU</em> (8
+October 1991). Using <a class="reference internal" href="../grdview.html"><span class="doc">grdview</span></a> one can
+choose to either plot a mesh surface (left) or a color-coded surface
+(right). We have also added artificial illumination from a light-source
+due north, which is simulated by computing the gradient of the surface
+grid in that direction though the
+<a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a> program. We choose to
+use the <strong>-Qc</strong> option in <a class="reference internal" href="../grdview.html"><span class="doc">grdview</span></a> to
+achieve a high degree of smoothness. Here, we select 100 dpi since that
+will be the resolution of our final raster (The EOS raster was 300 dpi).
+Note that the size of the resulting output file is directly dependent on
+the square of the dpi chosen for the scanline conversion and how well
+the resulting image compresses. A higher value for dpi in <strong>-Qc</strong> would
+have resulted in a much larger output file. The CPTs were taken
+from Example <a class="reference internal" href="ex02.html#example-02"><span class="std std-ref">(2) Image presentations</span></a>.</p>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).</td></tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex03.html"
+                        title="previous chapter">(3) Spectral estimation and xy-plots</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex05.html"
+                        title="next chapter">(5) A 3-D illuminated surface (in bw)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex04.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex05.html" title="(5) A 3-D illuminated surface (in bw)"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex03.html" title="(3) Spectral estimation and xy-plots"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

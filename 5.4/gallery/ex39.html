@@ -1,0 +1,178 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(39) Evaluation of spherical harmonics coefficients &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(40) Line simplification" href="ex40.html" />
+    <link rel="prev" title="(38) Histogram equalization of bathymetry grids" href="ex38.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex40.html" title="(40) Line simplification"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex38.html" title="(38) Histogram equalization of bathymetry grids"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="evaluation-of-spherical-harmonics-coefficients">
+<span id="example-39"></span><h1>(39) Evaluation of spherical harmonics coefficients<a class="headerlink" href="#evaluation-of-spherical-harmonics-coefficients" title="Permalink to this headline">¶</a></h1>
+<p>We use a spherical harmonic model for the topography of Venus and evaluate
+the resulting global grid for three sets of upper order/degrees, here 30,
+90, and 180; the original file (see below) goes to order and degree 720.
+We use the coefficients to evaluate the grids and make perspective globes
+of the different resolutions.  The key tool
+used here is <a class="reference internal" href="../sph2grd.html"><span class="doc">sph2grd</span></a>.</p>
+<p>Note that we use a special format in <a class="reference internal" href="../psscale.html"><span class="doc">psscale</span></a> so that the
+annotations will include the separators for the thousands.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT EXAMPLE 39</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate evaluation of spherical harmonic coefficients</span>
+<span class="c1"># GMT modules:  psscale, pstext, makecpt, grdimage, sph2grd</span>
+<span class="c1"># Unix progs:   rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_39.ps
+
+<span class="c1"># Evaluate the first 180, 90, and 30 order/degrees of Venus spherical</span>
+<span class="c1"># harmonics topography model, skipping the L = 0 term (radial mean).</span>
+<span class="c1"># File truncated from http://www.ipgp.fr/~wieczor/SH/VenusTopo180.txt.zip</span>
+<span class="c1"># Wieczorek, M. A., Gravity and topography of the terrestrial planets,</span>
+<span class="c1">#   Treatise on Geophysics, 10, 165-205, doi:10.1016/B978-044452748-6/00156-5, 2007</span>
+
+gmt sph2grd VenusTopo180.txt -I1 -Rg -Ng -Gv1.nc -F1/1/25/30
+gmt sph2grd VenusTopo180.txt -I1 -Rg -Ng -Gv2.nc -F1/1/85/90
+gmt sph2grd VenusTopo180.txt -I1 -Rg -Ng -Gv3.nc -F1/1/170/180
+gmt grd2cpt v3.nc -Crainbow -E &gt; t.cpt
+gmt grdimage v1.nc -I+a45+nt0.75 -JG90/30/5i -P -K -Bg -Ct.cpt -X3i -Y1.1i &gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="m">4</span> <span class="m">4</span>.5 <span class="nv">L</span> <span class="o">=</span> <span class="m">30</span> <span class="p">|</span> gmt pstext -R0/6/0/6 -Jx1i -O -K -Dj0.2i -F+f16p+jLM -N &gt;&gt; <span class="nv">$ps</span>
+gmt psscale --FORMAT_FLOAT_MAP<span class="o">=</span><span class="s2">&quot;%&#39;g&quot;</span> -Ct.cpt -O -K -Dx1.25i/-0.2i+jTC+w5.5i/0.1i+h -Bxaf -By+lm &gt;&gt; <span class="nv">$ps</span>
+gmt grdimage v2.nc -I+a45+nt0.75 -JG -O -K -Bg -Ct.cpt -X-1.25i -Y1.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="m">4</span> <span class="m">4</span>.5 <span class="nv">L</span> <span class="o">=</span> <span class="m">90</span> <span class="p">|</span> gmt pstext -R0/6/0/6 -Jx1i -O -K -Dj0.2i -F+f16p+jLM -N &gt;&gt; <span class="nv">$ps</span>
+gmt grdimage v3.nc -I+a45+nt0.75 -JG -O -K -Bg -Ct.cpt -X-1.25i -Y1.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="m">4</span> <span class="m">4</span>.5 <span class="nv">L</span> <span class="o">=</span> <span class="m">180</span> <span class="p">|</span> gmt pstext -R0/6/0/6 -Jx1i -O -K -Dj0.2i -F+f16p+jLM -N &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="m">3</span>.75 <span class="m">5</span>.4 Venus Spherical Harmonic Model <span class="p">|</span> gmt pstext -R0/6/0/6 -Jx1i -O -F+f24p+jCM -N &gt;&gt; <span class="nv">$ps</span>
+rm -f v?.nc t.cpt
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_39.png"><img alt="../_images/example_39.png" src="../_images/example_39.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Evaluation of spherical harmonics coefficients.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex38.html"
+                        title="previous chapter">(38) Histogram equalization of bathymetry grids</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex40.html"
+                        title="next chapter">(40) Line simplification</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex39.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex40.html" title="(40) Line simplification"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex38.html" title="(38) Histogram equalization of bathymetry grids"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

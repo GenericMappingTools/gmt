@@ -1,0 +1,341 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>grdpmodeler &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="grdrotater" href="grdrotater.html" />
+    <link rel="prev" title="backtracker" href="backtracker.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="grdrotater.html" title="grdrotater"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="backtracker.html" title="backtracker"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="grdpmodeler">
+<span id="index-0"></span><h1>grdpmodeler<a class="headerlink" href="#grdpmodeler" title="Permalink to this headline">¶</a></h1>
+<p>grdpmodeler - Evaluate a plate motion model on a geographic grid</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdpmodeler</strong> <em>agegrdfile</em> <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>rot_file</em> <strong>-S</strong><em>flags</em>
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>polygonfile</em> ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outgrdfile</em> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>age</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-b</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="../../gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdpmodeler</strong> reads a geographical age grid and a plate motion model
+and evaluates one of several model predictions. Optionally, the user may
+supply a clipping polygon in multiple-segment format; then, only the
+part of the grid inside the polygon is used to determine the model
+prediction; the remainder of the grid is set to NaN.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>ingrdfile</em></dt>
+<dd>Name of a grid file in geographical (lon, lat) coordinates with ages in Myr.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong><em>rotfile</em></dt>
+<dd><p class="first">Give file with rotation parameters. This file must contain one
+record for each rotation; each record must be of the following
+format:</p>
+<p><em>lon lat tstart [tstop] angle</em> [ <em>khat a b c d e f g df</em> ]</p>
+<p class="last">where <em>tstart</em> and <em>tstop</em> are in Myr and <em>lon lat angle</em> are in
+degrees. <em>tstart</em> and <em>tstop</em> are the ages of the old and young ends
+of a stage. If <em>tstop</em> is not present in the record then a total
+reconstruction rotation is expected and <em>tstop</em> is implicitly set to
+0 and should not be specified for any of the records in the file. If
+a covariance matrix <strong>C</strong> for the rotation is available it must be
+specified in a format using the nine optional terms listed in
+brackets. Here, <strong>C</strong> = (<em>g</em>/<em>khat</em>)*[ <em>a b d; b c e; d e f</em> ]
+which shows <strong>C</strong> made up of three row vectors. If the degrees of
+freedom (<em>df</em>) in fitting the rotation is 0 or not given it is set
+to 10000. Blank lines and records whose first column contains # will
+be ignored. You may prepend a leading + to the filename to indicate
+you wish to invert the rotations.
+Alternatively, give the filename composed of two plate IDs
+separated by a hyphen (e.g., PAC-MBL) and we will instead extract
+that rotation from the GPlates rotation database. We return an error
+if the rotation cannot be found.</p>
+</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><em>flags</em></dt>
+<dd>Type of model prediction(s). Append one or more items: choose from <strong>a</strong> for plate motion
+azimuth, <strong>d</strong> for great-circle distance between current location and its
+origin at the ridge (in km), <strong>s</strong> for plate motion model stage ID (1 is youngest),
+<strong>v</strong> for plate motion rate (in mm/yr),
+<strong>w</strong> for plate rotation rate (degree/Myr), <strong>x</strong> for change in
+longitude relative to location of crust formation, <strong>y</strong> for change in
+latitude relative to location of crust formation, <strong>X</strong> for longitude of
+crust formation, and <strong>Y</strong> for latitude of crust formation.
+If no arguments are given we default to all [<strong>adsvwxyXY</strong>].</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><em>polygonfile</em></dt>
+<dd>Specify a multisegment closed polygon file that describes the inside
+area of the grid where the model should be evaluated; the outside
+will be set to NaN [Default evaluates model on the entire grid].</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>outgrdfile</em></dt>
+<dd>Name of output grid. This is the grid with the model predictions
+given the specified rotations. Note: If you specified more than one
+model prediction in <strong>-S</strong> then the filename <em>must</em> be a template
+that contains the format %s; this will be replaced with the corresponding
+tags az, dist, stage, vel, omega, dlon, dlat, lon, lat.
+If the <strong>-G</strong> option is not used then we create no grids and instead
+write <em>lon, lat, age, predictions</em> records to standard output.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong><em>age</em></dt>
+<dd>Use a fixed age for model evaluation (i.e., override the ages in the
+age grid). This lets you evaluate the model at a snapshot in time.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input. [Default is 2 input columns].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em> <a class="reference internal" href="../../gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="geodetic-versus-geocentric-coordiinates">
+<h2>Geodetic versus Geocentric Coordiinates<a class="headerlink" href="#geodetic-versus-geocentric-coordiinates" title="Permalink to this headline">¶</a></h2>
+<p>All spherical rotations are applied to geocentric coordinates.
+This means that incoming data points and grids are considered
+to represent geodetic coordinates and must first
+be converted to geocentric coordinates. Rotations are then applied, and the
+final reconstructed points are converted back to geodetic
+coordinates.  This default behavior can be bypassed if the
+ellipsoid setting <a class="reference internal" href="../../gmt.conf.html#projection-parameters"><span class="std std-ref">PROJ_ELLIPSOID</span></a>
+is changed to Sphere.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>We will use a grid with Pacific crust ages (pac_age.nc), a plate motion
+model (Pac_APM.d), and a polygon that contains the outline of the
+present Pacific plate (pac_clip_path.d). To evaluate the plate motion
+azimuths at the present time for the Pacific, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdpmodeler</span> <span class="n">pac_age</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">EPac_APM</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">Fpac_clip_path</span><span class="o">.</span><span class="n">d</span> \
+                <span class="o">-</span><span class="n">Gpac_dir_0</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Sa</span> <span class="o">-</span><span class="n">T0</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To determine the changes in latitude since crust formation for the
+entire Pacific, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdpmodeler</span> <span class="n">pac_age</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">EPac_APM</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">Fpac_clip_path</span><span class="o">.</span><span class="n">d</span> \
+                <span class="o">-</span><span class="n">Gpac_dlat</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Sy</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To determine the plate motion velocities in effect when the Pacific crust was
+formed, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdpmodeler</span> <span class="n">pac_age</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">EPac_APM</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">Fpac_clip_path</span><span class="o">.</span><span class="n">d</span> \
+                <span class="o">-</span><span class="n">Gpac_vel</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Sv</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To determine how far the crust has moved since formation, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdpmodeler</span> <span class="n">pac_age</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">EPac_APM</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">Fpac_clip_path</span><span class="o">.</span><span class="n">d</span> \
+                <span class="o">-</span><span class="n">Gpac_dist</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Sd</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To save the coordinates of the crust’s formation to separate grids, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdpmodeler</span> <span class="n">pac_age</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">EPac_APM</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">Fpac_clip_path</span><span class="o">.</span><span class="n">d</span> \
+                <span class="o">-</span><span class="n">Gpac_origin_</span><span class="o">%</span><span class="n">s</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">SXY</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To repeat the same exercise but save output <em>lon,lat,age,xorigin,yorigin</em> to a table, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdpmodeler</span> <span class="n">pac_age</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">EPac_APM</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">Fpac_clip_path</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span><span class="n">SXY</span> <span class="o">&gt;</span> <span class="n">origin</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>GMT distributes the EarthByte rotation model Global_EarthByte_230-0Ma_GK07_AREPS.rot.
+To use an alternate rotation file, create an environmental parameters named
+<strong>GPLATES_ROTATIONS</strong> that points to an alternate rotation file.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="backtracker.html"><span class="doc">backtracker</span></a>,
+<a class="reference internal" href="gmtpmodeler.html"><span class="doc">gmtpmodeler</span></a>,
+<a class="reference internal" href="grdrotater.html"><span class="doc">grdrotater</span></a>,
+<a class="reference internal" href="grdspotter.html"><span class="doc">grdspotter</span></a>,
+<a class="reference internal" href="hotspotter.html"><span class="doc">hotspotter</span></a>,
+<a class="reference internal" href="originator.html"><span class="doc">originator</span></a>,
+<a class="reference internal" href="rotconverter.html"><span class="doc">rotconverter</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">grdpmodeler</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#geodetic-versus-geocentric-coordiinates">Geodetic versus Geocentric Coordiinates</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="backtracker.html"
+                        title="previous chapter">backtracker</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grdrotater.html"
+                        title="next chapter">grdrotater</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/spotter/grdpmodeler.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="grdrotater.html" title="grdrotater"
+             >next</a> </li>
+        <li class="right" >
+          <a href="backtracker.html" title="backtracker"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

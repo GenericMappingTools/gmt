@@ -1,0 +1,194 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(15) Gridding, contouring, and masking of unconstrained areas &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(16) Gridding of data, continued" href="ex16.html" />
+    <link rel="prev" title="(14) Gridding of data and trend surfaces" href="ex14.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex16.html" title="(16) Gridding of data, continued"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex14.html" title="(14) Gridding of data and trend surfaces"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gridding-contouring-and-masking-of-unconstrained-areas">
+<span id="example-15"></span><h1>(15) Gridding, contouring, and masking of unconstrained areas<a class="headerlink" href="#gridding-contouring-and-masking-of-unconstrained-areas" title="Permalink to this headline">¶</a></h1>
+<p>This example demonstrates some off the
+different ways one can use to grid data in GMT, and how to deal with
+unconstrained areas. We first convert a large ASCII file to binary with
+<a class="reference internal" href="../gmtconvert.html"><span class="doc">gmtconvert</span></a> since the binary file
+will read and process much faster. Our lower left plot illustrates the
+results of gridding using a nearest neighbor technique
+(<a class="reference internal" href="../nearneighbor.html"><span class="doc">nearneighbor</span></a>) which is a local
+method: No output is given where there are no data. Next (lower right),
+we use a minimum curvature technique
+(<a class="reference internal" href="../surface.html"><span class="doc">surface</span></a>) which is a global method.
+Hence, the contours cover the entire map although the data are only
+available for portions of the area (indicated by the gray areas plotted
+using <a class="reference internal" href="../psmask.html"><span class="doc">psmask</span></a>). The top left scenario
+illustrates how we can create a clip path (using
+<a class="reference internal" href="../psmask.html"><span class="doc">psmask</span></a>) based on the data coverage to
+eliminate contours outside the constrained area. Finally (top right) we
+simply employ <a class="reference internal" href="../pscoast.html"><span class="doc">pscoast</span></a> to overlay gray
+land masses to cover up the unwanted contours, and end by plotting a
+star at the deepest point on the map with
+<a class="reference internal" href="../psxy.html"><span class="doc">psxy</span></a>. This point was extracted from the
+grid files using <a class="reference internal" href="../grdinfo.html"><span class="doc">grdinfo</span></a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 15</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Gridding and clipping when data are missing</span>
+<span class="c1"># GMT modules:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo, gmtinfo</span>
+<span class="c1"># GMT modules:	nearneighbor, pscoast, psmask, pstext, surface</span>
+<span class="c1"># Unix progs:	echo, rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_15.ps
+gmt convert ship.xyz -bo &gt; ship.b
+<span class="c1">#</span>
+<span class="nv">region</span><span class="o">=</span><span class="sb">`</span>gmt info ship.b -I1 -bi3d<span class="sb">`</span>
+gmt nearneighbor <span class="nv">$region</span> -I10m -S40k -Gship.nc ship.b -bi
+gmt grdcontour ship.nc -JM3i -P -B2 -BWSne -C250 -A1000 -Gd2i -K &gt; <span class="nv">$ps</span>
+<span class="c1">#</span>
+gmt blockmedian <span class="nv">$region</span> -I10m ship.b -b3d &gt; ship_10m.b
+gmt surface <span class="nv">$region</span> -I10m ship_10m.b -Gship.nc -bi
+gmt psmask <span class="nv">$region</span> -I10m ship.b -J -O -K -T -Glightgray -bi3d -X3.6i &gt;&gt; <span class="nv">$ps</span>
+gmt grdcontour ship.nc -J -B -C250 -L-8000/0 -A1000 -Gd2i -O -K &gt;&gt; <span class="nv">$ps</span>
+<span class="c1">#</span>
+gmt psmask <span class="nv">$region</span> -I10m ship_10m.b -bi3d -J -B -O -K -X-3.6i -Y3.75i &gt;&gt; <span class="nv">$ps</span>
+gmt grdcontour ship.nc -J -C250 -A1000 -L-8000/0 -Gd2i -O -K &gt;&gt; <span class="nv">$ps</span>
+gmt psmask -C -O -K &gt;&gt; <span class="nv">$ps</span>
+<span class="c1">#</span>
+gmt grdclip ship.nc -Sa-1/NaN -Gship_clipped.nc
+gmt grdcontour ship_clipped.nc -J -B -C250 -A1000 -L-8000/0 -Gd2i -O -K -X3.6i &gt;&gt; <span class="nv">$ps</span>
+gmt pscoast <span class="nv">$region</span> -J -O -K -Ggray -Wthinnest &gt;&gt; <span class="nv">$ps</span>
+gmt grdinfo -C -M ship.nc <span class="p">|</span> gmt psxy -R -J -O -K -Sa0.15i -Wthick -i11,12 &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="s2">&quot;-0.3 3.6 Gridding with missing data&quot;</span> <span class="p">|</span> gmt pstext -R0/3/0/4 -Jx1i <span class="se">\</span>
+	-F+f24p,Helvetica-Bold+jCB -O -N &gt;&gt; <span class="nv">$ps</span>
+rm -f ship.b ship_10m.b ship.nc ship_clipped.nc
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_15.png"><img alt="../_images/example_15.png" src="../_images/example_15.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Gridding, contouring, and masking of data.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex14.html"
+                        title="previous chapter">(14) Gridding of data and trend surfaces</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex16.html"
+                        title="next chapter">(16) Gridding of data, continued</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex15.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex16.html" title="(16) Gridding of data, continued"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex14.html" title="(14) Gridding of data and trend surfaces"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

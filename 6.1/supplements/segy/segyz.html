@@ -1,0 +1,513 @@
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>segyz &mdash; GMT 6.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="segy" href="segy.html" />
+    <link rel="prev" title="talwani3d" href="../potential/talwani3d.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between different versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an earlier version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../modules.html">Modules</a> &raquo;</li>
+        
+      <li>segyz</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.1/doc/rst/source/supplements/segy/segyz.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="index-0"></span><div class="section" id="segyz">
+<h1>segyz<a class="headerlink" href="#segyz" title="Permalink to this headline">¶</a></h1>
+<p>Plot a SEGY file in 3-D</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt segyz</strong> <em>SEGYfile</em> <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em>
+<a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><strong>z</strong>|<strong>Z</strong><em>parameters</em>
+<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]
+<a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>deviation</em> <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<em>color</em>] <strong>-W</strong>
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>clip</em> ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong> ] [ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>nsamp</em> ]
+[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong><em>ntrace</em> ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><em>&lt;mode&gt;&lt;value&gt;</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>header_x</em>/<em>header_y</em> ]
+[ <a class="reference internal" href="#u"><span> <strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#x"><span> <strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>] ]
+[ <a class="reference internal" href="#y"><span> <strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong> ]
+[ <strong>-p</strong><a class="reference internal" href="../../gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="../../gmt.html#t-full"><span class="std std-ref">transp</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Reads a native (IEEE) format SEGY file and produces a
+plot of the seismic data. The <em>imagemask</em> operator is used
+so that the seismic data are plotted as a 1-bit deep bitmap in a single
+(user-specified) color or gray shade, with a transparent background. The
+bitmap resolution is taken from the current GMT defaults. The
+seismic traces may be plotted at their true locations using information
+in the trace headers (in which case order of the traces in the file is
+not significant). Standard GMT geometry routines are used so that in
+principle any map projection may be used, however it is likely that the
+geographic projections will lead to unexpected results. Beware that a
+couple of the options for the 2-D plotter are not available in here.</p>
+<p>Note that the order of operations before the seismic data are plotted is
+deviation*[clip]([bias]+[normalize](sample value)). Deviation
+determines how far <em>in the plot coordinates</em> a
+[normalized][biased][clipped] sample value of 1 plots from the trace
+location.</p>
+<p>The SEGY file should be a disk image of the tape format (i.e., 3200 byte
+text header, which is ignored, 400 byte binary reel header, and 240 byte
+header for each trace) with samples as native real*4 (IEEE real on all
+the platforms to which I have access).</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt><em>SEGYfile</em></dt><dd><p>Seismic SEGY data set to be imaged.</p>
+</dd>
+</dl>
+<dl class="simple" id="j">
+<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="../../gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select map projection.  </p>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
+Append <strong>+r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Set geographic regions by specifying ISO country codes from the Digital Chart of the World using
+<strong>-R</strong><em>code1,code2,…</em>[<strong>+r</strong>|<strong>R</strong>[<em>incs</em>]] instead:
+Append one or more comma-separated countries using the 2-character
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">ISO 3166-1 alpha-2 convention</a>.  To select a state of a country
+(if available), append .state, e.g, US.TX for Texas.  To specify a
+whole continent, prepend = to any of the continent codes AF (Africa),
+AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
+NA (North America), or SA (South America).  Use <strong>+r</strong> to modify the bounding box coordinates from the polygon(s):
+Append <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> to adjust the
+region to be a multiple of these steps [no adjustment]. Alternatively, use <strong>+R</strong> to extend the region
+outward by adding these increments instead, or <strong>+e</strong> which is like <strong>+r</strong> but
+it ensures that the bounding box extends by at least 0.25 times the increment [no extension].
+Alternatively for grid creation, give <strong>R</strong><em>code</em><em>lon</em>/<em>lat</em>/<em>nx</em>/<em>ny</em>, where
+<em>code</em> is a 2-character combination of L, C, R (for left, center, or right)
+and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
+indicates which point on a rectangular region the <em>lon</em>/<em>lat</em> coordinate
+refers to, and the grid dimensions <em>nx</em> and <em>ny</em> with grid spacings via
+<strong>-I</strong> is used to create the corresponding region.
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing and registration, if applicable) are copied from
+the grid. Appending <strong>+u</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.
+For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.
+In case of perspective view (<strong>-p</strong>), a z-range (<em>zmin</em>, <em>zmax</em>)
+can be appended to indicate the third dimension. This needs to be
+done only when using the <strong>-Jz</strong> option, not when using only the
+<strong>-p</strong> option. In the latter case a perspective view of the plane is
+plotted, with no third dimension.  </p>
+</dd>
+</dl>
+<dl class="simple" id="d">
+<dt><strong>-D</strong><em>deviation</em></dt><dd><p>gives the deviation in X units of the plot for 1.0 on the scaled
+trace, This may be a single number (applied equally in X and Y
+directions) or the pair <em>devX</em>/<em>devY</em>.</p>
+</dd>
+</dl>
+<dl class="simple" id="f">
+<dt><strong>-F</strong>[<em>color</em>]</dt><dd><p>Fill trace (variable area, defaults to filling positive). Specify the
+<em>color</em> with which the imagemask is filled.</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong></dt><dd><p>Draw wiggle trace.</p>
+</dd>
+</dl>
+<p>You <em>must</em> specify at least one of <strong>-W</strong> and <strong>-F</strong>.</p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="simple" id="a">
+<dt><strong>-A</strong></dt><dd><p>Flip the default byte-swap state (default assumes data have a
+bigendian byte-order).</p>
+</dd>
+</dl>
+<dl class="simple" id="c">
+<dt><strong>-C</strong><em>clip</em></dt><dd><p>Sample value at which to clip data (clipping is applied to both
+positive and negative values).</p>
+</dd>
+</dl>
+<dl class="simple" id="i">
+<dt><strong>-I</strong></dt><dd><p>Fill negative rather than positive excursions.</p>
+</dd>
+</dl>
+<dl class="simple" id="l">
+<dt><strong>-L</strong><em>nsamp</em></dt><dd><p>Override number of samples per trace in reel header (program
+attempts to determine number of samples from each trace header if
+possible to allow for variable length traces).</p>
+</dd>
+</dl>
+<dl class="simple" id="m">
+<dt><strong>-M</strong><em>ntrace</em></dt><dd><p>Override number of traces specified in reel header. Program detects
+end of file (relatively) gracefully, but this parameter limits
+number of traces that the program attempts to read.</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong></dt><dd><p>Normalize trace by dividing by rms amplitude over full trace length.</p>
+</dd>
+</dl>
+<dl id="q">
+<dt><strong>-Q</strong><em>&lt;mode&gt;&lt;value&gt;</em></dt><dd><dl>
+<dt>Can be used to change 5 different settings depending on <em>mode</em>:</dt><dd><p><strong>-Qb</strong><em>bias</em> to bias scaled traces (-Qb-0.1 subtracts 0.1 from values).</p>
+<p><strong>-Qi</strong><em>dpi</em> sets the dots-per-inch resolution of the image [300].</p>
+<p><strong>-Qu</strong><em>redvel</em> to apply reduction velocity (negative removes reduction already present).</p>
+<p><strong>-Qx</strong><em>mult</em> to multiply trace locations by <em>mult</em>.</p>
+<p><strong>-Qy</strong><em>dy</em> to override sample interval in reel header.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="simple" id="s">
+<dt><strong>-S</strong><em>header_x</em>/<em>header_y</em></dt><dd><p>Read trace locations from trace headers: headers is either <strong>c</strong> for CDP,
+<strong>o</strong> for offset, <strong>b</strong><em>num</em> to read a long starting at byte <em>num</em> in the
+header (first byte corresponds to num=0), or a number to fix the
+location. First parameter for x, second for y. Default has X and Y
+given by trace number.</p>
+</dd>
+</dl>
+<dl class="simple" id="u">
+<dt><strong>-U</strong>[<em>label</em>][<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>] <a class="reference internal" href="../../gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Draw GMT time stamp logo on plot.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
+</dd>
+</dl>
+<p id="x"><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</p>
+<dl class="simple">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] <a class="reference internal" href="../../gmt.html#xy-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Shift plot origin.</p>
+</dd>
+</dl>
+<dl class="simple" id="z">
+<dt><strong>-Z</strong></dt><dd><p>Do not plot traces with zero rms amplitude.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="../../gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select perspective view.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="../../gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level in percent.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p><strong>Note</strong>: Since many GMT plot examples are very short (i.e., one module call between the
+<strong>gmt begin</strong> and <strong>gmt end</strong> commands), we will often present them using the quick
+modern mode <a class="reference internal" href="../../cookbook/one-liner.html"><span class="doc">GMT Modern Mode One-line Commands</span></a> syntax, which simplifies such short scripts.</p>
+<p>To plot the SEGY file wa1.segy with normalized traces plotted at true
+offset locations, clipped at ±3 and with wiggle trace and positive
+variable area shading in black, use</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt segyz wa1.segy -JX5i/-5i -D1 -Jz0.05i -E180/5 -R0/100/0/10/0/10 <span class="se">\</span>
+        -C3 -N -So -W -Fblack -pdf segy
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="bugs">
+<h2>Bugs<a class="headerlink" href="#bugs" title="Permalink to this headline">¶</a></h2>
+<p>Variable area involves filling four-sided figures of distressing
+generality. I <em>know</em> that some of the more complex degenerate cases are
+not dealt with correctly or at all; the incidence of such cases
+increases as viewing angles become more oblique, and particularly as the
+viewing elevation increases. Wiggle-trace plotting is not affected.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="segy.html"><span class="doc">segy</span></a>,
+<a class="reference internal" href="segy2grd.html"><span class="doc">segy2grd</span></a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="segy.html" class="btn btn-neutral float-right" title="segy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../potential/talwani3d.html" class="btn btn-neutral float-left" title="talwani3d" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Aug 29, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

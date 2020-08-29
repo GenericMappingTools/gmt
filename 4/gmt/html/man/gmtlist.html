@@ -1,0 +1,330 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:38 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GMTLIST</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GMTLIST</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">gmtlist &minus;
+A data-extractor for &lt;legid&gt;.gmt files</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtlist</b>
+<i>leg-ids</i> [ <b>&minus;C</b><i>correctionfile</i> ] [
+<b>&minus;Da</b><i>startdate</i> ] [
+<b>&minus;Db</b><i>stopdate</i> ] [
+<b>&minus;F</b><i>flags</i> ] [ <b>&minus;G</b> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;Sa</b><i>startdist</i> ] [
+<b>&minus;Sb</b><i>stopdist</i> ] [ <b>&minus;V</b> ] [
+<b>&minus;W</b><i>weight</i> ] [
+<b>&minus;bo</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtlist</b>
+reads &lt;legid&gt;.gmt files and produces an ASCII [or
+binary] table. The &lt;legid&gt;.gmt files contain
+time(<b>s</b>), latitude(<b>y</b>), longitude(<b>x</b>),
+gravity(<b>g/G</b>), magnetics(<b>m/M</b>), and
+bathymetry(<b>t/T</b>), and the user may extract any
+combination of these 6 parameters + distance(<b>d</b>),
+heading (<b>h</b>), velocity (<b>v</b>), and weight
+(<b>w</b>, see <b>&minus;W</b>). A sub-section can be
+specified by passing time- or distance-intervals along track
+or by selecting a region. <i><br>
+leg-ids</i></p>
+
+<p style="margin-left:22%;">Can be one or more cruisenames.
+To give a list of names, use &lsquo;cat
+list_of_legs&lsquo;.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Apply crossover
+Corrections to the data. If no correction file is given,
+gmtlist reads the default correction file. (See
+<b>XSYSTEM</b> for how to set up your own correction
+file).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Da</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not list data
+collected before <i>startdate</i> (mm/dd/yyyy/hh:mm)
+[Default is first day].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Db</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not list data
+collected after <i>stopdate</i> (mm/dd/yyyy/hh:mm). [Default
+is last day].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Can be any
+combination of <b>syxgmtdhv</b> to indicate the desired
+output data. The data will appear in the order indicated by
+flags. If <b>G</b>, <b>M</b>, or <b>T</b> is substituted for
+<b>g</b>, <b>m</b>, <b>t</b>, only records that have that
+combination of data are written out. If <b>s</b> is followed
+by <b>c</b> (calendar), then yyyy/mm/dd/hh/mm/ss is written
+out, if <b>s</b> is followed by <b>j</b> (julian), then
+yyyy/jd/hh/mm/ss is written out. Default is seconds from
+start of year.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force Geographical
+longitudes (-180/+180) rather than geodetic (0-360)
+[Default].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Issue a header
+record with names for each data field.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> specify the Region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sa</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not list data
+that are less than <i>startdist</i> km along track from port
+of departure. [Default is 0].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sb</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not list data
+that are more than <i>stopdist</i> km along track from port
+of departure. [Default is length of track].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set the weight for
+these data. Weight output option must be set in
+<b>&minus;F</b>. This is useful if the data are to be
+processed with the weighted averaging techniques offered by
+<b><A HREF="blockmean.html">blockmean</A></b>, <b><A HREF="blockmedian.html">blockmedian</A></b>, and
+<b><A HREF="blockmode.html">blockmode</A></b>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;b</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output mode (in double precision) [Default is ASCII].
+<b>&minus;H</b> is ignored if <b>&minus;b</b> is selected.
+Julian and calendar dates are not supported for binary time
+output (i.e., you get seconds from start of year).</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To get a
+(distance, heading, crossover-corrected gravity, bathymetry)
+listing from c2104.gmt, starting at June 3 1971 20:45 and
+ending at distance = 5000 km, use the following command:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtlist</b>
+c2104 <b>&minus;Da</b> 6/3/1971/20:45 <b>&minus;Sb</b> 5000
+<b>&minus;F</b> dhgt <b>&minus;C</b> &gt; myfile</p>
+
+<p style="margin-left:11%; margin-top: 1em">To make input
+for <b><A HREF="blockmean.html">blockmean</A></b> and <b><A HREF="surface.html">surface</A></b> using all the
+cruises listed in the file gmt.list, but only the data that
+are inside the specified area, and make output binary:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtlist</b>
+&lsquo;cat gmt.list&lsquo; <b>&minus;F</b> xyg
+<b>&minus;R</b>-40/-30/25/35 <b>&minus;b</b> &gt;
+allgrav.xyg</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="x_system.html">x_system</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P., and
+W. H. F. Smith, 2018, The Generic Mapping Tools (GMT)
+version 4.5.18 Technical Reference &amp; Cookbook,
+SOEST/NOAA. <br>
+Wessel, P., and W. H. F. Smith, 1998, New, Improved Version
+of Generic Mapping Tools Released, EOS Trans., AGU, 79 (47),
+p. 579. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released, EOS Trans., AGU, 76 (33), p.
+329. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released,
+http://www.agu.org/eos_elec/95154e.html, Copyright 1995 by
+the American Geophysical Union. <br>
+Wessel, P., and W. H. F. Smith, 1991, Free Software Helps
+Map and Display Data, EOS Trans., AGU, 72 (41), p. 441.</p>
+<hr>
+</body>
+</html>

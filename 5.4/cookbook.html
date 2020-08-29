@@ -1,0 +1,168 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>CookBook &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="1. The Generic Mapping Tools" href="GMT_Docs.html" />
+    <link rel="prev" title="A pirate" href="gallery/users_contrib_symbols/pirata.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="GMT_Docs.html" title="1. The Generic Mapping Tools"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="gallery/users_contrib_symbols/pirata.html" title="A pirate"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="cookbook">
+<h1>CookBook<a class="headerlink" href="#cookbook" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html">1. The Generic Mapping Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#a-reminder">2. A Reminder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#copyright-and-caveat-emptor">3. Copyright and Caveat Emptor!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#preface">4. Preface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#new-features-in-gmt-5-4">5. New Features in GMT 5.4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#new-features-in-gmt-5-3">6. New Features in GMT 5.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#new-features-in-gmt-5-2">7. New Features in GMT 5.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#new-features-in-gmt-5">8. New Features in GMT 5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#switching-between-different-gmt-versions">9. Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#introduction">10. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#gmt-overview-and-quick-reference">11. GMT Overview and Quick Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#general-features">12. General Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#gmt-coordinate-transformations">13. GMT Coordinate Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#gmt-map-projections">14. GMT Map Projections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#creating-gmt-graphics">15. Creating GMT Graphics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#creating-gmt-animations">16. Creating GMT Animations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#gmt-supplemental-packages">17. GMT Supplemental Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#gmt-file-formats">18. GMT File Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#including-gmt-graphics-into-your-documents">19. Including GMT Graphics into your Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#predefined-bit-and-hachure-patterns-in-gmt">20. Predefined Bit and Hachure Patterns in GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#chart-of-octal-codes-for-characters">21. Chart of Octal Codes for Characters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#postscript-fonts-used-by-gmt">22. <em>PostScript</em> Fonts Used by GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#color-space-the-final-frontier">23. Color Space: The Final Frontier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#filtering-of-data-in-gmt">24. Filtering of Data in GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#the-gmt-high-resolution-coastline-data">25. The GMT High-Resolution Coastline Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#gmt-on-non-unix-platforms">26. GMT on non-UNIX Platforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#of-colors-and-color-legends">27. Of Colors and Color Legends</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#app-custom-symbols">28. Custom Plot Symbols</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#annotation-of-contours-and-quoted-lines">29. Annotation of Contours and “Quoted Lines”</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#special-operations">30. Special Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMT_Docs.html#the-gmt-vector-data-format-for-ogr-compatibility">31. The GMT Vector Data Format for OGR Compatibility</a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gallery/users_contrib_symbols/pirata.html"
+                        title="previous chapter">A pirate</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="GMT_Docs.html"
+                        title="next chapter">1. The Generic Mapping Tools</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cookbook.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="GMT_Docs.html" title="1. The Generic Mapping Tools"
+             >next</a> </li>
+        <li class="right" >
+          <a href="gallery/users_contrib_symbols/pirata.html" title="A pirate"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

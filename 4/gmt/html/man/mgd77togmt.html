@@ -1,0 +1,268 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:39 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>MDG77TOGMT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>MDG77TOGMT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">mgd77togmt
+&minus; Convert an MGD-77 ASCII file to a binary gmt
+file</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77togmt</b>
+[ <b>&minus;L</b><i>list</i> ] [ <i>mgd77file</i> ]
+<b>&minus;F</b><i>legid</i> <b>&minus;Y</b><i>start_year</i>
+[ <b>&minus;A</b><i>information</i> ] [
+<b>&minus;I</b><i>time_increment</i> ]
+[<b>&minus;T</b>[<i>offset</i>]]
+[<b>&minus;W</b>[<i>cable_length</i>]] [ <b>&minus;V</b>
+]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77togmt</b>
+reads an ASCII MGD-77 format file [or standard input] and
+creates a binary gmt file. The 16 header records specified
+in the MGD-77 documentation may or may not be present. If
+two-way travel times are available, <b>mgd77togmt</b> will
+convert those to corrected depths using the Carter tables.
+Both old and new (Y2K-compliant) MGD-77 files are
+supported.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Name of file with
+several records of the format <i>mgd77file legid
+start_year</i>. For multiple files, use this option rather
+than the <b>&minus;F &minus;Y</b> combination.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Y</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">The year of the
+first data point in the file. If not provided and -L option
+not used, it tries to get it from a header file. The header
+file must be in the same directory of the main file and must
+have a name equal to the main but with a .h77 extension.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set an optional 10
+character information string to be stored in the header
+[Default is blank].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Leg id that will be
+used in file name (<i>legid</i>.gmt). If not given, it will
+be constructed from the mgd77file name plus the .gmt
+extension.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Used for files
+where time is missing. The increment is used to calculate
+fake times.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Extracts Total
+field instead of anomaly. Since F does not hold in a 2 byte
+signed variable we subtract a constant [default = 40000] but
+you can provide another value in <i>offset</i>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Take into account
+that the magnetometer is not at ship&rsquo;s position.
+<i>cable_length</i> is magnetometer tow distance [default =
+200 meters]. If <b>&minus;W</b> only is given (e.g., no
+<i>cable_length</i>) and like with the <b>&minus;Y</b>
+option, we try to get the tow distance from the header file.
+Failing, defaults to 200 meters. Note that this option will
+throw away the first points whose accumulated. distance
+since the start of magnetic acquisition is less than
+<i>cable_length</i>, and likewise for the end of the mag
+profile.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To create a gmt
+file from the ASCII file c2104.mgd77, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77togmt</b>
+c2104.mgd77 <b>&minus;Y</b> 1977</p>
+
+<p style="margin-left:11%; margin-top: 1em">To create new
+gmt files from all the mgd77 files listed in
+<i>list.d</i>:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77togmt
+&minus;L</b> list.d <b>&minus;V</b></p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="dat2gmt.html">dat2gmt</A></i>(1),
+<i><A HREF="GMT.html">GMT</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P., and
+W. H. F. Smith, 2018, The Generic Mapping Tools (GMT)
+version 4.5.18 Technical Reference &amp; Cookbook,
+SOEST/NOAA. <br>
+Wessel, P., and W. H. F. Smith, 1998, New, Improved Version
+of Generic Mapping Tools Released, EOS Trans., AGU, 79 (47),
+p. 579. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released, EOS Trans., AGU, 76 (33), p.
+329. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released,
+http://www.agu.org/eos_elec/95154e.html, Copyright 1995 by
+the American Geophysical Union. <br>
+Wessel, P., and W. H. F. Smith, 1991, Free Software Helps
+Map and Display Data, EOS Trans., AGU, 72 (41), p. 441.</p>
+
+<p style="margin-left:11%; margin-top: 1em">MGD77 Task
+Group, 1977, The Marine Geophysical Data Exchange Format -
+MGD77, Key to Geophysical Records documentation No. 10,
+National Geophysical and Solar-Terrestrial Data Center,
+Boulder, CO.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Carter, D. J.
+T., <i>Echo Sounding Correction Tables: Formerly
+Matthews&rsquo; Tables</i>, 150 pp, Hydrographic Department,
+Ministry of Defense, Taunton, Somerset, England, 1980.</p>
+<hr>
+</body>
+</html>

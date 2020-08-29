@@ -1,0 +1,238 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(50) Probability distributions &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Introduction" href="anim_introduction.html" />
+    <link rel="prev" title="(49) Analysis of the Atlantic seafloor depth/age relationship" href="ex49.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="anim_introduction.html" title="Introduction"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex49.html" title="(49) Analysis of the Atlantic seafloor depth/age relationship"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="probability-distributions">
+<span id="example-50"></span><h1>(50) Probability distributions<a class="headerlink" href="#probability-distributions" title="Permalink to this headline">¶</a></h1>
+<p>This example presents visually the various probability
+distributions available in <a class="reference internal" href="../gmtmath.html"><span class="doc">gmtmath</span></a> (as well
+as <a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a>).  We evaluate and display both
+the probability density function (pdf) and the cumulative
+distribution function (cdf) for each case.  The left column shows the density
+functions while the right column shows the cumulative functions.
+In addition to the distributions you can also use <a class="reference internal" href="../gmtmath.html"><span class="doc">gmtmath</span></a>
+to evaluate critical values for the distributions for chosen
+confidence levels.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT EXAMPLE 50</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate different statistical distributions in gmtmath</span>
+<span class="c1"># GMT modules:  gmtmath, gmtset, psxy, pstext</span>
+<span class="c1">#</span>
+
+<span class="nv">ps</span><span class="o">=</span>example_50.ps
+<span class="c1"># Left column have all the PDFs</span>
+gmt <span class="nb">set</span> FONT_ANNOT_PRIMARY 10p,Helvetica,black
+<span class="c1"># Binomial distribution</span>
+gmt math -T0/8/1 <span class="m">0</span>.25 <span class="m">8</span> T <span class="nv">BPDF</span> <span class="o">=</span> p.txt
+gmt psxy -R-0.6/8.6/0/0.35 -JX3i/0.5i -P -K -Glightgreen p.txt -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -X1i -Y0.8i &gt; <span class="nv">$ps</span>
+<span class="c1"># Poisson distribution</span>
+gmt math -T0/8/1 T <span class="m">2</span> <span class="nv">PPDF</span> <span class="o">=</span> p.txt
+gmt psxy -R-0.6/8.6/0/0.3 -J -O -K -Glightgreen p.txt -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot normal distribution</span>
+gmt math -T-4/4/0.1 T <span class="nv">ZPDF</span> <span class="o">=</span> p.txt
+gmt psxy -R-4/4/0/0.4 -J -O -K p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot t distribution</span>
+gmt psxy -R-4/4/0/0.4 -J -O -K p.txt -W1p,lightgray -BWS -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+gmt math -T-4/4/0.1 T <span class="m">3</span> <span class="nv">TPDF</span> <span class="o">=</span> p.txt
+gmt psxy -R -J -O -K p.txt -L+yb -Glightgreen -W1p &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot F distribution</span>
+gmt math -T0/6/0.02 T <span class="m">20</span> <span class="m">12</span> <span class="nv">FPDF</span> <span class="o">=</span> p.txt
+gmt psxy -R0/6/0/1 -J -O -K p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot Laplace distribution</span>
+gmt math -T-4/4/0.1 T <span class="nv">LPDF</span> <span class="o">=</span> p.txt
+gmt psxy -R-4/4/0/0.5 -J -O -K p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot Exponential distribution</span>
+gmt math -T0/4/0.1 T <span class="m">2</span> <span class="nv">EPDF</span> <span class="o">=</span> p.txt
+gmt psxy -R0/4/0/2.0 -J -O -K p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot Rayleigh distribution</span>
+gmt math -T0/6/0.1 T <span class="nv">RPDF</span> <span class="o">=</span> p.txt
+gmt psxy -R0/6/0/0.7 -J -O -K p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot Weibull distribution</span>
+gmt math -T0/6/0.1 T <span class="m">1</span> <span class="m">1</span>.5 <span class="nv">WPDF</span> <span class="o">=</span> p.txt
+gmt psxy -R0/6/0/0.8 -J -O -K p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot Chi-squared distribution</span>
+gmt math -T0/12/0.1 T <span class="m">4</span> <span class="nv">CHI2PDF</span> <span class="o">=</span> p.txt
+gmt psxy -R0/12/0/0.20 -J -O -K p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Right column has all the CDF</span>
+<span class="c1"># Plot binomial cumulative distribution</span>
+gmt math -T0/8/1 <span class="m">0</span>.25 <span class="m">8</span> T <span class="nv">BCDF</span> <span class="o">=</span> p.txt
+gmt psxy -R-0.6/8.6/0/1 -J -O -K -Glightred p.txt -Sb0.8u -W0.5p -BES -Bxa1 -Byaf -X3.5i -Y-8.1i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot Poisson cumulative distribution</span>
+gmt math -T0/8/1 T <span class="m">2</span> <span class="nv">PCDF</span> <span class="o">=</span> p.txt
+gmt psxy -R-0.6/8.6/0/1 -J -O -K -Glightred p.txt -Sb0.8u -W0.5p -BES -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot normal cumulative distribution</span>
+gmt math -T-4/4/0.1 T <span class="nv">ZCDF</span> <span class="o">=</span> p.txt
+gmt psxy -R-4/4/0/1 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot t cumulative distribution</span>
+gmt psxy -R-4/4/0/1 -J -O -K p.txt -W1p,lightgray -BES -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+gmt math -T-4/4/0.1 T <span class="m">3</span> <span class="nv">TCDF</span> <span class="o">=</span> p.txt
+gmt psxy -R -J -O -K p.txt -L+yb -Glightred -W1p &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot F cumulative distribution</span>
+gmt math -T0/6/0.02 T <span class="m">20</span> <span class="m">12</span> <span class="nv">FCDF</span> <span class="o">=</span> p.txt
+gmt psxy -R0/6/0/1 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot Laplace cumulative distribution</span>
+gmt math -T-4/4/0.1 T <span class="nv">LCDF</span> <span class="o">=</span> p.txt
+gmt psxy -R-4/4/0/1  -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot Exponential cumulative distribution</span>
+gmt math -T0/4/0.1 T <span class="m">2</span> <span class="nv">ECDF</span> <span class="o">=</span> p.txt
+gmt psxy -R0/4/0/1 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot Rayleigh cumulative distribution</span>
+gmt math -T0/6/0.1 T <span class="nv">RCDF</span> <span class="o">=</span> p.txt
+gmt psxy -R0/6/0/1 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot Weibull cumulative distribution</span>
+gmt math -T0/6/0.1 T <span class="m">1</span> <span class="m">1</span>.5 <span class="nv">WCDF</span> <span class="o">=</span> p.txt
+gmt psxy -R0/6/0/1 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Plot Chi-squared cumulative distribution</span>
+gmt math -T0/12/0.1 T <span class="m">4</span> <span class="nv">CHI2CDF</span> <span class="o">=</span> p.txt
+gmt psxy -R0/12/0/1 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="s2">&quot;Probability @;lightgreen;Density@;; and @;lightred;Cumulative@;; Distribution Functions&quot;</span> <span class="p">|</span> gmt pstext -R0/6.5/0/1.25 -Jx1i -N -X-3.5i -O -K -F+f18p+cTC &gt;&gt; <span class="nv">$ps</span>
+gmt pstext -R0/6.5/0/10 -J -O -F+f14p,Times-Italic+jTC -Dj0.35i -N -Y-8.1i <span class="s">&lt;&lt; EOF &gt;&gt; $ps</span>
+<span class="s">3.25 0.9 Binomial P@-8,0.25@-</span>
+<span class="s">3.25 1.8 Poisson P(@~l=2@~)</span>
+<span class="s">3.25 2.7 Normal P(z)</span>
+<span class="s">3.25 3.6 Student t(@~n=3@~)</span>
+<span class="s">3.25 4.5 F(@~n@-1@-=20, n@-2@- = 12@~)</span>
+<span class="s">3.25 5.4 Laplace P(z)</span>
+<span class="s">3.25 6.3 Exponential P(@~l=2@~)</span>
+<span class="s">3.25 7.2 Rayleigh P(z)</span>
+<span class="s">3.25 8.1 Weibull P(z,1,1.5)</span>
+<span class="s">3.25 9 @~c@~@+2@+(z,@~n=4@~)</span>
+<span class="s">EOF</span>
+rm -f p.txt
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_50.png"><img alt="../_images/example_50.png" src="../_images/example_50.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Probability distributions.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex49.html"
+                        title="previous chapter">(49) Analysis of the Atlantic seafloor depth/age relationship</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="anim_introduction.html"
+                        title="next chapter">Introduction</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex50.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="anim_introduction.html" title="Introduction"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex49.html" title="(49) Analysis of the Atlantic seafloor depth/age relationship"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

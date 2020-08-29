@@ -1,0 +1,418 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:43 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>X2SYS_DATALIST</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>X2SYS_DATALIST</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#CORRECTIONS">CORRECTIONS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">x2sys_datalist
+&minus; A generic data-extractor for ASCII or binary
+files</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_datalist</b>
+<i>track(s)</i> <b>&minus;T</b><i>TAG</i> [ <b>&minus;A</b>
+] [ <b>&minus;F</b><i>name1,name2,...</i> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;L</b>[<i>corrtable</i>] ] [
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;S</b> ] [ <b>&minus;V</b> ] [
+<b>&minus;bo</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;m</b>[<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_datalist</b>
+reads one or more files and produces a single ASCII [or
+binary] table. The files can be of any format, which must be
+described and passed with the <b>&minus;T</b> option. You
+may limit the output to a geographic region, and insist that
+the output from several files be separated by a multiple
+segment header. Only the named data fields will be output
+[Default selects all columns].</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em" valign="top"><i>tracks</i></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Can be one or more
+ASCII, native binary, or COARDS netCDF 1-D data files. To
+supply the data files via a text file with a list of tracks
+(one per record), specify the name of the track list after a
+leading equal-sign (e.g., =tracks.lis). If the names are
+missing their file extension we will append the suffix
+specified for this <i>TAG</i>. Track files will be searched
+for first in the current directory and second in all
+directories listed in
+<b>$X2SYS_HOME</b>/<i>TAG</i>/<i>TAG</i>_paths.txt (if it
+exists). [If <b>$X2SYS_HOME</b> is not set it will default
+to <b>$GMT_SHAREDIR</b>/x2sys]. (Note: MGD77 files will also
+be looked for via <b>MGD77_HOME</b>/mgd77_paths.txt and
+*.gmt files will be searched for via
+<b>$GMT_SHAREDIR</b>/mgg/gmtfile_paths).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify the x2sys
+<i>TAG</i> which tracks the attributes of this data
+type.</p> </td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Eliminate COEs by
+distributing the COE between the two tracks in proportion to
+track weight. These (dist, adjustment) spline knots files
+for each track and data column are called
+<i>track.column</i>.adj and are expected to be in the
+<b>$X2SYS_HOME</b>/<i>TAG</i> directory. The adjustments are
+only applied if the corresponding adjust file can be found
+[No residual adjustments]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Give a
+comma-separated sub-set list of column names defined in the
+definition file. [Default selects all data columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Apply optimal
+corrections to columns where such corrections are available.
+Append the correction table to use [Default uses the
+correction table <i>TAG</i>_corrections.txt which is
+expected to reside in the <b>$X2SYS_HOME</b>/<i>TAG</i>
+directory]. For the format of this file, see CORRECTIONS
+below.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> specify the Region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+Cartesian data just give <i>xmin/xmax/ymin/ymax</i>. This
+option limits the COEs to those that fall inside the
+specified domain.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Suppress output
+records where all the data columns are NaN [Default will
+output all records].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Output a
+multisegment header between data from each track. Note this
+option does not imply anything about the input file; that
+information is conveyed via the system tag
+(<b>&minus;T</b>).</p> </td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To extract all
+data from the old-style MGG supplement file c2104.gmt,
+recognized by the tag GMT:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_datalist</b>
+c2104.gmt <b>&minus;T</b> GMT &gt; myfile</p>
+
+<p style="margin-left:11%; margin-top: 1em">To make
+lon,lat, and depth input for <b><A HREF="blockmean.html">blockmean</A></b> and
+<b><A HREF="surface.html">surface</A></b> using all the files listed in the file
+tracks.lis and define by the tag TRK, but only the data that
+are inside the specified area, and make output binary,
+run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_datalist</b>
+=tracks.lis <b>&minus;T</b> TRK <b>&minus;F</b>
+lon,lat,depth <b>&minus;R</b>-40/-30/25/35 <b>&minus;bo</b>
+&gt; alltopo_bin.xyz</p>
+
+<a name="CORRECTIONS"></a>
+<h2>CORRECTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The correction
+table is an ASCII file with coefficients and parameters
+needed to carry out corrections. This table is usually
+produced by <b><A HREF="x2sys_solve.html">x2sys_solve</A></b>. Comment records beginning
+with # are allowed. All correction records are of the
+form</p>
+
+<p style="margin-left:11%; margin-top: 1em"><i>trackID
+observation correction</i></p>
+
+<p style="margin-left:11%; margin-top: 1em">where
+<i>trackID</i> is the track name, <i>observation</i> is one
+of the abbreviations for an observed field contained in
+files under this TAG, and <i>correction</i> consists of one
+or more white-space-separated <i>term</i>s that will be
+<b>subtracted</b> from the observation before output. Each
+<i>term</i> must have this exact syntax:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i>factor</i>[*[<i>function</i>]([<i>scale</i>](<i>abbrev</i>[-<i>origin</i>]))[^<i>power</i>]]</p>
+
+<p style="margin-left:11%; margin-top: 1em">where terms in
+brackets are optional (the brackets themselves are not used
+but regular parentheses must be used exactly as indicated).
+No spaces are allowed except between <i>term</i>s. The
+<i>factor</i> is the amplitude of the basis function, while
+the optional <i>function</i> can be one of sin, cos, or exp.
+The optional <i>scale</i> and <i>origin</i> can be used to
+translate the argument (before giving it to the optional
+function). The argument <i>abbrev</i> is one of the
+abbreviations for columns known to this TAG. However, it can
+also be one of the three auxiliary terms <b>dist</b> (for
+along-track distances), <b>azim</b> for along-track
+azimuths, and <b>vel</b> (for along-track speed); these are
+all sensitive to the <b>&minus;C</b> and <b>&minus;N</b>
+settings used when defining the TAB; furthermore, <b>vel</b>
+requires <b>time</b> to be present in the data. If
+<i>origin</i> is given as <b>T</b> it means that we should
+replace it with the value of <i>abbrev</i> for the very
+first record in the file (this is usually only done for
+<i>time</i>). If the first data record entry is NaN we
+revert <i>origin</i> to zero. Optionally, raise the entire
+expression to the given <i>power</i>, before multiplying by
+<i>factor</i>. The following is an example of fictitious
+corrections to the track ABC, implying the <b>z</b> column
+should have a linear trend removed, the field <b>obs</b>
+should be corrected by a strange dependency on latitude,
+<b>weight</b> needs to have 1 added (hence correction is
+given as -1), and <b>fuel</b> should be reduced by a linear
+distance term:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">ABC z</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">7.1</p></td>
+<td width="69%">
+
+
+<p valign="top">1e-4*((time-T))</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">ABC obs</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">0.5*exp(-1e-3(lat))^1.5</p></td>
+<td width="69%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">ABC weight</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">-1</p></td>
+</table>
+
+<p style="margin-left:11%;">ABC fuel 0.02*((dist))</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="blockmean.html">blockmean</A></i>(1),
+<i><A HREF="GMT.html">GMT</A></i>(1), <i><A HREF="surface.html">surface</A></i>(1), <i><A HREF="x2sys_init.html">x2sys_init</A></i>(1),
+<i>x2sys_datalist</i>(1), <i><A HREF="x2sys_get.html">x2sys_get</A></i>(1),
+<i><A HREF="x2sys_list.html">x2sys_list</A></i>(1), <i><A HREF="x2sys_put.html">x2sys_put</A></i>(1),
+<i><A HREF="x2sys_report.html">x2sys_report</A></i>(1), <i><A HREF="x2sys_solve.html">x2sys_solve</A></i>(1)</p>
+<hr>
+</body>
+</html>

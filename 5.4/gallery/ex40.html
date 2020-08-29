@@ -1,0 +1,179 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(40) Line simplification &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(41) Legend with tables" href="ex41.html" />
+    <link rel="prev" title="(39) Evaluation of spherical harmonics coefficients" href="ex39.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex41.html" title="(41) Legend with tables"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex39.html" title="(39) Evaluation of spherical harmonics coefficients"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="line-simplification">
+<span id="example-40"></span><h1>(40) Line simplification<a class="headerlink" href="#line-simplification" title="Permalink to this headline">¶</a></h1>
+<p>This example demonstrate the Douglas-Peucker line simplification algorithm as
+implemented in the tool <a class="reference internal" href="../gmtsimplify.html"><span class="doc">gmtsimplify</span></a>.  We show the full
+resolution coastline of Australia and two much simplified versions using two
+different thresholds.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT EXAMPLE 40</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate line simplification and area calculations</span>
+<span class="c1"># GMT modules:  psbasemap, pstext, psxy, gmtsimplify, gmtspatial</span>
+<span class="c1"># Unix progs:   awk, rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_40.ps
+
+gmt spatial GSHHS_h_Australia.txt -fg -Qk &gt; centroid.txt
+gmt psbasemap -R112/154/-40/-10 -JM5.5i -P -K -B20 -BWSne+g240/255/240 -Xc &gt; <span class="nv">$ps</span>
+gmt psxy GSHHS_h_Australia.txt -R -J -O -Wfaint -G240/240/255 -K &gt;&gt; <span class="nv">$ps</span>
+gmt psxy GSHHS_h_Australia.txt -R -J -O -Sc0.01c -Gred -K &gt;&gt; <span class="nv">$ps</span>
+gmt simplify GSHHS_h_Australia.txt -T500k &gt; T500k.txt
+gmt spatial GSHHS_h_Australia.txt -fg -Qk <span class="p">|</span> <span class="nv">$AWK</span> <span class="s1">&#39;{printf &quot;Full area = %.0f km@+2@+\n&quot;, $3}&#39;</span> &gt; area.txt
+gmt spatial T500k.txt -fg -Qk <span class="p">|</span> <span class="nv">$AWK</span> <span class="s1">&#39;{printf &quot;Reduced area = %.0f km@+2@+\n&quot;, $3}&#39;</span> &gt; area_T500k.txt
+gmt psxy -R -J -O -K -W1p,blue T500k.txt &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K -Sx0.3i -W3p centroid.txt &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="nv">T</span> <span class="o">=</span> <span class="m">500</span> km <span class="p">|</span> gmt pstext -R -J -O -K -Dj0.1i/0.1i -F+cLT+jTL+f18p &gt;&gt; <span class="nv">$ps</span>
+gmt pstext -R -J -O -K area.txt -F+f14p+cCM &gt;&gt; <span class="nv">$ps</span>
+gmt pstext -R -J -O -K area_T500k.txt -F+f14p+cLB -Dj0.2i &gt;&gt; <span class="nv">$ps</span>
+gmt psbasemap -R -J -O -K -B20+lightgray -BWsne+g240/255/240 -Y4.7i &gt;&gt; <span class="nv">$ps</span>
+gmt psxy GSHHS_h_Australia.txt -R -J -O -Wfaint -G240/240/255 -K &gt;&gt; <span class="nv">$ps</span>
+gmt psxy GSHHS_h_Australia.txt -R -J -O -Sc0.01c -Gred -K &gt;&gt; <span class="nv">$ps</span>
+gmt simplify GSHHS_h_Australia.txt -T100k &gt; T100k.txt
+gmt spatial T100k.txt -fg -Qk <span class="p">|</span> <span class="nv">$AWK</span> <span class="s1">&#39;{printf &quot;Reduced area = %.0f km@+2@+\n&quot;, $3}&#39;</span> &gt; area_T100k.txt
+gmt psxy -R -J -O -K -W1p,blue T100k.txt &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K -Sx0.3i -W3p centroid.txt &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="nv">T</span> <span class="o">=</span> <span class="m">100</span> km <span class="p">|</span> gmt pstext -R -J -O -K -Dj0.1i/0.1i -F+cLT+jTL+f18p &gt;&gt; <span class="nv">$ps</span>
+gmt pstext -R -J -O -K area.txt -F+f14p+cCM &gt;&gt; <span class="nv">$ps</span>
+gmt pstext -R -J -O -K area_T100k.txt -F+f14p+cLB -Dj0.2i &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -T &gt;&gt; <span class="nv">$ps</span>
+rm -f centroid.txt area*.txt T*.txt
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_40.png"><img alt="../_images/example_40.png" src="../_images/example_40.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Illustrate line simplification and area calculations.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex39.html"
+                        title="previous chapter">(39) Evaluation of spherical harmonics coefficients</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex41.html"
+                        title="next chapter">(41) Legend with tables</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex40.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex41.html" title="(41) Legend with tables"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex39.html" title="(39) Evaluation of spherical harmonics coefficients"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

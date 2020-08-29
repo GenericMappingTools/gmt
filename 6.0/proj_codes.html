@@ -1,0 +1,416 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Projection Specifications &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gmt.conf" href="gmt.conf.html" />
+    <link rel="prev" title="Common Options" href="std_opts.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Projection Specifications</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/proj_codes.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="projection-specifications">
+<h1>Projection Specifications<a class="headerlink" href="#projection-specifications" title="Permalink to this headline">¶</a></h1>
+<p>GMT offers 31 map projections. These are specified using the <strong>-J</strong> common option.
+There are two conventions you may use: (a) GMT-style syntax and (b) <strong>Proj4</strong>-style syntax.
+The projection codes for the GMT-style and the <strong>Proj4</strong>-style are tabulated below.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="36%" />
+<col width="37%" />
+<col width="27%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">GMT PROJECTION CODES</th>
+<th class="head">Proj4 PROJECTION CODES</th>
+<th class="head">&#160;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>-J</strong> (upper case for <em>width</em>, lower case for <em>scale</em>)</td>
+<td><strong>-J</strong> (lower case for <em>scale</em> only)</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td><strong>-JA</strong>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>width</em></td>
+<td><strong>-Jlaea/</strong>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>scale</em></td>
+<td>Lambert azimuthal equal area <a class="reference internal" href="gmt.html#ja-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-JB</strong>lon<sub>0</sub>/lat<sub>0</sub>/lat<sub>1</sub>/lat<sub>2</sub>/<em>width</em></td>
+<td><strong>-Jaea/</strong>lon<sub>0</sub>/lat<sub>0</sub>/lat<sub>1</sub>/lat<sub>2</sub>/<em>scale</em></td>
+<td>Albers conic equal area <a class="reference internal" href="gmt.html#jb-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-JC</strong>lon<sub>0</sub>/lat<sub>0</sub>/<em>width</em></td>
+<td><strong>-Jcass/</strong>lon<sub>0</sub>/lat<sub>0</sub>/<em>scale</em></td>
+<td>Cassini cylindrical <a class="reference internal" href="gmt.html#jc-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-JCyl_stere/</strong>[lon<sub>0</sub>[/lat<sub>0</sub>/]]<em>width</em></td>
+<td><strong>-Jcyl_stere/</strong>[lon<sub>0</sub>[/lat<sub>0</sub>]/]<em>scale</em></td>
+<td>Cylindrical stereographic <a class="reference internal" href="gmt.html#jcyl-stere-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-JD</strong>lon<sub>0</sub>/lat<sub>0</sub>/lat<sub>1</sub>/lat<sub>2</sub>/<em>width</em></td>
+<td><strong>-Jeqdc/</strong>lon<sub>0</sub>/lat<sub>0</sub>/lat<sub>1</sub>/lat<sub>2</sub>/<em>scale</em></td>
+<td>Equidistant conic <a class="reference internal" href="gmt.html#jd-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-JE</strong>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>width</em></td>
+<td><strong>-Jaeqd/</strong>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>scale</em></td>
+<td>Azimuthal equidistant <a class="reference internal" href="gmt.html#je-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-JF</strong>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>width</em></td>
+<td><strong>-Jgnom/</strong>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>scale</em></td>
+<td>Azimuthal gnomonic <a class="reference internal" href="gmt.html#jf-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-JG</strong>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>width</em></td>
+<td><strong>-Jortho/</strong>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>scale</em></td>
+<td>Azimuthal orthographic <a class="reference internal" href="gmt.html#jg-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-JG</strong>lon<sub>0</sub>/lat<sub>0</sub>/<em>alt</em>/<em>azim</em>/<em>tilt</em>/<em>twist</em>/<em>W</em>/<em>H</em>/<em>width</em></td>
+<td><strong>-Jnsper/</strong>lon<sub>0</sub>/lat<sub>0</sub>/<em>alt</em>/<em>azim</em>/<em>tilt</em>/<em>twist</em>/<em>W</em>/<em>H</em>/<em>scale</em></td>
+<td>General perspective <a class="reference internal" href="gmt.html#jg-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-JH</strong>[lon<sub>0</sub>/]<em>width</em></td>
+<td><strong>-Jhammer/</strong>lon<sub>0</sub>/<em>scale</em></td>
+<td>Hammer equal area <a class="reference internal" href="gmt.html#jh-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-JI</strong>[lon<sub>0</sub>/]<em>width</em></td>
+<td><strong>-Jsinu/</strong>lat<sub>0</sub>/<em>scale</em></td>
+<td>Sinusoidal equal area <a class="reference internal" href="gmt.html#ji-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-JJ</strong>[lon<sub>0</sub>/]<em>width</em></td>
+<td><strong>-Jmill/</strong>lon<sub>0</sub>/<em>scale</em></td>
+<td>Miller cylindrical <a class="reference internal" href="gmt.html#jj-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-JKf</strong>[lon<sub>0</sub>/]<em>width</em></td>
+<td><strong>-Jeck4/</strong>lon<sub>0</sub>/<em>scale</em></td>
+<td>Eckert IV equal area <a class="reference internal" href="gmt.html#jk-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-JKs</strong>[lon<sub>0</sub>/]<em>width</em></td>
+<td><strong>-Jeck6/</strong>lon<sub>0</sub>/<em>scale</em></td>
+<td>Eckert VI equal area <a class="reference internal" href="gmt.html#jk-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-JL</strong>lon<sub>0</sub>/lat<sub>0</sub>/lat<sub>1</sub>/lat<sub>2</sub>/<em>width</em></td>
+<td><strong>-Jlcc/</strong>lon<sub>0</sub>/lat<sub>0</sub>/lat<sub>1</sub>/lat<sub>2</sub>/<em>scale</em></td>
+<td>Lambert conic conformal <a class="reference internal" href="gmt.html#jl-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-JM</strong>[lon<sub>0</sub>[/lat<sub>0</sub>]/]<em>width</em></td>
+<td><strong>-Jmerc/</strong>[lon<sub>0</sub>[/lat<sub>0</sub>/]]<em>scale</em></td>
+<td>Mercator cylindrical <a class="reference internal" href="gmt.html#jm-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-JN</strong>[lon<sub>0</sub>/]<em>width</em></td>
+<td><strong>-Jrobin/</strong>[lon<sub>0</sub>/]<em>scale</em></td>
+<td>Robinson <a class="reference internal" href="gmt.html#jn-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-JOa</strong>lon<sub>0</sub>/lat<sub>0</sub>/<em>azim</em>/<em>width</em></td>
+<td><strong>-Jomerc/</strong>lon<sub>0</sub>/lat<sub>0</sub>/<em>azim</em>/<em>scale</em></td>
+<td>Oblique Mercator, 1: origin and azim&nbsp; &nbsp;<a class="reference internal" href="gmt.html#jo-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-JOb</strong>lon<sub>0</sub>/lat<sub>0</sub>/lon<sub>1</sub>/lat<sub>1</sub>/<em>width</em></td>
+<td><strong>-Jomerc/</strong>lon<sub>0</sub>/lat<sub>0</sub>/lon<sub>1</sub>/lat<sub>1</sub>/<em>scale</em></td>
+<td>Oblique Mercator, 2: two points <a class="reference internal" href="gmt.html#jo-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-JOc</strong>lon<sub>0</sub>/lat<sub>0</sub>/lon<sub>p</sub>/lat<sub>p</sub>/<em>width</em></td>
+<td><strong>-Jomercp/</strong>lon<sub>0</sub>/lat<sub>0</sub>/lon<sub>p</sub>/lat<sub>p</sub>/<em>scale</em></td>
+<td>Oblique Mercator, 3: origin and pole <a class="reference internal" href="gmt.html#jo-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-JP</strong>[<strong>a</strong>]<em>width</em>[/<em>origin</em>][<strong>r</strong>|<strong>z</strong>]</td>
+<td><strong>-Jpolar/</strong>[<strong>a</strong>]<em>scale</em>[/<em>origin</em>][<strong>r</strong>|<strong>z</strong>]</td>
+<td>Polar [azimuthal] (<span class="math notranslate nohighlight">\(\theta, r\)</span>) (or cylindrical)</td>
+</tr>
+<tr class="row-even"><td><strong>-JPoly</strong>[lon<sub>0</sub>[/lat<sub>0</sub>]/]<em>width</em></td>
+<td><strong>-Jpoly/</strong>[lon<sub>0</sub>[/lat<sub>0</sub>/]]<em>scale</em></td>
+<td>(American) polyconic <a class="reference internal" href="gmt.html#jpoly-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-JQ</strong>[lon<sub>0</sub>[/lat<sub>0</sub>/]]<em>width</em></td>
+<td><strong>-Jeqc/</strong>[lon<sub>0</sub>[/lat<sub>0</sub>/]]<em>scale</em></td>
+<td>Equidistant cylindrical <a class="reference internal" href="gmt.html#jq-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-JR</strong>[lon<sub>0</sub>/]<em>width</em></td>
+<td><strong>-Jwintri/</strong>[lon<sub>0</sub>/]<em>scale</em></td>
+<td>Winkel Tripel <a class="reference internal" href="gmt.html#jr-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-JS</strong>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>width</em></td>
+<td><strong>-Jstere/</strong>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>scale</em></td>
+<td>General stereographic <a class="reference internal" href="gmt.html#js-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-JT</strong>[lon<sub>0</sub>[/lat<sub>0</sub>]/]<em>width</em></td>
+<td><strong>-Jtmerc/</strong>[lon<sub>0</sub>[/lat<sub>0</sub>/]]<em>scale</em></td>
+<td>Transverse Mercator <a class="reference internal" href="gmt.html#jt-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-JU</strong><em>zone</em>/<em>width</em></td>
+<td><strong>-Jutm/</strong><em>zone</em>/<em>scale</em></td>
+<td>Universal Transverse Mercator (UTM) <a class="reference internal" href="gmt.html#ju-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-JV</strong>[lon<sub>0</sub>/]<em>width</em></td>
+<td><strong>-Jvandg/</strong>[lon<sub>0</sub>/]<em>scale</em></td>
+<td>Van der Grinten <a class="reference internal" href="gmt.html#jv-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-JW</strong>[lon<sub>0</sub>/]<em>width</em></td>
+<td><strong>-Jmoll/</strong>[lon<sub>0</sub>/]<em>scale</em></td>
+<td>Mollweide <a class="reference internal" href="gmt.html#jw-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-JX</strong><em>width</em>[<strong>l</strong>|<strong>p</strong><em>exp</em>|<strong>T</strong>|<strong>t</strong>][/<em>height</em>[<strong>l</strong>|<strong>p</strong><em>exp</em>|<strong>T</strong>|<strong>t</strong>]][<strong>d</strong>]</td>
+<td><strong>-Jxy</strong><em>xscale</em>[<strong>l</strong>|<strong>p</strong><em>exp</em>|<strong>T</strong>|<strong>t</strong>][/<em>yscale</em>[<strong>l</strong>|<strong>p</strong><em>exp</em>|<strong>T</strong>|<strong>t</strong>]][<strong>d</strong>]</td>
+<td>Linear, log<span class="math notranslate nohighlight">\(_{10}\)</span>, <span class="math notranslate nohighlight">\(x^a-y^b\)</span>, and time
+<a class="reference internal" href="gmt.html#jx-full"><span class="std std-ref">…</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-JY</strong>lon<sub>0</sub>/lat<sub>0</sub>/<em>width</em></td>
+<td><strong>-Jcea/</strong>lon<sub>0</sub>/lat<sub>0</sub>/<em>scale</em></td>
+<td>Cylindrical equal area <a class="reference internal" href="gmt.html#jy-full"><span class="std std-ref">…</span></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="gmt.conf.html" class="btn btn-neutral float-right" title="gmt.conf" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="std_opts.html" class="btn btn-neutral float-left" title="Common Options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:46 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>X_SOLVE_DC_DRIFT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>X_SOLVE_DC_DRIFT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#BEWARE">BEWARE</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x_solve_dc_drift</b>
+&minus; Find Best-fitting D.C.-shift and Drift Estimates</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x_solve_dc_drift</b>
+[ <b>&minus;X</b><i>xbase</i> ] [
+<b>&minus;L</b><i>lbase</i> ] [
+<b>&minus;I</b><i>ignorefile</i> ] [ <b>&minus;S</b> ] [
+<b>&minus;C</b><i>iteration</i> ] [
+<b>&minus;M</b><i>min_nx</i> ] [
+<b>&minus;R</b><i>west/east/south/north</i> ] [
+<b>&minus;U</b><i>uselegsfile</i> ] [ <b>&minus;V</b> ] [
+<b>&minus;B</b><i>binfile</i> ] [
+<b>&minus;A</b><i>ASCIIfile</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x_solve_dc_drift</b>
+will read the database files and, by iterating, find the
+best-fitting regression line to the &lt;time,COE&gt; points
+for each leg that minimizes the overall standard deviation
+of the data set in a least squares sense. Finally,
+correction file(s) are created.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;X</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Indicate an
+alternate database to read. [Default is
+<i>xx_base.b</i>].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Indicate an
+alternate legbase to read. [Default is
+<i>xx_legs.b</i>].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Ignore information
+for certain legs (that might be bad, etc).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Reset the old
+d.c.-shift and drift estimates to zero before iterating.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify how many
+iterations to do. Default is interactive session.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Solve for drift
+only if the leg has more than <i>min_nx</i> cross-overs.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Only take COEs
+inside this region into account. [Default is world].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;U</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Solve for
+corrections involving COEs from legs in the
+<i>uselegsfile</i> only.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;B</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Create a binary
+correction file (which can be read by <b><A HREF="x_list.html">x_list</A></b> and
+<b><A HREF="gmtlist.html">gmtlist</A></b>).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Create an ASCII
+correction table. At least one of <b>&minus;A</b> and
+<b>&minus;B</b> must be specified.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+</table>
+
+<a name="BEWARE"></a>
+<h2>BEWARE</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The reason for
+the <b>&minus;M</b> option is that if the COEs are few, then
+a stable estimate of the slope may not be obtained (e.g.,
+when most of the COEs occur midway between ports). However,
+in most cases the bulk of the COEs do occur near the ports
+so that a drift estimate can be computed. Conventional
+wisdom recommends plotting the time-series and the computed
+regression line to see if it makes sense.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="x_system.html">x_system</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P.
+XOVER: A Cross-over Error Detector for Track Data,
+<i>Computers &amp; Geosciences, 15</i>, 333-346.</p>
+<hr>
+</body>
+</html>

@@ -1,0 +1,662 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:37 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>MGD77TRACK</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>MGD77TRACK</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">mgd77track
+&minus; A shiptrack plotting program</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77track</b>
+<i>NGDC-ids</i>
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+<b>&minus;J</b><i>parameters</i> [
+<b>&minus;A</b>[<b>c</b>][<i>size</i>][,<i>spacing</i>] ] [
+<b>&minus;B</b>[<b>p</b>|<b>s</b>]<i>parameters</i> ] [
+<b>&minus;Cf</b>|<b>g</b>|<b>e</b> ] [
+<b>&minus;Da</b><i>startdate</i> ] [
+<b>&minus;Db</b><i>stopdate</i> ] [ <b>&minus;F</b> ] [
+<b>&minus;Gd</b>|<b>t</b><i>gap</i> ] [
+<b>&minus;I</b><i>ignore</i> ] [ <b>&minus;K</b> ] [
+<b>&minus;L</b><i>trackticks</i> ] [ <b>&minus;O</b> ] [
+<b>&minus;P</b> ] [
+<b>&minus;Sa</b><i>startdist</i>[<b>u</b>] ] [
+<b>&minus;Sb</b><i>stopdist</i>[<b>u</b>] ] [
+<b>&minus;TT</b>|<b>t</b>|<b>d</b><i>ms,mc,mfs,mf,mfc</i> ]
+[
+<b>&minus;U</b>[<i>just</i>/<i>dx</i>/<i>dy</i>/][<b>c</b>|<i>label</i>]
+] [ <b>&minus;V</b> ] [ <b>&minus;W</b><i>pen</i> ] [
+<b>&minus;X</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>x-shift</i>[<b>u</b>]]
+] [
+<b>&minus;Y</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>y-shift</i>[<b>u</b>]]
+] [ <b>&minus;c</b><i>copies</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77track</b>
+reads NGDC MGD77 cruises and creates <i>PostScript</i> code
+that will plot one or more ship tracks on a map using the
+specified projection. The <i>PostScript</i> code is written
+to standard output. <i><br>
+NGDC-ids</i></p>
+
+<p style="margin-left:22%;">Can be one or more of five
+kinds of specifiers: <br>
+1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.
+<br>
+2) 2-character &lt;agency&gt; codes which will return all
+cruises from each agency. <br>
+3) 4-character &lt;agency&gt;&lt;vessel&gt; codes, which
+will return all cruises from those vessels. <br>
+4) =&lt;list&gt;, where &lt;list&gt; is a table with NGDC
+IDs, one per line. <br>
+5) If nothing is specified we return all cruises in the data
+base. <br>
+(See mgd77info <b>&minus;L</b> for agency and vessel codes).
+File extensions, if missing, will automatically be appended
+by searching for files in the following order: MGD77+
+(&quot;.nc&quot;), MGD77T (&quot;.m77t&quot;), MGD77
+(&quot;.mgd77&quot;), plain table (&quot;.dat&quot;). Use
+<b>&minus;I</b> to ignore one or more of these file types).
+Cruise files will be looked for first in the current
+directory and second in all directories listed in
+<b>$MGD77_HOME</b>/mgd77_paths.txt [If <b>$MGD77_HOME</b> is
+not set it will default to <b>$GMT_SHAREDIR</b>/mgd77].</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;J</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects the map
+projection. Scale is UNIT/degree, 1:xxxxx, or width in UNIT
+(upper case modifier). UNIT is cm, inch, or m, depending on
+the <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> setting in .gmtdefaults4, but this
+can be overridden on the command line by appending <b>c</b>,
+<b>i</b>, or <b>m</b> to the scale/width value. When central
+meridian is optional, default is center of longitude range
+on <b>&minus;R</b> option. Default standard parallel is the
+equator. For map height, max dimension, or min dimension,
+append <b>h</b>, <b>+</b>, or <b>-</b> to the width,
+respectively.</p> </td>
+</table>
+
+<p style="margin-left:22%;">More details can be found in
+the <b><A HREF="psbasemap.html">psbasemap</A></b> man pages.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CYLINDRICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jc</b><i>lon0/lat0/scale</i>
+(Cassini) <b><br>
+
+&minus;Jcyl_stere</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Stereographic) <b><br>
+&minus;Jj</b>[<i>lon0/</i>]<i>scale</i> (Miller) <b><br>
+&minus;Jm</b>[<i>lon0</i>/[<i>lat0/</i>]]<i>scale</i>
+(Mercator) <b><br>
+&minus;Jm</b><i>lon0/lat0/scale</i> (Mercator - Give
+meridian and standard parallel) <b><br>
+&minus;Jo</b>[<b>a</b>]<i>lon0/lat0/azimuth/scale</i>
+(Oblique Mercator - point and azimuth) <b><br>
+&minus;Jo</b>[<b>b</b>]<i>lon0/lat0/lon1/lat1/scale</i>
+(Oblique Mercator - two points) <b><br>
+&minus;Joc</b><i>lon0/lat0/lonp/latp/scale</i> (Oblique
+Mercator - point and pole) <b><br>
+&minus;Jq</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equidistant) <b><br>
+&minus;Jt</b><i>lon0/</i>[<i>lat0/</i>]<i>scale</i> (TM -
+Transverse Mercator) <b><br>
+&minus;Ju</b><i>zone/scale</i> (UTM - Universal Transverse
+Mercator) <b><br>
+&minus;Jy</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equal-Area)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CONIC
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jb</b><i>lon0/lat0/lat1/lat2/scale</i>
+(Albers) <b><br>
+&minus;Jd</b><i>lon0/lat0/lat1/lat2/scale</i> (Conic
+Equidistant) <b><br>
+&minus;Jl</b><i>lon0/lat0/lat1/lat2/scale</i> (Lambert Conic
+Conformal) <b><br>
+&minus;Jpoly</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+((American) Polyconic)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>AZIMUTHAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Ja</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Lambert Azimuthal Equal-Area) <b><br>
+&minus;Je</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Azimuthal Equidistant) <b><br>
+&minus;Jf</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Gnomonic) <b><br>
+&minus;Jg</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Orthographic) <b><br>
+
+&minus;Jg</b><i>lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale</i>
+(General Perspective). <b><br>
+&minus;Js</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(General Stereographic)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>MISCELLANEOUS
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jh</b>[<i>lon0/</i>]<i>scale</i>
+(Hammer) <b><br>
+&minus;Ji</b>[<i>lon0/</i>]<i>scale</i> (Sinusoidal) <b><br>
+&minus;Jkf</b>[<i>lon0/</i>]<i>scale</i> (Eckert IV) <b><br>
+&minus;Jk</b>[<b>s</b>][<i>lon0/</i>]<i>scale</i> (Eckert
+VI) <b><br>
+&minus;Jn</b>[<i>lon0/</i>]<i>scale</i> (Robinson) <b><br>
+&minus;Jr</b>[<i>lon0/</i>]<i>scale</i> (Winkel Tripel)
+<b><br>
+&minus;Jv</b>[<i>lon0/</i>]<i>scale</i> (Van der Grinten)
+<b><br>
+&minus;Jw</b>[<i>lon0/</i>]<i>scale</i> (Mollweide)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>NON-GEOGRAPHICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jp</b>[<b>a</b>]<i>scale</i>[<i>/origin</i>][<b>r</b>|<b>z</b>]
+(Polar coordinates (theta,r)) <b><br>
+
+&minus;Jx</b><i>x-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>][<i>/y-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>]]
+(Linear, log, and power scaling)</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> specify the Region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Append <b>c</b> to
+annotate using the MGD77 cruise ID [Default uses the
+filename prefix]. Optional <i>size</i> is the font size in
+points. The leg annotation font is controlled by
+<b><A HREF="gmtdefaults.html#LABEL_FONT">LABEL_FONT</A></b>. By default, each leg is annotated every
+time it enters the map region. Alternatively, append
+,<i>spacing</i> to place this label every <i>spacing</i>
+units apart along the track. Append one of the units
+<b>k</b> (km), <b>n</b> (nautical mile), <b>d</b> (day), or
+<b>h</b> (hour).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;B</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Sets map boundary
+annotation and tickmark intervals; see the <b><A HREF="psbasemap.html">psbasemap</A></b>
+man page for all the details.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Select procedure
+for along-track distance calculation:</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>f</b> Flat Earth distances.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>g</b> Great circle distances
+[Default].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>e</b> Geodesic distances on current GMT
+ellipsoid.</p> </td>
+</table>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Da</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not plot data
+collected before <i>startdate</i>
+(yyyy-mm-dd<b>T</b>[hh:mm:ss]) [Default is first day].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Db</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not plot data
+collected after <i>stopdate</i>
+(yyyy-mm-dd<b>T</b>[hh:mm:ss]). [Default is last day].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not apply the
+error bit flags if present in a MGD77+ file [Default will
+apply these flags upon reading the data].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Let successive
+point separations exceeding <b>d</b><i>gap</i> (km) or
+<b>t</b><i>gap</i> (minutes) indicate a break in the track
+where we should not draw a line [no gaps recognized]. Repeat
+to use both types of gap checking.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Ignore certain data
+file formats from consideration. Append <b>a|c|m|t</b> to
+ignore MGD77 ASCII, MGD77+ netCDF, MGD77T ASCII or plain
+tab-separated ASCII table files, respectively. The option
+may be repeated to ignore more than one format. [Default
+ignores none].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;K</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">More
+<i>PostScript</i> code will be appended later [Default
+terminates the plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">To put
+time/distance log-marks on the track. E.g.
+<b>a</b>500<b>ka</b>24<b>ht</b>6<b>h</b> means
+(<b>a</b>)nnotate every 500 km (<b>k</b>) and 24
+<b>h</b>(ours), with (<b>t</b>)ickmarks every 500 km and 6
+hours. Alternatively you may use the modifiers <b>d</b>
+(days) and <b>n</b> (nautical miles).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;O</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Overlay
+plot mode [Default initializes a new plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;P</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Portrait
+plotting mode [Default is Landscape, see <b><A HREF="gmtdefaults.html">gmtdefaults</A></b>
+to change this].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sa</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not plot data
+that are less than <i>startdist</i> meter along track from
+port of departure. Append <b>k</b> for km, <b>m</b> for
+miles, or <b>n</b> for nautical miles [Default is 0
+meters].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sb</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not plot data
+that are more than <i>stopdist</i> meter along track from
+port of departure. Append <b>k</b> for km, <b>m</b> for
+miles, or <b>n</b> for nautical miles [Default is end of
+track].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Controls the
+attributes of the three kinds of markers (<b>T</b> for the
+first time marker in a new day, <b>t</b> for additional time
+markers in the same day, and <b>d</b> for distance markers).
+For each of these you can specify the 5 comma-separated
+attributes <i>markersize</i>, <i>markercolor</i>,
+<i>markerfontsize</i>, <i>markerfont</i>, and
+<i>markerfontcolor</i>. Repeat the <b>&minus;T</b> option
+for each marker type.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;U</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw Unix System
+time stamp on plot. By adding <i>just/dx/dy/</i>, the user
+may specify the justification of the stamp and where the
+stamp should fall on the page relative to lower left corner
+of the plot. For example, BL/0/0 will align the lower left
+corner of the time stamp with the lower left corner of the
+plot. Optionally, append a <i>label</i>, or <b>c</b> (which
+will plot the command string.). The <b><A HREF="GMT.html">GMT</A></b> parameters
+<b><A HREF="gmtdefaults.html#UNIX_TIME">UNIX_TIME</A></b>, <b><A HREF="gmtdefaults.html#UNIX_TIME_POS">UNIX_TIME_POS</A></b>, and
+<b><A HREF="gmtdefaults.html#UNIX_TIME_FORMAT">UNIX_TIME_FORMAT</A></b> can affect the appearance; see the
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b> man page for details. The time string
+will be in the locale set by the environment variable
+<b>TZ</b> (generally local time).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Append <i>pen</i>
+used for the trackline. [Default is 0.25p,black]. [Default
+is solid].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;X
+&minus;Y</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Shift plot origin
+relative to the current origin by (<i>x-shift,y-shift</i>)
+and optionally append the length unit (<b>c</b>, <b>i</b>,
+<b>m</b>, <b>p</b>). You can prepend <b>a</b> to shift the
+origin back to the original position after plotting, or
+prepend <b>r</b> [Default] to reset the current origin to
+the new location. If <b>&minus;O</b> is used then the
+default (<i>x-shift,y-shift</i>) is (0,0), otherwise it is
+(r1i, r1i) or (r2.5c, r2.5c). Alternatively, give <b>c</b>
+to align the center coordinate (x or y) of the plot with the
+center of the page based on current page size.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;c</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies the
+number of plot copies. [Default is 1].</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To generate a
+Mercator plot of the track of the cruise 01010007 in the
+area 70W to 20E, 40S to 20N, using a Mercator scale of
+0.1inch/degree, label the tracks with 10 points characters,
+annotate the boundaries every 10 degrees, draw gridlines
+every 5 degrees, and mark the track every day and 1000 km,
+with ticks every 6 hours and 250 km, and send the plot to
+the default printer, enter the following command:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77track</b>
+01010007 <b>&minus;R</b> 70W/20E/40S/20N <b>&minus;Jm</b>
+0.1 <b>&minus;B</b> 10<b>g</b>5 <b>&minus;A</b> 10
+<b>&minus;L</b> a1da1000kf6hf250k | lpr</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="mgd77info.html">mgd77info</A></i>(1),
+<i><A HREF="psbasemap.html">psbasemap</A></i>(1) <i><A HREF="mgd77list.html">mgd77list</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P., and
+W. H. F. Smith, 2018, The Generic Mapping Tools (GMT)
+version 4.5.18 Technical Reference &amp; Cookbook,
+SOEST/NOAA. <br>
+Wessel, P., and W. H. F. Smith, 1998, New, Improved Version
+of Generic Mapping Tools Released, EOS Trans., AGU, 79 (47),
+p. 579. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released, EOS Trans., AGU, 76 (33), p.
+329. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released,
+http://www.agu.org/eos_elec/95154e.html, Copyright 1995 by
+the American Geophysical Union. <br>
+Wessel, P., and W. H. F. Smith, 1991, Free Software Helps
+Map and Display Data, EOS Trans., AGU, 72 (41), p. 441. <br>
+The Marine Geophysical Data Exchange Format -
+&quot;MGD77&quot;, see
+<i>http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt</i></p>
+<hr>
+</body>
+</html>

@@ -1,0 +1,497 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:43 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>ORIGINATOR</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>ORIGINATOR</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#COORDINATES">COORDINATES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">originator
+&minus; Associate seamounts with hotspot point sources</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>originator</b>
+[<i>infile(s)</i>] <b>&minus;E</b><i>stage_file</i>
+<b>&minus;F</b><i>hs_file</i> [ <b>&minus;C</b> ] [
+<b>&minus;D</b><i>d_km</i> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;L</b>[<i>flag</i>] ] [
+<b>&minus;N</b><i>upper_age</i> ] [
+<b>&minus;Q</b><i>r/t</i> ] [ <b>&minus;S</b>[<i>n_hs</i>] ]
+[ <b>&minus;T</b> ] [ <b>&minus;V</b> ]
+<b>&minus;W</b><i>maxdist</i> ] [ <b>&minus;Z</b> ] [
+<b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;bi</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>originator</b>
+reads (longitude, latitude, height, radius, crustal_age)
+records from <i>infiles</i> [or standard input] and uses the
+given Absolute Plate Motion (APM) stage poles and the list
+of hotspot locations to determine the most likely origin
+(hotspot) for each seamount. It does so by calculating
+flowlines back in time and determining the closest approach
+to all hotspots. The output consists of the input records
+with four additional fields added for each of the
+<i>n_hs</i> closest hotspots. The four fields are the
+hotspot id (e.g., HWI), the stage id of the flowline segment
+that came closest, the pseudo-age of the seamount, and the
+closest distance to the hotspot (in km). See option
+<b>&minus;:</b> on how to read (latitude, longitude,height,
+radius, crustal_age) files.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">No space between the option flag and the
+associated arguments. Use upper case for the option flags
+and lower case for modifiers.</p></td>
+</table>
+
+<p style="margin-left:11%;"><i>infile(s)</i></p>
+
+<p style="margin-left:22%;">Seamount data file(s) to be
+analyzed. If not given, standard input is read.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Give file with
+rotation parameters. This file must contain one record for
+each rotation; each record must be of the following
+format:</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><i>lon lat tstart [tstop] angle</i> [
+<i>khat a b c d e f g df</i> ]</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">where
+<i>tstart</i> and <i>tstop</i> are in Myr and <i>lon lat
+angle</i> are in degrees. <i>tstart</i> and <i>tstop</i> are
+the ages of the old and young ends of a stage. If
+<b>&minus;C</b> is set then a total reconstruction rotation
+is expected and <i>tstop</i> is implicitly set to 0 and
+should not be specified in the file. If a covariance matrix
+<b>C</b> for the rotation is available it must be specified
+in a format using the nine optional terms listed in
+brackets. Here, <b>C</b> = (<i>g</i>/<i>khat</i>)*[ <i>a b
+d; b c e; d e f</i> ] which shows <b>C</b> made up of three
+row vectors. If the degrees of freedom (<i>df</i>) in
+fitting the rotation is 0 or not given it is set to 10000.
+Blank lines and records whose first column contains # will
+be ignored.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Give file with
+hotspot locations. This file must contain one record for
+each hotspot to be considered; each record must be of the
+following format:</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top">lon lat hs_abbrev hs_id r t_off t_on create
+fit plot name</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">E.g., for
+Hawaii this may look like</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-4%"></td>
+<td width="8%">
+
+
+<p valign="top">205</p></td>
+<td width="8%">
+
+
+<p valign="top">20</p></td>
+<td width="8%">
+
+
+<p valign="top">HWI</p></td>
+<td width="7%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">25</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="7%">
+
+
+<p valign="top">90</p></td>
+<td width="8%">
+
+
+<p valign="top">Y</p></td>
+<td width="8%">
+
+
+<p valign="top">Y</p></td>
+<td width="7%">
+
+
+<p valign="top">Y</p></td>
+<td width="5%">
+
+
+<p valign="top">Hawaii</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Most
+applications only need the first 4 columns which thus
+represents the minimal hotspot information record type. The
+abbreviation may be maximum 3 characters long. The id must
+be an integer from 1-32. The positional uncertainty of the
+hotspot is given by r (in km). The t_off and t_on variables
+are used to indicate the active time-span of the hotspot.
+The create, fit, and plot indicators are either Y or N and
+are used by some programs to indicate if the hotspot is
+included in the ID-grids used to determine rotations, if the
+hotspot chain will be used to determine rotations, and if
+the hotspot should be included in various plots. The name is
+a 32-character maximum text string with the full hotspot
+name. Blank lines and records whose first column contains #
+will be ignored.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Expect Total
+Reconstruction Rotations rather than Forward Stage Rotations
+[Default]. File format is similar to the stage pole format
+except that the <i>tstart</i> column is not present (assumed
+to be 0 Ma).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the flowline
+sampling interval in km. [Default is 5].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Output closest
+approach for nearest hotspot only (ignores <b>&minus;S</b>).
+Choose <b>&minus;Lt</b> for (<i>time, dist, z</i>)
+[Default], <b>&minus;Lw</b> for (<i>omega, dist, z</i>), and
+<b>&minus;Ll</b> for (lon, lat, time, dist, z). Normally,
+<i>dist</i> is in km; use upper case modifiers <b>TWL</b> to
+get <i>dist</i> in spherical degrees.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set the maximum age
+to extend the oldest stage back in time [no extension].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+</td>
+</table>
+
+<p style="margin-left:11%;">Input files only has
+(<i>x,y,z</i>); specify constant values for <i>r,t</i>
+that</p>
+
+<p style="margin-left:22%;">will be implied for each
+record.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set the number of
+closest hotspots to report [Default is 1].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Truncate seamount
+ages exceeding the upper age set with <b>&minus;N</b> [no
+truncation].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Only report those
+seamounts whose flowlines came within <i>maxdist</i> to any
+hotspot [Default reports all seamounts].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Use the hotspot ID
+number rather than the name tag in output records.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 5 input columns].</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To find the
+likely (hotspot) origins of the seamounts represented by the
+(x,y,z,r,tc) points in the file seamounts.d, using the
+DC85.d Euler poles and the pac_hs.d list of possible
+hotspots, and report the 2 most likely hotspot candidates
+for each seamount, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>originator</b>
+seamounts.d <b>&minus;S</b> 2 <b>&minus;E</b> DC85.d
+<b>&minus;F</b> pac_hs.d &gt; origins.d</p>
+
+<a name="COORDINATES"></a>
+<h2>COORDINATES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Data
+coordinates are assumed to be geodetic and will
+automatically be converted to geocentric before spherical
+rotations are performed. We convert back to geodetic
+coordinates for output. Note: If your data already are
+geocentric, you can avoid the conversion by using
+--ELLIPSOID=sphere.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="project.html">project</A></i>(1), <i><A HREF="grdrotater.html">grdrotater</A></i>(1),
+<i><A HREF="grdspotter.html">grdspotter</A></i>(1), <i><A HREF="mapproject.html">mapproject</A></i>(1),
+<i><A HREF="backtracker.html">backtracker</A></i>(1), <i><A HREF="hotspotter.html">hotspotter</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P.,
+1999, &quot;Hotspotting&quot; tools released, EOS Trans.
+AGU, 80 (29), p. 319.</p>
+<hr>
+</body>
+</html>

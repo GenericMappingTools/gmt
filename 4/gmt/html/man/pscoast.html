@@ -1,0 +1,1033 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:26 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>PSCOAST</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>PSCOAST</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#GSHHS INFORMATION">GSHHS INFORMATION</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">pscoast &minus;
+To plot land-masses, water-masses, coastlines, borders, and
+rivers</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>pscoast
+&minus;J</b><i>parameters</i>
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+[
+<b>&minus;A</b><i>min_area</i>[<i>/min_level/max_level</i>][<b>+r</b>|<b>l</b>][<b>p</b><i>percent</i>]
+] [ <b>&minus;B</b>[<b>p</b>|<b>s</b>]<i>parameters</i> ] [
+<b>&minus;C</b>[<b>l</b>|<b>r</b>/]<i>fill</i> ] [
+<b>&minus;D</b><i>resolution</i>[<b>+</b>] ] [
+<b>&minus;E</b><i>azim</i>/<i>elev</i>[<b>+w</b><i>lon</i>/<i>lat</i>[/<i>z</i>]][<b>+v</b><i>x0</i>/<i>y0</i>]
+] [ <b>&minus;G</b><i>fill</i>|<b>c</b> ] [
+<b>&minus;I</b><i>river</i>[/<i>pen</i>] ] [
+<b>&minus;Jz</b>|<b>Z</b><i>parameters</i> ] [
+<b>&minus;K</b> ] [
+<b>&minus;L</b>[<b>f</b>][<b>x</b>]<i>lon0</i>/<i>lat0</i>[/<i>slon</i>]/<i>slat</i>/<i>length</i>[<b>m</b>|<b>n</b>|<b>k</b>][<b>+l</b><i>label</i>][<b>+j</b><i>just</i>][<b>+p</b><i>pen</i>][<b>+f</b><i>fill</i>][<b>+u</b>]
+] ] [ <b>&minus;O</b> ] [
+<b>&minus;N</b><i>border</i>[/<i>pen</i>] ] [
+<b>&minus;O</b> ] [ <b>&minus;P</b> ] [ <b>&minus;Q</b> ] [
+<b>&minus;S</b><i>fill</i>|<b>c</b> ] [
+<b>&minus;T</b>[<b>f</b>|<b>m</b>][<b>x</b>]<i>lon0</i>/<i>lat0</i>/<i>size</i>[/<i>info</i>][<b>:</b>w,e,s,n<b>:</b>][<b>+</b><i>gint</i>[/<i>mint</i>]]
+] [
+<b>&minus;U</b>[<i>just</i>/<i>dx</i>/<i>dy</i>/][<b>c</b>|<i>label</i>]
+] [ <b>&minus;V</b> ] [
+<b>&minus;W</b>[<i>level</i>/]<i>pen</i> ] [
+<b>&minus;X</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>x-shift</i>[<b>u</b>]]
+] [
+<b>&minus;Y</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>y-shift</i>[<b>u</b>]]
+] [ <b>&minus;Z</b><i>zlevel</i> ] [
+<b>&minus;c</b><i>copies</i> ] [
+<b>&minus;bo</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;m</b>[<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>pscoast</b>
+plots grayshaded, colored, or textured land-masses [or
+water-masses] on maps and [optionally] draws coastlines,
+rivers, and political boundaries. Alternatively, it can (1)
+issue clip paths that will contain all land or all water
+areas, or (2) dump the data to an ASCII table. The data
+files come in 5 different resolutions: (<b>f</b>)ull,
+(<b>h</b>)igh, (<b>i</b>)ntermediate, (<b>l</b>)ow, and
+(<b>c</b>)rude. The full resolution files amount to more
+than 55 Mb of data and provide great detail; for maps of
+larger geographical extent it is more economical to use one
+of the other resolutions. If the user selects to paint the
+land-areas and does not specify fill of water-areas then the
+latter will be transparent (i.e., earlier graphics drawn in
+those areas will not be overwritten). Likewise, if the
+water-areas are painted and no land fill is set then the
+land-areas will be transparent. A map projection must be
+supplied. The <i>PostScript</i> code is written to standard
+output.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;J</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects the map
+projection. Scale is UNIT/degree, 1:xxxxx, or width in UNIT
+(upper case modifier). UNIT is cm, inch, or m, depending on
+the <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> setting in .gmtdefaults4, but this
+can be overridden on the command line by appending <b>c</b>,
+<b>i</b>, or <b>m</b> to the scale/width value. When central
+meridian is optional, default is center of longitude range
+on <b>&minus;R</b> option. Default standard parallel is the
+equator. For map height, max dimension, or min dimension,
+append <b>h</b>, <b>+</b>, or <b>-</b> to the width,
+respectively.</p> </td>
+</table>
+
+<p style="margin-left:22%;">More details can be found in
+the <b><A HREF="psbasemap.html">psbasemap</A></b> man pages.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CYLINDRICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jc</b><i>lon0/lat0/scale</i>
+(Cassini) <b><br>
+
+&minus;Jcyl_stere</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Stereographic) <b><br>
+&minus;Jj</b>[<i>lon0/</i>]<i>scale</i> (Miller) <b><br>
+&minus;Jm</b>[<i>lon0</i>/[<i>lat0/</i>]]<i>scale</i>
+(Mercator) <b><br>
+&minus;Jm</b><i>lon0/lat0/scale</i> (Mercator - Give
+meridian and standard parallel) <b><br>
+&minus;Jo</b>[<b>a</b>]<i>lon0/lat0/azimuth/scale</i>
+(Oblique Mercator - point and azimuth) <b><br>
+&minus;Jo</b>[<b>b</b>]<i>lon0/lat0/lon1/lat1/scale</i>
+(Oblique Mercator - two points) <b><br>
+&minus;Joc</b><i>lon0/lat0/lonp/latp/scale</i> (Oblique
+Mercator - point and pole) <b><br>
+&minus;Jq</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equidistant) <b><br>
+&minus;Jt</b><i>lon0/</i>[<i>lat0/</i>]<i>scale</i> (TM -
+Transverse Mercator) <b><br>
+&minus;Ju</b><i>zone/scale</i> (UTM - Universal Transverse
+Mercator) <b><br>
+&minus;Jy</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equal-Area)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CONIC
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jb</b><i>lon0/lat0/lat1/lat2/scale</i>
+(Albers) <b><br>
+&minus;Jd</b><i>lon0/lat0/lat1/lat2/scale</i> (Conic
+Equidistant) <b><br>
+&minus;Jl</b><i>lon0/lat0/lat1/lat2/scale</i> (Lambert Conic
+Conformal) <b><br>
+&minus;Jpoly</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+((American) Polyconic)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>AZIMUTHAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Ja</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Lambert Azimuthal Equal-Area) <b><br>
+&minus;Je</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Azimuthal Equidistant) <b><br>
+&minus;Jf</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Gnomonic) <b><br>
+&minus;Jg</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Orthographic) <b><br>
+
+&minus;Jg</b><i>lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale</i>
+(General Perspective). <b><br>
+&minus;Js</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(General Stereographic)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>MISCELLANEOUS
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jh</b>[<i>lon0/</i>]<i>scale</i>
+(Hammer) <b><br>
+&minus;Ji</b>[<i>lon0/</i>]<i>scale</i> (Sinusoidal) <b><br>
+&minus;Jkf</b>[<i>lon0/</i>]<i>scale</i> (Eckert IV) <b><br>
+&minus;Jk</b>[<b>s</b>][<i>lon0/</i>]<i>scale</i> (Eckert
+VI) <b><br>
+&minus;Jn</b>[<i>lon0/</i>]<i>scale</i> (Robinson) <b><br>
+&minus;Jr</b>[<i>lon0/</i>]<i>scale</i> (Winkel Tripel)
+<b><br>
+&minus;Jv</b>[<i>lon0/</i>]<i>scale</i> (Van der Grinten)
+<b><br>
+&minus;Jw</b>[<i>lon0/</i>]<i>scale</i> (Mollweide)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>NON-GEOGRAPHICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jp</b>[<b>a</b>]<i>scale</i>[<i>/origin</i>][<b>r</b>|<b>z</b>]
+(Polar coordinates (theta,r)) <b><br>
+
+&minus;Jx</b><i>x-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>][<i>/y-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>]]
+(Linear, log, and power scaling)</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> specify the Region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Features with an
+area smaller than <i>min_area</i> in km^2 or of hierarchical
+level that is lower than <i>min_level</i> or higher than
+<i>max_level</i> will not be plotted [Default is 0/0/4 (all
+features)]. Level 2 (lakes) contains regular lakes and wide
+river bodies which we normally include as lakes; append
+<b>+r</b> to just get river-lakes or <b>+l</b> to just get
+regular lakes (requires GSHHS 2.0.1 or higher). Finally,
+append <b>+p</b><i>percent</i> to exclude polygons whose
+percentage area of the corresponding full-resolution feature
+is less than <i>percent</i> (requires GSHHS 2.0 or higher).
+See GSHHS INFORMATION below for more details.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;B</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets map boundary
+annotation and tickmark intervals; see the <b><A HREF="psbasemap.html">psbasemap</A></b>
+man page for all the details.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set the shade,
+color, or pattern for lakes and river-lakes [Default is the
+fill chosen for &quot;wet&quot; areas (<b>&minus;S</b>)].
+Optionally, specify separate fills by prepending <b>l</b>/
+for lakes and <b>r</b>/ for river-lakes, repeating the
+<b>&minus;C</b> option as needed. (See SPECIFYING FILL
+below).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects the
+resolution of the data set to use ((<b>f</b>)ull,
+(<b>h</b>)igh, (<b>i</b>)ntermediate, (<b>l</b>)ow, and
+(<b>c</b>)rude). The resolution drops off by 80% between
+data sets [Default is <b>l</b>]. Append <b>+</b> to
+automatically select a lower resolution should the one
+requested not be available [abort if not found].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the
+viewpoint&rsquo;s azimuth and elevation (for perspective
+view) [180/90]. For frames used for animation, you may want
+to append <b>+</b> to fix the center of your data domain (or
+specify a particular world coordinate point with
+<b>+w</b><i>lon0</i>/<i>lat</i>[/<i>z</i>]) which will
+project to the center of your page size (or specify the
+coordinates of the projected view point with
+<b>+v</b><i>x0</i>/<i>y0).</i></p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Select filling or
+clipping of &quot;dry&quot; areas. Append the shade, color,
+or pattern (see SPECIFYING FILL below); or use
+<b>&minus;Gc</b> for clipping [Default is no fill].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw rivers.
+Specify the type of rivers and [optionally] append pen
+attributes [Default pen: width = 0.25p, color = black,
+texture = solid]. (See SPECIFYING PENS below).</p></td>
+</table>
+
+<p style="margin-left:22%;">Choose from the list of river
+types below. Repeat option <b>&minus;I</b> as often as
+necessary.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">1 = Permanent major rivers</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">2 = Additional major rivers</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">3 = Additional rivers</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">4 = Minor rivers</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">5 = Intermittent rivers - major</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">6 = Intermittent rivers - additional</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">7 = Intermittent rivers - minor</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">8 = Major canals</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">9 = Minor canals</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">10 = Irrigation canals</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">a = All rivers and canals (1-10)</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">r = All permanent rivers (1-4)</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">i = All intermittent rivers (5-7)</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">c = All canals (8-10)</p></td>
+</table>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Jz</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the vertical
+scaling (for 3-D maps). Same syntax as <b>&minus;Jx</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;K</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">More
+<i>PostScript</i> code will be appended later [Default
+terminates the plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draws a simple map
+scale centered on <i>lon0/lat0</i>. Use <b>&minus;Lx</b> to
+specify x/y position instead. Scale is calculated at
+latitude <i>slat</i> (optionally supply longitude
+<i>slon</i> for oblique projections [Default is central
+meridian]), <i>length</i> is in km [miles if <b>m</b> is
+appended; nautical miles if <b>n</b> is appended]. Use
+<b>&minus;Lf</b> to get a &quot;fancy&quot; scale [Default
+is plain]. Append <b>+l</b> to select the default label
+which equals the distance unit (km, miles, nautical miles)
+and is justified on top of the scale [t]. Change this by
+giving your own label (append <b>+l</b><i>label</i>). Change
+label justification with <b>+j</b><i>justification</i>
+(choose among l(eft), r(ight), t(op), and b(ottom)). Apply
+<b>+u</b> to append the unit to all distance annotations
+along the scale. If you want to place a rectangle behind the
+scale, specify suitable <b>+p</b><i>pen</i> and/or
+<b>+f</b><i>fill</i> parameters. (See SPECIFYING PENS and
+SPECIFYING FILL below).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw political
+boundaries. Specify the type of boundary and [optionally]
+append pen attributes [Default pen: width = 0.25p, color =
+black, texture = solid]. (See SPECIFYING PENS below). (See
+SPECIFYING PENS below).</p></td>
+</table>
+
+<p style="margin-left:22%;">Choose from the list of
+boundaries below. Repeat option <b>&minus;N</b> as often as
+necessary.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">1 = National boundaries</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">2 = State boundaries within the
+Americas</p> </td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">3 = Marine boundaries</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="82%">
+
+
+<p valign="top">a = All boundaries (1-3)</p></td>
+</table>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;O</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Overlay
+plot mode [Default initializes a new plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;P</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Portrait
+plotting mode [Default is Landscape, see <b><A HREF="gmtdefaults.html">gmtdefaults</A></b>
+to change this].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Mark end of
+existing clip path. No projection information is needed.
+However, you must supply <b>&minus;Xa</b> and
+<b>&minus;Ya</b> settings if you are using absolute
+positioning.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Select filling or
+clipping of &quot;wet&quot; areas. Append the shade, color,
+or pattern (see SPECIFYING FILL below); or use
+<b>&minus;Sc</b> for clipping [Default is no fill].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draws a simple map
+directional rose centered on <i>lon0/lat0</i>. Use
+<b>&minus;Tx</b> to specify x/y position instead. The
+<i>size</i> is the diameter of the rose, and optional label
+information can be specified to override the default values
+of W, E, S, and N (Give <b>::</b> to suppress all labels).
+The default [plain] map rose only labels north. Use
+<b>&minus;Tf</b> to get a &quot;fancy&quot; rose, and
+specify in <i>info</i> what you want drawn. The default [1]
+draws the two principal E-W, N-S orientations, 2 adds the
+two intermediate NW-SE and NE-SW orientations, while 3 adds
+the eight minor orientations WNW-ESE, NNW-SSE, NNE-SSW, and
+ENE-WSW. For a magnetic compass rose, specify
+<b>&minus;Tm</b>. If given, <i>info</i> must be the two
+parameters <i>dec/dlabel</i>, where <i>dec</i> is the
+magnetic declination and <i>dlabel</i> is a label for the
+magnetic compass needle (specify <b>-</b> to format a label
+from <i>dec</i>). Then, both directions to geographic and
+magnetic north are plotted [Default is geographic only]. If
+the north label is <b>*</b> then a north star is plotted
+instead of the north label. Annotation and two levels of
+tick intervals for geographic and magnetic directions are
+10/5/1 and 30/5/1 degrees, respectively; override these
+settings by appending <b>+</b><i>gints</i>[/<i>mints</i>].
+Color and pen attributes are taken from
+<b><A HREF="gmtdefaults.html#COLOR_BACKGROUND">COLOR_BACKGROUND</A></b> and <b><A HREF="gmtdefaults.html#TICK_PEN">TICK_PEN</A></b>, respectively,
+while label fonts and sizes follow the usual annotation,
+label, and header font settings.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;U</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw Unix System
+time stamp on plot. By adding <i>just/dx/dy/</i>, the user
+may specify the justification of the stamp and where the
+stamp should fall on the page relative to lower left corner
+of the plot. For example, BL/0/0 will align the lower left
+corner of the time stamp with the lower left corner of the
+plot. Optionally, append a <i>label</i>, or <b>c</b> (which
+will plot the command string.). The <b><A HREF="GMT.html">GMT</A></b> parameters
+<b><A HREF="gmtdefaults.html#UNIX_TIME">UNIX_TIME</A></b>, <b><A HREF="gmtdefaults.html#UNIX_TIME_POS">UNIX_TIME_POS</A></b>, and
+<b><A HREF="gmtdefaults.html#UNIX_TIME_FORMAT">UNIX_TIME_FORMAT</A></b> can affect the appearance; see the
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b> man page for details. The time string
+will be in the locale set by the environment variable
+<b>TZ</b> (generally local time).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw shorelines
+[Default is no shorelines]. Append pen attributes [Defaults:
+width = 0.25p, color = black, texture = solid] which apply
+to all four levels. To set the pen for each level
+differently, prepend <i>level</i>/, where <i>level</i> is
+1-4 and represent coastline, lakeshore, island-in-lake
+shore, and lake-in-island-in-lake shore. Repeat
+<b>&minus;W</b> as needed. When specific level pens are set,
+those not listed will not be drawn [Default draws all
+levels; but see <b>&minus;A</b>]. (See SPECIFYING PENS
+below).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;X
+&minus;Y</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Shift plot origin
+relative to the current origin by (<i>x-shift,y-shift</i>)
+and optionally append the length unit (<b>c</b>, <b>i</b>,
+<b>m</b>, <b>p</b>). You can prepend <b>a</b> to shift the
+origin back to the original position after plotting, or
+prepend <b>r</b> [Default] to reset the current origin to
+the new location. If <b>&minus;O</b> is used then the
+default (<i>x-shift,y-shift</i>) is (0,0), otherwise it is
+(r1i, r1i) or (r2.5c, r2.5c). Alternatively, give <b>c</b>
+to align the center coordinate (x or y) of the plot with the
+center of the page based on current page size.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">For 3-D
+projections: Sets the z-level of the coastlines [Default is
+the bottom of the z-axis].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;c</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies the
+number of plot copies. [Default is 1].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Dumps a single
+multisegment ASCII (or binary, see <b>&minus;bo</b>) file to
+standard output. No plotting occurs. Specify any combination
+of <b>&minus;W</b>, <b>&minus;I</b>, <b>&minus;N</b>.
+Optionally, you may append the <i>flag</i> character that is
+written at the start of each segment header
+[&rsquo;&gt;&rsquo;].</p> </td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+PENS</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p valign="top"><i>pen</i></p></td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p valign="top">The attributes of lines and symbol outlines
+as defined by <i>pen</i> is a comma delimetered list of
+<i>width</i>, <i>color</i> and <i>texture</i>, each of which
+is optional. <i>width</i> can be indicated as a measure
+(points, centimeters, inches) or as <b>faint</b>,
+<b>thin</b>[<b>ner</b>|<b>nest</b>],
+<b>thick</b>[<b>er</b>|<b>est</b>],
+<b>fat</b>[<b>ter</b>|<b>test</b>], or <b>obese</b>.
+<i>color</i> specifies a gray shade or color (see SPECIFYING
+COLOR below). <i>texture</i> is a combination of dashes
+&lsquo;-&rsquo; and dots &lsquo;.&rsquo;.</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+FILL</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p valign="top"><i>fill</i></p></td>
+<td width="5%"></td>
+<td width="78%">
+
+
+<p valign="top">The attribute <i>fill</i> specifies the
+solid shade or solid <i>color</i> (see SPECIFYING COLOR
+below) or the pattern used for filling polygons. Patterns
+are specified as <b>p</b><i>dpi/pattern</i>, where
+<i>pattern</i> gives the number of the built-in pattern
+(1-90) <i>or</i> the name of a Sun 1-, 8-, or 24-bit raster
+file. The <i>dpi</i> sets the resolution of the image. For
+1-bit rasters: use <b>P</b><i>dpi/pattern</i> for inverse
+video, or append
+<b>:F</b><i>color</i>[<b>B</b>[<i>color</i>]] to specify
+fore- and background colors (use <i>color</i> = - for
+transparency). See <b><A HREF="GMT.html">GMT</A></b> Cookbook &amp; Technical
+Reference Appendix E for information on individual
+patterns.</p> </td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+COLOR</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>color</i></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p valign="top">The <i>color</i> of lines, areas and
+patterns can be specified by a valid color name; by a gray
+shade (in the range 0&minus;255); by a decimal color code
+(r/g/b, each in range 0&minus;255; h-s-v, ranges
+0&minus;360, 0&minus;1, 0&minus;1; or c/m/y/k, each in range
+0&minus;1); or by a hexadecimal color code (#rrggbb, as used
+in HTML). See the <b><A HREF="gmtcolors.html">gmtcolors</A></b> manpage for more
+information and a full list of color names.</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To plot a green
+Africa with white outline on blue background, with permanent
+major rivers in thick blue pen, additional major rivers in
+thin blue pen, and national borders as dashed lines on a
+Mercator map at scale 0.1 inch/degree, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>pscoast
+&minus;R</b>-30/30/-40/40 <b>&minus;Jm</b> 0.1<b>i
+&minus;B</b> 5 <b>&minus;I</b> 1/1p,blue <b>&minus;I</b>
+2/0.25p,blue <b>&minus;N</b> 1/0.25p,- <b>&minus;W</b>
+0.25p,white <b>&minus;G</b> green <b>&minus;S</b> blue
+<b>&minus;P</b> &gt; africa.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">To plot Iceland
+using the lava pattern (# 28) at 100 dots per inch, on a
+Mercator map at scale 1 cm/degree, run</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>pscoast
+&minus;R</b>-30/-10/60/65 <b>&minus;Jm</b> 1<b>c
+&minus;B</b> 5 <b>&minus;Gp</b> 100/28 &gt; iceland.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">To initiate a
+clip path for Africa so that the subsequent colorimage of
+gridded topography is only seen over land, using a Mercator
+map at scale 0.1 inch/degree, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>pscoast
+&minus;R</b>-30/30/-40/40 <b>&minus;Jm</b> 0.1<b>i
+&minus;B</b> 5 <b>&minus;Gc &minus;P &minus;K</b> &gt;
+africa.ps <b><br>
+grdimage &minus;Jm</b> 0.1<b>i</b> etopo5.grd
+<b>&minus;C</b> colors.cpt <b>&minus;O &minus;K</b> &gt;&gt;
+africa.ps <b><br>
+pscoast &minus;Q &minus;O</b> &gt;&gt; africa.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>pscoast</b>
+will first look for coastline files in directory
+<b>$GMT_SHAREDIR</b>/coast If the desired file is not found,
+it will look for the file
+<b>$GMT_SHAREDIR</b>/coastline.conf. This file may contain
+any number of records that each holds the full pathname of
+an alternative directory. Comment lines (#) and blank lines
+are allowed. The desired file is then sought for in the
+alternate directories.</p>
+
+<a name="GSHHS INFORMATION"></a>
+<h2>GSHHS INFORMATION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The coastline
+database is GSHHS which is compiled from two sources: World
+Vector Shorelines (WVS) and CIA World Data Bank II (WDBII).
+In particular, all level-1 polygons (ocean-land boundary)
+are derived from the more accurate WVS while all higher
+level polygons (level 2-4, representing land/lake,
+lake/island-in-lake, and
+island-in-lake/lake-in-island-in-lake boundaries) are taken
+from WDBII. Much processing has taken place to convert WVS
+and WDBII data into usable form for <b><A HREF="GMT.html">GMT</A></b>: assembling
+closed polygons from line segments, checking for duplicates,
+and correcting for crossings between polygons. The area of
+each polygon has been determined so that the user may choose
+not to draw features smaller than a minimum area (see
+<b>&minus;A</b>); one may also limit the highest
+hierarchical level of polygons to be included (4 is the
+maximum). The 4 lower-resolution databases were derived from
+the full resolution database using the Douglas-Peucker
+line-simplification algorithm. The classification of rivers
+and borders follow that of the WDBII. See the <b><A HREF="GMT.html">GMT</A></b>
+Cookbook and Technical Reference Appendix K for further
+details.</p>
+
+<a name="BUGS"></a>
+<h2>BUGS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The options to
+fill (<b>&minus;C &minus;G &minus;S</b>) may not always work
+if the Azimuthal equidistant projection is chosen
+(<b>&minus;Je</b>|<b>E</b>). If the antipole of the
+projection is in the oceans it will most likely work. If
+not, try to avoid using projection center coordinates that
+are even multiples of the coastline bin size (1, 2, 5, 10,
+and 20 degrees for <b>f, h, i, l, c</b>, respectively). This
+projection is not supported for clipping. <br>
+The political borders are for the most part 1970s-style but
+have been updated to reflect more recent border
+rearrangements in Europe and elsewhere. Let us know if you
+find something out of date. <br>
+Some users of <b>pscoast</b> will not be satisfied with what
+they find for the Antarctic shoreline. In Antarctica, the
+boundary between ice and ocean varies seasonally and
+inter-annually. There are some areas of permanent sea ice.
+In addition to these time-varying ice-ocean boundaries,
+there are also ice grounding lines where ice goes from
+floating on the sea to sitting on land, and lines delimiting
+areas of rock outcrop. For consistency&rsquo;s sake, we have
+used the World Vector Shoreline throughout the world in
+pscoast, as described in the <b><A HREF="GMT.html">GMT</A></b> Cookbook Appendix K.
+Users who need specific boundaries in Antarctica should get
+the Antarctic Digital Database, prepared by the British
+Antarctic Survey, Scott Polar Research Institute, World
+Conservation Monitoring Centre, under the auspices of the
+Scientific Committee on Antarctic Research. This data base
+contains various kinds of limiting lines for Antarctica and
+is available on CD-ROM. It is published by the Scientific
+Committee on Antarctic Research, Scott Polar Research
+Institute, Lensfield Road, Cambridge CB2 1ER, United
+Kingdom.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="gmtcolors.html">gmtcolors</A></i>(5),
+<i><A HREF="gmtdefaults.html">gmtdefaults</A></i>(1), <i><A HREF="GMT.html">GMT</A></i>(1), <i><A HREF="grdlandmask.html">grdlandmask</A></i>(1),
+<i><A HREF="psbasemap.html">psbasemap</A></i>(1)</p>
+<hr>
+</body>
+</html>

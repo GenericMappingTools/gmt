@@ -1,0 +1,286 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>grdredpol &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="grdseamount" href="grdseamount.html" />
+    <link rel="prev" title="grdgravmag3d" href="grdgravmag3d.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="grdseamount.html" title="grdseamount"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="grdgravmag3d.html" title="grdgravmag3d"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="grdredpol">
+<span id="index-0"></span><h1>grdredpol<a class="headerlink" href="#grdredpol" title="Permalink to this headline">¶</a></h1>
+<p>grdredpol - Compute the Continuous Reduction To the Pole, AKA differential RTP.</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdredpol</strong> <em>anom_grd</em> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>rtp_grd</em> [<a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>dec/dip</em>]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><strong>i</strong><em>inc_grd</em>]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><strong>d</strong><em>dec_grd</em>]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>&lt;m/n&gt;</em>]
+[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong><em>m|r</em>]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong><em>win_width</em>]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>year</em> ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong><em>filtergrd</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-n</strong><a class="reference internal" href="../../gmt.html#n-full"><span class="std std-ref">flags</span></a> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdredpol</strong> will take a <em>.nc</em> file with a magnetic anomaly and compute
+the reduction to the pole (RTP) anomaly. This anomaly is the one that
+would have been produce if the bodies were magnetized vertically and the
+anomalies were observed at the geomagnetic pole. Standard RTP procedure
+assumes the direction of magnetization to be uniform throughout the
+causative body, and the geomagnetic field to be uniform in direction
+throughout the study region. Although these assumptions are reasonable
+for small areas, they do not hold for large areas.</p>
+<p>In the method used here computations are carried out in both the
+frequency and the space domains. The idea is that a large area may be
+decomposed in small size windows where both the ambient field and the
+magnetization vector change by a very small amount. Inside each of those
+windows, or bins, a set of filter coefficients are calculate and
+reconstruct for each individual point the component filter using a first
+order Taylor series expansion.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>anom_grd</em></dt>
+<dd>The anomaly grid to be converted.</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>rtp_grd</em></dt>
+<dd>is the filename for output grdfile with the RTP solution</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>dec/dip</em></dt>
+<dd>Use this (constant) declination and inclination angles for both
+field and magnetization. This option consists in the classical RTP
+procedure.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-Ei</strong><em>inc_grd</em> <strong>-Ed</strong><em>dec_grd</em></dt>
+<dd>Get magnetization <em>INCLINATION</em> and <em>DECLINATION</em> from these grids
+[default: use IGRF for each of the above parameters not provided via grid].
+Note that these two grids do not need to have the same resolution as
+the anomaly grid. They can be coarser.</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><em>m/n</em></dt>
+<dd>The filter window size in terms of row/columns. The default value is 25x25.</dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-M</strong><em>m|r</em></dt>
+<dd>Set boundary conditions. m|r stands for mirror or replicate edges
+(Default is zero padding).</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong></dt>
+<dd>Do NOT use Taylor expansion.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em></dt>
+<dd>defines the Region of the output points. [Default: Same as input.]</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong><em>year</em></dt>
+<dd>Decimal year used by the IGRF routine to compute the declination and
+inclination at each point [default: 2000]</dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong><em>width</em></dt>
+<dd>The size of the moving window in degrees [5].</dd>
+</dl>
+<dl class="docutils" id="z">
+<dt><strong>-Z</strong><em>filter_grd</em></dt>
+<dd>Write the filter file to disk.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+c</strong>][<strong>+t</strong><em>threshold</em>] <a class="reference internal" href="../../gmt.html#n-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select interpolation mode for grids.</dd>
+</dl>
+</div>
+<div class="section" id="consequences-of-grid-resampling">
+<h2>Consequences of grid resampling<a class="headerlink" href="#consequences-of-grid-resampling" title="Permalink to this headline">¶</a></h2>
+<p>Resample or sampling of grids will use various algorithms (see <strong>-n</strong>) that may lead
+to possible distortions or unexpected results in the resampled values.
+One expected effect of resampling with splines is the tendency for the new
+resampled values to slightly exceed the global min/max limits of the original
+grid.  If this is unacceptable, you can impose clipping of the resampled values
+values so they do not exceed the input min/max values by adding <strong>+c</strong> to
+your <strong>-n</strong> option.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Suppose that <em>anom.grd</em> is a file with the magnetic anomaly reduced to
+the 2010 epoch and that the <em>dec.grd</em> and <em>dip.grd</em> contain the
+magnetization declination and inclination respectively for an area that
+encloses that of the <em>anom.grd</em>, compute the <em>RTP</em> using bins of 2
+degrees and a filter of 45 coefficients.</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdredpol</span> <span class="n">anom</span><span class="o">.</span><span class="n">grd</span> <span class="o">-</span><span class="n">Grtp</span><span class="o">.</span><span class="n">grd</span> <span class="o">-</span><span class="n">W2</span> <span class="o">-</span><span class="n">F45</span><span class="o">/</span><span class="mi">45</span> <span class="o">-</span><span class="n">T2010</span> <span class="o">-</span><span class="n">Edec</span><span class="o">.</span><span class="n">grd</span><span class="o">/</span><span class="n">dip</span><span class="o">.</span><span class="n">grd</span> <span class="o">-</span><span class="n">V</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To compute the same <em>RTP</em> but now with the field and magnetization
+vectors collinear and computed from IGRF :</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdredpol</span> <span class="n">anom</span><span class="o">.</span><span class="n">grd</span> <span class="o">-</span><span class="n">Grtp</span><span class="o">.</span><span class="n">grd</span> <span class="o">-</span><span class="n">W2</span> <span class="o">-</span><span class="n">F45</span><span class="o">/</span><span class="mi">45</span> <span class="o">-</span><span class="n">T2010</span> <span class="o">-</span><span class="n">V</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h2>
+<p>Luis, J.L. and Miranda, J.M. (2008), Reevaluation of magnetic chrons in
+the North Atlantic between 35N and 47N: Implications for the formation
+of the Azores Triple Junction and associated plateau. <em>JGR</em>, VOL.
+<strong>113</strong>, B10105, doi:10.1029/2007JB005573</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">grdredpol</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#consequences-of-grid-resampling">Consequences of grid resampling</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#reference">Reference</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grdgravmag3d.html"
+                        title="previous chapter">grdgravmag3d</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grdseamount.html"
+                        title="next chapter">grdseamount</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/potential/grdredpol.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="grdseamount.html" title="grdseamount"
+             >next</a> </li>
+        <li class="right" >
+          <a href="grdgravmag3d.html" title="grdgravmag3d"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

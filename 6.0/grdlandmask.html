@@ -1,0 +1,523 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>grdlandmask &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="grdmask" href="grdmask.html" />
+    <link rel="prev" title="grdinfo" href="grdinfo.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">GMT Modules</a> &raquo;</li>
+        
+      <li>grdlandmask</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/grdlandmask.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="grdlandmask">
+<span id="index-0"></span><h1>grdlandmask<a class="headerlink" href="#grdlandmask" title="Permalink to this headline">¶</a></h1>
+<p>Create a “wet-dry” mask grid from shoreline data base</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt grdlandmask</strong> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>mask_grd_file</em>
+<a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>increment</em>
+<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
+[ <strong>-A</strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+a</strong>[<strong>g</strong>|<strong>i</strong>][<strong>s</strong>|<strong>S</strong>]][<strong>+r</strong>|<strong>l</strong>][<strong>+p</strong><em>percent</em>] ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>resolution</em>[<strong>+f</strong>] ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<em>bordervalues</em>] ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>maskvalues</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ] [ <strong>-r</strong><a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">reg</span></a> ]
+[ <strong>-x</strong>[[-]<em>n</em>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdlandmask</strong> reads the selected shoreline database and uses that
+information to decide which nodes in the specified grid are over land or
+over water. The nodes defined by the selected region and lattice spacing
+will be set according to one of two criteria: (1) land vs water, or
+(2) the more detailed (hierarchical) ocean vs land vs lake
+vs island vs pond. The resulting mask may be used in subsequent
+operations involving <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> to mask out data from land [or water] areas.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>mask_grd_file</em></dt>
+<dd>Name of resulting output mask grid file. (See GRID FILE FORMATS below).</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>]]</dt>
+<dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
+append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>: Append
+<strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc seconds. If one
+of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or <strong>u</strong> is appended
+instead, the increment is assumed to be given in meter, foot, km, Mile,
+nautical mile or US survey foot, respectively, and will be converted to
+the equivalent degrees longitude at the middle latitude of the region
+(the conversion depends on <a class="reference internal" href="gmt.conf.html#proj-ellipsoid"><span class="std std-ref">PROJ_ELLIPSOID</span></a>). If <em>y_inc</em> is given
+but set to 0 it will be reset equal to <em>x_inc</em>; otherwise it will be
+converted to degrees latitude. <strong>All coordinates</strong>: If <strong>+e</strong> is appended
+then the corresponding max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly
+adjusted to fit exactly the given increment [by default the increment
+may be adjusted slightly to fit the given domain]. Finally, instead of
+giving an increment you may specify the <em>number of nodes</em> desired by
+appending <strong>+n</strong> to the supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The resulting
+increment value depends on whether you have selected a
+gridline-registered or pixel-registered grid; see <a class="reference internal" href="cookbook/file_formats.html#gmt-file-formats"><span class="std std-ref">GMT File Formats</span></a> for
+details. Note: if <strong>-R</strong><em>grdfile</em> is used then the grid spacing (and registration) have
+already been initialized; use <strong>-I</strong> (and <strong>-r</strong>) to override the values.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
+Append <strong>+r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Set geographic regions by specifying ISO country codes from the Digital Chart of the World using
+<strong>-R</strong><em>code1,code2,…</em>[<strong>+r</strong>|<strong>R</strong>[<em>incs</em>]] instead:
+Append one or more comma-separated countries using the 2-character
+ISO 3166-1 alpha-2 convention.  To select a state of a country
+(if available), append .state, e.g, US.TX for Texas.  To specify a
+whole continent, prepend = to any of the continent codes AF (Africa),
+AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
+NA (North America), or SA (South America).  Use <strong>+r</strong> to modify the bounding box coordinates from the polygon(s):
+Append <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> to adjust the
+region to be a multiple of these steps [no adjustment]. Alternatively, use <strong>+R</strong> to extend the region
+outward by adding these increments instead [no extension].
+Alternatively for grid creation, give <strong>R</strong><em>code</em><em>lon</em>/<em>lat</em>/<em>nx</em>/<em>ny</em>, where
+<em>code</em> is a 2-character combination of L, C, R (for left, center, or right)
+and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
+indicates which point on a rectangular region the <em>lon</em>/<em>lat</em> coordinate
+refers to, and the grid dimensions <em>nx</em> and <em>ny</em> with grid spacings via
+<strong>-I</strong> is used to create the corresponding region.
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing and registration, if applicable) are copied from
+the grid. Appending <strong>+u</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.
+For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.
+In case of perspective view (<strong>-p</strong>), a z-range (<em>zmin</em>, <em>zmax</em>)
+can be appended to indicate the third dimension. This needs to be
+done only when using the <strong>-Jz</strong> option, not when using only the
+<strong>-p</strong> option. In the latter case a perspective view of the plane is
+plotted, with no third dimension.  </dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+a</strong>[<strong>g</strong>|<strong>i</strong>][<strong>s</strong>|<strong>S</strong>]][<strong>+r</strong>|<strong>l</strong>][<strong>+p</strong><em>percent</em>]</dt>
+<dd>Features with an area smaller than <em>min_area</em> in km^2 or of
+hierarchical level that is lower than <em>min_level</em> or higher than
+<em>max_level</em> will not be plotted [Default is 0/0/4 (all features)].
+Level 2 (lakes) contains regular lakes and wide river bodies which
+we normally include as lakes; append <strong>+r</strong> to just get river-lakes
+or <strong>+l</strong> to just get regular lakes.  Append <strong>+p</strong><em>percent</em> to
+exclude polygons whose percentage area of the corresponding full-resolution
+feature is less than <em>percent</em>.  Use <strong>+a</strong> to control special
+aspects of the Antarctica coastline: By default (or add <strong>i</strong>) we
+select the ice shelf boundary as the coastline for Antarctica; alternatively,
+add <strong>g</strong> to select the ice grounding line instead.  For expert
+users who wish to utilize their own Antarctica (with islands) coastline
+you can add <strong>s</strong> to skip all GSHHG features below 60S. In contrast, you
+can add <strong>S</strong> to instead skip all features <em>north</em> of 60S.  See
+GSHHG INFORMATION below for more details.  </dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>resolution</em>[<strong>+f</strong>]</dt>
+<dd>Selects the resolution of the data set to use ((<strong>f</strong>)ull,
+(<strong>h</strong>)igh, (<strong>i</strong>)ntermediate, (<strong>l</strong>)ow, or (<strong>c</strong>)rude). The
+resolution drops off by ~80% between data sets. [Default is <strong>l</strong>].
+Append <strong>+f</strong> to automatically select a lower resolution should the
+one requested not be available [abort if not found].
+Alternatively, choose (<strong>a</strong>)uto to automatically select the best
+resolution given the chosen region.  Note that
+because the coastlines differ in details a node in a mask file using
+one resolution is not guaranteed to remain inside [or outside] when
+a different resolution is selected.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong>[<em>bordervalues</em>]</dt>
+<dd>Nodes that fall exactly on a polygon boundary should be
+considered to be outside the polygon [Default considers them to be inside].
+Alternatively, append either the four values <em>cborder/lborder/iborder/pborder</em>
+or just the single value <em>bordervalue</em> (for the case when they should all be the same value).
+This turns on the line-tracking mode.  Now, after setting the mask values
+specified via <strong>-N</strong> we trace the lines and change the node values for all
+cells traversed by a line to the corresponding border value.  Here, <em>cborder</em>
+is used for cells traversed by the coastline, <em>lborder</em> for cells traversed
+by a lake outline, <em>iborder</em> for islands-in-lakes outlines, and <em>pborder</em> for
+ponds-in-islands-in-lakes outlines [Default is no line tracing].</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong><em>maskvalues</em></dt>
+<dd><p class="first">Sets the values that will be assigned to nodes. Values can be any
+number, including the textstring NaN. Also select <strong>-E</strong> to let nodes
+exactly on feature boundaries be considered outside [Default is
+inside]. Specify this information using 1 of 2 formats:</p>
+<p><strong>-N</strong><em>wet/dry</em>.</p>
+<p><strong>-N</strong><em>ocean/land/lake/island/pond</em>.</p>
+<p class="last">[Default is 0/1/0/1/0 (i.e., 0/1)].</p>
+</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-r</strong>[<strong>g</strong>|<strong>p</strong>] <a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set node registration [gridline].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-x</strong>[[-]<em>n</em>] <a class="reference internal" href="gmt.html#core-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Limit number of cores used in multi-threaded algorithms (OpenMP required).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt>
+<dd>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</dd>
+</dl>
+</div>
+<div class="section" id="grid-file-formats">
+<h2>Grid File Formats<a class="headerlink" href="#grid-file-formats" title="Permalink to this headline">¶</a></h2>
+<p>By default GMT writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, GMT is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called “packing” of grids, writing out floating point
+data as 1- or 2-byte integers. To specify the precision, scale and
+offset, the user should add the suffix
+=<em>ID</em>[<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>], where
+<em>ID</em> is a two-letter identifier of the grid type and precision, and
+<em>scale</em> and <em>offset</em> are optional scale factor and offset to be applied
+to all grid values, and <em>invalid</em> is the value used to indicate missing
+data. See <a class="reference internal" href="grdconvert.html"><span class="doc">grdconvert</span></a> and Section
+<a class="reference internal" href="cookbook/features.html#grid-file-format"><span class="std std-ref">Grid file format specifications</span></a>
+of the GMT Technical Reference and Cookbook for more information.</p>
+<p>When writing a netCDF file, the grid is stored by default with the
+variable name “z”. To specify another variable name <em>varname</em>, append
+<strong>?</strong><em>varname</em> to the file name. Note that you may need to escape the
+special meaning of <strong>?</strong> in your shell program by putting a backslash in
+front of it, or by placing the filename and suffix between quotes or
+double quotes.</p>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>A grid produced by grdlandmask is a <em>categorical</em> dataset.  As such,
+one has to be careful not to interpolate it with standard methods,
+such as splines.  However, if you make a map of this grid using
+a map projection the grid will be reprojected to yield a rectangular
+matrix in the projected coordinates.  This interpolation is done
+using splines by default and thus may yield artifacts in your map.
+We recommend you use <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> <strong>-nn</strong> to instead use a nearest
+neighbor interpolation for such cases.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To set all nodes on land to NaN, and nodes over water to 1, using the
+high resolution data set, do</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdlandmask -R-60/-40/-40/-30 -Dh -I5m -N1/NaN -Gland_mask.nc -V
+</pre></div>
+</div>
+</div></blockquote>
+<p>To make a 1x1 degree global grid with the hierarchical levels of the
+nodes based on the low resolution data:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdlandmask -R0/360/-90/90 -Dl -I1 -N0/1/2/3/4 -Glevels.nc -V
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="gshhg-information">
+<h2>GSHHG Information<a class="headerlink" href="#gshhg-information" title="Permalink to this headline">¶</a></h2>
+<p>The coastline database is GSHHG (formerly GSHHS) which is compiled from
+three sources:  World Vector Shorelines (WVS, not including Antarctica),
+CIA World Data Bank II (WDBII), and Atlas of the Cryosphere (AC, for Antarctica only).
+Apart from Antarctica, all level-1 polygons (ocean-land boundary) are derived from
+the more accurate WVS while all higher level polygons (level 2-4,
+representing land/lake, lake/island-in-lake, and
+island-in-lake/lake-in-island-in-lake boundaries) are taken from WDBII.
+The Antarctica coastlines come in two flavors: ice-front or grounding line,
+selectable via the <strong>-A</strong> option.
+Much processing has taken place to convert WVS, WDBII, and AC data into
+usable form for GMT: assembling closed polygons from line segments,
+checking for duplicates, and correcting for crossings between polygons.
+The area of each polygon has been determined so that the user may choose
+not to draw features smaller than a minimum area (see <strong>-A</strong>); one may
+also limit the highest hierarchical level of polygons to be included (4
+is the maximum). The 4 lower-resolution databases were derived from the
+full resolution database using the Douglas-Peucker line-simplification
+algorithm. The classification of rivers and borders follow that of the
+WDBII. See <a class="reference internal" href="datasets/gshhg.html"><span class="doc">The Global Self-consistent, Hierarchical, High-resolution Geography Database (GSHHG)</span></a> for further details.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>,
+<a class="reference internal" href="grdclip.html"><span class="doc">grdclip</span></a>, <a class="reference internal" href="mask.html"><span class="doc">mask</span></a>,
+<a class="reference internal" href="clip.html"><span class="doc">clip</span></a>, <a class="reference internal" href="coast.html"><span class="doc">coast</span></a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="grdmask.html" class="btn btn-neutral float-right" title="grdmask" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="grdinfo.html" class="btn btn-neutral float-left" title="grdinfo" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

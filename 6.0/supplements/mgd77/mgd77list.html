@@ -1,0 +1,910 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mgd77list &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mgd77magref" href="mgd77magref.html" />
+    <link rel="prev" title="mgd77info" href="mgd77info.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../modules.html">GMT Modules</a> &raquo;</li>
+        
+      <li>mgd77list</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/supplements/mgd77/mgd77list.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mgd77list">
+<span id="index-0"></span><h1>mgd77list<a class="headerlink" href="#mgd77list" title="Permalink to this headline">¶</a></h1>
+<p>Extract data from MGD77 files</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt mgd77list</strong> <em>GEODAS-ids</em> <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>columns</em>[,<em>logic</em>][:<em>bittests</em>]
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><strong>c</strong>|<strong>d</strong>|<strong>f</strong>|<strong>m</strong>|<strong>t</strong><em>code</em>[<strong>+f</strong>] ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><strong>A</strong>|<strong>a</strong><em>startdate</em> ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><strong>B</strong>|<strong>b</strong><em>stopdate</em> ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong> ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><strong>a</strong><em>startrec</em> ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><strong>b</strong><em>stoprec</em> ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>ignore</em> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong>[<em>corrtable</em>] ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><strong>d</strong>|<strong>s</strong><em>unit</em> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><strong>a</strong>|<strong>c</strong>|<strong>v</strong><em>min</em>/<em>max</em> ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><strong>a</strong><em>startdist</em>[unit] ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><strong>b</strong><em>stopdist</em>[unit] ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong>[<strong>m</strong>|<strong>e</strong>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong><em>weight</em> ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong><strong>n</strong>|<strong>p</strong> ]
+[ <strong>-bo</strong><a class="reference internal" href="../../gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-j</strong><a class="reference internal" href="../../gmt.html#distcalc-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>mgd77list</strong> reads MGD77 files and produces an ASCII
+[or binary] table. The MGD77 files contain track
+information such as leg-id, time and position, geophysical observables
+such as gravity, magnetics, and bathymetry, and control codes and
+corrections such as Eotvos and diurnal corrections. The MGD77+ extended
+netCDF files may also contain additional user columns (for a listing of
+available columns, use <a class="reference internal" href="mgd77info.html"><span class="doc">mgd77info</span></a> <strong>-C</strong>, and to learn how to add
+your own custom columns, see <a class="reference internal" href="mgd77manage.html"><span class="doc">mgd77manage</span></a>). The user may extract any
+combination of these parameters, any of 8 computed quantities (distance,
+heading, course-change, velocity, Carter correction, Eotvos correction
+and gravity and magnetic global reference fields), calendar sub-units of
+time (year, month, day, hour, min, sec), the GEODAS id, and finally a
+preset weight (see <strong>-W</strong>). A sub-section can be specified by passing
+time- or distance-intervals along track or by selecting a geographical
+region. Finally, each output record may be required to pass any number
+of logical tests involving data values or bit flags. If multiple cruises
+are requested then they are separated by segment headers.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>NGDC-ids</em></dt>
+<dd><p class="first">Can be one or more of five kinds of specifiers:</p>
+<ol class="arabic simple">
+<li>8-character GEODAS IDs, e.g., 01010083, JA010010etc., etc.</li>
+<li>2-character <em>agency</em> codes which will return all cruises from each agency.</li>
+<li>4-character &lt;agency&gt;&lt;vessel&gt; codes, which will return all cruises from those vessels.</li>
+<li>=<em>list</em>, where <em>list</em> is a table with GEODAS IDs, one per line.</li>
+<li>If nothing is specified we return all cruises in the data base.</li>
+</ol>
+<p class="last">(See mgd77info <strong>-L</strong> for agency and vessel codes). If no file
+extension is given then we search for files with one of the four
+known extensions.  The search order (and the extensions) tried
+is MGD77+ (“.nc”), MGD77T (“.m77t”), MGD77 (“.mgd77” ) and plain
+text file (“.dat”).  Use <strong>-I</strong> to ignore one or more of these
+file types). Cruise files will be looked
+for first in the current directory and second in all directories
+listed in <strong>$MGD77_HOME</strong>/mgd77_paths.txt [If <strong>$MGD77_HOME</strong> is
+not set it will default to <strong>$GMT_SHAREDIR</strong>/mgd77].</p>
+</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><em>columns</em>[,<em>logic</em>][:<em>bittests</em>]</dt>
+<dd><p class="first">The required <em>columns</em> string must be a comma-separated list of
+parameter abbreviations given in the desired output order. Any
+parameters given in UPPER case must not be NaN in a record for
+output to occur. Unless specified separately, the output format (if
+ASCII) is controlled by the GMT parameter <a class="reference internal" href="../../gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a>.
+The available column abbreviations for information stored in the
+files (some columns may be NaN) are:</p>
+<dl class="docutils">
+<dt><strong>recno</strong></dt>
+<dd>The record number counter.</dd>
+<dt><strong>drt</strong></dt>
+<dd>The digital record type, usually 3 or 5 (for Y2K-compliant cruises).</dd>
+<dt><strong>id</strong></dt>
+<dd>The survey ID string (leg name).</dd>
+<dt><strong>ngdcid</strong></dt>
+<dd>The 8-character NGDC (now NCEI) cruise ID string (usually the file prefix).</dd>
+<dt><strong>time</strong></dt>
+<dd>Choose between Absolute calendar time (<strong>atime</strong>, the default) in
+the format dictated by the GMT parameters <a class="reference internal" href="../../gmt.conf.html#format-date-out"><span class="std std-ref">FORMAT_DATE_OUT</span></a> and
+<a class="reference internal" href="../../gmt.conf.html#format-clock-out"><span class="std std-ref">FORMAT_CLOCK_OUT</span></a>, Relative time (<strong>rtime</strong>) in the format
+dictated by the GMT parameters <a class="reference internal" href="../../gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a> and
+<a class="reference internal" href="../../gmt.conf.html#time-system"><span class="std std-ref">TIME_SYSTEM</span></a> (or <a class="reference internal" href="../../gmt.conf.html#time-epoch"><span class="std std-ref">TIME_EPOCH</span></a> and <a class="reference internal" href="../../gmt.conf.html#time-unit"><span class="std std-ref">TIME_UNIT</span></a>)), or
+Fractional year (<strong>ytime</strong>) in the format dictated by
+<a class="reference internal" href="../../gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a>.</dd>
+<dt><strong>lon</strong></dt>
+<dd>Longitude in the format dictated by the GMT parameter
+<a class="reference internal" href="../../gmt.conf.html#format-geo-out"><span class="std std-ref">FORMAT_GEO_OUT</span></a>.</dd>
+<dt><strong>lat</strong></dt>
+<dd>Longitude in the format dictated by the GMT parameter
+<a class="reference internal" href="../../gmt.conf.html#format-geo-out"><span class="std std-ref">FORMAT_GEO_OUT</span></a>.</dd>
+<dt><strong>twt</strong></dt>
+<dd>Two-Way Travel time (in s).</dd>
+<dt><strong>depth</strong></dt>
+<dd>Corrected bathymetry (in m, positive below sea level).</dd>
+<dt><strong>mtf1</strong></dt>
+<dd>Magnetic Total Field intensity from sensor 1 (in nTesla).</dd>
+<dt><strong>mtf2</strong></dt>
+<dd>Magnetic Total Field intensity from sensor 2 (in nTesla).</dd>
+<dt><strong>mag</strong></dt>
+<dd>Residual magnetic anomaly (in nTesla).</dd>
+<dt><strong>gobs</strong></dt>
+<dd>Observed gravity (in mGal).</dd>
+<dt><strong>faa</strong></dt>
+<dd>Free-air gravity anomaly (in mGal).</dd>
+<dt><strong>ptc</strong></dt>
+<dd>Position Type Code (1 = fix, 3 = interpolated, 9 = unspecified).</dd>
+<dt><strong>bcc</strong></dt>
+<dd>Bathymetric Correction Code, indicating the procedure used to
+convert travel time to depth. (01-55 = Matthews’ zone used to
+correct the depth, 59 = Matthews’ corrections used but the zones is
+unspecified in the data record, 60 = S. Kuwahara formula for T-S, 61
+= Wilson formula for T-S, 62 = Del Grosso formula for T-S, 63 =
+Carter’s tables, 88 = Other, described in header sections, 99 =
+unspecified).</dd>
+<dt><strong>btc</strong></dt>
+<dd>Bathymetric Type Code, indicating how the bathymetry value was
+obtained (1 = observed, 3 = interpolated, 9 = unspecified).</dd>
+<dt><strong>msens</strong></dt>
+<dd>Magnetic sensor for used to evaluate the residual field (1 = 1st or
+leading sensor, 2 = 2nd or trailing sensor, 9 = unspecified).</dd>
+<dt><strong>msd</strong></dt>
+<dd>Depth (or altitude) of the magnetic sensor (in m, positive below
+sealevel).</dd>
+<dt><strong>diur</strong></dt>
+<dd>Magnetic diurnal correction (in nTesla).</dd>
+<dt><strong>eot</strong></dt>
+<dd>Eotvos correction (in mGal).</dd>
+<dt><strong>sln</strong></dt>
+<dd>Seismic Line Number string.</dd>
+<dt><strong>sspn</strong></dt>
+<dd>Seismic Shot Point Number string.</dd>
+<dt><strong>nqc</strong></dt>
+<dd>Navigation Quality Code (5 = suspected, by source institution, 6 =
+suspected, by NCEI, 9 = no problems identified).</dd>
+</dl>
+<p>In addition, the following derived navigational quantities can be requested:</p>
+<dl class="docutils">
+<dt><strong>year</strong></dt>
+<dd>The year of each record.</dd>
+<dt><strong>month</strong></dt>
+<dd>The month of each record.</dd>
+<dt><strong>day</strong></dt>
+<dd>The day of the month of each record.</dd>
+<dt><strong>hour</strong></dt>
+<dd>The hour of each record.</dd>
+<dt><strong>min</strong></dt>
+<dd>The minutes of each record.</dd>
+<dt><strong>sec</strong></dt>
+<dd>The decimal seconds of each record.</dd>
+<dt><strong>dist</strong></dt>
+<dd>Along-track distance from start of leg. For method of calculation,
+see <strong>-j</strong> [spherical great circle distances], and for distance
+units, see <strong>-N</strong> [km].</dd>
+<dt><strong>az</strong></dt>
+<dd>Ship azimuth (heading) measured clockwise from north (in degrees).</dd>
+<dt><strong>cc</strong></dt>
+<dd>Ship course change (change in heading) measured clockwise from north
+(in degrees).</dd>
+<dt><strong>vel</strong></dt>
+<dd>Ship speed; see <strong>-N</strong> for units [m/s].</dd>
+</dl>
+<p>Finally, the following computed quantities can be requested:</p>
+<dl class="docutils">
+<dt><strong>weight</strong></dt>
+<dd>Weight assigned to this data set (see <strong>-W</strong>).</dd>
+<dt><strong>carter</strong></dt>
+<dd>Carter depth correction, if <strong>twt</strong> is present in file (in m). Sign:
+Correction is to be added to uncorrected depths to yield a corrected
+depth.</dd>
+<dt><strong>igrf</strong></dt>
+<dd>International geomagnetic reference field (total field) (in nTesla).</dd>
+<dt><strong>ngrav</strong></dt>
+<dd>International Gravity reference Field (“normal gravity”) (in mGal).
+Field is selected based on the parameter Gravity Theoretical Formula
+Code in the cruise’s MGD77 header. If this is not set or is invalid
+we default to the IGF 1980. Alternatively, specify the field
+directly using <strong>-Af</strong> (see that option for more details).</dd>
+<dt><strong>ceot</strong></dt>
+<dd>Calculated Eotvos correction from navigation, using E =
+7.5038 * V * cos(lat) * sin(az) + 0.004154 * V^2
+(in mGal). Sign: Correction is to be added to uncorrected faa to
+yield a corrected faa.</dd>
+</dl>
+<p>The following short-hand flags are also recognized:</p>
+<dl class="docutils">
+<dt><strong>mgd77</strong></dt>
+<dd>This results in all 27 MGD77 fields being written out in the official MGD77 order.</dd>
+<dt><strong>mgd77t</strong></dt>
+<dd>The full set of all 26 columns in the MGD77T specification.</dd>
+<dt><strong>geo</strong></dt>
+<dd>This limits the output to 10 fields (<strong>time</strong>, <strong>lon</strong>, <strong>lat</strong> plus
+the seven geophysical observations <strong>twt</strong>, <strong>depth</strong>, <strong>mtf1</strong>,
+<strong>mtf2</strong>, <strong>mag</strong>, <strong>gobs</strong>, and <strong>faa</strong>).</dd>
+<dt><strong>dat</strong></dt>
+<dd>As <strong>mgd77t</strong> but in plain table order.</dd>
+<dt><strong>all</strong></dt>
+<dd>This returns all data columns in the file.</dd>
+<dt><strong>allt</strong></dt>
+<dd>As mgd77t but with time items written as a date-time string.</dd>
+</dl>
+<p>By appending <strong>+</strong> to any of these set we will also append <strong>dist</strong>,
+<strong>azim</strong>, <strong>cc</strong>, <strong>vel</strong>, and <strong>weight</strong> as listed above.
+As an option, logical tests may be added for any of the observations
+by appending ,<em>logic</em>, which is itself composed of one or more
+comma-separated instructions of the form <em>par</em><strong>OP</strong><em>value</em>,
+where <em>par</em> is one of the parameters listed above, <strong>OP</strong> is a
+logical operator (&lt;, &lt;=, =, !=, &gt;=, &gt;, |), and <em>value</em> is a
+constant used in the comparison. Floating point parameters are
+compared numerically; character parameters are compared lexically
+(after leading and trailing blanks have been removed). The bit
+comparison (|) means that at least one of the bits in <em>value</em> must
+be turned on in <em>par</em>. At least one of the tests must be true for
+the record to be output, except for tests using UPPER case
+parameters which all must be true for output to occur. Notes:
+(1) Specifying a test does not imply that the corresponding column will
+be included in the output stream; it must be present in <em>columns</em>
+for that to occur. (2) Some of the operators are special UNIX
+characters and you are advised to place quotes around the entire
+argument to <strong>-F</strong>.  (3) The logical tests only apply to observed
+data; derived data (such as distances, velocities, etc.) must be
+limited using program options such as <strong>-D</strong>, <strong>-Q</strong>, <strong>-S</strong>, etc.</p>
+<p class="last">Finally, for MGD77+ files you may optionally append :<em>bittests</em>
+which is : (a colon) followed by one or more comma-separated +-<em>col</em>
+terms. This compares specific bitflags only for each listed column.
+Here, + means the chosen bit must be 1 (ON) whereas - means it must
+be 0 (OFF). All bit tests given must be passed. By default, MGD77+
+files that have the special <strong>MGD77_flags</strong> column present will use
+those flags, and observations associated with ON-bits (meaning they
+are flagged as bad) will be set to NaN; append : with no trailing
+information to turn this behavior off (i.e., no bit flags will be
+consulted).  Note that these record-based flags are different from
+any systematic corrections along track; the latter are deactivated
+by <strong>-T</strong>.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong><strong>c</strong>|<strong>d</strong>|<strong>f</strong>|<strong>m</strong>|<strong>t</strong><em>code</em>[<strong>+f</strong>]</dt>
+<dd>By default, corrected depth (<strong>depth</strong>), magnetic residual anomaly
+(<strong>mag</strong>), free-air gravity anomaly (<strong>faa</strong>), and the derived
+quantity Carter depth correction (<strong>carter</strong>) are all output as is
+(if selected in <strong>-F</strong>); this option adjusts that behavior. For each
+of these columns there are 2-4 ways to adjust the data. Append
+<strong>c</strong>(arter), <strong>d</strong>(epth), <strong>f</strong>(aa), or <strong>m</strong>(ag) and
+select the <em>code</em> for the procedure you want applied. You may select
+more than one procedure for a data column by summing their numerical
+<em>code</em>s (1, 2, 4, and 8). E.g., <strong>-Ac</strong>3 will first try method
+<strong>-Ac</strong>1 to estimate a Carter correction but if <strong>depth</strong> is NaN
+we will next try <strong>-Ac</strong>2 which only uses <strong>twt</strong>. In all cases,
+if any of the values required by an adjustment procedure is NaN then
+the result will be NaN. This is also true if the original anomaly is
+NaN. Append <strong>+f</strong> to recalculate anomalies even if the anomaly in
+the file is NaN. Additionally, you can use <strong>-At</strong> to create fake
+times for cruises that has no time; these are based on distances and
+cruise duration.</dd>
+<dt><strong>-Ac</strong></dt>
+<dd><p class="first">Determines how the <strong>carter</strong> correction term is calculated. Below,
+C(<strong>twt</strong>) stands for the Carter-corrected depth (it also depends
+on <strong>lon</strong>, <strong>lat</strong>), U(<strong>twt</strong>, <em>v</em>) is the uncorrected depth (=
+<strong>twt</strong> * <em>v</em> / 2) using as <em>v</em> the “Assumed Sound Velocity”
+parameter in the MGD77 header (if it is a valid velocity, otherwise
+we default to 1500 m/s); alternatively, append your preferred
+velocity <em>v</em> in m/s, TU(<strong>depth</strong>, <em>v</em>) is the 2-way travel time
+estimated from the (presumably) uncorrected <strong>depth</strong>, and
+TC(<strong>depth</strong>) is the 2-way travel time obtained by inverting the
+(presumably) corrected <strong>depth</strong> using the Carter correction
+formula. Select from</p>
+<p><strong>-Ac1</strong>[,<em>v</em>] returns difference between U(<strong>twt</strong>, <em>v</em>) and <strong>depth</strong> [Default].</p>
+<p><strong>-Ac2</strong>[,<em>v</em>] returns difference between U(<strong>twt</strong>, <em>v</em>) and Carter (<strong>twt</strong>).</p>
+<p><strong>-Ac4</strong>[,<em>v</em>] returns difference between (assumed uncorrected) <strong>depth</strong> and Carter (TU(<strong>depth</strong>)).</p>
+<p class="last"><strong>-Ac8</strong>[,<em>v</em>] returns difference between U(TC(<strong>depth</strong>), <em>v</em>) and <strong>depth</strong>.</p>
+</dd>
+<dt><strong>-Ad</strong></dt>
+<dd><p class="first">Determines how the <strong>depth</strong> column output is obtained:</p>
+<p><strong>-Ad1</strong> returns <strong>depth</strong> as stored in the data set [Default].</p>
+<p><strong>-Ad2</strong>[,<em>v</em>] returns calculated uncorrected depth U(<strong>twt</strong>, <em>v</em>).</p>
+<p class="last"><strong>-Ad4</strong> returns calculated corrected depth C(<strong>twt</strong>).</p>
+</dd>
+<dt><strong>-Af</strong></dt>
+<dd><p class="first">Determines how the <strong>faa</strong> column output is obtained. If <strong>ngrav</strong>
+(i.e., the International Gravity reference Field (IGF), or “normal
+gravity”) is required it is selected based on the MGD77 header
+parameter “Theoretical Gravity Formula Code”; if this code is not
+present or is invalid we default to 4. Alternatively, append the
+preferred <em>field</em> (1-4) to select 1 (Heiskanen 1924), 2 (IGF 1930),
+3 (IGF 1967) or 4 (IGF 1980). Select from</p>
+<p><strong>-Af1</strong>[,<em>field</em>] returns <strong>faa</strong> as stored in the data set
+[Default]. Optionally, sets the IGF <em>field</em> to use if you also have
+requested <strong>ngrav</strong> as an output column in <strong>-F</strong>.</p>
+<p><strong>-Af2</strong>[,<em>field</em>] returns the difference between <strong>gobs</strong> and
+<strong>ngrav</strong> (with optional <em>field</em> directive).</p>
+<p><strong>-Af4</strong>[,<em>field</em>] returns the combination of <strong>gobs</strong> + <strong>eot</strong> -
+<strong>ngrav</strong> (with optional <em>field</em> directive).</p>
+<p class="last"><strong>-Af8</strong>[,<em>field</em>] returns the combination of <strong>gobs</strong> +
+<strong>pred_eot</strong> - <strong>ngrav</strong> (with optional <em>field</em> directive).</p>
+</dd>
+<dt><strong>-Am</strong></dt>
+<dd><p class="first">Determines how the <strong>mag</strong> column output is obtained. There may be
+one or two total field measurements in the file (<strong>mtf1</strong> and
+<strong>mtf2</strong>), and the column <strong>msens</strong> may state which one is the
+leading sensor (1 or 2; it may also be undefined). Select from</p>
+<p><strong>-Am1</strong> returns <strong>mag</strong> as stored in the data set [Default].</p>
+<p><strong>-Am2</strong> returns the difference between <strong>mgfx</strong> and <strong>igrf</strong>, where
+<strong>x</strong> is the leading sensor (<strong>1</strong> or <strong>2</strong>) indicated by the
+<strong>msens</strong> data field (defaults to <strong>1</strong> if unspecified).</p>
+<p><strong>-Am4</strong> returns the difference between <strong>mgfx</strong> and <strong>igrf</strong>, where
+<strong>x</strong> is the sensor (<strong>2</strong> or <strong>1</strong>) <em>not</em> indicated by the
+<strong>msens</strong> data field (defaults to <strong>2</strong> if unspecified).</p>
+<p class="last"><strong>-Amc</strong><em>offset</em>[<em>unit</em>] applies a correction to compensate
+for the fact that the magnetic field was not acquired at the same
+position as the ship’s position [i.e., the navigation]. This is
+accomplished by re-interpolating the total magnetic field to what it
+would have been if it were measured at the ship’s position (remember,
+it probably was measured <em>offset</em> meters behind). Due to this
+interpolation step, bad navigation, namely too many repeated points,
+may cause trouble.  Measures are taken to minimize this effect but
+they aren’t 100% fool proof. The interpolation method is controlled
+by the GMT default GMT_INTERPOLANT. Append <strong>e</strong> for meter, <strong>f</strong>
+for feet, <strong>k</strong> for km, <strong>M</strong> for miles, <strong>n</strong> for nautical miles,
+or <strong>u</strong> for survey feet [Default is <strong>e</strong> (meters)].</p>
+</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-Da</strong><em>startdate</em></dt>
+<dd>Do not list data collected before <em>startdate</em>
+(yyyy-mm-dd<strong>T</strong>[hh:mm:ss]) [Default is start of cruise]. Use
+<strong>-DA</strong> to exclude records whose time is undefined (i.e., NaN).
+[Default reports those records].</dd>
+<dt><strong>-Db</strong><em>stopdate</em></dt>
+<dd>Do not list data collected on or after <em>stopdate</em>
+(yyyy-mm-dd<strong>T</strong>[hh:mm:ss]). [Default is end of cruise]. Use <strong>-DB</strong>
+to exclude records whose time is undefined (i.e., NaN). [Default
+reports those records].</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong></dt>
+<dd>Exact match: Only output records that match all the requested
+geophysical columns [Default outputs records that matches at least
+one of the observed columns].</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-Ga</strong><em>startrec</em></dt>
+<dd>Do not list records before <em>startrec</em> [Default is 0, the first
+record].</dd>
+<dt><strong>-Gb</strong><em>stoprec</em></dt>
+<dd>Do not list data after <em>stoprec</em>. [Default is the last record].</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>ignore</em></dt>
+<dd>Ignore certain data file formats from consideration. Append
+<strong>a|c|m|t</strong> to ignore MGD77 ASCII, MGD77+ netCDF, MGD77T ASCII, or plain
+tab-separated ASCII table files, respectively. The option may be
+repeated to ignore more than one format. [Default ignores none].</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong>[<em>corrtable</em>]</dt>
+<dd>Apply optimal corrections to columns where such corrections are
+available. Append the correction table to use [Default uses the
+correction table mgd77_corrections.txt in the <strong>$MGD77_HOME</strong>
+directory]. For the format of this file, see CORRECTIONS below.</dd>
+<dt><strong>-n</strong></dt>
+<dd>Issue a segment header record with cruise ID for each cruise.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-Nd</strong>|<strong>s</strong><em>unit</em></dt>
+<dd>Append <strong>d</strong> for distance or <strong>s</strong> for speed, then give the desired
+<em>unit</em> as <strong>e</strong> (meter or m/s), <strong>f</strong> (feet or feet/s), <strong>k</strong> (km or
+km/hr), <strong>m</strong> (miles or miles/hr), <strong>n</strong> (nautical miles or knots),
+or <strong>u</strong> (survey feet or sfeet/s). [Default is <strong>-Ndk</strong> <strong>-Nse</strong> (km
+and m/s)].</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Qa</strong><em>min</em>/<em>max</em></dt>
+<dd>Specify an accepted range (<em>min</em>/<em>max</em>) of azimuths. Records whose
+track azimuth falls outside this range are ignored [0/360].</dd>
+<dt><strong>-Qc</strong><em>min</em>/<em>max</em></dt>
+<dd>Specify an accepted range (<em>min</em>/<em>max</em>) of course changes. Records
+whose track course change falls outside this range are ignored
+[-360/+360]. Use <strong>-QC</strong> to take the absolute value of the course
+change before the test [Default uses signed course changes].</dd>
+<dt><strong>-Qv</strong><em>min</em>/<em>max</em></dt>
+<dd>Specify an accepted range (<em>min</em>/<em>max</em>; or just <em>min</em> if there is no
+upper limit) of velocities. Records whose track speed falls outside
+this range are ignored [0/infinity].</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
+Append <strong>+r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Set geographic regions by specifying ISO country codes from the Digital Chart of the World using
+<strong>-R</strong><em>code1,code2,…</em>[<strong>+r</strong>|<strong>R</strong>[<em>incs</em>]] instead:
+Append one or more comma-separated countries using the 2-character
+ISO 3166-1 alpha-2 convention.  To select a state of a country
+(if available), append .state, e.g, US.TX for Texas.  To specify a
+whole continent, prepend = to any of the continent codes AF (Africa),
+AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
+NA (North America), or SA (South America).  Use <strong>+r</strong> to modify the bounding box coordinates from the polygon(s):
+Append <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> to adjust the
+region to be a multiple of these steps [no adjustment]. Alternatively, use <strong>+R</strong> to extend the region
+outward by adding these increments instead [no extension].
+Alternatively for grid creation, give <strong>R</strong><em>code</em><em>lon</em>/<em>lat</em>/<em>nx</em>/<em>ny</em>, where
+<em>code</em> is a 2-character combination of L, C, R (for left, center, or right)
+and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
+indicates which point on a rectangular region the <em>lon</em>/<em>lat</em> coordinate
+refers to, and the grid dimensions <em>nx</em> and <em>ny</em> with grid spacings via
+<strong>-I</strong> is used to create the corresponding region.
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing and registration, if applicable) are copied from
+the grid. Appending <strong>+u</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.
+For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.
+In case of perspective view (<strong>-p</strong>), a z-range (<em>zmin</em>, <em>zmax</em>)
+can be appended to indicate the third dimension. This needs to be
+done only when using the <strong>-Jz</strong> option, not when using only the
+<strong>-p</strong> option. In the latter case a perspective view of the plane is
+plotted, with no third dimension.  </dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-Sa</strong><em>startdist</em>[unit]</dt>
+<dd>Do not list data that are less than <em>startdist</em> meter along track
+from port of departure. Append <strong>e</strong> for meter, <strong>f</strong> for feet,
+<strong>k</strong> for km, <strong>m</strong> for miles, <strong>n</strong> for nautical miles, or <strong>u</strong>
+for survey feet [Default is 0e (meters)].</dd>
+<dt><strong>-Sb</strong><em>stopdist</em>[unit]</dt>
+<dd>Do not list data that are <em>stopdist</em> or more meters along track from
+port of departure. Append <strong>e</strong> for meter, <strong>f</strong> for feet, <strong>k</strong> for
+km, <strong>m</strong> for miles, <strong>n</strong> for nautical miles, or <strong>u</strong> for survey
+feet [Default is end of track].</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong>[<strong>m</strong>|<strong>e</strong>]</dt>
+<dd>Turns OFF the otherwise automatic adjustment of values based on
+correction terms that are stored in the MGD77+ file and used to
+counteract such things as wrong units used by the source institution
+when creating the original MGD77 file from which the MGD77+ file
+derives (the option has no effect on plain MGD77 ASCII files).
+Append <strong>m</strong> or <strong>e</strong> to limit the option to the MGD77 or extended
+columns set only [Default applies to both].  Note that record-based
+E77 flags (MGD77+ format only) are not considered systematic corrections.
+Instead, the application of these bit-flags can be controlled via
+the : (colon) modifier to OPT(F).</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong><em>weight</em></dt>
+<dd>Set the weight for these data. Weight output option must be set in
+<strong>-F</strong>. This is useful if the data are to be processed with the
+weighted averaging techniques offered by <a class="reference internal" href="../../blockmean.html"><span class="doc">blockmean</span></a>,
+<a class="reference internal" href="../../blockmedian.html"><span class="doc">blockmedian</span></a>, and <a class="reference internal" href="../../blockmode.html"><span class="doc">blockmode</span></a> [1].</dd>
+</dl>
+<dl class="docutils" id="z">
+<dt><strong>-Z</strong><strong>n</strong>|<strong>p</strong></dt>
+<dd>Append the sign you want for <strong>depth</strong>, <strong>carter</strong>, and <strong>msd</strong>
+values below sea level (<strong>-Zn</strong> gives negative bathymetry) [Default
+is <strong>-Zp</strong> for positive down].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="../../gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output. ignored if <strong>-bo</strong> is selected. Likewise,
+string-fields cannot be selected. Note that if time is one of the
+binary output columns it will be stored as Unix-time (seconds since
+1970). To read this information in GMT to obtain absolute calendar
+time will require you to use <strong>-</strong><strong>-TIME_SYSTEM=1</strong>.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-je</strong>|<strong>f</strong>|<strong>g</strong> <a class="reference internal" href="../../gmt.html#distcalc-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine how spherical distances are calculated.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt>
+<dd>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To get a (distance, heading, gravity, bathymetry) listing from
+01010047.mgd77, starting at June 3 1971 20:45 and ending at distance =
+5000 km, use the following command:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mgd77list <span class="m">01010047</span> -Da1971-06-03T20:45 -Sb5000 -Fdist,azim,faa,depth &gt; myfile.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>To make input for <a class="reference internal" href="../../blockmean.html"><span class="doc">blockmean</span></a> and <a class="reference internal" href="../../surface.html"><span class="doc">surface</span></a> using free-air anomalies
+from all the cruises listed in the file cruises.lis, but only the data
+that are inside the specified area, and make the output binary:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mgd77list <span class="sb">`</span>cat cruises.lis<span class="sb">`</span> -Flon,lat,faa -R-40/-30/25/35 -bo &gt; allgrav.b
+</pre></div>
+</div>
+</div></blockquote>
+<p>To extract the locations of depths exceeding 9000 meter that were not
+interpolated (<strong>btc</strong> != 1) from all the cruises listed in the file
+cruises.lis:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mgd77list <span class="sb">`</span>cat cruises.lis<span class="sb">`</span> -F<span class="s2">&quot;depth,DEPTH&gt;9000,BTC!=1&quot;</span> &gt; really_deep.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>To extract dist, faa, and grav12_2 from records whose depths are
+shallower than 3 km and where none of the requested fields are NaN, from
+all the MGD77+ netCDF files whose cruise ids are listed in the file
+cruises.lis, we try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mgd77list <span class="sb">`</span>cat cruises.lis<span class="sb">`</span> -E -Ia -F<span class="s2">&quot;dist,faa,grav12_2,depth&lt;3000&quot;</span> &gt; <span class="se">\</span>
+    shallow_grav.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>To extract dist, faa, and grav12_2 from all the MGD77+ netCDF files
+whose cruise ids are listed in the file cruises.lis, but only retrieve
+records whose bitflag for faa indicates BAD values, we try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mgd77list <span class="sb">`</span>cat cruises.lis<span class="sb">`</span> -E -Ia -F<span class="s2">&quot;dist,faa,grav12_2:+faa&quot;</span> &gt; bad_grav.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>To output lon, lat, mag, and faa from all the cruises listed in the file
+cruises.lis, but recalculate the two residuals based on the latest
+reference fields, try:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mgd77list <span class="sb">`</span>cat cruises.lis<span class="sb">`</span> -Flon,lat,mag,faa -Af2,4 -Am2 &gt; data.txt
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="recalculated-anomalies">
+<h2>Recalculated Anomalies<a class="headerlink" href="#recalculated-anomalies" title="Permalink to this headline">¶</a></h2>
+<p>When recalculated anomalies are requested (either explicitly via the
+<strong>-A</strong> option or implicitly via E77 metadata in the MGD77+ file) we only
+do so for the records whose original anomaly was not a NaN. This
+restriction is implemented since many anomaly columns contains
+corrections, usually in the form of hand-edited changes, that cannot be
+duplicated from the corresponding observation.</p>
+</div>
+<div class="section" id="igrf">
+<h2>Igrf<a class="headerlink" href="#igrf" title="Permalink to this headline">¶</a></h2>
+<p>The IGRF calculations are based on a Fortran program written by Susan
+Macmillan, British Geological Survey, translated to C via f2c by Joaquim
+Luis, U Algarve, and adapted to GMT-style by Paul Wessel.</p>
+</div>
+<div class="section" id="igf">
+<h2>Igf<a class="headerlink" href="#igf" title="Permalink to this headline">¶</a></h2>
+<p>The equations used are reproduced here using coefficients extracted
+directly from the source code (let us know if you find errors):</p>
+<p>(1) g = 978052.0 * [1 + 0.005285 * sin^2(lat) - 7e-6 * sin^2(2*lat)
++ 27e-6 * cos^2(lat) * cos^2(lon-18)]</p>
+<p>(2) g = 978049.0 * [1 + 0.0052884 * sin^2(lat) - 0.0000059 *
+sin^2(2*lat)]</p>
+<p>(3) g = 978031.846 * [1 + 0.0053024 * sin^2(lat) - 0.0000058 *
+sin^2(2*lat)]</p>
+<p>(4) g = 978032.67714 * [(1 + 0.00193185138639 * sin^2(lat)) / sqrt (1
+- 0.00669437999013 * sin^2(lat))]</p>
+</div>
+<div class="section" id="corrections">
+<h2>Corrections<a class="headerlink" href="#corrections" title="Permalink to this headline">¶</a></h2>
+<p>The correction table is an ASCII file with coefficients and parameters
+needed to carry out corrections. Comment records beginning with # are
+allowed. All correction records are of the form</p>
+<p><em>cruiseID observation correction</em></p>
+<p>where <em>cruiseID</em> is a NCEI prefix, <em>observation</em> is one of the
+abbreviations for geophysical observations listed under <strong>-F</strong> above,
+and <em>correction</em> consists of one or more <em>term</em>s that will be summed
+up and then <strong>subtracted</strong> from the observation before output. Each
+<em>term</em> must have this exact syntax:</p>
+<p><em>factor</em>[*[<em>function</em>]([<em>scale</em>](<em>abbrev</em>[-<em>origin</em>]))[^<em>power</em>]]</p>
+<p>where terms in brackets are optional (the brackets themselves are not
+used but regular parentheses must be used as indicated). No spaces are
+allowed except between <em>term</em>s. The <em>factor</em> is the amplitude of the
+basis function, while the optional <em>function</em> can be one of sin, cos, or
+exp. The optional <em>scale</em> and <em>origin</em> can be used to translate the
+argument (before giving it to the optional function). The argument
+<em>abbrev</em> is one of the abbreviations for observations listed above. If
+<em>origin</em> is given as <strong>T</strong> it means that we should replace it with the
+value of <em>abbrev</em> for the very first record in the file (this is usually
+only done for <em>time</em>). If the first record entry is NaN we revert
+<em>origin</em> to zero. Optionally, raise the entire expression to the given
+<em>power</em>, before multiplying by the amplitude. The following is an
+example of fictitious corrections to the cruise 99999999, implying the
+<strong>depth</strong> should have the Carter correction removed, <strong>faa</strong> should have
+a linear trend removed, the magnetic anomaly (<strong>mag</strong>) should be
+corrected by a strange dependency on ship heading and latitude, and
+<strong>gob</strong>s needs to have 10 mGal added (hence given as -10):</p>
+<p>99999999 depth 1.0*((carter))</p>
+<p>99999999 faa 14.1 1e-5*((time-T))</p>
+<p>99999999 mag 0.5*cos(0.5*(azim-19))^2 1.0*exp(-1e-3(lat))^1.5</p>
+<p>99999999 gobs -10</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../../blockmean.html"><span class="doc">blockmean</span></a>,
+<a class="reference internal" href="../../blockmedian.html"><span class="doc">blockmedian</span></a>,
+<a class="reference internal" href="../../blockmode.html"><span class="doc">blockmode</span></a>,
+<a class="reference internal" href="mgd77convert.html"><span class="doc">mgd77convert</span></a>,
+<a class="reference internal" href="mgd77info.html"><span class="doc">mgd77info</span></a>,
+<a class="reference internal" href="mgd77manage.html"><span class="doc">mgd77manage</span></a>,
+<a class="reference internal" href="mgd77track.html"><span class="doc">mgd77track</span></a>,
+<a class="reference internal" href="../../surface.html"><span class="doc">surface</span></a>,</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>The Marine Geophysical Data Exchange Format - MGD77, see
+<a class="reference external" href="http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt">http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt</a></p>
+<p>IGRF, see <a class="reference external" href="http://www.ngdc.noaa.gov/IAGA/vmod/igrf/">http://www.ngdc.noaa.gov/IAGA/vmod/igrf/</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mgd77magref.html" class="btn btn-neutral float-right" title="mgd77magref" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mgd77info.html" class="btn btn-neutral float-left" title="mgd77info" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

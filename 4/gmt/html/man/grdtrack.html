@@ -1,0 +1,460 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:22 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GRDTRACK</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GRDTRACK</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#ASCII FORMAT PRECISION">ASCII FORMAT PRECISION</a><br>
+<a href="#GRID FILE FORMATS">GRID FILE FORMATS</a><br>
+<a href="#HINTS">HINTS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">grdtrack
+&minus; Sampling of a 2-D grid file along 1-D trackline (a
+sequence of x,y points)</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdtrack</b>
+<i>xyfile</i> <b>&minus;G</b><i>grdfile</i> [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;L</b><i>flag</i> ] [
+<b>&minus;Q</b>[<b>b</b>|<b>c</b>|<b>l</b>|<b>n</b>][[<b>/</b>]<i>threshold</i>]
+] [
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;S</b> ] [ <b>&minus;V</b> ] [ <b>&minus;Z</b>
+] [ <b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;b</b>[<b>i</b>|<b>o</b>][<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ] [
+<b>&minus;m</b>[<b>i</b>|<b>o</b>][<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdtrack</b>
+reads a grid file (or a Sandwell/Smith IMG file) and a table
+(from file or standard input) with (x,y) positions in the
+first two columns (more columns may be present). It
+interpolates the grid at the positions in the table and
+writes out the table with the interpolated values added as a
+new column. A bicubic [Default], bilinear, B-spline or
+nearest-neighbor (see <b>&minus;Q</b>) interpolation is
+used, requiring boundary conditions at the limits of the
+region (see <b>&minus;L</b>).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xyfile</i></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">This is an ASCII
+(or binary, see <b>&minus;b</b>) file where the first 2
+columns hold the (x,y) positions where the user wants to
+sample the 2-D data set.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>grdfile</i> is a
+2-D binary grid file with the function f(x,y). If the
+specified grid is in Sandwell/Smith Mercator format you must
+append a comma-separated list of arguments that includes a
+scale to multiply the data (usually 1 or 0.1), the mode
+which stand for the following: (0) Img files with no
+constraint code, returns data at all points, (1) Img file
+with constraints coded, return data at all points, (2) Img
+file with constraints coded, return data only at constrained
+points and NaN elsewhere, and (3) Img file with constraints
+coded, return 1 at constraints and 0 elsewhere, and
+optionally the max latitude in the IMG file [80.738]. (See
+GRID FILE FORMAT below.)</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Boundary condition
+<i>flag</i> may be <i>x</i> or <i>y</i> or <i>xy</i>
+indicating data is periodic in range of x or y or both set
+by <b>&minus;R</b>, or <i>flag</i> may be <i>g</i>
+indicating geographical conditions (x and y are lon and
+lat). [Default uses &quot;natural&quot; conditions (second
+partial derivative normal to edge is zero) unless the grid
+is automatically recognised as periodic.]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Quick mode, use
+bilinear rather than bicubic interpolation [Default].
+Alternatively, select the interpolation mode by adding
+<b>b</b> for B-spline smoothing, <b>c</b> for bicubic
+interpolation, <b>l</b> for bilinear interpolation or
+<b>n</b> for nearest-neighbor value. Optionally, append
+<i>threshold</i> in the range [0,1]. This parameter controls
+how close to nodes with NaN values the interpolation will
+go. E.g., a <i>threshold</i> of 0.5 will interpolate about
+half way from a non-NaN to a NaN node, whereas 0.1 will go
+about 90% of the way, etc. [Default is 1, which means none
+of the (4 or 16) nearby nodes may be NaN]. <b>&minus;Q0</b>
+will just return the value of the nearest node instead of
+interpolating. This is the same as using
+<b>&minus;Qn</b>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xmin</i>,
+<i>xmax</i>, <i>ymin</i>, and <i>ymax</i> specify the Region
+of interest. For geographic regions, these limits correspond
+to <i>west, east, south,</i> and <i>north</i> and you may
+specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+calendar time coordinates you may either give (a) relative
+time (relative to the selected <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and in the
+selected <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>; append <b>t</b> to
+<b>&minus;JX</b>|<b>x</b>), or (b) absolute time of the form
+[<i>date</i>]<b>T</b>[<i>clock</i>] (append <b>T</b> to
+<b>&minus;JX</b>|<b>x</b>). At least one of <i>date</i> and
+<i>clock</i> must be present; the <b>T</b> is always
+required. The <i>date</i> string must be of the form
+[-]yyyy[-mm[-dd]] (Gregorian calendar) or yyyy[-Www[-d]]
+(ISO week calendar), while the <i>clock</i> string must be
+of the form hh:mm:ss[.xxx]. The use of delimiters and their
+type and positions must be exactly as indicated (however,
+input, output and plot formats are customizable; see
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b>).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Suppress the output
+of interpolated points that result in NaN values.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Only write out the
+sampled z-values [Default writes all columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input/output.
+[Default is (longitude,latitude)].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 2 input columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.
+[Default is one more than input].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file(s). Segments are separated by a special record. For
+ASCII files the first character must be <i>flag</i> [Default
+is &rsquo;&gt;&rsquo;]. For binary files all fields must be
+NaN and <b>&minus;b</b> must set the number of output
+columns explicitly. By default the <b>&minus;m</b> setting
+applies to both input and output. Use <b>&minus;mi</b> and
+<b>&minus;mo</b> to give separate settings to input and
+output.</p> </td>
+</table>
+
+<a name="ASCII FORMAT PRECISION"></a>
+<h2>ASCII FORMAT PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ASCII
+output formats of numerical data are controlled by
+parameters in your .gmtdefaults4 file. Longitude and
+latitude are formatted according to
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>, whereas other values are
+formatted according to <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>. Be aware that the
+format in effect can lead to loss of precision in the
+output, which can lead to various problems downstream. If
+you find the output is not written with enough precision,
+consider switching to binary output (<b>&minus;bo</b> if
+available) or specify more decimals using the
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> setting.</p>
+
+<a name="GRID FILE FORMATS"></a>
+<h2>GRID FILE FORMATS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="GMT.html">GMT</A></b> is
+able to recognize many of the commonly used grid file
+formats, as well as the precision, scale and offset of the
+values contained in the grid file. When <b><A HREF="GMT.html">GMT</A></b> needs a
+little help with that, you can add the suffix
+<b>=</b><i>id</i>[<b>/</b><i>scale</i><b>/</b><i>offset</i>[<b>/</b><i>nan</i>]],
+where <i>id</i> is a two-letter identifier of the grid type
+and precision, and <i>scale</i> and <i>offset</i> are
+optional scale factor and offset to be applied to all grid
+values, and <i>nan</i> is the value used to indicate missing
+data. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and Section 4.17 of the GMT
+Technical Reference and Cookbook for more information.</p>
+
+<p style="margin-left:11%; margin-top: 1em">When reading a
+netCDF file that contains multiple grids, <b><A HREF="GMT.html">GMT</A></b> will
+read, by default, the first 2-dimensional grid that can find
+in that file. To coax <b><A HREF="GMT.html">GMT</A></b> into reading another
+multi-dimensional variable in the grid file, append
+<b>?</b><i>varname</i> to the file name, where
+<i>varname</i> is the name of the variable. Note that you
+may need to escape the special meaning of <b>?</b> in your
+shell program by putting a backslash in front of it, or by
+placing the filename and suffix between quotes or double
+quotes. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and Section 4.18 of the
+GMT Technical Reference and Cookbook for more information,
+particularly on how to read splices of 3-, 4-, or
+5-dimensional grids.</p>
+
+<a name="HINTS"></a>
+<h2>HINTS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">If an
+interpolation point is not on a node of the input grid, then
+a NaN at any node in the neighborhood surrounding the point
+will yield an interpolated NaN. Bicubic interpolation
+[default] yields continuous first derivatives but requires a
+neighborhood of 4 nodes by 4 nodes. Bilinear interpolation
+[<b>&minus;Q</b>] uses only a 2 by 2 neighborhood, but
+yields only zeroth-order continuity. Use bicubic when
+smoothness is important. Use bilinear to minimize the
+propagation of NaNs, or lower <i>threshold</i>.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To sample the
+file hawaii_topo.grd along the SEASAT track track_4.xyg (An
+ASCII table containing longitude, latitude, and
+SEASAT-derived gravity, preceded by one header record):</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdtrack</b>
+track_4.xyg <b>&minus;G</b> hawaii_topo.grd <b>&minus;H</b>
+&gt; track_4.xygt</p>
+
+<p style="margin-left:11%; margin-top: 1em">To sample the
+Sandwell/Smith IMG format file topo.8.2.img (2 minute
+predicted bathymetry on a Mercator grid) along the lon,lat
+coordinates given in the file cruise_track.xy, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdtrack</b>
+cruise_track.xy <b>&minus;G</b> topo.8.2.img,1,1 &gt;
+obs_and_predicted.d</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="surface.html">surface</A></i>(1), <i><A HREF="sample1d.html">sample1d</A></i>(1)</p>
+<hr>
+</body>
+</html>

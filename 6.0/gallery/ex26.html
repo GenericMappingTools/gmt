@@ -1,0 +1,323 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>(26) General vertical perspective projection &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(27) Plotting Sandwell/Smith Mercator img grids" href="ex27.html" />
+    <link rel="prev" title="(25) Global distribution of antipodes" href="ex25.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+        
+      <li>(26) General vertical perspective projection</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/gallery/ex26.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="general-vertical-perspective-projection">
+<span id="example-26"></span><h1>(26) General vertical perspective projection<a class="headerlink" href="#general-vertical-perspective-projection" title="Permalink to this headline">¶</a></h1>
+<p>Next, we present a recent extension to the <strong>-JG</strong> projection option
+which allows the user to specify a particular altitude (this was always
+at infinity before), as well as several further parameters to limit the
+view from the chosen vantage point. In this example we show a view of
+the eastern continental US from a height of 160 km. Below we add a view
+with a specific tilt of 55 and azimuth 210; here we have chosen a
+boresight twist of 45. We view the land from New York towards
+Washington, D.C.</p>
+<p>At this point the full projection has not been properly optimized and
+the map annotations will need additional work. Also, note that the
+projection is only implemented in
+<a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> and
+<a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a>. We hope to refine this
+further and extend the availability of the full projection to all of the
+GMT mapping programs.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#		GMT EXAMPLE 26</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Demonstrate general vertical perspective projection</span>
+<span class="c1"># GMT modules:	coast</span>
+<span class="c1">#</span>
+gmt begin ex26
+	<span class="c1"># first do an overhead of the east coast from 160 km altitude point straight down</span>
+	<span class="nv">latitude</span><span class="o">=</span><span class="m">41</span>.5
+	<span class="nv">longitude</span><span class="o">=</span>-74.0
+	<span class="nv">altitude</span><span class="o">=</span><span class="m">160</span>.0
+	<span class="nv">tilt</span><span class="o">=</span><span class="m">0</span>
+	<span class="nv">azimuth</span><span class="o">=</span><span class="m">0</span>
+	<span class="nv">twist</span><span class="o">=</span><span class="m">0</span>
+	<span class="nv">Width</span><span class="o">=</span><span class="m">0</span>.0
+	<span class="nv">Height</span><span class="o">=</span><span class="m">0</span>.0
+
+	<span class="nv">PROJ</span><span class="o">=</span>-JG<span class="si">${</span><span class="nv">longitude</span><span class="si">}</span>/<span class="si">${</span><span class="nv">latitude</span><span class="si">}</span>/<span class="si">${</span><span class="nv">altitude</span><span class="si">}</span>/<span class="si">${</span><span class="nv">azimuth</span><span class="si">}</span>/<span class="si">${</span><span class="nv">tilt</span><span class="si">}</span>/<span class="si">${</span><span class="nv">twist</span><span class="si">}</span>/<span class="si">${</span><span class="nv">Width</span><span class="si">}</span>/<span class="si">${</span><span class="nv">Height</span><span class="si">}</span>/4i
+	gmt coast -Rg <span class="nv">$PROJ</span> -X1i -B5g5 -Glightbrown -Slightblue -W -Dl -N1/1p,red -N2/0.5p -Y5i
+
+	<span class="c1"># now point from an altitude of 160 km with a specific tilt and azimuth and with a wider restricted</span>
+	<span class="c1"># view and a boresight twist of 45 degrees</span>
+	<span class="nv">tilt</span><span class="o">=</span><span class="m">55</span>
+	<span class="nv">azimuth</span><span class="o">=</span><span class="m">210</span>
+	<span class="nv">twist</span><span class="o">=</span><span class="m">45</span>
+	<span class="nv">Width</span><span class="o">=</span><span class="m">30</span>.0
+	<span class="nv">Height</span><span class="o">=</span><span class="m">30</span>.0
+
+	<span class="nv">PROJ</span><span class="o">=</span>-JG<span class="si">${</span><span class="nv">longitude</span><span class="si">}</span>/<span class="si">${</span><span class="nv">latitude</span><span class="si">}</span>/<span class="si">${</span><span class="nv">altitude</span><span class="si">}</span>/<span class="si">${</span><span class="nv">azimuth</span><span class="si">}</span>/<span class="si">${</span><span class="nv">tilt</span><span class="si">}</span>/<span class="si">${</span><span class="nv">twist</span><span class="si">}</span>/<span class="si">${</span><span class="nv">Width</span><span class="si">}</span>/<span class="si">${</span><span class="nv">Height</span><span class="si">}</span>/5i
+	gmt coast <span class="nv">$PROJ</span> -B5g5 -Glightbrown -Slightblue -W -Ia/blue -Di -Na -X1i -Y-4i
+gmt end show
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/ex26.png"><img alt="../_images/ex26.png" src="../_images/ex26.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">General vertical perspective projection.</span></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ex27.html" class="btn btn-neutral float-right" title="(27) Plotting Sandwell/Smith Mercator img grids" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ex25.html" class="btn btn-neutral float-left" title="(25) Global distribution of antipodes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

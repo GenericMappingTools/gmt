@@ -1,0 +1,447 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>makecpt &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mapproject" href="mapproject.html" />
+    <link rel="prev" title="kml2gmt" href="kml2gmt.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="mapproject.html" title="mapproject"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="kml2gmt.html" title="kml2gmt"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="makecpt">
+<span id="index-0"></span><h1>makecpt<a class="headerlink" href="#makecpt" title="Permalink to this headline">¶</a></h1>
+<p>makecpt - Make GMT color palette tables</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>makecpt</strong> [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong>[<strong>+</strong>]<em>transparency</em> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>cpt</em> ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<em>nlevels</em>] ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>R</strong>|<strong>r</strong>|<strong>h</strong>|<strong>c</strong> ][<strong>+c</strong>]]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>zlo</em>/<em>zhi</em> ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong>[<strong>c</strong>][<strong>z</strong>] ] [ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong> ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ] [ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>z_min</em>/<em>z_max</em>[/<em>z_inc</em>[+]] | <strong>-T</strong><em>ztable</em> | <strong>-T</strong><em>z1,z2,…,zn</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<strong>w</strong>] ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong> ]
+[ <strong>-bi</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>makecpt</strong> is a utility that will help you make static color palette tables
+(CPTs). You define an equidistant set of contour intervals or pass
+your own z-table or list, and create a new CPT based on an existing master (dynamic)
+CPT. The resulting CPT can be reversed relative to the master
+cpt, and can be made continuous or discrete.  For color tables beyond the
+standard GMT offerings, visit cpt-city:
+<a class="reference external" href="http://soliton.vm.bytemark.co.uk/pub/cpt-city/">http://soliton.vm.bytemark.co.uk/pub/cpt-city/</a>.</p>
+<p>The CPT includes three additional colors beyond the range of
+z-values. These are the background color (B) assigned to values lower
+than the lowest <em>z</em>-value, the foreground color (F) assigned to values
+higher than the highest <em>z</em>-value, and the NaN color (N) painted
+wherever values are undefined.</p>
+<p>If the master CPT includes B, F, and N entries, these will be
+copied into the new master file. If not, the parameters
+<a class="reference internal" href="gmt.conf.html#color-background"><span class="std std-ref">COLOR_BACKGROUND</span></a>, <a class="reference internal" href="gmt.conf.html#color-foreground"><span class="std std-ref">COLOR_FOREGROUND</span></a>,
+and <a class="reference internal" href="gmt.conf.html#color-nan"><span class="std std-ref">COLOR_NAN</span></a> from
+the <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file or the command line will be used. This default
+behavior can be overruled using the options <strong>-D</strong>, <strong>-M</strong> or <strong>-N</strong>.</p>
+<p>The color model (RGB, HSV or CMYK) of the palette created by <strong>makecpt</strong>
+will be the same as specified in the header of the master CPT. When
+there is no <a class="reference internal" href="gmt.conf.html#color-model"><span class="std std-ref">COLOR_MODEL</span></a> entry in the master CPT, the
+<a class="reference internal" href="gmt.conf.html#color-model"><span class="std std-ref">COLOR_MODEL</span></a> specified in the <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file or on the command
+line will be used.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<p>None.</p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong>[<strong>+</strong>]<em>transparency</em></dt>
+<dd>Sets a constant level of transparency (0-100) for all color slices.
+Prepend <strong>+</strong> to also affect the fore-, back-, and nan-colors
+[Default is no transparency, i.e., 0 (opaque)].</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>cpt</em></dt>
+<dd>Selects the master color table CPT to use in the interpolation.
+Choose among the built-in tables (type <strong>makecpt</strong> to see the list)
+or give the name of an existing CPT [Default gives a rainbow CPT].
+Yet another option is to specify -Ccolor1,color2[,color3,…]
+to build a linear continuous cpt from those colors automatically.
+In this case <em>color</em><strong>n</strong> can be a r/g/b triplet, a color name,
+or an HTML hexadecimal color (e.g. #aabbcc ).</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong>[<strong>i</strong>|<strong>o</strong>]</dt>
+<dd>Select the back- and foreground colors to match the colors for
+lowest and highest <em>z</em>-values in the output CPT [Default uses
+the colors specified in the master file, or those defined by the
+parameters <a class="reference internal" href="gmt.conf.html#color-background"><span class="std std-ref">COLOR_BACKGROUND</span></a>, <a class="reference internal" href="gmt.conf.html#color-foreground"><span class="std std-ref">COLOR_FOREGROUND</span></a>, and
+<a class="reference internal" href="gmt.conf.html#color-nan"><span class="std std-ref">COLOR_NAN</span></a>]. Append <strong>i</strong> to match the colors for the lowest and
+highest values in the input (instead of the output) CPT.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong>[<em>nlevels</em>]</dt>
+<dd>Implies reading data table(s) from given command-line files or standard input.
+We use the last data column to determine the data range; use <strong>-i</strong> to
+select another column, and use <strong>-bi</strong> if your data table is native binary.
+This z-range information is used instead of providing the <strong>-T</strong> option.
+We create a linear color table by dividing the table data z-range into
+<em>nlevels</em> equidistant slices.  If <em>nlevels</em> is not given it defaults to
+the number of levels in the chosen CPT.</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong>[<strong>R</strong>|<strong>r</strong>|<strong>h</strong>|<strong>c</strong>][<strong>+c</strong>]]</dt>
+<dd>Force output CPT to written with r/g/b codes, gray-scale values
+or color name (<strong>R</strong>, default) or r/g/b codes only (<strong>r</strong>), or h-s-v
+codes (<strong>h</strong>), or c/m/y/k codes (<strong>c</strong>).  Optionally or alternatively,
+append <strong>+c</strong> to write discrete palettes in categorical format.</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>zlo</em>/<em>zhi</em></dt>
+<dd>Truncate the incoming CPT so that the lowest and highest z-levels
+are to <em>zlo</em> and <em>zhi</em>.  If one of these equal NaN then
+we leave that end of the CPT alone.  The truncation takes place
+before any resampling. See also <a class="reference internal" href="GMT_Docs.html#manipulating-cpts"><span class="std std-ref">Manipulating CPTs</span></a></dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong>[<strong>c</strong>][<strong>z</strong>]</dt>
+<dd>Append <strong>c</strong> [Default] to reverse the sense of color progression in the master CPT. Also
+exchanges the foreground and background colors, including those
+specified by the parameters <a class="reference internal" href="gmt.conf.html#color-background"><span class="std std-ref">COLOR_BACKGROUND</span></a> and
+<a class="reference internal" href="gmt.conf.html#color-foreground"><span class="std std-ref">COLOR_FOREGROUND</span></a>.
+Append <strong>z</strong> to reverse the sign of z-values in the color table.  Note that
+this change of <em>z</em>-direction happens before <strong>-G</strong> and <strong>-T</strong> values are used
+so the latter much be compatible with the changed <em>z</em>-range.
+See also <a class="reference internal" href="GMT_Docs.html#manipulating-cpts"><span class="std std-ref">Manipulating CPTs</span></a></dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-M</strong></dt>
+<dd>Overrule background, foreground, and NaN colors specified in the
+master CPT with the values of the parameters
+<a class="reference internal" href="gmt.conf.html#color-background"><span class="std std-ref">COLOR_BACKGROUND</span></a>, <a class="reference internal" href="gmt.conf.html#color-foreground"><span class="std std-ref">COLOR_FOREGROUND</span></a>,
+and <a class="reference internal" href="gmt.conf.html#color-nan"><span class="std std-ref">COLOR_NAN</span></a>
+specified in the <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file or on the command line. When
+combined with <strong>-D</strong>, only <a class="reference internal" href="gmt.conf.html#color-nan"><span class="std std-ref">COLOR_NAN</span></a> is considered.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong></dt>
+<dd>Do not write out the background, foreground, and NaN-color fields [Default will write them].</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong>[<strong>i</strong>|<strong>o</strong>]</dt>
+<dd>Selects a logarithmic interpolation scheme [Default is linear].
+<strong>-Qi</strong> expects input z-values to be log10(z), assigns colors, and
+writes out z [Default]. <strong>-Qo</strong> takes log10(z) first, assigns
+colors, and writes out z.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong><em>z_min</em>/<em>z_max</em>[/<em>z_inc</em>[+]] | <strong>-T</strong><em>ztable</em> | <strong>-T</strong><em>z1,z2,…,zn</em></dt>
+<dd>Defines the range of the new CPT by giving the lowest and
+highest z-value and interval.  Append /<em>z_inc</em> to sample the input CPT
+discretely at intervals <em>z_inc</em> between <em>z_min</em> and <em>z_max</em>;
+append a trailing <strong>+</strong> to interpret <em>z_inc</em> as the number of desired intervals instead.
+Alternatively, give the name of a ASCII file that has one z-value
+per record, or provide a list of comma-separated z-values instead.
+If <strong>-T</strong> is not given, the existing range in the master
+CPT will be used intact.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong>[<strong>w</strong>]</dt>
+<dd>Do not interpolate the input color table but pick the output colors
+starting at the beginning of the color table, until colors for all
+intervals are assigned. This is particularly useful in combination
+with a categorical color table, like “categorical”. Cannot be used
+in combination with <strong>-Z</strong>.  Alternatively, use <strong>-Ww</strong> to produce
+a wrapped (cyclic) color table that endlessly repeats its range.</dd>
+</dl>
+<dl class="docutils" id="z">
+<dt><strong>-Z</strong></dt>
+<dd>Creates a continuous CPT [Default is discontinuous, i.e.,
+constant colors for each interval]. This option has no effect when no <strong>-T</strong>
+is used, or when using <strong>-T</strong><em>z_min</em>/<em>z_max</em>; in the first case the input
+CPT remains untouched, in the second case it is only scaled to match the
+range <em>z_min</em>/<em>z_max</em>.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input. [Default is the required number of columns given the chosen settings].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-di</strong><em>nodata</em> <a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc12">Notes on Transparency</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>The <em>PostScript</em> language originally had no accommodation for transparency.  However, Adobe
+added an extension that allows developers to encode some forms of transparency
+using the <em>PostScript</em> language model but it is only realized when converting the
+<em>PostScript</em> to PDF (and via PDF to any raster image format).
+GMT uses this model but there are some limitations: Transparency can only be controlled
+on a per-object or per-layer basis.  This means that a color specifications (such as
+those in CPTs of given via command-line options) only apply to vector graphic items
+(i.e., text, lines, polygon fills) or to an entire layer (which could include items
+such as <em>PostScript</em> images).  This limitation rules out any
+mechanism of controlling transparency in such images on a pixel level.</p>
+</div>
+<div class="section" id="color-hinges">
+<h2>Color Hinges<a class="headerlink" href="#color-hinges" title="Permalink to this headline">¶</a></h2>
+<p>Some of the GMT master dynamic CPTs are actually two separate CPTs
+meeting at a <em>hinge</em>.  Usually, colors may change dramatically across
+the hinge, which is used to separate two different domains (e.g., land
+and ocean across the shoreline, for instance).  CPTs with a hinge will
+have their two parts stretched to the required range separately, i.e.,
+the bottom part up to the hinge will be stretched independently of the
+part from the hinge to the top, according to the prescribed new range.
+If the selected range does not include the hinge then no such partitioning
+takes place.</p>
+</div>
+<div class="section" id="color-aliasing">
+<h2>Color Aliasing<a class="headerlink" href="#color-aliasing" title="Permalink to this headline">¶</a></h2>
+<p>For best result when <strong>-T -Z</strong> is used we recommend you do no append
+a specific <em>z_inc</em>.  This way the original CPT is used exactly
+as is but the <em>z</em> boundaries are adjusted to match the stated limits.
+Otherwise you may, depending on the nature of the input CPT, miss
+aspects of the color changes by aliasing the signal.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To make a CPT with z-values from -200 to 200, with discrete color
+changes every 25, and using a polar blue-white-red colortable:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">makecpt</span> <span class="o">-</span><span class="n">Cpolar</span> <span class="o">-</span><span class="n">T</span><span class="o">-</span><span class="mi">200</span><span class="o">/</span><span class="mi">200</span><span class="o">/</span><span class="mi">25</span> <span class="o">&gt;</span> <span class="n">colors</span><span class="o">.</span><span class="n">cpt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To make an equidistant CPT from z = -2 to 6 using the
+continuous default rainbow of colors:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">makecpt</span> <span class="o">-</span><span class="n">T</span><span class="o">-</span><span class="mi">2</span><span class="o">/</span><span class="mi">6</span> <span class="o">-</span><span class="n">Z</span> <span class="o">&gt;</span> <span class="n">rainbow</span><span class="o">.</span><span class="n">cpt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To use the GEBCO look-alike CPT with its default range for bathymetry, run</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">makecpt</span> <span class="o">-</span><span class="n">Cgebco</span> <span class="o">&gt;</span> <span class="n">my_gebco</span><span class="o">.</span><span class="n">cpt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>or simply use -Cgebco directly in the application that needs the color table.
+To create a 24-level rainbow color table suitable for plotting the depths in
+the data table depths.txt (with lon, lat, depths), run</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">makecpt</span> <span class="o">-</span><span class="n">Cgebco</span> <span class="n">depths</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">i2</span> <span class="o">-</span><span class="n">Z</span> <span class="o">-</span><span class="n">E24</span> <span class="o">&gt;</span> <span class="n">my_depths</span><span class="o">.</span><span class="n">cpt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To use the gebco color table but reverse the z-values so it can be used for
+positive depth values, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">makecpt</span> <span class="o">-</span><span class="n">Cgebco</span> <span class="o">-</span><span class="n">Iz</span> <span class="o">&gt;</span> <span class="n">my_positive_gebco</span><span class="o">.</span><span class="n">cpt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To create a 24-level rainbow color table suitable for plotting the depths in
+the data table depths.txt (with lon, lat, depths), run</p>
+<p>To make a custom discrete color table for depth of seismicity, using red color for
+hypocenters between 0 and 100 km, green for 100-300 km, and blue for deep (300-1000 km)
+earthquakes, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">makecpt</span> <span class="o">-</span><span class="n">Cred</span><span class="p">,</span><span class="n">green</span><span class="p">,</span><span class="n">blue</span> <span class="o">-</span><span class="n">T0</span><span class="p">,</span><span class="mi">80</span><span class="p">,</span><span class="mi">300</span><span class="p">,</span><span class="mi">1000</span> <span class="o">-</span><span class="n">N</span> <span class="o">&gt;</span> <span class="n">seis</span><span class="o">.</span><span class="n">cpt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To make a continuous CPT from white to blue as z goes from
+3 to 10, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">makecpt</span> <span class="o">-</span><span class="n">Cwhite</span><span class="p">,</span><span class="n">blue</span> <span class="o">-</span><span class="n">T3</span><span class="p">,</span><span class="mi">10</span> <span class="o">-</span><span class="n">Z</span> <span class="o">&gt;</span> <span class="n">cold</span><span class="o">.</span><span class="n">cpt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To make a wrapped (cyclic) CPT from the jet table over the interval
+0 to 500, i.e., the color will be wrapped every 500 z-units so that
+we always get a color regardless of the <em>z</em> value, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">makecpt</span> <span class="o">-</span><span class="n">Cjet</span> <span class="o">-</span><span class="n">T0</span><span class="o">/</span><span class="mi">500</span> <span class="o">-</span><span class="n">Ww</span> <span class="o">&gt;</span> <span class="n">wrapped</span><span class="o">.</span><span class="n">cpt</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="bugs">
+<h2>Bugs<a class="headerlink" href="#bugs" title="Permalink to this headline">¶</a></h2>
+<p>Since <strong>makecpt</strong> will also interpolate from any existing CPT you
+may have in your directory, you should not use one of the listed cpt names
+as an output filename; hence the my_gebco.cpt in the example.  If you
+do create a CPT of such a name, e.g., rainbow.cpt, then <strong>makecpt</strong> will
+read that file first and not look for the master CPT in the shared GMT
+directory.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">makecpt</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id1">Notes on Transparency</a></li>
+<li><a class="reference internal" href="#color-hinges">Color Hinges</a></li>
+<li><a class="reference internal" href="#color-aliasing">Color Aliasing</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#bugs">Bugs</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="kml2gmt.html"
+                        title="previous chapter">kml2gmt</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mapproject.html"
+                        title="next chapter">mapproject</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/makecpt.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="mapproject.html" title="mapproject"
+             >next</a> </li>
+        <li class="right" >
+          <a href="kml2gmt.html" title="kml2gmt"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

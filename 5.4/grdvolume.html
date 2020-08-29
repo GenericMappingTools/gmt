@@ -1,0 +1,312 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>grdvolume &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="greenspline" href="greenspline.html" />
+    <link rel="prev" title="grdview" href="grdview.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="greenspline.html" title="greenspline"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="grdview.html" title="grdview"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="grdvolume">
+<span id="index-0"></span><h1>grdvolume<a class="headerlink" href="#grdvolume" title="Permalink to this headline">¶</a></h1>
+<p>grdvolume - Calculate grid volume and area constrained by a contour</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdvolume</strong> <em>grdfile</em> [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>cval</em> or <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>low/high/delta</em> or <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><strong>r</strong><em>low/high</em> or <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><strong>r</strong><em>cval</em>]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>base</em> ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong>[<em>unit</em>] ] [ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong>[<strong>c</strong>|<strong>h</strong>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong><em>fact</em>[/<em>shift</em>] ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdvolume</strong> reads a 2-D grid file and calculates the volume contained between the surface and the plane specified
+by the given contour (or zero if not given) and reports the area, volume, and maximum mean height (volume/area).
+Alternatively, specify a range of contours to be tried and <strong>grdvolume</strong> will determine the volume and area inside
+the contour for all contour values. Using <strong>-T</strong>, the contour that produced the maximum mean height (or maximum
+curvature of heights vs contour value) is reported as well. This feature may be used with <a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a>
+in designing an Optimal Robust Separator [<em>Wessel</em>, 1998].</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>grdfile</em></dt>
+<dd>The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>cval</em> or <strong>-C</strong><em>low/high/delta</em> or <strong>-Cr</strong><em>low/high</em> or <strong>-Cr</strong><em>cval</em></dt>
+<dd>find area, volume and mean height (volume/area) inside the <em>cval</em> contour. Alternatively, search using
+all contours from <em>low</em> to <em>high</em> in steps of <em>delta</em>. [Default returns area, volume and mean height
+of the entire grid]. The area is measured in the plane of the contour. The <strong>Cr</strong> form on the other
+hand computes the volume between the grid surface and the plans defined by <em>low</em> and <em>high</em>,
+or below <em>cval</em> and grid’s minimum. Note that this is an <em>outside</em> volume whilst the other forms
+compute an <em>inside</em> (below the surface) area volume. Use this form to compute for example the volume
+of water between two contours.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong><em>base</em></dt>
+<dd>Also add in the volume from the level of the contour down to <em>base</em> [Default base is contour].</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong>[<em>unit</em>]</dt>
+<dd>For geographical grids, append a unit from
+<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>
+[Default is meter (<strong>e</strong>)].</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong>[<strong>c</strong>|<strong>h</strong>]</dt>
+<dd>Determine the single contour that maximized the average height (=
+volume/area). Select <strong>-Tc</strong> to use the maximum curvature of heights
+versus contour value rather than the contour with the maximum height
+to pick the best contour value (requires <strong>-C</strong>).</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest.  </dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="z">
+<dt><strong>-Z</strong><em>fact</em>[/<em>shift</em>]</dt>
+<dd>Optionally subtract <em>shift</em> before scaling data by <em>fact</em>. [Default
+is no scaling]. (Numbers in <strong>-C</strong>, <strong>-L</strong> refer to values after
+this scaling has occurred).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-o</strong><em>cols</em>[,…] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select output columns (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="grid-file-formats">
+<h2>Grid File Formats<a class="headerlink" href="#grid-file-formats" title="Permalink to this headline">¶</a></h2>
+<p>By default GMT writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, GMT is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called “packing” of grids, writing out floating point
+data as 1- or 2-byte integers. <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">(more …)</span></a></p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To determine the volume in km^3 under the surface hawaii_topo.nc (height in km), use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdvolume</span> <span class="n">hawaii_topo</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Sk</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To find the volume between the surface peaks.nc and the contour z = 250 m in meters, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdvolume</span> <span class="n">peaks</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Se</span> <span class="o">-</span><span class="n">C250</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To search for the contour, between 100 and 300 in steps of 10, that
+maximizes the ratio of volume to surface area for the file peaks.nc, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdvolume</span> <span class="n">peaks</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">C0</span><span class="o">/</span><span class="mi">300</span><span class="o">/</span><span class="mi">10</span> <span class="o">-</span><span class="n">Th</span> <span class="o">&gt;</span> <span class="n">results</span><span class="o">.</span><span class="n">d</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To see the areas and volumes for all the contours in the previous example, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdvolume</span> <span class="n">peaks</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">C100</span><span class="o">/</span><span class="mi">300</span><span class="o">/</span><span class="mi">10</span> <span class="o">&gt;</span> <span class="n">results</span><span class="o">.</span><span class="n">d</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To find the volume of water in a lake with its free surface at 0 and max depth of 300 meters, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdvolume</span> <span class="n">lake</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Cr</span><span class="o">-</span><span class="mi">300</span><span class="o">/</span><span class="mi">0</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>For geographical grids we convert degrees to “Flat Earth” distances in
+meter.  You can use <strong>-S</strong> to select another distance unit.  The
+area is then reported in this unit squared while the volume is reported
+in unit^2 * z_unit quantities.</li>
+<li><strong>grdvolume</strong> distinguishes between gridline and pixel-registered grids.
+In both cases the area and volume are computed up to the grid
+boundaries. That means that in the first case the grid cells on the
+boundary only contribute half their area (and volume), whereas in the
+second case all grid cells are fully used. The exception is when the
+<strong>-C</strong> flag is used: since contours do not extend beyond the outermost
+grid point, both grid types are treated the same. That means the outer
+rim in pixel oriented grids is ignored when using the <strong>-C</strong> flag.</li>
+</ol>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a>,
+<a class="reference internal" href="grdmask.html"><span class="doc">grdmask</span></a>,
+<a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Wessel, P., 1998, An empirical method for optimal robust
+regional-residual separation of geophysical data, <em>Math. Geol.</em>, <strong>30</strong>(4), 391-408.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">grdvolume</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#grid-file-formats">Grid File Formats</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grdview.html"
+                        title="previous chapter">grdview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="greenspline.html"
+                        title="next chapter">greenspline</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/grdvolume.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="greenspline.html" title="greenspline"
+             >next</a> </li>
+        <li class="right" >
+          <a href="grdview.html" title="grdview"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

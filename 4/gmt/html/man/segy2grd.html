@@ -1,0 +1,318 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:41 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>SEGY2GRD</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>SEGY2GRD</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">segy2grd
+&minus; Converting SEGY file to grid file format</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>segy2grd</b>
+<i>segyfile</i> <b>&minus;G</b><i>grdfile</i>
+<b>&minus;I</b><i>xinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>][/<i>yinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>]]
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+[ <b>&minus;A</b>[<b>n</b>|<b>z</b>] ] [
+<b>&minus;D</b><i>xname</i>/<i>yname</i>/<i>zname</i>/<i>scale</i>/<i>offset</i>/<i>title</i>/<i>remark</i>
+] [ <b>&minus;F</b> ] [ <b>&minus;N</b><i>nodata</i> ] [
+<b>&minus;S</b>[<i>zfile</i>] ] [ <b>&minus;V</b> ] [
+<b>&minus;Z</b>[<i>flags</i>] ] [
+<b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;bi</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>segy2grd</b>
+reads an IEEE SEGY file and creates a binary grid file.
+Either a simple mapping (equivalent to xyz2grd -Z) or a more
+complicated averaging where a particular grid cell includes
+values from more than one sample in the SEGY file can be
+done. <b>segy2grd</b> will report if some of the nodes are
+not filled in with data. Such unconstrained nodes are set to
+a value specified by the user [Default is NaN]. Nodes with
+more than one value will be set to the average value.
+<i><br>
+segyfile</i> is an IEEE floating point SEGY file. Traces are
+all assumed to <br>
+start at 0 time/depth.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>grdfile</i> is
+the name of the binary output grid file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>x_inc</i> [and
+optionally <i>y_inc</i>] is the grid spacing. Append
+<b>m</b> to indicate minutes or <b>c</b> to indicate
+seconds.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> specify the Region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Add up multiple
+values that belong to the same node (same as
+<b>&minus;Az</b>). Append <b>n</b> to simply count the
+number of data points that were assigned to each node.
+[Default (no <b>&minus;A</b> option) will calculate mean
+value]. Not used for simple mapping.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Give values for
+<i>xname, yname, zname, scale, offset, title,</i> and
+<i>remark</i>. To leave some of these values untouched,
+specify = as the value.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force pixel
+registration [Default is grid registration].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">No data. Set nodes
+with no input sample to this value [Default is NaN].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">set variable
+spacing <i>header</i> is c for cdp, o for offset,
+b&lt;number&gt; for 4-byte float starting at byte number If
+-S not set, assumes even spacing of samples at the dx, dy
+supplied with -I</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Override number of
+samples in each trace</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;X</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">applies scalar
+<i>x-scale</i> to coordinates in trace header to match the
+coordinates specified in -R</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Y</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies sample
+interval as <i>s_int</i> if incorrect in the SEGY file</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Fix number of
+traces to read in. Default tries to read 10000 traces. -M0
+will read number in binary header, -Mn will attempt to read
+only n traces.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:22%; margin-top: 1em">To create a
+grid file from an even spaced SEGY file test.segy, try</p>
+
+<p style="margin-left:22%; margin-top: 1em">segy2grd
+test.segy <b>&minus;I</b> 0.1/0.1 <b>&minus;G</b> test.grd
+<b>&minus;R</b> 198/208/18/25 <b>&minus;V</b></p>
+
+<p style="margin-left:22%; margin-top: 1em">Note that this
+will read in 18-25s (or km) on each trace, but the first
+trace will be assumed to be at X=198</p>
+
+<p style="margin-left:22%; margin-top: 1em">To create a
+grid file from the SEGY file test.segy, locating traces
+according to the CDP number, where there are 10 CDPs per km
+and the sample interval is 0.1, try</p>
+
+<p style="margin-left:22%; margin-top: 1em">segy2grd
+test.segy <b>&minus;G</b> test.grd <b>&minus;R</b>
+0/100/0/10 <b>&minus;I</b> 0.5/0.2 <b>&minus;V &minus;X</b>
+0.1 <b>&minus;Y</b> 0.1</p>
+
+<p style="margin-left:22%; margin-top: 1em">Because the
+grid interval is larger than the SEGY file sampling, the
+individual samples will be averaged in bins</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grd2xyz.html">grd2xyz</A></i>(1), <i><A HREF="grdedit.html">grdedit</A></i>(1), <i><A HREF="pssegy.html">pssegy</A></i>(1)</p>
+<hr>
+</body>
+</html>

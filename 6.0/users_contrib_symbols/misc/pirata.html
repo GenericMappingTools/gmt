@@ -1,0 +1,1018 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>A pirate &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Changelog" href="../../changes.html" />
+    <link rel="prev" title="Strike of vertical beds" href="../geology/geo-plane_vert.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../users_contrib_symbols.html">Users Symbol Contributions</a> &raquo;</li>
+        
+      <li>A pirate</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/users_contrib_symbols/misc/pirata.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="a-pirate">
+<span id="pirata"></span><h1>A pirate<a class="headerlink" href="#a-pirate" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># Definition File created by Mirone Tech</span>
+<span class="c1">#</span>
+<span class="m">0</span>.500000	<span class="m">0</span>.350000	M	 -G0/0/0 -W0.5p,0/0/0
+<span class="m">0</span>.500000	-0.350000	D
+-0.500000	-0.350000	D
+-0.500000	<span class="m">0</span>.350000	D
+<span class="m">0</span>.500000	<span class="m">0</span>.350000	D
+
+<span class="c1">#</span>
+-0.070434	-0.152132	M	 -G255/255/255 -W0.5p,0/0/0
+-0.096651	-0.136686	D
+-0.123091	-0.120386	D
+-0.149495	-0.103187	D
+-0.162603	-0.094237	D
+-0.175605	-0.085046	D
+-0.188468	-0.075609	D
+-0.201161	-0.065919	D
+-0.213650	-0.055972	D
+-0.225904	-0.045761	D
+-0.237889	-0.035282	D
+-0.249575	-0.024529	D
+-0.260927	-0.013496	D
+-0.271915	-0.002178	D
+-0.282504	<span class="m">0</span>.009430	D
+-0.292664	<span class="m">0</span>.021335	D
+-0.302362	<span class="m">0</span>.033541	D
+-0.311565	<span class="m">0</span>.046054	D
+-0.320241	<span class="m">0</span>.058880	D
+-0.328357	<span class="m">0</span>.072024	D
+-0.335881	<span class="m">0</span>.085492	D
+-0.342781	<span class="m">0</span>.099289	D
+-0.349025	<span class="m">0</span>.113420	D
+-0.354579	<span class="m">0</span>.127892	D
+-0.359412	<span class="m">0</span>.142709	D
+-0.363492	<span class="m">0</span>.157877	D
+-0.366785	<span class="m">0</span>.173402	D
+-0.352229	<span class="m">0</span>.156259	D
+-0.337329	<span class="m">0</span>.139314	D
+-0.322091	<span class="m">0</span>.122584	D
+-0.306518	<span class="m">0</span>.106089	D
+-0.290616	<span class="m">0</span>.089848	D
+-0.274388	<span class="m">0</span>.073878	D
+-0.257839	<span class="m">0</span>.058201	D
+-0.240973	<span class="m">0</span>.042833	D
+-0.223796	<span class="m">0</span>.027795	D
+-0.206311	<span class="m">0</span>.013104	D
+-0.188524	-0.001219	D
+-0.170438	-0.015156	D
+-0.152058	-0.028688	D
+-0.133389	-0.041797	D
+-0.114435	-0.054463	D
+-0.095200	-0.066667	D
+-0.075689	-0.078391	D
+-0.055907	-0.089615	D
+-0.035859	-0.100322	D
+-0.015547	-0.110490	D
+<span class="m">0</span>.005022	-0.120103	D
+<span class="m">0</span>.025844	-0.129140	D
+<span class="m">0</span>.046916	-0.137584	D
+<span class="m">0</span>.068232	-0.145414	D
+<span class="m">0</span>.089788	-0.152613	D
+<span class="m">0</span>.111579	-0.159160	D
+<span class="m">0</span>.133601	-0.165039	D
+<span class="m">0</span>.155850	-0.170228	D
+<span class="m">0</span>.178320	-0.174710	D
+<span class="m">0</span>.159911	-0.186319	D
+<span class="m">0</span>.154213	-0.192428	D
+<span class="m">0</span>.151260	-0.197502	D
+<span class="m">0</span>.149610	-0.203059	D
+<span class="m">0</span>.149309	-0.207056	D
+<span class="m">0</span>.149701	-0.211308	D
+<span class="m">0</span>.150832	-0.215828	D
+<span class="m">0</span>.152745	-0.220633	D
+<span class="m">0</span>.155488	-0.225738	D
+<span class="m">0</span>.024939	-0.194235	D
+-0.018650	-0.176710	D
+-0.030833	-0.170811	D
+-0.024920	-0.193345	D
+-0.036896	-0.200709	D
+-0.069944	-0.212517	D
+-0.121526	-0.225667	D
+-0.117553	-0.208125	D
+-0.120314	-0.191992	D
+-0.130931	-0.175703	D
+-0.132416	-0.174168	D
+-0.128533	-0.172566	D
+-0.121344	-0.170617	D
+-0.086891	-0.164610	D
+-0.079677	-0.162583	D
+-0.075772	-0.160911	D
+-0.074153	-0.159958	D
+-0.072785	-0.158916	D
+-0.071688	-0.157778	D
+-0.070884	-0.156538	D
+-0.070393	-0.155189	D
+-0.070236	-0.153722	D
+-0.070434	-0.152132	D
+
+<span class="c1">#</span>
+<span class="m">0</span>.040998	-0.013629	M	 -G255/255/255 -W0.5p,0/0/0
+-0.007083	-0.023841	D
+-0.018209	-0.023601	D
+-0.023667	-0.022570	D
+-0.029036	-0.020808	D
+-0.034303	-0.018223	D
+-0.039453	-0.014720	D
+-0.039038	-0.011980	D
+-0.038939	-0.006392	D
+-0.039750	-0.000751	D
+-0.041392	<span class="m">0</span>.004839	D
+-0.043786	<span class="m">0</span>.010275	D
+-0.048614	<span class="m">0</span>.017908	D
+-0.054691	<span class="m">0</span>.024605	D
+-0.059304	<span class="m">0</span>.028375	D
+-0.064276	<span class="m">0</span>.031468	D
+-0.069526	<span class="m">0</span>.033779	D
+-0.074977	<span class="m">0</span>.035203	D
+-0.077753	<span class="m">0</span>.035550	D
+-0.080549	<span class="m">0</span>.035637	D
+-0.083356	<span class="m">0</span>.035449	D
+-0.086164	<span class="m">0</span>.034975	D
+-0.088963	<span class="m">0</span>.034201	D
+-0.091743	<span class="m">0</span>.033114	D
+-0.096384	<span class="m">0</span>.032475	D
+-0.104063	<span class="m">0</span>.036346	D
+-0.117134	<span class="m">0</span>.051905	D
+-0.121327	<span class="m">0</span>.134526	D
+-0.121754	<span class="m">0</span>.171753	D
+-0.113223	<span class="m">0</span>.190647	D
+-0.102118	<span class="m">0</span>.208358	D
+-0.088705	<span class="m">0</span>.224487	D
+-0.073254	<span class="m">0</span>.238634	D
+-0.056031	<span class="m">0</span>.250402	D
+-0.041157	<span class="m">0</span>.257834	D
+-0.023728	<span class="m">0</span>.260835	D
+-0.005624	<span class="m">0</span>.262589	D
+<span class="m">0</span>.006616	<span class="m">0</span>.262933	D
+<span class="m">0</span>.018848	<span class="m">0</span>.262524	D
+<span class="m">0</span>.030949	<span class="m">0</span>.261280	D
+<span class="m">0</span>.036912	<span class="m">0</span>.260321	D
+<span class="m">0</span>.042797	<span class="m">0</span>.259123	D
+<span class="m">0</span>.048588	<span class="m">0</span>.257676	D
+<span class="m">0</span>.054269	<span class="m">0</span>.255971	D
+<span class="m">0</span>.059825	<span class="m">0</span>.253998	D
+<span class="m">0</span>.065241	<span class="m">0</span>.251746	D
+<span class="m">0</span>.070502	<span class="m">0</span>.249205	D
+<span class="m">0</span>.075591	<span class="m">0</span>.246366	D
+<span class="m">0</span>.080494	<span class="m">0</span>.243219	D
+<span class="m">0</span>.085196	<span class="m">0</span>.239752	D
+<span class="m">0</span>.089680	<span class="m">0</span>.235958	D
+<span class="m">0</span>.093933	<span class="m">0</span>.231824	D
+<span class="m">0</span>.097937	<span class="m">0</span>.227342	D
+<span class="m">0</span>.101678	<span class="m">0</span>.222502	D
+<span class="m">0</span>.105141	<span class="m">0</span>.217293	D
+<span class="m">0</span>.108309	<span class="m">0</span>.211705	D
+<span class="m">0</span>.111169	<span class="m">0</span>.205729	D
+<span class="m">0</span>.115599	<span class="m">0</span>.201695	D
+<span class="m">0</span>.119457	<span class="m">0</span>.197537	D
+<span class="m">0</span>.122768	<span class="m">0</span>.193264	D
+<span class="m">0</span>.125560	<span class="m">0</span>.188886	D
+<span class="m">0</span>.127856	<span class="m">0</span>.184412	D
+<span class="m">0</span>.129682	<span class="m">0</span>.179854	D
+<span class="m">0</span>.131065	<span class="m">0</span>.175221	D
+<span class="m">0</span>.132029	<span class="m">0</span>.170523	D
+<span class="m">0</span>.132599	<span class="m">0</span>.165771	D
+<span class="m">0</span>.132803	<span class="m">0</span>.160973	D
+<span class="m">0</span>.132664	<span class="m">0</span>.156141	D
+<span class="m">0</span>.132208	<span class="m">0</span>.151284	D
+<span class="m">0</span>.131461	<span class="m">0</span>.146413	D
+<span class="m">0</span>.129197	<span class="m">0</span>.136667	D
+<span class="m">0</span>.126074	<span class="m">0</span>.126982	D
+<span class="m">0</span>.115851	<span class="m">0</span>.103569	D
+<span class="m">0</span>.104727	<span class="m">0</span>.082301	D
+<span class="m">0</span>.100740	<span class="m">0</span>.074676	D
+<span class="m">0</span>.122686	<span class="m">0</span>.068969	D
+<span class="m">0</span>.120377	<span class="m">0</span>.065322	D
+<span class="m">0</span>.117800	<span class="m">0</span>.061962	D
+<span class="m">0</span>.114982	<span class="m">0</span>.058863	D
+<span class="m">0</span>.111947	<span class="m">0</span>.056000	D
+<span class="m">0</span>.105333	<span class="m">0</span>.050880	D
+<span class="m">0</span>.090642	<span class="m">0</span>.042346	D
+<span class="m">0</span>.064527	<span class="m">0</span>.028625	D
+<span class="m">0</span>.057972	<span class="m">0</span>.023992	D
+<span class="m">0</span>.054973	<span class="m">0</span>.021429	D
+<span class="m">0</span>.052196	<span class="m">0</span>.018667	D
+<span class="m">0</span>.049665	<span class="m">0</span>.015682	D
+<span class="m">0</span>.047405	<span class="m">0</span>.012448	D
+<span class="m">0</span>.045444	<span class="m">0</span>.008938	D
+<span class="m">0</span>.043805	<span class="m">0</span>.005128	D
+<span class="m">0</span>.042516	<span class="m">0</span>.000991	D
+<span class="m">0</span>.041601	-0.003497	D
+<span class="m">0</span>.041087	-0.008362	D
+<span class="m">0</span>.040998	-0.013629	D
+
+<span class="c1">#</span>
+<span class="m">0</span>.289840	-0.219325	M	 -G255/255/255 -W0.5p,0/0/0
+<span class="m">0</span>.284013	-0.218888	D
+<span class="m">0</span>.275016	-0.219693	D
+<span class="m">0</span>.240547	-0.227984	D
+<span class="m">0</span>.231078	-0.228901	D
+<span class="m">0</span>.224825	-0.228566	D
+<span class="m">0</span>.221724	-0.228043	D
+<span class="m">0</span>.221346	-0.224194	D
+<span class="m">0</span>.221332	-0.220606	D
+<span class="m">0</span>.221664	-0.217269	D
+<span class="m">0</span>.222324	-0.214172	D
+<span class="m">0</span>.223293	-0.211308	D
+<span class="m">0</span>.224554	-0.208664	D
+<span class="m">0</span>.226088	-0.206233	D
+<span class="m">0</span>.227877	-0.204004	D
+<span class="m">0</span>.229902	-0.201967	D
+<span class="m">0</span>.232146	-0.200113	D
+<span class="m">0</span>.237215	-0.196913	D
+<span class="m">0</span>.242937	-0.194327	D
+<span class="m">0</span>.252425	-0.191427	D
+<span class="m">0</span>.285958	-0.187079	D
+<span class="m">0</span>.291919	-0.186606	D
+<span class="m">0</span>.333447	-0.183066	D
+<span class="m">0</span>.333866	-0.186905	D
+<span class="m">0</span>.334211	-0.194141	D
+<span class="m">0</span>.332496	-0.216871	D
+<span class="m">0</span>.330474	-0.224572	D
+<span class="m">0</span>.328598	-0.228863	D
+<span class="m">0</span>.327487	-0.230673	D
+<span class="m">0</span>.326253	-0.232224	D
+<span class="m">0</span>.324892	-0.233487	D
+<span class="m">0</span>.323398	-0.234435	D
+<span class="m">0</span>.321766	-0.235041	D
+<span class="m">0</span>.319991	-0.235277	D
+<span class="m">0</span>.318069	-0.235117	D
+<span class="m">0</span>.315993	-0.234531	D
+<span class="m">0</span>.313760	-0.233494	D
+<span class="m">0</span>.311363	-0.231978	D
+<span class="m">0</span>.308799	-0.229955	D
+<span class="m">0</span>.306250	-0.227381	D
+<span class="m">0</span>.303642	-0.225199	D
+<span class="m">0</span>.300980	-0.223384	D
+<span class="m">0</span>.298266	-0.221912	D
+<span class="m">0</span>.295503	-0.220761	D
+<span class="m">0</span>.292693	-0.219906	D
+<span class="m">0</span>.289840	-0.219325	D
+
+<span class="c1">#</span>
+<span class="m">0</span>.148074	-0.292592	M	 -G255/255/255 -W0.5p,0/0/0
+<span class="m">0</span>.144302	-0.291620	D
+<span class="m">0</span>.136817	-0.288904	D
+<span class="m">0</span>.129733	-0.285332	D
+<span class="m">0</span>.126462	-0.283292	D
+<span class="m">0</span>.123437	-0.281118	D
+<span class="m">0</span>.120706	-0.278837	D
+<span class="m">0</span>.118318	-0.276475	D
+<span class="m">0</span>.116321	-0.274059	D
+<span class="m">0</span>.114763	-0.271615	D
+<span class="m">0</span>.113692	-0.269170	D
+<span class="m">0</span>.113159	-0.266750	D
+<span class="m">0</span>.113209	-0.264382	D
+<span class="m">0</span>.113893	-0.262093	D
+<span class="m">0</span>.115259	-0.259909	D
+<span class="m">0</span>.117354	-0.257856	D
+<span class="m">0</span>.120228	-0.255962	D
+<span class="m">0</span>.123929	-0.254253	D
+<span class="m">0</span>.151687	-0.258519	D
+<span class="m">0</span>.155528	-0.257259	D
+<span class="m">0</span>.158833	-0.254696	D
+<span class="m">0</span>.160679	-0.252126	D
+<span class="m">0</span>.162200	-0.248771	D
+<span class="m">0</span>.162827	-0.246774	D
+<span class="m">0</span>.162819	-0.241736	D
+<span class="m">0</span>.163111	-0.236841	D
+<span class="m">0</span>.163687	-0.232081	D
+<span class="m">0</span>.164531	-0.227447	D
+<span class="m">0</span>.165626	-0.222932	D
+<span class="m">0</span>.168505	-0.214226	D
+<span class="m">0</span>.172191	-0.205897	D
+<span class="m">0</span>.178948	-0.193969	D
+<span class="m">0</span>.217579	-0.141188	D
+<span class="m">0</span>.224586	-0.129120	D
+<span class="m">0</span>.226679	-0.128066	D
+<span class="m">0</span>.231156	-0.126679	D
+<span class="m">0</span>.235880	-0.126176	D
+<span class="m">0</span>.240683	-0.126467	D
+<span class="m">0</span>.247668	-0.128195	D
+<span class="m">0</span>.253884	-0.131201	D
+<span class="m">0</span>.257321	-0.133763	D
+<span class="m">0</span>.259996	-0.136667	D
+<span class="m">0</span>.260995	-0.138219	D
+<span class="m">0</span>.261741	-0.139821	D
+<span class="m">0</span>.262212	-0.141464	D
+<span class="m">0</span>.262387	-0.143136	D
+<span class="m">0</span>.262246	-0.144825	D
+<span class="m">0</span>.261768	-0.146520	D
+<span class="m">0</span>.260930	-0.148210	D
+<span class="m">0</span>.259714	-0.149883	D
+<span class="m">0</span>.258096	-0.151528	D
+<span class="m">0</span>.256057	-0.153134	D
+<span class="m">0</span>.253575	-0.154690	D
+<span class="m">0</span>.250629	-0.156183	D
+<span class="m">0</span>.246187	-0.159468	D
+<span class="m">0</span>.242088	-0.162948	D
+<span class="m">0</span>.238307	-0.166612	D
+<span class="m">0</span>.234823	-0.170444	D
+<span class="m">0</span>.231610	-0.174432	D
+<span class="m">0</span>.228647	-0.178562	D
+<span class="m">0</span>.223372	-0.187195	D
+<span class="m">0</span>.216742	-0.200874	D
+<span class="m">0</span>.198136	-0.248409	D
+<span class="m">0</span>.193656	-0.257465	D
+<span class="m">0</span>.188487	-0.266118	D
+<span class="m">0</span>.185585	-0.270261	D
+<span class="m">0</span>.182441	-0.274262	D
+<span class="m">0</span>.179030	-0.278109	D
+<span class="m">0</span>.175330	-0.281788	D
+<span class="m">0</span>.174187	-0.284946	D
+<span class="m">0</span>.172564	-0.287571	D
+<span class="m">0</span>.170508	-0.289690	D
+<span class="m">0</span>.168068	-0.291330	D
+<span class="m">0</span>.165292	-0.292518	D
+<span class="m">0</span>.162229	-0.293278	D
+<span class="m">0</span>.158927	-0.293640	D
+<span class="m">0</span>.155435	-0.293628	D
+<span class="m">0</span>.151802	-0.293270	D
+<span class="m">0</span>.148074	-0.292592	D
+
+<span class="c1">#</span>
+-0.129117	-0.286912	M	 -G255/255/255 -W0.5p,0/0/0
+-0.132612	-0.285646	D
+-0.135982	-0.284094	D
+-0.139233	-0.282277	D
+-0.145402	-0.277933	D
+-0.151167	-0.272780	D
+-0.161675	-0.260711	D
+-0.182070	-0.231042	D
+-0.186382	-0.230648	D
+-0.190769	-0.230701	D
+-0.195225	-0.231160	D
+-0.199741	-0.231982	D
+-0.204309	-0.233127	D
+-0.213574	-0.236211	D
+-0.251184	-0.253004	D
+-0.260416	-0.256633	D
+-0.264963	-0.258131	D
+-0.269454	-0.259361	D
+-0.273882	-0.260283	D
+-0.278238	-0.260853	D
+-0.282515	-0.261030	D
+-0.286705	-0.260772	D
+-0.290801	-0.260036	D
+-0.294794	-0.258781	D
+-0.298676	-0.256964	D
+-0.302441	-0.254544	D
+-0.306080	-0.251478	D
+-0.309586	-0.247724	D
+-0.310815	-0.244473	D
+-0.311722	-0.241366	D
+-0.312319	-0.238399	D
+-0.312621	-0.235566	D
+-0.312643	-0.232863	D
+-0.312398	-0.230284	D
+-0.311901	-0.227826	D
+-0.311167	-0.225483	D
+-0.309043	-0.221122	D
+-0.306139	-0.217164	D
+-0.300572	-0.211896	D
+-0.278748	-0.199691	D
+-0.266136	-0.194279	D
+-0.265281	-0.197271	D
+-0.264719	-0.200070	D
+-0.264430	-0.202688	D
+-0.264394	-0.205139	D
+-0.264593	-0.207437	D
+-0.265617	-0.211624	D
+-0.268428	-0.217080	D
+-0.285124	-0.235714	D
+-0.287222	-0.239366	D
+-0.288712	-0.243456	D
+-0.289181	-0.245697	D
+-0.289440	-0.248087	D
+-0.289470	-0.250639	D
+-0.282132	-0.247021	D
+-0.275302	-0.242738	D
+-0.242255	-0.213740	D
+-0.229983	-0.203982	D
+-0.223365	-0.199875	D
+-0.216291	-0.196474	D
+-0.212552	-0.195084	D
+-0.208660	-0.193925	D
+-0.204603	-0.193015	D
+-0.200369	-0.192372	D
+-0.195945	-0.192014	D
+-0.191319	-0.191959	D
+-0.211732	-0.127692	D
+-0.205563	-0.127066	D
+-0.199751	-0.127097	D
+-0.194284	-0.127750	D
+-0.189148	-0.128989	D
+-0.184332	-0.130780	D
+-0.179821	-0.133086	D
+-0.175604	-0.135872	D
+-0.171667	-0.139104	D
+-0.167999	-0.142746	D
+-0.164585	-0.146761	D
+-0.161413	-0.151116	D
+-0.158471	-0.155775	D
+-0.155746	-0.160702	D
+-0.153224	-0.165862	D
+-0.148742	-0.176740	D
+-0.143227	-0.193921	D
+-0.136409	-0.222503	D
+-0.134214	-0.233094	D
+-0.133180	-0.238067	D
+-0.132170	-0.242778	D
+-0.131173	-0.247192	D
+-0.126539	-0.247380	D
+-0.115374	-0.248526	D
+-0.097439	-0.252448	D
+-0.092093	-0.254418	D
+-0.087458	-0.256751	D
+-0.085482	-0.258059	D
+-0.083772	-0.259464	D
+-0.082360	-0.260970	D
+-0.081273	-0.262578	D
+-0.080542	-0.264291	D
+-0.080197	-0.266110	D
+-0.080266	-0.268040	D
+-0.080781	-0.270080	D
+-0.081770	-0.272235	D
+-0.083263	-0.274506	D
+-0.085290	-0.276896	D
+-0.087881	-0.279407	D
+-0.091064	-0.282041	D
+-0.095950	-0.284278	D
+-0.100658	-0.286043	D
+-0.105193	-0.287356	D
+-0.109562	-0.288238	D
+-0.113770	-0.288710	D
+-0.117824	-0.288792	D
+-0.121729	-0.288506	D
+-0.125491	-0.287873	D
+-0.129117	-0.286912	D
+
+<span class="c1">#</span>
+-0.058391	-0.065139	M	 -G255/255/255 -W0.5p,0/0/0
+-0.063996	-0.057971	D
+-0.068948	-0.050302	D
+-0.073282	-0.042194	D
+-0.078701	-0.029346	D
+-0.084094	-0.011266	D
+-0.088829	<span class="m">0</span>.016871	D
+-0.085205	<span class="m">0</span>.017229	D
+-0.081914	<span class="m">0</span>.017204	D
+-0.078938	<span class="m">0</span>.016818	D
+-0.076254	<span class="m">0</span>.016095	D
+-0.073841	<span class="m">0</span>.015055	D
+-0.071679	<span class="m">0</span>.013722	D
+-0.069748	<span class="m">0</span>.012118	D
+-0.068025	<span class="m">0</span>.010266	D
+-0.066490	<span class="m">0</span>.008187	D
+-0.063902	<span class="m">0</span>.003441	D
+-0.060907	-0.004816	D
+-0.053045	-0.032135	D
+-0.050454	-0.037577	D
+-0.048918	-0.040077	D
+-0.047194	-0.042401	D
+-0.045260	-0.044526	D
+-0.043096	-0.046430	D
+<span class="m">0</span>.033982	-0.041737	D
+<span class="m">0</span>.050451	-0.045358	D
+<span class="m">0</span>.053719	-0.046453	D
+<span class="m">0</span>.055850	-0.041709	D
+<span class="m">0</span>.058113	-0.033482	D
+<span class="m">0</span>.063107	-0.003019	D
+<span class="m">0</span>.064655	<span class="m">0</span>.002420	D
+<span class="m">0</span>.066703	<span class="m">0</span>.007263	D
+<span class="m">0</span>.067957	<span class="m">0</span>.009410	D
+<span class="m">0</span>.069388	<span class="m">0</span>.011348	D
+<span class="m">0</span>.071011	<span class="m">0</span>.013056	D
+<span class="m">0</span>.072845	<span class="m">0</span>.014514	D
+<span class="m">0</span>.074906	<span class="m">0</span>.015701	D
+<span class="m">0</span>.077211	<span class="m">0</span>.016598	D
+<span class="m">0</span>.079777	<span class="m">0</span>.017183	D
+<span class="m">0</span>.082621	<span class="m">0</span>.017437	D
+<span class="m">0</span>.085760	<span class="m">0</span>.017340	D
+<span class="m">0</span>.089211	<span class="m">0</span>.016871	D
+<span class="m">0</span>.089546	<span class="m">0</span>.010788	D
+<span class="m">0</span>.089554	<span class="m">0</span>.004569	D
+<span class="m">0</span>.089237	-0.001754	D
+<span class="m">0</span>.088602	-0.008145	D
+<span class="m">0</span>.087651	-0.014572	D
+<span class="m">0</span>.086388	-0.021000	D
+<span class="m">0</span>.084818	-0.027395	D
+<span class="m">0</span>.082945	-0.033723	D
+<span class="m">0</span>.080772	-0.039952	D
+<span class="m">0</span>.078303	-0.046046	D
+<span class="m">0</span>.075544	-0.051971	D
+<span class="m">0</span>.072497	-0.057695	D
+<span class="m">0</span>.069167	-0.063183	D
+<span class="m">0</span>.065558	-0.068401	D
+<span class="m">0</span>.061674	-0.073315	D
+<span class="m">0</span>.057518	-0.077892	D
+<span class="m">0</span>.053096	-0.082098	D
+<span class="m">0</span>.048410	-0.085898	D
+<span class="m">0</span>.043466	-0.089259	D
+<span class="m">0</span>.038266	-0.092147	D
+<span class="m">0</span>.032816	-0.094528	D
+<span class="m">0</span>.027118	-0.096369	D
+<span class="m">0</span>.021178	-0.097635	D
+<span class="m">0</span>.014999	-0.098292	D
+<span class="m">0</span>.008585	-0.098307	D
+<span class="m">0</span>.001941	-0.097646	D
+-0.004930	-0.096274	D
+-0.012024	-0.094159	D
+-0.019337	-0.091265	D
+-0.024143	-0.089511	D
+-0.028736	-0.087544	D
+-0.033123	-0.085374	D
+-0.037306	-0.083009	D
+-0.041291	-0.080455	D
+-0.045082	-0.077721	D
+-0.052098	-0.071743	D
+-0.058391	-0.065139	D
+
+<span class="c1">#</span>
+<span class="m">0</span>.073567	-0.086719	M	 -G255/255/255 -W0.5p,0/0/0
+<span class="m">0</span>.097659	-0.070760	D
+<span class="m">0</span>.121233	-0.054023	D
+<span class="m">0</span>.144294	-0.036553	D
+<span class="m">0</span>.166846	-0.018394	D
+<span class="m">0</span>.188892	<span class="m">0</span>.000410	D
+<span class="m">0</span>.210437	<span class="m">0</span>.019815	D
+<span class="m">0</span>.231485	<span class="m">0</span>.039777	D
+<span class="m">0</span>.262132	<span class="m">0</span>.070665	D
+<span class="m">0</span>.291682	<span class="m">0</span>.102557	D
+<span class="m">0</span>.320149	<span class="m">0</span>.135303	D
+<span class="m">0</span>.347546	<span class="m">0</span>.168752	D
+<span class="m">0</span>.355796	<span class="m">0</span>.173561	D
+<span class="m">0</span>.353224	<span class="m">0</span>.159286	D
+<span class="m">0</span>.349957	<span class="m">0</span>.145288	D
+<span class="m">0</span>.346023	<span class="m">0</span>.131564	D
+<span class="m">0</span>.341449	<span class="m">0</span>.118111	D
+<span class="m">0</span>.336262	<span class="m">0</span>.104926	D
+<span class="m">0</span>.330490	<span class="m">0</span>.092007	D
+<span class="m">0</span>.324161	<span class="m">0</span>.079351	D
+<span class="m">0</span>.317302	<span class="m">0</span>.066955	D
+<span class="m">0</span>.309940	<span class="m">0</span>.054816	D
+<span class="m">0</span>.302103	<span class="m">0</span>.042932	D
+<span class="m">0</span>.293818	<span class="m">0</span>.031299	D
+<span class="m">0</span>.285112	<span class="m">0</span>.019915	D
+<span class="m">0</span>.276014	<span class="m">0</span>.008777	D
+<span class="m">0</span>.266551	-0.002117	D
+<span class="m">0</span>.256749	-0.012771	D
+<span class="m">0</span>.246637	-0.023188	D
+<span class="m">0</span>.236242	-0.033369	D
+<span class="m">0</span>.225591	-0.043318	D
+<span class="m">0</span>.214712	-0.053038	D
+<span class="m">0</span>.203632	-0.062532	D
+<span class="m">0</span>.192378	-0.071802	D
+<span class="m">0</span>.169462	-0.089681	D
+<span class="m">0</span>.146181	-0.106699	D
+<span class="m">0</span>.122756	-0.122878	D
+<span class="m">0</span>.099406	-0.138240	D
+<span class="m">0</span>.097277	-0.137194	D
+<span class="m">0</span>.092353	-0.135546	D
+<span class="m">0</span>.083686	-0.133932	D
+<span class="m">0</span>.051875	-0.130556	D
+<span class="m">0</span>.046486	-0.129247	D
+<span class="m">0</span>.044076	-0.128405	D
+<span class="m">0</span>.041891	-0.127415	D
+<span class="m">0</span>.039954	-0.126261	D
+<span class="m">0</span>.038292	-0.124925	D
+<span class="m">0</span>.036929	-0.123392	D
+<span class="m">0</span>.035891	-0.121644	D
+<span class="m">0</span>.035202	-0.119665	D
+<span class="m">0</span>.034889	-0.117438	D
+<span class="m">0</span>.034975	-0.114946	D
+<span class="m">0</span>.035488	-0.112173	D
+<span class="m">0</span>.036450	-0.109102	D
+<span class="m">0</span>.048954	-0.101855	D
+<span class="m">0</span>.073567	-0.086719	D
+
+<span class="c1">#</span>
+<span class="m">0</span>.088675	-0.187655	M	 -G0/0/0 -W0.5p,0/0/0
+<span class="m">0</span>.112186	-0.193820	D
+<span class="m">0</span>.123579	-0.193549	D
+<span class="m">0</span>.129699	-0.191998	D
+<span class="m">0</span>.128899	-0.190097	D
+<span class="m">0</span>.126756	-0.186527	D
+<span class="m">0</span>.123959	-0.183276	D
+<span class="m">0</span>.118721	-0.179033	D
+<span class="m">0</span>.110235	-0.174642	D
+<span class="m">0</span>.098158	-0.171365	D
+<span class="m">0</span>.085678	-0.170776	D
+<span class="m">0</span>.076288	-0.172406	D
+<span class="m">0</span>.070034	-0.174936	D
+<span class="m">0</span>.075277	-0.179933	D
+<span class="m">0</span>.088675	-0.187655	D
+
+<span class="c1">#</span>
+-0.076578	-0.194792	M	 -G0/0/0 -W0.5p,0/0/0
+-0.071194	-0.193256	D
+-0.055193	-0.185259	D
+-0.048787	-0.179950	D
+-0.046564	-0.177159	D
+-0.045215	-0.174350	D
+-0.044920	-0.172955	D
+-0.044907	-0.171577	D
+-0.045195	-0.170221	D
+-0.045805	-0.168894	D
+-0.046759	-0.167604	D
+-0.048077	-0.166357	D
+-0.049779	-0.165159	D
+-0.051887	-0.164019	D
+-0.053457	-0.164609	D
+-0.055292	-0.165323	D
+-0.057358	-0.166151	D
+-0.064592	-0.169222	D
+-0.085463	-0.179958	D
+-0.089554	-0.182791	D
+-0.091242	-0.184175	D
+-0.092646	-0.185524	D
+-0.093732	-0.186828	D
+-0.094464	-0.188078	D
+-0.094810	-0.189263	D
+-0.094735	-0.190374	D
+-0.094204	-0.191400	D
+-0.093183	-0.192332	D
+-0.091638	-0.193159	D
+-0.089534	-0.193872	D
+-0.086838	-0.194461	D
+-0.083515	-0.194915	D
+-0.079531	-0.195226	D
+-0.076578	-0.194792	D
+
+<span class="c1">#</span>
+<span class="m">0</span>.011028	-0.160776	M	 -G0/0/0 -W0.5p,0/0/0
+<span class="m">0</span>.056817	-0.172166	D
+<span class="m">0</span>.054063	-0.166927	D
+<span class="m">0</span>.050776	-0.162424	D
+<span class="m">0</span>.047010	-0.158584	D
+<span class="m">0</span>.042823	-0.155336	D
+<span class="m">0</span>.033411	-0.150329	D
+-0.012372	-0.138945	D
+-0.009620	-0.144183	D
+-0.006334	-0.148685	D
+-0.002569	-0.152524	D
+<span class="m">0</span>.001617	-0.155771	D
+<span class="m">0</span>.011028	-0.160776	D
+
+<span class="c1">#</span>
+<span class="m">0</span>.002062	<span class="m">0</span>.083489	M	 -G0/0/0 -W0.5p,0/0/0
+-0.011328	<span class="m">0</span>.042492	D
+<span class="m">0</span>.022015	<span class="m">0</span>.042466	D
+<span class="m">0</span>.022514	<span class="m">0</span>.058581	D
+<span class="m">0</span>.017486	<span class="m">0</span>.072306	D
+<span class="m">0</span>.010463	<span class="m">0</span>.079334	D
+<span class="m">0</span>.002062	<span class="m">0</span>.083489	D
+
+<span class="c1">#</span>
+<span class="m">0</span>.027744	<span class="m">0</span>.094494	M	 -G0/0/0 -W0.5p,0/0/0
+<span class="m">0</span>.047050	<span class="m">0</span>.074325	D
+<span class="m">0</span>.052051	<span class="m">0</span>.073184	D
+<span class="m">0</span>.056641	<span class="m">0</span>.073005	D
+<span class="m">0</span>.060820	<span class="m">0</span>.073705	D
+<span class="m">0</span>.064587	<span class="m">0</span>.075200	D
+<span class="m">0</span>.067941	<span class="m">0</span>.077408	D
+<span class="m">0</span>.070881	<span class="m">0</span>.080245	D
+<span class="m">0</span>.073404	<span class="m">0</span>.083628	D
+<span class="m">0</span>.075512	<span class="m">0</span>.087474	D
+<span class="m">0</span>.077201	<span class="m">0</span>.091699	D
+<span class="m">0</span>.078472	<span class="m">0</span>.096219	D
+<span class="m">0</span>.079324	<span class="m">0</span>.100953	D
+<span class="m">0</span>.079754	<span class="m">0</span>.105816	D
+<span class="m">0</span>.079763	<span class="m">0</span>.110725	D
+<span class="m">0</span>.079348	<span class="m">0</span>.115596	D
+<span class="m">0</span>.078510	<span class="m">0</span>.120348	D
+<span class="m">0</span>.077246	<span class="m">0</span>.124895	D
+<span class="m">0</span>.075556	<span class="m">0</span>.129155	D
+<span class="m">0</span>.073439	<span class="m">0</span>.133045	D
+<span class="m">0</span>.070893	<span class="m">0</span>.136482	D
+<span class="m">0</span>.067918	<span class="m">0</span>.139381	D
+<span class="m">0</span>.064513	<span class="m">0</span>.141660	D
+<span class="m">0</span>.060676	<span class="m">0</span>.143236	D
+<span class="m">0</span>.056406	<span class="m">0</span>.144025	D
+<span class="m">0</span>.051703	<span class="m">0</span>.143944	D
+<span class="m">0</span>.046565	<span class="m">0</span>.142909	D
+<span class="m">0</span>.040991	<span class="m">0</span>.140838	D
+<span class="m">0</span>.034980	<span class="m">0</span>.137646	D
+<span class="m">0</span>.028531	<span class="m">0</span>.133251	D
+<span class="m">0</span>.021643	<span class="m">0</span>.127570	D
+<span class="m">0</span>.021048	<span class="m">0</span>.122935	D
+<span class="m">0</span>.021739	<span class="m">0</span>.109890	D
+<span class="m">0</span>.027744	<span class="m">0</span>.094494	D
+
+<span class="c1">#</span>
+-0.043960	<span class="m">0</span>.072239	M	 -G0/0/0 -W0.5p,0/0/0
+-0.038665	<span class="m">0</span>.073716	D
+-0.033745	<span class="m">0</span>.076066	D
+-0.031484	<span class="m">0</span>.077568	D
+-0.029387	<span class="m">0</span>.079288	D
+-0.027478	<span class="m">0</span>.081225	D
+-0.025779	<span class="m">0</span>.083381	D
+-0.024315	<span class="m">0</span>.085754	D
+-0.023109	<span class="m">0</span>.088345	D
+-0.022184	<span class="m">0</span>.091154	D
+-0.021564	<span class="m">0</span>.094180	D
+-0.019751	<span class="m">0</span>.095920	D
+-0.016757	<span class="m">0</span>.099805	D
+-0.014580	<span class="m">0</span>.104107	D
+-0.013191	<span class="m">0</span>.108683	D
+-0.012561	<span class="m">0</span>.113388	D
+-0.012659	<span class="m">0</span>.118077	D
+-0.013455	<span class="m">0</span>.122605	D
+-0.014920	<span class="m">0</span>.126827	D
+-0.017025	<span class="m">0</span>.130599	D
+-0.019739	<span class="m">0</span>.133776	D
+-0.023033	<span class="m">0</span>.136213	D
+-0.024888	<span class="m">0</span>.137109	D
+-0.026877	<span class="m">0</span>.137766	D
+-0.028996	<span class="m">0</span>.138165	D
+-0.031241	<span class="m">0</span>.138289	D
+-0.033609	<span class="m">0</span>.138119	D
+-0.036096	<span class="m">0</span>.137638	D
+-0.038698	<span class="m">0</span>.136827	D
+-0.041412	<span class="m">0</span>.135668	D
+-0.064246	<span class="m">0</span>.124073	D
+-0.073753	<span class="m">0</span>.116470	D
+-0.076949	<span class="m">0</span>.111753	D
+-0.078293	<span class="m">0</span>.108180	D
+-0.078901	<span class="m">0</span>.104218	D
+-0.078682	<span class="m">0</span>.099828	D
+-0.078233	<span class="m">0</span>.097460	D
+-0.077543	<span class="m">0</span>.094970	D
+-0.077260	<span class="m">0</span>.091882	D
+-0.076648	<span class="m">0</span>.089013	D
+-0.075730	<span class="m">0</span>.086363	D
+-0.074531	<span class="m">0</span>.083933	D
+-0.073073	<span class="m">0</span>.081721	D
+-0.071380	<span class="m">0</span>.079728	D
+-0.069475	<span class="m">0</span>.077954	D
+-0.067383	<span class="m">0</span>.076399	D
+-0.065126	<span class="m">0</span>.075062	D
+-0.060211	<span class="m">0</span>.073046	D
+-0.054920	<span class="m">0</span>.071903	D
+-0.049441	<span class="m">0</span>.071634	D
+-0.043960	<span class="m">0</span>.072239	D
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../../changes.html" class="btn btn-neutral float-right" title="Changelog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../geology/geo-plane_vert.html" class="btn btn-neutral float-left" title="Strike of vertical beds" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

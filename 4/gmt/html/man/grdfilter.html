@@ -1,0 +1,398 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:18 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GRDFILTER</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GRDFILTER</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#GRID FILE FORMATS">GRID FILE FORMATS</a><br>
+<a href="#GEOGRAPHICAL AND TIME COORDINATES">GEOGRAPHICAL AND TIME COORDINATES</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#LIMITATIONS">LIMITATIONS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">grdfilter
+&minus; Filter a 2-D grid file in the space (or time)
+domain</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdfilter</b>
+<i>input_file</i> <b>&minus;D</b><i>distance_flag</i>
+<b>&minus;F</b><i>&lt;filtertype&gt;&lt;width&gt;</i>[<i>mode</i>]
+<b>&minus;G</b><i>output_file</i> [
+<b>&minus;I</b><i>xinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>][/<i>yinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>]]
+] [ <b>&minus;Ni</b>|<b>p</b>|<b>r</b> ] [
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;T</b> ] [ <b>&minus;V</b> ] [
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdfilter</b>
+will filter a <i>.grd</i> file in the time domain using one
+of the selected convolution or non-convolution isotropic
+filters and compute distances using Cartesian or Spherical
+geometries. The output <i>.grd</i> file can optionally be
+generated as a subOPT(R)egion of the input and/or with a new
+<b>&minus;I</b> ncrement. In this way, one may have
+&quot;extra space&quot; in the input data so that the edges
+will not be used and the output can be within one-half-
+width of the input edges. If the filter is low-pass, then
+the output may be less frequently sampled than the input.
+<i><br>
+input_file</i></p>
+
+<p style="margin-left:22%;">The grid file of points to be
+filtered. (See GRID FILE FORMATS below).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Distance
+<i>flag</i> tells how grid (x,y) relates to filter
+<i>width</i> as follows:</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em"><i>flag</i> =
+0: grid (x,y) same units as <i>width</i>, Cartesian
+distances. <i><br>
+flag</i> = 1: grid (x,y) in degrees, <i>width</i> in
+kilometers, Cartesian distances. <i><br>
+flag</i> = 2: grid (x,y) in degrees, <i>width</i> in km, dx
+scaled by cos(middle y), Cartesian distances.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The above
+options are fastest because they allow weight matrix to be
+computed only once. The next three options are slower
+because they recompute weights for each latitude.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><i>flag</i> =
+3: grid (x,y) in degrees, <i>width</i> in km, dx scaled by
+cosine(y), Cartesian distance calculation. <i><br>
+flag</i> = 4: grid (x,y) in degrees, <i>width</i> in km,
+Spherical distance calculation. <i><br>
+flag</i> = 5: grid (x,y) in Mercator -Jm1 img units,
+<i>width</i> in km, Spherical distance calculation.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the filter
+type. Choose among convolution and non-convolution filters.
+Append the filter code followed by the full diameter
+<i>width</i>. Available convolution filters are:</p></td>
+</table>
+
+<p style="margin-left:22%;">(<b>b</b>) Boxcar: All weights
+are equal. <br>
+(<b>c</b>) Cosine Arch: Weights follow a cosine arch curve.
+<br>
+(<b>g</b>) Gaussian: Weights are given by the Gaussian
+function, where <i>width</i> is 6 times the conventional
+Gaussian sigma. <br>
+Non-convolution filters are: <br>
+(<b>m</b>) Median: Returns median value. <br>
+(<b>p</b>) Maximum likelihood probability (a mode
+estimator): Return modal value. If more than one mode is
+found we return their average value. Append - or + to the
+filter width if you rather want to return the smallest or
+largest of the modal values. <br>
+(<b>l</b>) Lower: Return the minimum of all values. <br>
+(<b>L</b>) Lower: Return minimum of all positive values
+only. <br>
+(<b>u</b>) Upper: Return maximum of all values. <br>
+(<b>U</b>) Upper: Return maximum or all negative values
+only. <br>
+In the case of <b>L</b>|<b>U</b> it is possible that no data
+passes the initial sign test; in that case the filter will
+return 0.0.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>output_file</i>
+is the output grid file of the filter. (See GRID FILE
+FORMATS below).</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>x_inc</i> [and
+optionally <i>y_inc</i>] is the output Increment. Append
+<b>m</b> to indicate minutes, or <b>c</b> to indicate
+seconds. If the new <i>x_inc, y_inc</i> are NOT integer
+multiples of the old ones (in the input data), filtering
+will be considerably slower. [Default: Same as input.]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Determine how
+NaN-values in the input grid affects the filtered outout:
+Append <b>i</b> to ignore all NaNs in the calculation of
+filtered value [Default], <b>r</b> is same as <b>i</b>
+except if the input node was NaN then the output node will
+be set to NaN (only applies if both grids are coregistered),
+and <b>p</b> which will force the filtered value to be NaN
+if any grid-nodes with NaN-values are found inside the
+filter circle.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> defines the Region of the output
+points. [Default: Same as input.]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggle the node
+registration for the output grid so as to become the
+opposite of the input grid [Default gives the same
+registration as the input grid].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+</table>
+
+<a name="GRID FILE FORMATS"></a>
+<h2>GRID FILE FORMATS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">By default
+<b><A HREF="GMT.html">GMT</A></b> writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, <b><A HREF="GMT.html">GMT</A></b> is
+able to produce grid files in many other commonly used grid
+file formats and also facilitates so called
+&quot;packing&quot; of grids, writing out floating point
+data as 2- or 4-byte integers. To specify the precision,
+scale and offset, the user should add the suffix
+<b>=</b><i>id</i>[<b>/</b><i>scale</i><b>/</b><i>offset</i>[<b>/</b><i>nan</i>]],
+where <i>id</i> is a two-letter identifier of the grid type
+and precision, and <i>scale</i> and <i>offset</i> are
+optional scale factor and offset to be applied to all grid
+values, and <i>nan</i> is the value used to indicate missing
+data. When reading grids, the format is generally
+automatically recognized. If not, the same suffix can be
+added to input grid file names. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1)
+and Section 4.17 of the GMT Technical Reference and Cookbook
+for more information.</p>
+
+<p style="margin-left:11%; margin-top: 1em">When reading a
+netCDF file that contains multiple grids, <b><A HREF="GMT.html">GMT</A></b> will
+read, by default, the first 2-dimensional grid that can find
+in that file. To coax <b><A HREF="GMT.html">GMT</A></b> into reading another
+multi-dimensional variable in the grid file, append
+<b>?</b><i>varname</i> to the file name, where
+<i>varname</i> is the name of the variable. Note that you
+may need to escape the special meaning of <b>?</b> in your
+shell program by putting a backslash in front of it, or by
+placing the filename and suffix between quotes or double
+quotes. The <b>?</b><i>varname</i> suffix can also be used
+for output grids to specify a variable name different from
+the default: &quot;z&quot;. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and
+Section 4.18 of the GMT Technical Reference and Cookbook for
+more information, particularly on how to read splices of 3-,
+4-, or 5-dimensional grids.</p>
+
+<a name="GEOGRAPHICAL AND TIME COORDINATES"></a>
+<h2>GEOGRAPHICAL AND TIME COORDINATES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">When the output
+grid type is netCDF, the coordinates will be labeled
+&quot;longitude&quot;, &quot;latitude&quot;, or
+&quot;time&quot; based on the attributes of the input data
+or grid (if any) or on the <b>&minus;f</b> or
+<b>&minus;R</b> options. For example, both <b>&minus;f0x
+&minus;f1t</b> and <b>&minus;R</b> 90w/90e/0t/3t will result
+in a longitude/time grid. When the x, y, or z coordinate is
+time, it will be stored in the grid as relative time since
+epoch as specified by <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> and <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>
+in the .gmtdefaults file or on the command line. In
+addition, the <b>unit</b> attribute of the time variable
+will indicate both this unit and epoch.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Suppose that
+north_pacific_dbdb5.grd is a file of 5 minute bathymetry
+from 140E to 260E and 0N to 50N, and you want to find the
+medians of values within a 300km radius (600km full width)
+of the output points, which you choose to be from 150E to
+250E and 10N to 40N, and you want the output values every
+0.5 degree. Using spherical distance calculations, you
+need:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdfilter</b>
+north_pacific_dbdb5.grd <b>&minus;G</b> filtered_pacific.grd
+<b>&minus;Fm</b> 600 <b>&minus;D</b> 4 <b>&minus;R</b>
+150/250/10/40 <b>&minus;I</b> 0.5 <b>&minus;V</b></p>
+
+<a name="LIMITATIONS"></a>
+<h2>LIMITATIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">When working
+with geographic (lat, lon) grids, all three convolution
+filters (boxcar, cosine arch, and gaussian) will properly
+normalize the filter weights for the variation in gridbox
+size with latitude, and correctly determine which nodes are
+needed for the convolution when the filter
+&quot;circle&quot; crosses a periodic (0-360) boundary or
+contains a geographic pole. However, the spatial filters,
+such as median and mode filters, do not use weights and thus
+should only be used on Cartesian grids (or at very low
+latitudes) only. If you want to apply such spatial filters
+you should project your data to an equal-area projection and
+run grdfilter on the resulting Cartesian grid. <br>
+To use the <b>&minus;D</b> 5 option the input Mercator grid
+must be created by img2mercgrd using the <b>&minus;C</b>
+option so the origin of the y-values is the Equator (i.e., x
+= y = 0 correspond to lon = lat = 0).</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grdfft.html">grdfft</A></i>(1) <i><A HREF="img2mercgrd.html">img2mercgrd</A></i>(1)</p>
+<hr>
+</body>
+</html>

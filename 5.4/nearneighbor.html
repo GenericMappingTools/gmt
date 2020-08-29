@@ -1,0 +1,358 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>nearneighbor &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="project" href="project.html" />
+    <link rel="prev" title="mapproject" href="mapproject.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="project.html" title="project"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="mapproject.html" title="mapproject"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="nearneighbor">
+<span id="index-0"></span><h1>nearneighbor<a class="headerlink" href="#nearneighbor" title="Permalink to this headline">¶</a></h1>
+<p>nearneighbor - Grid table data using a “Nearest neighbor” algorithm</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>nearneighbor</strong> [ <em>table</em> ] <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>out_grdfile</em>
+<a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>increment</em>
+<a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>sectors</em>[/<em>min_sectors</em>]
+<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
+<a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>search_radius</em>[<em>unit</em>]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>empty</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong> ]
+[ <strong>-bi</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-n</strong><a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-r</strong> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>nearneighbor</strong> reads arbitrarily located (x,y,z[,w]) triples
+[quadruplets] from standard input [or <em>table</em>] and uses a nearest
+neighbor algorithm to assign an average value to each node that have one
+or more points within a radius centered on the node. The average value
+is computed as a weighted mean of the nearest point from each sector
+inside the search radius. The weighting function used is w(r) = 1 / (1 +
+d ^ 2), where d = 3 * r / search_radius and r is distance from the
+node. This weight is modulated by the weights of the observation points [if
+supplied].</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>out_grdfile</em></dt>
+<dd>Give the name of the output grid file.</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>]]</dt>
+<dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
+append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>: Append
+<strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc seconds. If one
+of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or <strong>u</strong> is appended
+instead, the increment is assumed to be given in meter, foot, km, Mile,
+nautical mile or US survey foot, respectively, and will be converted to
+the equivalent degrees longitude at the middle latitude of the region
+(the conversion depends on <a class="reference internal" href="gmt.conf.html#projection-parameters"><span class="std std-ref">PROJ_ELLIPSOID</span></a>). If <em>y_inc</em> is given
+but set to 0 it will be reset equal to <em>x_inc</em>; otherwise it will be
+converted to degrees latitude. <strong>All coordinates</strong>: If <strong>+e</strong> is appended
+then the corresponding max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly
+adjusted to fit exactly the given increment [by default the increment
+may be adjusted slightly to fit the given domain]. Finally, instead of
+giving an increment you may specify the <em>number of nodes</em> desired by
+appending <strong>+n</strong> to the supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The resulting
+increment value depends on whether you have selected a
+gridline-registered or pixel-registered grid; see <a class="reference internal" href="GMT_Docs.html#app-file-formats"><span class="std std-ref">GMT File Formats</span></a> for
+details. Note: if <strong>-R</strong><em>grdfile</em> is used then the grid spacing has
+already been initialized; use <strong>-I</strong> to override the values.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong><em>sectors</em>[/<em>min_sectors</em>]</dt>
+<dd>The circular area centered on each node is divided into <em>sectors</em>
+sectors. Average values will only be computed if there is at least
+one value inside each of at least <em>min_sectors</em> of the sectors for a given
+node. Nodes that fail this test are assigned the value NaN (but see
+<strong>-E</strong>). If <em>min_sectors</em> is omitted it is set to be at least 50%
+of <em>sectors</em> (i.e., rounded up to next integer).  [Default is a quadrant
+search with 100% coverage, i.e., <em>sectors</em> = <em>min_sectors</em> = 4]. Note
+that only the nearest value per sector enters into the averaging; the
+more distant points are ignored.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest.  </dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><em>search_radius</em>[<em>unit</em>]</dt>
+<dd>Sets the <em>search_radius</em> that determines which data points are
+considered close to a node. Append the distance unit (see UNITS).</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>3 [or 4, see <strong>-W</strong>] column ASCII file(s) [or binary, see
+<strong>-bi</strong>] holding (x,y,z[,w]) data values. If
+no file is specified, <strong>nearneighbor</strong> will read from standard input.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong><em>empty</em></dt>
+<dd>Set the value assigned to empty nodes [NaN].</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong></dt>
+<dd>Input data have a 4th column containing observation point weights.
+These are multiplied with the geometrical weight factor to determine
+the actual weights used in the calculations.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input. [Default is 3 (or 4 if <strong>-W</strong> is set) columns].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-di</strong><em>nodata</em> <a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+<dt><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+t</strong><em>threshold</em>]</dt>
+<dd>Append <strong>+b</strong><em>BC</em> to set any boundary conditions to be used,
+adding <strong>g</strong> for geographic, <strong>p</strong> for periodic, or <strong>n</strong> for
+natural boundary conditions. For the latter two you may append <strong>x</strong>
+or <strong>y</strong> to specify just one direction, otherwise both are assumed.
+[Default is geographic if grid is geographic].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-r</strong> <a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set pixel node registration [gridline].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc9">Units</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
+and <strong>u</strong> for US survey foot. By default we compute such distances using
+a spherical approximation with great circles. Prepend <strong>-</strong> to a
+distance (or the unit is no distance is given) to perform “Flat Earth”
+calculations (quicker but less accurate) or prepend <strong>+</strong> to perform
+exact geodesic calculations (slower but more accurate).</p>
+</div>
+<div class="section" id="grid-values-precision">
+<h2>Grid Values Precision<a class="headerlink" href="#grid-values-precision" title="Permalink to this headline">¶</a></h2>
+<p>Regardless of the precision of the input data, GMT programs that create
+grid files will internally hold the grids in 4-byte floating point
+arrays. This is done to conserve memory and furthermore most if not all
+real data can be stored using 4-byte floating point values. Data with
+higher precision (i.e., double precision values) will lose that
+precision once GMT operates on the grid or writes out new grids. To
+limit loss of precision when processing data you should always consider
+normalizing the data prior to processing.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To create a gridded data set from the file seaMARCII_bathy.lon_lat_z
+using a 0.5 min grid, a 5 km search radius, using an octant search with
+100% sector coverage, and set empty nodes to -9999:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">nearneighbor</span> <span class="n">seaMARCII_bathy</span><span class="o">.</span><span class="n">lon_lat_z</span> <span class="o">-</span><span class="n">R242</span><span class="o">/</span><span class="mi">244</span><span class="o">/-</span><span class="mi">22</span><span class="o">/-</span><span class="mi">20</span> <span class="o">-</span><span class="n">I0</span><span class="o">.</span><span class="mi">5</span><span class="n">m</span> \
+                 <span class="o">-</span><span class="n">E</span><span class="o">-</span><span class="mi">9999</span> <span class="o">-</span><span class="n">Gbathymetry</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">S5k</span> <span class="o">-</span><span class="n">N8</span><span class="o">/</span><span class="mi">8</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To make a global grid file from the data in geoid.xyz using a 1 degree
+grid, a 200 km search radius, spherical distances, using an quadrant
+search, and set nodes to NaN only when fewer than two quadrants contain
+at least one value:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">nearneighbor</span> <span class="n">geoid</span><span class="o">.</span><span class="n">xyz</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mi">360</span><span class="o">/-</span><span class="mi">90</span><span class="o">/</span><span class="mi">90</span> <span class="o">-</span><span class="n">I1</span> <span class="o">-</span><span class="n">Lg</span> <span class="o">-</span><span class="n">Ggeoid</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">S200k</span> <span class="o">-</span><span class="n">N4</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="blockmean.html"><span class="doc">blockmean</span></a>,
+<a class="reference internal" href="blockmedian.html"><span class="doc">blockmedian</span></a>,
+<a class="reference internal" href="blockmode.html"><span class="doc">blockmode</span></a>, <a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a>,
+<a class="reference internal" href="sphtriangulate.html"><span class="doc">sphtriangulate</span></a>,
+<a class="reference internal" href="surface.html"><span class="doc">surface</span></a>,
+<a class="reference internal" href="triangulate.html"><span class="doc">triangulate</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">nearneighbor</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id1">Units</a></li>
+<li><a class="reference internal" href="#grid-values-precision">Grid Values Precision</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mapproject.html"
+                        title="previous chapter">mapproject</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="project.html"
+                        title="next chapter">project</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/nearneighbor.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="project.html" title="project"
+             >next</a> </li>
+        <li class="right" >
+          <a href="mapproject.html" title="mapproject"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

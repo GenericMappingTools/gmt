@@ -1,0 +1,382 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>trend1d &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="trend2d" href="trend2d.html" />
+    <link rel="prev" title="surface" href="surface.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="trend2d.html" title="trend2d"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="surface.html" title="surface"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="trend1d">
+<span id="index-0"></span><h1>trend1d<a class="headerlink" href="#trend1d" title="Permalink to this headline">¶</a></h1>
+<p>trend1d - Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>trend1d</strong> [ <em>table</em> ] <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><strong>xymrw|p|P|c</strong> <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>params</em>
+[ <em>xy[w]file</em> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>condition_number</em> ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong>[<em>confidence_level</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong> ]
+[ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>trend1d</strong> reads x,y [and w] values from the first two [three] columns
+on standard input [or <em>file</em>] and fits a regression model y = f(x) + e
+by [weighted] least squares. The functional form of f(x) may be chosen
+as polynomial or Fourier or a mix of the two, and the fit may be made robust by iterative
+reweighting of the data. The user may also search for the number of
+terms in f(x) which significantly reduce the variance in y.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><strong>xymrw|p|P|c</strong></dt>
+<dd>Specify up to five letters from the set {<strong>x y m r w</strong>} in any
+order to create columns of ASCII [or binary] output. <strong>x</strong> = x,
+<strong>y</strong> = y, <strong>m</strong> = model f(x), <strong>r</strong> = residual y - <strong>m</strong>, <strong>w</strong> =
+weight used in fitting. Alternatively, choose just the single
+selection <strong>p</strong> to output a record with the polynomial model coefficients,
+<strong>P</strong> for the normalized polynomial model coefficients, or <strong>c</strong>
+for the normalized Chebyshev model coefficients.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong>[<strong>p</strong>|<strong>P</strong>|<strong>f</strong>|<strong>F</strong>|<strong>c</strong>|<strong>C</strong>|<strong>s</strong>|<strong>S</strong>|<strong>x</strong>]<em>n</em>[,…][<strong>+l</strong><em>length</em>][<strong>+o</strong><em>origin</em>][<strong>+r</strong>]</dt>
+<dd>Specify the components of the (possibly mixed) model.  Append
+one or more comma-separated model components.  Each component is
+of the form <strong>T</strong><em>n</em>, where <strong>T</strong> indicates the basis function and
+<em>n</em> indicates the polynomial degree or how many terms in the Fourier series we want to include.  Choose
+<strong>T</strong> from <strong>p</strong> (polynomial with intercept and powers of x up to degree <em>n</em>), <strong>P</strong> (just the
+single term <em>x^n</em>), <strong>f</strong> (Fourier series with <em>n</em> terms),
+<strong>c</strong> (Cosine series with <em>n</em> terms), <strong>s</strong> (sine series with
+<em>n</em> terms), <strong>F</strong> (single Fourier component of order <em>n</em>),
+<strong>C</strong> (single cosine component of order <em>n</em>), and
+<strong>S</strong> (single sine component of order <em>n</em>).  By default the
+<em>x</em>-origin and fundamental period is set to the mid-point and data
+range, respectively.  Change this using the <strong>+o</strong><em>origin</em> and
+<strong>+l</strong><em>length</em> modifiers.  We normalize <em>x</em> before evaluating
+the basis functions.  Basically, the trigonometric bases all
+use the normalized x’ = (2*pi*(x-<em>origin</em>)/<em>length</em>) while
+the polynomials use x’ = 2*(x-x_mid)/(xmax - xmin) for stability. Finally, append <strong>+r</strong> for a robust
+solution [Default gives a least squares fit].  Use <strong>-V</strong> to see
+a plain-text representation of the y(x) model specified in <strong>-N</strong>.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII [or binary, see <strong>-bi</strong>]
+files containing x,y [w] values in the first 2 [3] columns. If no
+files are specified, <strong>trend1d</strong> will read from standard input.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>condition_number</em></dt>
+<dd>Set the maximum allowed condition number for the matrix solution.
+<strong>trend1d</strong> fits a damped least squares model, retaining only that
+part of the eigenvalue spectrum such that the ratio of the largest
+eigenvalue to the smallest eigenvalue is <em>condition_#</em>. [Default:
+<em>condition_#</em> = 1.0e06. ].</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong>[<em>confidence_level</em>]</dt>
+<dd>Iteratively increase the number of model parameters, starting at
+one, until <em>n_model</em> is reached or the reduction in variance of the
+model is not significant at the <em>confidence_level</em> level. You may
+set <strong>-I</strong> only, without an attached number; in this case the fit
+will be iterative with a default confidence level of 0.51. Or choose
+your own level between 0 and 1. See remarks section.  Note that the
+model terms are added in the order they were given in <strong>-N</strong> so you
+should place the most important terms first.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong></dt>
+<dd>Weights are supplied in input column 3. Do a weighted least squares
+fit [or start with these weights when doing the iterative robust
+fit]. [Default reads only the first 2 columns.]</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input. [Default is 2 (or 3 if <strong>-W</strong> is set) columns].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output. [Default is 1-5 columns as given by <strong>-F</strong>].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em> <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="ascii-format-precision">
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-geo-out"><span class="std std-ref">FORMAT_GEO_OUT</span></a>, absolute time is
+under the control of <a class="reference internal" href="gmt.conf.html#format-date-out"><span class="std std-ref">FORMAT_DATE_OUT</span></a> and
+<a class="reference internal" href="gmt.conf.html#format-clock-out"><span class="std std-ref">FORMAT_CLOCK_OUT</span></a>, whereas general floating point values are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a>. Be aware that the format in effect
+can lead to loss of precision in ASCII output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a> setting.</p>
+</div>
+<div class="section" id="remarks">
+<h2>Remarks<a class="headerlink" href="#remarks" title="Permalink to this headline">¶</a></h2>
+<p>If a polynomial model is included, then the domain of x will be shifted and scaled
+to [-1, 1] and the basis functions will be Chebyshev polynomials provided
+the polygon is of full order (otherwise we stay with powers of x). The Chebyshev polynomials
+have a numerical advantage in the form of the matrix which must be
+inverted and allow more accurate solutions. The Chebyshev polynomial of
+degree n has n+1 extrema in [-1, 1], at all of which its value is either
+-1 or +1. Therefore the magnitude of the polynomial model coefficients
+can be directly compared. NOTE: The stable model coefficients are
+Chebyshev coefficients. The corresponding polynomial coefficients in a +
+bx + cxx + … are also given in Verbose mode but users must realize
+that they are NOT stable beyond degree 7 or 8. See Numerical Recipes for
+more discussion. For evaluating Chebyshev polynomials, see <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>.</p>
+<p>The <strong>-N</strong>…<strong>+r</strong> (robust) and <strong>-I</strong> (iterative) options evaluate the
+significance of the improvement in model misfit Chi-Squared by an F
+test. The default confidence limit is set at 0.51; it can be changed
+with the <strong>-I</strong> option. The user may be surprised to find that in most
+cases the reduction in variance achieved by increasing the number of
+terms in a model is not significant at a very high degree of confidence.
+For example, with 120 degrees of freedom, Chi-Squared must decrease by
+26% or more to be significant at the 95% confidence level. If you want
+to keep iterating as long as Chi-Squared is decreasing, set
+<em>confidence_level</em> to zero.</p>
+<p>A low confidence limit (such as the default value of 0.51) is needed to
+make the robust method work. This method iteratively reweights the data
+to reduce the influence of outliers. The weight is based on the Median
+Absolute Deviation and a formula from Huber [1964], and is 95% efficient
+when the model residuals have an outlier-free normal distribution. This
+means that the influence of outliers is reduced only slightly at each
+iteration; consequently the reduction in Chi-Squared is not very
+significant. If the procedure needs a few iterations to successfully
+attenuate their effect, the significance level of the F test must be
+kept low.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To remove a linear trend from data.xy by ordinary least squares, use:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">trend1d</span> <span class="n">data</span><span class="o">.</span><span class="n">xy</span> <span class="o">-</span><span class="n">Fxr</span> <span class="o">-</span><span class="n">Np1</span> <span class="o">&gt;</span> <span class="n">detrended_data</span><span class="o">.</span><span class="n">xy</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To make the above linear trend robust with respect to outliers, use:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">trend1d</span> <span class="n">data</span><span class="o">.</span><span class="n">xy</span> <span class="o">-</span><span class="n">Fxr</span> <span class="o">-</span><span class="n">Np1</span><span class="o">+</span><span class="n">r</span> <span class="o">&gt;</span> <span class="n">detrended_data</span><span class="o">.</span><span class="n">xy</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To fit the model y(x) = a + bx^2 + c * cos(2*pi*3*(x/l) + d * sin(2*pi*3*(x/l), with l the fundamental period (here l = 15), try:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">trend1d</span> <span class="n">data</span><span class="o">.</span><span class="n">xy</span> <span class="o">-</span><span class="n">Fxm</span> <span class="o">-</span><span class="n">NP0</span><span class="p">,</span><span class="n">P2</span><span class="p">,</span><span class="n">F3</span><span class="o">+</span><span class="n">l15</span> <span class="o">&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">xy</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To find out how many terms (up to 20, say in a robust Fourier
+interpolant are significant in fitting data.xy, use:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">trend1d</span> <span class="n">data</span><span class="o">.</span><span class="n">xy</span> <span class="o">-</span><span class="n">Nf20</span><span class="o">+</span><span class="n">r</span> <span class="o">-</span><span class="n">I</span> <span class="o">-</span><span class="n">V</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>,
+<a class="reference internal" href="gmtregress.html"><span class="doc">gmtregress</span></a>,
+<a class="reference internal" href="grdtrend.html"><span class="doc">grdtrend</span></a>,
+<a class="reference internal" href="trend2d.html"><span class="doc">trend2d</span></a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Huber, P. J., 1964, Robust estimation of a location parameter, <em>Ann.
+Math. Stat.</em>, <strong>35</strong>, 73-101.</p>
+<p>Menke, W., 1989, Geophysical Data Analysis: Discrete Inverse Theory,
+Revised Edition, Academic Press, San Diego.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">trend1d</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#ascii-format-precision">ASCII Format Precision</a></li>
+<li><a class="reference internal" href="#remarks">Remarks</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="surface.html"
+                        title="previous chapter">surface</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="trend2d.html"
+                        title="next chapter">trend2d</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/trend1d.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="trend2d.html" title="trend2d"
+             >next</a> </li>
+        <li class="right" >
+          <a href="surface.html" title="surface"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

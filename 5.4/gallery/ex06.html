@@ -1,0 +1,164 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(6) Plotting of histograms &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(7) A simple location map" href="ex07.html" />
+    <link rel="prev" title="(5) A 3-D illuminated surface (in bw)" href="ex05.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex07.html" title="(7) A simple location map"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex05.html" title="(5) A 3-D illuminated surface (in bw)"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="plotting-of-histograms">
+<span id="example-06"></span><h1>(6) Plotting of histograms<a class="headerlink" href="#plotting-of-histograms" title="Permalink to this headline">¶</a></h1>
+<p>GMT provides two tools to render histograms:
+<a class="reference internal" href="../pshistogram.html"><span class="doc">pshistogram</span></a> and <a class="reference internal" href="../psrose.html"><span class="doc">psrose</span></a>. The former takes care of
+regular histograms whereas the latter deals with polar histograms (rose
+diagrams, sector diagrams, and wind rose diagrams). We will show an
+example that involves both programs. The file <code class="docutils literal notranslate"><span class="pre">fractures.yx</span></code> contains a compilation of
+fracture lengths and directions as digitized from geological maps. The
+file <code class="docutils literal notranslate"><span class="pre">v3206.t</span></code> contains all the bathymetry measurements from <em>Vema</em> cruise 3206.
+Our complete figure was made running
+this script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 06</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Make standard and polar histograms</span>
+<span class="c1"># GMT modules:	pshistogram, psrose</span>
+<span class="c1"># Unix progs:	rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_06.ps
+gmt psrose fractures.txt -: -A10r -S1.8in -P -Gorange -R0/1/0/360 -X2.5i -K -Bx0.2g0.2 <span class="se">\</span>
+	-By30g30 -B+glightblue -W1p &gt; <span class="nv">$ps</span>
+gmt pshistogram -Bxa2000f1000+l<span class="s2">&quot;Topography (m)&quot;</span> -Bya10f5+l<span class="s2">&quot;Frequency&quot;</span>+u<span class="s2">&quot; %&quot;</span> <span class="se">\</span>
+	-BWSne+t<span class="s2">&quot;Histograms&quot;</span>+glightblue v3206.t -R-6000/0/0/30 -JX4.8i/2.4i -Gorange -O <span class="se">\</span>
+	-Y5.0i -X-0.5i -L1p -Z1 -W250 &gt;&gt; <span class="nv">$ps</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_06.png"><img alt="../_images/example_06.png" src="../_images/example_06.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Two kinds of histograms.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex05.html"
+                        title="previous chapter">(5) A 3-D illuminated surface (in bw)</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex07.html"
+                        title="next chapter">(7) A simple location map</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex06.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex07.html" title="(7) A simple location map"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex05.html" title="(5) A 3-D illuminated surface (in bw)"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

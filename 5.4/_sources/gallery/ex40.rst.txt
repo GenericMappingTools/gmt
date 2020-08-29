@@ -1,0 +1,18 @@
+.. _example_40:
+
+(40) Line simplification
+------------------------
+
+This example demonstrate the Douglas-Peucker line simplification algorithm as
+implemented in the tool :doc:`gmtsimplify </gmtsimplify>`.  We show the full
+resolution coastline of Australia and two much simplified versions using two
+different thresholds.
+
+.. literalinclude:: /_verbatim/example_40.txt
+   :language: bash
+
+.. figure:: /_images/example_40.*
+   :width: 500 px
+   :align: center
+
+   Illustrate line simplification and area calculations.

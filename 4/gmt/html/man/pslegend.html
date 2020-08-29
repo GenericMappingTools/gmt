@@ -1,0 +1,792 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:27 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>PSLEGEND</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>PSLEGEND</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#WINDOWS REMARKS">WINDOWS REMARKS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">pslegend
+&minus; To plot a map legend</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>pslegend</b>
+<i>textfile</i>
+<b>&minus;D</b>[<b>x</b>]<i>lon</i>/<i>lat</i>/<i>width</i>/<i>height</i>/<i>just</i>
+<b>&minus;J</b><i>parameters</i>
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+[ <b>&minus;B</b>[<b>p</b>|<b>s</b>]<i>parameters</i> ] [
+<b>&minus;C</b><i>dx</i>/<i>dy</i> ] [ <b>&minus;F</b> ] [
+<b>&minus;G</b><i>fill</i> ] [ <b>&minus;K</b> ] [
+<b>&minus;L</b><i>spacing</i> ] [ <b>&minus;O</b> ] [
+<b>&minus;P</b> ] [ <b>&minus;S</b>[<i>script</i>] ] [
+<b>&minus;U</b>[<i>just</i>/<i>dx</i>/<i>dy</i>/][<b>c</b>|<i>label</i>]
+] [ <b>&minus;V</b> ] [
+<b>&minus;X</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>x-shift</i>[<b>u</b>]]
+] [ <b>&minus;c</b><i>copies</i> ] [
+<b>&minus;Y</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>y-shift</i>[<b>u</b>]]
+]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>pslegend</b>
+will make legends that can be overlaid on maps. It reads
+specific legend-related information from an input file [or
+stdin]. Because all the elements of the legend can already
+be created with other tools (<b><A HREF="psxy.html">psxy</A></b>, <b><A HREF="pstext.html">pstext</A></b>) we
+use those tools by creating a batch job of commands that are
+executed to make the final <i>PostScript</i> overlay.
+Because of this process, the option exists to just output
+the script which can then be fine-tuned manually. Unless
+otherwise noted, annotations will be made using the
+annotation font and size in effect. <i><br>
+textfile</i></p>
+
+<p style="margin-left:22%;">This file contains instruction
+for the layout of items in the legend. Each legend item is
+described by a unique record. All records begin with a
+unique character that is common to all records of the same
+kind. The order of the legend items is implied by the order
+of the records. Ten different record types are recognized,
+and the syntax for each of these records are presented
+below:</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>#</b>
+<i>comment</i> Records starting with # and blank lines are
+skipped. <b><br>
+B</b> <i>cptname offset height</i> [ <i>optional
+arguments</i> ]</p>
+
+<p style="margin-left:32%;">The <b>B</b> record will plot a
+horizontal color bar, <b><A HREF="psscale.html">psscale</A></b>-style in the middle,
+starting at <i>offset</i> from the left edge, and of the
+given <i>height</i>. You may add any additional
+<i><A HREF="psscale.html">psscale</A></i> options from the list: <b>&minus;A &minus;B
+&minus;E &minus;I &minus;L &minus;M &minus;N &minus;S</b>
+and <b>&minus;Z</b>.</p>
+
+<p style="margin-left:22%;"><b>C</b> <i>textcolor</i></p>
+
+<p style="margin-left:32%;">The <b>C</b> record specifies
+the color with which the remaining text is to be printed.
+<i>textcolor</i> can be in the form <i>r/g/b</i>,
+<i>c/m/y/k</i>, or a named color.</p>
+
+<p style="margin-left:22%;"><b>D</b> <i>offset pen</i></p>
+
+<p style="margin-left:32%;">The <b>D</b> record results in
+a horizontal line with specified <i>pen</i> across the
+legend with one quarter of the line spacing left blank above
+and below the line. Two gaps of <i>offset</i> units are left
+blank between the horizontal line and the left and right
+frame sides. (See SPECIFYING PENS below).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em" valign="top"><b>G</b>
+<i>gap</i></p> </td>
+<td width="3%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">The <b>G</b> record
+specifies a vertical gap of the given length. In addition to
+the standard units (<b>i</b>, <b>c</b>, <b>p</b>) you may
+use <b>l</b> for lines.</p></td>
+</table>
+
+<p style="margin-left:22%;"><b>H</b>
+<i>fontsize</i>|<b>-</b> <i>font</i>|<b>-</b> header</p>
+
+<p style="margin-left:32%;">The <b>H</b> record plots a
+centered text string using the specified font parameters.
+Use <b>-</b> to default to <b><A HREF="gmtdefaults.html#HEADER_FONT_SIZE">HEADER_FONT_SIZE</A></b> and
+<b><A HREF="gmtdefaults.html#HEADER_FONT">HEADER_FONT</A></b>.</p>
+
+<p style="margin-left:22%;"><b>I</b> <i>imagefile width
+justification</i></p>
+
+<p style="margin-left:32%;">Place an EPS or Sun raster
+image in the legend justified relative to the current point.
+The image <i>width</i> determines the size of the image on
+the page.</p>
+
+<p style="margin-left:22%;"><b>L</b>
+<i>fontsize</i>|<b>-</b> <i>font</i>|<b>-</b> justification
+label</p>
+
+<p style="margin-left:32%;">The <b>L</b> record plots a
+(L)eft, (C)entered, or (R)ight-justified text string within
+a column using the specified font parameters. Use <b>-</b>
+to default to <b><A HREF="gmtdefaults.html#LABEL_FONT_SIZE">LABEL_FONT_SIZE</A></b> and
+<b><A HREF="gmtdefaults.html#LABEL_FONT">LABEL_FONT</A></b>.</p>
+
+<p style="margin-left:22%;"><b>M</b> <i>slon</i>|<b>-</b>
+<i>slat length</i> <b>f</b>|<b>p</b> [
+<b>&minus;R</b><i>w/e/s/n</i> <b>&minus;J</b><i>param</i>
+]</p>
+
+<p style="margin-left:32%;">Place a map scale in the
+legend. Specify <i>slon slat</i>, the point on the map where
+the scale applies (<i>slon</i> is only meaningful for
+certain oblique projections. If not needed, you must specify
+<b>-</b> instead), <i>length</i>, the length of the scale in
+km (append <b>m</b> or <b>n</b> for miles or nautical
+miles), and <b>f</b> or <b>p</b> for fancy or plain scale.
+If the <b>&minus;R &minus;J</b> supplied to <b>pslegend</b>
+is different than the projection needed for the scale,
+supply the optional <b>&minus;R &minus;J</b> settings as
+well. Append <b>+l</b> to the <i>length</i> to select the
+default label which equals the distance unit (km, miles,
+nautical miles) and is justified on top of the scale [t].
+Change this by giving your own label (append
+<b>+l</b><i>label</i>). Change label justification with
+<b>+j</b><i>justification</i> (choose among l(eft), r(ight),
+t(op), and b(ottom)). Apply <b>+u</b> to append the unit to
+all distance annotations along the scale. If you want to
+place a rectangle behind the scale, specify suitable
+<b>+p</b><i>pen</i> and/or <b>+f</b><i>fill</i> parameters.
+All these <i>+modifiers</i> are appended to <i>length</i> to
+make a single string. (See SPECIFYING PENS and SPECIFYING
+FILL below).</p>
+
+<p style="margin-left:22%;"><b>N</b> <i>ncolumns</i></p>
+
+<p style="margin-left:32%;">Change the number of columns in
+the legend [1]. This only affects the printing of symbols
+(<b>S</b>) and labels (<b>L</b>).</p>
+
+<p style="margin-left:22%;"><b>S</b> <i>dx1 symbol size
+fill pen</i> [ <i>dx2 text</i> ]</p>
+
+<p style="margin-left:32%;">Plots the selected symbol with
+specified size, fill, and outline (see <b><A HREF="psxy.html">psxy</A></b>). The
+symbol is centered at <i>dx1</i> from the left margin of the
+column, with the optional explanatory <i>text</i> starting
+<i>dx2</i> from the margin, printed with fontsize
+<b><A HREF="gmtdefaults.html#ANNOT_FONT_SIZE_PRIMARY">ANNOT_FONT_SIZE_PRIMARY</A></b> and font
+<b><A HREF="gmtdefaults.html#ANNOT_FONT_PRIMARY">ANNOT_FONT_PRIMARY</A></b>. Use <b>-</b> if no <i>fill</i> or
+outline (<i>pen</i>) is required. When plotting just a
+symbol, without text, <i>dx2</i> and <i>text</i> can be
+omitted. Two <b><A HREF="psxy.html">psxy</A></b> symbols require special attention:
+front (f) and vector (v). You must prepend the length of the
+desired item to the rest of the symbol argument; this will
+be used internally to set the correct fault or vector length
+and will be stripped before passing the arguments to
+<b><A HREF="psxy.html">psxy</A></b>.</p>
+
+<p style="margin-left:22%;"><b>T</b>
+<i>paragraph-text</i></p>
+
+<p style="margin-left:32%;">One or more of these <b>T</b>
+records with <i>paragraph-text</i> printed with fontsize
+<b><A HREF="gmtdefaults.html#ANNOT_FONT_SIZE_PRIMARY">ANNOT_FONT_SIZE_PRIMARY</A></b> and font
+<b><A HREF="gmtdefaults.html#ANNOT_FONT_PRIMARY">ANNOT_FONT_PRIMARY</A></b> (aligned and wrapped). To specify
+special positioning and typesetting arrangements, or to
+enter a paragraph break, use the optional <b>&gt;</b>
+record.</p>
+
+<p style="margin-left:22%;"><b>V</b> <i>offset pen</i></p>
+
+<p style="margin-left:32%;">The <b>V</b> record draws a
+vertical line between columns (if more than one) using the
+selected <i>pen</i> (See SPECIFYING PENS below).
+<i>offset</i> is analogous to the offset for the <b>D</b>
+records but in the vertical direction.</p>
+
+<p style="margin-left:22%;"><b>&gt;</b>
+<i>paragraph-mode-header-for-pstext</i></p>
+
+<p style="margin-left:32%;">Start a new text paragraph by
+specifying all the parameters needed (see <b>pstext
+&minus;m</b> description). Note that <b>pslegend</b> knows
+what all those values should be, so normally you can leave
+the entire record (after &gt;) blank or leave it out all
+together. If you need to set at least one of the parameters
+directly, you must specify all and set the ones you want to
+leave at their default value to <b>-</b>.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Positions the
+legend and specifies its size. The <i>just</i> is a 2-char
+justification string (see <b><A HREF="pstext.html">pstext</A></b>) that relates the
+given position to a point on the rectangular legend box. If
+you want to specify the position in map plot units (i.e.,
+inches or cm), use <b>&minus;Dx</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;J</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects the map
+projection. Scale is UNIT/degree, 1:xxxxx, or width in UNIT
+(upper case modifier). UNIT is cm, inch, or m, depending on
+the <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> setting in .gmtdefaults4, but this
+can be overridden on the command line by appending <b>c</b>,
+<b>i</b>, or <b>m</b> to the scale/width value. When central
+meridian is optional, default is center of longitude range
+on <b>&minus;R</b> option. Default standard parallel is the
+equator. For map height, max dimension, or min dimension,
+append <b>h</b>, <b>+</b>, or <b>-</b> to the width,
+respectively.</p> </td>
+</table>
+
+<p style="margin-left:22%;">More details can be found in
+the <b><A HREF="psbasemap.html">psbasemap</A></b> man pages.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CYLINDRICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jc</b><i>lon0/lat0/scale</i>
+(Cassini) <b><br>
+
+&minus;Jcyl_stere</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Stereographic) <b><br>
+&minus;Jj</b>[<i>lon0/</i>]<i>scale</i> (Miller) <b><br>
+&minus;Jm</b>[<i>lon0</i>/[<i>lat0/</i>]]<i>scale</i>
+(Mercator) <b><br>
+&minus;Jm</b><i>lon0/lat0/scale</i> (Mercator - Give
+meridian and standard parallel) <b><br>
+&minus;Jo</b>[<b>a</b>]<i>lon0/lat0/azimuth/scale</i>
+(Oblique Mercator - point and azimuth) <b><br>
+&minus;Jo</b>[<b>b</b>]<i>lon0/lat0/lon1/lat1/scale</i>
+(Oblique Mercator - two points) <b><br>
+&minus;Joc</b><i>lon0/lat0/lonp/latp/scale</i> (Oblique
+Mercator - point and pole) <b><br>
+&minus;Jq</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equidistant) <b><br>
+&minus;Jt</b><i>lon0/</i>[<i>lat0/</i>]<i>scale</i> (TM -
+Transverse Mercator) <b><br>
+&minus;Ju</b><i>zone/scale</i> (UTM - Universal Transverse
+Mercator) <b><br>
+&minus;Jy</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equal-Area)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CONIC
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jb</b><i>lon0/lat0/lat1/lat2/scale</i>
+(Albers) <b><br>
+&minus;Jd</b><i>lon0/lat0/lat1/lat2/scale</i> (Conic
+Equidistant) <b><br>
+&minus;Jl</b><i>lon0/lat0/lat1/lat2/scale</i> (Lambert Conic
+Conformal) <b><br>
+&minus;Jpoly</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+((American) Polyconic)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>AZIMUTHAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Ja</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Lambert Azimuthal Equal-Area) <b><br>
+&minus;Je</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Azimuthal Equidistant) <b><br>
+&minus;Jf</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Gnomonic) <b><br>
+&minus;Jg</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Orthographic) <b><br>
+
+&minus;Jg</b><i>lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale</i>
+(General Perspective). <b><br>
+&minus;Js</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(General Stereographic)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>MISCELLANEOUS
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jh</b>[<i>lon0/</i>]<i>scale</i>
+(Hammer) <b><br>
+&minus;Ji</b>[<i>lon0/</i>]<i>scale</i> (Sinusoidal) <b><br>
+&minus;Jkf</b>[<i>lon0/</i>]<i>scale</i> (Eckert IV) <b><br>
+&minus;Jk</b>[<b>s</b>][<i>lon0/</i>]<i>scale</i> (Eckert
+VI) <b><br>
+&minus;Jn</b>[<i>lon0/</i>]<i>scale</i> (Robinson) <b><br>
+&minus;Jr</b>[<i>lon0/</i>]<i>scale</i> (Winkel Tripel)
+<b><br>
+&minus;Jv</b>[<i>lon0/</i>]<i>scale</i> (Van der Grinten)
+<b><br>
+&minus;Jw</b>[<i>lon0/</i>]<i>scale</i> (Mollweide)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>NON-GEOGRAPHICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jp</b>[<b>a</b>]<i>scale</i>[<i>/origin</i>][<b>r</b>|<b>z</b>]
+(Polar coordinates (theta,r)) <b><br>
+
+&minus;Jx</b><i>x-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>][<i>/y-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>]]
+(Linear, log, and power scaling)</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xmin</i>,
+<i>xmax</i>, <i>ymin</i>, and <i>ymax</i> specify the Region
+of interest. For geographic regions, these limits correspond
+to <i>west, east, south,</i> and <i>north</i> and you may
+specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+calendar time coordinates you may either give (a) relative
+time (relative to the selected <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and in the
+selected <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>; append <b>t</b> to
+<b>&minus;JX</b>|<b>x</b>), or (b) absolute time of the form
+[<i>date</i>]<b>T</b>[<i>clock</i>] (append <b>T</b> to
+<b>&minus;JX</b>|<b>x</b>). At least one of <i>date</i> and
+<i>clock</i> must be present; the <b>T</b> is always
+required. The <i>date</i> string must be of the form
+[-]yyyy[-mm[-dd]] (Gregorian calendar) or yyyy[-Www[-d]]
+(ISO week calendar), while the <i>clock</i> string must be
+of the form hh:mm:ss[.xxx]. The use of delimiters and their
+type and positions must be exactly as indicated (however,
+input, output and plot formats are customizable; see
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b>).</p> </td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;B</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets map boundary
+annotation and tickmark intervals; see the <b><A HREF="psbasemap.html">psbasemap</A></b>
+man page for all the details.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the clearance
+between the legend frame and the internal items
+[0.15<b>c</b>/0.15<b>c</b> (or
+0.05<b>i</b>/0.05<b>i</b>)].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draws a border
+around the legend using <b><A HREF="gmtdefaults.html#FRAME_PEN">FRAME_PEN</A></b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Select fill shade,
+color or pattern of the legend box [Default is no fill].
+(See SPECIFYING FILL below).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;K</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">More
+<i>PostScript</i> code will be appended later [Default
+terminates the plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the
+linespacing factor in units of the current annotation font
+size [1.1].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;O</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Overlay
+plot mode [Default initializes a new plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;P</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Portrait
+plotting mode [Default is Landscape, see <b><A HREF="gmtdefaults.html">gmtdefaults</A></b>
+to change this].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Instead of writing
+the <i>PostScript</i> plot [Default], output the <b><A HREF="GMT.html">GMT</A></b>
+script used to make the legend to standard output, or
+optionally to the file <i>script</i>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;U</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw Unix System
+time stamp on plot. By adding <i>just/dx/dy/</i>, the user
+may specify the justification of the stamp and where the
+stamp should fall on the page relative to lower left corner
+of the plot. For example, BL/0/0 will align the lower left
+corner of the time stamp with the lower left corner of the
+plot. Optionally, append a <i>label</i>, or <b>c</b> (which
+will plot the command string.). The <b><A HREF="GMT.html">GMT</A></b> parameters
+<b><A HREF="gmtdefaults.html#UNIX_TIME">UNIX_TIME</A></b>, <b><A HREF="gmtdefaults.html#UNIX_TIME_POS">UNIX_TIME_POS</A></b>, and
+<b><A HREF="gmtdefaults.html#UNIX_TIME_FORMAT">UNIX_TIME_FORMAT</A></b> can affect the appearance; see the
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b> man page for details. The time string
+will be in the locale set by the environment variable
+<b>TZ</b> (generally local time).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;X
+&minus;Y</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Shift plot origin
+relative to the current origin by (<i>x-shift,y-shift</i>)
+and optionally append the length unit (<b>c</b>, <b>i</b>,
+<b>m</b>, <b>p</b>). You can prepend <b>a</b> to shift the
+origin back to the original position after plotting, or
+prepend <b>r</b> [Default] to reset the current origin to
+the new location. If <b>&minus;O</b> is used then the
+default (<i>x-shift,y-shift</i>) is (0,0), otherwise it is
+(r1i, r1i) or (r2.5c, r2.5c). Alternatively, give <b>c</b>
+to align the center coordinate (x or y) of the plot with the
+center of the page based on current page size.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;c</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies the
+number of plot copies. [Default is 1].</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+PENS</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p valign="top"><i>pen</i></p></td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p valign="top">The attributes of lines and symbol outlines
+as defined by <i>pen</i> is a comma delimetered list of
+<i>width</i>, <i>color</i> and <i>texture</i>, each of which
+is optional. <i>width</i> can be indicated as a measure
+(points, centimeters, inches) or as <b>faint</b>,
+<b>thin</b>[<b>ner</b>|<b>nest</b>],
+<b>thick</b>[<b>er</b>|<b>est</b>],
+<b>fat</b>[<b>ter</b>|<b>test</b>], or <b>obese</b>.
+<i>color</i> specifies a gray shade or color (see SPECIFYING
+COLOR below). <i>texture</i> is a combination of dashes
+&lsquo;-&rsquo; and dots &lsquo;.&rsquo;.</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+FILL</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p valign="top"><i>fill</i></p></td>
+<td width="5%"></td>
+<td width="78%">
+
+
+<p valign="top">The attribute <i>fill</i> specifies the
+solid shade or solid <i>color</i> (see SPECIFYING COLOR
+below) or the pattern used for filling polygons. Patterns
+are specified as <b>p</b><i>dpi/pattern</i>, where
+<i>pattern</i> gives the number of the built-in pattern
+(1-90) <i>or</i> the name of a Sun 1-, 8-, or 24-bit raster
+file. The <i>dpi</i> sets the resolution of the image. For
+1-bit rasters: use <b>P</b><i>dpi/pattern</i> for inverse
+video, or append
+<b>:F</b><i>color</i>[<b>B</b>[<i>color</i>]] to specify
+fore- and background colors (use <i>color</i> = - for
+transparency). See <b><A HREF="GMT.html">GMT</A></b> Cookbook &amp; Technical
+Reference Appendix E for information on individual
+patterns.</p> </td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+COLOR</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>color</i></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p valign="top">The <i>color</i> of lines, areas and
+patterns can be specified by a valid color name; by a gray
+shade (in the range 0&minus;255); by a decimal color code
+(r/g/b, each in range 0&minus;255; h-s-v, ranges
+0&minus;360, 0&minus;1, 0&minus;1; or c/m/y/k, each in range
+0&minus;1); or by a hexadecimal color code (#rrggbb, as used
+in HTML). See the <b><A HREF="gmtcolors.html">gmtcolors</A></b> manpage for more
+information and a full list of color names.</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To add an
+example of a legend to a Mercator plot (map.ps) with the
+given specifications, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>pslegend
+&minus;R</b>-10/10/-10/10 <b>&minus;JM</b> 6i
+<b>&minus;G</b> azure1 <b>&minus;Dx</b> 0.5i/0.5i/5i/3.3i/BL
+<b>&minus;C</b> 0.1i/0.1i <b>&minus;L</b> 1.2 <b>&minus;F
+&minus;B</b> 5f1 &lt;&lt; EOF &gt;&gt; map.ps <br>
+G -0.1i <br>
+H 24 Times-Roman My Map Legend <br>
+D 0.2i 1p <br>
+N 2 <br>
+V 0 1p <br>
+S 0.1i c 0.15i p300/12 0.25p 0.3i This circle is hachured
+<br>
+S 0.1i e 0.15i 255/255/0 0.25p 0.3i This ellipse is yellow
+<br>
+S 0.1i w 0.15i 0/255/0 0.25p 0.3i This wedge is green <br>
+S 0.1i f 0.25i/-1/0.075ilb 0/0/255 0.25p 0.3i This is a
+fault <br>
+S 0.1i - 0.15i - 0.25tap 0.3i A contour <br>
+S 0.1i v 0.25i/0.02i/0.06i/0.05i 255/0/255 0.25p 0.3i This
+is a vector <br>
+S 0.1i i 0.15i 0/255/255 0.25p 0.3i This triangle is boring
+<br>
+V 0 1p <br>
+D 0.2i 1p <br>
+N 1 <br>
+M 5 5 600+u f <br>
+G 0.05i <br>
+I SOEST_logo.ras 3i CT <br>
+G 0.05i <br>
+B colors.cpt 0.2i 0.2i <br>
+G 0.05i L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%,
+2000 <br>
+G 0.1i <br>
+T Let us just try some simple text that can go on a few
+lines. <br>
+T There is no easy way to predetermine how many lines will
+be required, <br>
+T so we may have to adjust the box height to get the right
+size box. <br>
+EOF</p>
+
+<a name="WINDOWS REMARKS"></a>
+<h2>WINDOWS REMARKS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Note that under
+Windows, the percent sign (%) is a variable indicator (like
+$ under Unix). To indicate a plain percentage sign in a
+batch script you need to repeat it (%%); hence the font
+switching mechanism (@%<i>font</i>% and @%%) may require
+twice the number of percent signs. This only applies to text
+inside a script or that otherwise is processed by DOS. Data
+files that are opened and read by <b>pslegend</b> do not
+need such duplication.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="gmtcolors.html">gmtcolors</A></i>(5), <i><A HREF="gmtdefaults.html">gmtdefaults</A></i>(1),
+<i><A HREF="psbasemap.html">psbasemap</A></i>(1), <i><A HREF="pstext.html">pstext</A></i>(1), <i><A HREF="psxy.html">psxy</A></i>(1)</p>
+<hr>
+</body>
+</html>

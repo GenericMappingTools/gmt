@@ -1,0 +1,573 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>grdmask &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="grdmath" href="grdmath.html" />
+    <link rel="prev" title="grdlandmask" href="grdlandmask.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">GMT Modules</a> &raquo;</li>
+        
+      <li>grdmask</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/grdmask.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="grdmask">
+<span id="index-0"></span><h1>grdmask<a class="headerlink" href="#grdmask" title="Permalink to this headline">¶</a></h1>
+<p>Create mask grid from polygons or point coverage</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt grdmask</strong> <em>pathfiles</em> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>mask_grd_file</em>
+<a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>increment</em>
+<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong>[<strong>m</strong>|<strong>p</strong>|<strong>x</strong>|<strong>y</strong>] ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong>[<strong>z</strong>|<strong>Z</strong>|<strong>p</strong>|<strong>P</strong>]<em>values</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>search_radius</em>[<em>unit</em>] |<em>xlim</em>/<em>ylim</em> ] [ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-bi</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-j</strong><a class="reference internal" href="gmt.html#distcalc-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-n</strong><a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-r</strong><a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">reg</span></a> ]
+[ <strong>-x</strong>[[-]<em>n</em>] ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdmask</strong> can operate in two different modes. 1. It reads one or more
+<em>pathfiles</em> that each define a closed polygon. The nodes defined by the
+specified region and lattice spacing will be set equal to one of three
+possible values depending on whether the node is outside, on the polygon
+perimeter, or inside the polygon. The resulting mask may be used in
+subsequent operations involving <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> to mask out data from
+polygonal areas. 2. The <em>pathfiles</em> simply represent data point locations
+and the mask is set to the inside or outside value depending on whether
+a node is within a maximum distance from the nearest data point. If the
+distance specified is zero then only the nodes nearest each data point
+are considered “inside”.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>pathfiles</em></dt>
+<dd>The name of 1 or more ASCII [or binary, see
+<strong>-bi</strong>] files holding the polygon(s) or data points.</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>mask_grd_file</em></dt>
+<dd>Name of resulting output mask grid file. (See GRID FILE FORMATS below).</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>]]</dt>
+<dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
+append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>: Append
+<strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc seconds. If one
+of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or <strong>u</strong> is appended
+instead, the increment is assumed to be given in meter, foot, km, Mile,
+nautical mile or US survey foot, respectively, and will be converted to
+the equivalent degrees longitude at the middle latitude of the region
+(the conversion depends on <a class="reference internal" href="gmt.conf.html#proj-ellipsoid"><span class="std std-ref">PROJ_ELLIPSOID</span></a>). If <em>y_inc</em> is given
+but set to 0 it will be reset equal to <em>x_inc</em>; otherwise it will be
+converted to degrees latitude. <strong>All coordinates</strong>: If <strong>+e</strong> is appended
+then the corresponding max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly
+adjusted to fit exactly the given increment [by default the increment
+may be adjusted slightly to fit the given domain]. Finally, instead of
+giving an increment you may specify the <em>number of nodes</em> desired by
+appending <strong>+n</strong> to the supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The resulting
+increment value depends on whether you have selected a
+gridline-registered or pixel-registered grid; see <a class="reference internal" href="cookbook/file_formats.html#gmt-file-formats"><span class="std std-ref">GMT File Formats</span></a> for
+details. Note: if <strong>-R</strong><em>grdfile</em> is used then the grid spacing (and registration) have
+already been initialized; use <strong>-I</strong> (and <strong>-r</strong>) to override the values.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest.  </dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong>[<strong>m</strong>|<strong>p</strong>|<strong>x</strong>|<strong>y</strong>]</dt>
+<dd>If the input data are geographic (as indicated by <strong>-f</strong>) then the
+sides in the polygons will be approximated by great circle arcs.
+When using the <strong>-A</strong> sides will be regarded as straight lines.
+Alternatively, append <strong>m</strong> to have sides first follow meridians,
+then parallels. Or append <strong>p</strong> to first follow parallels, then meridians.
+For Cartesian data, points are simply connected, unless you append
+<strong>x</strong> or <strong>y</strong> to construct stair-case paths whose first move is along
+<em>x</em> or <em>y</em>, respectively.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong>[<strong>z</strong>|<strong>Z</strong>|<strong>p</strong>|<strong>P</strong>]<em>values</em></dt>
+<dd>Sets the <em>out/edge/in</em> that will be assigned to nodes that are
+<em>out</em>side the polygons, on the <em>edge</em>, or <em>in</em>side. Values can
+be any number, including the textstring NaN [Default is 0/0/1].
+Optionally, use <strong>Nz</strong> to set polygon insides to the z-value
+obtained from the data (either segment header <strong>-Z</strong><em>zval</em>,
+<strong>-L</strong><em>header</em> or via <strong>-a</strong>Z=<em>name</em>); use <strong>-NZ</strong> to consider
+the polygon boundary as part of the inside. Alternatively, use
+<strong>-Np</strong> to use a running number as polygon ID; optionally append
+start of the sequence [0]. Here, <strong>-NP</strong> includes the polygon
+perimeter as inside. Note:
+<strong>-N</strong><strong>z</strong>|<strong>Z</strong>|<strong>p</strong>|<strong>P</strong> cannot be used in
+conjunction with <strong>-S</strong>; they also all optionally accept /<em>out</em> [0].</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><em>search_radius</em>[<em>unit</em>] |<em>xlim</em>/<em>ylim</em></dt>
+<dd>Set nodes to inside, on edge, or outside depending on their distance
+to the nearest data point. Nodes within <em>radius</em> [0] from the
+nearest data point are considered inside; append a distance unit
+(see <a class="reference internal" href="#units">Units</a>). If <em>radius</em> is given as <strong>z</strong> then we instead read
+individual radii from the 3rd input column.  Unless Cartesian data,
+specify the unit of these radii by appending it after <strong>-Sz</strong>.
+If <strong>-S</strong> is not set then we consider the input data to define
+one or more closed polygon(s) instead.  For Cartesian data with
+different units you can instead append <em>xlim</em>/<em>ylim</em> which will
+perform a rectangular search where all nodes within ±<em>xlim</em> and
+±<em>ylim</em> of a data point will be considered inside.
+One can also achieve the rectangular selection effect by using the <strong>-S</strong><em>n_cells</em><strong>c</strong> form.
+Here <em>n_cells</em> means the number of cells around each data point. As an example, <strong>-S</strong>0<strong>c</strong> means
+that only the cell where point lies is masked, <strong>-S</strong>1<strong>c</strong> masks one cell beyond that
+(i.e. makes a 3x3 neighborhood), and so on.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary format for primary input. [Default is 2 input columns (3 with <strong>-Sz</strong>)].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-di</strong><em>nodata</em> <a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> | <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong><em>gap</em>[<strong>u</strong>][<strong>+n</strong>|<strong>p</strong>] <a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine data gaps and line breaks.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<em>t</em>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column, <em>t</em> is trailing text, append <em>word</em> to read one word only).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-je</strong>|<strong>f</strong>|<strong>g</strong> <a class="reference internal" href="gmt.html#distcalc-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine how spherical distances are calculated.</dd>
+<dt><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+t</strong><em>threshold</em>]</dt>
+<dd>Append <strong>+b</strong><em>BC</em> to set any boundary conditions to be used,
+adding <strong>g</strong> for geographic, <strong>p</strong> for periodic, or <strong>n</strong> for
+natural boundary conditions. For the latter two you may append <strong>x</strong>
+or <strong>y</strong> to specify just one direction, otherwise both are assumed.
+[Default is geographic if grid is geographic].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-r</strong>[<strong>g</strong>|<strong>p</strong>] <a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set node registration [gridline].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-x</strong>[[-]<em>n</em>] <a class="reference internal" href="gmt.html#core-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Limit number of cores used in multi-threaded algorithms (OpenMP required).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt>
+<dd>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</dd>
+</dl>
+</div>
+<div class="section" id="units">
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
+<p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
+and <strong>u</strong> for US survey foot. By default we compute such distances using
+a spherical approximation with great circles (<strong>-jg</strong>) using the authalic radius
+(see <a class="reference internal" href="gmt.conf.html#proj-mean-radius"><span class="std std-ref">PROJ_MEAN_RADIUS</span></a>). You can use <strong>-jf</strong> to perform
+“Flat Earth” calculations (quicker but less accurate) or <strong>-je</strong> to perform
+exact geodesic calculations (slower but more accurate; see
+<a class="reference internal" href="gmt.conf.html#proj-geodesic"><span class="std std-ref">PROJ_GEODESIC</span></a> for method used).</p>
+</div>
+<div class="section" id="grid-file-formats">
+<h2>Grid File Formats<a class="headerlink" href="#grid-file-formats" title="Permalink to this headline">¶</a></h2>
+<p>By default GMT writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, GMT is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called “packing” of grids, writing out floating point
+data as 1- or 2-byte integers. To specify the precision, scale and
+offset, the user should add the suffix
+=<em>ID</em>[<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>], where
+<em>ID</em> is a two-letter identifier of the grid type and precision, and
+<em>scale</em> and <em>offset</em> are optional scale factor and offset to be applied
+to all grid values, and <em>invalid</em> is the value used to indicate missing
+data. See <a class="reference internal" href="grdconvert.html"><span class="doc">grdconvert</span></a> and Section
+<a class="reference internal" href="cookbook/features.html#grid-file-format"><span class="std std-ref">Grid file format specifications</span></a>
+of the GMT Technical Reference and Cookbook for more information.</p>
+<p>When writing a netCDF file, the grid is stored by default with the
+variable name “z”. To specify another variable name <em>varname</em>, append
+<strong>?</strong><em>varname</em> to the file name. Note that you may need to escape the
+special meaning of <strong>?</strong> in your shell program by putting a backslash in
+front of it, or by placing the filename and suffix between quotes or
+double quotes.</p>
+</div>
+<div class="section" id="geographical-and-time-coordinates">
+<h2>Geographical And Time Coordinates<a class="headerlink" href="#geographical-and-time-coordinates" title="Permalink to this headline">¶</a></h2>
+<p>When the output grid type is netCDF, the coordinates will be labeled
+“longitude”, “latitude”, or “time” based on the attributes of the input
+data or grid (if any) or on the <strong>-f</strong> or <strong>-R</strong> options. For example,
+both <strong>-f0x</strong> <strong>-f1t</strong> and <strong>-R</strong>90w/90e/0t/3t will result in a
+longitude/time grid. When the x, y, or z coordinate is time, it will be
+stored in the grid as relative time since epoch as specified by
+<a class="reference internal" href="gmt.conf.html#time-unit"><span class="std std-ref">TIME_UNIT</span></a> and <a class="reference internal" href="gmt.conf.html#time-epoch"><span class="std std-ref">TIME_EPOCH</span></a> in the
+<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file or on the
+command line. In addition, the <strong>unit</strong> attribute of the time variable
+will indicate both this unit and epoch.</p>
+</div>
+<div class="section" id="inside-outside-status">
+<h2>Inside/outside Status<a class="headerlink" href="#inside-outside-status" title="Permalink to this headline">¶</a></h2>
+<p>To determine if a point is inside, outside, or exactly on the boundary of a polygon
+we need to balance the complexity (and execution time) of the algorithm with the
+type of data and shape of the polygons.  For any Cartesian data we use a non-zero
+winding algorithm, which is quite fast.  For geographic data we will also use this algorithm
+as long as (1) the polygons do not include a geographic pole, and (2) the longitude extent
+of the polygons is less than 360.  If this is the situation we also carefully adjust
+the test point longitude for any 360 degree offsets, if appropriate.  Otherwise,
+we employ a full spherical ray-shooting method to determine a points status.</p>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>A grid produced by grdmask is a <em>categorical</em> dataset.  As such,
+one has to be careful not to interpolate it with standard methods,
+such as splines.  However, if you make a map of this grid using
+a map projection the grid will be reprojected to yield a rectangular
+matrix in the projected coordinates.  This interpolation is done
+using splines by default and thus may yield artifacts in your map.
+We recommend you use <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> <strong>-nn</strong> to instead use a nearest
+neighbor interpolation for such cases.</p>
+</div>
+<div class="section" id="save-storage-space">
+<h2>Save storage space<a class="headerlink" href="#save-storage-space" title="Permalink to this headline">¶</a></h2>
+<p>Since most uses of grdmask revolves around creating mask grids that hold just a few integer
+values (and perhaps NaN), we choose to write them to disk as byte grids by appending the
+suffix <strong>=nb</strong> to the desired grid filename.  Some situations may store integers that exceed
+the range available in a byte and for those we specify a short integer grid with <strong>=ns</strong>.
+For larger integers you may consider <strong>=ni</strong>, otherwise use the default float grid format.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p><strong>Note</strong>: Below are some examples of valid syntax for this module.
+The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
+can be cut and pasted into your terminal for testing.
+Other commands requiring input files are just dummy examples of the types
+of uses that are common but cannot be run verbatim as written.</p>
+<p>To set all nodes inside and on the polygons coastline_*.xy to 0, and
+outside points to 1, do</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdmask coastline_*.xy -R-60/-40/-40/-30 -I5m -N1/0/0 -Gland_mask.nc<span class="o">=</span>nb -V
+</pre></div>
+</div>
+</div></blockquote>
+<p>To set nodes within 50 km of data points to 1 and other nodes to NaN, do</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata_mask.nc<span class="o">=</span>nb -V
+</pre></div>
+</div>
+</div></blockquote>
+<p>To assign polygon IDs to the gridnodes using the insides of the polygons
+in plates.gmt, based on the attribute POL_ID, do</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate_IDs.nc<span class="o">=</span>ns -aZ<span class="o">=</span>POL_ID -V
+</pre></div>
+</div>
+</div></blockquote>
+<p>Same exercise, but instead compute running polygon IDs starting at 100, do</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate_IDs.nc<span class="o">=</span>ns -V
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="grdlandmask.html"><span class="doc">grdlandmask</span></a>,
+<a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>, <a class="reference internal" href="grdclip.html"><span class="doc">grdclip</span></a>,
+<a class="reference internal" href="mask.html"><span class="doc">mask</span></a>, <a class="reference internal" href="clip.html"><span class="doc">clip</span></a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="grdmath.html" class="btn btn-neutral float-right" title="grdmath" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="grdlandmask.html" class="btn btn-neutral float-left" title="grdlandmask" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

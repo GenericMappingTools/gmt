@@ -1,0 +1,1540 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Changelog &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Deprecated GMT Defaults Names" href="deprecated_defaults.html" />
+    <link rel="prev" title="A pirate" href="users_contrib_symbols/misc/pirata.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-0">New Features in GMT 6.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modern-mode-modules">Modern mode modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#new-modules">New modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#general-improvements">General improvements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-enhancements">Module enhancements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-5-4">New Features in GMT 5.4</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">New modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">General improvements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Module enhancements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#api-changes">API changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backwards-compatible-syntax-changes">Backwards-compatible syntax changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-5-3">New Features in GMT 5.3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">New modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">General improvements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-api">The API</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-5-2">New Features in GMT 5.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">New modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#new-common-options">New common options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#new-default-parameters">New default parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#updated-common-options">Updated common options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">General improvements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#program-specific-improvements">Program-specific improvements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-5">New Features in GMT 5</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#new-programs">New programs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">New common options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Updated common options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">New default parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">General improvements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">Program-specific improvements</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Changelog</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/changes.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="changelog">
+<span id="id1"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="new-features-in-gmt-6-0">
+<h2>New Features in GMT 6.0<a class="headerlink" href="#new-features-in-gmt-6-0" title="Permalink to this headline">¶</a></h2>
+<p>GMT 6.0 is a major revision of GMT and its eco-system.  At the top level,
+there are numerous changes:</p>
+<ol class="arabic simple">
+<li>An entirely new and permanent address with a brand new website layout and
+organization: <a class="reference external" href="http://www.generic-mapping-tools.org">http://www.generic-mapping-tools.org</a>.</li>
+<li>A new discussion forum at <a class="reference external" href="http://forum.generic-mapping-tools.org">http://forum.generic-mapping-tools.org</a>.</li>
+<li>A data server in Hawaii (oceania.generic-mapping-tools.org) with plans
+for new mirror servers around the world.  This is where the remote files
+that start with &#64; come from.</li>
+<li>A new way to use GMT (<em>modern</em> mode) that eliminates many of the
+aspects of classic GMT that perplexes users.  In modern mode, PostSCript
+is no longer the default graphics output format and most modules that
+had names starting with <strong>ps</strong> have had that prefix removed.  In addition,
+a few modules have entirely different names in modern mode (<em>psxy</em> is <em>plot</em>,
+<em>psxyz</em> is <em>plot3d</em>, and <em>psscale</em> is <em>colorbar</em>).</li>
+<li>The default mode remains <em>classic</em>, the only mode previously available.  All
+existing classic mode GMT 4 and 5 scripts will run as before.</li>
+</ol>
+<div class="section" id="modern-mode-modules">
+<h3>Modern mode modules<a class="headerlink" href="#modern-mode-modules" title="Permalink to this headline">¶</a></h3>
+<p>GMT modern mode is supported by five new commands:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="begin.html"><span class="doc">begin</span></a> starts a new GMT modern mode session.</li>
+<li><a class="reference internal" href="figure.html"><span class="doc">figure</span></a> names a new GMT figure in the current session</li>
+<li><a class="reference internal" href="subplot.html"><span class="doc">subplot</span></a> starts, manages, and ends subplots in a figure.</li>
+<li><a class="reference internal" href="inset.html"><span class="doc">inset</span></a> starts, manages and ends an inset in a figure or subplot.</li>
+<li><a class="reference internal" href="end.html"><span class="doc">end</span></a> ends a GMT modern mode session.</li>
+</ol>
+<p>Here, <strong>gmt begin</strong> and <strong>gmt end</strong> begins and ends a modern mode session, hence
+it is not possible to get entangled in modern mode if you prefer to run classic
+mode scripts.  There are three additional commands that are associated with modern
+mode; the first two also work in classic mode since they are typically not useful in scripts:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="docs.html"><span class="doc">docs</span></a> gives browser access to any GMT module documentation.</li>
+<li><a class="reference internal" href="clear.html"><span class="doc">clear</span></a> removes various session files or cached data files.</li>
+<li><a class="reference internal" href="movie.html"><span class="doc">movie</span></a> simplifies the construction of animated sequences.</li>
+</ol>
+<p>The entire cookbook, tutorial and gallery examples all use modern mode. In modern mode,
+the default graphics format is PDF and scripts can open up the plots in the default
+viewer automatically.</p>
+</div>
+<div class="section" id="new-modules">
+<h3>New modules<a class="headerlink" href="#new-modules" title="Permalink to this headline">¶</a></h3>
+<p>Apart from modern mode we have added a few modules that are accessible to all users:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="events.html"><span class="doc">events</span></a> makes a snapshot of all time-dependent events.</li>
+<li><a class="reference internal" href="supplements/geodesy/earthtide.html"><span class="doc">earthtide</span></a> (supplement) computes the solid Earth tides.</li>
+</ol>
+</div>
+<div class="section" id="general-improvements">
+<h3>General improvements<a class="headerlink" href="#general-improvements" title="Permalink to this headline">¶</a></h3>
+<p>While our focus has been almost exclusively on GMT modern mode, there is a
+range of new capabilities have been added to all of GMT; here is a
+summary of these changes:</p>
+<ul class="simple">
+<li>The <a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a> driver has several new options to display the latest GMT citation, DOI,
+the current data server, and the ability to create a blank modern mode shell script or
+DOS batch template.</li>
+<li>A new common option <strong>-l</strong> lets some modules (currently, only <a class="reference internal" href="plot.html"><span class="doc">plot</span></a> and <a class="reference internal" href="plot3d.html"><span class="doc">plot3d</span></a>)
+build an automatic legend. Most legends are now perfectly dimensions and aligned using
+the PostScript language.</li>
+<li>We now consider untouched pixels when rendering PostScript to be opaque, hence automatic
+cropping to tightest bounding box will recognize areas painted white as different from opaque.</li>
+<li>We have a much improved scheme for distinguishing between minus-signs and hyphens when typesetting
+text since these are different glyphs in various character sets.</li>
+<li>Modern mode can produce any of several graphics <a class="reference internal" href="begin.html#tbl-formats"><span class="std std-ref">formats</span></a>. While the default
+is PDF, this can be changed via a new GMT defaults <a class="reference internal" href="gmt.conf.html#gmt-graphics-format"><span class="std std-ref">GMT_GRAPHICS_FORMAT</span></a>.
+The conversion from PostScript to the desired format can be modified via another new GMT defaults
+setting <a class="reference internal" href="gmt.conf.html#ps-convert"><span class="std std-ref">PS_CONVERT</span></a>.</li>
+<li>We have relaxed the <em>style</em> syntax for pens so that the :<em>phase</em> part is optional, with a default of 0.</li>
+<li>We have rearranged our supplements a bit: We have split meca to seis and geodesy and moved new module
+<a class="reference internal" href="supplements/geodesy/earthtide.html"><span class="doc">earthtide</span></a> and existing module <a class="reference internal" href="supplements/geodesy/gpsgridder.html"><span class="doc">gpsgridder</span></a> to
+the geodesy supplement.  Also, <a class="reference internal" href="dimfilter.html"><span class="doc">dimfilter</span></a> has moved to the core and we have remove the empty misc supplement.</li>
+<li>In most modules that need to set up an equidistant 1-D array we now use the same machinery to parse
+options and created the arrays through a redesigned <strong>-T</strong> option.  For details on array creation,
+see <cite>Generate 1D Array</cite>.</li>
+<li>We have a new GMT common option <strong>-j</strong> that clarifies how to select flat Earth, great circle,
+and geodesic calculations and thus eliminates awkward, sign-based increments.</li>
+<li>The GMT common option <strong>-r</strong> used to always set pixel-registration for grids but it can now
+take the optional directives <strong>g</strong> or <strong>p</strong> to specify the desired registration.</li>
+<li>We now offer slanted annotations via the <strong>-B</strong> option, using the modifier <strong>+a</strong><em>angle</em>.
+We have added auto-computed annotation and tick intervals for time-axes.  There is also the
+frame specifications <strong>lrbtu</strong> that just draw the corresponding frames without ticking.</li>
+<li>We offer a wide range of new color tables, including the scientific color maps from Fabio Crameri,
+and we now use Google’s <em>turbo</em> as the default GMT color table, and <em>geo</em> for topographic DEMs.</li>
+<li>Modules that read data tables can now be given an ESRI shapefile directly.</li>
+<li>GMT common options <strong>-X</strong> and <strong>-Y</strong> may now be specified using fractions of current plot’s
+dimensions.</li>
+<li>When specifying master CPTs one can add the modifier <strong>+i</strong><em>dz</em> to ensure any automatically computed
+range is rounded into multiples of <em>dz</em>.</li>
+<li>Let common option <strong>-a</strong> with no arguments place add all aspatial items to the input record.</li>
+<li>We have added <em>dashdot</em> as a new shorthand style name.</li>
+<li>Map regions can now be specified via <strong>-R</strong><em>ISOcode</em> using the 2-char ISO country codes, with modifiers
+to round the resulting exact regions into multiples of given increments.  Under modern mode, new shorthand
+options <strong>-Re</strong> and <strong>-Ra</strong> will examine the data files given and determine the exact or approximate region,
+respectively.</li>
+</ul>
+</div>
+<div class="section" id="module-enhancements">
+<h3>Module enhancements<a class="headerlink" href="#module-enhancements" title="Permalink to this headline">¶</a></h3>
+<p>Several modules have obtained new options to extend their capabilities:</p>
+<ul class="simple">
+<li><a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a> now accepts the <strong>-r</strong> option to set grid node registration.</li>
+<li><a class="reference internal" href="clip.html"><span class="doc">clip</span></a> has a new option <strong>-W</strong><em>pen</em> to draw the clip path as well as
+setting up clipping.</li>
+<li><a class="reference internal" href="plot.html"><span class="doc">plot</span></a> takes a new modifier <strong>+s</strong> to <strong>-Sr</strong> to specify a rectangle via opposite
+diagonal corners.  Users can now also specify a color indirectly via a CPT (i.e., <strong>-C</strong>)
+and a new <strong>-Z</strong><em>value</em> option (instead of directly via <strong>-G</strong>). The wedge symbol (<strong>-Sw</strong>) has been greatly upgraded to
+offer windshield and spider-graph symbols.  There is now also a new QR code symbol
+that will redirect to the GMT homepage.  We also added a <strong>+h</strong> modifier for quoted lines
+when the user wants to hide the line. Finally, symbols <strong>-SE-</strong>, <strong>-SJ-</strong> and <strong>-SW</strong> can
+now all handle geographic units.</li>
+<li><a class="reference internal" href="plot3d.html"><span class="doc">plot3d</span></a> also allows users to specify a color indirectly via a CPT (i.e., <strong>-C</strong>)
+and a new <strong>-Z</strong><em>value</em> option.  The wedge symbol (<strong>-Sw</strong>) has been greatly upgraded to
+offer windshield symbols and spider-graph symbols. There is now also a new QR code symbol
+that will redirect to the GMT homepage.</li>
+<li><a class="reference internal" href="text.html"><span class="doc">text</span></a> can now handle lack of input files when <strong>-F+c+t</strong> is used to give both a string and
+its placement.</li>
+<li>In modern mode, both <a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a> and <a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a> require a new option <strong>-H</strong> to actually
+write the resulting CPT to standard output (by default they write a hidden CPT that modern mode
+modules know where to find automatically).  <strong>makecpt</strong> also has a new option <strong>-S</strong> to create a
+symmetric color table given the range in a data file given via <strong>-T</strong>.</li>
+<li><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a> has a new operator <strong>PHI</strong> that computes the
+golden ratio.  We now allow <strong>-Cx</strong> and <strong>-Cy</strong> to represent <strong>-C</strong>0 and <strong>-C</strong> 1.</li>
+<li><a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> also has a new operator <strong>PHI</strong> that computes the
+golden ratio, as well as <strong>NODE</strong> and <strong>NODEP</strong> operators, and added more
+OpenMP support for operators <strong>LDISTG</strong>, <strong>PSI</strong>, <strong>TCRIT</strong>, <strong>PLM</strong>, and <strong>PLMg</strong>.</li>
+<li><a class="reference internal" href="rose.html"><span class="doc">rose</span></a> can now take <strong>-JX</strong> instead of <strong>-S</strong> so all plot modules take <strong>-J</strong>.</li>
+<li><a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a> can now take <strong>-J</strong> and add meta-data to the grid header.</li>
+<li><a class="reference internal" href="gmt2kml.html"><span class="doc">gmt2kml</span></a> takes new option <strong>-E</strong> to extract altitudes stored in the Extended data property.</li>
+<li><a class="reference internal" href="supplements/seis/polar.html"><span class="doc">polar</span></a> and <a class="reference internal" href="supplements/seis/meca.html"><span class="doc">meca</span></a> can let beachball size scale
+with magnitude.  These and other plotting tools in seis can now accept the 3-D projection setting via <strong>-p</strong>.</li>
+<li>Both <a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a> and <a class="reference internal" href="contour.html"><span class="doc">contour</span></a> can now accept a list of comma-separated contours instead
+of always creating equidistant lists. Also, if no contours are specified we auto-compute a reasonable
+selection of 10 to 20 contours.  We also added <strong>-Ln</strong>|<strong>N</strong>|<strong>p</strong>|<strong>P</strong> for selecting
+just negative or positive contours.  Finally, we added modifier <strong>+z</strong> to <strong>-Q</strong> to exclude the zero-contour
+entirely.</li>
+<li><a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a> has an enhanced option <strong>-W</strong> that can return reference point coordinates.
+Also, either <strong>-J+</strong><em>proj</em> or <strong>-J</strong><em>EPSG</em>:n can now be given.</li>
+<li><a class="reference internal" href="grdproject.html"><span class="doc">grdproject</span></a> also takes <strong>-J</strong>+*proj* or <strong>-J</strong><em>EPSG</em>:n.</li>
+<li><a class="reference internal" href="project.html"><span class="doc">project</span></a> has a new option <strong>-Z</strong> for generating the path of a specified ellipse.</li>
+<li><a class="reference internal" href="dimfilter.html"><span class="doc">dimfilter</span></a> now writes an error analysis template to standard output via the <strong>-L</strong> option.</li>
+<li><a class="reference internal" href="surface.html"><span class="doc">surface</span></a> can now apply a data mask computed from the data distribution directly rather than
+having to make separate calls to <a class="reference internal" href="grdmask.html"><span class="doc">grdmask</span></a> and <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>.  Also, the <strong>-A</strong> option now
+has a directive <strong>m</strong> to select Flat Earth scaling via the mean latitude.</li>
+<li>The block-modules <a class="reference internal" href="blockmean.html"><span class="doc">blockmean</span></a>, <a class="reference internal" href="blockmedian.html"><span class="doc">blockmedian</span></a>, and <a class="reference internal" href="blockmode.html"><span class="doc">blockmode</span></a> have new options
+<strong>-A</strong> and <strong>-G</strong> which allow them to write one or more grids directly.</li>
+<li><a class="reference internal" href="gmtinfo.html"><span class="doc">gmtinfo</span></a> has a new option <strong>-a</strong> which allows it to report aspatial column names, and
+<strong>-Ib</strong> to output the boundary polygon for the data.</li>
+<li><a class="reference internal" href="supplements/spotter/backtracker.html"><span class="doc">backtracker</span></a> can now do reconstruction given individual hotspot
+drift histories.  We also added <strong>-M</strong> for fractional stage rotations.</li>
+<li><a class="reference internal" href="supplements/spotter/grdrotater.html"><span class="doc">grdrotater</span></a> has an option <strong>-A</strong> to override region of output grid.</li>
+<li><a class="reference internal" href="supplements/spotter/polespotter.html"><span class="doc">polespotter</span></a> has a new option <strong>-Cx</strong><em>file</em>.</li>
+<li><a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a> has a new option <strong>-H</strong> for automatic sub-pixel rendering and scaling. Under
+modern mode we also have option <strong>-M</strong> for sandwiching a PostScript plot between two other plots.</li>
+<li>We added modifiers <strong>+a</strong> and <strong>+i</strong> to option <strong>-Z</strong> in <a class="reference internal" href="gmtselect.html"><span class="doc">gmtselect</span></a>.</li>
+<li><a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a> has new option <strong>-ZN</strong> to strip off outside rows and cols that are all NaN.</li>
+<li><a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a> now accepts <strong>-o</strong> when <strong>-Cn</strong> is in effect.</li>
+<li>Enable <a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a> <strong>-L</strong> to do Cartesian projection scales, even vertical.</li>
+<li>Improve the vertical scale bar for <a class="reference internal" href="wiggle.html"><span class="doc">wiggle</span></a> as well.</li>
+<li><a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a> has new option <strong>-W</strong> that attempts to convert trailing text to numbers, if possible.
+Append modifier <strong>+n</strong> to suppress NaN columns.  We also added <strong>-N</strong><em>column</em>[<strong>+a</strong>|<strong>d</strong>] to
+sort a table based on specified <em>column</em>.  Finally, <strong>-EM</strong><em>stride</em> is similar to <strong>-Em</strong> but it will
+always include the last point.</li>
+<li><a class="reference internal" href="grdlandmask.html"><span class="doc">grdlandmask</span></a> <strong>-E</strong> will trace nodes being positioned exactly on polygon border.</li>
+<li><a class="reference internal" href="histogram.html"><span class="doc">histogram</span></a> can now run in reverse cumulative mode via <strong>-Qr</strong>.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="new-features-in-gmt-5-4">
+<h2>New Features in GMT 5.4<a class="headerlink" href="#new-features-in-gmt-5-4" title="Permalink to this headline">¶</a></h2>
+<p>Between 5.3 and 5.4 we continued to work on the underlying API
+needed to support the modules and especially the external interfaces
+we are building toward MATLAB, Julia and Python.  We have introduced the use of
+static analyzers to fix any code irregularities and we continue to submit
+our builds to Coverity for similar reasons.  We have also made an effort
+to standardize GMT non-common option usage across the suite.
+Nevertheless, there have been many user-level enhancements as well.
+Here is a summary of these changes in three key areas:</p>
+<div class="section" id="id2">
+<h3>New modules<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>We have added a new module to the GMT core called
+<a class="reference internal" href="ternary.html"><span class="doc">ternary</span></a>.
+This module allows for the construction of ternary diagram, currently
+restricted to symbols (i.e., a plot-like experience but for ternary data).
+The <em>mgd77</em> supplement has gained a new tool <a class="reference internal" href="supplements/mgd77/mgd77header.html"><span class="doc">mgd77header</span></a>
+for creating a valid MGD77-format header from basic metadata and information
+determined from the header-less data file.</p>
+</div>
+<div class="section" id="id3">
+<h3>General improvements<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>A range of new capabilities have been added to all of GMT; here is a
+summary of these changes:</p>
+<ul class="simple">
+<li>We have added a new lower-case GMT common option.  Programs that read
+ASCII data can use <strong>-e</strong> to only select data records that match a
+specified pattern or regular expression.</li>
+<li>All modules can now read data via external URL addresses.  This works
+by using libcurl to access an external file and save it to the users’
+GMT cache directory.  This directory can be specified via a new GMT
+defaults called <a class="reference internal" href="gmt.conf.html#dir-cache"><span class="std std-ref">DIR_CACHE</span></a> (and defaults to
+the sub-directory cache under the <strong>$GMT_USERDIR</strong> directory [~/.gmt]).
+Subsequent use of the same URL will be read from the cache (except
+if explicitly removed by the user).  An exception is CGI Get Commands
+which will be executed anew each time. Both the user directory and
+the cache directory will be created if they do not exist.</li>
+<li>Any reference to Earth topographic/bathymetric relief files called
+<strong>&#64;earth_relief_</strong><em>res</em><strong>.grd</strong> will automatically obtain the grid
+from the GMT data server.  The resolution <em>res</em> allows a choice among
+13 command grid spacings: 60m, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m,
+01m, 30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb,
+7.5 Mb, 11 Mb, 16 Mb, 27 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively).
+Once one of these have been downloaded any future reference will simply
+obtain the file from <strong>$GMT_USERDIR</strong> (except if explicitly
+removed by the user).</li>
+<li>We are laying the groundwork for more dynamic documentation.  At present,
+the examples on the man pages (with the exception of <em>basemap</em> and <em>coast</em>)
+cannot be run by cut and paste since they reference imaginary data sets.
+These will soon appear with filenames starting in &#64; (e.g., &#64;hotspots.txt),
+and when such files are found on the command line it is interpreted to be
+a shorthand notation for the full URL to the GMT cache data server.</li>
+<li>We have added four new color tables inspired by matplotlib to the collection.
+These CPTs are called plasma, magma, inferno, and viridis.</li>
+<li>We have updated the online documentation of user-contributed custom symbols and
+restored the beautiful biological symbols for whales and dolphins created by
+Pablo Valdés during the GMT4 era. These are now complemented by new custom
+symbols for structural geology designed by José A. Álvarez-Gómez.</li>
+<li>The <a class="reference internal" href="postscriptlight.html"><span class="doc">PSL</span></a> library no longer needs run-time files to configure the
+list of standard fonts and character encodings, reducing the number of configure
+files required.</li>
+<li>The <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> files produced by gmt set will only write parameters that differ
+from the GMT SI Standard settings.  This means most gmt.conf files will just
+be a few lines.</li>
+<li>We have deprecated the <strong>-c</strong><em>copies</em> option whose purpose was to modify the
+number of copies a printer would issue give a PostScript file.  This is better
+controlled by your printer driver and most users now work with PDF files.</li>
+<li>The <strong>-p</strong> option can now do a simple rotation about the z-axis (i.e., not a
+perspective view) for more advanced plotting.</li>
+<li>The placement of color scales around a map can now be near-automatic, as
+the <strong>-DJ</strong> setting now has many default values (such as for bar length,
+width, offsets and orientation) based on which side you specified.  If you
+use this option in concert with <strong>-B</strong> to turn off frame annotation on the
+side you place the scale bar then justification works exactly.</li>
+<li>The <strong>-i</strong> option to select input columns can now handle repeat entries,
+e.g., -i0,2,2,4, which is useful when a column is needed as a coordinate
+<em>and</em> for symbol color or size.</li>
+<li>The vector specifications now take one more modifier: <strong>+h</strong><em>shape</em>
+allows vectors to quickly set the head shape normally specified via
+<a class="reference internal" href="gmt.conf.html#map-vector-shape"><span class="std std-ref">MAP_VECTOR_SHAPE</span></a>.  This is particularly useful
+when the symbol types are given via the input file.</li>
+<li>The custom symbol macro language has been strengthened and now allows all
+angular quantities to be variables (i.e., provided from your data file as
+extra columns), the pen thickness can be specified as relative (and thus
+scale with the symbol size at run-time), and a symbol can internally switch
+colors between the pen and fill colors given on the command line.</li>
+<li>We have reintroduced the old GMT4 polygon-vector for those who fell so hard
+in love with that symbol.  By giving old-style vector specifications you
+will now get the old-style symbol.  The new and superior vector symbols
+will require the use of the new (and standard) syntax.</li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h3>Module enhancements<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>Several modules have obtained new options to extend their capabilities:</p>
+<ul class="simple">
+<li><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a> has new session management option that lets you clear various
+files and cache directories via the new commands
+<strong>gmt clear</strong> <em>all</em>|<em>history</em>|<em>conf</em>|<em>cache</em>.</li>
+<li><a class="reference internal" href="gmt2kml.html"><span class="doc">gmt2kml</span></a> adds option <strong>-Fw</strong> for drawing wiggles along track.</li>
+<li><a class="reference internal" href="gmtinfo.html"><span class="doc">gmtinfo</span></a> adds option <strong>-F</strong> for reporting the number of tables,
+segments, records, headers, etc.</li>
+<li><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a> will convert all plot dimensions given on the command line
+to the prevailing length unit set via <a class="reference internal" href="gmt.conf.html#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a>.
+This allows you to combine measurements like 12c, 4i, and 72p. The module
+also has a new <strong>SORT</strong> operator for sorting columns and <strong>RMSW</strong> for weighted
+root-mean-square.</li>
+<li><a class="reference internal" href="gmtwhich.html"><span class="doc">gmtwhich</span></a> <strong>-G</strong> will download a file from the internet (as discussed
+above) before reporting the path to the file (which will then be in the
+user’s cache directory).</li>
+<li><a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a> can now write weights equal to the area each node represents
+via the <strong>-Wa</strong> option.</li>
+<li><a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a> can now take a grid of azimuths via the <strong>-A</strong> option.</li>
+<li><a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> and <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a> can now auto-compute the intensities
+directly from the required input grid via <strong>-I</strong>, and this option now
+supports modifiers <strong>+a</strong> and <strong>+n</strong> for changing the options of the
+grdgradient call within the module.</li>
+<li><a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a> adds option <strong>-D</strong> to determine the regions of all the
+smaller-size grid tiles required to cover the larger area.  It also take
+a new argument <strong>-Ii</strong> for reporting the exact region of an img grid.
+Finally, we now report area-weighted statistics for geographic grids,
+added <strong>-Lp</strong> for mode (maximum-likelihood) estimate of location and scale,
+and <strong>-La</strong> for requesting all of the statistical estimates.</li>
+<li><a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> has new operators <strong>TRIM</strong>, which will set all grid values
+that fall in the specified tails of the data distribution to NaN, <strong>NODE</strong>,
+which will create a grid with node indices 0 to (nx*ny)-1, and <strong>RMSW</strong>,
+which will compute the weighted root-mean-square.</li>
+<li><a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a> and <a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a> add option <strong>-Ws</strong> for producing
+wrapped (cyclic) CPT tables that repeat endlessly.  New CPT keyword
+<strong>CYCLIC</strong> controls if the CPT is cyclic.</li>
+<li><a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a> adds a new <strong>-Z</strong> option for temporal calculations based
+on distances and speeds, and has been redesigned to allow several outputs
+by combining the options <strong>-A</strong>, <strong>-G</strong>, <strong>-L</strong>, and <strong>-Z</strong>.</li>
+<li><a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a> has a new map-inset (<strong>-D</strong>) modifier <strong>+t</strong> that will
+translate the plot origin after determining the lower-left corner of the
+map inset.</li>
+<li><a class="reference internal" href="histogram.html"><span class="doc">histogram</span></a> has a new <strong>-Z</strong> modifier <strong>+w</strong> that will
+accumulate weights provided in the 2nd input column instead of pure counts.</li>
+<li><a class="reference internal" href="rose.html"><span class="doc">rose</span></a> adds option <strong>-Q</strong> for setting the  confidence level used
+for a Rayleigh test for uniformity of direction.  The <strong>-C</strong> option also
+takes a new modifier <strong>+w</strong><em>modfile</em> for storing mode direction to file.</li>
+<li><a class="reference internal" href="gmt_shell_functions.sh.html"><span class="doc">gmt_shell_functions.sh</span></a> adds numerous new functions to simplify the
+building of animation scripts, animated GIF and MP4 videos, launching
+groups of jobs across many cores, packaging KMLs into a single KMZ archive,
+and more.</li>
+</ul>
+</div>
+<div class="section" id="api-changes">
+<h3>API changes<a class="headerlink" href="#api-changes" title="Permalink to this headline">¶</a></h3>
+<p>We have introduced one change that breaks backwards compatibility for users of
+the API functions.  We don’t do this lightly but given the API is still considered
+beta it was the best solution.  Function GMT_Create_Data now requires the mode to
+be <strong>GMT_IS_OUTPUT</strong> (an new constant) if a dummy (empty) container should be
+created to hold the output of a module.  We also added two new API functions
+GMT_Duplicate_Options and GMT_Free_Option to manage option lists, and added
+the new constants <strong>GMT_GRID_IS_CARTESIAN</strong> and <strong>GMT_GRID_IS_GEO</strong> so that
+external tools can communicate the nature of grid written in situations where there
+are no projections involved (hence GMT does not know a grid is geographic).
+Passing this constant will be required in MB-System.</p>
+</div>
+<div class="section" id="backwards-compatible-syntax-changes">
+<h3>Backwards-compatible syntax changes<a class="headerlink" href="#backwards-compatible-syntax-changes" title="Permalink to this headline">¶</a></h3>
+<p>We strive to keep the GMT user interface consistent.  The common options help
+with that, but the module-specific options have often used very different
+forms to achieve similar goals.  We have revised the syntax of numerous options
+across the modules to use the common <em>modifier</em> method.  However, as no GMT
+users would be happy that their
+scripts no longer run, these changes are backwards compatible.  Only the new
+syntax will be documented but old syntax will be accepted.  Some options are
+used across GMT and will get a special mention first:</p>
+<ul class="simple">
+<li>Many modules use <strong>-G</strong> to specify the fill (solid color or pattern).
+The pattern specification has now changed to be
+<strong>-Gp</strong>|<strong>P</strong><em>pattern</em>[<strong>+b</strong><em>color</em>][<strong>+f</strong><em>color</em>][<strong>+r</strong><em>dpi</em>]</li>
+<li>When specifying grids one can always add information such as grid type, scaling,
+offset, etc.  This is now done using a cleaner syntax for grids:
+gridfile[=<em>ID</em>[<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>]].</li>
+</ul>
+<p>Here is a list of modules with revised options:</p>
+<ul class="simple">
+<li><a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a> now expects <strong>-Z</strong>[<strong>+</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+p</strong>].</li>
+<li>In <a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a> and <a class="reference internal" href="xyz2grd.html"><span class="doc">xyz2grd</span></a>, the mechanism to change a grid’s
+metadata is now done via modifiers to the <strong>-D</strong> option, such as
+<strong>+x</strong><em>xname</em>, <strong>+t</strong><em>title</em>, etc.</li>
+<li><a class="reference internal" href="grdfft.html"><span class="doc">grdfft</span></a> has changed to <strong>-E</strong>[<strong>+w</strong>[<strong>k</strong>]][<strong>+n</strong>].</li>
+<li><a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a> modifies the syntax of <strong>-E</strong> and <strong>-N</strong> by introducing modifiers,
+i.e., <strong>-E</strong>[<strong>m</strong>|<strong>s</strong>|<strong>p</strong>]<em>azim/elev</em>[<strong>+a</strong><em>ambient</em>][<strong>+d</strong><em>diffuse</em>][<strong>+p</strong><em>specular</em>][<strong>+s</strong><em>shine</em>] and
+<strong>-N</strong>[<strong>e</strong>|<strong>t</strong>][<em>amp</em>][<strong>+s</strong><em>sigma</em>][<strong>+o</strong><em>offset</em>].</li>
+<li><a class="reference internal" href="grdtrend.html"><span class="doc">grdtrend</span></a> follows <a class="reference internal" href="trend1d.html"><span class="doc">trend1d</span></a> and now wants <strong>-N</strong><em>model</em>[<strong>+r</strong>].</li>
+<li><a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a> introduces new and consistent syntax for <strong>-G</strong> and <strong>-L</strong> as
+<strong>-G</strong>[<em>lon0</em>/<em>lat0</em>][<strong>+a</strong>][<strong>+i</strong>][<strong>+u</strong>[<strong>+</strong>|<strong>-</strong>]<em>unit</em>][<strong>+v</strong>] and
+<strong>-L</strong><em>line.xy</em>[<strong>+u</strong>[<strong>+</strong>|<strong>-</strong>]<em>unit</em>][<strong>+p</strong>].</li>
+<li><a class="reference internal" href="project.html"><span class="doc">project</span></a> expects <strong>-G</strong><em>inc</em>[/<em>lat</em>][<strong>+h</strong>].</li>
+<li><a class="reference internal" href="rose.html"><span class="doc">rose</span></a> now wants <strong>-L</strong>[<em>wlabel</em>,<em>elabel</em>,<em>slabel</em>,<em>nlabel</em>] to
+match the other labeling options.</li>
+<li><a class="reference internal" href="text.html"><span class="doc">text</span></a> now expects <strong>-D</strong>[<strong>j</strong>|<strong>J</strong>]<em>dx</em>[/<em>dy</em>][<strong>+v</strong>[<em>pen</em>]].</li>
+<li><a class="reference internal" href="plot.html"><span class="doc">plot</span></a> expects <strong>-E</strong>[<strong>x</strong>|<strong>y</strong>|<strong>X</strong>|<strong>Y</strong>][<strong>+a</strong>][<strong>+cl</strong>|<strong>f</strong>][<strong>+n</strong>][<strong>+w</strong><em>cap</em>][<strong>+p</strong><em>pen</em>].</li>
+<li><a class="reference internal" href="trend2d.html"><span class="doc">trend2d</span></a> follows <a class="reference internal" href="trend1d.html"><span class="doc">trend1d</span></a> and now wants <strong>-N</strong><em>model</em>[<strong>+r</strong>].</li>
+</ul>
+</div>
+</div>
+<div class="section" id="new-features-in-gmt-5-3">
+<h2>New Features in GMT 5.3<a class="headerlink" href="#new-features-in-gmt-5-3" title="Permalink to this headline">¶</a></h2>
+<p>Between 5.2 and 5.3 we spent much time working on the underlying API
+needed to support the modules and especially the external interfaces
+we are building toward MATLAB and Python.  Nevertheless, there have
+been many user-level enhancements as well.
+Here is a summary of these changes in three key areas:</p>
+<div class="section" id="id5">
+<h3>New modules<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>We have added a new module to the GMT core called
+<a class="reference internal" href="solar.html"><span class="doc">solar</span></a>.
+This module plots various day-light terminators and other sunlight parameters.</p>
+<p>Two new modules have been added to the <em>spotter</em> supplement:
+The first is <a class="reference internal" href="supplements/spotter/gmtpmodeler.html"><span class="doc">gmtpmodeler</span></a>.
+Like <a class="reference internal" href="supplements/spotter/grdpmodeler.html"><span class="doc">grdpmodeler</span></a> it evaluates plate
+tectonic model predictions but at given point locations locations instead of
+on a grid.  The second is <a class="reference internal" href="supplements/spotter/rotsmoother.html"><span class="doc">rotsmoother</span></a>
+which smooths estimated rotations using quaternions.</p>
+<p>Also, the <em>meca</em> supplement has gained a new tool <a class="reference internal" href="supplements/seis/sac.html"><span class="doc">sac</span></a>
+for the plotting of seismograms in SAC format.</p>
+<p>Finally, we have added <a class="reference internal" href="supplements/geodesy/gpsgridder.html"><span class="doc">gpsgridder</span></a>
+to the <em>potential</em> supplement.  This tool is a Green’s function gridding module
+that grids vector data assumed to be coupled via an elastic model.  The prime
+usage is for gridding GPS velocity components.</p>
+</div>
+<div class="section" id="id6">
+<h3>General improvements<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>There are many changes to GMT, mostly under the hood, but also changes that
+affect users directly.  We have added four new examples and one new animation
+to highlight recently added capabilities.  There have been many bug fixes
+as well. For specific enhancements, we have:</p>
+<ul class="simple">
+<li>All GMT-distributed color palette tables (CPTs, now a total of 44) are
+<em>dynamic</em> and many have a <em>hinge</em> and a default <em>range</em>.  What this means
+is that the range of all CPTs have been normalized to 0-1, expect that
+those with a hinge are normalized to -1/+1, with 0 being the normalized
+hinge location.  CPTs with a hinge are interpolated separately on either
+side of the hinge, since a hinge typically signifies a dramatic color
+change (e.g., at sea-level) and we do not want that color change to be
+shifted to some other <em>z</em>-value when an asymmetrical range is being
+requested.  In situations where no range is specified then some CPTs
+will have a default range and that will be substituted instead.  The
+tools <a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a> and <a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a> now displays more meta-data
+about the various CPTs, including values for hinge, range, and the
+color-model used.</li>
+<li>We have consolidated how map embellishments are specified.  This group
+includes map scales, color bars, legends, map roses, map insets,
+image overlays, the GMT logo, and a background panel.  A new section in the Cookbook is
+dedicated to these items and how they are specified.  Common to all is
+the concept of a <em>reference point</em> relative to which the item is
+<em>justified</em> and <em>offset</em>.</li>
+<li>We continue to extend support for OpenMP in GMT.  New modules that are
+OpenMP-enabled are <a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a>, <a class="reference internal" href="grdlandmask.html"><span class="doc">grdlandmask</span></a>, and <a class="reference internal" href="sph2grd.html"><span class="doc">sph2grd</span></a>.</li>
+<li><a class="reference internal" href="blockmean.html"><span class="doc">blockmean</span></a>, <a class="reference internal" href="blockmedian.html"><span class="doc">blockmedian</span></a> and <a class="reference internal" href="blockmode.html"><span class="doc">blockmode</span></a> have a new
+modifier <strong>+s</strong> to the <strong>-W</strong> option.  When used we expect 1-sigma
+uncertainties instead of weights and compute weight = 1/sigma.</li>
+<li><a class="reference internal" href="filter1d.html"><span class="doc">filter1d</span></a>: can now compute high-pass filtered output via a new
+<strong>+h</strong> modifier to the filter settings, similar to existing capability
+in <a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a>.</li>
+<li><a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a> has a new option (<strong>-F</strong>) for line segmentation and
+network configuration. Also, the <strong>-D</strong> option has a new modifier <strong>+o</strong>
+that sets the origin used for the numbering of tables and segments.</li>
+<li><a class="reference internal" href="gmtinfo.html"><span class="doc">gmtinfo</span></a> has a new option <strong>-L</strong> for finding the common bounds
+across multiple files or segments.  Also, the <strong>-T</strong> option has been
+modified (while still being backwards compatible) to allow <em>dz</em> to be
+optional, with modifiers <strong>+s</strong> forcing a symmetric range and <strong>+a</strong>
+offering <em>alpha</em>-trimming of the tails before estimating the range.</li>
+<li><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a> has gained new operators <strong>VAR</strong>,
+<strong>RMS</strong>, <strong>DENAN</strong>, as well as the weighted statistical operators
+<strong>LMSSCLW</strong>, <strong>MADW</strong>, <strong>MEANW</strong>, <strong>MEDIANW</strong>, <strong>MODEW</strong>, <strong>PQUANTW</strong>,
+<strong>STDW</strong>, and <strong>VARW</strong>.  Finally, we added a <strong>SORT</strong> operator that lets
+you sort an entire table in ascending or descending order based on the
+values in a selected column.</li>
+<li><a class="reference internal" href="gmtselect.html"><span class="doc">gmtselect</span></a> has a new option <strong>-G</strong> for selecting based on a mask grid.
+Points falling in bins whose grid nodes are non-zero are selected (or not if <strong>-Ig</strong>)</li>
+<li><a class="reference internal" href="gmtspatial.html"><span class="doc">gmtspatial</span></a> has two new modifiers for the <strong>-Q</strong> option that allow
+output segments to be limited based on the segment length (or area for
+polygons) as well as sorting the output in ascending or descending order.</li>
+<li><a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a> existing <strong>-F</strong> option now takes a new modifier <strong>+c</strong>
+for writing a discrete palette using the categorical format.</li>
+<li><a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a> can now reset text items in the header via <strong>-D</strong> by
+specifying ‘-‘.  Also, new <strong>-C</strong> option can be used to reset the
+command history in the header.</li>
+<li><a class="reference internal" href="grdfft.html"><span class="doc">grdfft</span></a> has a new modifier to the <strong>-E</strong> option that allows for more
+control of the power normalization for radial spectra.</li>
+<li><a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> also has the new operators <strong>VAR</strong>,
+<strong>RMS</strong>, <strong>DENAN</strong>, as well as the weighted statistical operators
+<strong>LMSSCLW</strong>, <strong>MADW</strong>, <strong>MEANW</strong>, <strong>MEDIANW</strong>, <strong>MODEW</strong>, <strong>PQUANTW</strong>,
+<strong>STDW</strong>, and <strong>VARW</strong>.  In addition it gains a new
+<strong>AREA</strong> operator which computes the gridcell area (in km<sup>2</sup> if the
+grid is geographic).  Finally, operators <strong>MEAN</strong>, <strong>MEDIAN</strong>, etc.,
+when working on a geographic grid, will weight the result using the
+<strong>AREA</strong> function for proper spherical statistics.</li>
+<li><a class="reference internal" href="grdvolume.html"><span class="doc">grdvolume</span></a> can now accept <strong>-Cr</strong><em>cval</em> which will evaluate
+the volume between <em>cval</em> and the grid’s minimum value.</li>
+<li><a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a> now offers a new <strong>-E</strong> option that evaluates the
+model fit at the input data locations and optionally saves the model
+misfits to a secondary output file.</li>
+<li><a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a> can also let you build either a discrete or continuous custom
+color palette table from a comma-separated list of colors and
+<em>z</em>-values provided via a file, an equidistant setup, or comma-separated list.
+The <strong>-F</strong> option now takes a new modifier <strong>+c</strong> for writing a discrete
+palette using the categorical format.</li>
+<li><a class="reference internal" href="text.html"><span class="doc">text</span></a> has new modifiers to its <strong>-F</strong> option that allows users
+to generate automatic labels such as record numbers of formatting of a
+third data column into a textual representation.  We also allow any
+baseline angles to be interpreted as <em>orientations</em>, i.e., they will be
+modified to fall in the -90/+90 range when <strong>-F</strong>…<strong>+A</strong> is set.</li>
+<li><a class="reference internal" href="rose.html"><span class="doc">rose</span></a> can now control the attributes of vectors in a windrose
+diagram via <strong>-M</strong>.</li>
+<li><a class="reference internal" href="plot.html"><span class="doc">plot</span></a> have seen numerous enhancements.  New features include
+<em>decorated</em> lines, which are similar to quoted lines except we place
+symbols rather than text along the line.  Users also gain new controls
+over the plotting of lines, including the ability to add vector heads
+to the line endings, to trim back lines by specified amounts, and to
+request a Bezier spline interpolation in PostScript (see enhanced
+<strong>-W</strong> option).  A new option (<strong>-F</strong>) for line segmentation and networks
+have also been added. Various geographic symbols (such as ellipses; <strong>-SE</strong>,
+rotatable rectangles <strong>-SJ</strong>; and geo-vectors <strong>-S=</strong>) can now take size in geographic
+dimensions, including a new geo-wedge symbol.  We also offer one more
+type of fault-slip symbol, using curved arrow heads.  Also the arrow
+head selections now include inward-pointing arrows.  Custom symbols
+may now simply be a preexisting EPS figure.  Many of these enhancements
+are also available in <a class="reference internal" href="plot3d.html"><span class="doc">plot3d</span></a>.</li>
+<li>The spotter supplement now comes with the latest rotation files from
+EarthByte, U. of Sydney.</li>
+</ul>
+</div>
+<div class="section" id="the-api">
+<h3>The API<a class="headerlink" href="#the-api" title="Permalink to this headline">¶</a></h3>
+<p>We have spend most of our time strengthening the API, in particular in support
+of the GMT/MATLAB toolbox.  A few new API functions have been added since the
+initial release, including GMT_Get_Pixel, GMT_Set_Index, GMT_Open_VirtualFile,
+GMT_Close_VirtualFile, GMT_Read_VirtualFile, GMT_Read_Group, and GMT_Convert_Data;
+see the API <a class="reference internal" href="api.html#api"><span class="std std-ref">GMT C API</span></a> for details.</p>
+</div>
+</div>
+<div class="section" id="new-features-in-gmt-5-2">
+<h2>New Features in GMT 5.2<a class="headerlink" href="#new-features-in-gmt-5-2" title="Permalink to this headline">¶</a></h2>
+<p>While the GMT 5.1-series has seen bug-fixes since its release, new features were
+only added to the 5.2-series.  All in all, almost 200 new features (a combination
+of new programs, new options, and enhancements) have been implemented.
+Here is a summary of these changes in six key areas:</p>
+<div class="section" id="id7">
+<h3>New modules<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>There are two new modules in the core system:</p>
+<p><a class="reference internal" href="gmtlogo.html"><span class="doc">gmtlogo</span></a> is modeled after the shell script with the same
+name but is now a regular C module that can be used to add the
+GMT logo to maps and posters.</p>
+<p><a class="reference internal" href="gmtregress.html"><span class="doc">gmtregress</span></a> determines linear regressions for data sets using
+a variety of misfit norms and regression modes.</p>
+<p>Four new modules have also been added to the <em>potential</em> supplement:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="supplements/potential/gmtflexure.html"><span class="doc">gmtflexure</span></a>:</dt>
+<dd>Compute the elastic flexural response to a 2-D (line) load.</dd>
+<dt><a class="reference internal" href="supplements/potential/grdflexure.html"><span class="doc">grdflexure</span></a>:</dt>
+<dd>Compute the flexural response to a 3-D (grid) load, using a variety
+or rheological models (elastic, viscoelastic, firmoviscous).</dd>
+<dt><a class="reference internal" href="supplements/potential/talwani2d.html"><span class="doc">talwani2d</span></a>:</dt>
+<dd>Compute a profile of the free-air gravity, geoid or vertical gravity gradient anomaly
+over a 2-D body given as cross-sectional polygons.</dd>
+<dt><a class="reference internal" href="supplements/potential/talwani3d.html"><span class="doc">talwani3d</span></a>:</dt>
+<dd>Compute a grid or profile of the free-air gravity, geoid or vertical gravity gradient anomaly
+over a 3-D body given as horizontal polygonal slices.</dd>
+</dl>
+<p>In addition, two established modules have been given more suitable names
+(however, the old names are still recognized):</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="grdconvert.html"><span class="doc">grdconvert</span></a></dt>
+<dd>Converts between different grid formats.
+Previously known as grdreformat (this name is recognized
+when GMT is running in compatibility mode).</dd>
+<dt><a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a></dt>
+<dd>Converts from PostScript to PDF, SVG, or various raster image formats.
+Previously known as ps2raster (this name is recognized
+when GMT is running in compatibility mode).</dd>
+</dl>
+<p>Finally, we have renamed our PostScript Light (PSL) library from psl
+to PostScriptLight to avoid package name conflicts.  This library will eventually
+become decoupled from GMT and end up as a required prerequisite.</p>
+</div>
+<div class="section" id="new-common-options">
+<h3>New common options<a class="headerlink" href="#new-common-options" title="Permalink to this headline">¶</a></h3>
+<p>We have added two new lower-case GMT common options:</p>
+<ul class="simple">
+<li>Programs that need to specify which values should represent “no data”
+can now use <strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em>. For instance, this
+option replaces the old <strong>-N</strong> in <a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a> and <a class="reference internal" href="xyz2grd.html"><span class="doc">xyz2grd</span></a>
+(but is backwards compatible).</li>
+<li>Some modules are now using OpenMP to spread computations over all
+available cores (only available if compiled with OpenMP support).
+Those modules will offer the new option <strong>-x</strong>[[-]<em>n</em>] to reduce
+how many cores to assign to the task.  The modules that currently
+have this option are <a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a>, <a class="reference internal" href="grdmask.html"><span class="doc">grdmask</span></a>, <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>,
+<a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a>, <a class="reference internal" href="grdsample.html"><span class="doc">grdsample</span></a>, <a class="reference internal" href="sph2grd.html"><span class="doc">sph2grd</span></a>, the potential supplement’s
+<a class="reference internal" href="supplements/potential/grdgravmag3d.html"><span class="doc">grdgravmag3d</span></a>,
+<a class="reference internal" href="supplements/potential/talwani2d.html"><span class="doc">talwani2d</span></a> and
+<a class="reference internal" href="supplements/potential/talwani3d.html"><span class="doc">talwani3d</span></a>, and the x2sys
+supplement’s <a class="reference internal" href="supplements/x2sys/x2sys_solve.html"><span class="doc">x2sys_solve</span></a>.
+This list will grow longer with time.</li>
+</ul>
+</div>
+<div class="section" id="new-default-parameters">
+<h3>New default parameters<a class="headerlink" href="#new-default-parameters" title="Permalink to this headline">¶</a></h3>
+<p>There have been a few changes to the GMT Defaults parameters.  All changes
+are backwards compatible:</p>
+<ul class="simple">
+<li><strong>FORMAT_FLOAT_MAP</strong> now allows the use %’g to get comma-separated groupings
+when integer values are plotted.</li>
+<li><strong>FORMAT_FLOAT_OUT</strong> can now accept a space-separated list of formats
+as shorthand for first few columns.  On output it will show the formats
+in effect for multiple columns.</li>
+<li><strong>GMT_LANGUAGE</strong> has replaced the old parameter <strong>TIME_LANGUAGE</strong>.
+Related to this, the files share/time/*.d have been moved and renamed to
+share/localization/*.txt and now include a new section
+or cardinal points letter codes.</li>
+<li><strong>IO_SEGMENT_BINARY</strong> is a new parameter that controls how binary records
+with just NaNs should or should not be interpreted as segment headers.</li>
+<li><strong>PROJ_GEODESIC</strong> was added to control which geodesic calculation should be
+used.  Choose among Vincenty [Default], Andoyer (fast approximate geodesics),
+and Rudoe (from GMT4).</li>
+<li><strong>TIME_REPORT</strong> now has defaults for absolute or elapsed time stamps.</li>
+</ul>
+</div>
+<div class="section" id="updated-common-options">
+<h3>Updated common options<a class="headerlink" href="#updated-common-options" title="Permalink to this headline">¶</a></h3>
+<p>Two of the established GMT common options have seen minor improvements:</p>
+<ul class="simple">
+<li>Implemented modifier <strong>-B+n</strong> to <em>not</em> draw the frame at all.</li>
+<li>Allow oblique Mercator projections to select projection poles in the
+southern hemisphere by using upper-case selectors <strong>A</strong>|<strong>B</strong>|<strong>C</strong>.</li>
+<li>Added a forth way to specify the region for a new grid via the new
+<strong>-R</strong>[<strong>L</strong>|<strong>C</strong>|<strong>R</strong>][<strong>T</strong>|<strong>M</strong>|<strong>B</strong>]<em>x0</em>/<em>y0</em>/<em>nx</em>/<em>ny</em>
+syntax where you specify an reference point and number of points in the two
+dimensions (requires <strong>-I</strong> to use the increments).  The optional justification
+keys specify how the reference point relate to the grid region.</li>
+</ul>
+</div>
+<div class="section" id="id8">
+<h3>General improvements<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>Several changes have affects across GMT; these are:</p>
+<ul class="simple">
+<li>Added optional multi-threading capabilities to several modules, such as
+<a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a>, <a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a>, <a class="reference internal" href="grdmask.html"><span class="doc">grdmask</span></a>, <a class="reference internal" href="grdsample.html"><span class="doc">grdsample</span></a>,
+the potential supplement’s <a class="reference internal" href="supplements/potential/grdgravmag3d.html"><span class="doc">grdgravmag3d</span></a>,
+<a class="reference internal" href="supplements/potential/talwani2d.html"><span class="doc">talwani2d</span></a> and
+<a class="reference internal" href="supplements/potential/talwani2d.html"><span class="doc">talwani3d</span></a> and x2sys’s <a class="reference internal" href="supplements/x2sys/x2sys_solve.html"><span class="doc">x2sys_solve</span></a>.</li>
+<li>Optional prerequisite LAPACK means SVD decomposition in <a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a> is
+now very fast, as is true for the regular Gauss-Jordan solution via a
+new multi-processor enabled algorithm.</li>
+<li>Allow comma-separated colors instead of CPTs in options that are
+used to pass a CPT (typically this means the <strong>-C</strong> option).</li>
+<li>Faster netCDF reading for COARDS table data (i.e., not grids).</li>
+<li>When importing grids via GDAL the projection info is preserved and stored as netCDF metadata.
+This will allow third party programs like GDAL and QGIS to recognize the projection info of
+GMT created grids. Same thing happens when creating grids with <a class="reference internal" href="grdproject.html"><span class="doc">grdproject</span></a>.</li>
+<li>Tools using GSHHG can now access information for both Antarctica data
+sets (ice-front and grounding line).</li>
+<li>Tools that specify pens may now explicitly choose “solid” as an attribute,
+and we added “dashed” and “dotted” as alternatives to the shorthands “-” and “.”.</li>
+<li>Added three alternative vector head choices (terminal, square and circle) in addition
+to the default “arrow” style. We have also added the option for trimming the
+beginning and/or end point location of a vector, and you may now place the
+vector head at the mid-point of the vector instead at the ends.</li>
+<li>All eight map embellishment features (map scale, color bar, direction rose, magnetic
+rose, GMT logo, raster images, map insets, and map legends) now use a uniform
+mechanism for specifying placement, justification, and attributes and is supported
+by a new section in the documentation.</li>
+<li>Typesetting simultaneous sub- and super-scripts has improved (i.e., when a symbol
+should have both a subscript and and a superscript).</li>
+<li>The custom symbol macro codes now allow for an unspecified symbol code (<strong>?</strong>), which
+means the desired code will be given as last item on each data record.  Such custom
+symbols must be specified with uppercase <strong>-SK</strong>.</li>
+</ul>
+</div>
+<div class="section" id="program-specific-improvements">
+<h3>Program-specific improvements<a class="headerlink" href="#program-specific-improvements" title="Permalink to this headline">¶</a></h3>
+<p>Finally, here is a list of enhancements to individual modules.  Any
+changes to existing syntax will be backwards compatible:</p>
+<ul class="simple">
+<li><a class="reference internal" href="fitcircle.html"><span class="doc">fitcircle</span></a> now has a new option <strong>-F</strong> that allows output to be in the
+form of coordinates only (no text report) and you may choose which items to
+return by appending suitable flags.</li>
+<li><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a> now has a --show-cores option that reports the available cores.</li>
+<li><a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a> adds a <strong>-C</strong> option that can be used to eliminate
+segments on output based on the number of records it contains.  We also
+added a <strong>-F</strong> option to create line segments from an input data sets using
+a variety of connectivity modes.</li>
+<li><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a> adds a long list of new operators.  We have the operator <strong>BPDF</strong> for binomial probability distribution and
+<strong>BCDF</strong> for the cumulative binomial distribution function.  Due to confusion with
+other probability distributions we have introduced a series of new operator names
+(but honor backwards compatibility).  Listing the pdf and cdf for each distribution,
+these are <strong>TPDF</strong> and <strong>TCDF</strong> for the Student t-distribution,
+<strong>FPDF</strong> and <strong>FCDF</strong> for the F-distribution,
+<strong>CHI2PDF</strong> and <strong>CHI2CDF</strong> for the Chi-squared distribution,
+<strong>EPDF</strong> and <strong>ECDF</strong> for the exponential distribution (as well as <strong>ECRIT</strong>),
+<strong>PPDF</strong> and <strong>PCDF</strong> for the Poisson distribution,
+<strong>LPDF</strong> and <strong>LCDF</strong> for the Laplace distribution (as well as <strong>LCRIT</strong>),
+<strong>RPDF</strong> and <strong>RCDF</strong> for the Rayleigh distribution (as well as <strong>RCRIT</strong>),
+<strong>WPDF</strong> and <strong>WCDF</strong> for the Weibull distribution (as well as <strong>WCRIT</strong>), and
+<strong>ZPDF</strong> and <strong>ZCDF</strong> for the Normal distribution. We added <strong>ROLL</strong> for cyclic shifts of the stack,
+and <strong>DENAN</strong> as a more intuitive operator for removing NaNs, as
+well as new constants <strong>TRANGE</strong>, <strong>TROW</strong>, <strong>F_EPS</strong> and <strong>D_EPS</strong>, and we have renamed the
+normalized coordinates from <strong>Tn</strong> to <strong>TNORM</strong> (but this is backwards compatible).  We added
+operator <strong>POINT</strong> which reads a data table and places the mean x and mean y on the stack.
+Finally, we added new hyperbolic and inverse hyperbolic functions <strong>COTH</strong> and <strong>ACOTH</strong>,
+<strong>SECH</strong> and <strong>ASECH</strong>, and <strong>CSCH</strong> and <strong>ACSCH</strong>.</li>
+<li><a class="reference internal" href="gmtspatial.html"><span class="doc">gmtspatial</span></a> now lets you specify Flat Earth or Geodesic distance calculations
+for line lengths via <strong>-Q</strong>.</li>
+<li><a class="reference internal" href="grdblend.html"><span class="doc">grdblend</span></a> relaxes the <strong>-W</strong> restriction on only one output grid
+and adds the new mode <strong>-Wz</strong> to write the weight*zsum grid.</li>
+<li><a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a> enhances the <strong>-E</strong> option to allow for 90-degree rotations
+or flips of grid, as well as a new <strong>-G</strong> to enable writing of the result
+to a new output file [Default updates the existing file]. The <strong>-J</strong> option
+saves the georeferencing info as metadata in netCDF grids.</li>
+<li><a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a> now includes histogram mode filtering to complement mode
+(LMS) filtering.</li>
+<li><a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a> adds <strong>-Da</strong> to compute the aspect (down-slope) direction [up-slope].</li>
+<li><a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a> reports the projection info of netCDF grids when that is stored in
+a grid’s metadata in WKT format.</li>
+<li><a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> adds numerous new operators, such as <strong>ARC</strong> and <strong>WRAP</strong> for
+angular operators, <strong>BPDF</strong> for binomial probability distribution and
+<strong>BCDF</strong> for the cumulative binomial distribution function.  Due to confusion with
+other probability distributions we have introduced a series of new operator names
+(but accept backwards compatibility).  Listing the pdf and cdf for each distribution,
+these are <strong>TPDF</strong> and <strong>TCDF</strong> for the Student t-distribution,
+<strong>FPDF</strong> and <strong>FCDF</strong> for the F-distribution,
+<strong>CHI2PDF</strong> and <strong>CHI2CDF</strong> for the Chi-squared distribution,
+<strong>EPDF</strong> and <strong>ECDF</strong> for the exponential distribution (as well as <strong>ECRIT</strong>),
+<strong>PPDF</strong> and <strong>PCDF</strong> for the Poisson distribution,
+<strong>LPDF</strong> and <strong>LCDF</strong> for the Laplace distribution (as well as <strong>LCRIT</strong>),
+<strong>RPDF</strong> and <strong>RCDF</strong> for the Rayleigh distribution (as well as <strong>RCRIT</strong>),
+<strong>WPDF</strong> and <strong>WCDF</strong> for the Weibull distribution (as well as <strong>WCRIT</strong>), and
+<strong>ZPDF</strong> and <strong>ZCDF</strong> for the Normal distribution.  We added <strong>LDISTG</strong> (for distances
+to GSHHG), <strong>CDIST2</strong> and <strong>SDIST2</strong>
+(to complement <strong>LDIST2</strong> and <strong>PDIST2</strong>), and <strong>ROLL</strong> for cyclic shifts of the stack,
+and <strong>DENAN</strong> as a more intuitive operator for removing NaNs,
+while <strong>LDIST1</strong> has been renamed
+to <strong>LDISTC</strong>.  We also add new constants <strong>XRANGE</strong>, <strong>YRANGE</strong>, <strong>XCOL</strong>,
+<strong>YROW</strong> and <strong>F_EPS</strong>, and we have renamed the normalized coordinates from <strong>Xn</strong> to <strong>XNORM</strong>
+and <strong>Yn</strong> to <strong>YNORM</strong> (but this is backwards compatible).
+Finally, we added new hyperbolic and inverse hyperbolic functions <strong>COTH</strong> and <strong>ACOTH</strong>,
+<strong>SECH</strong> and <strong>ASECH</strong>, and <strong>CSCH</strong> and <strong>ACSCH</strong>.</li>
+<li><a class="reference internal" href="grdtrack.html"><span class="doc">grdtrack</span></a> add the modifier <strong>-G+l</strong><em>list</em> to pass a list of grids.</li>
+<li><a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a> implements the Waterfall plot mode via <strong>-Qmx</strong>|<strong>y</strong>.</li>
+<li><a class="reference internal" href="kml2gmt.html"><span class="doc">kml2gmt</span></a> acquires a <strong>-F</strong> option to control which geometry to output.</li>
+<li><a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a> takes <strong>-E</strong> to determine range from an input data table.</li>
+<li><a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a> can be used in conjunction with the 3-D projection options to
+compute 3-D projected coordinates.  We also added <strong>-W</strong> to simply output the
+projected dimensions of the plot without reading input data.</li>
+<li><a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a> now takes <strong>-A</strong> to save the plot domain polygon in geographical coordinates.
+The <strong>-L</strong> option for map scale and <strong>-T</strong> for map roses have been revised (backwards compatible) and a
+new uniform <strong>-F</strong> option to specify background panel and its many settings was added.</li>
+<li><a class="reference internal" href="coast.html"><span class="doc">coast</span></a> can accept multiple <strong>-E</strong> settings to color several features independently.
+We also have the modifiers <strong>+AS</strong> to <em>only</em> plot Antarctica, <strong>+ag</strong> to use
+shelf ice grounding line for Antarctica coastline, and <strong>+ai</strong> to use ice/water
+front for Antarctica coastline [Default].  As above, the <strong>-L</strong> option for map scale
+and <strong>-T</strong> option for map roses have been revised (backwards compatible) and a new uniform <strong>-F</strong> option to specify
+background panel and its many settings was added.</li>
+<li><a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a> (apart from the name change) has several new features, such as
+reporting dimensions of the plot when <strong>-A</strong> and <strong>-V</strong> are used,
+scaling the output plots via <strong>-A+s</strong>[<strong>m</strong>]<em>width</em>[<strong>u</strong>][/<em>height</em>[<strong>u</strong>]],
+paint and outline the bounding box via <strong>-A</strong> modifiers <strong>g</strong><em>fill</em> and <strong>+p</strong><em>pen</em>,
+and <strong>-Z</strong> for removing the PostScript file on exit.  In addition, we have
+added SVG as a new output vector graphics format and now handle transparency even if
+non-PDF output formats are requested.</li>
+<li><a class="reference internal" href="contour.html"><span class="doc">contour</span></a> adds a <strong>-Q</strong><em>cut</em> option like <a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a> and consolidates the
+old <strong>-T</strong>, <strong>-Q</strong> options for an index file to a new <strong>-E</strong> option.</li>
+<li><a class="reference internal" href="histogram.html"><span class="doc">histogram</span></a> added modifiers <strong>-W</strong><em>width</em>[<strong>+l</strong>|<strong>h</strong>|<strong>b</strong>]
+to allow for more control on what happens to points falling in the tails.</li>
+<li><a class="reference internal" href="image.html"><span class="doc">image</span></a> added a new uniform <strong>-D</strong> option to specify location of the image and new uniform
+<strong>-F</strong> option to specify background panel and its many settings.</li>
+<li><a class="reference internal" href="legend.html"><span class="doc">legend</span></a> has many enhancements for specifying varying cell widths and color, as
+well as a new uniform <strong>-D</strong> option to specify location of legend and new uniform
+<strong>-F</strong> option to specify background panel and its many settings.</li>
+<li><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a> new uniform <strong>-D</strong> option to specify location of the scale. We have
+retired the <strong>-T</strong> option in favor of the new uniform
+<strong>-F</strong> option to specify background panel and its many settings.</li>
+<li><a class="reference internal" href="plot.html"><span class="doc">plot</span></a> has seen considerable enhancements. We added two new quoted
+line (<strong>-Sq</strong>) modifiers: <strong>S</strong>|<strong>s</strong> for treating input as consecutive
+two-point line segments that should be individually quoted,
+and <strong>+x</strong>[<em>first</em>,<em>last</em>] for automating cross-section labeling.
+We added a new symbol (<strong>-S~</strong>) for <em>decorated lines</em>.  These are very similar
+to quoted lines but instead place specified symbols along lines.
+We expanded <strong>-N</strong> to handle periodic, repeating symbols near the boundary,
+added a new modifier <strong>+</strong> to <strong>-E</strong> for asymmetrical error bars, and provided the
+shorthand <strong>-SE-</strong><em>diameter</em> for degenerated ellipses (i.e., circles).
+The <strong>-L</strong> option has been enhanced to create envelope polygons around y(x),
+say for confidence envelopes (modifiers <strong>+b</strong>|<strong>d</strong>|<strong>D</strong>), and to complete a closed
+polygon by adding selected corners (modifiers <strong>+xl</strong>|<strong>r</strong>|<em>x0</em> or <strong>+yb</strong>|<strong>t</strong>|<em>y0</em>).
+The <strong>-A</strong>-option now has new modifiers <strong>x</strong>|<strong>y</strong> for creating stair-case curves.
+The slip-vector symbol can now optionally accept a vector-head angle [30].
+The custom symbols definition tests can now compare two input variables.
+We also added a <strong>-F</strong> option to draw line segments from an input data sets using
+a variety of connectivity modes.  Finally, for drawing lines there are new line
+attribute modifiers available via the pen setting <strong>-W</strong> such as drawing with a
+Bezier spline (<strong>+s</strong>), trimming the segments from the ends before plotting (<strong>+o</strong><em>offset</em>),
+or adding vector heads at the ends of the lines (<strong>+v</strong>).</li>
+<li><a class="reference internal" href="plot3d.html"><span class="doc">plot3d</span></a> also has the new <strong>-SE-</strong><em>diameter</em> shorthand as well as the <strong>-N</strong>
+modifiers for handling periodic plot symbols.  Like, plot it gets the same improvements
+to quoted lines and adds decorated lines as a new symbol.  Likewise,
+the <strong>-L</strong> option has been enhanced to create envelope polygons around y(x),
+say for confidence envelopes (modifiers <strong>+b</strong>|<strong>d</strong>|<strong>D</strong>), and to complete a closed
+polygon by adding selected corners (modifiers <strong>+xl</strong>|<strong>r</strong>|<em>x0</em> or <strong>+yb</strong>|<strong>t</strong>|<em>y0</em>).
+The slip-vector symbol can now optionally accept a vector-head angle [30].
+Finally, to match <a class="reference internal" href="plot.html"><span class="doc">plot</span></a> we have added the option <strong>-T</strong> for specifying no data input.</li>
+<li><a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a> spline selection option <strong>-F</strong> can now accept the optional
+modifiers <strong>+1</strong> or <strong>+2</strong> which will compute
+the first or second derivatives of the spline, respectively.</li>
+<li><a class="reference internal" href="spectrum1d.html"><span class="doc">spectrum1d</span></a> can now turn off single-output data to stdout via <strong>-T</strong>
+or turn off multi-file output via <strong>-N</strong>.</li>
+<li><a class="reference internal" href="sphdistance.html"><span class="doc">sphdistance</span></a> can now also perform a nearest-neighbor gridding where
+all grid nodes inside a Voronoi polygon is set to the same value as the
+Voronoi node value, via <strong>-Ez</strong>.</li>
+<li><a class="reference internal" href="trend1d.html"><span class="doc">trend1d</span></a> can now fit mixed polynomial and Fourier series models,
+as well as allowing models with just some terms in a polynomial or a
+Fourier series, including plain cosine or sine series terms.  Modifiers
+have been added to specify data origin and fundamental period instead of
+defaulting to the data mid-point and data range, respectively.</li>
+</ul>
+<p>A few supplement modules have new features as well:</p>
+<ul class="simple">
+<li><a class="reference internal" href="supplements/mgd77/mgd77track.html"><span class="doc">mgd77track</span></a> adds the <strong>-Gn</strong><em>gap</em> option to
+decimate the trackline coordinates by only plotting every <em>gap</em> point.</li>
+<li><a class="reference internal" href="supplements/potential/gravfft.html"><span class="doc">gravfft</span></a> adds <strong>-W</strong><em>wd</em> to change
+observation level.</li>
+<li><a class="reference internal" href="supplements/potential/grdgravmag3d.html"><span class="doc">grdgravmag3d</span></a> adds <strong>-H</strong> to compute magnetic anomaly.</li>
+<li><a class="reference internal" href="supplements/spotter/grdpmodeler.html"><span class="doc">grdpmodeler</span></a> can now output more than one model
+prediction into several grids or as a record written to stdout.  Also gains the <strong>-N</strong> option
+used by other spotter tools to extend the model duration.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="new-features-in-gmt-5">
+<h2>New Features in GMT 5<a class="headerlink" href="#new-features-in-gmt-5" title="Permalink to this headline">¶</a></h2>
+<p>GMT 5 represents a new branch of GMT development that mostly preserves the
+capabilities of the previous versions while adding over 200 new features
+to an already extensive bag of tricks.  Our PostScript library
+<a class="reference internal" href="postscriptlight.html"><span class="doc">PSL</span></a> has seen a complete rewrite as well
+and produce shorter and more compact PostScript. However, the big news
+is aimed for developers who wish to leverage GMT in their own applications.
+We have completely revamped the code base so that high-level
+GMT functionality is now accessible via GMT “modules”. These are
+high-level functions named after their corresponding programs (e.g.,
+<code class="docutils literal notranslate"><span class="pre">GMT_grdimage</span></code>) that contains all of the functionality of that program
+within the function. While currently callable from C/C++ only (with some
+support for F77), we are making progress on the Matlab interface as well
+and there are plans to start on the Python version. Developers should
+consult the <a class="reference internal" href="api.html#api"><span class="std std-ref">GMT API</span></a> documentation for more details.</p>
+<p>We recommend that users of GMT 4 consider learning the new rules and defaults
+since eventually (in some years) GMT 4 will be obsolete.
+To ease the transition to GMT 5 you may run it in compatibility mode,
+thus allowing the use of many obsolete default names and command
+switches (you will receive a warning instead).  This is discussed below.</p>
+<p>Below are six key areas of improvements in GMT 5.</p>
+<div class="section" id="new-programs">
+<h3>New programs<a class="headerlink" href="#new-programs" title="Permalink to this headline">¶</a></h3>
+<p>First, a few new programs have been added and some have been
+promoted (and possibly renamed) from earlier supplements:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a></dt>
+<dd>This is the <strong>only</strong> program executable that is distributed with GMT 5. To avoid
+problems with namespace conflicts (e.g., there are other, non-GMT programs
+with generic names like triangulate, surface, etc.) all GMT 5 modules are
+launched from the gmt executable via “gmt module” calls (e.g, gmt coast).
+For backwards compatibility (see below) we also offer symbolic links with
+the old executable names that simply point to the gmt program, which then
+can start the correct module.  Any module whose name starts with “gmt” can
+be abbreviated, e.g., “gmt gmtconvert” may be called as “gmt convert”.</dd>
+<dt><a class="reference internal" href="gmt2kml.html"><span class="doc">gmt2kml</span></a></dt>
+<dd>A <a class="reference internal" href="plot.html"><span class="doc">plot</span></a> -like tool to produce KML overlays for Google Earth. Previously
+found in the misc supplement.</dd>
+<dt><a class="reference internal" href="gmtconnect.html"><span class="doc">gmtconnect</span></a></dt>
+<dd>Connect individual lines whose end points match within given tolerance.
+Previously known as gmtstitch in the misc supplement (this name is recognized
+when GMT is running in compatibility mode).</dd>
+<dt><a class="reference internal" href="gmtget.html"><span class="doc">gmtget</span></a></dt>
+<dd>Return the values of the specified GMT defaults.  Previously only
+implemented as a shell script and thus not available on all platforms.</dd>
+<dt><a class="reference internal" href="gmtinfo.html"><span class="doc">gmtinfo</span></a></dt>
+<dd>Report information about data tables. Previously known by the name minmax
+(this name is still recognized when GMT is running in compatibility mode).</dd>
+<dt><a class="reference internal" href="gmtsimplify.html"><span class="doc">gmtsimplify</span></a></dt>
+<dd>A line-reduction tool for coastlines and similar lines. Previously found
+in the misc supplement under the name gmtdp (this name is recognized when
+GMT is running in compatibility mode).</dd>
+<dt><a class="reference internal" href="gmtspatial.html"><span class="doc">gmtspatial</span></a></dt>
+<dd>Perform various geospatial operations on lines and polygons.</dd>
+<dt><a class="reference internal" href="gmtvector.html"><span class="doc">gmtvector</span></a></dt>
+<dd>Perform basic vector manipulation in 2-D and 3-D.</dd>
+<dt><a class="reference internal" href="gmtwhich.html"><span class="doc">gmtwhich</span></a></dt>
+<dd>Return the full path to specified data files.</dd>
+<dt>grdraster</dt>
+<dd>Extracts subsets from large global grids.  Previously
+found in the dbase supplement.</dd>
+<dt><a class="reference internal" href="kml2gmt.html"><span class="doc">kml2gmt</span></a></dt>
+<dd>Extract GMT data tables from Google Earth KML files.  Previously
+found in the misc supplement.</dd>
+<dt><a class="reference internal" href="sph2grd.html"><span class="doc">sph2grd</span></a></dt>
+<dd>Compute grid from list of spherical harmonic coefficients [We will add its
+natural complement grd2sph at a later date].</dd>
+<dt><a class="reference internal" href="sphdistance.html"><span class="doc">sphdistance</span></a></dt>
+<dd>Make grid of distances to nearest points on a sphere.  Previously
+found in the sph supplement.</dd>
+<dt><a class="reference internal" href="sphinterpolate.html"><span class="doc">sphinterpolate</span></a></dt>
+<dd>Spherical gridding in tension of data on a sphere.  Previously
+found in the sph supplement.</dd>
+<dt><a class="reference internal" href="sphtriangulate.html"><span class="doc">sphtriangulate</span></a></dt>
+<dd>Delaunay or Voronoi construction of spherical lon,lat data.  Previously
+found in the sph supplement.</dd>
+</dl>
+<p>We have also added a new supplement called potential that contains these five modules:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="supplements/potential/gmtgravmag3d.html"><span class="doc">gmtgravmag3d</span></a>:</dt>
+<dd>Compute the gravity/magnetic anomaly of a body by the method of Okabe.</dd>
+<dt><a class="reference internal" href="supplements/potential/gmtflexure.html"><span class="doc">gmtflexure</span></a>:</dt>
+<dd>Compute the flexure of a 2-D load using variable plate thickness and restoring force.</dd>
+<dt><a class="reference internal" href="supplements/potential/gravfft.html"><span class="doc">gravfft</span></a>:</dt>
+<dd>Compute gravitational attraction of 3-D surfaces and a little more by the method of Parker.</dd>
+<dt><a class="reference internal" href="supplements/potential/grdgravmag3d.html"><span class="doc">grdgravmag3d</span></a>:</dt>
+<dd>Computes the gravity effect of one (or two) grids by the method of Okabe.</dd>
+<dt><a class="reference internal" href="supplements/potential/grdredpol.html"><span class="doc">grdredpol</span></a>:</dt>
+<dd>Compute the Continuous Reduction To the Pole, also known as differential RTP.</dd>
+<dt><a class="reference internal" href="supplements/potential/grdseamount.html"><span class="doc">grdseamount</span></a>:</dt>
+<dd>Compute synthetic seamount (Gaussian or cone, circular or elliptical) bathymetry.</dd>
+</dl>
+<p>Finally, the spotter supplement has added one new module:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="supplements/spotter/grdpmodeler.html"><span class="doc">grdpmodeler</span></a>:</dt>
+<dd>Evaluate a plate model on a geographic grid.</dd>
+</dl>
+</div>
+<div class="section" id="id9">
+<h3>New common options<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p>First we discuss changes that have been
+implemented by a series of new lower-case GMT common options:</p>
+<ul class="simple">
+<li>Programs that read data tables can now process the aspatial metadata
+in OGR/GMT files with the new <strong>-a</strong> option. These can be produced by
+<strong>ogr2ogr</strong> (a GDAL tool) when selecting the -f “GMT” output
+format. See Chapter <a class="reference internal" href="cookbook/ogrgmt_format.html#ogr-compat"><span class="std std-ref">The GMT Vector Data Format for OGR Compatibility</span></a> for an explanation of the OGR/GMT file format.
+Because all GIS information is encoded via GMT comment lines these
+files can also be used in GMT 4 (the GIS metadata is simply
+skipped).</li>
+<li>Programs that read or write data tables can specify a custom binary format
+using the enhanced <strong>-b</strong> option.</li>
+<li>Programs that read data tables can control which columns to read and
+in what order (and optionally supply scaling relations) with the new <strong>-i</strong> option</li>
+<li>Programs that read grids can use new common option <strong>-n</strong> to control
+grid interpolation settings and boundary conditions.</li>
+<li>Programs that write data tables can control which columns to write
+and in what order (and optionally supply scaling relations) with the new <strong>-o</strong> option.</li>
+<li>All plot programs can take a new <strong>-p</strong> option for perspective view
+from infinity. In GMT 4, only some programs could do this (e.g.,
+<a class="reference internal" href="coast.html"><span class="doc">coast</span></a>) and it took a
+program-specific option, typically <strong>-E</strong> and sometimes an option
+<strong>-Z</strong> would be needed as well. This information is now all passed
+via <strong>-p</strong> and applies across all GMT plotting programs.</li>
+<li>Programs that read data tables can control how records with NaNs are
+handled with the new <strong>-s</strong> option.</li>
+<li>All plot programs can take a new <strong>-t</strong> option to modify the PDF
+transparency level for that layer. However, as PostScript has no provision for
+transparency you can only see the effect if you convert it to PDF.</li>
+</ul>
+</div>
+<div class="section" id="id10">
+<h3>Updated common options<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>Some of the established GMT common options have seen significant
+improvements; these include:</p>
+<ul class="simple">
+<li>The completely revised <strong>-B</strong> option can now handle irregular and custom annotations
+(see Section <a class="reference internal" href="cookbook/options.html#custom-axes"><span class="std std-ref">Custom axes</span></a>). It also has a new automatic mode which
+will select optimal intervals given data range and plot size. The 3-D base maps can now have
+horizontal gridlines on xz and yz back walls.</li>
+<li>The <strong>-R</strong> option may now accept a leading unit which implies the
+given coordinates are projected map coordinates and should be
+replaced with the corresponding geographic coordinates given the
+specified map projection. For linear projections such units imply a
+simple unit conversion for the given coordinates (e.g., km to meter).</li>
+<li>Introduced <strong>-fp</strong>[<em>unit</em>] which allows data input to be in
+projected values, e.g., UTM coordinates while <strong>-Ju</strong> is given.</li>
+</ul>
+<p>While just giving - (the hyphen) as argument presents just the synopsis of the command
+line arguments, we now also support giving + which in addition will list
+the explanations for all options that are not among the GMT common set.</p>
+</div>
+<div class="section" id="id11">
+<h3>New default parameters<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p>Most of the GMT default parameters have changed names in order to
+group parameters into logical groups and to use more consistent naming.
+However, under compatibility mode (see below) the old names are still recognized.
+New capabilities have been implemented by introducing new GMT default settings:</p>
+<ul class="simple">
+<li><a class="reference internal" href="gmt.conf.html#dir-parameters"><span class="std std-ref">DIR_DCW</span></a> specifies where to look for the optional
+Digital Charts of the World database (for country coloring or selections).</li>
+<li><a class="reference internal" href="gmt.conf.html#dir-parameters"><span class="std std-ref">DIR_GSHHG</span></a> specifies where to look for the required
+Global Self-consistent Hierarchical High-resolution Geography database.</li>
+<li><a class="reference internal" href="gmt.conf.html#gmt-compatibility"><span class="std std-ref">GMT_COMPATIBILITY</span></a> can be set to 4 to allow
+backwards compatibility with GMT 4 command-line syntax or 5 to impose
+strict GMT5 syntax checking.</li>
+<li><a class="reference internal" href="gmt.conf.html#io-nc4-chunk-size"><span class="std std-ref">IO_NC4_CHUNK_SIZE</span></a> is used to set the default
+chunk size for the <strong>lat</strong> and <strong>lon</strong> dimension of the <strong>z</strong> variable of
+netCDF version 4 files.</li>
+<li><a class="reference internal" href="gmt.conf.html#io-nc4-deflation-level"><span class="std std-ref">IO_NC4_DEFLATION_LEVEL</span></a> is used to set
+the compression level for netCDF4 files upon output.</li>
+<li><a class="reference internal" href="gmt.conf.html#io-segment-marker"><span class="std std-ref">IO_SEGMENT_MARKER</span></a> can be used to change the
+character that GMT uses to identify new segment header records [&gt;].</li>
+<li><a class="reference internal" href="gmt.conf.html#map-annot-ortho"><span class="std std-ref">MAP_ANNOT_ORTHO</span></a> controls whether axes annotations
+for Cartesian plots are horizontal or orthogonal to the individual axes.</li>
+<li><a class="reference internal" href="gmt.conf.html#gmt-fft"><span class="std std-ref">GMT_FFT</span></a> controls which algorithms to use for Fourier
+transforms.</li>
+<li><a class="reference internal" href="gmt.conf.html#gmt-triangulate"><span class="std std-ref">GMT_TRIANGULATE</span></a> controls which algorithm to use
+for Delaunay triangulation.</li>
+<li>Great circle distance approximations can now be fine-tuned via new GMT default parameters
+<a class="reference internal" href="gmt.conf.html#proj-mean-radius"><span class="std std-ref">PROJ_MEAN_RADIUS</span></a> and <a class="reference internal" href="gmt.conf.html#proj-aux-latitude"><span class="std std-ref">PROJ_AUX_LATITUDE</span></a>.
+Geodesics are now even more accurate by using the Vincenty [1975] algorithm instead of
+Rudoe’s method.</li>
+<li><a class="reference internal" href="gmt.conf.html#gmt-extrapolate-val"><span class="std std-ref">GMT_EXTRAPOLATE_VAL</span></a> controls what splines should do if
+requested to extrapolate beyond the given data domain.</li>
+<li><a class="reference internal" href="gmt.conf.html#ps-transparency"><span class="std std-ref">PS_TRANSPARENCY</span></a> allows users to modify how transparency will be
+processed when converted to PDF [Normal].</li>
+</ul>
+<p>A few parameters have been introduced in GMT 5 in the past and have been removed again.
+Among these are:</p>
+<ul class="simple">
+<li><em>DIR_USER</em>: was supposed to set the directory in which the user configuration files, or data are stored, but
+this creates problems, because it needs to be known already before it is potentially set in <em>DIR_USER</em>/gmt.conf.
+The environment variable <strong>$GMT_USERDIR</strong> is used for this instead.</li>
+<li><em>DIR_TMP</em>: was supposed to indicate the directory in which to store temporary files. But needs to be known without
+gmt.conf file as well. So the environment variable <strong>$GMT_TMPDIR</strong> is used instead.</li>
+</ul>
+</div>
+<div class="section" id="id12">
+<h3>General improvements<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<p>Other wide-ranging changes have been implemented in different
+ways, such as</p>
+<ul class="simple">
+<li>All programs now use consistent, standardized choices for plot
+dimension units (<strong>c</strong>m, <strong>i</strong>nch, or <strong>p</strong>oint; we no longer
+consider <strong>m</strong>eter a plot length unit), and actual distances
+(choose spherical arc lengths in <strong>d</strong>egree, <strong>m</strong>inute, and
+<strong>s</strong>econd [was <strong>c</strong>], or distances in m<strong>e</strong>ter [Default],
+<strong>f</strong>oot [new], <strong>k</strong>m, <strong>M</strong>ile [was sometimes <strong>i</strong> or
+<strong>m</strong>], <strong>n</strong>autical mile, and s<strong>u</strong>rvey foot [new]).</li>
+<li>Programs that read data tables can now process multi-segment tables
+automatically. This means programs that did not have this capability
+(e.g., <a class="reference internal" href="filter1d.html"><span class="doc">filter1d</span></a>) can now all operate on the
+segments separately; consequently, there is no longer a <strong>-m</strong>
+option.</li>
+<li>While we support the scaling of z-values in grids via the filename convention
+name[=<em>ID</em>[<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>nan</em>] mechanism, there are times
+when we wish to scale the x,y domain as well. Users can now
+append <strong>+u</strong><em>unit</em> to their gridfile names, where <em>unit</em> is one of non-arc units listed
+in Table <a class="reference internal" href="cookbook/features.html#tbl-distunits"><span class="std std-ref">distunits</span></a>.  This will convert your Cartesian
+x and y coordinates <em>from</em> the given unit <em>to</em> meters.  We also support the inverse
+option <strong>+U</strong><em>unit</em>, which can be used to convert your grid
+coordinates <em>from</em> meters <em>to</em> the specified unit.</li>
+<li>CPTs also support the <strong>+u</strong>|<strong>U</strong><em>unit</em> mechanism.  Here, the scaling
+applies to the z values.  By appending these modifiers to your CPT names you
+can avoid having two CPTs (one for meter and one for km) since only one is needed.</li>
+<li>Programs that read grids can now directly handle Arc/Info float binary
+files (GRIDFLOAT) and ESRI .hdr formats.</li>
+<li>Programs that read grids now set boundary conditions to aid further
+processing. If a subset then the boundary conditions are taken from
+the surrounding grid values.</li>
+<li>All text can now optionally be filled with patterns and/or drawn with
+outline pens. In the past, only <a class="reference internal" href="text.html"><span class="doc">text</span></a> could plot outline fonts via
+<strong>-S</strong><em>pen</em>. Now, any text can be an outline text by manipulating
+the corresponding FONT defaults (e.g., <a class="reference internal" href="gmt.conf.html#font-title"><span class="std std-ref">FONT_TITLE</span></a>).</li>
+<li>All color or fill specifications may append &#64;<em>transparency</em> to
+change the PDF transparency level for that item. See <strong>-t</strong> for
+limitations on how to visualize this transparency.</li>
+<li>GMT now ships with 36 standard color palette tables (CPT), up from 24.</li>
+</ul>
+</div>
+<div class="section" id="id13">
+<h3>Program-specific improvements<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<p>Finally, here is a list of numerous enhancements to individual programs:</p>
+<ul class="simple">
+<li><a class="reference internal" href="blockmean.html"><span class="doc">blockmean</span></a> added <strong>-Ep</strong> for error propagation and
+<strong>-Sn</strong> to report the number of data points per block.</li>
+<li><a class="reference internal" href="blockmedian.html"><span class="doc">blockmedian</span></a> added <strong>-Er</strong>[-]
+to return as last column the record number that gave the median
+value. For ties, we return the record number of the higher data value
+unless <strong>-Er</strong>- is given (return lower). Added <strong>-Es</strong> to read and
+output source id for median value.</li>
+<li><a class="reference internal" href="blockmode.html"><span class="doc">blockmode</span></a> added <strong>-Er</strong>[-] but
+for modal value. Added <strong>-Es</strong> to read and output source id for modal
+value.</li>
+<li><a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a> now has optional PCRE (regular expression) support,
+as well as a new option to select a subset of segments specified by
+segment running numbers (<strong>-Q</strong>) and improved options to extract a
+subset of records (<strong>-E</strong>) and support for a list of search strings
+via <strong>-S+f</strong><em>patternfile</em>.</li>
+<li><a class="reference internal" href="gmtinfo.html"><span class="doc">gmtinfo</span></a> has new option <strong>-A</strong> to
+select what group to report on (all input, per file, or per segment).
+Also, use <strong>-If</strong> to report an extended region optimized for fastest results in FFTs.
+and <strong>-Is</strong> to report an extended region optimized for fastest results in <a class="reference internal" href="surface.html"><span class="doc">surface</span></a>.
+Finally, new option <strong>-D</strong>[<em>inc</em>] to align regions found via <strong>-I</strong> with the center
+of the data.</li>
+<li><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a> with <strong>-N</strong><em>ncol</em> and input
+files will add extra blank columns, if needed.  A new option <strong>-E</strong>
+sets the minimum eigenvalue used by operators LSQFIT and SVDFIT.
+Option <strong>-L</strong> applies operators on a per-segment basis instead of
+accumulating operations across the entire file.  Many new
+operators have been added (BITAND, BITLEFT, BITNOT, BITOR, BITRIGHT,
+BITTEST, BITXOR, DIFF, IFELSE, ISFINITE, SVDFIT, TAPER).  Finally,
+we have implemented user macros for long or commonly used expressions,
+as well as ability to store and recall using named variables.</li>
+<li><a class="reference internal" href="gmtselect.html"><span class="doc">gmtselect</span></a> Takes <strong>-E</strong> to indicate if points exactly on a polygon
+boundary are inside or outside, and <strong>-Z</strong> can now be extended to apply
+to other columns than the third.</li>
+<li><a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a> takes <strong>-F</strong> to specify output color model and <strong>-G</strong> to
+truncate incoming CPT to be limited to a given range.</li>
+<li><a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a> takes <strong>-C</strong> to write row, col instead of x,y.  Append <strong>f</strong>
+to start at 1, else start at 0.  Alternatively, use <strong>-Ci</strong> to write just
+the two columns <em>index</em> and <em>z</em>, where <em>index</em>
+is the 1-D indexing that GMT uses when referring to grid nodes.</li>
+<li><a class="reference internal" href="grdblend.html"><span class="doc">grdblend</span></a> can now take list of grids on
+the command line and blend, and now has more blend choices (see <strong>-C</strong>). Grids no
+longer have to have same registration or spacing.</li>
+<li><a class="reference internal" href="grdclip.html"><span class="doc">grdclip</span></a> has new option <strong>-Si</strong> to set all data &gt;= low and &lt;= high
+to the <em>between</em> value, and <strong>-Sr</strong> to set all data == old to the <em>new</em> value.</li>
+<li><a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a> can specify a single contour with <strong>-C+</strong><em>contour</em> and
+<strong>-A+</strong><em>contour</em>.</li>
+<li><a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a> can use <strong>-S</strong> to specify an origin and radius and cut the
+corresponding rectangular area, and <strong>-N</strong> to extend the region if the new
+<strong>-R</strong> domain exceeds existing boundaries.</li>
+<li><a class="reference internal" href="grdfft.html"><span class="doc">grdfft</span></a> can now accept two grids and let <strong>-E</strong> compute the cross-spectra.
+The <strong>-N</strong> option allows for many new and special settings, including ability
+to control data mirroring, detrending, tapering, and output of intermediate
+results.</li>
+<li><a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a> can now do spherical
+filtering (with wrap around longitudes and over poles) for non-global
+grids. We have also begun implementing Open MP threads to speed up
+calculations on multi-core machines. We have added rectangular
+filtering and automatic resampling to input resolution for high-pass
+filters. There is also <strong>-Ff</strong><em>weightgrd</em> which reads the gridfile
+<em>weightgrd</em> for a custom Cartesian grid convolution. The <em>weightgrd</em>
+must have odd dimensions. Similarly added <strong>-Fo</strong><em>opgrd</em> for
+operators (via coefficients in the grdfile <em>opgrd</em>) whose weight sum
+is zero (hence we do not sum and divide the convolution by the weight
+sum).</li>
+<li><a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a> now has <strong>-Em</strong> that gives results close to ESRI’s
+“hillshade”’” (but faster).</li>
+<li><a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a> now has modifier
+<strong>-Ts</strong><em>dz</em> which returns a symmetrical range about zero.  Also,
+if <strong>-Ib</strong> is given then the grid’s bounding box polygon is written.</li>
+<li><a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> with GDAL support can write a raster image directly to
+a raster file (<strong>-A</strong>) and may plot raster images as well (<strong>-Dr</strong>).
+It also automatically assigns a color table if none is given and can use
+any of the 36 GMT color tables and scale them to fit the grid range.</li>
+<li><a class="reference internal" href="grdmask.html"><span class="doc">grdmask</span></a> has new option
+<strong>-Ni</strong>|I|p|P to set inside of
+polygons to the polygon IDs. These may come from OGR aspatial values,
+segment head <strong>-L</strong>ID, or a running number, starting at a specified
+origin [0]. Now correctly handles polygons with perimeters and holes.
+Added z as possible radius value in <strong>-S</strong> which means read radii
+from 3rd input column.</li>
+<li><a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> added many new operators such as BITAND, BITLEFT, BITNOT, BITOR, BITRIGHT,
+BITTEST, BITXOR, DEG2KM, IFELSE, ISFINITE, KM2DEG, and TAPER.  Finally,
+we have implemented user macros for long or commonly used expressions,
+as well as ability to store and recall using named variables.</li>
+<li><a class="reference internal" href="grdtrack.html"><span class="doc">grdtrack</span></a> has many new options.  The <strong>-A</strong> option controls how the
+input track is resampled when <strong>-C</strong> is selected, the new <strong>-C</strong>, <strong>-D</strong>
+options automatically create an equidistant set of cross-sectional
+profiles given input line segments; one or more grids can then be
+sampled at these locations.  The <strong>-E</strong> option allows users to quickly specify
+tracks for sampling without needed input tracks.  Also added <strong>-S</strong> which stack
+cross-profiles generated with <strong>-C</strong>. The <strong>-N</strong> will not skip
+points that are outside the grid domain but return NaN as sampled
+value.  Finally, <strong>-T</strong> will return the nearest non-NaN node if the initial
+location only finds a NaN value.</li>
+<li><a class="reference internal" href="grdvector.html"><span class="doc">grdvector</span></a> can now take <strong>-Si</strong><em>scale</em> to give the reciprocal scale,
+i.e., cm/ unit or km/unit.  Also, the vector heads in GMT have completely been overhauled
+and includes geo-vector heads that follow great or small circles.</li>
+<li><a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a> will automatically assigns a color table if none is given and can use
+any of the 36 GMT color tables and scale them to fit the grid range.</li>
+<li><a class="reference internal" href="grdvolume.html"><span class="doc">grdvolume</span></a> can let <strong>-S</strong> accept more distance units than just km. It also
+has a modified <strong>-T</strong>[<strong>c</strong>|<strong>h</strong>] for ORS estimates based on max
+curvature or height. <strong>-Cr</strong> to compute the <em>outside</em> volume between two contours
+(for instances, the volume of water from a bathymetry grid).</li>
+<li><a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a> has an improved <strong>-C</strong> option to control how many eigenvalues are used
+in the fitting, and <strong>-Sl</strong> adds a linear (or bilinear) spline.</li>
+<li><a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a> has a new <strong>-F</strong> option to
+specify output color representation, e.g., to output the CPT in
+h-s-v format despite originally being given in r/g/b, and <strong>-G</strong> to
+truncate incoming CPT to be limited to a given range.  It also adds <strong>Di</strong>
+to match the bottom/top values in the input CPT.</li>
+<li><a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a> has a new <strong>-N</strong>
+option to do geodetic/geocentric conversions; it combines with <strong>-I</strong>
+for inverse conversions. Also, we have extended <strong>-A</strong> to accept
+<strong>-A</strong><strong>o</strong>| <strong>O</strong> to compute line orientations (-90/90).
+In <strong>-G</strong>, prepend - to the unit for (fast) flat Earth or + for (slow) geodesic calculations.</li>
+<li><a class="reference internal" href="project.html"><span class="doc">project</span></a> has added <strong>-G</strong>…[+] so
+if + is appended we get a segment header with information about the
+pole for the circle. Optionally, append /<em>colat</em> in <strong>-G</strong> for a small circle path.</li>
+<li><a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a> has added a <strong>-TF</strong> option to create multi-page PDF files. There is
+also modification to <strong>-A</strong> to add user-specified margins, and it automatically detects
+if transparent elements have been included (and a detour via PDF might be needed).</li>
+<li><a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a> has added a <strong>-D</strong> option to place a map-inset box.</li>
+<li><a class="reference internal" href="clip.html"><span class="doc">clip</span></a> has added an extended <strong>-C</strong> option to close different types of clip paths.</li>
+<li><a class="reference internal" href="coast.html"><span class="doc">coast</span></a> has added a new option <strong>-E</strong> which lets users specify one or more countries
+to paint, fill, extract, or use as plot domain (requires DCW to be installed).</li>
+<li><a class="reference internal" href="contour.html"><span class="doc">contour</span></a> is now similar to <a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a> in the options it
+takes, e.g., <strong>-C</strong> in particular. In GMT 4, the program could only
+read a CPT and not take a specific contour interval.</li>
+<li><a class="reference internal" href="histogram.html"><span class="doc">histogram</span></a> now takes <strong>-D</strong> to place histogram count labels on top of each bar
+and <strong>-N</strong> to draw the equivalent normal distributions.</li>
+<li><a class="reference internal" href="legend.html"><span class="doc">legend</span></a> no longer uses system calls to do the plotting.  The modified <strong>-D</strong>
+allows for minor offsets, while <strong>-F</strong> offers more control over the frame and fill.</li>
+<li><a class="reference internal" href="rose.html"><span class="doc">rose</span></a> has added <strong>-Wv</strong><em>pen</em> to
+specify pen for vector (specified in <strong>-C</strong>). Added <strong>-Zu</strong> to set all radii to
+unity (i.e., for analysis of angles only).</li>
+<li><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a> has a new option <strong>-T</strong> that paints a rectangle behind the color bar.
+The <strong>+n</strong> modifier to <strong>-E</strong> draws a rectangle with NaN color and adds a label.
+The <strong>-G</strong> option will truncate incoming CPT to be limited to the specified z-range.
+Modification <strong>-Np</strong> indicates a preference to use polygons to draw the color bar.</li>
+<li><a class="reference internal" href="text.html"><span class="doc">text</span></a> can take simplified input
+via new option <strong>-F</strong> to set fixed font (including size), angle, and
+justification. If these parameters are fixed for all the text strings
+then the input can simply be <em>x y text</em>.  It also has enhanced <strong>-DJ</strong> option
+to shorten diagonal offsets by <span class="math notranslate nohighlight">\(\sqrt{2}\)</span> to maintain the same
+radial distance from point to annotation. Change all text to upper or
+lower case with <strong>-Q</strong>.</li>
+<li><a class="reference internal" href="plot.html"><span class="doc">plot</span></a> and <a class="reference internal" href="plot3d.html"><span class="doc">plot3d</span></a> both support the revised custom symbol macro
+language which has been expanded considerably to allow for complicated,
+multi-parameter symbols; see Chapter <a class="reference internal" href="cookbook/custom_symbols.html#app-custom-symbols"><span class="std std-ref">Custom Plot Symbols</span></a>
+for details. Finally, we allow the base for bars and columns optionally to be
+read from data file by not specifying the base value.</li>
+<li><a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a> offers <strong>-A</strong> to control resampling of spatial curves (with <strong>-I</strong>).</li>
+<li><a class="reference internal" href="spectrum1d.html"><span class="doc">spectrum1d</span></a> has added <strong>-L</strong> to control removal of trend, mean value or mid value.</li>
+<li><a class="reference internal" href="surface.html"><span class="doc">surface</span></a> has added <strong>-r</strong> to create pixel-registered grids and knows about
+periodicity in longitude (given <strong>-fg</strong>).  There is also <strong>-D</strong> to supply a “sort” break line.</li>
+<li><a class="reference internal" href="triangulate.html"><span class="doc">triangulate</span></a> now offers <strong>-S</strong>
+to write triangle polygons and can handle 2-column input if <strong>-Z</strong> is given.
+Can also write triangle edges as line with <strong>-M</strong>.</li>
+<li><a class="reference internal" href="xyz2grd.html"><span class="doc">xyz2grd</span></a> now also offers <strong>-Af</strong> (first value encountered),
+<strong>-Am</strong> (mean, the default), <strong>-Ar</strong> (rms), and <strong>-As</strong> (last value encountered).</li>
+</ul>
+<p>Several supplements have new features as well:</p>
+<ul class="simple">
+<li><a class="reference internal" href="supplements/img/img2grd.html"><span class="doc">img2grd</span></a>
+used to be a shell script but is now a C program and can be used on all platforms.</li>
+<li><a class="reference internal" href="supplements/mgd77/mgd77convert.html"><span class="doc">mgd77convert</span></a>
+added <strong>-C</strong> option to assemble *.mgd77 files from *.h77/*.a77 pairs.</li>
+<li>The spotter programs can now read GPlates rotation files directly as well
+as write this format. Also,
+<a class="reference internal" href="supplements/spotter/rotconverter.html"><span class="doc">rotconverter</span></a> can extract plate
+circuit rotations on-the-fly from the GPlates rotation file.</li>
+</ul>
+<p>Note: GMT 5 only produces PostScript and no longer has a setting for
+Encapsulated PostScript (EPS). We made this decision since (a) our EPS determination
+was always very approximate (no consideration of font metrics, etc.) and quite often wrong,
+and (b) <a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a> handles it exactly.  Hence, users who need EPS plots should
+simply process their PostScript files via <a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a>.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="deprecated_defaults.html" class="btn btn-neutral float-right" title="Deprecated GMT Defaults Names" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="users_contrib_symbols/misc/pirata.html" class="btn btn-neutral float-left" title="A pirate" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

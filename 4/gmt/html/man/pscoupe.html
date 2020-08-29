@@ -1,0 +1,863 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:34 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>PSCOUPE</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>PSCOUPE</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+<a href="#AUTHOR">AUTHOR</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">pscoupe &minus;
+Plot cross-sections of focal mechanisms.</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>pscoupe</b>
+<i>files</i> <b>&minus;J</b><i>parameters</i>
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+<b>&minus;A</b><i>parameters</i> [
+<b>&minus;B</b>[<b>p</b>|<b>s</b>]<i>parameters</i> ] [
+<b>&minus;E</b><i>fill</i> ] [ <b>&minus;G</b><i>fill</i> ]
+[ <b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [ <b>&minus;K</b>
+] [ <b>&minus;L</b><i>[pen]</i> ] [ <b>&minus;M</b> ] [
+<b>&minus;N</b> ] [ <b>&minus;O</b> ] [ <b>&minus;P</b> ] [
+<b>&minus;S</b><i>&lt;format&gt;&lt;scale&gt;</i>[/<b>d</b>]
+] [
+<b>&minus;s</b><i>&lt;symbol&gt;&lt;size&gt;</i>[/<b>d</b>]
+] [ <b>&minus;T</b><i>n</i> ] [
+<b>&minus;U</b>[<i>just</i>/<i>dx</i>/<i>dy</i>/][<b>c</b>|<i>label</i>]
+] [ <b>&minus;V</b> ] [ <b>&minus;W</b><i>pen</i> ] [
+<b>&minus;X</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>x-shift</i>[<b>u</b>]]
+] [
+<b>&minus;Y</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>y-shift</i>[<b>u</b>]]
+] [ <b>&minus;Z</b><i>cpt</i> ] [
+<b>&minus;a</b>[<i>size</i>/[<i>P_symbol</i>/[<i>T_symbol</i>]]]
+] [ <b>&minus;g</b><i>fill</i> ] [
+<b>&minus;e</b><i>fill</i> ] [ <b>&minus;p</b><i>pen</i> ] [
+<b>&minus;t</b><i>pen</i> ] [
+<b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;c</b><i>copies</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>pscoupe</b>
+reads data values from <i>files</i> [or standard input] and
+generates <i>PostScript</i> code that will plot symbols,
+lines or polygons on a cross-section. Focal mechanisms may
+be specified and require additional columns of data. The
+<i>PostScript</i> code is written to standard output.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><i>files</i>
+list one or more file-names. If no files are given,
+<b>pscoupe</b> will read standard input.</p>
+
+<p style="margin-left:11%; margin-top: 1em">A <i>new
+file</i> is created with the new coordinates (<b>x</b>,
+<b>y</b>) and the mechanism (from lower focal half-sphere
+for horizontal plane, to half-sphere behind a vertical
+plane). When the plane is not horizontal, - north direction
+becomes upwards steepest descent direction of the plane (u)
+- east direction becomes strike direction of the plane (s) -
+down direction (= north^east) becomes u^s <br>
+Axis angles are defined in the same way as in horizontal
+plane in the new system. <br>
+Moment tensor (initially in r, t, f system that is up,
+south, east) is defined in (-u^s, -u, s) system. A
+<i>file</i> is created with extracted events.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;J</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects the map
+projection. Scale is UNIT/degree, 1:xxxxx, or width in UNIT
+(upper case modifier). UNIT is cm, inch, or m, depending on
+the <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> setting in .gmtdefaults4, but this
+can be overridden on the command line by appending <b>c</b>,
+<b>i</b>, or <b>m</b> to the scale/width value. When central
+meridian is optional, default is center of longitude range
+on <b>&minus;R</b> option. Default standard parallel is the
+equator. For map height, max dimension, or min dimension,
+append <b>h</b>, <b>+</b>, or <b>-</b> to the width,
+respectively.</p> </td>
+</table>
+
+<p style="margin-left:22%;">More details can be found in
+the <b><A HREF="psbasemap.html">psbasemap</A></b> man pages.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CYLINDRICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jc</b><i>lon0/lat0/scale</i>
+(Cassini) <b><br>
+
+&minus;Jcyl_stere</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Stereographic) <b><br>
+&minus;Jj</b>[<i>lon0/</i>]<i>scale</i> (Miller) <b><br>
+&minus;Jm</b>[<i>lon0</i>/[<i>lat0/</i>]]<i>scale</i>
+(Mercator) <b><br>
+&minus;Jm</b><i>lon0/lat0/scale</i> (Mercator - Give
+meridian and standard parallel) <b><br>
+&minus;Jo</b>[<b>a</b>]<i>lon0/lat0/azimuth/scale</i>
+(Oblique Mercator - point and azimuth) <b><br>
+&minus;Jo</b>[<b>b</b>]<i>lon0/lat0/lon1/lat1/scale</i>
+(Oblique Mercator - two points) <b><br>
+&minus;Joc</b><i>lon0/lat0/lonp/latp/scale</i> (Oblique
+Mercator - point and pole) <b><br>
+&minus;Jq</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equidistant) <b><br>
+&minus;Jt</b><i>lon0/</i>[<i>lat0/</i>]<i>scale</i> (TM -
+Transverse Mercator) <b><br>
+&minus;Ju</b><i>zone/scale</i> (UTM - Universal Transverse
+Mercator) <b><br>
+&minus;Jy</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equal-Area)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CONIC
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jb</b><i>lon0/lat0/lat1/lat2/scale</i>
+(Albers) <b><br>
+&minus;Jd</b><i>lon0/lat0/lat1/lat2/scale</i> (Conic
+Equidistant) <b><br>
+&minus;Jl</b><i>lon0/lat0/lat1/lat2/scale</i> (Lambert Conic
+Conformal) <b><br>
+&minus;Jpoly</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+((American) Polyconic)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>AZIMUTHAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Ja</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Lambert Azimuthal Equal-Area) <b><br>
+&minus;Je</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Azimuthal Equidistant) <b><br>
+&minus;Jf</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Gnomonic) <b><br>
+&minus;Jg</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Orthographic) <b><br>
+
+&minus;Jg</b><i>lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale</i>
+(General Perspective). <b><br>
+&minus;Js</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(General Stereographic)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>MISCELLANEOUS
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jh</b>[<i>lon0/</i>]<i>scale</i>
+(Hammer) <b><br>
+&minus;Ji</b>[<i>lon0/</i>]<i>scale</i> (Sinusoidal) <b><br>
+&minus;Jkf</b>[<i>lon0/</i>]<i>scale</i> (Eckert IV) <b><br>
+&minus;Jk</b>[<b>s</b>][<i>lon0/</i>]<i>scale</i> (Eckert
+VI) <b><br>
+&minus;Jn</b>[<i>lon0/</i>]<i>scale</i> (Robinson) <b><br>
+&minus;Jr</b>[<i>lon0/</i>]<i>scale</i> (Winkel Tripel)
+<b><br>
+&minus;Jv</b>[<i>lon0/</i>]<i>scale</i> (Van der Grinten)
+<b><br>
+&minus;Jw</b>[<i>lon0/</i>]<i>scale</i> (Mollweide)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>NON-GEOGRAPHICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jp</b>[<b>a</b>]<i>scale</i>[<i>/origin</i>][<b>r</b>|<b>z</b>]
+(Polar coordinates (theta,r)) <b><br>
+
+&minus;Jx</b><i>x-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>][<i>/y-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>]]
+(Linear, log, and power scaling)</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> specify the Region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. If frame
+is defined from cross-section parameters (see <b>-A</b>)
+this option is not taken into account, but must be
+present.</p> </td>
+</table>
+
+<p style="margin-left:11%;"><b>&minus;A</b> selects the
+cross-section.</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Aa</b><i>lon1/lat1/lon2/lat2/dip/p_width/dmin/dmax</i>[<b>f</b>]
+<i><br>
+lon</i> and <i>lat</i> are the longitude and latitude of
+points 1 and 2 limiting the length of the cross-section.
+<i><br>
+dip</i> is the dip of the plane on which the cross-section
+is made. <i><br>
+p_width</i> is the width of the cross-section on each side
+of a vertical plane or above and under an oblique plane.
+<i><br>
+dmin</i> and <i>dmax</i> are the distances min and max from
+horizontal plane, along steepest descent direction. <br>
+Add <b>f</b> to get the frame from the cross-section
+parameters. <b><br>
+
+&minus;Ab</b><i>lon1/lat1/strike/p_length/dip/p_width/dmin/dmax</i>[<b>f</b>]
+<i><br>
+lon1</i> and <i>lat1</i> are the longitude and latitude of
+the beginning of the cross-section. <i><br>
+strike</i> is the azimuth of the direction of the
+cross-section. <i><br>
+p_length</i> is the length along which the cross-section is
+made. <br>
+The other parameters are the same as for <b>-Aa</b> option.
+<b><br>
+
+&minus;Ac</b><i>x1/y1/x2/y2/dip/p_width/dmin/dmax</i>[<b>f</b>]
+<br>
+The same as <b>&minus;Aa</b> option with <i>x</i> and
+<i>y</i> cartesian coordinates. <b><br>
+
+&minus;Ad</b><i>x1/y1/strike/p_length/dip/p_width/dmin/dmax</i>[<b>f</b>]
+<br>
+The same as <b>&minus;Ab</b> option with <i>x</i> and
+<i>y</i> cartesian coordinates.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">selects the meaning
+of the columns in the data file and the figure to be
+plotted.</p> </td>
+</table>
+
+
+<p style="margin-left:11%;"><b>&minus;Sa</b><i>scale[/fontsize[/offset</i>[<b>u</b>]]]</p>
+
+<p style="margin-left:22%;">Focal mechanisms in Aki and
+Richards convention. <i>scale</i> adjusts the scaling of the
+radius of the &quot;beach ball&quot;, which will be
+proportional to the magnitude. The <i>scale</i> is the size
+for magnitude = 5 in <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> (unless <b>c</b>,
+<b>i</b>, <b>m</b>, or <b>p</b> is appended to indicate that
+the size information is in units of cm, inches, meters, or
+points, respectively). Use the <b>&minus;T</b> option to
+render the beach ball transparent by drawing only the nodal
+planes and the circumference. The color or shade of the
+compressive quadrants can be specified with the
+<b>&minus;G</b> option. The color or shade of the extensive
+quadrants can be specified with the <b>&minus;E</b> option.
+Parameters are expected to be in the following columns:</p>
+
+<p style="margin-left:11%;">longitude, latitude of event
+(<b>&minus;:</b> option interchanges order) <br>
+depth of event in kilometers <br>
+strike, dip and rake <br>
+magnitude <br>
+not used; can be 0 0; allows use of the psmeca file format
+<br>
+text string to appear above the beach ball (default) or
+under (add <b>u</b>). <b><br>
+&minus;Sc</b> scale</p>
+
+<p style="margin-left:23%;">Focal mechanisms in Harvard CMT
+convention. <i>scale</i> adjusts the scaling of the radius
+of the &quot;beach ball&quot;, which will be proportional to
+the magnitude. The <i>scale</i> is the size for magnitude =
+5 (that is M0 = 4E+23 dynes-cm.) in <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b>
+(unless <b>c</b>, <b>i</b>, <b>m</b>, or <b>p</b> is
+appended to indicate that the size information is in units
+of cm, inches, meters, or points, respectively). Use the
+<b>&minus;T</b> option to render the beach ball transparent
+by drawing only the nodal planes and the circumference. The
+color or shade of the compressive quadrants can be specified
+with the <b>&minus;G</b> option. The color or shade of the
+extensive quadrants can be specified with the
+<b>&minus;E</b> option. Parameters are expected to be in the
+following columns:</p>
+
+<p style="margin-left:11%;">longitude, latitude of event
+(<b>&minus;:</b> option interchanges order) <br>
+depth of event in kilometers <br>
+strike, dip, and slip of plane 1 <br>
+strike, dip, and slip of plane 2 <br>
+mantissa and exponent of moment in dyne-cm (if magnitude is
+uses <br>
+instead of scalar moment, magnitude is in column 10 and 0
+must be in <br>
+column 11) <br>
+not used; can be 0 0; allows use of the psmeca file format
+<br>
+text string to appear above the beach ball (default) or
+under (add <b>u</b>). <b><br>
+&minus;Sp</b><i>scale[/fontsize[/offset</i>[<b>u</b>]]]</p>
+
+<p style="margin-left:29%;">Focal mechanisms given with
+partial data on both planes. <i>scale</i> adjusts the
+scaling of the radius of the &quot;beach ball&quot;, which
+will be proportional to the magnitude. The <i>scale</i> is
+the size for magnitude = 5 in <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> (unless
+<b>c</b>, <b>i</b>, <b>m</b>, or <b>p</b> is appended to
+indicate that the size information is in units of cm,
+inches, meters, or points, respectively). The color or shade
+of the compressive quadrants can be specified with the
+<b>&minus;G</b> option. The color or shade of the extensive
+quadrants can be specified with the <b>&minus;E</b> option.
+Parameters are expected to be in the following columns:</p>
+
+<p style="margin-left:11%;">longitude, latitude of event
+(<b>&minus;:</b> option interchanges order) <br>
+depth <br>
+strike, dip of plane 1 <br>
+strike of plane 2 <br>
+must be -1/+1 for a normal/inverse fault <br>
+magnitude <br>
+not used; can be 0 0; allows use of the psmeca file format
+<br>
+text string to appear above the beach ball (default) or
+under (add <b>u</b>). <b><br>
+
+&minus;Sm|d|z</b><i>scale[/fontsize[/offset</i>[<b>u</b>]]]</p>
+
+<p style="margin-left:25%;">Seismic moment tensor (Harvard
+CMT, with zero trace). <i>scale</i> adjusts the scaling of
+the radius of the &quot;beach ball&quot;, which will be
+proportional to the magnitude. The <i>scale</i> is the size
+for magnitude = 5 (that is seismic scalar moment = 4E+23
+dynes-cm) in <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> (unless <b>c</b>, <b>i</b>,
+<b>m</b>, or <b>p</b> is appended to indicate that the size
+information is in units of cm, inches, meters, or points,
+respectively). (<b>&minus;T</b><i>0</i> option overlays best
+double couple transparently.) Put
+<b>&minus;Sd</b><i>scale[/fontsize[/offset</i>[<b>u</b>]]]
+to plot the only double couple part of moment tensor. Put
+<b>&minus;Sz</b><i>scale[/fontsize[/offset</i>[<b>u</b>]]]
+to plot anisotropic part of moment tensor (zero trace). The
+color or shade of the compressive quadrants can be specified
+with the <b>&minus;G</b> option. The color or shade of the
+extensive quadrants can be specified with the
+<b>&minus;E</b> option. Parameters are expected to be in the
+following columns:</p>
+
+<p style="margin-left:11%;">longitude, latitude of event
+(<b>&minus;:</b> option interchanges order) <br>
+depth of event in kilometers <br>
+mrr, mtt, mff, mrt, mrf, mtf in 10*exponent dynes-cm <br>
+exponent <br>
+Not used; can be 0 0; allows use of the psmeca file format
+<br>
+Text string to appear above the beach ball (default) or
+under (add <b>u</b>). <b><br>
+&minus;Sx</b><i>scale[/fontsize[/offset</i>[<b>u</b>]]]</p>
+
+<p style="margin-left:28%;">Principal axis. <i>scale</i>
+adjusts the scaling of the radius of the &quot;beach
+ball&quot;, which will be proportional to the magnitude. The
+<i>scale</i> is the size for magnitude = 5 (that is seismic
+scalar moment = 4*10e+23 dynes-cm) in <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b>
+(unless <b>c</b>, <b>i</b>, <b>m</b>, or <b>p</b> is
+appended to indicate that the size information is in units
+of cm, inches, meters, or points, respectively).
+(<b>-T</b><i>0</i> option overlays best double couple
+transparently.) Put
+<b>&minus;Sy</b><i>scale[/fontsize[/offset</i>[<b>u</b>]]]
+to plot the only double couple part of moment tensor. Put
+<b>&minus;St</b><i>scale[/fontsize[/offset</i>[<b>u</b>]]]
+to plot anisotropic part of moment tensor (zero trace). The
+color or shade of the compressive quadrants can be specified
+with the <b>&minus;G</b> option. The color or shade of the
+extensive quadrants can be specified with the
+<b>&minus;E</b> option. Parameters are expected to be in the
+following columns:</p>
+
+<p style="margin-left:11%;">longitude, latitude of event
+(<b>&minus;:</b> option interchanges order) <br>
+depth of event in kilometers <br>
+value (in 10*exponent dynes-cm), azimuth, plunge of the T,
+N, and P <br>
+axes. <br>
+exponent <br>
+longitude, latitude at which to place beach ball. Entries in
+these</p>
+
+<p style="margin-left:32%;">columns are necessary with the
+<b>&minus;C</b> option. Using 0,0 in columns 9 and 10 will
+plot the beach ball at the longitude, latitude given in
+columns 1 and 2. The <b>&minus;:</b> option will interchange
+the order of columns (1,2) and (9,10).</p>
+
+<p style="margin-left:11%;">Text string to appear above the
+beach ball (optional). <b><br>
+
+&minus;s</b><i>symbol[size[/fontsize[/offset</i>[<b>u</b>]]]</p>
+
+<p style="margin-left:32%;">selects a symbol instead of
+mechanism. Choose from the following: (<b>c</b>) circle,
+(<b>d</b>) diamond, (<b>i</b>) itriangle, (<b>s</b>) square,
+(<b>t</b>) triangle, (<b>x</b>) cross. <i>size</i> is the
+symbol size in <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> (unless <b>c</b>,
+<b>i</b>, <b>m</b>, or <b>p</b> is appended to indicate that
+the size information is in units of cm, inches, meters, or
+points, respectively). If <i>size</i> must be read, it must
+be in column 4 and the text string will start in column 5.
+Parameters are expected to be in the following columns:</p>
+
+<p style="margin-left:11%;">longitude, latitude of event
+(<b>&minus;:</b> option interchanges order) <br>
+depth of event in kilometers <br>
+Text string to appear above the beach ball (default) or
+under (add <b>u</b>).</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;B</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets map boundary
+annotation and tickmark intervals; see the <b><A HREF="psbasemap.html">psbasemap</A></b>
+man page for all the details.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b><i>fill</i></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects filling of
+extensive quadrants. Usually white. Set the shade
+(0&minus;255) or color (r/g/b) [Default is 255/255/255].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b><i>fill</i></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects filling of
+focal mechanisms. By convention, the compressional quadrants
+are shaded. Set the shade (0&minus;255) or color
+(<i>r/g/b</i>) [Default is <i>0/0/0</i>]. Optionally,
+specify <b>&minus;Gp</b><i>icon_size/pattern</i>, where
+<i>pattern</i> gives the number of the image pattern (1-90)
+OR the name of a Sun rasterfile. <i>icon_size</i> sets the
+unit size in inches. To invert black and white pixels, use
+<b>&minus;GP</b> instead of <b>&minus;Gp</b>. See Appendix E
+for information on individual patterns.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;K</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">More
+<i>PostScript</i> code will be appended later [Default
+terminates the plot system].</p></td>
+</table>
+
+
+<p style="margin-left:11%;"><b>&minus;L</b>[<i>pen</i>]</p>
+
+<p style="margin-left:22%;">Draws the &quot;beach
+ball&quot; outline using current pen (see <b>&minus;W</b>)
+or sets pen attributes.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Same size for any
+magnitude.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Does <b>NOT</b>
+skip symbols that fall outside map border [Default plots
+points inside border only].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;O</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Overlay
+plot mode [Default initializes a new plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;P</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Portrait
+plotting mode [Default is Landscape, see <b><A HREF="gmtdefaults.html">gmtdefaults</A></b>
+to change this].</p></td>
+</table>
+
+
+<p style="margin-left:11%;"><b>&minus;T</b>[<i>num_of_planes</i>]</p>
+
+<p style="margin-left:22%;">Plots the nodal planes and
+outlines the bubble which is transparent. If
+<i>num_of_planes</i> is <i><br>
+0</i>: both nodal planes are plotted; <i><br>
+1</i>: only the first nodal plane is plotted; <i><br>
+2</i>: only the second nodal plane is plotted [Default:
+0].</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;U</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw Unix System
+time stamp on plot. By adding <i>just/dx/dy/</i>, the user
+may specify the justification of the stamp and where the
+stamp should fall on the page relative to lower left corner
+of the plot. For example, BL/0/0 will align the lower left
+corner of the time stamp with the lower left corner of the
+plot. Optionally, append a <i>label</i>, or <b>c</b> (which
+will plot the command string.). The <b><A HREF="GMT.html">GMT</A></b> parameters
+<b><A HREF="gmtdefaults.html#UNIX_TIME">UNIX_TIME</A></b>, <b><A HREF="gmtdefaults.html#UNIX_TIME_POS">UNIX_TIME_POS</A></b>, and
+<b><A HREF="gmtdefaults.html#UNIX_TIME_FORMAT">UNIX_TIME_FORMAT</A></b> can affect the appearance; see the
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b> man page for details. The time string
+will be in the locale set by the environment variable
+<b>TZ</b> (generally local time).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">set pen attributes
+for text string or default pen attributes for fault plane
+edges. [Defaults: width = <i>1</i>, color = <i>0/0/0</i>,
+texture = <i>solid</i>].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;X
+&minus;Y</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Shift plot origin
+relative to the current origin by (<i>x-shift,y-shift</i>)
+and optionally append the length unit (<b>c</b>, <b>i</b>,
+<b>m</b>, <b>p</b>). You can prepend <b>a</b> to shift the
+origin back to the original position after plotting, or
+prepend <b>r</b> [Default] to reset the current origin to
+the new location. If <b>&minus;O</b> is used then the
+default (<i>x-shift,y-shift</i>) is (0,0), otherwise it is
+(r1i, r1i) or (r2.5c, r2.5c). Alternatively, give <b>c</b>
+to align the center coordinate (x or y) of the plot with the
+center of the page based on current page size.</p></td>
+</table>
+
+<p style="margin-left:11%;"><b>&minus;Z</b> cptfile</p>
+
+<p style="margin-left:22%;">Give a color palette file and
+let compressive part color be determined by the z-value in
+the third column.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;a</b>[<i>size</i>/[<i>P_axis_symbol</i>/[<i>T_axis_symbol</i>]]]</p>
+
+<p style="margin-left:22%;">Computes and plots P and T axes
+with symbols. Optionally specify <i>size</i> and (separate)
+P and T axis symbols from the following: (<b>c</b>) circle,
+(<b>d</b>) diamond, (<b>h</b>) hexagon, (<b>i</b>) inverse
+triangle, (<b>p</b>)point, (<b>s</b>) square, (<b>t</b>)
+triangle, (<b>x</b>) cross. [Defaults:
+0.2<b>c</b>/<b>c</b>/<b>c</b> or
+0.08<b>i</b>/<b>c</b>/<b>c</b>.]</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;e</b><i>fill</i></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects filling of
+T axis symbol. Set the shade (0&minus;255) or color (r/g/b)
+[Default is color of extensive parts.]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;g</b><i>fill</i></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects filling of
+P axis symbol. Set the shade (0&minus;255) or color (r/g/b)
+[Default is color of compressive parts.]</p></td>
+</table>
+
+
+<p style="margin-left:11%;"><b>&minus;p</b>[<i>pen</i>]</p>
+
+<p style="margin-left:22%;">Draws the P axis outline using
+current pen (see <b>&minus;W</b>), or sets pen
+attributes.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;t</b>[<i>pen</i>]</p>
+
+<p style="margin-left:22%;">Draws the T axis outline using
+current pen (see <b>&minus;W</b>), or sets pen
+attributes.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;c</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies the
+number of plot copies. [Default is 1].</p></td>
+</table>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="psbasemap.html">psbasemap</A></i>(1), <i><A HREF="psmeca.html">psmeca</A></i>(1), <i><A HREF="psxy.html">psxy</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Bomford, G.,
+Geodesy, 4th ed., Oxford University Press, 1980. <br>
+Aki, K. and P. Richards, Quantitative Seismology, Freeman,
+1980. <br>
+F. A. Dahlen and Jeroen Tromp, Theoretical Seismology,
+Princeton, 1998, p.167. Definition of scalar moment. <br>
+Cliff Frohlich, Cliff&rsquo;s Nodes Concerning Plotting
+Nodal Lines for P, Sh and Sv <br>
+Seismological Research Letters, Volume 67, Number 1,
+January-February, 1996 <br>
+Thorne Lay, Terry C. Wallace, Modern Global Seismology,
+Academic Press, 1995, p.384. <br>
+W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery,
+Numerical Recipes in C, Cambridge University press (routine
+jacobi)</p>
+
+<a name="AUTHOR"></a>
+<h2>AUTHOR</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Genevieve Patau
+<br>
+CNRS UMR 7580 <br>
+Seismology Dept. <br>
+Institut de Physique du Globe de Paris <br>
+ (patau@ipgp.jussieu.fr)</p>
+<hr>
+</body>
+</html>

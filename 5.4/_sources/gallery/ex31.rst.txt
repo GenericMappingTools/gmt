@@ -1,0 +1,36 @@
+.. _example_31:
+
+(31) Using non-default fonts in PostScript
+--------------------------------------------
+
+This example illustrates several possibilities to create GMT plots
+with non-default fonts. As these fonts are not part of the standard
+PostScript font collection they have to be embedded in the PS- or
+PDF-file with Ghostscript. See also
+Cookbook Section :ref:`non-default-fonts` for further information. The script
+includes the following steps:
+
+-  create a ``PSL_custom_fonts.txt`` file;
+
+-  set the GMT parameters ``MAP_DEGREE_SYMBOL``, ``PS_CHAR_ENCODING``, and ``FONT``;
+
+-  replace the default Helvetica font in the GMT-PostScript-File with sed;
+
+-  create a PostScript-File with outlined fonts (optional);
+
+-  convert GMT's PostScript output to PDF or any image format (optional).
+
+The script produces the plot in Figure. All
+standard fonts have been substituted by the free OpenType fonts Linux
+Libertine (title) and Linux Biolinum (annotations). Uncomment the
+appropriate lines in the script to make a PostScript-file with
+outlined fonts or to convert to a PDF-file.
+
+.. literalinclude:: /_verbatim/example_31.txt
+   :language: bash
+
+.. figure:: /_images/example_31.*
+   :width: 500 px
+   :align: center
+
+   Using non-default fonts in PostScript.

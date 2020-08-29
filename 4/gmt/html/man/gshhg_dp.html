@@ -1,0 +1,140 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:33 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GSHHG_DP</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GSHHG_DP</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+<a href="#AUTHOR">AUTHOR</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">gshhg_dp
+&minus; Line reduction using the Douglas-Peucker
+algorithm</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gshhg_dp</b>
+<i>input.b tolerance output.b</i> [<b>&minus;v</b>]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gshhg_dp</b>
+reads the binary coastline (GSHHS) or political boundary or
+river (WDBII) files and and reduces the complexity of the
+line by applying the Douglas-Peucker algorithm. It
+automatically handles byte-swabbing between different
+architectures. <i><br>
+input.b</i></p>
+
+<p style="margin-left:22%;">GSHHS or WDBII binary data file
+as distributed with the GSHHG data supplement. Any of the 5
+standard resolutions (full, high, intermediate, low, crude)
+can be used.</p>
+
+<p style="margin-left:11%;"><i>tolerance</i></p>
+
+<p style="margin-left:22%;">tolerance is maximum mismatch
+in km. The larger the value the more reduction will take
+place.</p>
+
+<p style="margin-left:11%;"><i>output.b</i></p>
+
+<p style="margin-left:22%;">The reducted data set.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;v</b></p> </td>
+<td width="8%"></td>
+<td width="70%">
+
+
+<p style="margin-top: 1em" valign="top">Reports progress
+and statistics while running.</p></td>
+<td width="8%">
+</td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To simplify the
+full GSHHS data set with a custom tolerance of 2 km, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gshhg_dp</b>
+<i>gshhs_f.b 2 gshhs_2km.b</i></p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Douglas, D. H.,
+and T. K. Peucker, Algorithms for the reduction of the
+number of points required to represent a digitized line of
+its caricature, <i>Can. Cartogr., 10</i>, 112-122, 1973.</p>
+
+<a name="AUTHOR"></a>
+<h2>AUTHOR</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">This
+implementation of the D-P algorithm has been kindly provided
+by Dr. Gary J. Robinson, Environmental Systems Science
+Centre, University of Reading, Reading, UK
+(gazza@mail.nerc-essc.ac.uk); his subroutine forms the basis
+for this program.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="gshhg.html">gshhg</A></i>(1), <i><A HREF="gshhgtograss.html">gshhgtograss</A></i>(1)</p>
+<hr>
+</body>
+</html>

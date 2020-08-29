@@ -1,0 +1,725 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mapproject &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mask" href="mask.html" />
+    <link rel="prev" title="makecpt" href="makecpt.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">GMT Modules</a> &raquo;</li>
+        
+      <li>mapproject</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/mapproject.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mapproject">
+<span id="index-0"></span><h1>mapproject<a class="headerlink" href="#mapproject" title="Permalink to this headline">¶</a></h1>
+<p>Forward and inverse map transformations, datum conversions and geodesy</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt mapproject</strong> [ <em>tables</em> ] <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em>
+<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><strong>b</strong>|<strong>B</strong>|<strong>f</strong>|<strong>F</strong>|<strong>o</strong>|<strong>O</strong>[<em>lon0</em>/<em>lat0</em>][<strong>+v</strong>] ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong>[<em>dx</em>/<em>dy</em>] ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><strong>c</strong>|<strong>i</strong>|<strong>p</strong> ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<em>datum</em>] ] [ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<em>unit</em>] ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong>[<em>lon0</em>/<em>lat0</em>][<strong>+a</strong>][<strong>+i</strong>][<strong>+u</strong><em>unit</em>][<strong>+v</strong>] ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>line.xy</em>[<strong>+u</strong><em>unit</em>][<strong>+p</strong>] ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>g</strong>|<strong>m</strong>] ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong>[<strong>d</strong>|<strong>e</strong>] ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong>[<strong>h</strong>]<em>from</em>[/<em>to</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<strong>g</strong>|<strong>h</strong>|<strong>j</strong>|<strong>n</strong>|<strong>w</strong>|<strong>x</strong>] ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong>[<em>speed</em>][<strong>+a</strong>][<strong>+i</strong>][<strong>+f</strong>][<strong>+t</strong><em>epoch</em>] ]
+[ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-j</strong><a class="reference internal" href="gmt.html#distcalc-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-s</strong><a class="reference internal" href="gmt.html#s-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>mapproject</strong> reads (longitude, latitude) positions from <em>tables</em> [or
+standard input] and computes (x,y) coordinates using the specified map
+projection and scales. Optionally, it can read (x,y) positions and
+compute (longitude, latitude) values doing the inverse transformation.
+This can be used to transform linear (x,y) points obtained by digitizing
+a map of known projection to geographical coordinates. May also
+calculate distances along track, to a fixed point, or closest approach
+to a line.
+Alternatively, can be used to perform various datum conversions.
+Additional data fields are permitted after the first 2 columns which
+must have (longitude,latitude) or (x,y). See option <strong>-:</strong> on how to
+read (latitude,longitude) files.
+Finally, <strong>mapproject</strong> can compute a variety of auxiliary output
+data from input coordinates that make up a track.  Items like
+azimuth, distances, distances to other lines, and travel-times
+along lines can all be computed by using one or more of the options
+<strong>-A</strong>, <strong>-G</strong>, <strong>-L</strong>, and <strong>-Z</strong>.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="j">
+<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select map projection.  </dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest. Special case for the UTM
+projection: If <strong>-C</strong> is used and <strong>-R</strong> is not given then the
+region is set to coincide with the given UTM zone so as to preserve
+the full ellipsoidal solution (See RESTRICTIONS for more information).</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </dd>
+</dl>
+<dl class="docutils" id="a">
+<dt><strong>-Ab</strong>|<strong>B</strong>|<strong>f</strong>|<strong>F</strong>|<strong>o</strong>|<strong>O</strong>[<em>lon0</em>/<em>lat0</em>][<strong>+v</strong>]</dt>
+<dd>Calculate azimuth along track <em>or</em> to the optional <em>fixed</em> point set
+with <em>lon0/lat0</em>.  <strong>-Af</strong> calculates the (forward) azimuth
+to each data point. Use <strong>-Ab</strong> to get back-azimuth from data points
+to fixed point. Use <strong>-Ao</strong> to get orientations (-90/90) rather than
+azimuths (0/360). Upper case <strong>F</strong>, <strong>B</strong> or <strong>O</strong> will convert from
+geodetic to geocentric latitudes and estimate azimuth of geodesics
+(assuming the current ellipsoid is not a sphere). If no fixed point
+is given then we compute the azimuth (or back-azimuth) from the
+previous point.  Alternatively, append <strong>+v</strong> to obtain a
+<em>variable</em> 2nd point (<em>lon0</em>/<em>lat0</em>) via columns 3-4 in the input file.
+See <a class="reference internal" href="#output-order">Output Order</a> for how <strong>-A</strong> affects the output record.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong>[<em>dx</em>/<em>dy</em>]</dt>
+<dd>Set center of projected coordinates to be at map projection center
+[Default is lower left corner]. Optionally, add offsets in the
+projected units to be added (or subtracted when <strong>-I</strong> is set) to
+(from) the projected coordinates, such as false eastings and
+northings for particular projection zones [0/0]. The unit used for
+the offsets is the plot distance unit in effect (see
+<a class="reference internal" href="gmt.conf.html#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a>) unless <strong>-F</strong> is used, in which case the
+offsets are in meters.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-Dc</strong>|<strong>i</strong>|<strong>p</strong></dt>
+<dd>Temporarily override <a class="reference internal" href="gmt.conf.html#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a> and use <strong>c</strong> (cm),
+<strong>i</strong> (inch), or <strong>p</strong> (points) instead. Cannot be used with <strong>-F</strong>.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong>[<em>datum</em>]</dt>
+<dd>Convert from geodetic (lon, lat, height) to Earth Centered Earth Fixed (ECEF) (x,y,z) coordinates
+(add <strong>-I</strong> for the inverse conversion). Append datum ID (see <strong>-Qd</strong>) or give
+<em>ellipsoid</em>:<em>dx</em>,<em>dy</em>,<em>dz</em> where <em>ellipsoid</em> may be an ellipsoid
+ID (see <strong>-Qe</strong>) or given as <em>a</em>[,<em>inv_f</em>], where <em>a</em> is the
+semi-major axis and <em>inv_f</em> is the inverse flattening (0 if
+omitted). If <em>datum</em> is - or not given we assume WGS-84.</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong>[<em>unit</em>]</dt>
+<dd>Force 1:1 scaling, i.e., output (or input, see <strong>-I</strong>) data are in
+actual projected meters. To specify other units, append the desired
+unit (see <a class="reference internal" href="#units">Units</a>). Without <strong>-F</strong>, the output (or input, see <strong>-I</strong>)
+are in the units specified by <a class="reference internal" href="gmt.conf.html#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a> (but see
+<strong>-D</strong>).</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong>[<em>lon0</em>/<em>lat0</em>][<strong>+a</strong>][<strong>+i</strong>][<strong>+u</strong><em>unit</em>][<strong>+v</strong>]</dt>
+<dd>Calculate distances along track <em>or</em> to the optional <em>fixed</em> point set
+with <strong>-G</strong><em>lon0</em>/<em>lat0</em>. Append the distance unit with <strong>+u</strong> (see <a class="reference internal" href="#units">Units</a> for available
+units and how distances are computed [great circle using authalic radius]), including
+<strong>c</strong> (Cartesian distance using input coordinates) or <strong>C</strong>
+(Cartesian distance using projected coordinates). The <strong>C</strong> unit
+requires <strong>-R</strong> and <strong>-J</strong> to be set. When no fixed point is given
+we calculate accumulated distances [or by adding <strong>+a</strong>] along the
+track defined by the input points. Append <strong>+i</strong> to obtain <em>incremental</em>
+distances between successive points, or append both modifiers to get
+both distance measurements. Alternatively, append <strong>+v</strong> to obtain a
+<em>variable</em> 2nd point (<em>lon0</em>/<em>lat0</em>) via columns 3-4 in the input file.
+See <a class="reference internal" href="#output-order">Output Order</a> for how <strong>-G</strong> affects the output record.</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong></dt>
+<dd>Do the Inverse transformation, i.e., get (longitude,latitude) from (x,y) data.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong><em>line.xy</em>[<strong>+u</strong><em>unit</em>][<strong>+p</strong>]</dt>
+<dd>Determine the shortest distance from the input data points to the
+line(s) given in the ASCII multisegment file <em>line.xy</em>. The distance
+and the coordinates of the nearest point will be appended to the
+output as three new columns. Append the distance unit (see <a class="reference internal" href="#units">Units</a>
+for available units and how distances are computed [great circle using authalic radius]),
+including <strong>c</strong> (Cartesian distance using input coordinates) or
+<strong>C</strong> (Cartesian distance using projected coordinates). The <strong>C</strong>
+unit requires <strong>-R</strong> and <strong>-J</strong> to be set. Finally, append <strong>+p</strong> to
+report the line segment id and the fractional point number instead
+of lon/lat of the nearest point.
+See <a class="reference internal" href="#output-order">Output Order</a> for how <strong>-L</strong> affects the output record.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong>[<strong>a</strong>|<strong>c</strong>|<strong>g</strong>|<strong>m</strong>]</dt>
+<dd>Convert from geodetic latitudes (using the current ellipsoid; see
+<a class="reference internal" href="gmt.conf.html#proj-ellipsoid"><span class="std std-ref">PROJ_ELLIPSOID</span></a>) to one of four different auxiliary latitudes
+(longitudes are unaffected). Choose from <strong>a</strong>uthalic,
+<strong>c</strong>onformal, <strong>g</strong>eocentric, and <strong>m</strong>eridional latitudes
+[geocentric]. Use <strong>-I</strong> to convert from auxiliary latitudes to
+geodetic latitudes.</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong>[<strong>d</strong>|<strong>e</strong>]</dt>
+<dd>List all projection parameters. To only list datums, use <strong>-Qd</strong>. To
+only list ellipsoids, use <strong>-Qe</strong>.</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong></dt>
+<dd>Suppress points that fall outside the region.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong>[<strong>h</strong>]<em>from</em>[/<em>to</em>]</dt>
+<dd>Coordinate conversions between datums <em>from</em> and <em>to</em> using the
+standard Molodensky transformation. Use <strong>-Th</strong> if 3rd input column
+has height above ellipsoid [Default assumes height = 0, i.e., on the
+ellipsoid]. Specify datums using the datum ID (see <strong>-Qd</strong>) or give
+<em>ellipsoid</em>:<em>dx</em>,<em>dy</em>,<em>dz</em> where <em>ellipsoid</em> may be an ellipsoid
+ID (see <strong>-Qe</strong>) or given as <em>a</em>[,<em>inv_f</em>], where <em>a</em> is the
+semi-major axis and <em>inv_f</em> is the inverse flattening (0 if
+omitted). If <em>datum</em> is - or not given we assume WGS-84. <strong>-T</strong> may
+be used in conjunction with <strong>-R</strong> <strong>-J</strong> to change the datum before
+coordinate projection (add <strong>-I</strong> to apply the datum conversion
+after the inverse projection). Make sure that the
+<a class="reference internal" href="gmt.conf.html#proj-ellipsoid"><span class="std std-ref">PROJ_ELLIPSOID</span></a> setting is correct for your case.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong>[<strong>g</strong>|<strong>h</strong>|<strong>j</strong>|<strong>n</strong>|<strong>w</strong>|<strong>x</strong>]</dt>
+<dd>Prints map width and height on standard output.  No input files are read.
+To only output the width or the height, append <strong>w</strong> or <strong>h</strong>, respectively.
+To output the plot coordinates of a map point, give <strong>g</strong><em>lon</em>/<em>lat</em>.
+The units of reported plot dimensions may be changed via <strong>-D</strong>.
+To output the map coordinates of a reference point, select <strong>j</strong><em>code</em> (with
+standard two-character justification codes), <strong>n</strong><em>rx</em>/<em>ry</em>, where the reference
+point is given as normalized positions in the 0-1 range, or <strong>x</strong><em>px</em>/<em>py</em>,
+where a plot point is given directly [Default returns the width and height of the map].</dd>
+</dl>
+<dl class="docutils" id="z">
+<dt><strong>-Z</strong>[<em>speed</em>][<strong>+a</strong>][<strong>+i</strong>][<strong>+f</strong>][<strong>+t</strong><em>epoch</em>]</dt>
+<dd>Calculate travel times along track as specified with <strong>-G</strong>.
+Append a constant speed unit; if missing we expect to read
+a variable speed from column 3.  The speed is expected to be
+in the distance units set via <strong>-G</strong> per time unit controlled
+by <a class="reference internal" href="gmt.conf.html#time-unit"><span class="std std-ref">TIME_UNIT</span></a> [m/s].  Append <strong>+i</strong> to output
+<em>incremental</em> travel times between successive points, <strong>+a</strong>
+to obtain <em>accumulated</em> travel times, or both to get both kinds
+of time information.  Use <strong>+f</strong> to format the accumulated
+(elapsed) travel time according to the ISO 8601 convention.
+As for the number of decimals used to represent seconds we
+consult the <a class="reference internal" href="gmt.conf.html#format-clock-out"><span class="std std-ref">FORMAT_CLOCK_OUT</span></a>
+setting. Finally, append <strong>+t</strong><em>epoch</em> to report absolute
+times (ETA) for successive points. Finally, because of the
+need for incremental distances the <strong>-G</strong> option with the
+<strong>+i</strong> modifier is required.
+See <a class="reference internal" href="#output-order">Output Order</a> for how <strong>-Z</strong> affects the output record.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary format for primary input. [Default is 2 input columns].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output. [Default is same as input].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em> <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> | <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong><em>gap</em>[<strong>u</strong>][<strong>+n</strong>|<strong>p</strong>] <a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine data gaps and line breaks.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<em>t</em>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column, <em>t</em> is trailing text, append <em>word</em> to read one word only).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-je</strong>|<strong>f</strong>|<strong>g</strong> <a class="reference internal" href="gmt.html#distcalc-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine how spherical distances are calculated.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-o</strong><em>cols</em>[,…][<em>t</em>[<em>word</em>]] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select output columns (0 is first column; <em>t</em> is trailing text, append <em>word</em> to write one word only).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select perspective view.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-s</strong>[<em>cols</em>][<strong>+a</strong>|<strong>+r</strong>] <a class="reference internal" href="gmt.html#s-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set handling of NaN records.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt>
+<dd>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</dd>
+</dl>
+</div>
+<div class="section" id="units">
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
+<p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
+and <strong>u</strong> for US survey foot. By default we compute such distances using
+a spherical approximation with great circles (<strong>-jg</strong>) using the authalic radius
+(see <a class="reference internal" href="gmt.conf.html#proj-mean-radius"><span class="std std-ref">PROJ_MEAN_RADIUS</span></a>). You can use <strong>-jf</strong> to perform
+“Flat Earth” calculations (quicker but less accurate) or <strong>-je</strong> to perform
+exact geodesic calculations (slower but more accurate; see
+<a class="reference internal" href="gmt.conf.html#proj-geodesic"><span class="std std-ref">PROJ_GEODESIC</span></a> for method used).</p>
+</div>
+<div class="section" id="ascii-format-precision">
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-geo-out"><span class="std std-ref">FORMAT_GEO_OUT</span></a>, absolute time is
+under the control of <a class="reference internal" href="gmt.conf.html#format-date-out"><span class="std std-ref">FORMAT_DATE_OUT</span></a> and
+<a class="reference internal" href="gmt.conf.html#format-clock-out"><span class="std std-ref">FORMAT_CLOCK_OUT</span></a>, whereas general floating point values are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a>. Be aware that the format in effect
+can lead to loss of precision in ASCII output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a> setting.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p><strong>Note</strong>: Below are some examples of valid syntax for this module.
+The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
+can be cut and pasted into your terminal for testing.
+Other commands requiring input files are just dummy examples of the types
+of uses that are common but cannot be run verbatim as written.</p>
+<p>To transform a remote file with (latitude,longitude) into (x,y) positions in cm
+on a Mercator grid for a given scale of 0.5 cm per degree and selected region, run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mapproject @waypoints.txt -R-180/180/-72/72 -Jm0.5c -: &gt; xyfile
+</pre></div>
+</div>
+</div></blockquote>
+<p>To convert UTM coordinates in meters to geographic locations, given
+a file utm.txt and knowing the UTM zone (and zone or hemisphere), try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mapproject utm.txt -Ju+11/1:1 -C -I -F
+</pre></div>
+</div>
+</div></blockquote>
+<p>To transform several 2-column, binary, double precision files with
+(latitude,longitude) into (x,y) positions in inch on a Transverse
+Mercator grid (central longitude 75W) for scale = 1:500000 and suppress
+those points that would fall outside the map area, run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mapproject tracks.* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 &gt; tmfile.b
+</pre></div>
+</div>
+</div></blockquote>
+<p>To convert the geodetic coordinates (lon, lat, height) in the file
+old.txt from the NAD27 CONUS datum (Datum ID 131 which uses the
+Clarke-1866 ellipsoid) to WGS 84, run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mapproject old.txt -Th131 &gt; new.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>To compute the closest distance (in km) between each point in the input
+file quakes.txt and the line segments given in the multisegment ASCII
+file coastline.xy, run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mapproject quakes.txt -Lcoastline.xy+uk &gt; quake_dist.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>Given a file with longitude and latitude, compute both incremental
+and accumulated distance along track, and estimate travel times
+assuming a fixed speed of 12 knots.  We do this with</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mapproject track.txt -Gn+a+i -Z12+a --TIME_UNIT<span class="o">=</span>h &gt; elapsed_time.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>where <a class="reference internal" href="gmt.conf.html#time-unit"><span class="std std-ref">TIME_UNIT</span></a> is set to hour so that the speed is
+measured in nm (set by <strong>-G</strong>) per hour (set by <a class="reference internal" href="gmt.conf.html#time-unit"><span class="std std-ref">TIME_UNIT</span></a>).
+Elapsed times will be reported in hours (unless <strong>+f</strong> is added to <strong>-Z</strong>
+for ISO elapsed time).</p>
+<p>To determine the geographic coordinates of the mid-point of this transverse Mercator map, try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mapproject -R-80/-70/20/40 -Jt-75/1:500000 -WjCM &gt; mid_point.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>where <a class="reference internal" href="gmt.conf.html#time-unit"><span class="std std-ref">TIME_UNIT</span></a> is set to hour so that the speed is</p>
+</div>
+<div class="section" id="restrictions">
+<h2>Restrictions<a class="headerlink" href="#restrictions" title="Permalink to this headline">¶</a></h2>
+<p>The rectangular input region set with <strong>-R</strong> will in general be mapped
+into a non-rectangular grid. Unless <strong>-C</strong> is set, the leftmost point on
+this grid has xvalue = 0.0, and the lowermost point will have yvalue =
+0.0. Thus, before you digitize a map, run the extreme map coordinates
+through <strong>mapproject</strong> using the appropriate scale and see what (x,y)
+values they are mapped onto. Use these values when setting up for
+digitizing in order to have the inverse transformation work correctly,
+or alternatively, use <strong>awk</strong> to scale and shift the (x,y) values before
+transforming.</p>
+<p>For some projection, a spherical solution may be used despite the user
+having selected an ellipsoid. This occurs when the users <strong>-R</strong> setting
+implies a region that exceeds the domain in which the ellipsoidal series
+expansions are valid. These are the conditions: (1) Lambert Conformal
+Conic (<strong>-JL</strong>)and Albers Equal-Area (<strong>-JB</strong>) will use the spherical
+solution when the map scale exceeds 1.0E7. (2) Transverse Mercator
+(<strong>-JT</strong>) and UTM (<strong>-JU</strong>) will will use the spherical solution when
+either the west or east boundary given in <strong>-R</strong> is more than 10 degrees
+from the central meridian, and (3) same for Cassini
+(<strong>-JC</strong>) but with a limit of only 4 degrees.</p>
+</div>
+<div class="section" id="ellipsoids-and-spheroids">
+<h2>Ellipsoids And Spheroids<a class="headerlink" href="#ellipsoids-and-spheroids" title="Permalink to this headline">¶</a></h2>
+<p>GMT will use ellipsoidal formulae if they are implemented and the
+user have selected an ellipsoid as the reference shape (see
+<a class="reference internal" href="gmt.conf.html#proj-ellipsoid"><span class="std std-ref">PROJ_ELLIPSOID</span></a>). The user needs to be aware of a
+few potential pitfalls: (1) For some projections, such as Transverse
+Mercator, Albers, and Lambert’s conformal conic we use the ellipsoidal
+expressions when the areas mapped are small, and switch to the spherical
+expressions (and substituting the appropriate auxiliary latitudes) for
+larger maps. The ellipsoidal formulae are used as follows: (a)
+Transverse Mercator: When all points are within 10 degrees of central
+meridian, (b) Conic projections when longitudinal range is less than 90
+degrees, (c) Cassini projection when all points are within 4 degrees of
+central meridian. (2) When you are trying to match some historical data
+(e.g., coordinates obtained with a certain projection and a certain
+reference ellipsoid) you may find that GMT gives results that are
+slightly different. One likely source of this mismatch is that older
+calculations often used less significant digits. For instance, Snyder’s
+examples often use the Clarke 1866 ellipsoid (defined by him as having a
+flattening f = 1/294.98). From f we get the eccentricity squared to be
+0.00676862818 (this is what GMT uses), while Snyder rounds off and
+uses 0.00676866. This difference can give discrepancies of several tens
+of cm. If you need to reproduce coordinates projected with this slightly
+different eccentricity, you should specify your own ellipsoid with the
+same parameters as Clarke 1866, but with f = 1/294.97861076. Also, be
+aware that older data may be referenced to different datums, and unless
+you know which datum was used and convert all data to a common datum you
+may experience mismatches of tens to hundreds of meters. (3) Finally, be
+aware that <a class="reference internal" href="gmt.conf.html#proj-scale-factor"><span class="std std-ref">PROJ_SCALE_FACTOR</span></a> have certain default values for some
+projections so you may have to override the setting in order to match
+results produced with other settings.</p>
+</div>
+<div class="section" id="output-order">
+<h2>Output Order<a class="headerlink" href="#output-order" title="Permalink to this headline">¶</a></h2>
+<p>The production order for the geodetic and temporal columns produced by the
+options <strong>-A</strong>, <strong>-G</strong>, <strong>-L</strong>, and <strong>-Z</strong> is fixed and follows the
+alphabetical order of the options.  Hence, the order these options
+appear on the command line is irrelevant.  The actual output order
+can of course be modulated via <strong>-o</strong>.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
+<a class="reference internal" href="gmtvector.html"><span class="doc">gmtvector</span></a>,
+<a class="reference internal" href="project.html"><span class="doc">project</span></a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Bomford, G., 1952, Geodesy, Oxford U. Press.</p>
+<p>Snyder, J. P., 1987, Map Projections - A Working Manual, U.S. Geological
+Survey Prof. Paper 1395.</p>
+<p>Vanicek, P. and Krakiwsky, E, 1982, Geodesy - The Concepts,
+North-Holland Publ., ISBN: 0 444 86149 1.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mask.html" class="btn btn-neutral float-right" title="mask" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="makecpt.html" class="btn btn-neutral float-left" title="makecpt" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

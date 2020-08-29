@@ -1,0 +1,722 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Session Four &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GMT Modules" href="../modules.html" />
+    <link rel="prev" title="Session Three" href="session-3.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../tutorial.html">GMT Tutorial</a> &raquo;</li>
+        
+      <li>Session Four</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/tutorial/session-4.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="session-four">
+<h1>Session Four<a class="headerlink" href="#session-four" title="Permalink to this headline">¶</a></h1>
+<p>In our final session we will concentrate on color images and
+perspective views of gridded data sets.  Before we start that
+discussion we need to cover three important aspects of plotting
+that must be understood.  These are</p>
+<ol class="arabic simple">
+<li>Color tables and pseudo-colors in GMT.</li>
+<li>Artificial illumination and how it affects colors.</li>
+<li>Multi-dimensional grids.</li>
+</ol>
+<div class="section" id="cpts">
+<h2>CPTs<a class="headerlink" href="#cpts" title="Permalink to this headline">¶</a></h2>
+<p>The CPT is discussed in detail in the GMT Technical Reference
+and Cookbook.  Please review the format before experimenting
+further.</p>
+<p>CPTs can be created in any number of ways.  GMT provides
+two mechanisms:</p>
+<ol class="arabic simple">
+<li>Create simple, linear color tables given a master color table
+(several are built-in) and the desired <em>z</em>-values at color boundaries
+(<a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a>)</li>
+<li>Create color tables based on a master CPT color table and the
+histogram-equalized distribution of <em>z</em>-values in a gridded data file (<a class="reference internal" href="../grd2cpt.html"><span class="doc">grd2cpt</span></a>)</li>
+</ol>
+<p>One can also make these files manually or with awk
+or other tools.  Here we will limit our discussion to <a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a>.
+Its main argument is the name of the master color table (a list is
+shown if you run the module with no arguments) and the equidistant
+<em>z</em>-values to go with it.  The main options are given below.</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="84%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Purpose</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>-C</strong></td>
+<td>Set the name of the master CPT to use</td>
+</tr>
+<tr class="row-odd"><td><strong>-I</strong></td>
+<td>Reverse the sense of the color progression</td>
+</tr>
+<tr class="row-even"><td><strong>-V</strong></td>
+<td>Run in verbose mode</td>
+</tr>
+<tr class="row-odd"><td><strong>-Z</strong></td>
+<td>Make a continuous rather than discrete table</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>To make discrete and continuous color CPTs for data that ranges
+from -20 to 60, with color changes at every 10, try these two variants:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt makecpt -Crainbow -T-20/60/10 &gt; disc.cpt
+gmt makecpt -Crainbow -T-20/60/10 -Z &gt; cont.cpt
+</pre></div>
+</div>
+</div></blockquote>
+<p>We can plot these color tables with <a class="reference internal" href="../colorbar.html"><span class="doc">colorbar</span></a>; the options
+worth mentioning here are listed below.  The placement of the
+color bar is particularly important and we refer you to the
+<a class="reference internal" href="../cookbook/features.html#gmt-embellishments"><span class="std std-ref">Plot embellishments</span></a> section for all
+the details.
+In addition, the <strong>-B</strong> option can be used to set the title
+and unit label (and optionally to set the annotation-, tick-,
+and grid-line intervals for the color bars.).  Note that the makecpt commands
+above are done in classic mode.  If you run <a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a> in modern mode
+then you usually do not specify an output file via stdout since
+modern mode maintains what is known as the current CPT.  However,
+if you must explicitly name an output CPT then you will need to
+add the -H option for modern mode to allow output to stdout.</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="54%" />
+<col width="46%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Purpose</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>-C</strong><em>cpt</em></td>
+<td>The required CPT</td>
+</tr>
+<tr class="row-odd"><td><strong>-Dx</strong><em>xpos/ypos</em><strong>+w</strong><em>length/width</em>[<strong>+h</strong>]</td>
+<td>Sets the position and dimensions of scale bar.</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>Append <strong>+h</strong> to get horizontal bar</td>
+</tr>
+<tr class="row-odd"><td><strong>-I</strong><em>max_intensity</em></td>
+<td>Add illumination effects</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>Here is an example of four different ways of presenting the color bar:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_14
+	gmt makecpt -H -Crainbow -T-20/60/10 &gt; disc.cpt
+	gmt makecpt -H -Crainbow -T-20/60 &gt; cont.cpt
+	gmt basemap -R0/6/0/9 -Jx1i -B0 -Xc 
+	gmt colorbar -Dx1i/1i+w4i/0.5i+h -Cdisc.cpt -Ba -B+tdiscrete 
+	gmt colorbar -Dx1i/3i+w4i/0.5i+h -Ccont.cpt -Ba -B+tcontinuous 
+	gmt colorbar -Dx1i/5i+w4i/0.5i+h -Cdisc.cpt -Ba -B+tdiscrete -I0.5 
+	gmt colorbar -Dx1i/7i+w4i/0.5i+h -Ccont.cpt -Ba -B+tcontinuous -I0.5 
+gmt end show
+</pre></div>
+</div>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-14"><span class="std std-ref">our example 14 below</span></a></p>
+<div class="figure align-center" id="id1">
+<span id="gmt-tut-14"></span><a class="reference internal image-reference" href="../_images/GMT_tut_14.png"><img alt="../_images/GMT_tut_14.png" src="../_images/GMT_tut_14.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 14</span></p>
+</div>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li>Redo the <a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a> exercise using the master table
+<em>hot</em> and redo the bar plot.</li>
+<li>Try specifying <strong>-B</strong>10g5.</li>
+</ol>
+</div>
+<div class="section" id="illumination-and-intensities">
+<h2>Illumination and intensities<a class="headerlink" href="#illumination-and-intensities" title="Permalink to this headline">¶</a></h2>
+<p>GMT allows for artificial illumination and shading.  What this
+means is that we imagine an artificial sun placed at infinity in
+some azimuth and elevation position illuminating our surface.
+The parts of the surface that slope toward the sun should brighten
+while those sides facing away should become darker; no shadows are
+cast as a result of topographic undulations.</p>
+<p>While it is clear that the actual slopes of the surface and the
+orientation of the sun enter into these calculations, there is
+clearly an arbitrary element when the surface is not topographic
+relief but some other quantity.  For instance, what does the slope
+toward the sun mean if we are plotting a grid of heat flow anomalies?
+While there are many ways to accomplish what we want, GMT offers
+a relatively simple way:  We may calculate the gradient of the surface
+in the direction of the sun and normalize these values to fall in
+the -1 to +1 range; +1 means maximum sun exposure and -1 means complete
+shade. Although we will not show it here, it should be added that
+GMT treats the intensities as a separate data set.  Thus, while
+these values are often derived from the relief surface we want to
+image they could be separately observed quantities such as back-scatter
+information.</p>
+<p>Colors in GMT are specified in the RGB system used for computer
+screens; it mixes red, green, and blue light to achieve other colors.
+The RGB system is a Cartesian coordinate system and produces a color cube.
+For reasons better explained in Appendix I in the Reference book it is
+difficult to darken and brighten a color based on its RGB values and an
+alternative coordinate system is used instead; here we use the HSV system.
+If you hold the color cube so that the black and white corners are along
+a vertical axis, then the other 6 corners project onto the horizontal plane to
+form a hexagon; the corners of this hexagon are the primary colors Red,
+Yellow, Green, Cyan, Blue, and Magenta.
+The CMY colors are the complimentary colors and are used when paints are
+mixed to produce a new color (this is how printers operate; they also add
+pure black (K) to avoid making gray from CMY).  In this coordinate system the
+angle 0-360º is the hue (H); the Saturation and Value are harder to
+explain.  Suffice it to say here that we intend to darken any pure color
+(on the cube facets) by keeping H fixed and adding black and brighten it by adding white; for
+interior points in the cube we will add or remove gray.
+This operation is efficiently done in the HSV coordinate system; hence all
+GMT shading operations involve translating from RGB to HSV, do the
+illumination effect, and transform back the modified RGB values.</p>
+</div>
+<div class="section" id="color-images">
+<h2>Color images<a class="headerlink" href="#color-images" title="Permalink to this headline">¶</a></h2>
+<p>Once a CPT has been made it is relatively straightforward to generate
+a color image of a gridded data.  Here, we will extract a subset of the
+global 30” DEM called SRTM30+:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdcut @earth_relief_30s -R-108/-103/35/40 -Gtut_relief.nc
+</pre></div>
+</div>
+</div></blockquote>
+<p>Using <a class="reference internal" href="../grdinfo.html"><span class="doc">grdinfo</span></a> we find that the data ranges from about 1000m to
+about 4300m so we need to make a CPT with that range.</p>
+<p>Color images are made with <a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a> which takes the usual
+common command options (by default the <strong>-R</strong> is taken from the data set)
+and a CPT; the main other options are:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Purpose</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>-E</strong><em>dpi</em></td>
+<td>Sets the desired resolution of the image [Default is data resolution]</td>
+</tr>
+<tr class="row-odd"><td><strong>-I</strong><em>intenfile</em></td>
+<td>Use artificial illumination using intensities from <em>intensfile</em></td>
+</tr>
+<tr class="row-even"><td><strong>-M</strong></td>
+<td>Force gray shade using the (television) YIQ conversion</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>We want to make a plain color map with a color bar superimposed above
+the plot.  We try</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_15
+	gmt makecpt -Crainbow -T1000/5000
+	gmt grdimage @tut_relief.nc -JM6i -B -BWSnE
+	gmt colorbar -DJTC -I0.4 -Bxa -By+lm 
+gmt end show
+</pre></div>
+</div>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-15"><span class="std std-ref">our example 15 below</span></a></p>
+<div class="figure align-center" id="id2">
+<span id="gmt-tut-15"></span><a class="reference internal image-reference" href="../_images/GMT_tut_15.png"><img alt="../_images/GMT_tut_15.png" src="../_images/GMT_tut_15.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 15</span></p>
+</div>
+<p>The plain color map lacks detail and fails to reveal the topographic
+complexity of this Rocky Mountain region.  What it needs is artificial
+illumination.  We want to simulate shading by a sun source in the east,
+hence we derive the required intensities from the gradients of the
+topography in the N90ºE direction using <a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a>.  Other than the
+required input and output filenames, the available options are</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Purpose</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>-A</strong><em>azimuth</em></td>
+<td>Azimuthal direction for gradients</td>
+</tr>
+<tr class="row-odd"><td><strong>-fg</strong></td>
+<td>Indicates that this is a geographic grid</td>
+</tr>
+<tr class="row-even"><td><strong>-N</strong>[<strong>t</strong>|<strong>e</strong>][<strong>+s</strong><em>norm</em>][<strong>+o</strong><em>offset</em>]</td>
+<td>Normalize gradients by <em>norm/offset</em> [= 1/0 by default].</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>Insert <strong>t</strong> to normalize by the inverse tangent transformation.</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>Insert <strong>e</strong> to normalize by the cumulative Laplace distribution.</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>The <a class="reference internal" href="#gmt-atan"><span class="std std-ref">GMT inverse tangent transformation</span></a>  shows that raw slopes from bathymetry tend to be
+far from normally distributed (left).  By using the inverse tangent
+transformation we can ensure a more uniform distribution (right).
+The inverse tangent transform simply takes the raw slope estimate
+(the <em>x</em> value at the arrow) and returns the corresponding inverse
+tangent value (normalized to fall in the plus/minus 1 range; horizontal
+arrow pointing to the <em>y</em>-value).</p>
+<div class="figure align-center" id="id3">
+<span id="gmt-atan"></span><a class="reference internal image-reference" href="../_images/GMT_atan.png"><img alt="../_images/GMT_atan.png" src="../_images/GMT_atan.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">How the inverse tangent operation works.  Raw slope values (left) are processed
+via the inverse tangent operator, turning tan(x) into x and thus compressing
+the data range.  The transformed slopes are more normally distributed (right).</span></p>
+</div>
+<p><strong>-Ne</strong> and <strong>-Nt</strong> yield well behaved gradients.  Personally,
+we prefer to use the <strong>-Ne</strong> option; the value of
+<em>norm</em> is subjective and you may experiment somewhat in the
+0.5-5 range.  For our case we choose</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdgradient @tut_relief.nc -Ne0.8 -A100 -fg -Gus_i.nc
+</pre></div>
+</div>
+</div></blockquote>
+<p>Given the CPT and the two gridded data sets we can
+create the shaded relief image:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_16
+	gmt makecpt -Crainbow -T1000/5000
+	gmt grdgradient @tut_relief.nc -Ne0.8 -A100 -fg -Gus_i.nc
+	gmt grdimage tut_relief.nc -Ius_i.nc -JM6i -B -BWSnE
+	gmt colorbar -DJTC -I0.4 -Bxa -By+lm 
+gmt end show
+</pre></div>
+</div>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-16"><span class="std std-ref">our example 16 below</span></a></p>
+<div class="figure align-center" id="id4">
+<span id="gmt-tut-16"></span><a class="reference internal image-reference" href="../_images/GMT_tut_16.png"><img alt="../_images/GMT_tut_16.png" src="../_images/GMT_tut_16.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 16</span></p>
+</div>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li>Force a gray-shade image.</li>
+<li>Rerun <a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a> with <strong>-N</strong>1.</li>
+</ol>
+</div>
+<div class="section" id="multi-dimensional-maps">
+<h2>Multi-dimensional maps<a class="headerlink" href="#multi-dimensional-maps" title="Permalink to this headline">¶</a></h2>
+<p>Climate data, like ocean temperatures or atmospheric pressure, are often provided as
+multi-dimensional (3-D, 4-D or 5-D) grids in netCDF format. This section will demonstrate
+that GMT is able to plot “horizontal”
+slices (spanning latitude and longitude) of such grids without much effort.</p>
+<p>As an example we will download the Seasonal Analysed Mean Temperature from the
+<a class="reference external" href="http://www.cdc.noaa.gov/cdc/data.nodc.woa98.html)">World Ocean Atlas 1998</a>
+The file in question is named
+otemp.anal1deg.nc (<a class="reference external" href="ftp://ftp.cdc.noaa.gov/Datasets/nodc.woa98/temperat/seasonal/otemp.anal1deg.nc">ftp://ftp.cdc.noaa.gov/Datasets/nodc.woa98/temperat/seasonal/otemp.anal1deg.nc</a>).</p>
+<p>You can look at the information pertained in this file using the program ncdump and
+notice that the variable that we want to plot (otemp) is a four-dimensional variable of time,
+level (i.e., depth), latitude and longitude.</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ncdump -h otemp.anal1deg.nc
+</pre></div>
+</div>
+</div></blockquote>
+<p>We will need to make an appropriate color scale, running from -2ºC (freezing temperature of salt
+water) to 30ºC (highest likely ocean temperature).
+Let us focus on the temperatures in Summer (that is the third season, July through
+September) at sea level (that is the first level). To plot these in a Mollweide projection we
+use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_17
+	gmt makecpt -Cno_green -T-2/30/2
+	gmt grdimage -Rg -JW180/9i <span class="s2">&quot;@otemp.anal1deg.nc?otemp[2,0]&quot;</span> -Bag
+gmt end show
+</pre></div>
+</div>
+<p>The addition “?otemp[2,0]” indicates which variable to retrieve from the netCDF
+file (otemp) and that we need the third time step and first level. The numbering of the
+time steps and levels starts at zero, therefore “[2,0]”. Make sure to put the
+whole file name within quotes since the characters ?, [ and ] have
+special meaning in Unix.
+Your plot should look like <a class="reference internal" href="#gmt-tut-17"><span class="std std-ref">our example 17 below</span></a></p>
+<div class="figure align-center" id="id5">
+<span id="gmt-tut-17"></span><a class="reference internal image-reference" href="../_images/GMT_tut_17.png"><img alt="../_images/GMT_tut_17.png" src="../_images/GMT_tut_17.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 17</span></p>
+</div>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li>Plot the temperatures for Spring at 5000 m depth. (Hint: use ncdump -v level to
+figure out what level number that is).</li>
+<li>Include a color scale at the bottom of the plot.</li>
+</ol>
+</div>
+<div class="section" id="perspective-views">
+<h2>Perspective views<a class="headerlink" href="#perspective-views" title="Permalink to this headline">¶</a></h2>
+<p>Our final undertaking in this tutorial is to examine three-dimensional
+perspective views.  The
+GMT module that produces perspective views of gridded data files is
+<a class="reference internal" href="../grdview.html"><span class="doc">grdview</span></a>.  It can make two kinds of plots:</p>
+<ol class="arabic simple">
+<li>Mesh or wire-frame plot (with or without superimposed contours)</li>
+<li>Color-coded surface (with optional shading, contours, or draping).</li>
+</ol>
+<p>Regardless of plot type, some arguments must be specified; these are</p>
+<ol class="arabic simple">
+<li><em>relief_file</em>; a gridded data set of the surface.</li>
+<li><strong>-J</strong> for the desired map projection.</li>
+<li><strong>-JZ</strong><em>height</em> for the vertical scaling.</li>
+<li><strong>-p</strong><em>azimuth/elevation</em> for the vantage point.</li>
+</ol>
+<p>In addition, some options may be required:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Purpose</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>-C</strong><em>cpt</em></td>
+<td>The <em>cpt</em> is required for color-coded surfaces and for contoured mesh plots</td>
+</tr>
+<tr class="row-odd"><td><strong>-G</strong><em>drape_file</em></td>
+<td>Assign colors using <em>drape_file</em> instead of <em>relief_file</em></td>
+</tr>
+<tr class="row-even"><td><strong>-I</strong><em>intens_file</em></td>
+<td>File with illumination intensities</td>
+</tr>
+<tr class="row-odd"><td><strong>-Qm</strong></td>
+<td>Selects mesh plot</td>
+</tr>
+<tr class="row-even"><td><strong>-Qs</strong>[<strong>+m</strong>]</td>
+<td>Surface plot using polygons; append <strong>+m</strong> to show mesh.  This option allows for <strong>-W</strong></td>
+</tr>
+<tr class="row-odd"><td><strong>-Qi</strong><em>dpi</em>[<strong>g</strong>]</td>
+<td>Image by scan-line conversion.  Specify <em>dpi</em>; append <strong>g</strong> to force gray-shade image.  <strong>-B</strong> is disabled.</td>
+</tr>
+<tr class="row-even"><td><strong>-W</strong><em>pen</em></td>
+<td>Draw contours on top of surface (except with <strong>-Qi</strong>)</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<div class="section" id="mesh-plot">
+<h3>Mesh-plot<a class="headerlink" href="#mesh-plot" title="Permalink to this headline">¶</a></h3>
+<p>Mesh plots work best on smaller data sets.  We again use the small
+subset of the ETOPO5 data over Bermuda and will use the ocean CPT.
+A simple mesh plot can therefore be obtained with</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_18
+	gmt grd2cpt @tut_bathy.nc -Cocean
+	gmt grdview tut_bathy.nc -JM5i -JZ2i -p135/30 -B
+gmt end show
+</pre></div>
+</div>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-18"><span class="std std-ref">our example 18 below</span></a></p>
+<div class="figure align-center" id="id6">
+<span id="gmt-tut-18"></span><a class="reference internal image-reference" href="../_images/GMT_tut_18.png"><img alt="../_images/GMT_tut_18.png" src="../_images/GMT_tut_18.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 18</span></p>
+</div>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li>Select another vantage point and vertical height.</li>
+</ol>
+</div>
+<div class="section" id="color-coded-view">
+<h3>Color-coded view<a class="headerlink" href="#color-coded-view" title="Permalink to this headline">¶</a></h3>
+<p>We will make a perspective, color-coded view of the US Rockies
+from the southeast.  This is done using</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_19
+	gmt makecpt -Ctopo -T1000/5000
+	gmt grdgradient @tut_relief.nc -Ne0.8 -A100 -fg -Gus_i.nc
+	gmt grdview tut_relief.nc -JM4i -p135/35 -Qi50 -Ius_i.nc -B -JZ0.5i -C
+gmt end show
+</pre></div>
+</div>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-19"><span class="std std-ref">our example 19 below</span></a></p>
+<div class="figure align-center" id="id7">
+<span id="gmt-tut-19"></span><a class="reference internal image-reference" href="../_images/GMT_tut_19.png"><img alt="../_images/GMT_tut_19.png" src="../_images/GMT_tut_19.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 19</span></p>
+</div>
+<p>This plot is pretty crude since we selected 50 dpi but it is fast
+to render and allows us to try alternate values for vantage point
+and scaling.  When we settle on the final values we select the
+appropriate <em>dpi</em> for the final output device and let it rip.</p>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li>Choose another vantage point and scaling.</li>
+<li>Redo <a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a> with another illumination direction and plot again.</li>
+<li>Select a higher <em>dpi</em>, e.g., 200.</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../modules.html" class="btn btn-neutral float-right" title="GMT Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="session-3.html" class="btn btn-neutral float-left" title="Session Three" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

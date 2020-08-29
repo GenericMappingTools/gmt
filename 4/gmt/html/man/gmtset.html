@@ -1,0 +1,116 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:16 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GMTSET</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GMTSET</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">gmtset &minus;
+To change individual <b><A HREF="GMT.html">GMT</A></b> default parameters</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtset</b> [
+<b>&minus;G</b><i>defaultsfile</i> ] PARAMETER1 [=]
+<i>value1</i> PARAMETER2 [=] <i>value2</i> PARAMETER3 [=]
+<i>value3</i> ...</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtset</b>
+will adjust individual <b><A HREF="GMT.html">GMT</A></b> defaults settings in the
+current directory&rsquo;s .gmtdefaults4 file. If no such
+file exists one will be created. The main purpose of
+<b>gmtset</b> is temporarily to change certain parameters
+inside a shell script, e.g., set the dots-per-inch to 600,
+run the script, and reset to 300 dpi. Optionally, you can
+specify one or more temporary changes directly on any
+<b><A HREF="GMT.html">GMT</A></b> command line with the syntax
+<b>&minus;&minus;PARAMETER</b>=<i>value</i>; such changes
+are only in effect for that command and do not permanently
+change the default settings on disk. <br>
+PARAMETER <i>value</i></p>
+
+<p style="margin-left:22%;">Provide one or several pairs of
+parameter/value combinations that you want to modify. For a
+complete listing of available parameters and their meaning,
+see the <b><A HREF="gmtdefaults.html">gmtdefaults</A></b> man page.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Name of specific
+.gmtdefaults4 file to modify [Default looks first in current
+directory, then in your home directory, then in ~/.gmt and
+finally in the system defaults].</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To change the
+dpi to 600, set annotation font to Helvetica, and select
+grid-crosses of size 0.1 inch, and set annotation offset to
+0.2 cm:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtset
+DOTS_PR_INCH</b> 600 <b><A HREF="gmtdefaults.html#ANNOT_FONT_PRIMARY">ANNOT_FONT_PRIMARY</A></b> Helvetica
+<b><A HREF="gmtdefaults.html#GRID_CROSS_SIZE_PRIMARY">GRID_CROSS_SIZE_PRIMARY</A></b> 0.1<b>i
+ANNOT_OFFSET_PRIMARY</b> 0.2<b>c</b></p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="gmtdefaults.html">gmtdefaults</A></i>(1), <i><A HREF="gmtget.html">gmtget</A></i>(1)</p>
+<hr>
+</body>
+</html>

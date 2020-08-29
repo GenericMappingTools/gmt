@@ -1,0 +1,583 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Example Gallery &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="(1) Contour maps" href="gallery/ex01.html" />
+    <link rel="prev" title="gmtcolors" href="gmtcolors.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Example Gallery</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-50-examples">The 50 Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#animations">Animations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Example Gallery</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/gallery.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="example-gallery">
+<span id="id1"></span><h1>Example Gallery<a class="headerlink" href="#example-gallery" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="the-50-examples">
+<h2>The 50 Examples<a class="headerlink" href="#the-50-examples" title="Permalink to this headline">¶</a></h2>
+<p>In this section we will be giving numerous examples of typical usage of
+GMT programs. In general, we will start with a raw data set,
+manipulate the numbers in various ways, then display the results in
+diagram or map view. The resulting plots will have in common that they
+are all made up of simpler plots that have been overlaid to create a
+complex illustration.</p>
+<ul class="gmtgallary">
+<li><div class="first figure" id="id2">
+<a class="reference external image-reference" href="./gallery/ex01.html"><img alt="_images/ex01.png" src="_images/ex01.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex01.html#example-01"><span class="std std-ref">(1) Contour maps</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id3">
+<a class="reference external image-reference" href="./gallery/ex02.html"><img alt="_images/ex02.png" src="_images/ex02.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex02.html#example-02"><span class="std std-ref">(2) Image presentations</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id4">
+<a class="reference external image-reference" href="./gallery/ex03.html"><img alt="_images/ex03.png" src="_images/ex03.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex03.html#example-03"><span class="std std-ref">(3) Spectral estimation and xy-plots</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id5">
+<a class="reference external image-reference" href="./gallery/ex04.html"><img alt="_images/ex04.png" src="_images/ex04.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex04.html#example-04"><span class="std std-ref">(4) A 3-D perspective mesh plot</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id6">
+<a class="reference external image-reference" href="./gallery/ex05.html"><img alt="_images/ex05.png" src="_images/ex05.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex05.html#example-05"><span class="std std-ref">(5) A 3-D illuminated surface (in bw)</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id7">
+<a class="reference external image-reference" href="./gallery/ex06.html"><img alt="_images/ex06.png" src="_images/ex06.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex06.html#example-06"><span class="std std-ref">(6) Plotting of histograms</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id8">
+<a class="reference external image-reference" href="./gallery/ex07.html"><img alt="_images/ex07.png" src="_images/ex07.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex07.html#example-07"><span class="std std-ref">(7) A simple location map</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id9">
+<a class="reference external image-reference" href="./gallery/ex08.html"><img alt="_images/ex08.png" src="_images/ex08.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex08.html#example-08"><span class="std std-ref">(8) A 3-D histogram</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id10">
+<a class="reference external image-reference" href="./gallery/ex09.html"><img alt="_images/ex09.png" src="_images/ex09.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex09.html#example-09"><span class="std std-ref">(9) Time-series along tracks</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id11">
+<a class="reference external image-reference" href="./gallery/ex10.html"><img alt="_images/ex10.png" src="_images/ex10.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex10.html#example-10"><span class="std std-ref">(10) A geographical bar graph plot</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id12">
+<a class="reference external image-reference" href="./gallery/ex11.html"><img alt="_images/ex11.png" src="_images/ex11.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex11.html#example-11"><span class="std std-ref">(11) A 3-D RGB color cube</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id13">
+<a class="reference external image-reference" href="./gallery/ex12.html"><img alt="_images/ex12.png" src="_images/ex12.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex12.html#example-12"><span class="std std-ref">(12) Optimal triangulation of data</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id14">
+<a class="reference external image-reference" href="./gallery/ex13.html"><img alt="_images/ex13.png" src="_images/ex13.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex13.html#example-13"><span class="std std-ref">(13) Plotting of vector fields</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id15">
+<a class="reference external image-reference" href="./gallery/ex14.html"><img alt="_images/ex14.png" src="_images/ex14.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex14.html#example-14"><span class="std std-ref">(14) Gridding of data and trend surfaces</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id16">
+<a class="reference external image-reference" href="./gallery/ex15.html"><img alt="_images/ex15.png" src="_images/ex15.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex15.html#example-15"><span class="std std-ref">(15) Gridding, contouring, and masking of unconstrained areas</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id17">
+<a class="reference external image-reference" href="./gallery/ex16.html"><img alt="_images/ex16.png" src="_images/ex16.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex16.html#example-16"><span class="std std-ref">(16) Gridding of data, continued</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id18">
+<a class="reference external image-reference" href="./gallery/ex17.html"><img alt="_images/ex17.png" src="_images/ex17.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex17.html#example-17"><span class="std std-ref">(17) Images clipped by coastlines</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id19">
+<a class="reference external image-reference" href="./gallery/ex18.html"><img alt="_images/ex18.png" src="_images/ex18.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex18.html#example-18"><span class="std std-ref">(18) Volumes and Spatial Selections</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id20">
+<a class="reference external image-reference" href="./gallery/ex19.html"><img alt="_images/ex19.png" src="_images/ex19.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex19.html#example-19"><span class="std std-ref">(19) Color patterns on maps</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id21">
+<a class="reference external image-reference" href="./gallery/ex20.html"><img alt="_images/ex20.png" src="_images/ex20.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex20.html#example-20"><span class="std std-ref">(20) Custom plot symbols</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id22">
+<a class="reference external image-reference" href="./gallery/ex21.html"><img alt="_images/ex21.png" src="_images/ex21.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex21.html#example-21"><span class="std std-ref">(21) Time-series of RedHat stock price</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id23">
+<a class="reference external image-reference" href="./gallery/ex22.html"><img alt="_images/ex22.png" src="_images/ex22.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex22.html#example-22"><span class="std std-ref">(22) World-wide seismicity the last 7 days</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id24">
+<a class="reference external image-reference" href="./gallery/ex23.html"><img alt="_images/ex23.png" src="_images/ex23.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex23.html#example-23"><span class="std std-ref">(23) All great-circle paths lead to Rome</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id25">
+<a class="reference external image-reference" href="./gallery/ex24.html"><img alt="_images/ex24.png" src="_images/ex24.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex24.html#example-24"><span class="std std-ref">(24) Data selection based on geospatial criteria</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id26">
+<a class="reference external image-reference" href="./gallery/ex25.html"><img alt="_images/ex25.png" src="_images/ex25.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex25.html#example-25"><span class="std std-ref">(25) Global distribution of antipodes</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id27">
+<a class="reference external image-reference" href="./gallery/ex26.html"><img alt="_images/ex26.png" src="_images/ex26.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex26.html#example-26"><span class="std std-ref">(26) General vertical perspective projection</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id28">
+<a class="reference external image-reference" href="./gallery/ex27.html"><img alt="_images/ex27.png" src="_images/ex27.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex27.html#example-27"><span class="std std-ref">(27) Plotting Sandwell/Smith Mercator img grids</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id29">
+<a class="reference external image-reference" href="./gallery/ex28.html"><img alt="_images/ex28.png" src="_images/ex28.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex28.html#example-28"><span class="std std-ref">(28) Mixing UTM and geographic data sets</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id30">
+<a class="reference external image-reference" href="./gallery/ex29.html"><img alt="_images/ex29.png" src="_images/ex29.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex29.html#example-29"><span class="std std-ref">(29) Gridding spherical surface data using splines</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id31">
+<a class="reference external image-reference" href="./gallery/ex30.html"><img alt="_images/ex30.png" src="_images/ex30.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex30.html#example-30"><span class="std std-ref">(30) Trigonometric functions plotted in graph mode</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id32">
+<a class="reference external image-reference" href="./gallery/ex31.html"><img alt="_images/ex31.png" src="_images/ex31.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex31.html#example-31"><span class="std std-ref">(31) Using non-default fonts in PostScript</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id33">
+<a class="reference external image-reference" href="./gallery/ex32.html"><img alt="_images/ex32.png" src="_images/ex32.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex32.html#example-32"><span class="std std-ref">(32) Draping an image over topography</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id34">
+<a class="reference external image-reference" href="./gallery/ex33.html"><img alt="_images/ex33.png" src="_images/ex33.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex33.html#example-33"><span class="std std-ref">(33) Stacking automatically generated cross-profiles</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id35">
+<a class="reference external image-reference" href="./gallery/ex34.html"><img alt="_images/ex34.png" src="_images/ex34.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex34.html#example-34"><span class="std std-ref">(34) Using country polygons for plotting and shading</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id36">
+<a class="reference external image-reference" href="./gallery/ex35.html"><img alt="_images/ex35.png" src="_images/ex35.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex35.html#example-35"><span class="std std-ref">(35) Spherical triangulation and distance calculations</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id37">
+<a class="reference external image-reference" href="./gallery/ex36.html"><img alt="_images/ex36.png" src="_images/ex36.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex36.html#example-36"><span class="std std-ref">(36) Spherical gridding using Renka’s algorithms</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id38">
+<a class="reference external image-reference" href="./gallery/ex37.html"><img alt="_images/ex37.png" src="_images/ex37.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex37.html#example-37"><span class="std std-ref">(37) Spectral coherence between gravity and bathymetry grids</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id39">
+<a class="reference external image-reference" href="./gallery/ex38.html"><img alt="_images/ex38.png" src="_images/ex38.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex38.html#example-38"><span class="std std-ref">(38) Histogram equalization of bathymetry grids</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id40">
+<a class="reference external image-reference" href="./gallery/ex39.html"><img alt="_images/ex39.png" src="_images/ex39.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex39.html#example-39"><span class="std std-ref">(39) Evaluation of spherical harmonics coefficients</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id41">
+<a class="reference external image-reference" href="./gallery/ex40.html"><img alt="_images/ex40.png" src="_images/ex40.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex40.html#example-40"><span class="std std-ref">(40) Line simplification</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id42">
+<a class="reference external image-reference" href="./gallery/ex41.html"><img alt="_images/ex41.png" src="_images/ex41.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex41.html#example-41"><span class="std std-ref">(41) Legend with tables</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id43">
+<a class="reference external image-reference" href="./gallery/ex42.html"><img alt="_images/ex42.png" src="_images/ex42.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex42.html#example-42"><span class="std std-ref">(42) Antarctica and stereographic data</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id44">
+<a class="reference external image-reference" href="./gallery/ex43.html"><img alt="_images/ex43.png" src="_images/ex43.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex43.html#example-43"><span class="std std-ref">(43) Robust regression and outlier detection</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id45">
+<a class="reference external image-reference" href="./gallery/ex44.html"><img alt="_images/ex44.png" src="_images/ex44.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex44.html#example-44"><span class="std std-ref">(44) Map insets</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id46">
+<a class="reference external image-reference" href="./gallery/ex45.html"><img alt="_images/ex45.png" src="_images/ex45.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex45.html#example-45"><span class="std std-ref">(45) Trend modeling</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id47">
+<a class="reference external image-reference" href="./gallery/ex46.html"><img alt="_images/ex46.png" src="_images/ex46.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex46.html#example-46"><span class="std std-ref">(46) Day-light terminators and other sunlight parameters</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id48">
+<a class="reference external image-reference" href="./gallery/ex47.html"><img alt="_images/ex47.png" src="_images/ex47.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex47.html#example-47"><span class="std std-ref">(47) Linear regression using different norms and types</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id49">
+<a class="reference external image-reference" href="./gallery/ex48.html"><img alt="_images/ex48.png" src="_images/ex48.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex48.html#example-48"><span class="std std-ref">(48) Line networks, map embellishments, and curved titles</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id50">
+<a class="reference external image-reference" href="./gallery/ex49.html"><img alt="_images/ex49.png" src="_images/ex49.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex49.html#example-49"><span class="std std-ref">(49) Analysis of the Atlantic seafloor depth/age relationship</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id51">
+<a class="reference external image-reference" href="./gallery/ex50.html"><img alt="_images/ex50.png" src="_images/ex50.png" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/ex50.html#example-50"><span class="std std-ref">(50) Probability distributions</span></a></span></p>
+</div>
+</li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="animations">
+<h2>Animations<a class="headerlink" href="#animations" title="Permalink to this headline">¶</a></h2>
+<ul class="gmtgallary">
+<li><div class="first figure" id="id52">
+<a class="reference external image-reference" href="./gallery/anim01.html"><img alt="_images/anim01.gif" src="_images/anim01.gif" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/anim01.html#anim01"><span class="std std-ref">(1) Animation of the sine function</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id53">
+<a class="reference external image-reference" href="./gallery/anim02.html"><img alt="_images/anim02.gif" src="_images/anim02.gif" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/anim02.html#anim02"><span class="std std-ref">(2) Examining DEMs using variable illumination</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id54">
+<a class="reference external image-reference" href="./gallery/anim03.html"><img alt="_images/anim03.gif" src="_images/anim03.gif" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/anim03.html#anim03"><span class="std std-ref">(3) Orbiting a static map</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id55">
+<a class="reference external image-reference" href="./gallery/anim04.html"><img alt="_images/anim04.gif" src="_images/anim04.gif" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/anim04.html#anim04"><span class="std std-ref">(4) Flying over topography</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id56">
+<a class="reference external image-reference" href="./gallery/anim05.html"><img alt="_images/anim05.gif" src="_images/anim05.gif" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/anim05.html#anim05"><span class="std std-ref">(5) Control spline gridding via eigenvalues</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id57">
+<a class="reference external image-reference" href="./gallery/anim06.html"><img alt="_images/anim06.gif" src="_images/anim06.gif" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/anim06.html#anim06"><span class="std std-ref">(6) Demonstrate aliasing by sampling a chirp</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id58">
+<a class="reference external image-reference" href="./gallery/anim07.html"><img alt="_images/anim07.gif" src="_images/anim07.gif" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/anim07.html#anim07"><span class="std std-ref">(7) Spinning Earth showing crustal ages</span></a></span></p>
+</div>
+</li>
+<li><div class="first figure" id="id59">
+<a class="reference external image-reference" href="./gallery/anim08.html"><img alt="_images/anim08.gif" src="_images/anim08.gif" /></a>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="gallery/anim08.html#anim08"><span class="std std-ref">(8) One year (2018) of Pacific seismicity events</span></a></span></p>
+</div>
+</li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="gallery/ex01.html" class="btn btn-neutral float-right" title="(1) Contour maps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="gmtcolors.html" class="btn btn-neutral float-left" title="gmtcolors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,1050 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:10 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GMT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GMT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#INTRODUCTION">INTRODUCTION</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#GMT OVERVIEW">GMT OVERVIEW</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">GMT &minus; The
+Generic Mapping Tools data processing and display software
+package</p>
+
+<a name="INTRODUCTION"></a>
+<h2>INTRODUCTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>GMT</b> is a
+collection of public-domain Unix tools that allows you to
+manipulate x,y and x,y,z data sets (filtering, trend
+fitting, gridding, projecting, etc.) and produce
+<i>PostScript</i> illustrations ranging from simple x-y
+plots, via contour maps, to artificially illuminated
+surfaces and 3-D perspective views in black/white or full
+color. Linear, log10, and power scaling is supported in
+addition to 25 common map projections. The processing and
+display routines within <b>GMT</b> are completely general
+and will handle any (x,y) or (x,y,z) data as input.</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>GMT</b> is
+also a wrapper script that can start any of the
+programs:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>GMT</b>
+module module-options</p>
+
+<p style="margin-left:11%; margin-top: 1em">where module is
+the name of a <b>GMT</b> program and the options are those
+that pertain to that particular program.</p>
+
+<a name="GMT OVERVIEW"></a>
+<h2>GMT OVERVIEW</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The following
+is a summary of all the programs supplied with <b>GMT</b>
+and a very short description of their purpose. Detailed
+information about each program can be found in the separate
+manual pages.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="blockmean.html">blockmean</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">L2 (x,y,z) data filter/decimator</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="blockmedian.html">blockmedian</A></b></p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">L1 (x,y,z) data filter/decimator</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="blockmode.html">blockmode</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Mode (x,y,z) data filter/decimator</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="filter1d.html">filter1d</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Filter 1-D data sets (time series)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="fitcircle.html">fitcircle</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Finds the best-fitting great circle to a
+set of points</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="gmt2rgb.html">gmt2rgb</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Convert Sun rasterfile or grid to r, g, b
+grids</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="gmtconvert.html">gmtconvert</A></b></p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Convert between ASCII and binary 1-D
+tables</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="gmtdefaults.html">gmtdefaults</A></b></p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">List the current default settings</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="gmtmath.html">gmtmath</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Mathematical operations on data tables</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="gmtset.html">gmtset</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Set individual default parameters</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="gmtselect.html">gmtselect</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Extract data subsets based on spatial
+criteria</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdfilter.html">grdfilter</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Filter 2-D data sets in the space
+domain</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grd2cpt.html">grd2cpt</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Make a color palette table from grid
+files</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grd2xyz.html">grd2xyz</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Conversion from 2-D grid file to table
+data</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdblend.html">grdblend</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Blend several partially over-lapping grid
+files onto one grid</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdclip.html">grdclip</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Limit the z-range in gridded data</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdcontour.html">grdcontour</A></b></p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Contouring of 2-D gridded data</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdcut.html">grdcut</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Cut a sub-region from a grid file</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdedit.html">grdedit</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Modify header information in a 2-D grid
+file</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdfft.html">grdfft</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Operate on grid files in the wavenumber (or
+frequency) domain</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdgradient.html">grdgradient</A></b></p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Compute directional gradient from grid
+files</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdhisteq.html">grdhisteq</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Histogram equalization for grid files</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdimage.html">grdimage</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Produce images from 2-D gridded data</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdinfo.html">grdinfo</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Get information about grid files</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdlandmask.html">grdlandmask</A></b></p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Create mask grid file from shoreline data
+base</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdmask.html">grdmask</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Reset nodes outside a clip path to a
+constant</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdmath.html">grdmath</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Mathematical operations on grid files</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdpaste.html">grdpaste</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Paste together grid files along a common
+edge</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdproject.html">grdproject</A></b></p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Project gridded data onto a new coordinate
+system</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdreformat.html">grdreformat</A></b></p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Converting between different grid file
+formats</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdsample.html">grdsample</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Resample a 2-D gridded data set onto a new
+grid</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdtrend.html">grdtrend</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Fits polynomial trends to grid files</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdtrack.html">grdtrack</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Sampling of 2-D data set along 1-D
+track</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdvector.html">grdvector</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Plot vector fields from grid files</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdview.html">grdview</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">3-D perspective imaging of 2-D gridded
+data</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="grdvolume.html">grdvolume</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Volume calculations from 2-D gridded
+data</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="greenspline.html">greenspline</A></b></p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Interpolation using Green&rsquo;s functions
+for splines in 1-3 dimensions</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="makecpt.html">makecpt</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Make color palette tables</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="mapproject.html">mapproject</A></b></p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Forward or inverse map projections of table
+data</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="minmax.html">minmax</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Find extreme values in data tables</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="nearneighbor.html">nearneighbor</A></b></p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Nearest-neighbor gridding scheme</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="project.html">project</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Project data onto lines/great circles</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="ps2raster.html">ps2raster</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Crop and convert <i>PostScript</i> files to
+raster images, EPS, and PDF</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="psbasemap.html">psbasemap</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Create a basemap plot</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="psclip.html">psclip</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Use polygon files to define clipping
+paths</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="pscoast.html">pscoast</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Plot coastlines and filled continents on
+maps</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="pscontour.html">pscontour</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Contour xyz-data by triangulation</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="pshistogram.html">pshistogram</A></b></p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Plot a histogram</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="psimage.html">psimage</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Plot images (EPS or Sun raster files) on
+maps</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="pslegend.html">pslegend</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Plot legend on maps</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="psmask.html">psmask</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Create overlay to mask out regions on
+maps</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="psrose.html">psrose</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Plot sector or rose diagrams</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="psscale.html">psscale</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Plot gray scale or color scale on maps</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="pstext.html">pstext</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Plot text strings on maps</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="pswiggle.html">pswiggle</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Draw time-series along track on maps</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="psxy.html">psxy</A></b></p></td>
+<td width="8%">
+</td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Plot symbols, polygons, and lines on
+maps</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="psxyz.html">psxyz</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Plot symbols, polygons, and lines in
+3-D</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="sample1d.html">sample1d</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Resampling of 1-D table data sets</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="spectrum1d.html">spectrum1d</A></b></p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Compute various spectral estimates from
+time-series</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="splitxyz.html">splitxyz</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Split xyz-files into several segments</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="surface.html">surface</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">A continuous curvature gridding
+algorithm</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="trend1d.html">trend1d</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Fits polynomial or Fourier trends to y =
+f(x) data</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="trend2d.html">trend2d</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Fits polynomial trends to z = f(x,y)
+data</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="triangulate.html">triangulate</A></b></p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Perform optimal Delaunay triangulation and
+gridding</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="xyz2grd.html">xyz2grd</A></b></p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="69%">
+
+
+<p valign="top">Convert equidistant xyz data to a 2-D grid
+file</p> </td>
+</table>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Look up the
+individual man pages for more details and full syntax. Run
+<b>GMT</b> without options to list all GMT programs and to
+show all installation directories. Information is also
+available on the <b>GMT</b> home page
+gmt.soest.hawaii.edu</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P., and
+W. H. F. Smith, 2018, The Generic Mapping Tools (GMT)
+version 4.5.18 Technical Reference &amp; Cookbook,
+SOEST/NOAA. <br>
+Wessel, P., and W. H. F. Smith, 1998, New, Improved Version
+of Generic Mapping Tools Released, EOS Trans., AGU, 79 (47),
+p. 579. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released, EOS Trans., AGU, 76 (33), p.
+329. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released,
+http://www.agu.org/eos_elec/95154e.html, Copyright 1995 by
+the American Geophysical Union. <br>
+Wessel, P., and W. H. F. Smith, 1991, Free Software Helps
+Map and Display Data, EOS Trans., AGU, 72 (41), p. 441.</p>
+<hr>
+</body>
+</html>

@@ -1,0 +1,331 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>talwani2d &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="talwani3d" href="talwani3d.html" />
+    <link rel="prev" title="grdseamount" href="grdseamount.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="talwani3d.html" title="talwani3d"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="grdseamount.html" title="grdseamount"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="talwani2d">
+<span id="index-0"></span><h1>talwani2d<a class="headerlink" href="#talwani2d" title="Permalink to this headline">¶</a></h1>
+<p>talwani2d - Compute geopotential anomalies over 2-D bodies by the method of Talwani</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>talwani2d</strong> [ <em>modeltable</em> ]
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong> ] [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>rho</em> ] ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><strong>f</strong>|<strong>n</strong>[<em>lat</em>]|<strong>v</strong> ]
+[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong>[<strong>h</strong>][<strong>v</strong>] ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>trackfile</em> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>min</em><em>max</em>/<em>inc</em> ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong><em>level</em>[<em>ymin</em>/<em>ymax</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-bi</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="../../gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-x</strong>[[-]<em>n</em>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>talwani2d</strong> will read the multi-segment <em>modeltable</em> from file or standard input.
+This file contains cross-sections of one or more 2-D bodies, with one polygon
+per segment.  The segment header must contain the parameter <em>rho</em>, which
+states the the density of this body (individual body
+densities may be overridden by a fixed constant density contrast given via <strong>-D</strong>).
+We can compute anomalies on an equidistant lattice (by specifying a lattice with
+<strong>-T</strong>) or provide arbitrary output points specified in a file via <strong>-N</strong>.
+Choose between free-air anomalies, vertical gravity gradient anomalies, or geoid anomalies.
+Options are available to control axes units and direction.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>modeltable</em></dt>
+<dd>The file describing cross-sectional polygons of one or more bodies.  Polygons
+will be automatically closed if not already
+closed, and repeated vertices will be eliminated.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong></dt>
+<dd>The <em>z</em>-axis should be positive upwards [Default is down].</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>unit</em></dt>
+<dd>Sets fixed density contrast that overrides any setting in model file, in kg/m^3.</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><strong>f</strong>|<strong>n</strong>[<em>lat</em>]|<strong>v</strong></dt>
+<dd>Specify desired gravitational field component.  Choose between <strong>f</strong> (free-air anomaly) [Default],
+<strong>n</strong> (geoid, and optionally append average latitude for normal gravity reference value [45])
+or <strong>v</strong> (vertical gravity gradient).</dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-M</strong>[<strong>h</strong>][<strong>v</strong>]</dt>
+<dd>Sets units used.  Append <strong>h</strong> to indicate horizontal distances are in km [m],
+and append <strong>z</strong> to indicate vertical distances are in km [m].</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong><em>trackfile</em></dt>
+<dd>Specifies locations where we wish to compute the predicted value.  When this option
+is used you cannot use <strong>-T</strong> to set an equidistant lattice. The output data records are written to stdout.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong><em>min</em><em>max</em>/<em>inc</em></dt>
+<dd>Specify an equidistant output lattice starting at <em>x = min</em>, with increments <em>inc</em> and
+ending at <em>x = max</em>.</dd>
+</dl>
+<dl class="docutils" id="z">
+<dt><strong>-Z</strong><em>level</em>[<em>ymin</em>/<em>ymax</em>]</dt>
+<dd>Set observation level as a constant [0].  Optionally, and for gravity anomalies only,
+append the finite extent limits of a 2.5-D body.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input. [Default is 2 input columns].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em> <a class="reference internal" href="../../gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s). Not used with binary data.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-o</strong><em>cols</em>[,…] <a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select output columns (0 is first column).</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-x</strong>[[-]<em>n</em>] <a class="reference internal" href="../../gmt.html#core-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Limit number of cores used in multi-threaded algorithms (OpenMP required).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="../../gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc9">Units</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
+and <strong>u</strong> for US survey foot. By default we compute such distances using
+a spherical approximation with great circles. Prepend <strong>-</strong> to a
+distance (or the unit is no distance is given) to perform “Flat Earth”
+calculations (quicker but less accurate) or prepend <strong>+</strong> to perform
+exact geodesic calculations (slower but more accurate).</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To compute the free-air anomalies on a grid over a 2-D body that has been contoured
+and saved to body.txt, using 1.7 g/cm^3 as the density contrast, try</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">talwani2d</span> <span class="o">-</span><span class="n">T</span><span class="o">-</span><span class="mi">200</span><span class="o">/</span><span class="mi">200</span><span class="o">/</span><span class="mi">2</span> <span class="n">body</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">D1700</span> <span class="o">-</span><span class="n">Fg</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="n">dgrav</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>To obtain the vertical gravity gradient anomaly along the track in crossing.txt
+for the same model, try</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">talwani2d</span> <span class="o">-</span><span class="n">Ncrossing</span><span class="o">.</span><span class="n">txt</span> <span class="n">body</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">D1700</span> <span class="o">-</span><span class="n">Fv</span> <span class="o">&gt;</span> <span class="n">vgg_crossing</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>The geoid anomaly for the same setup is given by</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">talwani2d</span> <span class="o">-</span><span class="n">Ncrossing</span><span class="o">.</span><span class="n">txt</span> <span class="n">body</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">D1700</span> <span class="o">-</span><span class="n">Fn</span> <span class="o">&gt;</span> <span class="n">n_crossing</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>The 2-D geoid anomaly is a logarithmic potential and thus has no natural
+reference level.  We simply remove the most negative (if density contrast
+is positive) or positive (if density contrast is negative) computed value
+from all values, rendering the entire anomaly positive (or negative).  You
+can use <a class="reference internal" href="../../gmtmath.html"><span class="doc">gmtmath</span></a> to change the zero level to suit your needs.</li>
+</ol>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Chapman, M. E., 1979, Techniques for interpretation of geoid anomalies,
+<em>J. Geophys. Res., 84(B8)</em>, 3793-3801.</p>
+<p>Kim, S.-S., and P. Wessel, 2016, New analytic solutions for modeling vertical
+gravity gradient anomalies, <em>Geochem. Geophys. Geosyst., 17</em>,
+<a class="reference external" href="http://dx.doi.org/10.1002/2016GC006263">http://dx.doi.org/10.1002/2016GC006263</a>.</p>
+<p>Talwani, M., J. L. Worzel, and M. Landisman, 1959, Rapid gravity computations for
+two-dimensional bodies with application to the Mendocino submarine fracture zone,
+<em>J. Geophys. Res., 64</em>, 49-59.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a>, <a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="../../grdmath.html"><span class="doc">grdmath</span></a>, <a class="reference internal" href="../../gmtmath.html"><span class="doc">gmtmath</span></a>,
+<a class="reference internal" href="gravfft.html"><span class="doc">gravfft</span></a>,
+<a class="reference internal" href="gmtgravmag3d.html"><span class="doc">gmtgravmag3d</span></a>,
+<a class="reference internal" href="grdgravmag3d.html"><span class="doc">grdgravmag3d</span></a>,
+<a class="reference internal" href="talwani3d.html"><span class="doc">talwani3d</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">talwani2d</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id1">Units</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grdseamount.html"
+                        title="previous chapter">grdseamount</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="talwani3d.html"
+                        title="next chapter">talwani3d</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/potential/talwani2d.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="talwani3d.html" title="talwani3d"
+             >next</a> </li>
+        <li class="right" >
+          <a href="grdseamount.html" title="grdseamount"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

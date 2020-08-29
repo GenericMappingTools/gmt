@@ -1,0 +1,385 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>A Vertical slice &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Users Symbol Contributions" href="../users_contrib_symbols.html" />
+    <link rel="prev" title="Users Script Contributions" href="../users_contrib_scripts.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../users_contrib_scripts.html">Users Script Contributions</a> &raquo;</li>
+        
+      <li>A Vertical slice</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/users_contrib_scripts/vertical_slice.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="a-vertical-slice">
+<span id="vertical-slice"></span><h1>A Vertical slice<a class="headerlink" href="#a-vertical-slice" title="Permalink to this headline">¶</a></h1>
+<p>This is an example of how to graph a function p=f(x, y, z)
+and include in the graph a slice of it using GMT.</p>
+<p>In this case, my function is f(latitude, longitude, height) and to make
+the example self-contained I make the grid and the slice in the script.</p>
+<p>To keep the example easy to me, I did the slice in a N-S direction at a
+fixed longitude, so the slice is f(latitude, height). Nothing will prevent
+you from making the slices in other orientations. If you instead of a more
+or less straight line, you have an arbitrary path, you must be careful that
+the track does not have “folds” and if it has them you must break it into parts.</p>
+<p>Due to my slice is f(lat, height) I must dump it, add the column for the fixed
+longitude, and project the coordinates using mappproject and then re-grid it.</p>
+<p>The biggest problem that I found, and it took longer to me was how to locate
+the slice. In a 2D map it is easy to do, transforming (lat, lon) to (x, y) with
+mapproject, and then using J[xX] but in this case it was trial and error for me.
+Maybe someone has the recipe to do it analytically.</p>
+<p>The grid in the horizontal plane is to make sure the slice is located exactly where it should be.</p>
+<p>I also had to re-draw the box, because the slice partially covered it.</p>
+<p>I tried to make the script as clear as possible with comments, but
+yet they can be tricky.</p>
+<p>Regards, Eduardo.-</p>
+<p>--
+Eduardo A. Suarez
+Facultad de Ciencias Astronomicas y Geofisicas - UNLP</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#</span>
+gmt <span class="nb">set</span> <span class="nv">GMT_COMPATIBILITY</span><span class="o">=</span><span class="m">5</span> <span class="nv">MAP_FRAME_TYPE</span><span class="o">=</span>plain
+<span class="c1">#</span>
+<span class="c1">#  f(x,y,z) = sin(x+y)*e(-(x+y)*(3 - (z/1e4)))</span>
+<span class="c1">#</span>
+<span class="c1"># create base grid (z = 0)</span>
+<span class="c1">#</span>
+gmt grdmath -R-75/-60/-50/-40 -I0.005 X D2R Y D2R ADD STO@xySum SIN @xySum <span class="se">\</span>
+    <span class="m">3</span> MUL NEG EXP <span class="nv">MUL</span> <span class="o">=</span> base.nc
+<span class="c1">#</span>
+<span class="c1"># create slice grid (lon = -67.5) (-47.5 &lt;= lat &lt;= 42.5)  (0 &lt;= z &lt;= 999)</span>
+<span class="c1">#</span>
+gmt grdmath -R-47.5/-42.5/0/999 -I0.005/0.5 X D2R -67.5 D2R ADD STO@xySum SIN @xySum <span class="se">\</span>
+    <span class="m">3</span> Y 1E4 DIV SUB MUL NEG EXP <span class="nv">MUL</span> <span class="o">=</span> slice.nc
+<span class="c1">#</span>
+<span class="c1"># dump slice grid and reproject X</span>
+<span class="c1">#</span>
+gmt grd2xyz slice.nc <span class="p">|</span> awk <span class="s1">&#39;{print -67.5,$0}&#39;</span> <span class="p">|</span> gmt mapproject -R-75/-60/-50/-40 -JM-67.5/-45/16 <span class="p">|</span> <span class="se">\</span>
+    awk <span class="s1">&#39;{print $2,$3,$4}&#39;</span>&gt; points.txt
+<span class="c1">#</span>
+<span class="c1"># calculate projected region X-limits</span>
+<span class="c1">#</span>
+<span class="nv">lMin</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="s1">&#39;-67.5 -47.5&#39;</span> <span class="p">|</span> gmt mapproject -R-75/-60/-50/-40 -JM-67.5/-45/16 <span class="p">|</span> awk <span class="s1">&#39;{print $2}&#39;</span><span class="sb">`</span>
+<span class="nv">lMax</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="s1">&#39;-67.5 -42.5&#39;</span> <span class="p">|</span> gmt mapproject -R-75/-60/-50/-40 -JM-67.5/-45/16 <span class="p">|</span> awk <span class="s1">&#39;{print $2}&#39;</span><span class="sb">`</span>
+<span class="c1">#</span>
+<span class="c1"># re-grid slice</span>
+<span class="c1">#</span>
+gmt surface points.txt -Gslice_cut.nc -R<span class="nv">$lMin</span>/<span class="nv">$lMax</span>/0/999 -I1500+/2000+ -C0.1 -T0.25
+<span class="c1">#</span>
+<span class="c1"># create CPT</span>
+<span class="c1">#</span>
+<span class="nv">deltaZ</span><span class="o">=</span><span class="sb">`</span>gmt grdinfo -T10 slice_cut.nc base.nc<span class="sb">`</span>
+gmt makecpt -Cseis -I <span class="nv">$deltaZ</span> -Z &gt; colors.cpt
+<span class="c1">#</span>
+<span class="c1"># make basemap (this is not necessary but...)</span>
+<span class="c1">#</span>
+gmt basemap -R-75/-60/-50/-40/0/999 -JM-67.5/-45/16 -JZ8 -Bxa2f1 -Bya1f1 -Bza250f50g250+l<span class="s2">&quot;Km&quot;</span> <span class="se">\</span>
+    -B+b -BwESn -pz135/30+v10/5 -K &gt; mag.ps
+<span class="c1">#</span>
+<span class="c1"># plot base grid (z = 0)</span>
+<span class="c1">#</span>
+gmt grdimage base.nc -R -JM -JZ -Bxa2f1 -Bya1f1 -Bza250f50g250+l<span class="s2">&quot;Km&quot;</span> -B+b -BwESn <span class="se">\</span>
+    -Ccolors.cpt -p -O -K &gt;&gt; mag.ps
+<span class="c1">#</span>
+<span class="c1"># plot map (coast, country borders). Grid plotted to check slice location</span>
+<span class="c1">#</span>
+gmt coast -R -JM -JZ -Bxa2f1g0.5 -Bya1f1g0.5 -Bza250f50g250+l<span class="s2">&quot;Km&quot;</span> -B+b -BwESn -Df -A0/0/1 <span class="se">\</span>
+    -N1/0.5p,black,-..- -W0.5p,black -p -O -K &gt;&gt; mag.ps
+<span class="c1">#</span>
+<span class="c1"># calculate max X projected</span>
+<span class="c1">#</span>
+<span class="nv">xMax</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="s1">&#39;-60 -40&#39;</span> <span class="p">|</span> gmt mapproject -R-75/-60/-50/-40 -JM-67.5/-45/16 <span class="p">|</span> awk <span class="s1">&#39;{print $2}&#39;</span><span class="sb">`</span>
+<span class="c1">#</span>
+<span class="c1"># plot slice</span>
+<span class="c1">#</span>
+gmt grdimage slice_cut.nc -R0/<span class="nv">$xMax</span>/0/999 -JX15.0922064999/8 -Bxa0f0 -Bya250f50+l<span class="s2">&quot;Km&quot;</span> -Ccolors.cpt <span class="se">\</span>
+    -px135/30+v12.59/0.96 -O -K --MAP_FRAME_AXES<span class="o">=</span><span class="s1">&#39;&#39;</span> &gt;&gt; mag.ps
+<span class="c1">#</span>
+<span class="c1"># plot slice box</span>
+<span class="c1">#</span>
+gmt plot -R -JX -W1p,black -px135/30+v12.59/0.96 -O -K &gt;&gt; mag.ps <span class="s">&lt;&lt; EOF</span>
+<span class="s">$lMin 0</span>
+<span class="s">$lMin 999</span>
+<span class="s">$lMax 999</span>
+<span class="s">$lMax 0</span>
+<span class="s">$lMin 0</span>
+<span class="s">EOF</span>
+<span class="c1">#</span>
+<span class="c1"># add missing Z-box lines overwritten by slice plot</span>
+<span class="c1">#</span>
+gmt plot3d -R-75/-60/-50/-40/0/999 -JM-67.5/-45/16 -JZ8 -W1p,black -pz135/30+v10/5 -O &gt;&gt; mag.ps <span class="s">&lt;&lt; EOF</span>
+<span class="s"> -75 -50 999</span>
+<span class="s"> -75 -40 999</span>
+<span class="s"> -60 -40 999</span>
+<span class="s"> -60 -50 999</span>
+<span class="s"> -75 -50 999</span>
+<span class="s">&gt;</span>
+<span class="s"> -60 -50 0</span>
+<span class="s"> -60 -50 999</span>
+<span class="s">EOF</span>
+<span class="c1">#</span>
+gmt psconvert -Tg -Qt4 -Qg4 -E300 -P mag.ps
+<span class="c1">#</span>
+rm -f base.nc points.txt slice.nc slice_cut.nc gmt.history gmt.conf
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/vertical_slice.png"><img alt="../_images/vertical_slice.png" src="../_images/vertical_slice.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">A vertical slice …</span></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../users_contrib_symbols.html" class="btn btn-neutral float-right" title="Users Symbol Contributions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../users_contrib_scripts.html" class="btn btn-neutral float-left" title="Users Script Contributions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,520 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dimfilter &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="docs" href="docs.html" />
+    <link rel="prev" title="contour" href="contour.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">GMT Modules</a> &raquo;</li>
+        
+      <li>dimfilter</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/dimfilter.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dimfilter">
+<span id="index-0"></span><h1>dimfilter<a class="headerlink" href="#dimfilter" title="Permalink to this headline">¶</a></h1>
+<p>Directional filtering of grids in the space domain</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt dimfilter</strong> <em>input_file.nc</em>
+<a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>distance_flag</em>
+<a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><strong>x</strong><em>width</em>[<em>modifier</em>]
+<a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>output_file.nc</em>
+<a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><strong>x</strong><em>sectors</em>[<em>modifier</em>]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong> ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>increment</em> ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>dimfilter</strong> will filter a <em>.nc</em> file in the space (or time) domain by
+dividing the given filter circle into <em>n_sectors</em>, applying one of the
+selected primary convolution or non-convolution filters to each sector,
+and choosing the final outcome according to the selected secondary
+filter. It computes distances using Cartesian or Spherical geometries.
+The output <em>.nc</em> file can optionally be generated as a subregion of the
+input and/or with a new <strong>-I</strong>ncrement. In this way, one may have
+“extra space” in the input data so that there will be no edge effects
+for the output grid. If the filter is low-pass, then the output may be
+less frequently sampled than the input. The <strong>-Q</strong> option is for the error analysis
+mode and expects the input file to contains the filtered depths. Finally, one should know that
+<strong>dimfilter</strong> will not produce a smooth output as other spatial filters
+do because it returns a minimum median out of <em>N</em> medians of <em>N</em>
+sectors. The output can be rough unless the input data is noise-free.
+Thus, an additional filtering (e.g., Gaussian via <a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a>) of the
+DiM-filtered data is generally recommended.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>input_file.nc</em></dt>
+<dd>The data grid to be filtered.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>distance_flag</em></dt>
+<dd><p class="first">Distance <em>flag</em> tells how grid (x,y) relates to filter <em>width</em>, as follows:</p>
+<p><em>flag</em> = 0: grid (x,y) same units as <em>width</em>, Cartesian distances.
+<em>flag</em> = 1: grid (x,y) in degrees, <em>width</em> in kilometers, Cartesian distances.
+<em>flag</em> = 2: grid (x,y) in degrees, <em>width</em> in km, dx scaled by
+cos(middle y), Cartesian distances.</p>
+<p>The above options are fastest because they allow weight matrix to be
+computed only once. The next three options are slower because they
+recompute weights for each latitude.</p>
+<p><em>flag</em> = 3: grid (x,y) in degrees, <em>width</em> in km, dx scaled by
+cosine(y), Cartesian distance calculation.</p>
+<p class="last"><em>flag</em> = 4: grid (x,y) in degrees, <em>width</em> in km, Spherical distance
+calculation.</p>
+</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><strong>x</strong><em>width</em>[<em>modifier</em>]</dt>
+<dd><p class="first">Sets the primary filter type. Choose among convolution and
+non-convolution filters. Append the filter code <strong>x</strong> followed by the full
+diameter <em>width</em>. Available convolution filters are:</p>
+<p>(<strong>b</strong>) Boxcar: All weights are equal.</p>
+<p>(<strong>c</strong>) Cosine Arch: Weights follow a cosine arch curve.</p>
+<p>(<strong>g</strong>) Gaussian: Weights are given by the Gaussian function.</p>
+<p>Non-convolution filters are:</p>
+<p>(<strong>m</strong>) Median: Returns median value.</p>
+<p class="last">(<strong>p</strong>) Maximum likelihood probability (a mode estimator): Return
+modal value. If more than one mode is found we return their average
+value. Append <strong>+l</strong> or <strong>+h</strong> to the filter width if you rather want to
+return the smallest or largest of each sector’s modal values.</p>
+</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong><strong>x</strong><em>sectors</em>[<em>modifier</em>]</dt>
+<dd><p class="first">Sets the secondary filter type <strong>x</strong> and the number of bow-tie sectors.
+<em>sectors</em> must be integer and larger than 0. When <em>sectors</em> is
+set to 1, the secondary filter is not effective. Available secondary
+filters <strong>x</strong> are:</p>
+<p>(<strong>l</strong>) Lower: Return the minimum of all filtered values.</p>
+<p>(<strong>u</strong>) Upper: Return the maximum of all filtered values.</p>
+<p>(<strong>a</strong>) Average: Return the mean of all filtered values.</p>
+<p>(<strong>m</strong>) Median: Return the median of all filtered values.</p>
+<p class="last">(<strong>p</strong>) Mode: Return the mode of all filtered values:
+If more than one mode is found we return their average
+value. Append <strong>+l</strong> or <strong>+h</strong> to the sectors if you rather want to
+return the smallest or largest of the modal values.</p>
+</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>output_file.nc</em></dt>
+<dd><em>output_file.nc</em> is the output of the filter.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong></dt>
+<dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the output Increment. Append
+<strong>m</strong> to indicate minutes, or <strong>c</strong> to indicate seconds. If the new
+<em>x_inc</em>, <em>y_inc</em> are NOT integer multiples of the old ones (in the
+input data), filtering will be considerably slower. [Default: Same
+as input.]</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong></dt>
+<dd>This option is used by itself to write the dim.template.sh bash script
+to standard output.  No other options can be used in combination.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong></dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> defines the Region of the
+output points. [Default: Same as input.]</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong></dt>
+<dd>Toggle the node registration for the output grid so as to become the
+opposite of the input grid [Default gives the same registration as
+the input grid].</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong></dt>
+<dd>For this mode, it expects to read depths consisted of several
+columns. Each column represents a filtered grid with a filter width,
+which can be obtained by <strong>grd2xyz -Z</strong>. The outcome will be median,
+MAD, and mean. So, the column with the medians is used to generate
+the regional component and the column with the MADs is used to
+conduct the error analysis.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt>
+<dd>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</dd>
+</dl>
+</div>
+<div class="section" id="grid-file-formats">
+<h2>Grid File Formats<a class="headerlink" href="#grid-file-formats" title="Permalink to this headline">¶</a></h2>
+<p>By default GMT writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, GMT is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called “packing” of grids, writing out floating point
+data as 1- or 2-byte integers. <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">(more …)</span></a></p>
+</div>
+<div class="section" id="geographical-and-time-coordinates">
+<h2>Geographical And Time Coordinates<a class="headerlink" href="#geographical-and-time-coordinates" title="Permalink to this headline">¶</a></h2>
+<p>When the output grid type is netCDF, the coordinates will be labeled
+“longitude”, “latitude”, or “time” based on the attributes of the input
+data or grid (if any) or on the <strong>-f</strong> or <strong>-R</strong> options. For example,
+both <strong>-f0x</strong> <strong>-f1t</strong> and <strong>-R</strong>90w/90e/0t/3t will result in a
+longitude/time grid. When the x, y, or z coordinate is time, it will be
+stored in the grid as relative time since epoch as specified by
+<a class="reference internal" href="gmt.conf.html#time-unit"><span class="std std-ref">TIME_UNIT</span></a> and <a class="reference internal" href="gmt.conf.html#time-epoch"><span class="std std-ref">TIME_EPOCH</span></a> in the
+<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file or on the
+command line. In addition, the <strong>unit</strong> attribute of the time variable
+will indicate both this unit and epoch.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p><strong>Note</strong>: Below are some examples of valid syntax for this module.
+The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
+can be cut and pasted into your terminal for testing.
+Other commands requiring input files are just dummy examples of the types
+of uses that are common but cannot be run verbatim as written.</p>
+<p>We have the remote file &#64;earth_relief_05m which is a file of 5 minute bathymetry,
+and you want to find the medians of
+values within a 300km radius (600km full width) of the output points,
+which you choose to be from 150E to 250E and 10N to 40N, and you want
+the output values every 0.5 degree. To prevent the medians from being
+biased by the sloping plane, you want to divide the filter circle into 6
+sectors and to choose the lowest value among 6 medians. Using spherical
+distance calculations, you need:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt dimfilter @earth_relief_05m -Gfiltered_pacific.nc -Fm600 -D4 -Nl6 -R150/250/10/40 -I0.5 -V
+</pre></div>
+</div>
+</div></blockquote>
+<p>Suppose that cape_verde.nc is a file of 0.5 minute bathymetry from 32W
+to 15W and 8N to 25N, and you want to remove small-length-scale features
+in order to define a swell in an area extending from 27.5W to 20.5W and
+12.5N to 19.5N, and you want the output value every 2 minute. Using
+cartesian distance calculations, you need:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt dimfilter cape_verde.nc -Gt.nc -Fm220 -Nl8 -D2 -R-27.5/-20.5/12.5/19.5 -I2m -V
+gmt grdfilter t.nc -Gcape_swell.nc -Fg50 -D2 -V
+</pre></div>
+</div>
+</div></blockquote>
+<p>Suppose that you found a range of filter widths for a given area, and
+you filtered the given bathymetric data using the range of filter widths
+(e.g., <em>f100.nc f110.nc f120.nc f130.nc</em>), and you want to define a
+regional trend using the range of filter widths, and you want to obtain
+median absolute deviation (MAD) estimates at each data point. Then, you
+will need to do:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grd2xyz f100.nc -Z &gt; f100.txt
+gmt grd2xyz f110.nc -Z &gt; f110.txt
+gmt grd2xyz f120.nc -Z &gt; f120.txt
+gmt grd2xyz f130.nc -Z &gt; f130.txt
+paste f100.txt f110.txt f120.txt f130.txt &gt; depths.txt
+gmt dimfilter depths.txt -Q &gt; output.z
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h2>
+<p>When working with geographic (lat, lon) grids, all three convolution
+filters (boxcar, cosine arch, and gaussian) will properly normalize the
+filter weights for the variation in gridbox size with latitude, and
+correctly determine which nodes are needed for the convolution when the
+filter “circle” crosses a periodic (0-360) boundary or contains a
+geographic pole. However, the spatial filters, such as median and mode
+filters, do not use weights and thus should only be used on Cartesian
+grids (or at very low latitudes) only. If you want to apply such spatial
+filters you should project your data to an equal-area projection and run
+<strong>dimfilter</strong> on the resulting Cartesian grid.</p>
+</div>
+<div class="section" id="script-template">
+<h2>Script Template<a class="headerlink" href="#script-template" title="Permalink to this headline">¶</a></h2>
+<p>The dim.template.sh is a skeleton shell script that can be used to set
+up a complete DiM analysis, including the MAD analysis.  It is obtained
+via the <strong>-L</strong> option.</p>
+</div>
+<div class="section" id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h2>
+<p>Kim, S.-S., and Wessel, P. (2008), Directional Median Filtering for
+Regional-Residual Separation of Bathymetry, <em>Geochem. Geophys.
+Geosyst.</em>, <strong>9</strong>, Q03005, doi:10.1029/2007GC001850.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="docs.html" class="btn btn-neutral float-right" title="docs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="contour.html" class="btn btn-neutral float-left" title="contour" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

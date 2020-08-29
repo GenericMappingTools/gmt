@@ -1,0 +1,733 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:39 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GMT2KML</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GMT2KML</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#LIMITATIONS">LIMITATIONS</a><br>
+<a href="#MAKING KMZ FILES">MAKING KMZ FILES</a><br>
+<a href="#KML HIERARCHY">KML HIERARCHY</a><br>
+<a href="#SEGMENT INFORMATION">SEGMENT INFORMATION</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">gmt2kml &minus;
+Convert GMT data tables to KML files for Google Earth</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmt2kml</b>
+[ <i>infile(s)</i> ] [
+<b>&minus;Aa</b>|<b>g</b>|<b>s</b>[<i>alt</i>|<b>x</b><i>scale</i>]
+] [ <b>&minus;C</b><i>cpt</i> ] [
+<b>&minus;D</b><i>descriptfile</i> ] [
+<b>&minus;E</b>[<i>altitude</i>] ] [
+<b>&minus;Fe</b>|<b>s</b>[<i>cpt</i>]|<b>t</b>|<b>l</b>|<b>p</b>
+] [ <b>&minus;Gf|n[-|</b><i>fill</i>] ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;I</b><i>icon</i> ] [ <b>&minus;K</b>] [
+<b>&minus;L</b><i>col1:name1,col2:name2,...</i> ] [
+<b>&minus;N</b>[+|<i>name_template</i>|<i>name</i>] ] [
+<b>&minus;O</b>] [
+<b>&minus;Q</b>[<b>s</b>|<b>l</b>|<b>p</b>]<i>transparency</i>
+] [ <b>&minus;Ra</b>|<i>w/e/s/n</i> ] [
+<b>&minus;Sc</b>|<b>n</b><i>scale</i>] ] [
+<b>&minus;T</b><i>title</i>[/<i>foldername</i>] ] [
+<b>&minus;V</b> ] [ <b>&minus;W</b>-|<i>pen</i> ] [
+<b>&minus;Z</b><i>args</i> ] [
+<b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;bi</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ] [
+<b>&minus;m</b>[<b>i</b>|<b>o</b>][<i>flag</i>] ] [ &gt;
+<i>output.kml</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmt2kml</b>
+reads one or more GMT table file and converts them to a
+single output file using Google Earth&rsquo;s KML format.
+Data may represent points, lines, or polygons, and you may
+specify additional attributes such as title, altitude mode,
+colors, pen widths, transparency, regions, and data
+descriptions. You may also extend the feature down to ground
+level (assuming it is above it) and use custom icons for
+point symbols. <br>
+The input file should contain the following columns: <i><br>
+lon lat</i> [ <i>alt</i> ] [ <i>timestart</i> [
+<i>timestop</i> ] ] <br>
+where <i>lon</i> and <i>lat</i> are required for all
+features, <i>alt</i> is optional for all features (see also
+<b>&minus;A</b> and <b>&minus;C</b>), and <i>timestart</i>
+and <i>timestop</i> apply to events and timespan features.
+<i><br>
+infile(s)</i></p>
+
+<p style="margin-left:22%;">ASCII (or binary, see
+<b>&minus;bi</b>) data file(s) to be operated on. If not
+given, standard input will be read.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Select one of three
+altitude modes recognized by Google Earth that determines
+the altitude (in m) of the feature: <b>a</b> absolute
+altitude, <b>g</b> altitude relative to sea surface or
+ground, <b>s</b> altitude relative to seafloor. To plot the
+features at a fixed altitude, append an altitude <i>alt</i>
+(in m). Use 0 to clamp the features to the chosen reference
+surface. Append <b>x</b><i>scale</i> to scale the altitude
+from the input file by that factor. If no value is appended,
+the altitude (in m) is read from the 3rd column of the input
+file. [By default the features are clamped to the sea
+surface or ground].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Use color palette
+for assigning colors to the symbol, event, or timespan
+icons, based on the value in the 3rd column of the input
+file. Ignored when plotting lines or polygons.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">File with HTML
+snippets that will be included as part of the main
+description content for the KML file [no description]. See
+SEGMENT INFORMATION below for feature-specific
+descriptions.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Extrude feature
+down to ground level [no extrusion].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the feature
+type. Choose from points (<b>e</b>vent, <b>s</b>ymbol, or
+<b>t</b>imespan), <b>l</b>ine, or <b>p</b>olygon [symbol].
+The first two columns of the input file should contain
+(<i>lon, lat</i>). When altitude or value is required (i.e.,
+no <i>altitude</i> value was given with <b>&minus;A</b>, or
+<b>&minus;C</b> is set), the third column needs to contain
+the <i>altitude</i> (in m). The event (<b>&minus;Fe</b>) is
+a symbol that should only be active at a particular
+<i>time</i>, given in the next column. Timespan
+(<b>&minus;Ft</b>) is a symbol that should only be active
+during a particular time period indicated by the next two
+columns (<i>timestart, timestop</i>). Use NaN to indicate
+unbounded time limits. If used, times should be in ISO
+format yyyy-mm-ddThh:mm:ss[.xxx] or in GMT relative time
+format (see <b>&minus;f</b>).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set fill color for
+symbols, extrusions and polygons (<b>&minus;Gf</b>) [Default
+is lightorange] or text labels (<b>&minus;Gn</b>) [Default
+is white]. Optionally, use <b>&minus;Gf-</b> to turn off
+polygon fill, and <b>&minus;Gn-</b> to disable labels. (See
+SPECIFYING FILL below).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify the URL to
+an alternative icon that should be used for the symbol
+[Default is a Google Earth circle]. If the URL starts with +
+then we will prepend http://maps.google.com/mapfiles/kml/ to
+the name. [Default is a local icon with no directory
+path].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;K</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Allow more KML code
+to be appended to the output later [finalize the KML
+file].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Extended data
+given. Append one or more strings of the form
+<i>col</i>:<i>name</i> separated by commas. We will expect
+the listed data columns to exist in the input and they will
+be encoded in the KML file as Extended Data sets, whose
+attributes will be available in the Google Earth balloon
+when the item is selected.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">By default, if
+multisegment headers contain a <b>&minus;L</b>&quot;label
+string&quot; then we use that for the name of the KML
+feature (polygon, line segment or set of symbols). Default
+names for these segments are &quot;Line %d&quot; and
+&quot;Point Set %d&quot;, depending on the feature, where %d
+is a sequence number of line segments within a file. Each
+point within a line segment will be named after the line
+segment plus a sequence number. Default is simply
+&quot;Point %d&quot;.</p></td>
+</table>
+
+<p style="margin-left:22%;">Alternatively, select one of
+these options: (1) append <b>+</b> to supply individual
+symbol labels directly at the end of the data record, (2)
+append a string that may include %d or a similar integer
+format to assign unique name IDs for each feature, with the
+segment number (for lines and polygons) or point number
+(symbols) appearing where %d is placed, (3) give no
+arguments to turn symbol labeling off; line segments will
+still be named.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;O</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Appended KML code
+to an existing KML file [initialize a new KML file].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set the
+transparency level for the selected feature (<b>e</b>,
+<b>s</b>, <b>t</b>, <b>l</b>, or <b>p</b>, plus <b>n</b> for
+name labels). Transparency goes from 0 (fully transparent)
+to 1 (opaque) [0.75 for polygons, 1 for symbols, lines, and
+labels].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Issue a single
+Region tag. Append <i>w/e/s/n</i> to set a particular region
+(will ignore points outside the region), or append <b>a</b>
+to determine and use the actual domain of the data (single
+file only) [no region tags issued].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Scale icons or
+labels. Here, <b>&minus;Sc</b> sets a scale for the symbol
+icon, whereas <b>&minus;Sn</b> sets a scale for the name
+labels [1 for both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the document
+title [GMT Data Document]. Optionally, append
+/<i>FolderName</i>; this allows you, with <b>&minus;O</b>,
+<b>&minus;K</b>, to group features into folders within the
+KML document. [The default folder name is &quot;<i>Name</i>
+Features&quot;, where <i>Name</i> is Point, Event, Timespan,
+Line, or Polygon].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set pen attributes
+for lines or polygon outlines. Append pen attributes to use
+[Defaults: width = 1p, color = black, texture = solid].
+Optionally, use <b>&minus;W-</b> to turn off polygon outline
+Note that for KML the pen width is given as integer pixel
+widths so you must specify pen width as <i>n</i><b>p</b>,
+where <i>n</i> is an integer. (See SPECIFYING PENS
+below).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set one or more
+attributes of the Document and Region tags. Append
+<b>+a</b><i>alt_min/alt_max</i> to specify limits on
+visibility based on altitude. Append
+<b>+l</b><i>lod_min/lod_max</i> to specify limits on
+visibility based on Level Of Detail, where <i>lod_max</i> ==
+-1 means it is visible to infinite size. Append
+<b>+f</b><i>fade_min/fade_max</i> to fade in and out over a
+ramp [abrupt]. Append <b>+v</b> to make a feature <i>not</i>
+visible when loaded [visible]. Append <b>+o</b> to open a
+folder or document in the sidebar when loaded [closed].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 2 input columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file(s). Segments are separated by a special record. For
+ASCII files the first character must be <i>flag</i> [Default
+is &rsquo;&gt;&rsquo;]. For binary files all fields must be
+NaN and <b>&minus;b</b> must set the number of output
+columns explicitly. By default the <b>&minus;m</b> setting
+applies to both input and output. Use <b>&minus;mi</b> and
+<b>&minus;mo</b> to give separate settings to input and
+output. The <b>&minus;m</b> option make sure that segment
+headers in the input files are copied to output, but it has
+no effect on the data selection. Selection is always done
+point by point, not by segment.</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+PENS</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p valign="top"><i>pen</i></p></td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p valign="top">The attributes of lines and symbol outlines
+as defined by <i>pen</i> is a comma delimetered list of
+<i>width</i>, <i>color</i> and <i>texture</i>, each of which
+is optional. <i>width</i> can be indicated as a measure
+(points, centimeters, inches) or as <b>faint</b>,
+<b>thin</b>[<b>ner</b>|<b>nest</b>],
+<b>thick</b>[<b>er</b>|<b>est</b>],
+<b>fat</b>[<b>ter</b>|<b>test</b>], or <b>obese</b>.
+<i>color</i> specifies a gray shade or color (see SPECIFYING
+COLOR below). <i>texture</i> is a combination of dashes
+&lsquo;-&rsquo; and dots &lsquo;.&rsquo;.</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+COLOR</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>color</i></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p valign="top">The <i>color</i> of lines, areas and
+patterns can be specified by a valid color name; by a gray
+shade (in the range 0&minus;255); by a decimal color code
+(r/g/b, each in range 0&minus;255; h-s-v, ranges
+0&minus;360, 0&minus;1, 0&minus;1; or c/m/y/k, each in range
+0&minus;1); or by a hexadecimal color code (#rrggbb, as used
+in HTML). See the <b><A HREF="gmtcolors.html">gmtcolors</A></b> manpage for more
+information and a full list of color names.</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To convert a
+file with point locations (lon, lat) into a KML file with
+red circle symbols, try</p>
+
+<p style="margin-left:11%; margin-top: 1em">gmt2kml
+mypoints.txt <b>&minus;Gf</b> red <b>&minus;Fs</b> &gt;
+mypoints.kml</p>
+
+<p style="margin-left:11%; margin-top: 1em">To convert a
+multisegment file with lines (lon, lat) separated by
+multisegment headers that contain a <b>&minus;L</b>
+labelstring with the feature name, selecting a thick white
+pen, and title the document, try</p>
+
+<p style="margin-left:11%; margin-top: 1em">gmt2kml
+mylines.txt <b>&minus;W</b> thick,white <b>&minus;Fl
+&minus;T</b>&quot;Lines from here to there&quot; &gt;
+mylines.kml</p>
+
+<p style="margin-left:11%; margin-top: 1em">To convert a
+multisegment file with polygons (lon, lat) separated by
+multisegment headers that contain a <b>&minus;L</b>
+labelstring with the feature name, selecting a thick black
+pen and semi-transparent yellow fill, giving a title to the
+document, and prescribing a particular region limit, try</p>
+
+<p style="margin-left:11%; margin-top: 1em">gmt2kml
+mypolygons.txt <b>&minus;Gf</b> yellow <b>&minus;Qp</b> 0.5
+<b>&minus;Fp &minus;T</b>&quot;My polygons&quot;
+<b>&minus;R</b> 30/90/-20/40 &gt; mypolygons.kml</p>
+
+<p style="margin-left:11%; margin-top: 1em">To convert a
+file with point locations (lon, lat, time) into a KML file
+with green circle symbols that will go active at the
+specified time and stay active going forward, try</p>
+
+<p style="margin-left:11%; margin-top: 1em">awk
+&rsquo;{print $1, $2, $3, &quot;NaN&quot;}&rsquo;
+mypoints.txt | gmt2kml <b>&minus;Gf</b> green
+<b>&minus;Ft</b> &gt; mytimepoints.kml</p>
+
+<a name="LIMITATIONS"></a>
+<h2>LIMITATIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Google Earth
+has trouble displaying filled polygons across the Dateline.
+For now you must manually break any polygon crossing the
+dateline into a west and east polygon and plot them
+separately.</p>
+
+<a name="MAKING KMZ FILES"></a>
+<h2>MAKING KMZ FILES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Using the KMZ
+format is preferred as it takes less space. KMZ is simply a
+KML file and any data files, icons, or images referenced by
+the KML, contained in a zip archive. One way to organize
+large data sets is to split them into groups called Folders.
+A Document can contain any number of folders. Using scripts
+you can create a composite KML file using the
+<b>&minus;K</b>, <b>&minus;O</b> options just like you do
+with GMT plots. See <b>&minus;T</b> for switching between
+folders and documents.</p>
+
+<a name="KML HIERARCHY"></a>
+<h2>KML HIERARCHY</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="GMT.html">GMT</A></b>
+stores the different features in hierarchical folders, by
+feature type (when using <b>&minus;O</b>, <b>&minus;K</b> or
+<b>&minus;T/</b><i>foldername</i>), by input file (if not
+standard input), and by line segment (using the name from
+the segment header, or <b>&minus;N</b>). This makes it more
+easy in Google Earth to switch on or off parts of the
+contents of the Document. The following is a crude
+example:</p>
+
+<p style="margin-left:11%; margin-top: 1em">[ KML header
+information - not present if <b>&minus;O</b> was given ]
+<br>
+&lt;Document&gt;&lt;name&gt;GMT Data Document&lt;/name&gt;
+<br>
+&lt;Folder&gt;&lt;name&gt;Point Features&lt;/name&gt; <br>
+&lt;!--This level of folder is inserted only when using -O,
+-K&gt; <br>
+&lt;Folder&gt;&lt;name&gt;file1.dat&lt;/name&gt; <br>
+&lt;!--One folder for each input file (not when standard
+input)&gt; <br>
+&lt;Folder&gt;&lt;name&gt;Point Set 0&lt;/name&gt; <br>
+&lt;!--One folder per line segment&gt; <br>
+&lt;!--Points from the first line segment in file file1.dat
+go here&gt; <br>
+&lt;Folder&gt;&lt;name&gt;Point Set 1&lt;/name&gt; <br>
+&lt;!--Points from the second line segment in file file1.dat
+go here&gt; <br>
+&lt;/Folder&gt; <br>
+&lt;/Folder&gt; <br>
+&lt;Folder&gt;&lt;name&gt;Line Features&lt;/name&gt; <br>
+&lt;Folder&gt;&lt;name&gt;file1.dat&lt;/name&gt; <br>
+&lt;!--One folder for each input file (not when standard
+input)&gt; <br>
+&lt;Placemark&gt;&lt;name&gt;Line 0&lt;/name&gt; <br>
+&lt;!--Here goes the first line segment&gt; <br>
+&lt;/Placemark&gt; <br>
+&lt;Placemark&gt;&lt;name&gt;Line 1&lt;/name&gt; <br>
+&lt;!--Here goes the second line segment&gt; <br>
+&lt;/Placemark&gt; <br>
+&lt;/Folder&gt; <br>
+&lt;Folder&gt; <br>
+&lt;/Document&gt; <br>
+[ KML trailer information - not present if <b>&minus;K</b>
+was given ]</p>
+
+<a name="SEGMENT INFORMATION"></a>
+<h2>SEGMENT INFORMATION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmt2kml</b>
+will scan the segment headers for substrings of the form
+<b>&minus;L</b>&quot;<i>some label</i>&quot; [also see
+<b>&minus;N</b> discussion] and <b>&minus;D</b>&quot;<i>some
+description</i>&quot;. If present, these are parsed to
+supply name and description tags for the current
+feature.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="gmtdefaults.html">gmtdefaults</A></i>(1),
+<i><A HREF="GMT.html">GMT</A></i>(1), <i><A HREF="img2google.html">img2google</A></i>(1), <i><A HREF="kml2gmt.html">kml2gmt</A></i>(1),
+<i><A HREF="ps2raster.html">ps2raster</A></i>(1)</p>
+<hr>
+</body>
+</html>

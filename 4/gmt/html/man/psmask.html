@@ -1,0 +1,732 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:28 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>PSMASK</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>PSMASK</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">psmask &minus;
+To clip or mask areas of no data on a map</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>psmask</b>
+[<i>xyzfile</i>]
+<b>&minus;I</b><i>xinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>][/<i>yinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>]]
+<b>&minus;J</b><i>parameters</i>
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+[ <b>&minus;B</b>[<b>p</b>|<b>s</b>]<i>parameters</i> ] [
+<b>&minus;D</b><i>dumpfile</i> ] [
+<b>&minus;E</b><i>azim</i>/<i>elev</i>[<b>+w</b><i>lon</i>/<i>lat</i>[/<i>z</i>]][<b>+v</b><i>x0</i>/<i>y0</i>]
+] [ <b>&minus;F</b> ] [ <b>&minus;G</b><i>fill</i> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [ <b>&minus;K</b> ]
+[ <b>&minus;N</b> ] [ <b>&minus;O</b> ] [ <b>&minus;P</b> ]
+[
+<b>&minus;S</b><i>search_radius</i>[<b>m</b>|<b>c</b>|<b>k</b>|<b>K</b>]
+] [ <b>&minus;T</b> ] [
+<b>&minus;U</b>[<i>just</i>/<i>dx</i>/<i>dy</i>/][<b>c</b>|<i>label</i>]
+] [ <b>&minus;V</b> ] [
+<b>&minus;X</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>x-shift</i>[<b>u</b>]]
+] [
+<b>&minus;Y</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>y-shift</i>[<b>u</b>]]
+] [ <b>&minus;c</b><i>copies</i> ] [
+<b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;bi</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;m</b>[<i>flag</i>] ]</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psmask
+&minus;C</b> [ <b>&minus;K</b> ] [ <b>&minus;O</b> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>psmask</b>
+reads a (<i>x</i>,<i>y</i>,<i>z</i>) file [or standard
+input] and uses this information to find out which grid
+cells are reliable. Only gridcells which have one or more
+data points are considered reliable. As an option, you may
+specify a radius of influence. Then, all gridcells that are
+within <i>radius</i> of a data point are considered
+reliable. Furthermore, an option is provided to reverse the
+sense of the test. Having found the reliable/not reliable
+points, <b>psmask</b> will either paint tiles to mask these
+nodes (with the <b>&minus;T</b> switch), or use contouring
+to create polygons that will clip out regions of no
+interest. When clipping is initiated, it will stay in effect
+until turned off by a second call to <b>psmask</b> using the
+<b>&minus;C</b> option. <i><br>
+xyzfile</i></p>
+
+<p style="margin-left:22%;">File with
+(<i>x</i>,<i>y</i>,<i>z</i>) values (e.g., that was used to
+run <b><A HREF="surface.html">surface</A></b>). If no file is given, standard input is
+read. For binary files, see <b>&minus;b</b>.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>x_inc</i> [and
+optionally <i>y_inc</i>] is the grid spacing. Optionally,
+append a suffix modifier. <b>Geographical (degrees)
+coordinates</b>: Append <b>m</b> to indicate arc minutes or
+<b>c</b> to indicate arc seconds. If one of the units
+<b>e</b>, <b>k</b>, <b>i</b>, or <b>n</b> is appended
+instead, the increment is assumed to be given in meter, km,
+miles, or nautical miles, respectively, and will be
+converted to the equivalent degrees longitude at the middle
+latitude of the region (the conversion depends on
+<b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b>). If /<i>y_inc</i> is given but set to 0 it
+will be reset equal to <i>x_inc</i>; otherwise it will be
+converted to degrees latitude. <b>All coordinates</b>: If
+<b>=</b> is appended then the corresponding max <i>x</i>
+(<i>east</i>) or <i>y</i> (<i>north</i>) may be slightly
+adjusted to fit exactly the given increment [by default the
+increment may be adjusted slightly to fit the given domain].
+Finally, instead of giving an increment you may specify the
+<i>number of nodes</i> desired by appending <b>+</b> to the
+supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The
+resulting increment value depends on whether you have
+selected a gridline-registered or pixel-registered grid; see
+Appendix B for details. Note: if
+<b>&minus;R</b><i>grdfile</i> is used then grid spacing has
+already been initialized; use <b>&minus;I</b> to override
+the values.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;J</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects the map
+projection. Scale is UNIT/degree, 1:xxxxx, or width in UNIT
+(upper case modifier). UNIT is cm, inch, or m, depending on
+the <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> setting in .gmtdefaults4, but this
+can be overridden on the command line by appending <b>c</b>,
+<b>i</b>, or <b>m</b> to the scale/width value. When central
+meridian is optional, default is center of longitude range
+on <b>&minus;R</b> option. Default standard parallel is the
+equator. For map height, max dimension, or min dimension,
+append <b>h</b>, <b>+</b>, or <b>-</b> to the width,
+respectively.</p> </td>
+</table>
+
+<p style="margin-left:22%;">More details can be found in
+the <b><A HREF="psbasemap.html">psbasemap</A></b> man pages.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CYLINDRICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jc</b><i>lon0/lat0/scale</i>
+(Cassini) <b><br>
+
+&minus;Jcyl_stere</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Stereographic) <b><br>
+&minus;Jj</b>[<i>lon0/</i>]<i>scale</i> (Miller) <b><br>
+&minus;Jm</b>[<i>lon0</i>/[<i>lat0/</i>]]<i>scale</i>
+(Mercator) <b><br>
+&minus;Jm</b><i>lon0/lat0/scale</i> (Mercator - Give
+meridian and standard parallel) <b><br>
+&minus;Jo</b>[<b>a</b>]<i>lon0/lat0/azimuth/scale</i>
+(Oblique Mercator - point and azimuth) <b><br>
+&minus;Jo</b>[<b>b</b>]<i>lon0/lat0/lon1/lat1/scale</i>
+(Oblique Mercator - two points) <b><br>
+&minus;Joc</b><i>lon0/lat0/lonp/latp/scale</i> (Oblique
+Mercator - point and pole) <b><br>
+&minus;Jq</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equidistant) <b><br>
+&minus;Jt</b><i>lon0/</i>[<i>lat0/</i>]<i>scale</i> (TM -
+Transverse Mercator) <b><br>
+&minus;Ju</b><i>zone/scale</i> (UTM - Universal Transverse
+Mercator) <b><br>
+&minus;Jy</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equal-Area)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CONIC
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jb</b><i>lon0/lat0/lat1/lat2/scale</i>
+(Albers) <b><br>
+&minus;Jd</b><i>lon0/lat0/lat1/lat2/scale</i> (Conic
+Equidistant) <b><br>
+&minus;Jl</b><i>lon0/lat0/lat1/lat2/scale</i> (Lambert Conic
+Conformal) <b><br>
+&minus;Jpoly</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+((American) Polyconic)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>AZIMUTHAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Ja</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Lambert Azimuthal Equal-Area) <b><br>
+&minus;Je</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Azimuthal Equidistant) <b><br>
+&minus;Jf</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Gnomonic) <b><br>
+&minus;Jg</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Orthographic) <b><br>
+
+&minus;Jg</b><i>lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale</i>
+(General Perspective). <b><br>
+&minus;Js</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(General Stereographic)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>MISCELLANEOUS
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jh</b>[<i>lon0/</i>]<i>scale</i>
+(Hammer) <b><br>
+&minus;Ji</b>[<i>lon0/</i>]<i>scale</i> (Sinusoidal) <b><br>
+&minus;Jkf</b>[<i>lon0/</i>]<i>scale</i> (Eckert IV) <b><br>
+&minus;Jk</b>[<b>s</b>][<i>lon0/</i>]<i>scale</i> (Eckert
+VI) <b><br>
+&minus;Jn</b>[<i>lon0/</i>]<i>scale</i> (Robinson) <b><br>
+&minus;Jr</b>[<i>lon0/</i>]<i>scale</i> (Winkel Tripel)
+<b><br>
+&minus;Jv</b>[<i>lon0/</i>]<i>scale</i> (Van der Grinten)
+<b><br>
+&minus;Jw</b>[<i>lon0/</i>]<i>scale</i> (Mollweide)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>NON-GEOGRAPHICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jp</b>[<b>a</b>]<i>scale</i>[<i>/origin</i>][<b>r</b>|<b>z</b>]
+(Polar coordinates (theta,r)) <b><br>
+
+&minus;Jx</b><i>x-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>][<i>/y-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>]]
+(Linear, log, and power scaling)</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xmin</i>,
+<i>xmax</i>, <i>ymin</i>, and <i>ymax</i> specify the Region
+of interest. For geographic regions, these limits correspond
+to <i>west, east, south,</i> and <i>north</i> and you may
+specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+calendar time coordinates you may either give (a) relative
+time (relative to the selected <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and in the
+selected <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>; append <b>t</b> to
+<b>&minus;JX</b>|<b>x</b>), or (b) absolute time of the form
+[<i>date</i>]<b>T</b>[<i>clock</i>] (append <b>T</b> to
+<b>&minus;JX</b>|<b>x</b>). At least one of <i>date</i> and
+<i>clock</i> must be present; the <b>T</b> is always
+required. The <i>date</i> string must be of the form
+[-]yyyy[-mm[-dd]] (Gregorian calendar) or yyyy[-Www[-d]]
+(ISO week calendar), while the <i>clock</i> string must be
+of the form hh:mm:ss[.xxx]. The use of delimiters and their
+type and positions must be exactly as indicated (however,
+input, output and plot formats are customizable; see
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b>).</p> </td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;B</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets map boundary
+annotation and tickmark intervals; see the <b><A HREF="psbasemap.html">psbasemap</A></b>
+man page for all the details.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Mark end of
+existing clip path. No input file is needed. Implicitly sets
+<b>&minus;O</b>. However, you must supply <b>&minus;Xa</b>
+and <b>&minus;Ya</b> settings if you are using absolute
+positioning.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Dumps out the
+resulting clipping polygons to disk. Ignored if
+<b>&minus;T</b> is set. If no dumpprefix is given we use
+mask (Files will be called mask_*.d). Append
+<b>+n&lt;n_pts&gt;</b> to limit the number of points in
+files to a minimum of <i>n_pts</i>. That is, do not write
+individual polygon files if they do not have at least
+<i>n_pts</i> vertices. Often, when one uses the
+<b>&minus;D</b> option it is not wished to output any ps
+code to stdout. In such cases redirect the output to &gt;
+/dev/null on *nix systems or to &gt; nul on Windows.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the
+viewpoint&rsquo;s azimuth and elevation (for perspective
+view) [180/90]. For frames used for animation, you may want
+to append <b>+</b> to fix the center of your data domain (or
+specify a particular world coordinate point with
+<b>+w</b><i>lon0</i>/<i>lat</i>[/<i>z</i>]) which will
+project to the center of your page size (or specify the
+coordinates of the projected view point with
+<b>+v</b><i>x0</i>/<i>y0).</i></p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force pixel node
+registration [Default is gridline registration]. (Node
+registrations are defined in <b><A HREF="GMT.html">GMT</A></b> Cookbook Appendix B
+on grid file formats.)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Paint the clip
+polygons (or tiles) with a selected fill [Default is no
+fill]. (See SPECIFYING FILL below).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped. Not used
+with binary data.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;K</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">More
+<i>PostScript</i> code will be appended later [Default
+terminates the plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Invert the sense of
+the test, i.e., clip regions where there is data
+coverage.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;O</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Overlay
+plot mode [Default initializes a new plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;P</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Portrait
+plotting mode [Default is Landscape, see <b><A HREF="gmtdefaults.html">gmtdefaults</A></b>
+to change this].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets radius of
+influence. Grid nodes within <i>radius</i> of a data point
+are considered reliable. [Default is 0, which means that
+only grid cells with data in them are reliable]. Append
+<b>m</b> to indicate minutes or <b>c</b> to indicate
+seconds. Append <b>k</b> to indicate km (implies
+<b>&minus;R</b> and <b>&minus;I</b> are in degrees, and we
+will use a fast flat Earth approximation to calculate
+distance). For more accuracy, use uppercase <b>K</b> if
+distances should be calculated along geodesics. However, if
+the current <b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b> is spherical then great circle
+calculations are used.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Plot tiles instead
+of clip polygons. Use <b>&minus;G</b> to set tile color or
+pattern.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;U</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw Unix System
+time stamp on plot. By adding <i>just/dx/dy/</i>, the user
+may specify the justification of the stamp and where the
+stamp should fall on the page relative to lower left corner
+of the plot. For example, BL/0/0 will align the lower left
+corner of the time stamp with the lower left corner of the
+plot. Optionally, append a <i>label</i>, or <b>c</b> (which
+will plot the command string.). The <b><A HREF="GMT.html">GMT</A></b> parameters
+<b><A HREF="gmtdefaults.html#UNIX_TIME">UNIX_TIME</A></b>, <b><A HREF="gmtdefaults.html#UNIX_TIME_POS">UNIX_TIME_POS</A></b>, and
+<b><A HREF="gmtdefaults.html#UNIX_TIME_FORMAT">UNIX_TIME_FORMAT</A></b> can affect the appearance; see the
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b> man page for details. The time string
+will be in the locale set by the environment variable
+<b>TZ</b> (generally local time).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;X
+&minus;Y</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Shift plot origin
+relative to the current origin by (<i>x-shift,y-shift</i>)
+and optionally append the length unit (<b>c</b>, <b>i</b>,
+<b>m</b>, <b>p</b>). You can prepend <b>a</b> to shift the
+origin back to the original position after plotting, or
+prepend <b>r</b> [Default] to reset the current origin to
+the new location. If <b>&minus;O</b> is used then the
+default (<i>x-shift,y-shift</i>) is (0,0), otherwise it is
+(r1i, r1i) or (r2.5c, r2.5c). Alternatively, give <b>c</b>
+to align the center coordinate (x or y) of the plot with the
+center of the page based on current page size.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 2 input columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;c</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies the
+number of plot copies. [Default is 1].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file(s). Segments are separated by a special record. For
+ASCII files the first character must be <i>flag</i> [Default
+is &rsquo;&gt;&rsquo;]. For binary files all fields must be
+NaN and <b>&minus;b</b> must set the number of output
+columns explicitly. By default the <b>&minus;m</b> setting
+applies to both input and output. Use <b>&minus;mi</b> and
+<b>&minus;mo</b> to give separate settings to input and
+output.</p> </td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+FILL</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p valign="top"><i>fill</i></p></td>
+<td width="5%"></td>
+<td width="78%">
+
+
+<p valign="top">The attribute <i>fill</i> specifies the
+solid shade or solid <i>color</i> (see SPECIFYING COLOR
+below) or the pattern used for filling polygons. Patterns
+are specified as <b>p</b><i>dpi/pattern</i>, where
+<i>pattern</i> gives the number of the built-in pattern
+(1-90) <i>or</i> the name of a Sun 1-, 8-, or 24-bit raster
+file. The <i>dpi</i> sets the resolution of the image. For
+1-bit rasters: use <b>P</b><i>dpi/pattern</i> for inverse
+video, or append
+<b>:F</b><i>color</i>[<b>B</b>[<i>color</i>]] to specify
+fore- and background colors (use <i>color</i> = - for
+transparency). See <b><A HREF="GMT.html">GMT</A></b> Cookbook &amp; Technical
+Reference Appendix E for information on individual
+patterns.</p> </td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+COLOR</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>color</i></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p valign="top">The <i>color</i> of lines, areas and
+patterns can be specified by a valid color name; by a gray
+shade (in the range 0&minus;255); by a decimal color code
+(r/g/b, each in range 0&minus;255; h-s-v, ranges
+0&minus;360, 0&minus;1, 0&minus;1; or c/m/y/k, each in range
+0&minus;1); or by a hexadecimal color code (#rrggbb, as used
+in HTML). See the <b><A HREF="gmtcolors.html">gmtcolors</A></b> manpage for more
+information and a full list of color names.</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To make an
+overlay <i>PostScript</i> file that will mask out the
+regions of a contour map where there is no control data
+using clip polygons, use:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psmask</b>
+africa_grav.xyg <b>&minus;R</b> 20/40/20/40 <b>&minus;I</b>
+5<b>m &minus;JM</b> 10<b>i &minus;O &minus;K</b> &gt;
+mask.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">The same
+example but this time we use white tiling:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psmask</b>
+africa_grav.xyg <b>&minus;R</b> 20/40/20/40 <b>&minus;I</b>
+5<b>m &minus;JM</b> 10<b>i &minus;T &minus;O &minus;K
+&minus;G</b> white &gt; mask.ps</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="gmtcolors.html">gmtcolors</A></i>(5), <i><A HREF="grdmask.html">grdmask</A></i>(1), <i><A HREF="surface.html">surface</A></i>(1),
+<i><A HREF="psbasemap.html">psbasemap</A></i>(1), <i><A HREF="psclip.html">psclip</A></i>(1)</p>
+<hr>
+</body>
+</html>

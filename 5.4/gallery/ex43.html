@@ -1,0 +1,200 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(43) Robust regression and outlier detection &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(44) Map inserts" href="ex44.html" />
+    <link rel="prev" title="(42) Antarctica and stereographic data" href="ex42.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex44.html" title="(44) Map inserts"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex42.html" title="(42) Antarctica and stereographic data"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="robust-regression-and-outlier-detection">
+<span id="example-43"></span><h1>(43) Robust regression and outlier detection<a class="headerlink" href="#robust-regression-and-outlier-detection" title="Permalink to this headline">¶</a></h1>
+<p>In this example show how <a class="reference internal" href="../gmtregress.html"><span class="doc">gmtregress</span></a> can be used to determine a
+robust regression line using <em>reweighted least squares</em> and from
+this fit we are able to identify outliers with respect to the
+main trend.  The result shows dinosaurs were large and dumb,
+humans and some monkeys pretty smart, and the rest of the
+mammals doing alright.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT EXAMPLE 43</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate regression and outlier detection</span>
+<span class="c1"># GMT modules:  gmtregress, psbasemap, pslegend, pstext, psxy</span>
+<span class="c1"># Unix progs:   grep, paste, awk, sed</span>
+<span class="c1">#</span>
+
+<span class="c1"># Data from Table 7 in Rousseeuw and Leroy, 1987.</span>
+<span class="nv">ps</span><span class="o">=</span>example_43.ps
+
+gmt regress -Ey -Nw -i0:1+l bb_weights.asc &gt; model.txt
+gmt regress -Ey -Nw -i0:1+l bb_weights.asc -Fxmc -T-2/6/0.1 &gt; rls_line.txt
+gmt regress -Ey -N2 -i0:1+l bb_weights.asc -Fxm -T-2/6/8 &gt; ls_line.txt
+grep -v <span class="s1">&#39;^&gt;&#39;</span> model.txt &gt; A.txt
+grep -v <span class="s1">&#39;^#&#39;</span> bb_weights.asc &gt; B.txt
+<span class="nv">$AWK</span> <span class="s1">&#39;{if ($7 == 0) printf &quot;%dp\n&quot;, NR}&#39;</span> A.txt &gt; sed.txt
+gmt makecpt -Clightred,green -T0/2/1 -F+c -N &gt; t.cpt
+gmt psbasemap -R0.01/1e6/0.1/1e5 -JX6il -P -Ba1pf3 -Bx+l<span class="s2">&quot;Log@-10@- body weight (kg)&quot;</span> -By+l<span class="s2">&quot;Log@-10@- brain weight (g)&quot;</span> -BWSne+glightblue -K -X1.5i -Y4i &gt; <span class="nv">$ps</span>
+gmt psxy -R-2/6/-1/5 -JX6i -O -K rls_line.txt -L+yt -Glightgoldenrod &gt;&gt; <span class="nv">$ps</span>
+sed -n -f sed.txt B.txt <span class="p">|</span> gmt pstext -R0.01/1e6/0.1/1e5 -JX6il -O -K -F+f12p+jRM -Dj0.15i &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R-2/6/-1/5 -JX6i -O -K -L+d+p0.25p,- -Gcornsilk1 rls_line.txt &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K rls_line.txt -W3p &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K ls_line.txt -W1p,- &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K -Sc0.15i -Ct.cpt -Wfaint -i0,1,6 model.txt &gt;&gt; <span class="nv">$ps</span>
+gmt pstext A.txt -R -J -O -K -F+f8p+jCM+r1 -B0 &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Build legend</span>
+cat <span class="s">&lt;&lt; EOF &gt; legend.txt</span>
+<span class="s">H 18 Times-Roman Index of Animals</span>
+<span class="s">D 1p</span>
+<span class="s">N 7 43 7 43</span>
+<span class="s">EOF</span>
+<span class="nv">$AWK</span> -F<span class="s1">&#39;\t&#39;</span> <span class="s1">&#39;{printf &quot;L - - C %d.\nL - - L %s\n&quot;, NR, $NF}&#39;</span> B.txt &gt;&gt; legend.txt
+gmt pslegend -DjBR+w2.5i+o0.4c -R -J -O -K -F+p1p+gwhite+s+c3p+r legend.txt --FONT_LABEL<span class="o">=</span>8p &gt;&gt; <span class="nv">$ps</span>
+gmt psbasemap -R0.5/28.5/-10/4 -JX6i/2i -O -K -Y-2.9i -B+glightgoldenrod &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K -Gcornsilk1 -W0.25p,- <span class="s">&lt;&lt; EOF &gt;&gt; $ps</span>
+<span class="s">&gt;</span>
+<span class="s">0	-2.5</span>
+<span class="s">30	-2.5</span>
+<span class="s">30	2.5</span>
+<span class="s">0	2.5</span>
+<span class="s">&gt; -Glightblue</span>
+<span class="s">0	-10</span>
+<span class="s">30	-10</span>
+<span class="s">30	-2.5</span>
+<span class="s">0	-2.5</span>
+
+<span class="s">EOF</span>
+<span class="nv">$AWK</span> <span class="s1">&#39;{print NR, $6, $7}&#39;</span> A.txt <span class="p">|</span> gmt psxy -R -J -O -K -Sb1ub0 -W0.25p -Ct.cpt &gt;&gt; <span class="nv">$ps</span>
+gmt psbasemap -R -J -O -K -Bafg100 -Bx+l<span class="s2">&quot;Animal index number&quot;</span> -By+l<span class="s2">&quot;z-zcore&quot;</span> -BWSne &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -T &gt;&gt; <span class="nv">$ps</span>
+rm -f *.txt t.cpt
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_43.png"><img alt="../_images/example_43.png" src="../_images/example_43.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Robust Regression and Outlier Detection.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex42.html"
+                        title="previous chapter">(42) Antarctica and stereographic data</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex44.html"
+                        title="next chapter">(44) Map inserts</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex43.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex44.html" title="(44) Map inserts"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex42.html" title="(42) Antarctica and stereographic data"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

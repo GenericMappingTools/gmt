@@ -1,0 +1,202 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(2) Image presentations &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(3) Spectral estimation and xy-plots" href="ex03.html" />
+    <link rel="prev" title="(1) Contour maps" href="ex01.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex03.html" title="(3) Spectral estimation and xy-plots"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex01.html" title="(1) Contour maps"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="image-presentations">
+<span id="example-02"></span><h1>(2) Image presentations<a class="headerlink" href="#image-presentations" title="Permalink to this headline">¶</a></h1>
+<p>As our second example we will demonstrate how to make color images from
+gridded data sets (again, we will defer the actual making of grid files
+to later examples). We will use <a class="reference internal" href="../grdraster.html"><span class="doc">grdraster</span></a> to extract 2-D grid files
+of bathymetry and Geosat geoid heights and put the two images on the
+same page. The region of interest is the Hawaiian islands, and due to
+the oblique trend of the island chain we prefer to rotate our
+geographical data sets using an oblique Mercator projection defined by
+the hotspot pole at (68W, 69N). We choose the point (190, 25.5) to be
+the center of our projection (e.g., the local origin), and we want to
+image a rectangular region defined by the longitudes and latitudes of
+the lower left and upper right corner of region. In our case we choose
+(160, 20) and (220, 30) as the corners. We use
+<a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a> to make the illustration:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 02</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Make two color images based gridded data</span>
+<span class="c1"># GMT modules:	gmtset, grd2cpt, grdimage, makecpt, psscale, pstext</span>
+<span class="c1"># Unix progs:	rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_02.ps
+gmt <span class="nb">set</span> FONT_TITLE 30p MAP_ANNOT_OBLIQUE <span class="m">0</span>
+gmt makecpt -Crainbow -T-2/14/2 &gt; g.cpt
+gmt grdimage HI_geoid2.nc -R160/20/220/30+r -JOc190/25.5/292/69/4.5i -E50 -K -P <span class="se">\</span>
+            -B10 -Cg.cpt -X1.5i -Y1.25i &gt; <span class="nv">$ps</span>
+gmt psscale -Cg.cpt -DJRM+o0.6i/0+e+mc -R -J -O -K -Bx2+lGEOID -By+lm &gt;&gt; <span class="nv">$ps</span>
+gmt grd2cpt HI_topo2.nc -Crelief -Z &gt; t.cpt
+gmt grdimage HI_topo2.nc -I+a0 -R -J -B+t<span class="s2">&quot;H@#awaiian@# T@#opo and @#G@#eoid@#&quot;</span> <span class="se">\</span>
+            -B10 -E50 -O -K -Ct.cpt -Y4.5i --MAP_TITLE_OFFSET<span class="o">=</span><span class="m">0</span>.5i &gt;&gt; <span class="nv">$ps</span>
+gmt psscale -Ct.cpt -DJRM+o0.6i/0+mc -R -J -O -K -I0.3 -Bx2+lTOPO -By+lkm &gt;&gt; <span class="nv">$ps</span>
+gmt pstext -R0/8.5/0/11 -Jx1i -F+f30p,Helvetica-Bold+jCB -O -N -Y-4.5i &gt;&gt; <span class="nv">$ps</span> <span class="s">&lt;&lt; END</span>
+<span class="s">-0.4 7.5 a)</span>
+<span class="s">-0.4 3.0 b)</span>
+<span class="s">END</span>
+rm -f ?.cpt gmt.conf
+</pre></div>
+</div>
+<p>The first step extracts the 2-D data sets from the local data base using
+<a class="reference internal" href="../grdraster.html"><span class="doc">grdraster</span></a> that may be adapted to reflect
+the nature of your data base format. It automatically figures out the
+required extent of the region given the two corners points and the
+projection. The extreme meridians and parallels enclosing the oblique
+region is <strong>-R</strong>159:50/220:10/3:10/47:35. This is the area extracted
+by <a class="reference internal" href="../grdraster.html"><span class="doc">grdraster</span></a>. For your convenience
+we have commented out those lines and provided the two extracted files
+so you do not need <a class="reference internal" href="../grdraster.html"><span class="doc">grdraster</span></a> to try
+this example. By using the embedded grid file format mechanism we saved
+the topography using kilometers as the data unit. We now have two grid
+files with bathymetry and geoid heights, respectively. We use
+<a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a> to generate a linear color
+palette file <code class="docutils literal notranslate"><span class="pre">geoid.cpt</span></code> for the geoid and use
+<a class="reference internal" href="../grd2cpt.html"><span class="doc">grd2cpt</span></a> to get a histogram-equalized
+CPT <code class="docutils literal notranslate"><span class="pre">topo.cpt</span></code> for the topography data. To emphasize the structures in the
+data we calculate the slopes in the north-south direction using
+<a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a>; these will be used to
+modulate the color image. Next we run
+<a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a> to create a color-code image
+of the Geosat geoid heights, and draw a color legend to the right of the
+image with <a class="reference internal" href="../psscale.html"><span class="doc">psscale</span></a>. Similarly, we run
+<a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a> but specify <strong>-Y</strong>4.5i to
+plot above the previous image. Adding scale and label the two plots a)
+and b) completes the illustration.</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_02.png"><img alt="../_images/example_02.png" src="../_images/example_02.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Color images from gridded data.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex01.html"
+                        title="previous chapter">(1) Contour maps</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex03.html"
+                        title="next chapter">(3) Spectral estimation and xy-plots</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex02.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex03.html" title="(3) Spectral estimation and xy-plots"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex01.html" title="(1) Contour maps"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

@@ -1,0 +1,322 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>sphtriangulate &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="splitxyz" href="splitxyz.html" />
+    <link rel="prev" title="sphinterpolate" href="sphinterpolate.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="splitxyz.html" title="splitxyz"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="sphinterpolate.html" title="sphinterpolate"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sphtriangulate">
+<span id="index-0"></span><h1>sphtriangulate<a class="headerlink" href="#sphtriangulate" title="Permalink to this headline">¶</a></h1>
+<p>sphtriangulate - Delaunay or Voronoi construction of spherical lon,lat data</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>sphtriangulate</strong> [ <em>table</em> ] [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong> ] [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong> ] [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>unit</em> ] [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>nfile</em> ] [ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><strong>d</strong>|<strong>v</strong> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong> ] [ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>sphtriangulate</strong> reads one or more ASCII [or binary] files (or
+standard input) containing lon, lat and performs a spherical Delaunay
+triangulation, i.e., it determines how the points should be connected to give
+the most equilateral triangulation possible on the sphere. Optionally,
+you may choose <strong>-Qv</strong> which will do further processing to obtain the
+Voronoi polygons. Normally, either set of polygons will be written as
+closed fillable segment output; use <strong>-T</strong> to write unique arcs instead. As an
+option, compute the area of each triangle or polygon. The algorithm used
+is STRIPACK.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<p>None.</p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </dd>
+</dl>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong></dt>
+<dd>Compute the area of the spherical triangles (<strong>-Qd</strong>) or polygons
+(<strong>-Qv</strong>) and write the areas (in chosen units; see <strong>-L</strong>) in the
+output segment headers [no areas calculated].</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong></dt>
+<dd>For large data set you can save some memory (at the expense of more
+processing) by only storing one form of location coordinates
+(geographic or Cartesian 3-D vectors) at any given time, translating
+from one form to the other when necessary [Default keeps both arrays in memory].</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong></dt>
+<dd>Used to skip the last (repeated) input vertex at the end
+of a closed segment if it equals the first point in the segment.
+[Default uses all points].</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong><em>unit</em></dt>
+<dd>Specify the unit used for distance and area calculations. Choose
+among <strong>e</strong> (m), <strong>f</strong> (foot), <strong>k</strong> (km), <strong>m</strong> (mile), <strong>n</strong>
+(nautical mile), <strong>u</strong> (survey foot), or <strong>d</strong> (spherical degree). A
+spherical approximation is used unless <a class="reference internal" href="gmt.conf.html#proj-ellipsoid"><span class="std std-ref">PROJ_ELLIPSOID</span></a> is set to
+an actual ellipsoid, in which case we convert latitudes to authalic
+latitudes before calculating areas. When degree is selected the
+areas are given in steradians.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong><em>nfile</em></dt>
+<dd>Write the information pertaining to each polygon. For Delaunay: the
+three node number and the triangle area (if <strong>-A</strong> was set); for
+Voronoi the unique node lon, lat and polygon area (if <strong>-A</strong> was
+set)) to a separate file. This information is also encoded in the
+segment headers of ASCII output files. Required if binary output is needed.</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong><strong>d</strong>|<strong>v</strong></dt>
+<dd>Append <strong>d</strong> for Delaunay triangles or <strong>v</strong> for Voronoi polygons [Delaunay].
+If <strong>-bo</strong> is used then <strong>-N</strong> may be used to specify a separate file where the
+polygon information normally is written.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong></dt>
+<dd>Write the unique arcs of the construction [Default writes fillable
+triangles or polygons]. When used with <strong>-A</strong> we store arc length in
+the segment header in chosen unit (see <strong>-L</strong>).</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input. [Default is 2 input columns].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output. [Default is same as input].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em> <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-r</strong> <a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set pixel node registration [gridline].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="ascii-format-precision">
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-geo-out"><span class="std std-ref">FORMAT_GEO_OUT</span></a>, absolute time is
+under the control of <a class="reference internal" href="gmt.conf.html#format-date-out"><span class="std std-ref">FORMAT_DATE_OUT</span></a> and
+<a class="reference internal" href="gmt.conf.html#format-clock-out"><span class="std std-ref">FORMAT_CLOCK_OUT</span></a>, whereas general floating point values are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a>. Be aware that the format in effect
+can lead to loss of precision in ASCII output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a> setting.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To triangulate the points in the file testdata.txt, and make a Voronoi
+diagram via <a class="reference internal" href="psxy.html"><span class="doc">psxy</span></a>, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">sphtriangulate</span> <span class="n">testdata</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">Qv</span> <span class="o">|</span> <span class="n">psxy</span> <span class="o">-</span><span class="n">Rg</span> <span class="o">-</span><span class="n">JG30</span><span class="o">/</span><span class="mi">30</span><span class="o">/</span><span class="mi">6</span><span class="n">i</span> <span class="o">-</span><span class="n">L</span> <span class="o">-</span><span class="n">P</span> <span class="o">-</span><span class="n">W1p</span> <span class="o">-</span><span class="n">Bag</span> <span class="o">|</span> <span class="n">gv</span> <span class="o">-</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To compute the optimal Delaunay triangulation network based on the
+multiple segment file globalnodes.d and save the area of each triangle
+in the header record, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">sphtriangulate</span> <span class="n">globalnodes</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span><span class="n">Qd</span> <span class="o">-</span><span class="n">A</span> <span class="o">&gt;</span> <span class="n">global_tri</span><span class="o">.</span><span class="n">d</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="triangulate.html"><span class="doc">triangulate</span></a>,
+<a class="reference internal" href="sphdistance.html"><span class="doc">sphdistance</span></a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Renka, R, J., 1997, Algorithm 772: STRIPACK: Delaunay Triangulation and
+Voronoi Diagram on the Surface of a Sphere, <em>AMC Trans. Math. Software</em>,
+<strong>23</strong>(3), 416-434.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">sphtriangulate</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#ascii-format-precision">ASCII Format Precision</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="sphinterpolate.html"
+                        title="previous chapter">sphinterpolate</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="splitxyz.html"
+                        title="next chapter">splitxyz</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/sphtriangulate.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="splitxyz.html" title="splitxyz"
+             >next</a> </li>
+        <li class="right" >
+          <a href="sphinterpolate.html" title="sphinterpolate"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

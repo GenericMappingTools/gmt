@@ -1,0 +1,188 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(28) Mixing UTM and geographic data sets &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(29) Gridding spherical surface data using splines" href="ex29.html" />
+    <link rel="prev" title="(27) Plotting Sandwell/Smith Mercator img grids" href="ex27.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex29.html" title="(29) Gridding spherical surface data using splines"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex27.html" title="(27) Plotting Sandwell/Smith Mercator img grids"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="mixing-utm-and-geographic-data-sets">
+<span id="example-28"></span><h1>(28) Mixing UTM and geographic data sets<a class="headerlink" href="#mixing-utm-and-geographic-data-sets" title="Permalink to this headline">¶</a></h1>
+<p>Next, we present a similar case: We wish to plot a data set given in UTM
+coordinates (meter) and want it to be properly registered with overlying
+geographic data, such as coastlines or data points. The mistake many
+GMT rookies make is to specify the UTM projection with their UTM data.
+However, that data have already been projected and is now in linear
+meters. The only sensible way to plot such data is with a linear
+projection, yielding a UTM map. In this step one can choose to annotate
+or tick the map in UTM meters as well. To plot geographic (lon/lat) data
+on the same map you simply have to specify the region using the UTM
+meters but supply the actual UTM projection parameters. Make sure you
+use the same scale with both the linear and UTM projection.</p>
+<p>Our script illustrates how we would plot a UTM grid (with coordinates in
+meters) of elevations near Kilauea volcano on the Big Island of Hawaii
+and overlay geographical information (with longitude, latitude
+coordinates). We first lay down the UTM grid using the linear
+projection. Then, given we are in UTM zone 5Q, we use the UTM domain and
+the UTM projection when overlaying the coastline and light blue ocean.
+We do some trickery by converting the UTM domain to km so that we can
+add custom annotations to the map. Finally, we place a scale bar and
+label Kilauea crater to complete the figure.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 28</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Illustrates how to mix UTM data and UTM gmt projection</span>
+<span class="c1"># GMT modules:	makecpt, grdimage, grdmath, pscoast, pstext,</span>
+<span class="c1"># Unix progs:	rm, echo</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_28.ps
+
+<span class="c1"># Set up a color table</span>
+gmt makecpt -Ccopper -T0/1500 &gt; Kilauea.cpt
+<span class="c1"># Lay down the UTM topo grid using a 1:16,000 scale</span>
+gmt grdimage Kilauea.utm.nc -I+a45+nt1 -CKilauea.cpt -Jx1:160000 -P -K <span class="se">\</span>
+	--FORMAT_FLOAT_OUT<span class="o">=</span>%.10g --FONT_ANNOT_PRIMARY<span class="o">=</span>9p &gt; <span class="nv">$ps</span>
+<span class="c1"># Overlay geographic data and coregister by using correct region and gmt projection with the same scale</span>
+gmt pscoast -RKilauea.utm.nc -Ju5Q/1:160000 -O -K -Df+ -Slightblue -W0.5p -B5mg5m -BNE <span class="se">\</span>
+	--FONT_ANNOT_PRIMARY<span class="o">=</span>12p --FORMAT_GEO_MAP<span class="o">=</span>ddd:mmF &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="m">155</span>:16:20W <span class="m">19</span>:26:20N KILAUEA <span class="p">|</span> gmt pstext -R -J -O -K -F+f12p,Helvetica-Bold+jCB &gt;&gt; <span class="nv">$ps</span>
+gmt psbasemap -R -J -O -K --FONT_ANNOT_PRIMARY<span class="o">=</span>9p -LjRB+c19:23N+f+w5k+l1:16,000+u+o0.2i <span class="se">\</span>
+	--FONT_LABEL<span class="o">=</span>10p &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Annotate in km but append ,000m to annotations to get customized meter labels</span>
+gmt psbasemap -RKilauea.utm.nc+Uk -Jx1:160 -B5g5+u<span class="s2">&quot;@:8:000m@::&quot;</span> -BWSne -O --FONT_ANNOT_PRIMARY<span class="o">=</span>10p <span class="se">\</span>
+	--MAP_GRID_CROSS_SIZE_PRIMARY<span class="o">=</span><span class="m">0</span>.1i --FONT_LABEL<span class="o">=</span>10p &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Clean up</span>
+rm -f Kilauea.cpt tmp.txt
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_28.png"><img alt="../_images/example_28.png" src="../_images/example_28.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Mixing UTM and geographic data sets requires knowledge of the map region domain in
+both UTM and lon/lat coordinates and consistent use of the same map scale.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex27.html"
+                        title="previous chapter">(27) Plotting Sandwell/Smith Mercator img grids</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex29.html"
+                        title="next chapter">(29) Gridding spherical surface data using splines</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex28.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex29.html" title="(29) Gridding spherical surface data using splines"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex27.html" title="(27) Plotting Sandwell/Smith Mercator img grids"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

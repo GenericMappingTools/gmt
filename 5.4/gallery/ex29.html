@@ -1,0 +1,202 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(29) Gridding spherical surface data using splines &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(30) Trigonometric functions plotted in graph mode" href="ex30.html" />
+    <link rel="prev" title="(28) Mixing UTM and geographic data sets" href="ex28.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex30.html" title="(30) Trigonometric functions plotted in graph mode"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex28.html" title="(28) Mixing UTM and geographic data sets"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gridding-spherical-surface-data-using-splines">
+<span id="example-29"></span><h1>(29) Gridding spherical surface data using splines<a class="headerlink" href="#gridding-spherical-surface-data-using-splines" title="Permalink to this headline">¶</a></h1>
+<p>Finally, we demonstrate how gridding on a spherical surface can be
+accomplished using Green’s functions of surface splines, with or without
+tension. Global gridding does not work particularly well in Cartesian
+coordinates hence the chosen approach. We use
+<a class="reference internal" href="../greenspline.html"><span class="doc">greenspline</span></a> to produce a crude
+topography grid for Mars based on radii estimates from the Mariner 9 and
+Viking Orbiter spacecrafts. This data comes from <em>Smith and Zuber</em>
+[Science, 1996] and is used here as a small (<em>N</em> = 370) data set we can
+use to demonstrate spherical surface gridding. Since
+<a class="reference internal" href="../greenspline.html"><span class="doc">greenspline</span></a> must solve a <em>N</em> by
+<em>N</em> matrix system your system memory may impose limits on how large data
+sets you can handle; also note that the spherical surface spline in
+tension is particularly slow to compute.</p>
+<p>Our script must first estimate the ellipsoidal shape of Mars from the
+parameters given by <em>Smith and Zuber</em> so that we can remove this
+reference surface from the gridded radii. We run the gridding twice:
+First with no tension using <em>Parker</em>’s [1990] method and then with
+tension using the <em>Wessel and Becker</em> [2008] method. The grids are then
+imaged with <a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a> and
+<a class="reference internal" href="../grdcontour.html"><span class="doc">grdcontour</span></a> and a color scale is placed between them.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 29</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Illustrates spherical surface gridding with Green&#39;s function of splines</span>
+<span class="c1"># GMT modules:	makecpt, grdcontour, grdimage, grdmath greenspline, psscale, pstext</span>
+<span class="c1"># Unix progs:	rm, echo</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_29.ps
+
+<span class="c1"># This example uses 370 radio occultation data for Mars to grid the topography.</span>
+<span class="c1"># Data and information from Smith, D. E., and M. T. Zuber (1996), The shape of</span>
+<span class="c1"># Mars and the topographic signature of the hemispheric dichotomy, Science, 271, 184-187.</span>
+
+<span class="c1"># Make Mars PROJ_ELLIPSOID given their three best-fitting axes:</span>
+<span class="nv">a</span><span class="o">=</span><span class="m">3399</span>.472
+<span class="nv">b</span><span class="o">=</span><span class="m">3394</span>.329
+<span class="nv">c</span><span class="o">=</span><span class="m">3376</span>.502
+gmt grdmath -Rg -I4 -r X COSD <span class="nv">$a</span> DIV DUP MUL X SIND <span class="nv">$b</span> DIV DUP MUL ADD Y COSD DUP MUL MUL Y <span class="se">\</span>
+	SIND <span class="nv">$c</span> DIV DUP MUL ADD SQRT <span class="nv">INV</span> <span class="o">=</span> PROJ_ELLIPSOID.nc
+
+<span class="c1">#  Do both Parker and Wessel/Becker solutions (tension = 0.9975)</span>
+gmt greenspline -RPROJ_ELLIPSOID.nc mars370.txt -D4 -Sp -Gmars.nc
+gmt greenspline -RPROJ_ELLIPSOID.nc mars370.txt -D4 -Sq0.9975 -Gmars2.nc
+<span class="c1"># Scale to km and remove PROJ_ELLIPSOID</span>
+gmt grdmath mars.nc <span class="m">1000</span> DIV PROJ_ELLIPSOID.nc <span class="nv">SUB</span> <span class="o">=</span> mars.nc
+gmt grdmath mars2.nc <span class="m">1000</span> DIV PROJ_ELLIPSOID.nc <span class="nv">SUB</span> <span class="o">=</span> mars2.nc
+gmt makecpt -Crainbow -T-7/15 &gt; mars.cpt
+gmt grdimage mars2.nc -I+ne0.75+a45 -Cmars.cpt -B30g30 -BWsne -JH0/7i -P -K -E200 <span class="se">\</span>
+	--FONT_ANNOT_PRIMARY<span class="o">=</span>12p -X0.75i &gt; <span class="nv">$ps</span>
+gmt grdcontour mars2.nc -J -O -K -C1 -A5 -Glz+/z- &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.txt  &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="s2">&quot;0 90 b)&quot;</span> <span class="p">|</span> gmt pstext -R -J -O -K -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB &gt;&gt; <span class="nv">$ps</span>
+gmt grdimage mars.nc -I+ne0.75+a45 -Cmars.cpt -B30g30 -BWsne -J -O -K -Y4.2i -E200 <span class="se">\</span>
+	--FONT_ANNOT_PRIMARY<span class="o">=</span>12p &gt;&gt; <span class="nv">$ps</span>
+gmt grdcontour mars.nc -J -O -K -C1 -A5 -Glz+/z- &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.txt  &gt;&gt; <span class="nv">$ps</span>
+gmt psscale -Cmars.cpt -O -K -R -J -DJBC+o0/0.15i+w6i/0.1i -I --FONT_ANNOT_PRIMARY<span class="o">=</span>12p -Bx2f1 -By+lkm &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="s2">&quot;0 90 a)&quot;</span> <span class="p">|</span> gmt pstext -R -J -O -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Clean up</span>
+rm -f *.nc mars.cpt
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_29.png"><img alt="../_images/example_29.png" src="../_images/example_29.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Gridding of spherical surface data using Green’s function splines.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex28.html"
+                        title="previous chapter">(28) Mixing UTM and geographic data sets</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex30.html"
+                        title="next chapter">(30) Trigonometric functions plotted in graph mode</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex29.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex30.html" title="(30) Trigonometric functions plotted in graph mode"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex28.html" title="(28) Mixing UTM and geographic data sets"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

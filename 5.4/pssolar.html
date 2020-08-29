@@ -1,0 +1,311 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>pssolar &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="GSHHG" href="SUP_GSHHS.html" />
+    <link rel="prev" title="PS" href="PS.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="SUP_GSHHS.html" title="GSHHG"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="PS.html" title="PS"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="PS.html" accesskey="U">PS</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pssolar">
+<span id="index-0"></span><h1>pssolar<a class="headerlink" href="#pssolar" title="Permalink to this headline">¶</a></h1>
+<p>pssolar - Calculate and plot the day-night terminator</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>pssolar</strong>
+[ <a class="reference internal" href="#b"><span> <strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong> ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>fill</em>|<strong>c</strong> ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong>[<em>lon/lat</em>][<strong>+d</strong><em>date</em>][<strong>+z</strong><em>TZ</em>] ]
+[ <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em> ]
+[ <a class="reference internal" href="#k"><span> <strong>-K</strong></span></a></strong> ]
+[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong> ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#o"><span> <strong>-O</strong></span></a></strong> ] [<a class="reference internal" href="#p"><span> <strong>-P</strong></span></a></strong> ] [ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong> ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><strong>dcna</strong>[<strong>+d</strong><em>date</em>][<strong>+z</strong><em>TZ</em>]]
+[ <a class="reference internal" href="#u"><span> <strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong><em>pen</em> ]
+[ <a class="reference internal" href="#x"><span> <strong>-X</strong></span></a></strong><em>x_offset</em> ]
+[ <a class="reference internal" href="#y"><span> <strong>-Y</strong></span></a></strong><em>y_offset</em> ]
+[ <strong>-bo</strong><a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">transp</span></a> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>pssolar</strong> Calculate and plot the day-night terminator and the civil, nautical and astronomical twilights.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<p>There are no required arguments but either <strong>-I</strong> or <strong>-T</strong> must be selected.</p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set map boundary frame and axes attributes.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong></dt>
+<dd>Formats the report selected by <strong>-I</strong> using tab-separated fields on a single line. The
+output is Sun <em>Lon Lat Azimuth Elevation</em> in degrees, <em>Sunrise Sunset Noon</em> in decimal days,
+<em>day length</em> in minutes, <em>SolarElevationCorrected</em> corrected for the effect of refraction index
+and <em>Equation of time</em> in minutes. Note that if no position is provided in <strong>-I</strong><em>lon/lat</em> the
+data after <em>Elevation</em> refers to the point (0,0).</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>fill</em>|<strong>c</strong></dt>
+<dd>Select color or pattern for filling of terminators; or use <strong>-Gc</strong> for clipping [Default is no fill].
+Deactivate clipping by appending the output of gmt <a class="reference internal" href="psclip.html"><span class="doc">psclip</span></a> <strong>-C</strong>.</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong>[<em>lon/lat</em>][<strong>+d</strong><em>date</em>][<strong>+z</strong><em>TZ</em>]</dt>
+<dd>Print current sun position as well as Azimuth and Elevation. Append lon/lat to print also the times of
+Sunrise, Sunset, Noon and length of the day.
+Add <strong>+d</strong><em>date</em> in ISO format, e.g, <strong>+d</strong><em>2000-04-25</em>, to compute sun parameters
+for this date. If necessary, append time zone via <strong>+z</strong><em>TZ</em>.</dd>
+</dl>
+<dl class="docutils" id="j">
+<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select map projection.  </dd>
+</dl>
+<dl class="docutils" id="k">
+<dt><strong>-K</strong> <a class="reference internal" href="gmt.html#k-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Do not finalize the PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-M</strong></dt>
+<dd>Write terminator(s) as a multisegment ASCII (or binary, see <strong>-b</strong><em>o</em>) file to standard output. No plotting occurs.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong></dt>
+<dd>Invert the sense of what is inside and outside the terminator.  Only
+used with clipping (<strong>-Gc</strong>) and cannot be used together with <strong>-B</strong>.</dd>
+</dl>
+<dl class="docutils" id="o">
+<dt><strong>-O</strong> <a class="reference internal" href="gmt.html#o-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Append to existing PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="p">
+<dt><strong>-P</strong> <a class="reference internal" href="gmt.html#p-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select “Portrait” plot orientation.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest.  </dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-Tdcna</strong>[<strong>+d</strong><em>date</em>][<strong>+z</strong><em>TZ</em>]</dt>
+<dd>Plot (or dump; see <strong>-M</strong>) one or more terminators defined via the <strong>dcna</strong> flags. Where:
+<strong>d</strong> means day/night terminator; <strong>c</strong> means civil twilight; <strong>n</strong> means nautical twilight;
+<strong>a</strong> means astronomical twilight.  Add <strong>+d</strong><em>date</em> in ISO format, e.g, <strong>+d</strong><em>2000-04-25T12:15:00</em>
+to know where the day-night was at that date. If necessary, append time zone via <strong>+z</strong><em>TZ</em>.</dd>
+</dl>
+<dl class="docutils" id="u">
+<dt><strong>-U</strong>[[<em>just</em>]/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Draw GMT time stamp logo on plot.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong>[<strong>-</strong>|<strong>+</strong>][<em>pen</em>] <a class="reference internal" href="GMT_Docs.html#wpen-attrib"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set pen attributes for lines or the outline of symbols [Defaults:
+width = default, color = black, style = solid].</dd>
+</dl>
+<p id="x"><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]</p>
+<dl class="docutils">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]] <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Shift plot origin.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-o</strong><em>cols</em>[,…] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select output columns (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select perspective view.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set PDF transparency level in percent.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Print current Sun position and Sunrise, Sunset times at:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">pssolar</span> <span class="o">-</span><span class="n">I</span><span class="o">-</span><span class="mf">7.93</span><span class="o">/</span><span class="mf">37.079</span><span class="o">+</span><span class="n">d2016</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">04</span><span class="n">T10</span><span class="p">:</span><span class="mi">01</span><span class="p">:</span><span class="mi">00</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Plot the day-night and civil twilight</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">pscoast</span> <span class="o">-</span><span class="n">Rd</span> <span class="o">-</span><span class="n">W0</span><span class="o">.</span><span class="mi">1</span><span class="n">p</span> <span class="o">-</span><span class="n">JQ0</span><span class="o">/</span><span class="mi">14</span><span class="n">c</span> <span class="o">-</span><span class="n">Ba</span> <span class="o">-</span><span class="n">BWSen</span> <span class="o">-</span><span class="n">Dl</span> <span class="o">-</span><span class="n">A1000</span> <span class="o">-</span><span class="n">P</span> <span class="o">-</span><span class="n">K</span> <span class="o">&gt;</span> <span class="n">terminator</span><span class="o">.</span><span class="n">ps</span>
+
+<span class="n">gmt</span> <span class="n">pssolar</span> <span class="o">-</span><span class="n">R</span> <span class="o">-</span><span class="n">J</span> <span class="o">-</span><span class="n">W1p</span> <span class="o">-</span><span class="n">Tdc</span> <span class="o">-</span><span class="n">O</span> <span class="o">&gt;&gt;</span> <span class="n">terminator</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Set up a clip path overlay based on the day/night terminator:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">pssolar</span> <span class="o">-</span><span class="n">R</span> <span class="o">-</span><span class="n">J</span> <span class="o">-</span><span class="n">Gc</span> <span class="o">-</span><span class="n">Tc</span> <span class="o">-</span><span class="n">O</span> <span class="o">-</span><span class="n">K</span> <span class="o">&gt;&gt;</span> <span class="n">someplot</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="psclip.html"><span class="doc">psclip</span></a>, <a class="reference internal" href="pscoast.html"><span class="doc">pscoast</span></a>, <a class="reference internal" href="psxy.html"><span class="doc">psxy</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pssolar</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="PS.html"
+                        title="previous chapter">PS</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="SUP_GSHHS.html"
+                        title="next chapter">GSHHG</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pssolar.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="SUP_GSHHS.html" title="GSHHG"
+             >next</a> </li>
+        <li class="right" >
+          <a href="PS.html" title="PS"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="PS.html" >PS</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

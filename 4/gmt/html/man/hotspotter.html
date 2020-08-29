@@ -1,0 +1,421 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:42 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>HOTSPOTTER</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>HOTSPOTTER</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#COORDINATES">COORDINATES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">hotspotter
+&minus; Create CVA image from seamount flowlines</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>hotspotter</b>
+[<i>infile(s)</i>] <b>&minus;E</b><i>stage_file</i>
+<b>&minus;G</b><i>CVAgrid</i>
+<b>&minus;I</b><i>xinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>][/<i>yinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>]]
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+[ <b>&minus;C</b> ] [ <b>&minus;D</b><i>factor</i> ] [
+<b>&minus;F</b> ] [ <b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ]
+[ <b>&minus;N</b><i>upper_age</i> ] [ <b>&minus;S</b> ] [
+<b>&minus;T</b> ] [ <b>&minus;V</b> ] [
+<b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;bi</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>hotspotter</b>
+reads (longitude, latitude, amplitude, radius, age) records
+from <i>infiles</i> [or standard input] and calculates
+flowlines using the specified stage pole (Euler) rotations.
+These flowlines are convolved with the shape of the seamount
+(using a Gaussian shape given amplitude and radius = 6
+sigma) and added up to give a Cumulative Volcano Amplitude
+grid (CVA). See option <b>&minus;:</b> on how to read
+(latitude,longitude,...) files.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">No space between the option flag and the
+associated arguments. Use upper case for the option flags
+and lower case for modifiers.</p></td>
+</table>
+
+<p style="margin-left:11%;"><i>infile(s)</i></p>
+
+<p style="margin-left:22%;">Data file(s) to be processed.
+If not given, standard input is read.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Give file with
+rotation parameters. This file must contain one record for
+each rotation; each record must be of the following
+format:</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><i>lon lat tstart [tstop] angle</i> [
+<i>khat a b c d e f g df</i> ]</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">where
+<i>tstart</i> and <i>tstop</i> are in Myr and <i>lon lat
+angle</i> are in degrees. <i>tstart</i> and <i>tstop</i> are
+the ages of the old and young ends of a stage. If
+<b>&minus;C</b> is set then a total reconstruction rotation
+is expected and <i>tstop</i> is implicitly set to 0 and
+should not be specified in the file. If a covariance matrix
+<b>C</b> for the rotation is available it must be specified
+in a format using the nine optional terms listed in
+brackets. Here, <b>C</b> = (<i>g</i>/<i>khat</i>)*[ <i>a b
+d; b c e; d e f</i> ] which shows <b>C</b> made up of three
+row vectors. If the degrees of freedom (<i>df</i>) in
+fitting the rotation is 0 or not given it is set to 10000.
+Blank lines and records whose first column contains # will
+be ignored.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify name for
+output grid file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>x_inc</i> [and
+optionally <i>y_inc</i>] is the grid spacing. Optionally,
+append a suffix modifier. <b>Geographical (degrees)
+coordinates</b>: Append <b>m</b> to indicate arc minutes or
+<b>c</b> to indicate arc seconds. If one of the units
+<b>e</b>, <b>k</b>, <b>i</b>, or <b>n</b> is appended
+instead, the increment is assumed to be given in meter, km,
+miles, or nautical miles, respectively, and will be
+converted to the equivalent degrees longitude at the middle
+latitude of the region (the conversion depends on
+<b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b>). If /<i>y_inc</i> is given but set to 0 it
+will be reset equal to <i>x_inc</i>; otherwise it will be
+converted to degrees latitude. <b>All coordinates</b>: If
+<b>=</b> is appended then the corresponding max <i>x</i>
+(<i>east</i>) or <i>y</i> (<i>north</i>) may be slightly
+adjusted to fit exactly the given increment [by default the
+increment may be adjusted slightly to fit the given domain].
+Finally, instead of giving an increment you may specify the
+<i>number of nodes</i> desired by appending <b>+</b> to the
+supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The
+resulting increment value depends on whether you have
+selected a gridline-registered or pixel-registered grid; see
+Appendix B for details. Note: if
+<b>&minus;R</b><i>grdfile</i> is used then grid spacing has
+already been initialized; use <b>&minus;I</b> to override
+the values.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> specify the Region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Expect Total
+Reconstruction Rotations rather than Forward Stage Rotations
+[Default]. File format is similar to the stage pole format
+except that the <i>tstart</i> column is not present (assumed
+to be 0 Ma).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Modify the sampling
+interval along flowlines. Default [0.5] gives approximately
+2 points within each grid box. Smaller factors gives higher
+resolutions at the expense of longer processing time.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force pixel
+registration [Default is grid registration].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set the upper age
+to assign seamounts whose crustal age is unknown (i.e., NaN)
+[no upper age].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Normalize the
+resulting CVA grid to percentages of the CVA maximum.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Truncate seamount
+ages exceeding the upper age set with <b>&minus;N</b> [no
+truncation].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 5 input columns].</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To create a CVA
+image from the Pacific (x,y,z,r,t) data in the file
+seamounts.d, using the DC85.d Euler poles, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>hotspotter</b>
+seamounts.d <b>&minus;E</b> DC85.d <b>&minus;G</b> CVA.grd
+<b>&minus;R</b> 130/260/-66/60 <b>&minus;I</b> 10<b>m
+&minus;N</b> 145 <b>&minus;T &minus;V</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">This file can
+then be plotted with <b><A HREF="grdimage.html">grdimage</A></b>.</p>
+
+<a name="COORDINATES"></a>
+<h2>COORDINATES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Data
+coordinates are assumed to be geodetic and will
+automatically be converted to geocentric before spherical
+rotations are performed. We convert back to geodetic
+coordinates for output. Note: If your data already are
+geocentric, you can avoid the conversion by using
+--ELLIPSOID=sphere.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grdimage.html">grdimage</A></i>(1), <i><A HREF="grdrotater.html">grdrotater</A></i>(1),
+<i><A HREF="grdspotter.html">grdspotter</A></i>(1), <i><A HREF="project.html">project</A></i>(1),
+<i><A HREF="mapproject.html">mapproject</A></i>(1), <i><A HREF="backtracker.html">backtracker</A></i>(1),
+<i><A HREF="originator.html">originator</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P.,
+1999, &quot;Hotspotting&quot; tools released, EOS Trans.
+AGU, 80 (29), p. 319.</p>
+<hr>
+</body>
+</html>

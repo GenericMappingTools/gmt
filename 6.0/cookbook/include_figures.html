@@ -1,0 +1,633 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>9. Including GMT Graphics into your Documents &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="10. Predefined Bit and Hachure Patterns in GMT" href="predefined_patterns.html" />
+    <link rel="prev" title="8. GMT File Formats" href="file_formats.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preface.html">1. Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html">2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">3. General Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="options.html">4. Standardized command line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinate_transformations.html">5. GMT Coordinate Transformations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="map_projections.html">6. GMT Map Projections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplemental_packages.html">7. GMT Supplemental Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html">8. GMT File Formats</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">9. Including GMT Graphics into your Documents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#making-gmt-encapsulated-postscript-files">9.1. Making GMT Encapsulated PostScript Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#converting-gmt-postscript-to-pdf-or-raster-images">9.2. Converting GMT PostScript to PDF or raster images</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#when-converting-or-viewing-postscript-goes-awry">9.2.1. When converting or viewing PostScript goes awry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-psconvert">9.2.2. Using <code class="docutils literal notranslate"><span class="pre">/psconvert</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">9.3. Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gmt-graphics-in-latex">9.3.1. GMT graphics in LaTeX</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gmt-graphics-in-powerpoint">9.3.2. GMT graphics in <strong>PowerPoint</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#concluding-remarks">9.4. Concluding remarks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="predefined_patterns.html">10. Predefined Bit and Hachure Patterns in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="octal_codes.html">11. Chart of Octal Codes for Characters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postscript_fonts.html">12. PostScript Fonts Used by GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">13. Color Space: The Final Frontier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_filtering.html">14. Filtering of Data in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_unix_platforms.html">15. GMT on non-UNIX Platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpts.html">16. Of Colors and Color Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_symbols.html">17. Custom Plot Symbols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contour_annotations.html">18. Annotation of Contours and “Quoted Lines”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ogrgmt_format.html">19. The GMT Vector Data Format for OGR Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="one-liner.html">20. GMT Modern Mode One-line Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../cookbook.html">GMT Cookbook</a> &raquo;</li>
+        
+      <li>9. Including GMT Graphics into your Documents</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/cookbook/include_figures.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="including-gmt-graphics-into-your-documents">
+<span id="include-gmt-graphics"></span><h1>9. Including GMT Graphics into your Documents<a class="headerlink" href="#including-gmt-graphics-into-your-documents" title="Permalink to this headline">¶</a></h1>
+<p>Now that you made some nice graphics with GMT, it is time to add them
+to a document, an article, a report, your dissertation, a poster, a web
+page, or a presentation. Of course, you could try the old-fashioned
+scissors and glue stick. More likely, you want to incorporate your
+graphics electronically into the document. Depending on the application,
+the GMT PostScript file will need to be converted to Encapsulated
+PostScript (EPS), Portable Document Format (PDF), or some raster
+format (e.g., JPEG, PNG, or TIFF) in order to incorporate them into the
+document.</p>
+<ul class="simple">
+<li>When creating a document intended for printing (article,
+dissertation, or poster) it is best to preserve the scalable vector
+characteristics of the PostScript file. Many applications can
+directly incorporate PostScript in the form of EPS files. Modern
+programs will often allow the inclusion of PDF files. Either way, the
+sharpness of lines and fonts will be preserved and can be scaled up
+or down as required.</li>
+<li>When the aim is to display the graphics on a computer screen or
+present it using a projector, it is wise to convert the
+PostScript into a raster format. Although applications like
+PowerPoint can do this for you, you can best take the
+conversion into your own hands for the best results.</li>
+</ul>
+<p>A large number of questions to the GMT-Help mailing list are related to
+these rendering issues, showing that something as seemingly
+straightforward as incorporating a PostScript file into a document is
+a far from trivial exercise. This Chapter will show how to include
+GMT graphics into documents and how to achieve the best quality results.</p>
+<div class="section" id="making-gmt-encapsulated-postscript-files">
+<h2>9.1. Making GMT Encapsulated PostScript Files<a class="headerlink" href="#making-gmt-encapsulated-postscript-files" title="Permalink to this headline">¶</a></h2>
+<p>GMT produces freeform PostScript files. Note that a freeform
+PostScript file may contain special operators (such as
+<code class="docutils literal notranslate"><span class="pre">Setpagedevice</span></code>) that is specific to printers (e.g., selection of
+paper tray). Some previewers may not
+understand these valid instructions and may fail to image the file.
+Also, embedding freeform PostScript with such instructions in it into
+a larger document can cause printing to fail. While you could choose
+another viewer (we recommend <strong>ghostview</strong>) to view single plots
+prepared by GMT, it is generally wiser to convert PostScript to EPS
+output when you are creating a plot intended for inclusion into a larger
+document. Some programs (and some publishers as well) do not allow the
+use of instructions like <code class="docutils literal notranslate"><span class="pre">Setpagedevice</span></code> as part of embedded graphics.</p>
+<p>An EPS file that is to be placed into another document needs to have
+correct bounding box parameters. These are found in the
+PostScript Document Comment %%BoundingBox. Applications that generate
+EPS files should set these parameters correctly. Because GMTmakes
+the PostScript files on the fly, often with several overlays, it is
+not possible to do so accurately. Therefore, if you need and EPS version
+with a “tight” BoundingBox you need to post-process your
+PostScript file. There are several ways in which this can be
+accomplished.</p>
+<ul>
+<li><p class="first">Programs such as Adobe Illustrator, Aldus Freehand, and
+Corel Draw will allow you to edit the BoundingBox graphically.</p>
+</li>
+<li><p class="first">A command-line alternative is to use freely-available program
+<strong>epstool</strong> from the makers of Aladdin ghostscript. Running</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>epstool -c -b myplot.ps
+</pre></div>
+</div>
+</div></blockquote>
+<p>should give a tight BoundingBox; <strong>epstool</strong> assumes the plot is
+page size and not a huge poster.</p>
+</li>
+<li><p class="first">Another option is to use <strong>ps2epsi</strong> which also comes with the
+ghostscript package. Running</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ps2epsi myplot.ps myplot.eps
+</pre></div>
+</div>
+</div></blockquote>
+<p>should also do the trick. The downside is that this program adds an
+“image” of the plot in the preamble of the EPS file, thus increasing
+the file size significantly. This image is a rough rendering of your
+PostScript graphics that some programs will show on screen while
+you are editing your document. This image is basically a placeholder
+for the PostScript graphics that will actually be printed.</p>
+</li>
+<li><p class="first">However, the preferred option is to use the GMT utility
+<a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a>. Its <strong>-A</strong> option will
+figure out the tightest BoundingBox, again using ghostscript in
+the background. For example, running</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psconvert -A -Te myplot.ps
+</pre></div>
+</div>
+</div></blockquote>
+<p>will convert the PostScript file <code class="docutils literal notranslate"><span class="pre">myplot.ps</span></code> into an encapsulated
+PostScript file <code class="docutils literal notranslate"><span class="pre">myplot.eps</span></code> which is exactly cropped to the tightest possible
+BoundingBox.</p>
+</li>
+</ul>
+<p>If you do not want to modify your illustration but just include it in a
+text document: many word processors (such as Microsoft Word  or Apple Pages) will let you include a
+PostScript file that you may place but not edit. Newer versions of
+those programs also allow you to include PDF versions of your graphics.
+Except for Pages, you will not be able to view the EPS figure
+on-screen, but it will print correctly.</p>
+</div>
+<div class="section" id="converting-gmt-postscript-to-pdf-or-raster-images">
+<h2>9.2. Converting GMT PostScript to PDF or raster images<a class="headerlink" href="#converting-gmt-postscript-to-pdf-or-raster-images" title="Permalink to this headline">¶</a></h2>
+<p>Since Adobe’s PDF (Portable Document Format) seems to have become the
+<em>de facto</em> standard for vector graphics, you are often well off
+converting GMT produced PostScript files to PDF. Being both vector
+formats (i.e., they basically describe all objects, text and graphics as
+lines and curves), such conversion sounds awfully straightforward and
+not worth a full section in this document. But experience has shown
+differently, since most converters cut corners by using the same tool
+(Aladdin’s ghostscript) with basic default options that are not
+devised to produce the best quality PDF files.</p>
+<p>For some applications it is practical or even essential that you convert
+your PostScript file into a raster format, such as GIF (Graphics
+Interchange Format), TIFF (Tagged Image File Format), PNG (Portable
+Network Graphics), or JPEG (Joint Photographic Experts Group). A web
+page is better served with a raster image that will immediately show on
+a web browser, than with a PostScript file that needs to be downloaded
+to view, despite the better printing quality of the PostScript image.
+A less obvious reason to convert your image to a raster format is to
+by-pass PowerPoint’s rendering engine in case you want to embed
+the image into a presentation.</p>
+<p>The are a number of programs that will convert PostScript files to PDF
+or raster formats, like Aladdin’s <strong>pstopdf</strong>, pbmplus’ <strong>pstoimg</strong>,
+or GraphicsMagick’s and ImageMagick’s <strong>convert</strong>, most of which run ghostscript
+behind the scenes. The same is true for viewers like <strong>ghostview</strong> and
+Apple’s <strong>Preview</strong>. So a lot of the times when people report that
+their PostScript plot does not look right but prints fine, it is the
+way ghostscript is used with its most basic settings that is to blame.</p>
+<div class="section" id="when-converting-or-viewing-postscript-goes-awry">
+<h3>9.2.1. When converting or viewing PostScript goes awry<a class="headerlink" href="#when-converting-or-viewing-postscript-goes-awry" title="Permalink to this headline">¶</a></h3>
+<p>Here are some notorious pitfalls with ghostscript (and other
+rendering programs for that matter).</p>
+<dl class="docutils">
+<dt>Rendering.</dt>
+<dd>When you are converting to a raster format, make sure you use a high
+enough resolution so that the pixels do not show when it is enlarged
+onto a screen or using a projector. The right choice of resolution
+depends on the application, but do not feel limited to the default
+72 dpi (dots-per-inch) that is offered by most converters.</dd>
+<dt>Image compression.</dt>
+<dd>There are <em>lossy</em> and <em>non-lossy</em> compressions. A compression
+algorithm is called “lossy” when information is lost in the
+conversion: there is no way back to get the full original. The
+effect can be seen when there are sharp color transitions in your
+image: the edges will get blurry in order to allow a more efficient
+compression. JPEG uses a lossy compression, PNG is non-lossy, and
+TIFF generally does not use compression at all. We therefore
+recommend you convert to PNG if you need to rasterize your plot, and
+leave JPEG to photographs.</dd>
+<dt>Embedded image compression.</dt>
+<dd>When your GMT plot includes objects produced by
+<a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a>, <a class="reference internal" href="../image.html"><span class="doc">image</span></a> or
+<a class="reference internal" href="../legend.html"><span class="doc">legend</span></a>, they are seen as
+“images”. The default options of ghostscript will use a
+<em>lossy</em> compression (similar to JPEG) on those images when
+converting them to PDF objects. This can be avoided, however, by
+inhibiting the compression altogether, or using the non-lossy
+<em>flate</em> compression, similar to the one used in the old
+<strong>compress</strong> program. This compression is fully reversible, so
+that your image does not suffer any loss.</dd>
+<dt>Auto-rotation.</dt>
+<dd>The ghostscript engine has the annoying habit to automatically
+rotate an image produced with portrait orientation (using the <strong>-P</strong>
+option) so that the height is always larger than the width. So if
+you have an image that was printed in portrait mode but happens to
+have a width larger than height (for example a global map), it would
+suddenly get rotated. Again, this function needs to be switched off.
+Apple’s Preview uses the ghostscript engine and suffers
+from the same annoying habit. Oddly enough, ghostscript does
+not force landscape plots to be “horizontal”.</dd>
+<dt>Anti-aliasing.</dt>
+<dd><p class="first">This is not something to worry about when converting to PDF, but
+certainly when producing raster images (discussed below).
+<em>Anti-aliasing</em> in this context means that the rendering tries to
+avoid <em>aliasing</em>, for example, sampling only the blacks in a
+black-and-white hachure. It does so by first oversampling the image
+and then using “gray-shades” when a target pixel is only partially
+white or black.</p>
+<p>Clearly, this can lead to some unwanted results. First, all edges
+and lines get blurry and second, the assumption of a white
+background causes the gray shades to stand out when transferring the
+image to background with a different color (like the popular
+sleep-inducing blue in PowerPoint presentations). A more
+surprising effect of anti-aliasing is that the seams between tiles
+that make up the land mask when using
+<a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> will become visible. The
+anti-aliasing somehow decides to blur the edges of all polygons,
+even when they are seamlessly connected to other polygons.</p>
+<p class="last">It is therefore wise to overrule the default anti-aliasing option
+and over-sample the image yourself by choosing a higher resolution.</p>
+</dd>
+<dt>Including fonts.</dt>
+<dd>When you are producing print-ready copy to publishers, they will
+often (and justifiably) ask that you include all fonts in your PDF
+document. Again, ghostscript (and all converters relying on
+that engine) will not do so by default.</dd>
+</dl>
+</div>
+<div class="section" id="using-psconvert">
+<h3>9.2.2. Using <a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a><a class="headerlink" href="#using-psconvert" title="Permalink to this headline">¶</a></h3>
+<p>The remedy to all the problems mentioned in the previous section is
+readily available to you in the form of the GMT utility
+<a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a>. It is designed to provide
+the best quality PDF and raster files using ghostscript as a
+rendering engine. The program <a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a> avoids anti-aliasing and
+lossy compression techniques that are default to ghostscript and
+includes the fonts into the resulting PDF file to ensure portability. By
+default the fonts are rendered at 720 dots-per-inch in a PDF file and
+images are sampled to 300 dpi, but that can be changed with the <strong>-E</strong>
+option. Simply run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psconvert -A -P -Tf *.ps
+</pre></div>
+</div>
+</div></blockquote>
+<p>to convert all PostScript files to PDF while cropping it to the
+smallest possible BoundingBox. Or use the <strong>-Tg</strong> option to convert your
+files to PNG.</p>
+<p>The <strong>-P</strong> option of <a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a> may
+also come in handy. When you have <em>not</em> supplied the <strong>-P</strong> option in
+your first GMT plot command, your plot will be in Landscape mode. That
+means that the plot will be rotated 90º (anti-clockwise) to fit
+on a Portrait mode page when coming out of the printer. The <strong>-P</strong>
+option of <a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a> will undo that
+rotation, so that you do not have to do so within your document. This
+will only affect Landscape plots; Portrait plots will not be rotated.
+We should note that the <strong>-A</strong> option in <a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a> has many modifiers
+that can be used to control background color, framing, padding, and overall
+scaling of the result.</p>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>9.3. Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="gmt-graphics-in-latex">
+<h3>9.3.1. GMT graphics in LaTeX<a class="headerlink" href="#gmt-graphics-in-latex" title="Permalink to this headline">¶</a></h3>
+<p>To add the graphics into a LaTeX document we use the
+<code class="docutils literal notranslate"><span class="pre">\includegraphics</span></code> command supplied by the package. In the preamble of
+your LaTeX document you will need to include the line</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="se">\u</span>sepackage<span class="o">{</span>graphicx<span class="o">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The inclusion of the graphics will probably be inside a floating figure
+environment; something like this</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="se">\b</span>egin<span class="o">{</span>figure<span class="o">}</span>
+   <span class="se">\i</span>ncludegraphics<span class="o">{</span>myplot<span class="o">}</span>
+   <span class="se">\c</span>aption<span class="o">{</span>This is my first plot in <span class="se">\L</span>aTeX.<span class="o">}</span>
+   <span class="se">\l</span>abel<span class="o">{</span>fig:myplot<span class="o">}</span>
+<span class="se">\e</span>nd<span class="o">{</span>figure<span class="o">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note that the <code class="docutils literal notranslate"><span class="pre">\includegraphics</span></code> command does not require you to add
+the suffix <code class="docutils literal notranslate"><span class="pre">.pdf</span></code> to the file name. If you run <strong>pdflatex</strong>, it will
+look automatically for <code class="docutils literal notranslate"><span class="pre">myplot.pdf</span></code>. If you run <strong>latex</strong>, it will use <code class="docutils literal notranslate"><span class="pre">myplot.eps</span></code> instead.</p>
+<p>You can scale your plot using the options <code class="docutils literal notranslate"><span class="pre">width=</span></code>, <code class="docutils literal notranslate"><span class="pre">height=</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">scale=</span></code>. In addition, if your original graphics was produced in
+Landscape mode (i.e., you did <em>not</em> use GMT’s <strong>-P</strong> option: not
+while plotting, nor in <a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a>),
+you will need to rotate the plot as well. For example,</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="se">\i</span>ncludegraphics<span class="o">[</span><span class="nv">angle</span><span class="o">=</span>-90,width<span class="o">=</span><span class="m">0</span>.8<span class="se">\t</span>extwidth<span class="o">]{</span>myplot<span class="o">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>will rotate the image 90º clockwise and scale it such that its width
+(after rotation) will be 80% of the width of the text column.</p>
+</div>
+<div class="section" id="gmt-graphics-in-powerpoint">
+<h3>9.3.2. GMT graphics in <strong>PowerPoint</strong><a class="headerlink" href="#gmt-graphics-in-powerpoint" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-center" id="id1">
+<span id="rendering"></span><a class="reference internal image-reference" href="../_images/rendering.png"><img alt="../_images/rendering.png" src="../_images/rendering.png" style="width: 360.0px; height: 270.0px;" /></a>
+<p class="caption"><span class="caption-text">Examples of rendered images in a PowerPoint presentation</span></p>
+</div>
+<div class="figure align-center" id="id2">
+<span id="powerpoint-dialogue"></span><a class="reference internal image-reference" href="../_images/formatpicture.png"><img alt="../_images/formatpicture.png" src="../_images/formatpicture.png" style="width: 272.5px; height: 258.0px;" /></a>
+<p class="caption"><span class="caption-text">PowerPoint’s Format Picture dialogue to set scale and rotation.</span></p>
+</div>
+<p>In Figure <a class="reference internal" href="#rendering"><span class="std std-ref">Rendered images</span></a> we have attempted to include
+Example <a class="reference internal" href="../gallery/ex20.html#example-20"><span class="std std-ref">(20) Custom plot symbols</span></a> into a PowerPoint presentation.
+First the PostScript file was converted to PDF (using
+<a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a>), then loaded into
+PowerPoint and the white background color was made transparent
+using the formatting toolbar (shown on the left side of
+Figure <a class="reference internal" href="#rendering"><span class="std std-ref">Rendered images</span></a>). Clearly, when we let PowerPoint
+do the rendering, we do not get the best result:</p>
+<ul class="simple">
+<li>The anti-aliasing causes the tiles that make up the land to stand
+out. This is because the anti-aliasing algorithm blurs all edges,
+even when the tiles join seamlessly.</li>
+<li>The background color was assumed to be white, hence the text is
+“smoothed” using gray shades. Instead, shades of blue which would be
+appropriate for the background we are using.</li>
+</ul>
+<p>On the central column of Figure <a class="reference internal" href="#rendering"><span class="std std-ref">Rendered images</span></a> we have
+included PNG
+versions of a portion of the same example. This shows the workings of
+anti-aliasing and different resolutions. All samples were obtained with
+<strong>convert</strong>. The one on the top uses all default settings, resulting
+in an anti-aliased image at 72 dpi resolution (very much like the PDF
+included directly into PowerPoint).</p>
+<p>Just switching anti-aliasing off (middle) is clearly not an option
+either. It is true that we got rid of the gray blurring and the seams
+between the tiles, but without anti-aliasing the image becomes very
+blocky. The solution is to render the image at a higher resolution
+(e.g., 300 dpi) without anti-aliasing and then shrink the image to the
+appropriate size (bottom of the central column in
+Figure <a class="reference internal" href="#rendering"><span class="std std-ref">Rendered images</span></a>). The scaling, rotation as well as
+the selection
+of the transparent color can be accomplished through the “Formatting”
+tool bar and the “Format Picture” dialogue box of PowerPoint
+(Figure <a class="reference internal" href="#powerpoint-dialogue"><span class="std std-ref">PowerPoint dialogue box</span></a>), which can be
+found by double clicking the
+included image (or selecting and right-clicking or control-clicking on a
+one-button mouse).</p>
+</div>
+</div>
+<div class="section" id="concluding-remarks">
+<h2>9.4. Concluding remarks<a class="headerlink" href="#concluding-remarks" title="Permalink to this headline">¶</a></h2>
+<p>These examples do not constitute endorsements of the products mentioned
+above; they only represent our limited experience with adding
+PostScript to various types of documents. For other solutions and
+further help, please post messages to the GMT user forum.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="predefined_patterns.html" class="btn btn-neutral float-right" title="10. Predefined Bit and Hachure Patterns in GMT" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="file_formats.html" class="btn btn-neutral float-left" title="8. GMT File Formats" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

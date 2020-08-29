@@ -1,0 +1,552 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>gmtregress &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gmtselect" href="gmtselect.html" />
+    <link rel="prev" title="gmtmath" href="gmtmath.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">GMT Modules</a> &raquo;</li>
+        
+      <li>gmtregress</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/gmtregress.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="gmtregress">
+<span id="index-0"></span><h1>gmtregress<a class="headerlink" href="#gmtregress" title="Permalink to this headline">¶</a></h1>
+<p>Linear regression of 1-D data sets</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt regress</strong> [ <em>table</em> ] [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>min</em>/<em>max</em>/<em>inc</em> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>level</em> ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><strong>x</strong>|<strong>y</strong>|<strong>o</strong>|<strong>r</strong> ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>flags</em> ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><strong>1</strong>|<strong>2</strong>|<strong>r</strong>|<strong>w</strong> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong>[<strong>r</strong>] ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong>[<em>min/max</em>/]<em>inc</em>[<strong>n</strong>] |<a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>file</em>|<em>list</em> ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<strong>w</strong>][<strong>x</strong>][<strong>y</strong>][<strong>r</strong>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-a</strong><a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>regress</strong> reads one or more data tables [or <em>stdin</em>]
+and determines the best linear regression model <em>y</em> = <em>a</em> + <em>b</em>* <em>x</em> for each segment using the chosen parameters.
+The user may specify which data and model components should be reported.  By default, the model will be evaluated at the
+input points, but alternatively you can specify an equidistant range over which to evaluate
+the model, or turn off evaluation completely.  Instead of determining the best fit we can
+perform a scan of all possible regression lines
+(for a range of slope angles) and examine how the chosen misfit measure varies with slope.
+This is particularly useful when analyzing data with many outliers.  Note: If you
+actually need to work with log10 of <em>x</em> or <em>y</em> you can accomplish that transformation during read by using the <strong>-i</strong> option.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<p>None</p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input. The first two columns are expected to contain the required <em>x</em> and <em>y</em> data.  Depending on
+your <strong>-W</strong> and <strong>-E</strong> settings we may expect an additional 1-3 columns with error estimates
+of one of both of the data coordinates, and even their correlation.</dd>
+</dl>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong><em>min</em>/<em>max</em>/<em>inc</em></dt>
+<dd>Instead of determining a best-fit regression we explore the full range of regressions.
+Examine all possible regression lines with slope angles between <em>min</em> and <em>max</em>,
+using steps of <em>inc</em> degrees [-90/+90/1].  For each slope the optimum intercept
+is determined based on your regression type (<strong>-E</strong>) and misfit norm (<strong>-N</strong>) settings.
+For each segment we report the four columns <em>angle</em>, <em>E</em>, <em>slope</em>, <em>intercept</em>, for
+the range of specified angles. The best model parameters within this range
+are written into the segment header and reported in verbose mode (<strong>-V</strong>).</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>level</em></dt>
+<dd>Set the confidence level (in %) to use for the optional calculation of confidence bands
+on the regression [95].  This is only used if <strong>-F</strong> includes the output column <strong>c</strong>.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-Ex</strong>|<strong>y</strong>|<strong>o</strong>|<strong>r</strong></dt>
+<dd>Type of linear regression, i.e., select the type of misfit we should calculate.
+Choose from <strong>x</strong> (regress <em>x</em> on <em>y</em>; i.e., the misfit is measured horizontally from data point to regression line),
+<strong>y</strong> (regress <em>y</em> on <em>x</em>; i.e., the misfit is measured vertically [Default]), <strong>o</strong> (orthogonal regression;
+i.e., the misfit is measured from data point orthogonally to nearest point on the line), or <strong>r</strong> (Reduced Major
+Axis regression; i.e., the misfit is the product of both vertical and horizontal misfits) [<strong>y</strong>].</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><em>flags</em></dt>
+<dd>Append a combination of the columns you wish returned; the output order will match the order specified.  Choose from
+<strong>x</strong> (observed <em>x</em>), <strong>y</strong> (observed <em>y</em>), <strong>m</strong> (model prediction), <strong>r</strong> (residual = data minus model),
+<strong>c</strong> (symmetrical confidence interval on the regression; see <strong>-C</strong>
+for specifying the level), <strong>z</strong> (standardized residuals or so-called <em>z-scores</em>) and <strong>w</strong> (outlier weights 0 or 1; for
+<strong>-Nw</strong> these are the Reweighted Least Squares weights) [<strong>xymrczw</strong>].
+As an alternative to evaluating the model, just give <strong>-Fp</strong> and we instead write a single record with the model
+parameters <em>npoints xmean ymean angle misfit slope intercept sigma_slope sigma_intercept</em>.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N1</strong>|<strong>2</strong>|<strong>r</strong>|<strong>w</strong></dt>
+<dd>Selects the norm to use for the misfit calculation.  Choose among <strong>1</strong> (L-1 measure; the mean of the
+absolute residuals), <strong>2</strong> (Least-squares; the mean of the squared residuals),
+<strong>r</strong> (LMS; The least median of the squared residuals), or <strong>w</strong> (RLS; Reweighted Least Squares: the
+mean of the squared residuals after outliers identified via LMS have been removed) [Default is <strong>2</strong>].
+Traditional regression uses L-2 while L-1 and in particular LMS are more robust in how they handle outliers.
+As alluded to, RLS implies an initial LMS regression which is then used to identify outliers in the data,
+assign these a zero weight, and then redo the regression using a L-2 norm.</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong>[<strong>r</strong>]</dt>
+<dd>Restricts which records will be output.  By default all data records will be output in the format specified
+by <strong>-F</strong>.  Use <strong>-S</strong> to exclude data points identified as outliers by the regression.  Alternatively,
+use <strong>-Sr</strong> to reverse this and only output the outlier records.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong>[<em>min/max</em>/]<em>inc</em>[<strong>n</strong>] |<a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>file</em>|<em>list</em></dt>
+<dd>Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If only
+<strong>-T</strong><em>inc</em> is given instead we will reset <em>min</em> and <em>max</em> to the extreme <em>x</em>-values for each segment.
+To skip the model evaluation entirely, simply provide <strong>-T</strong>0.
+For details on array creation, see <a class="reference internal" href="#generate-1d-array">Generate 1D Array</a>.</dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong>[<strong>w</strong>][<strong>x</strong>][<strong>y</strong>][<strong>r</strong>]</dt>
+<dd>Specifies weighted regression and which weights will be provided.
+Append <strong>x</strong> if giving 1-sigma uncertainties in the <em>x</em>-observations, <strong>y</strong> if giving 1-sigma uncertainties in <em>y</em>, and
+<strong>r</strong> if giving correlations between <em>x</em> and <em>y</em> observations, in the order these columns appear in the input (after the
+two required and leading <em>x</em>, <em>y</em> columns).
+Giving both <strong>x</strong> and <strong>y</strong> (and optionally <strong>r</strong>) implies an orthogonal regression, otherwise giving
+<strong>x</strong> requires <strong>-Ex</strong> and <strong>y</strong> requires <strong>-Ey</strong>.
+We convert uncertainties in <em>x</em> and <em>y</em> to regression weights via the relationship weight = 1/sigma.
+Use <strong>-Ww</strong> if the we should interpret the input columns to have precomputed weights instead.  Note: residuals
+with respect to the regression line will be scaled by the given weights.  Most norms will then square this weighted
+residual (<strong>-N1</strong> is the only exception).</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-a</strong><em>col</em>=<em>name</em>[<em>…</em>] <a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set aspatial column associations <em>col</em>=<em>name</em>.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary format for primary input.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output. [Default is same as input].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em> <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> | <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong><em>gap</em>[<strong>u</strong>][<strong>+n</strong>|<strong>p</strong>] <a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine data gaps and line breaks.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<em>t</em>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column, <em>t</em> is trailing text, append <em>word</em> to read one word only).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-o</strong><em>cols</em>[,…][<em>t</em>[<em>word</em>]] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select output columns (0 is first column; <em>t</em> is trailing text, append <em>word</em> to write one word only).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt>
+<dd>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</dd>
+</dl>
+</div>
+<div class="section" id="ascii-format-precision">
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-geo-out"><span class="std std-ref">FORMAT_GEO_OUT</span></a>, absolute time is
+under the control of <a class="reference internal" href="gmt.conf.html#format-date-out"><span class="std std-ref">FORMAT_DATE_OUT</span></a> and
+<a class="reference internal" href="gmt.conf.html#format-clock-out"><span class="std std-ref">FORMAT_CLOCK_OUT</span></a>, whereas general floating point values are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a>. Be aware that the format in effect
+can lead to loss of precision in ASCII output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a> setting.</p>
+</div>
+<div class="section" id="generate-1d-array">
+<h2>Generate 1D Array<a class="headerlink" href="#generate-1d-array" title="Permalink to this headline">¶</a></h2>
+<p>Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in steps of <em>inc</em>.
+Append <strong>+b</strong> if we should take log2 of <em>min</em> and <em>max</em> and build an equidistant
+log2-array using <em>inc</em> integer increments in log2.
+Append <strong>+l</strong> if we should take log10 of <em>min</em> and <em>max</em> and build an
+array where <em>inc</em> can be 1 (every magnitude), 2, (1, 2, 5 times magnitude) or 3
+(1-9 times magnitude).  For less than every magnitude, use a negative integer <em>inc</em>.
+Append <strong>+n</strong> if <em>inc</em> is meant to indicate the number of equidistant coordinates
+instead.   Alternatively, give a <em>file</em> with output coordinates in the first column,
+or provide a comma-separated <em>list</em> of coordinates.  If you only want a <em>single</em> value
+then you must append a comma to distinguish the list from the setting of <em>inc</em>.</p>
+<p>If the module allows you to set up an absolute time series, append a valid time unit from the list
+<strong>y</strong>ear, m<strong>o</strong>nth, <strong>w</strong>eek, <strong>d</strong>ay, <strong>h</strong>our, <strong>m</strong>inute, and <strong>s</strong>econd
+to the given increment; add <strong>+t</strong> to ensure time column (or use <strong>-f</strong>) Note: The internal time
+unit is still controlled independently by <a class="reference internal" href="gmt.conf.html#time-unit"><span class="std std-ref">TIME_UNIT</span></a>.  Some modules allow for <strong>+a</strong>
+which will paste the coordinate array to the output table.</p>
+<p>Likewise, if the module allows you to set up a spatial distance series (with distance computed
+from the first two data columns), specify the increment as <em>inc</em>[<em>unit</em>] with a
+geospatial distance unit from the list
+<strong>d</strong>egree (arc), <strong>m</strong>inute (arc), <strong>s</strong>econd (arc), m<strong>e</strong>ter, <strong>f</strong>oot, <strong>k</strong>ilometer,
+<strong>M</strong>iles (statute), <strong>n</strong>autical miles, or s<strong>u</strong>rvey foot; see <strong>-j</strong> for calculation mode.
+For Cartesian distances, you must use the special unit <strong>c</strong>.</p>
+<p>Finally, if you are only providing an increment and obtain <em>min</em> and <em>max</em> from the data, then it is
+possible (<em>max</em> - <em>min</em>)/<em>inc</em> is not an integer, as required.  If so then <em>inc</em> will be adjusted to accordingly.
+Alternatively, append <strong>+e</strong> to keep <em>inc</em> exact and adjust <em>max</em> instead.</p>
+</div>
+<div class="section" id="note">
+<h2>Note:<a class="headerlink" href="#note" title="Permalink to this headline">¶</a></h2>
+<p>The output segment header will contain all the various statistics we compute for each segment.
+These are in order: N (number of points), x0 (weighted mean x), y0 (weighted mean y),
+angle (of line), E (misfit), slope, intercept, sigma_slope, sigma_intercept, correlation (r),
+coefficient of determination (R).</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p><strong>Note</strong>: Below are some examples of valid syntax for this module.
+The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
+can be cut and pasted into your terminal for testing.
+Other commands requiring input files are just dummy examples of the types
+of uses that are common but cannot be run verbatim as written.</p>
+<p>To return the coordinates on the best-fit orthogonal regression line through the data in the
+remote file hertzsprung-russell.txt, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt regress @hertzsprung-russell.txt -Eo -Fxm
+</pre></div>
+</div>
+<p>To do a standard least-squares regression on the <em>x-y</em> data in points.txt and return
+x, y, and model prediction with 99% confidence intervals, try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt regress points.txt -Fxymc -C99 &gt; points_regressed.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>To just get the slope for the above regression, try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">slope</span><span class="o">=</span><span class="sb">`</span>gmt regress points.txt -Fp -o5<span class="sb">`</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To do a reweighted least-squares regression on the data rough.txt and return
+x, y, model prediction and the RLS weights, try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt regress rough.txt -Fxymw &gt; points_regressed.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>To do an orthogonal least-squares regression on the data crazy.txt but first take
+the logarithm of both x and y, then return x, y, model prediction and the normalized
+residuals (z-scores), try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt regress crazy.txt -Eo -Fxymz -i0-1l &gt; points_regressed.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>To examine how the orthogonal LMS misfits vary with angle between 0 and 90
+in steps of 0.2 degrees for the same file, try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt regress points.txt -A0/90/0.2 -Eo -Nr &gt; points_analysis.txt
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Draper, N. R., and H. Smith, 1998, <em>Applied regression analysis</em>, 3rd ed., 736 pp.,
+John Wiley and Sons, New York.</p>
+<p>Rousseeuw, P. J., and A. M. Leroy, 1987, <em>Robust regression and outlier detection</em>,
+329 pp., John Wiley and Sons, New York.</p>
+<p>York, D., N. M. Evensen, M. L. Martinez, and J. De Basebe Delgado, 2004, Unified
+equations for the slope, intercept, and standard errors of the best straight line,
+<em>Am. J. Phys.</em>, 72(3), 367-375.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="trend1d.html"><span class="doc">trend1d</span></a>,
+<a class="reference internal" href="trend2d.html"><span class="doc">trend2d</span></a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="gmtselect.html" class="btn btn-neutral float-right" title="gmtselect" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="gmtmath.html" class="btn btn-neutral float-left" title="gmtmath" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

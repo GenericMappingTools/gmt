@@ -1,0 +1,190 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(24) Data selection based on geospatial criteria &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(25) Global distribution of antipodes" href="ex25.html" />
+    <link rel="prev" title="(23) All great-circle paths lead to Rome" href="ex23.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex25.html" title="(25) Global distribution of antipodes"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex23.html" title="(23) All great-circle paths lead to Rome"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="data-selection-based-on-geospatial-criteria">
+<span id="example-24"></span><h1>(24) Data selection based on geospatial criteria<a class="headerlink" href="#data-selection-based-on-geospatial-criteria" title="Permalink to this headline">¶</a></h1>
+<p>Although we are not seismologists, we have yet another example involving
+seismicity. We use seismicity data for the Australia/New Zealand region
+to demonstrate how we can extract subsets of data using geospatial
+criteria. In particular, we wish to plot the epicenters given in the
+file <code class="docutils literal notranslate"><span class="pre">oz_quakes.d</span></code> as red or green circles. Green circles should only be used for
+epicenters that satisfy the following three criteria:</p>
+<ol class="arabic simple">
+<li>They are located in the ocean and not on land</li>
+<li>They are within 3000 km of Hobart</li>
+<li>They are more than 1000 km away from the International Dateline</li>
+</ol>
+<p>All remaining earthquakes should be plotted in red. Rather that doing
+the selection process twice we simply plot all quakes as red circles and
+then replot those that pass our criteria. Most of the work here is done
+by <a class="reference internal" href="../gmtselect.html"><span class="doc">gmtselect</span></a>; the rest is carried
+out by the usual <a class="reference internal" href="../pscoast.html"><span class="doc">pscoast</span></a> and
+<a class="reference internal" href="../psxy.html"><span class="doc">psxy</span></a> workhorses. Note for our purposes
+the Dateline is just a line along the 180 meridian.</p>
+<p>The script produces the plot in Figure. Note
+that the horizontal distance from the dateline seems to increase as we
+go south; however that is just the projected distance (Mercator
+distortion) and not the actual distance which remains constant at 1000 km.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 24</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Extract subsets of data based on geospatial criteria</span>
+<span class="c1"># GMT modules:	gmtselect, pscoast, psxy, gmtinfo</span>
+<span class="c1"># Unix progs:	echo, cat</span>
+<span class="c1">#</span>
+<span class="c1"># Highlight oceanic earthquakes within 3000 km of Hobart and &gt; 1000 km from dateline</span>
+<span class="nv">ps</span><span class="o">=</span>example_24.ps
+<span class="nb">echo</span> <span class="s2">&quot;147:13 -42:48 6000&quot;</span> &gt; point.txt
+cat <span class="s">&lt;&lt; END &gt; dateline.txt</span>
+<span class="s">&gt; Our proxy for the dateline</span>
+<span class="s">180	0</span>
+<span class="s">180	-90</span>
+<span class="s">END</span>
+<span class="nv">R</span><span class="o">=</span><span class="sb">`</span>gmt info -I10 oz_quakes.txt<span class="sb">`</span>
+gmt pscoast <span class="nv">$R</span> -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10 -BWeSn &gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K oz_quakes.txt -Sc0.05i -Gred &gt;&gt; <span class="nv">$ps</span>
+gmt <span class="k">select</span> oz_quakes.txt -Ldateline.txt+d1000k -Nk/s -Cpoint.txt+d3000k -fg -R -Il <span class="se">\</span>
+	<span class="p">|</span> gmt psxy -R -JM -O -K -Sc0.05i -Ggreen &gt;&gt; <span class="nv">$ps</span>
+gmt psxy point.txt -R -J -O -K -SE- -Wfat,white &gt;&gt; <span class="nv">$ps</span>
+gmt pstext point.txt -R -J -F+f14p,Helvetica-Bold,white+jLT+tHobart <span class="se">\</span>
+	-O -K -D0.1i/-0.1i &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K point.txt -Wfat,white -S+0.2i &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O dateline.txt -Wfat,white -A &gt;&gt; <span class="nv">$ps</span>
+rm -f point.txt dateline.txt
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_24.png"><img alt="../_images/example_24.png" src="../_images/example_24.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Data selection based on geospatial criteria.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex23.html"
+                        title="previous chapter">(23) All great-circle paths lead to Rome</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex25.html"
+                        title="next chapter">(25) Global distribution of antipodes</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex24.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex25.html" title="(25) Global distribution of antipodes"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex23.html" title="(23) All great-circle paths lead to Rome"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

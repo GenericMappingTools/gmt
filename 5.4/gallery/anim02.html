@@ -1,0 +1,221 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(2) Examining DEMs using variable illumination &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(3) Orbiting a static map" href="anim03.html" />
+    <link rel="prev" title="(1) Animation of the sine function" href="anim01.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="anim03.html" title="(3) Orbiting a static map"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="anim01.html" title="(1) Animation of the sine function"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="examining-dems-using-variable-illumination">
+<span id="anim-02"></span><h1>(2) Examining DEMs using variable illumination<a class="headerlink" href="#examining-dems-using-variable-illumination" title="Permalink to this headline">¶</a></h1>
+<p>Our next animation uses a gridded topography for parts of Colorado (US);
+the file is distributed with the tutorial examples. Here, we want to use
+<a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a> to generate a shaded-relief
+image sequence in which we sweep the illumination azimuth around the
+entire horizon. The resulting animation illustrates how changing the
+illumination azimuth can bring out subtle features (or artifacts) in the
+gridded data. The red arrow points in the direction of the illumination.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT ANIMATION 02</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Make web page with simple animated GIF of a DEM grid</span>
+<span class="c1"># GMT modules   gmtmath, makecpt, grdimage psxy, psconvert</span>
+<span class="c1"># Unix progs:   awk, mkdir, rm, mv, echo, convert, cat</span>
+<span class="c1"># Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.</span>
+<span class="c1">#</span>
+<span class="c1"># 1. Initialization</span>
+<span class="c1"># 1a) Assign movie parameters</span>
+. gmt_shell_functions.sh
+<span class="nv">width</span><span class="o">=</span><span class="m">3</span>.5i
+<span class="nv">height</span><span class="o">=</span><span class="m">4</span>.15i
+<span class="nv">dpi</span><span class="o">=</span><span class="m">72</span>
+<span class="nv">n_frames</span><span class="o">=</span><span class="m">36</span>
+<span class="nv">name</span><span class="o">=</span>anim_02
+<span class="nv">ps</span><span class="o">=</span><span class="si">${</span><span class="nv">name</span><span class="si">}</span>.ps
+<span class="c1"># 1b) setup</span>
+<span class="nv">del_angle</span><span class="o">=</span><span class="sb">`</span>gmt math -Q <span class="m">360</span> <span class="si">${</span><span class="nv">n_frames</span><span class="si">}</span> <span class="nv">DIV</span> <span class="o">=</span><span class="sb">`</span>
+gmt makecpt -Crainbow -T500/4500 &gt; <span class="nv">$$</span>.cpt
+<span class="c1"># 2. Main loop</span>
+mkdir -p <span class="nv">$$</span>
+<span class="nv">frame</span><span class="o">=</span><span class="m">0</span>
+<span class="k">while</span> <span class="o">[</span> <span class="si">${</span><span class="nv">frame</span><span class="si">}</span> -lt <span class="si">${</span><span class="nv">n_frames</span><span class="si">}</span> <span class="o">]</span><span class="p">;</span> <span class="k">do</span>
+	<span class="c1"># Create file name using a name_##.tif format</span>
+	<span class="nv">file</span><span class="o">=</span><span class="sb">`</span>gmt_set_framename <span class="si">${</span><span class="nv">name</span><span class="si">}</span> <span class="si">${</span><span class="nv">frame</span><span class="si">}</span><span class="sb">`</span>
+	<span class="nv">angle</span><span class="o">=</span><span class="sb">`</span>gmt math -Q <span class="si">${</span><span class="nv">frame</span><span class="si">}</span> <span class="si">${</span><span class="nv">del_angle</span><span class="si">}</span> <span class="nv">MUL</span> <span class="o">=</span><span class="sb">`</span>
+	<span class="nv">dir</span><span class="o">=</span><span class="sb">`</span>gmt math -Q <span class="si">${</span><span class="nv">angle</span><span class="si">}</span> <span class="m">180</span> <span class="nv">ADD</span> <span class="o">=</span><span class="sb">`</span>
+	gmt grdimage us.nc -I+a<span class="si">${</span><span class="nv">angle</span><span class="si">}</span>+nt2 -JM3i -P -K -C<span class="nv">$$</span>.cpt -BWSne -B1 -X0.35i -Y0.3i <span class="se">\</span>
+	--PS_MEDIA<span class="o">=</span><span class="si">${</span><span class="nv">width</span><span class="si">}</span>x<span class="si">${</span><span class="nv">height</span><span class="si">}</span> --FONT_ANNOT_PRIMARY<span class="o">=</span>9p &gt; <span class="nv">$$</span>.ps
+	gmt psxy -Rus.nc -J -O -K -Sc0.8i -Gwhite -Wthin &gt;&gt; <span class="nv">$$</span>.ps <span class="o">&lt;&lt;&lt;</span> <span class="s2">&quot;256.25 35.6&quot;</span>
+	gmt psxy -Rus.nc -J -O -Sv0.1i+e -Gred -Wthick &gt;&gt; <span class="nv">$$</span>.ps <span class="o">&lt;&lt;&lt;</span> <span class="s2">&quot;256.25 35.6 </span><span class="si">${</span><span class="nv">dir</span><span class="si">}</span><span class="s2"> 0.37&quot;</span>
+	<span class="o">[[</span> <span class="si">${</span><span class="nv">frame</span><span class="si">}</span> -eq <span class="m">0</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> cp <span class="nv">$$</span>.ps <span class="si">${</span><span class="nv">ps</span><span class="si">}</span>
+	<span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -eq <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+		gmt_cleanup .gmt
+		gmt_abort <span class="s2">&quot;</span><span class="si">${</span><span class="nv">0</span><span class="si">}</span><span class="s2">: First frame plotted to </span><span class="si">${</span><span class="nv">name</span><span class="si">}</span><span class="s2">.ps&quot;</span>
+	<span class="k">fi</span>
+<span class="c1">#	RIP to TIFF at specified dpi</span>
+	gmt psconvert -E<span class="si">${</span><span class="nv">dpi</span><span class="si">}</span> -Tt <span class="nv">$$</span>.ps
+	mv -f <span class="nv">$$</span>.tif <span class="nv">$$</span>/<span class="si">${</span><span class="nv">file</span><span class="si">}</span>.tif
+	<span class="nb">echo</span> <span class="s2">&quot;Frame </span><span class="si">${</span><span class="nv">file</span><span class="si">}</span><span class="s2"> completed&quot;</span>
+	<span class="nv">frame</span><span class="o">=</span><span class="sb">`</span>gmt_set_framenext <span class="si">${</span><span class="nv">frame</span><span class="si">}</span><span class="sb">`</span>
+<span class="k">done</span>
+<span class="c1"># 3. Create animated GIF file and HTML for web page</span>
+<span class="si">${</span><span class="nv">GRAPHICSMAGICK</span><span class="p">-gm</span><span class="si">}</span> convert -delay <span class="m">10</span> -loop <span class="m">0</span> <span class="nv">$$</span>/<span class="si">${</span><span class="nv">name_</span><span class="si">}</span>*.tif <span class="si">${</span><span class="nv">name</span><span class="si">}</span>.gif
+cat <span class="s">&lt;&lt; END &gt; ${name}.html</span>
+<span class="s">&lt;HTML&gt;</span>
+<span class="s">&lt;TITLE&gt;GMT shading: A tool for feature detection&lt;/TITLE&gt;</span>
+<span class="s">&lt;BODY bgcolor=&quot;#ffffff&quot;&gt;</span>
+<span class="s">&lt;CENTER&gt;</span>
+<span class="s">&lt;H1&gt;GMT shading: A tool for feature detection&lt;/H1&gt;</span>
+<span class="s">&lt;IMG src=&quot;${name}.gif&quot;&gt;</span>
+<span class="s">&lt;/CENTER&gt;</span>
+<span class="s">&lt;HR&gt;</span>
+<span class="s">We make illuminated images of topography from a section of Colorado and</span>
+<span class="s">vary the azimuth of the illumination (see arrow).  As the light-source sweeps around</span>
+<span class="s">the area over 360 degrees we notice that different features in the data</span>
+<span class="s">become highlighted.  This is because the illumination is based on data</span>
+<span class="s">gradients and such derivatives will high-light short-wavelength signal.</span>
+<span class="s">Again, our animation uses GraphicsMagick&#39;s convert tool to make an animated GIF file</span>
+<span class="s">with a 0.1 second pause between the 36 frames.</span>
+<span class="s">&lt;HR&gt;</span>
+<span class="s">&lt;I&gt;${name}.sh: Created by ${USER} on `date`&lt;/I&gt;</span>
+<span class="s">&lt;/BODY&gt;</span>
+<span class="s">&lt;/HTML&gt;</span>
+<span class="s">END</span>
+<span class="c1"># 4. Clean up temporary files</span>
+gmt_cleanup .gmt
+</pre></div>
+</div>
+<p>As you can see, these sorts of animations are not terribly difficult to
+put together, especially since our vantage point is fixed. In the next
+example we will move the “camera” around and must therefore deal with
+how to frame perspective views.</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/anim_02.gif"><img alt="../_images/anim_02.gif" src="../_images/anim_02.gif" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Animation of a DEM using variable illumination.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="anim01.html"
+                        title="previous chapter">(1) Animation of the sine function</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="anim03.html"
+                        title="next chapter">(3) Orbiting a static map</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/anim02.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="anim03.html" title="(3) Orbiting a static map"
+             >next</a> </li>
+        <li class="right" >
+          <a href="anim01.html" title="(1) Animation of the sine function"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

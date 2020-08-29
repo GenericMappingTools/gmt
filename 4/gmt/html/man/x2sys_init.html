@@ -1,0 +1,1386 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:44 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>X2SYS_INIT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>X2SYS_INIT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#DEFINITION FILES">DEFINITION FILES</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">x2sys_init
+&minus; Initialize x2sys data base for track data files</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_init</b>
+<i>TAG</i> <b>&minus;D</b><i>deffile</i> [
+<b>&minus;Cc</b>|<b>f</b>|<b>g</b>|<b>e</b> ] [
+<b>&minus;E</b><i>suffix</i> ] [ <b>&minus;F</b> ] [
+<b>&minus;Gd</b>|<b>g</b> ] [
+<b>&minus;I</b><i>dx</i>[/<i>dy</i>] ] [
+<b>&minus;Nd</b>|<b>s</b><i>unit</i> ] [
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;V</b> ] [ <b>&minus;Wt</b>|<b>d</b><i>gap</i>
+] [ <b>&minus;m</b>[<b>i</b>|<b>o</b>][<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_init</b>
+is the starting point for anyone wishing to use x2sys; it
+initializes a set of data bases that are particular to one
+kind of track data. These data, their associated data bases,
+and key parameters are given a short-hand notation called an
+x2sys TAG. The TAG keeps track of settings such as file
+format, whether the data are geographic or not, and the
+binning resolution for track indices. Running
+<b>x2sys_init</b> is a prerequisite to running any of the
+other x2sys programs, such as <b><A HREF="x2sys_binlist.html">x2sys_binlist</A></b>, which
+will create a crude representation of where each data track
+go within the domain and which observations are available;
+this information serves as input to <b><A HREF="x2sys_put.html">x2sys_put</A></b> which
+updates the track data base. Then, <b><A HREF="x2sys_get.html">x2sys_get</A></b> can be
+used to find which tracks and data are available inside a
+given region. With that list of tracks you can use
+<b><A HREF="x2sys_cross.html">x2sys_cross</A></b> to calculate track crossovers, use
+<b><A HREF="x2sys_report.html">x2sys_report</A></b> to report crossover statistics or
+<b><A HREF="x2sys_list.html">x2sys_list</A></b> to pull out selected crossover information
+that <b><A HREF="x2sys_solve.html">x2sys_solve</A></b> can use to determine track-specific
+systematic corrections. These corrections may be used with
+<b><A HREF="x2sys_datalist.html">x2sys_datalist</A></b> to extract corrected data values for
+use in subsequent work.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p style="margin-top: 1em" valign="top"><i>TAG</i></p></td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">The unique name of
+this data type x2sys TAG.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Select procedure
+for along-track distance calculation when needed by other
+programs:</p> </td>
+</table>
+
+<p style="margin-left:22%;"><b>c</b> Cartesian distances
+[Default, unless <b>&minus;G</b> is set]. <b><br>
+f</b> Flat Earth distances. <b><br>
+g</b> Great circle distances [Default if <b>&minus;G</b> is
+set]. <b><br>
+e</b> Geodesic distances on current <b><A HREF="GMT.html">GMT</A></b>
+ellipsoid.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Definition file
+prefix for this data set [See DEFINITION FILES below for
+more information]. Specify full path if the file is not in
+the current directory.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies the file
+extension (suffix) for these data files. If not given we use
+the definition file prefix as the suffix (see
+<b>&minus;D</b>).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force creating new
+files if old ones are present [Default will abort if old TAG
+files are found].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects
+geographical coordinates. Append <b>d</b> for discontinuity
+at the Dateline (makes longitude go from -180 to + 180) or
+<b>g</b> for discontinuity at Greenwich (makes longitude go
+from 0 to 360 [Default]). If not given we assume the data
+are Cartesian.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>x_inc</i> [and
+optionally <i>y_inc</i>] is the grid spacing. Append
+<b>m</b> to indicate minutes or <b>c</b> to indicate seconds
+for geographic data. These spacings refer to the binning
+used in the track bin-index data base.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file(s). Segments are separated by a special record. For
+ASCII files the first character must be <i>flag</i> [Default
+is &rsquo;&gt;&rsquo;]. For binary files all fields must be
+NaN and <b>&minus;b</b> must set the number of output
+columns explicitly. By default the <b>&minus;m</b> setting
+applies to both input and output. Use <b>&minus;mi</b> and
+<b>&minus;mo</b> to give separate settings to input and
+output.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the units used
+for distance and speed when requested by other programs.
+Append <b>d</b> for distance or <b>s</b> for speed, then
+give the desired <i>unit</i> as <b>c</b> (Cartesian userdist
+or userdist/usertime), <b>e</b> (meter or m/s), <b>k</b> (km
+or km/hr), <b>m</b> (miles or miles/hr), or <b>n</b>
+(nautical miles or knots). [Default is <b>&minus;Ndk
+&minus;Nse</b> (km and m/s) if <b>&minus;G</b> is set and
+<b>&minus;Ndc</b> and <b>&minus;Nsc</b> otherwise (Cartesian
+units)].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> specify the Region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+Cartesian data just give <i>xin/xmax/ymin/ymax</i>. This
+sets the complete domain for the relevant track data
+set.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Give <b>t</b> or
+<b>d</b> and append the corresponding maximum time gap (in
+user units; this is typically seconds [Infinity]), or
+distance (for units, see <b>&minus;N</b>) gap [Infinity])
+allowed between the two data points immediately on either
+side of a crossover. If these limits are exceeded then a
+data gap is assumed and no COE will be determined.</p></td>
+</table>
+
+<a name="DEFINITION FILES"></a>
+<h2>DEFINITION FILES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">These *.def
+files contain information about the data file format and
+have two sections: (1) header information and (2) column
+information. All header information starts with the
+character # in the first column, immediately followed by an
+upper-case directive. If the directive takes an argument it
+is separated by white-space. You may append a trailing #
+comments. Five directives are recognized:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>ASCII</b>
+states that the data files are in ASCII format. <b><br>
+BINARY</b> states that the data files are native binary
+files. <b><br>
+NETCDF</b> states that the data files are COARDS-compliant
+1-D netCDF files. <b><br>
+SKIP</b> takes an integer argument which is either the
+number of lines to skip (when reading ASCII files) or the
+number of bytes to skip (when reading native binary files).
+Not used with netCDF files. <b><br>
+GEO</b> indicates that these files are geographic data sets,
+with periodicities in the <i>x</i>-coordinate (longitudes).
+Alternatively, use <b>&minus;G</b>. <b><br>
+MULTISEG</b> means each track consists of multiple segments
+separated by a <b><A HREF="GMT.html">GMT</A></b> multisegment header
+(alternatively, use <b>&minus;m</b> when defining the system
+TAG). Not used with netCDF files.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The column
+information consists of one line per column in the order the
+columns appear in the data file. For each column you must
+provide seven attributes:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><i>name type
+NaN NaN-proxy scale offset oformat</i></p>
+
+<p style="margin-left:11%; margin-top: 1em"><i>name</i> is
+the name of the column variable. It is expected that you
+will use the special names <i>lon</i> (or <i>x</i> if
+Cartesian) and <i>lat</i> (or <i>y</i>) for the two required
+coordinate columns, and <i>time</i> when optional time data
+are present. <i><br>
+type</i> is always <b>a</b> for ASCII representations of
+numbers, whereas for binary files you may choose among
+<b>c</b> for signed 1-byte character (-127,+128), <b>u</b>
+for unsigned byte (0-255), <b>h</b> for signed 2-byte
+integers (-32768,+32767), <b>i</b> for signed 4-byte
+integers (-2,147,483,648,+2,147,483,647), <b>f</b> for
+4-byte floating points and <b>d</b> for 8-byte double
+precision floating points. For netCDF, simply use <b>d</b>
+as netCDF will automatically handle type-conversions during
+reading. <i><br>
+NaN</i> is Y if certain values (e.g, -9999) are to be
+replaced by NAN, and N otherwise. <i><br>
+NaN-proxy</i> is that special value (e.g., -9999). <i><br>
+scale</i> is used to multiply the data after reading.
+<i><br>
+offset</i> is used to add to the scaled data. <i><br>
+oformat</i> is a C-style format string used to print values
+from this column.</p>
+
+<p style="margin-left:11%; margin-top: 1em">If you give -
+as the <i>oformat</i> then <b><A HREF="GMT.html">GMT</A></b>&rsquo;s formatting
+machinery will be used instead (i.e., <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>,
+<b><A HREF="gmtdefaults.html#PLOT_DEGREE_FORMAT">PLOT_DEGREE_FORMAT</A></b>, <b><A HREF="gmtdefaults.html#PLOT_DATE_FORMAT">PLOT_DATE_FORMAT</A></b>,
+<b><A HREF="gmtdefaults.html#PLOT_CLOCK_FORMAT">PLOT_CLOCK_FORMAT</A></b>). Some file formats already have
+definition files premade. These include mgd77 (for plain
+ASCII MGD77 data files), mgd77+ (for enhanced MGD77+ netCDF
+files), gmt (for old mgg supplement binary files), xy (for
+plain ASCII x, y tables), xyz (same, with one z-column), geo
+(for plain ASCII longitude, latitude files), and geoz (same,
+with one z-column).</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">If you have a
+large set of track data files you can organize them using
+the x2sys tools. Here we will outline the steps. Let us
+assume that your track data file format consist of 2 header
+records with text information followed by any number of
+identically formatted data records with 6 columns (lat, lon,
+time, obs1, obs2, obs3) and that files are called *.trk. We
+will call this the &quot;line&quot; format. First, we create
+the line.def file:</p>
+
+<p style="margin-left:11%; margin-top: 1em"># Define file
+for the line format</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top">#ASCII</p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="7%">
+
+
+<p valign="top"># File is ASCII</p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top">#SKIP 2</p></td>
+<td width="8%"></td>
+<td width="8%">
+</td>
+<td width="7%">
+
+
+<p valign="top"># Skip 2 header records</p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top">#GEO</p></td>
+<td width="8%">
+</td>
+<td width="8%">
+
+
+<p valign="top"># Data are geographic</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top">#name</p></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">type</p></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">NaN</p></td>
+<td width="8%">
+
+
+<p valign="top">NaN-proxy</p></td>
+<td width="8%"></td>
+<td width="38%">
+
+
+<p valign="top">scale offset oformat</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top">lat</p></td>
+<td width="8%">
+
+
+<p valign="top">a</p></td>
+<td width="8%">
+
+
+<p valign="top">N</p></td>
+<td width="7%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">%9.5f</p></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top">lon</p></td>
+<td width="8%">
+
+
+<p valign="top">a</p></td>
+<td width="8%">
+
+
+<p valign="top">N</p></td>
+<td width="7%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">%10.5f</p></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top">time</p></td>
+<td width="8%">
+
+
+<p valign="top">a</p></td>
+<td width="8%">
+
+
+<p valign="top">N</p></td>
+<td width="7%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">%7.1f</p></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top">obs1</p></td>
+<td width="8%">
+
+
+<p valign="top">a</p></td>
+<td width="8%">
+
+
+<p valign="top">N</p></td>
+<td width="7%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">%7.2f</p></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top">obs2</p></td>
+<td width="8%">
+
+
+<p valign="top">a</p></td>
+<td width="8%">
+
+
+<p valign="top">N</p></td>
+<td width="7%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">%7.2f</p></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top">obs3</p></td>
+<td width="8%">
+
+
+<p valign="top">a</p></td>
+<td width="8%">
+
+
+<p valign="top">N</p></td>
+<td width="7%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">%7.2f</p></td>
+<td width="38%">
+</td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">Next we create
+the TAG and the TAG directory with the databases for these
+line track files. Assuming these contain geographic data and
+that we want to keep track of the data distribution at a 1 x
+1 degree resolution, with distances in km calculated along
+geodesics and with speeds given in knots, we may run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_init</b>
+LINE <b>&minus;V &minus;G &minus;D</b> line <b>&minus;Rg
+&minus;Ce &minus;Ndk &minus;NsN &minus;I</b> 1/1
+<b>&minus;E</b> trk</p>
+
+<p style="margin-left:11%; margin-top: 1em">where we have
+selected LINE to be our x2sys tag. When x2sys tools try to
+read your line data files they will first look in the
+current directory and second look in the file
+<i>TAG</i>_paths.txt for a list of additional directories to
+examine. Therefore, create such a file (here LINE_paths.txt)
+and stick the full paths to your data directories there. All
+TAG-related files (definition files, tag files, and track
+data bases created) will be expected to be in the directory
+pointed to by <b>$X2SYS_HOME</b>/<i>TAG</i> (in our case
+<b>$X2SYS_HOME</b>/LINE). Note that the argument to
+<b>&minus;D</b> must contain the full path if the *.def file
+is not in the current directory. <b>x2sys_init</b> will copy
+this file to the <b>$X2SYS_HOME</b>/<i>TAG</i> directory
+where all other x2sys tools will expect to find it. <b><br>
+Create tbf file(s):</b></p>
+
+<p style="margin-left:22%;">Once the (empty) TAG databases
+have been initialized we go through a two-step process to
+populate them. First we run <b><A HREF="x2sys_binlist.html">x2sys_binlist</A></b> on all our
+track files to create one (or more) multi-segment track
+bin-index files (tbf). These contain information on which 1
+x 1 degree bins (or any other blocksize; see
+<b>&minus;I</b>) each track has visited and which
+observations (in your case obs1, obs2, obs3) were actually
+observed (not all tracks may have all three kinds of
+observations everywhere). For instance, if your tracks are
+listed in the file tracks.lis we may run this command:</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>x2sys_binlist
+&minus;V &minus;T</b> LINE :tracks.lis &gt; tracks.tbf</p>
+
+<p style="margin-left:11%;"><b>Update index data
+base:</b></p>
+
+<p style="margin-left:22%;">Next, the track bin-index files
+are fed to <b><A HREF="x2sys_put.html">x2sys_put</A></b> which will insert the
+information into the TAG databases:</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>x2sys_put
+&minus;V &minus;T</b> LINE tracks.tbf</p>
+
+<p style="margin-left:11%;"><b>Search for data:</b></p>
+
+<p style="margin-left:22%;">You may now use
+<b><A HREF="x2sys_get.html">x2sys_get</A></b> to find all the tracks within a certain
+sub-region, and optionally limit the search to those tracks
+that have a particular combination of observables. E.g., to
+find all the tracks which has both obs1 and obs3 inside the
+specified region, run</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>x2sys_get
+&minus;V &minus;T</b> LINE <b>&minus;R</b> 20/40/-40/-20
+<b>&minus;F</b> obs1,obs3 &gt; tracks.tbf</p>
+
+<p style="margin-left:11%;"><b>MGD77[+] or GMT:</b></p>
+
+<p style="margin-left:22%;">Definition files already exist
+for MGD77 files (both standard ASCII and enhanced
+netCDF-based MGD77+ files) and the old *.gmt files
+manipulated by the mgg supplements; for these data sets the
+<b>&minus;C</b> and <b>&minus;N</b> will default to great
+circle distance calculation in km and speed in m/s. There
+are also definition files for plain x,y[,z] and lon,lat[,z]
+tracks. To initiate new track databases to be used with
+MGD77 data from NGDC, try</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>x2sys_init</b>
+MGD77 <b>&minus;V &minus;D</b> mgd77 <b>&minus;E</b> mgd77
+<b>&minus;Rd &minus;Gd &minus;Nsn &minus;I</b> 1/1
+<b>&minus;Wt</b> 900 <b>&minus;Wd</b> 5</p>
+
+<p style="margin-left:22%; margin-top: 1em">where we have
+chosen a 15 minute (900 sec) or 5 km threshold to indicate a
+data gap and selected knots as the speed; the other steps
+are similar.</p>
+
+<p style="margin-left:11%;"><b>Binary files:</b></p>
+
+<p style="margin-left:22%;">Let us pretend that your line
+files actually are binary files with a 128-byte header
+structure (to be skipped) followed by the data records and
+where <i>lon</i>, <i>lat</i>, <i>time</i> are double
+precision numbers while the three observations are 2-byte
+integers which must be multiplied by 0.1. Finally, the first
+two observations may be -32768 which means there is no data
+available. All that is needed is a different line.def
+file:</p>
+
+<p style="margin-left:22%; margin-top: 1em"># Define file
+for the binary line format</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">#BINARY</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top"># File is now binary</p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">#SKIP 128</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top"># Skip 128 bytes</p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">#GEO</p></td>
+<td width="8%">
+</td>
+<td width="7%">
+
+
+<p valign="top"># Data are geographic</p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">#name</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">type</p></td>
+<td width="8%">
+
+
+<p valign="top">NaN?</p></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">NaN-proxy</p></td>
+<td width="38%">
+
+
+<p valign="top">scale offset oformat</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">lon</p></td>
+<td width="8%">
+
+
+<p valign="top">d</p></td>
+<td width="7%">
+
+
+<p valign="top">N</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="38%">
+
+
+<p valign="top">%10.5f</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">lat</p></td>
+<td width="8%">
+
+
+<p valign="top">d</p></td>
+<td width="7%">
+
+
+<p valign="top">N</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="38%">
+
+
+<p valign="top">%9.5f</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">time</p></td>
+<td width="8%">
+
+
+<p valign="top">d</p></td>
+<td width="7%">
+
+
+<p valign="top">N</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="38%">
+
+
+<p valign="top">%7.1f</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">obs1</p></td>
+<td width="8%">
+
+
+<p valign="top">h</p></td>
+<td width="7%">
+
+
+<p valign="top">Y</p></td>
+<td width="8%">
+
+
+<p valign="top">-32768</p></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">0.1</p></td>
+<td width="38%">
+
+
+<p valign="top">0</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+
+
+<p valign="top">%6.1f</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">obs2</p></td>
+<td width="8%">
+
+
+<p valign="top">h</p></td>
+<td width="7%">
+
+
+<p valign="top">Y</p></td>
+<td width="8%">
+
+
+<p valign="top">-32768</p></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">0.1</p></td>
+<td width="38%">
+
+
+<p valign="top">0</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+
+
+<p valign="top">%6.1f</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">obs3</p></td>
+<td width="8%">
+
+
+<p valign="top">h</p></td>
+<td width="7%">
+
+
+<p valign="top">N</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">0.1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="38%">
+
+
+<p valign="top">%6.1f</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">The rest of the
+steps are identical.</p>
+
+<p style="margin-left:11%;"><b>COARDS 1-D netCDF
+files:</b></p>
+
+<p style="margin-left:22%;">Finally, suppose that your line
+files actually are netCDF files that conform to the COARDS
+convention, with data columns named <i>lon</i>, <i>lat</i>,
+<i>time</i>, <i>obs1</i>, <i>obs2</i>, and <i>obs3</i>. All
+that is needed is a different line.def file:</p>
+
+<p style="margin-left:22%; margin-top: 1em"># Define file
+for the netCDF COARDS line format</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">#NETCDF</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top"># File is now netCDF</p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">#GEO</p></td>
+<td width="8%">
+</td>
+<td width="7%">
+
+
+<p valign="top"># Data are geographic</p></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">#name</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">type</p></td>
+<td width="8%">
+
+
+<p valign="top">NaN?</p></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">NaN-proxy</p></td>
+<td width="38%">
+
+
+<p valign="top">scale offset oformat</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">lon</p></td>
+<td width="8%">
+
+
+<p valign="top">d</p></td>
+<td width="7%">
+
+
+<p valign="top">N</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="38%">
+
+
+<p valign="top">%10.5f</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">lat</p></td>
+<td width="8%">
+
+
+<p valign="top">d</p></td>
+<td width="7%">
+
+
+<p valign="top">N</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="38%">
+
+
+<p valign="top">%9.5f</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">time</p></td>
+<td width="8%">
+
+
+<p valign="top">d</p></td>
+<td width="7%">
+
+
+<p valign="top">N</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="38%">
+
+
+<p valign="top">%7.1f</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">obs1</p></td>
+<td width="8%">
+
+
+<p valign="top">d</p></td>
+<td width="7%">
+
+
+<p valign="top">N</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="38%">
+
+
+<p valign="top">%6.1f</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">obs2</p></td>
+<td width="8%">
+
+
+<p valign="top">d</p></td>
+<td width="7%">
+
+
+<p valign="top">N</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="38%">
+
+
+<p valign="top">%6.1f</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">obs3</p></td>
+<td width="8%">
+
+
+<p valign="top">d</p></td>
+<td width="7%">
+
+
+<p valign="top">N</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="8%">
+
+
+<p valign="top">1</p></td>
+<td width="8%">
+
+
+<p valign="top">0</p></td>
+<td width="38%">
+
+
+<p valign="top">%6.1f</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Note we use no
+scaling or NAN proxies since those issues are usually
+handled internally in the netCDF format description.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="x2sys_binlist.html">x2sys_binlist</A></i>(1),
+<i><A HREF="x2sys_datalist.html">x2sys_datalist</A></i>(1), <i><A HREF="x2sys_get.html">x2sys_get</A></i>(1),
+<i><A HREF="x2sys_list.html">x2sys_list</A></i>(1), <i><A HREF="x2sys_put.html">x2sys_put</A></i>(1),
+<i><A HREF="x2sys_report.html">x2sys_report</A></i>(1), <i><A HREF="x2sys_solve.html">x2sys_solve</A></i>(1)</p>
+<hr>
+</body>
+</html>

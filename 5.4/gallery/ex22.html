@@ -1,0 +1,254 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(22) World-wide seismicity the last 7 days &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(23) All great-circle paths lead to Rome" href="ex23.html" />
+    <link rel="prev" title="(21) Time-series of RedHat stock price" href="ex21.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex23.html" title="(23) All great-circle paths lead to Rome"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex21.html" title="(21) Time-series of RedHat stock price"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="world-wide-seismicity-the-last-7-days">
+<span id="example-22"></span><h1>(22) World-wide seismicity the last 7 days<a class="headerlink" href="#world-wide-seismicity-the-last-7-days" title="Permalink to this headline">¶</a></h1>
+<p>The next example uses the command-line tool <strong>wget</strong> to obtain a data
+file from a specified URL <a class="footnote-reference" href="#id2" id="id1">[1]</a>. In the example script this line is
+commented out so the example will run even if you do not have <strong>wget</strong>
+(we use the supplied <code class="docutils literal notranslate"><span class="pre">neic_quakes.d</span></code> which normally would be created by <strong>wget</strong>);
+remove the comment to get the actual current seismicity plot using the
+live data. The main purpose of this script is not to show how to plot a
+map background and a few circles, but rather demonstrate how a map
+legend may be composed using the new tool
+<a class="reference internal" href="../pslegend.html"><span class="doc">pslegend</span></a>. Some scripting is used to
+pull out information from the data file that is later used in the
+legend. The legend will normally have the email address of the script
+owner; here that command is commented out and the user is hardwired to
+“GMT guru”. The USGS logo, taken from their web page and converted to a
+Sun raster file, is used to spice up the legend.</p>
+<p>The script produces the plot in Figure,
+giving the URL where these and similar data can be obtained.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 22</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Automatic map of last 7 days of world-wide seismicity</span>
+<span class="c1"># GMT modules:	gmtset, pscoast, psxy, pslegend</span>
+<span class="c1"># Unix progs:	cat, sed, awk, wget|curl</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_22.ps
+gmt <span class="nb">set</span> FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
+
+<span class="c1"># Get the data (-q quietly) from USGS using the wget (comment out in case</span>
+<span class="c1"># your system does not have wget or curl)</span>
+
+<span class="c1">#wget http://neic.usgs.gov/neis/gis/bulletin.asc -q -O neic_quakes.txt</span>
+<span class="c1">#curl http://neic.usgs.gov/neis/gis/bulletin.asc -s &gt; neic_quakes.txt</span>
+
+<span class="c1"># Count the number of events (to be used in title later. one less due to header)</span>
+
+<span class="nv">n</span><span class="o">=</span><span class="sb">`</span>gmt info neic_quakes.txt -h1 -Fi -o2<span class="sb">`</span>
+<span class="c1"># Pull out the first and last timestamp to use in legend title</span>
+
+<span class="nv">first</span><span class="o">=</span><span class="sb">`</span>sed -n 2p neic_quakes.txt <span class="p">|</span> <span class="nv">$AWK</span> -F, <span class="s1">&#39;{printf &quot;%s %s\n&quot;, $1, $2}&#39;</span><span class="sb">`</span>
+<span class="nv">last</span><span class="o">=</span><span class="sb">`</span>sed -n <span class="s1">&#39;$p&#39;</span> neic_quakes.txt <span class="p">|</span> <span class="nv">$AWK</span> -F, <span class="s1">&#39;{printf &quot;%s %s\n&quot;, $1, $2}&#39;</span><span class="sb">`</span>
+
+<span class="c1"># Assign a string that contains the current user @ the current computer node.</span>
+<span class="c1"># Note that two @@ is needed to print a single @ in gmt pstext:</span>
+
+<span class="c1">#set me = &quot;$user@@`hostname`&quot;</span>
+<span class="nv">me</span><span class="o">=</span><span class="s2">&quot;GMT guru @@ GMTbox&quot;</span>
+
+<span class="c1"># Create standard seismicity color table</span>
+
+gmt makecpt -Cred,green,blue -T0,100,300,10000 -N &gt; neis.cpt
+
+<span class="c1"># Start plotting. First lay down map, then plot quakes with size = magintude/50&quot;:</span>
+
+gmt pscoast -Rg -JK180/9i -B45g30 -B+t<span class="s2">&quot;World-wide earthquake activity&quot;</span> -Gbrown -Slightblue <span class="se">\</span>
+	-Dc -A1000 -K -Y2.75i &gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K -Cneis.cpt -Sci -Wthin -h -i3,2,5,4+s0.02 neic_quakes.txt &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Create legend input file for NEIS quake plot</span>
+
+cat &gt; neis.legend <span class="s">&lt;&lt; END</span>
+<span class="s">H 16 1 $n events during $first to $last</span>
+<span class="s">D 0 1p</span>
+<span class="s">N 3</span>
+<span class="s">V 0 1p</span>
+<span class="s">S 0.1i c 0.1i red 0.25p 0.2i Shallow depth (0-100 km)</span>
+<span class="s">S 0.1i c 0.1i green 0.25p 0.2i Intermediate depth (100-300 km)</span>
+<span class="s">S 0.1i c 0.1i blue 0.25p 0.2i Very deep (&gt; 300 km)</span>
+<span class="s">D 0 1p</span>
+<span class="s">V 0 1p</span>
+<span class="s">N 7</span>
+<span class="s">V 0 1p</span>
+<span class="s">S 0.1i c 0.06i - 0.25p 0.3i M 3</span>
+<span class="s">S 0.1i c 0.08i - 0.25p 0.3i M 4</span>
+<span class="s">S 0.1i c 0.10i - 0.25p 0.3i M 5</span>
+<span class="s">S 0.1i c 0.12i - 0.25p 0.3i M 6</span>
+<span class="s">S 0.1i c 0.14i - 0.25p 0.3i M 7</span>
+<span class="s">S 0.1i c 0.16i - 0.25p 0.3i M 8</span>
+<span class="s">S 0.1i c 0.18i - 0.25p 0.3i M 9</span>
+<span class="s">D 0 1p</span>
+<span class="s">V 0 1p</span>
+<span class="s">N 1</span>
+<span class="s">END</span>
+
+<span class="c1"># Put together a reasonable legend text, and add logo and user&#39;s name:</span>
+
+cat <span class="s">&lt;&lt; END &gt;&gt; neis.legend</span>
+<span class="s">G 0.25l</span>
+<span class="s">P</span>
+<span class="s">T USGS/NEIS most recent earthquakes for the last seven days.  The data were</span>
+<span class="s">T obtained automatically from the USGS Earthquake Hazards Program page at</span>
+<span class="s">T @_http://neic/usgs.gov @_.  Interested users may also receive email alerts</span>
+<span class="s">T from the USGS.</span>
+<span class="s">T This script can be called daily to update the latest information.</span>
+<span class="s">G 0.4i</span>
+<span class="s"># Add USGS logo</span>
+<span class="s">I USGS.ras 1i RT</span>
+<span class="s">G -0.3i</span>
+<span class="s">L 12 6 LB $me</span>
+<span class="s">END</span>
+
+<span class="c1"># OK, now we can actually run gmt pslegend.  We center the legend below the map.</span>
+<span class="c1"># Trial and error shows that 1.7i is a good legend height:</span>
+
+gmt pslegend -DJBC+o0/0.4i+w7i/1.7i -R -J -O -F+p+glightyellow neis.legend  &gt;&gt; <span class="nv">$ps</span>
+
+<span class="c1"># Clean up after ourselves:</span>
+
+rm -f neis.* gmt.conf
+</pre></div>
+</div>
+<div class="figure align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/example_22.png"><img alt="../_images/example_22.png" src="../_images/example_22.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">World-wide seismicity the last 7 days.</span></p>
+</div>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>You can also use the utility <strong>curl</strong></td></tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex21.html"
+                        title="previous chapter">(21) Time-series of RedHat stock price</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex23.html"
+                        title="next chapter">(23) All great-circle paths lead to Rome</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex22.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex23.html" title="(23) All great-circle paths lead to Rome"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex21.html" title="(21) Time-series of RedHat stock price"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

@@ -1,0 +1,208 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(17) Images clipped by coastlines &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(18) Volumes and Spatial Selections" href="ex18.html" />
+    <link rel="prev" title="(16) Gridding of data, continued" href="ex16.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex18.html" title="(18) Volumes and Spatial Selections"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex16.html" title="(16) Gridding of data, continued"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="images-clipped-by-coastlines">
+<span id="example-17"></span><h1>(17) Images clipped by coastlines<a class="headerlink" href="#images-clipped-by-coastlines" title="Permalink to this headline">¶</a></h1>
+<p>This example demonstrates how <a class="reference internal" href="../pscoast.html"><span class="doc">pscoast</span></a>
+can be used to set up clip paths based on coastlines. This approach is
+well suited when different gridded data sets are to be merged on a plot
+using different CPTs. Merging the files themselves may
+not be doable since they may represent different data sets, as we show
+in this example. Here, we lay down a color map of the geoid field near
+India with <a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a>, use
+<a class="reference internal" href="../pscoast.html"><span class="doc">pscoast</span></a> to set up land clip paths, and
+then overlay topography from the ETOPO5 data set with another call to
+<a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a>. We finally undo the
+clippath with a second call to <a class="reference internal" href="../pscoast.html"><span class="doc">pscoast</span></a>
+with the option <strong>-Q</strong> (See the Figure <a class="reference internal" href="#fig-ex17"><span class="std std-ref">Clipping of images using coastlines</span></a>):</p>
+<p>We also plot a color legend on top of the land. So here we basically
+have three layers of “paint” stacked on top of each other: the
+underlaying geoid map, the land mask, and finally the color legend. This
+legend makes clear how <a class="reference internal" href="../grd2cpt.html"><span class="doc">grd2cpt</span></a>
+distributed the colors over the range: they are not of equal length put
+are associated with equal amounts of area in the plot. Since the high
+amounts (in red) are not very prevalent, that color spans a long range.</p>
+<p>For this image it is appropriate to use the <strong>-I</strong> option in
+<a class="reference internal" href="../psscale.html"><span class="doc">psscale</span></a> so the legend gets shaded,
+similar to the geoid grid. See Appendix [app:M] to learn more about
+CPTs and ways to draw color legends.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 17</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Illustrates clipping of images using coastlines</span>
+<span class="c1"># GMT modules:	grd2cpt, grdimage, pscoast, pstext</span>
+<span class="c1"># Unix progs:	rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_17.ps
+
+<span class="c1"># First generate geoid image w/ shading</span>
+
+gmt grd2cpt india_geoid.nc -Crainbow &gt; geoid.cpt
+gmt grdimage india_geoid.nc -I+a45+nt1 -JM6.5i -Cgeoid.cpt -P -K &gt; <span class="nv">$ps</span>
+
+<span class="c1"># Then use gmt pscoast to initiate clip path for land</span>
+
+gmt pscoast -Rindia_geoid.nc -J -O -K -Dl -Gc &gt;&gt; <span class="nv">$ps</span>
+
+<span class="c1"># Now generate topography image w/shading</span>
+
+gmt makecpt -C150 -T-10000,10000 -N &gt; shade.cpt
+gmt grdimage india_topo.nc -I+a45+nt1 -J -Cshade.cpt -O -K &gt;&gt; <span class="nv">$ps</span>
+
+<span class="c1"># Finally undo clipping and overlay basemap</span>
+
+gmt pscoast -R -J -O -K -Q -B10f5 -B+t<span class="s2">&quot;Clipping of Images&quot;</span> &gt;&gt; <span class="nv">$ps</span>
+
+<span class="c1"># Put a color legend on top of the land mask</span>
+
+gmt psscale -DjTR+o0.3i/0.1i+w4i/0.2i+h -R -J -Cgeoid.cpt -Bx5f1 -By+lm -I -O -K &gt;&gt; <span class="nv">$ps</span>
+
+<span class="c1"># Add a text paragraph</span>
+
+gmt pstext -R -J -O -M -Gwhite -Wthinner -TO -D-0.1i/0.1i -F+f12,Times-Roman+jRB &gt;&gt; <span class="nv">$ps</span> <span class="s">&lt;&lt; END</span>
+<span class="s">&gt; 90 -10 12p 3i j</span>
+<span class="s">@_@%5%Example 17.@%%@_  We first plot the color geoid image</span>
+<span class="s">for the entire region, followed by a gray-shaded @#etopo5@#</span>
+<span class="s">image that is clipped so it is only visible inside the coastlines.</span>
+<span class="s">END</span>
+
+<span class="c1"># Clean up</span>
+
+rm -f geoid.cpt shade.cpt
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<span id="fig-ex17"></span><a class="reference internal image-reference" href="../_images/example_17.png"><img alt="../_images/example_17.png" src="../_images/example_17.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Clipping of images using coastlines</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex16.html"
+                        title="previous chapter">(16) Gridding of data, continued</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex18.html"
+                        title="next chapter">(18) Volumes and Spatial Selections</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex17.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex18.html" title="(18) Volumes and Spatial Selections"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex16.html" title="(16) Gridding of data, continued"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

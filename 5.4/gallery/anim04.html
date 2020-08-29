@@ -1,0 +1,245 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(4) Flying over topography &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(5) Control spline gridding via eigenvalues" href="anim05.html" />
+    <link rel="prev" title="(3) Orbiting a static map" href="anim03.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="anim05.html" title="(5) Control spline gridding via eigenvalues"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="anim03.html" title="(3) Orbiting a static map"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="flying-over-topography">
+<span id="anim-04"></span><h1>(4) Flying over topography<a class="headerlink" href="#flying-over-topography" title="Permalink to this headline">¶</a></h1>
+<p>Our next animation simulates what an imaginary satellite might see as it
+passes in a great circle from New York to Miami at an altitude of 160
+km. We use the general perspective view projection with
+<a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a> and use
+<a class="reference internal" href="../project.html"><span class="doc">project</span></a> to create a great circle path
+between the two cities, sampled every 5 km. The main part of the script
+will make the DVD-quality frames from different view points, draw the
+path on the ground, and add frame numbers to each frame. As this
+animation generates 355 frames we can use 3rd party tools to turn the
+image sequence into a MPEG-4 movie. Note: At the moment,
+<a class="reference internal" href="../grdview.html"><span class="doc">grdview</span></a> cannot use general perspective
+view projection to allow “fly-through” animations like Fledermaus; we
+expect to add this functionality in a future version.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT ANIMATION 04</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Make DVD-res movie of NY to Miami flight</span>
+<span class="c1"># GMT modules:  gmtset, grdgradient, grdimage, makecpt, project, pstext, psxy, psconvert</span>
+<span class="c1"># Unix progs:   awk, mkdir, rm, mv, echo, qt_export, cat</span>
+<span class="c1"># Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.</span>
+<span class="c1">#</span>
+<span class="c1"># 1. Initialization</span>
+<span class="c1"># 1a) Assign movie parameters</span>
+. gmt_shell_functions.sh
+<span class="nv">REGION</span><span class="o">=</span>-Rg
+<span class="nv">altitude</span><span class="o">=</span><span class="m">160</span>.0
+<span class="nv">tilt</span><span class="o">=</span><span class="m">55</span>
+<span class="nv">azimuth</span><span class="o">=</span><span class="m">210</span>
+<span class="nv">twist</span><span class="o">=</span><span class="m">0</span>
+<span class="nv">Width</span><span class="o">=</span><span class="m">36</span>.0
+<span class="nv">Height</span><span class="o">=</span><span class="m">34</span>.0
+<span class="nv">px</span><span class="o">=</span><span class="m">7</span>.2
+<span class="nv">py</span><span class="o">=</span><span class="m">4</span>.8
+<span class="nv">dpi</span><span class="o">=</span><span class="m">100</span>
+<span class="nv">name</span><span class="o">=</span>anim_04
+<span class="nv">ps</span><span class="o">=</span><span class="si">${</span><span class="nv">name</span><span class="si">}</span>.ps
+
+<span class="c1"># Set up flight path</span>
+gmt project -C-73.8333/40.75 -E-80.133/25.75 -G5 -Q &gt; <span class="nv">$$</span>.path.d
+<span class="nv">frame</span><span class="o">=</span><span class="m">0</span>
+mkdir -p <span class="nv">$$</span>
+gmt grdgradient USEast_Coast.nc -A90 -Nt1 -Gint_<span class="nv">$$</span>.nc
+gmt makecpt -Cglobe &gt; globe_<span class="nv">$$</span>.cpt
+<span class="k">function</span> make_frame <span class="o">()</span> <span class="o">{</span>
+	<span class="nb">local</span> frame file ID lon lat dist
+	<span class="nv">frame</span><span class="o">=</span><span class="nv">$1</span><span class="p">;</span> <span class="nv">lon</span><span class="o">=</span><span class="nv">$2</span><span class="p">;</span> <span class="nv">lat</span><span class="o">=</span><span class="nv">$3</span><span class="p">;</span> <span class="nv">dist</span><span class="o">=</span><span class="nv">$4</span>
+	<span class="nv">file</span><span class="o">=</span><span class="sb">`</span>gmt_set_framename <span class="si">${</span><span class="nv">name</span><span class="si">}</span> <span class="si">${</span><span class="nv">frame</span><span class="si">}</span><span class="sb">`</span>
+	<span class="nv">ID</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="si">${</span><span class="nv">frame</span><span class="si">}</span> <span class="p">|</span> <span class="nv">$AWK</span> <span class="s1">&#39;{printf &quot;%04d\n&quot;, $1}&#39;</span><span class="sb">`</span>
+	gmt grdimage -JG<span class="si">${</span><span class="nv">lon</span><span class="si">}</span>/<span class="si">${</span><span class="nv">lat</span><span class="si">}</span>/<span class="si">${</span><span class="nv">altitude</span><span class="si">}</span>/<span class="si">${</span><span class="nv">azimuth</span><span class="si">}</span>/<span class="si">${</span><span class="nv">tilt</span><span class="si">}</span>/<span class="si">${</span><span class="nv">twist</span><span class="si">}</span>/<span class="si">${</span><span class="nv">Width</span><span class="si">}</span>/<span class="si">${</span><span class="nv">Height</span><span class="si">}</span>/7i+ <span class="se">\</span>
+		<span class="si">${</span><span class="nv">REGION</span><span class="si">}</span> -P -Y0.1i -X0.1i USEast_Coast.nc -Iint_<span class="nv">$$</span>.nc -Cglobe_<span class="nv">$$</span>.cpt <span class="se">\</span>
+		--PS_MEDIA<span class="o">=</span><span class="si">${</span><span class="nv">px</span><span class="si">}</span>ix<span class="si">${</span><span class="nv">py</span><span class="si">}</span>i -K &gt; <span class="si">${</span><span class="nv">file</span><span class="si">}</span>_<span class="nv">$$</span>.ps
+	gmt psxy -JG<span class="si">${</span><span class="nv">lon</span><span class="si">}</span>/<span class="si">${</span><span class="nv">lat</span><span class="si">}</span>/<span class="si">${</span><span class="nv">altitude</span><span class="si">}</span>/<span class="si">${</span><span class="nv">azimuth</span><span class="si">}</span>/<span class="si">${</span><span class="nv">tilt</span><span class="si">}</span>/<span class="si">${</span><span class="nv">twist</span><span class="si">}</span>/<span class="si">${</span><span class="nv">Width</span><span class="si">}</span>/<span class="si">${</span><span class="nv">Height</span><span class="si">}</span>/7i+ <span class="se">\</span>
+		<span class="si">${</span><span class="nv">REGION</span><span class="si">}</span> -O -K -W1p <span class="nv">$$</span>.path.d &gt;&gt; <span class="si">${</span><span class="nv">file</span><span class="si">}</span>_<span class="nv">$$</span>.ps
+	gmt pstext -R0/<span class="si">${</span><span class="nv">px</span><span class="si">}</span>/0/<span class="si">${</span><span class="nv">py</span><span class="si">}</span> -Jx1i -F+f14p,Helvetica-Bold+jTL -O &gt;&gt; <span class="si">${</span><span class="nv">file</span><span class="si">}</span>_<span class="nv">$$</span>.ps <span class="o">&lt;&lt;&lt;</span> <span class="s2">&quot;0 4.6 </span><span class="si">${</span><span class="nv">ID</span><span class="si">}</span><span class="s2">&quot;</span>
+	<span class="o">[[</span> <span class="si">${</span><span class="nv">frame</span><span class="si">}</span> -eq <span class="m">0</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> cp <span class="si">${</span><span class="nv">file</span><span class="si">}</span>_<span class="nv">$$</span>.ps <span class="si">${</span><span class="nv">ps</span><span class="si">}</span>
+	<span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -eq <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+		gmt_cleanup .gmt
+		gmt_abort <span class="s2">&quot;</span><span class="si">${</span><span class="nv">0</span><span class="si">}</span><span class="s2">: First frame plotted to </span><span class="si">${</span><span class="nv">name</span><span class="si">}</span><span class="s2">.ps&quot;</span>
+	<span class="k">fi</span>
+	gmt psconvert <span class="si">${</span><span class="nv">file</span><span class="si">}</span>_<span class="nv">$$</span>.ps -Tt -E<span class="si">${</span><span class="nv">dpi</span><span class="si">}</span>
+	mv <span class="si">${</span><span class="nv">file</span><span class="si">}</span>_<span class="nv">$$</span>.tif <span class="nv">$$</span>/<span class="si">${</span><span class="nv">file</span><span class="si">}</span>.tif
+	rm -f <span class="si">${</span><span class="nv">file</span><span class="si">}</span>_<span class="nv">$$</span>.ps
+	<span class="nb">echo</span> <span class="s2">&quot;Frame </span><span class="si">${</span><span class="nv">file</span><span class="si">}</span><span class="s2"> completed&quot;</span>
+<span class="o">}</span>
+<span class="nv">n_jobs</span><span class="o">=</span><span class="m">0</span>
+<span class="nv">max_jobs</span><span class="o">=</span><span class="k">$(</span>getconf _NPROCESSORS_ONLN <span class="o">||</span> <span class="nb">echo</span> <span class="m">1</span><span class="k">)</span>
+<span class="k">while</span> <span class="nb">read</span> lon lat dist<span class="p">;</span> <span class="k">do</span>
+	make_frame <span class="si">${</span><span class="nv">frame</span><span class="si">}</span> <span class="si">${</span><span class="nv">lon</span><span class="si">}</span> <span class="si">${</span><span class="nv">lat</span><span class="si">}</span> <span class="si">${</span><span class="nv">dist</span><span class="si">}</span> <span class="p">&amp;</span>
+	<span class="o">((</span>++n_jobs<span class="o">))</span>
+	<span class="nv">frame</span><span class="o">=</span><span class="sb">`</span>gmt_set_framenext <span class="si">${</span><span class="nv">frame</span><span class="si">}</span><span class="sb">`</span>
+	<span class="k">if</span> <span class="o">[</span> <span class="si">${</span><span class="nv">n_jobs</span><span class="si">}</span> -ge <span class="si">${</span><span class="nv">max_jobs</span><span class="si">}</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+		<span class="nb">wait</span>
+		<span class="nv">n_jobs</span><span class="o">=</span><span class="m">0</span>
+	<span class="k">fi</span>
+<span class="k">done</span> &lt; <span class="nv">$$</span>.path.d
+<span class="nb">wait</span>
+
+<span class="nv">file</span><span class="o">=</span><span class="sb">`</span>gmt_set_framename <span class="si">${</span><span class="nv">name</span><span class="si">}</span> <span class="m">0</span><span class="sb">`</span>
+
+<span class="nb">echo</span> <span class="s2">&quot;Made </span><span class="si">${</span><span class="nv">frame</span><span class="si">}</span><span class="s2"> frames at 720x480 pixels&quot;</span>
+<span class="c1"># GIF animate every 20th frame</span>
+<span class="si">${</span><span class="nv">GRAPHICSMAGICK</span><span class="p">-gm</span><span class="si">}</span> convert -delay <span class="m">40</span> -loop <span class="m">0</span> +dither <span class="nv">$$</span>/<span class="si">${</span><span class="nv">name</span><span class="si">}</span>_*<span class="o">[</span><span class="m">02468</span><span class="o">]</span><span class="m">0</span>.tif <span class="si">${</span><span class="nv">name</span><span class="si">}</span>.gif
+<span class="k">if</span> <span class="nb">type</span> -ft <span class="si">${</span><span class="nv">FFMPEG</span><span class="p">-ffmpeg</span><span class="si">}</span> &gt;/dev/null <span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="p">;</span> <span class="k">then</span>
+	<span class="c1"># create H.264 video at 25fps</span>
+	<span class="nb">echo</span> <span class="s2">&quot;Creating H.264 video&quot;</span>
+	<span class="si">${</span><span class="nv">FFMPEG</span><span class="k">:-</span><span class="nv">ffmpeg</span><span class="si">}</span> -loglevel warning -y -f image2 -r <span class="m">25</span> -i <span class="nv">$$</span>/<span class="si">${</span><span class="nv">name</span><span class="si">}</span>_%6d.tif <span class="se">\</span>
+		-vcodec libx264 -preset slower -crf <span class="m">25</span> -pix_fmt yuv420p <span class="si">${</span><span class="nv">name</span><span class="si">}</span>.mp4
+	<span class="c1"># create WebM video</span>
+	<span class="nb">echo</span> <span class="s2">&quot;Creating WebM video&quot;</span>
+	<span class="si">${</span><span class="nv">FFMPEG</span><span class="k">:-</span><span class="nv">ffmpeg</span><span class="si">}</span> -loglevel warning -y -f image2 -r <span class="m">25</span> -i <span class="nv">$$</span>/<span class="si">${</span><span class="nv">name</span><span class="si">}</span>_%6d.tif <span class="se">\</span>
+		-vcodec libvpx -crf <span class="m">10</span> -b:v <span class="m">1</span>.2M -pix_fmt yuv420p <span class="si">${</span><span class="nv">name</span><span class="si">}</span>.webm
+	<span class="c1"># create Theora video</span>
+	<span class="nb">echo</span> <span class="s2">&quot;Creating Theora video&quot;</span>
+	<span class="si">${</span><span class="nv">FFMPEG</span><span class="k">:-</span><span class="nv">ffmpeg</span><span class="si">}</span> -loglevel warning -y -f image2 -r <span class="m">25</span> -i <span class="nv">$$</span>/<span class="si">${</span><span class="nv">name</span><span class="si">}</span>_%6d.tif <span class="se">\</span>
+		-vcodec libtheora -q <span class="m">4</span> -pix_fmt yuv420p <span class="si">${</span><span class="nv">name</span><span class="si">}</span>.ogv
+<span class="k">fi</span>
+
+<span class="c1"># 4. Clean up temporary files</span>
+gmt_cleanup .gmt
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/anim_04.png"><img alt="../_images/anim_04.png" src="../_images/anim_04.png" style="width: 0px;" /></a>
+<div class="figure align-center">
+  <video width="720" height="480" poster="../_images/anim_04.png" controls>
+    <source src="../_static/anim_04.mp4" type="video/mp4">
+    <source src="../_static/anim_04.webm" type="video/webm">
+    Your browser does not support the video tag.
+  </video>
+  <p class="caption">Flying over topography.</p>
+</div></div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="anim03.html"
+                        title="previous chapter">(3) Orbiting a static map</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="anim05.html"
+                        title="next chapter">(5) Control spline gridding via eigenvalues</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/anim04.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="anim05.html" title="(5) Control spline gridding via eigenvalues"
+             >next</a> </li>
+        <li class="right" >
+          <a href="anim03.html" title="(3) Orbiting a static map"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

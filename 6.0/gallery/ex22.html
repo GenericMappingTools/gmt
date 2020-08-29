@@ -1,0 +1,386 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>(22) World-wide seismicity the last 7 days &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(23) All great-circle paths lead to Rome" href="ex23.html" />
+    <link rel="prev" title="(21) Time-series of RedHat stock price" href="ex21.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+        
+      <li>(22) World-wide seismicity the last 7 days</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/gallery/ex22.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="world-wide-seismicity-the-last-7-days">
+<span id="example-22"></span><h1>(22) World-wide seismicity the last 7 days<a class="headerlink" href="#world-wide-seismicity-the-last-7-days" title="Permalink to this headline">¶</a></h1>
+<p>The next example uses the command-line tool <strong>curl</strong> to obtain a data
+file from a specified URL <a class="footnote-reference" href="#id2" id="id1">[1]</a>. In the example script this line is
+commented out so the example will run even if you do not have <strong>wget</strong>
+(we use the remote file <code class="docutils literal notranslate"><span class="pre">usgs_quakes_22.txt</span></code> which normally would be created by <strong>curl</strong>);
+remove the comments to get the actual current seismicity plot using the
+live data. The main purpose of this script is not to show how to plot a
+map background and a few circles, but rather demonstrate how a map
+legend may be composed using the module
+<a class="reference internal" href="../legend.html"><span class="doc">legend</span></a>. Some scripting is used to
+pull out information from the data file that is later used in the
+legend. The legend will normally have the email address of the script
+owner; here that command is commented out and the user is hardwired to
+“GMT guru”. The USGS logo, taken from their web page and converted to a
+Sun raster file, is used to spice up the legend.</p>
+<p>The script produces the plot in Figure,
+giving the URL where these and similar data can be obtained.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#		GMT EXAMPLE 22</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Automatic map of last month of world-wide seismicity</span>
+<span class="c1"># GMT modules:	set, coast, plot, legend</span>
+<span class="c1"># Unix progs:	cat, sed, awk, wget|curl</span>
+<span class="c1">#</span>
+gmt begin ex22
+	gmt <span class="nb">set</span> FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
+
+	<span class="c1"># Get the data (-s silently) from USGS using the curl</span>
+	<span class="c1"># Hardwired here to the month of October, 2017</span>
+	<span class="c1"># SITE=&quot;https://earthquake.usgs.gov/fdsnws/event/1/query.csv&quot;</span>
+	<span class="c1"># TIME=&quot;starttime=2017-09-01%2000:00:00&amp;endtime=2017-10-01%2000:00:00&quot;</span>
+	<span class="c1"># MAG=&quot;minmagnitude=3&quot;</span>
+	<span class="c1"># ORDER=&quot;orderby=magnitude&quot;</span>
+	<span class="c1"># URL=&quot;${SITE}?${TIME}&amp;${MAG}&amp;${ORDER}&quot;</span>
+	<span class="c1"># curl -s $URL &gt; usgs_quakes_22.txt</span>
+
+	<span class="c1"># Count the number of events (to be used in title later. one less due to header)</span>
+	<span class="nv">file</span><span class="o">=</span><span class="sb">`</span>gmt which @usgs_quakes_22.txt -G<span class="sb">`</span>
+	<span class="nv">n</span><span class="o">=</span><span class="sb">`</span>gmt info <span class="nv">$file</span> -h1 -Fi -o2<span class="sb">`</span>
+
+	<span class="c1"># Pull out the first and last timestamp to use in legend title</span>
+	<span class="nv">first</span><span class="o">=</span><span class="sb">`</span>gmt info -h1 -f0T -i0 <span class="nv">$file</span> -C --TIME_UNIT<span class="o">=</span>d -I1 -o0 --FORMAT_CLOCK_OUT<span class="o">=</span>-<span class="sb">`</span>
+	<span class="nv">last</span><span class="o">=</span><span class="sb">`</span>gmt info -h1 -f0T -i0 <span class="nv">$file</span> -C --TIME_UNIT<span class="o">=</span>d -I1 -o1 --FORMAT_CLOCK_OUT<span class="o">=</span>-<span class="sb">`</span>
+
+	<span class="c1"># Assign a string that contains the current user @ the current computer node.</span>
+	<span class="c1"># Note that two @@ is needed to print a single @ in gmt text:</span>
+
+	<span class="c1">#set me = &quot;$user@@`hostname`&quot;</span>
+	<span class="nv">me</span><span class="o">=</span><span class="s2">&quot;GMT guru @@ GMTbox&quot;</span>
+
+	<span class="c1"># Create standard seismicity color table</span>
+	gmt makecpt -Cred,green,blue -T0,100,300,10000 -N
+
+	<span class="c1"># Start plotting. First lay down map, then plot quakes with size = magnitude * 0.015&quot;:</span>
+	gmt coast -Rg -JK180/9i -B45g30 -B+t<span class="s2">&quot;World-wide earthquake activity&quot;</span> -Gburlywood -Slightblue -A1000 -Y2.75i
+	gmt plot -C -Sci -Wfaint -hi1 -i2,1,3,4+s0.015 <span class="nv">$file</span>
+
+	<span class="c1"># Create legend input file for NEIS quake plot</span>
+	cat &gt; neis.legend <span class="s">&lt;&lt;- END</span>
+<span class="s">	H 16p,Helvetica-Bold $n events during $first to $last</span>
+<span class="s">	D 0 1p</span>
+<span class="s">	N 3</span>
+<span class="s">	V 0 1p</span>
+<span class="s">	S 0.1i c 0.1i red 0.25p 0.2i Shallow depth (0-100 km)</span>
+<span class="s">	S 0.1i c 0.1i green 0.25p 0.2i Intermediate depth (100-300 km)</span>
+<span class="s">	S 0.1i c 0.1i blue 0.25p 0.2i Very deep (&gt; 300 km)</span>
+<span class="s">	D 0 1p</span>
+<span class="s">	V 0 1p</span>
+<span class="s">	N 7</span>
+<span class="s">	V 0 1p</span>
+<span class="s">	S 0.1i c 0.06i - 0.25p 0.3i M 3</span>
+<span class="s">	S 0.1i c 0.08i - 0.25p 0.3i M 4</span>
+<span class="s">	S 0.1i c 0.10i - 0.25p 0.3i M 5</span>
+<span class="s">	S 0.1i c 0.12i - 0.25p 0.3i M 6</span>
+<span class="s">	S 0.1i c 0.14i - 0.25p 0.3i M 7</span>
+<span class="s">	S 0.1i c 0.16i - 0.25p 0.3i M 8</span>
+<span class="s">	S 0.1i c 0.18i - 0.25p 0.3i M 9</span>
+<span class="s">	D 0 1p</span>
+<span class="s">	V 0 1p</span>
+<span class="s">	N 1</span>
+<span class="s">	END</span>
+
+	<span class="c1"># Put together a reasonable legend text, and add logo and user&#39;s name:</span>
+	cat <span class="s">&lt;&lt;- END &gt;&gt; neis.legend</span>
+<span class="s">	G 0.25l</span>
+<span class="s">	P</span>
+<span class="s">	T USGS/NEIS most recent earthquakes for the last month.  The data were</span>
+<span class="s">	T obtained automatically from the USGS Earthquake Hazards Program page at</span>
+<span class="s">	T @_https://earthquake.usgs.gov@_.  Interested users may also receive email alerts</span>
+<span class="s">	T from the USGS.</span>
+<span class="s">	T This script could be called monthly to update the latest information.</span>
+<span class="s">	G 0.4i</span>
+<span class="s">	# Add USGS logo</span>
+<span class="s">	I @USGS.png 1i RT</span>
+<span class="s">	G -0.3i</span>
+<span class="s">	L 12p,Times-Italic LB $me</span>
+<span class="s">	END</span>
+
+	<span class="c1"># OK, now we can actually run gmt legend.  We center the legend below the map.</span>
+	<span class="c1"># Trial and error shows that 1.7i is a good legend height:</span>
+	gmt legend -DJBC+o0/0.4i+w7i/1.7i -F+p+glightyellow neis.legend
+
+	rm neis.legend usgs_quakes_22.txt
+gmt end show
+</pre></div>
+</div>
+<div class="figure align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/ex22.png"><img alt="../_images/ex22.png" src="../_images/ex22.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">World-wide seismicity the last 7 days.</span></p>
+</div>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>You can also use the utility <strong>curl</strong></td></tr>
+</tbody>
+</table>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ex23.html" class="btn btn-neutral float-right" title="(23) All great-circle paths lead to Rome" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ex21.html" class="btn btn-neutral float-left" title="(21) Time-series of RedHat stock price" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

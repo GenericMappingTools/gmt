@@ -1,0 +1,365 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>1. Introduction &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="examples_options.html" />
+    <link rel="prev" title="Julia Wrapper" href="jl_wrapper.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="examples_options.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="jl_wrapper.html" title="Julia Wrapper"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="jl_wrapper.html" accesskey="U">Julia Wrapper</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p><strong>The Generic Mapping Tools</strong></p>
+<p><strong>The Julia Interface</strong></p>
+<p><strong>Joaquim F. Luis</strong></p>
+<p><strong>Universidade do Algarve, Faro, Portugal</strong></p>
+<p><strong>Pål (Paul) Wessel</strong></p>
+<p><strong>SOEST, University of Hawai’i at Manoa</strong></p>
+<div class="section" id="introduction">
+<h1>1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference external" href="http://julialang.org">Julia</a> wrapper is a companion to the MATLAB wrapper that works in very similar way,
+making use of the relative similarity of the two languages.</p>
+</div>
+<div class="section" id="installing">
+<h1>2. Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h1>
+<p>Contrary to the rest of all <strong>GMT</strong> products the Julia wrapper has to live in a Github repository. At the time of
+this writing the wrapper was not yet registered within the Julia package manager, so to install it one has to
+access the Github address directly. After installing Julia and from within its shell (<em>aka</em> the REPL) issue this
+command: (but refer to Julia’s <a class="reference external" href="http://docs.julialang.org/en/release-0.4/stdlib/pkg/?highlight=init#package-manager-functions">package manager</a>)</p>
+<blockquote>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">Pkg</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;GMT&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Now you are ready to start using the <strong>GMT</strong> wrapper and the only condition for it to work is that the GMT5.2 shared libs
+are listed in your path. On Windows the <strong>GMT</strong> installer takes care of that but be careful that no other previous version
+is found first.</p>
+<p>On UNIX things are more complicated (<em>surprise</em>). On OSX, the only other OS tested so far by us, we got a working version
+by running, in the Julia <em>REPL</em></p>
+<blockquote>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">push</span><span class="o">!</span><span class="p">(</span><span class="n">Libdl</span><span class="p">.</span><span class="n">DL_LOAD_PATH</span><span class="p">,</span> <span class="s">&quot;/Users/j/programs/gmt5/lib&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>this adds, for one particular user case, the <em>gmt/lib</em> directory to the list of system locations searched for valid libraries.
+There might be more problems finding other gmt dependencies but with Homebrew builds it works because those dependencies
+are located at /usr/local/lib and the system finds them with no other help. To make that line permanent, add it to your
+~/.juliarc.jl file (if don’t have one yet, create it).</p>
+</div>
+<div class="section" id="using">
+<h1>3. Using<a class="headerlink" href="#using" title="Permalink to this headline">¶</a></h1>
+<p>The Julia wrapper was designed to work in a way the closest as possible to the command line version.
+In this sense, all <strong>GMT</strong> options are put in a single text string that is passed, plus the data itself when it applies,
+to the <code class="docutils literal notranslate"><span class="pre">gmt()</span></code> command. For example to reproduce the CookBook example of an Hemisphere map using a
+Azimuthal projection</p>
+<blockquote>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">using</span> <span class="n">GMT</span>
+<span class="n">gmt</span><span class="p">(</span><span class="s">&quot;pscoast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy -P &gt; GMT_lambert_az_hemi.ps&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note the <code class="docutils literal notranslate"><span class="pre">using</span> <span class="pre">GMT</span></code> command. We need to do that to load the <code class="docutils literal notranslate"><span class="pre">GMT.jl</span></code> wrapper and the first time it will
+take a little longer because it will need to <em>JIT</em> compile the module’s code. Following commands, however, will run at same
+speed as the command line calls to <strong>GMT</strong>.</p>
+<p>However, the above example is not particularly interesting as after all we could do the exact same thing on the a shell
+command line. Things start to get interesting when we can send data <em>in</em> and <em>out</em> from Julia to
+<strong>GMT</strong>. So, consider the following example</p>
+<blockquote>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="mi">150</span><span class="p">;</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">gmt</span><span class="p">(</span><span class="s">&quot;surface -R0/150/0/150 -I1&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">);</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Here we just created a random data <em>100x3</em> matrix and told <strong>GMT</strong> to grid it using it’s program
+<em>surface</em>. Note how the syntax follows closely the standard usage but we sent the data to be
+interpolated (the <em>t</em> matrix) as the second argument to the <code class="docutils literal notranslate"><span class="pre">gmt()</span></code> function. And on return we
+got the <em>G</em> variable that is a structure (actually a Julia’s <code class="docutils literal notranslate"><span class="pre">type</span></code>) holding the grid and it’s metadata. See the
+<a class="reference internal" href="#grid-type"><span class="std std-ref">grid type</span></a> for the details of its members.</p>
+<p>Imagining that we want to plot that random data art, we can do it with a call to <em>grdimage</em>, like</p>
+<blockquote>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span><span class="p">(</span><span class="s">&quot;grdimage -JX8c -Ba -P -Cblue,red &gt; crap_img.ps&quot;</span><span class="p">,</span> <span class="n">G</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note that we now sent the <em>G grid</em> as argument instead of the <strong>-G</strong><em>gridname</em> that we would have
+used in the command line. But for readability we could well had left the <strong>-G</strong> option in command string. E.g:</p>
+<blockquote>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span><span class="p">(</span><span class="s">&quot;grdimage -JX8c -Ba -P -Cblue,red -G &gt; crap_img.ps&quot;</span><span class="p">,</span> <span class="n">G</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>While for this particular case it makes no difference to use or not the <strong>-G</strong>, because there is <strong>only</strong>
+one input, the same does not hold true when we have more than one. For example, we can run the same example
+but compute the CPT separately.</p>
+<blockquote>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">cpt</span> <span class="o">=</span> <span class="n">gmt</span><span class="p">(</span><span class="s">&quot;grd2cpt -Cblue,red&quot;</span><span class="p">,</span> <span class="n">G</span><span class="p">);</span>
+<span class="n">gmt</span><span class="p">(</span><span class="s">&quot;grdimage -JX8c -Ba -P -C -G &gt; crap_img.ps&quot;</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">cpt</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Now we had to explicitly write the <strong>-C</strong> &amp; <strong>-G</strong> (well, actually we could have omitted the <strong>-G</strong> because
+it’s a mandatory input but that would make the things more confusing). Note also the order of the input data variables.
+It is crucial that they are used in the <strong>exact</strong> same order as the options in the command string.</p>
+<p>To illustrate another aspect on the importance of the order of input data let us see how to plot a sinus curve
+made of colored filled circles.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>x = linspace(-pi, pi);             # The *xx* var
+seno = sin(x);                     # *yy*
+xyz  = [x seno seno];              # Duplicate *yy* so that it can be colored
+cpt  = gmt(&quot;makecpt -T-1/1/0.1&quot;);  # Create a CPT
+gmt(&quot;psxy -R-3.2/3.2/-1.1/1.1 -JX12c -Sc0.1c -C -P -Ba &gt; seno.ps&quot;, xyz, cpt)
+</pre></div>
+</div>
+<p>The poin here is that we had to give <em>cpt, xyz</em> and not <em>xyz, cpt</em> (which would error) because input data
+associated with an option letter <strong>always comes first</strong> and has to respect the corresponding options order
+in command string.</p>
+<p>To plot text strings we send in the input data wrapped in a cell array. Example:</p>
+<blockquote>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">lines</span> <span class="o">=</span> <span class="n">Any</span><span class="p">[</span><span class="s">&quot;5 6 Some label&quot;</span><span class="p">,</span> <span class="s">&quot;6 7 Another label&quot;</span><span class="p">];</span>
+<span class="n">gmt</span><span class="p">(</span><span class="s">&quot;pstext -R0/10/0/10 -JM6i -Bafg -F+f18p -P &gt; text.ps&quot;</span><span class="p">,</span> <span class="n">lines</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>and we get back text info in cell arrays as well. Using the <em>G</em> grid computed above we can run <em>gmtinfo</em> on it</p>
+<blockquote>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">info</span> <span class="o">=</span> <span class="n">gmt</span><span class="p">(</span><span class="s">&quot;gmtinfo&quot;</span><span class="p">,</span> <span class="n">G</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>At the end of an <strong>GMT</strong> session work we call the internal functions that will do the house keeping of
+freeing no longer needed memory. We do that with this command:</p>
+<blockquote>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span><span class="p">(</span><span class="s">&quot;destroy&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>So that’s basically how it works. When numeric data has to be sent <em>in</em> to <strong>GMT</strong> we use
+Julia variables holding the data in matrices or structures or cell arrays depending on the case. On
+return we get the computed result stored in variables that we gave as output arguments.
+Things only complicate a little more for the cases where we can have more than one <em>input</em> or
+<em>output</em> arguments. The file <em>gallery.jl</em> in <em>test</em> directory, that reproduces the examples in the
+Gallery section of the <strong>GMT</strong> documentation, has many (not so trivial) examples on usage of the Julia GMT5.2 API.</p>
+<p>To run the examples in <em>gallery.jl</em> we have to load the file first, which is located in your .julia directory.
+For me it lives in <em>C:/j/.julia/v0.4/GMT/test/gallery.jl</em> and we have to edit it to set the path to the <strong>GMT</strong>
+root dir so that the data file used in examples can be found. After that, run</p>
+<blockquote>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">include</span><span class="p">(</span><span class="s">&quot;C:/j/.julia/v0.4/GMT/test/gallery.jl&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>now the examples are wrapped in functions named <em>ex01</em>, <em>ex02</em>, … <em>ex45</em> (not all are yet ported/working) and we
+just call them with</p>
+<blockquote>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">ex01</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+<div class="highlight-none notranslate" id="grid-type"><div class="highlight"><pre><span></span>type GMTgrid                  # The type holding a local header and data of a GMT grid
+   proj4::String              # Projection string in PROJ4 syntax (Optional)
+   wkt::String                # Projection string in WKT syntax (Optional)
+   range::Array{Float64,1}    # 1x6 vector with [x_min x_max y_min y_max z_min z_max]
+   inc::Array{Float64,1}      # 1x2 vector with [x_inc y_inc]
+   registration::Int          # Registration type: 0 -&gt; Grid registration; 1 -&gt; Pixel registration
+   nodata::Float64            # The value of nodata
+   title::String              # Title (Optional)
+   comment::String            # Remark (Optional)
+   command::String            # Command used to create the grid (Optional)
+   datatype::String           # &#39;float&#39; or &#39;double&#39;
+   x::Array{Float64,1}        # [1 x n_columns] vector with XX coordinates
+   y::Array{Float64,1}        # [1 x n_rows]    vector with YY coordinates
+   z::Array{Float32,2}        # [n_rows x n_columns] grid array
+   x_units::String            # Units of XX axis (Optional)
+   y_units::String            # Units of YY axis (Optional)
+   z_units::String            # Units of ZZ axis (Optional)
+   layout::String             # A three character string describing the grid memory layout
+end
+</pre></div>
+</div>
+<p>Definition of the <em>grid type</em> that holds a grid and its metadata.</p>
+<div class="highlight-none notranslate" id="img-type"><div class="highlight"><pre><span></span>type GMTimage                 # The type holding a local header and data of a GMT image
+   proj4::String              # Projection string in PROJ4 syntax (Optional)
+   wkt::String                # Projection string in WKT syntax (Optional)
+   range::Array{Float64,1}    # 1x6 vector with [x_min x_max y_min y_max z_min z_max]
+   inc::Array{Float64,1}      # 1x2 vector with [x_inc y_inc]
+   registration::Int          # Registration type: 0 -&gt; Grid registration; 1 -&gt; Pixel registration
+   nodata::Float64            # The value of nodata
+   title::String              # Title (Optional)
+   comment::String            # Remark (Optional)
+   command::String            # Command used to create the image (Optional)
+   datatype::String           # &#39;uint8&#39; or &#39;int8&#39; (needs checking)
+   x::Array{Float64,1}        # [1 x n_columns] vector with XX coordinates
+   y::Array{Float64,1}        # [1 x n_rows]    vector with YY coordinates
+   image::Array{UInt8,3}      # [n_rows x n_columns x n_bands] image array
+   x_units::String            # Units of XX axis (Optional)
+   y_units::String            # Units of YY axis (Optional)
+   z_units::String            # Units of ZZ axis (Optional) ==&gt; MAKES NO SENSE
+   colormap::Array{Clong,1}   #
+   alpha::Array{UInt8,2}      # A [n_rows x n_columns] alpha array
+   layout::String             # A four character string describing the image memory layout
+end
+</pre></div>
+</div>
+<p>Definition of the <em>image type</em> that holds an image and its metadata.</p>
+<div class="highlight-c notranslate" id="dataset-type"><div class="highlight"><pre><span></span><span class="n">type</span> <span class="n">GMTdataset</span>
+    <span class="n">header</span><span class="o">::</span><span class="n">String</span>
+    <span class="n">data</span><span class="o">::</span><span class="n">Array</span><span class="p">{</span><span class="n">Float64</span><span class="p">,</span><span class="mi">2</span><span class="p">}</span>
+    <span class="n">text</span><span class="o">::</span><span class="n">Array</span><span class="p">{</span><span class="n">Any</span><span class="p">,</span><span class="mi">1</span><span class="p">}</span>
+    <span class="n">comment</span><span class="o">::</span><span class="n">Array</span><span class="p">{</span><span class="n">Any</span><span class="p">,</span><span class="mi">1</span><span class="p">}</span>
+    <span class="n">proj4</span><span class="o">::</span><span class="n">String</span>
+    <span class="n">wkt</span><span class="o">::</span><span class="n">String</span>
+<span class="n">end</span>
+</pre></div>
+</div>
+<p>Definition of the <em>daset type</em>.</p>
+<div class="highlight-none notranslate" id="cpt-type"><div class="highlight"><pre><span></span>type GMTcpt
+    colormap::Array{Float64,2}
+    alpha::Array{Float64,1}
+    range::Array{Float64,2}
+    minmax::Array{Float64,1}
+    bfn::Array{Float64,2}
+    depth::Cint
+    hinge::Cdouble
+    cpt::Array{Float64,2}
+    model::String
+    comment::Array{Any,1}   # Cell array with any comments
+end
+</pre></div>
+</div>
+<p>Definition of the <em>cpt type</em> that holds a CPT paltette.</p>
+<div class="highlight-none notranslate" id="ps-type"><div class="highlight"><pre><span></span>type GMTps
+    postscript::String      # Actual PS plot (text string)
+    length::Int             # Byte length of postscript
+    mode::Int               # 1 = Has header, 2 = Has trailer, 3 = Has both
+    comment::Array{Any,1}   # Cell array with any comments
+end
+</pre></div>
+</div>
+<p>Definition of the <em>PotScript type</em>.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1. Introduction</a></li>
+<li><a class="reference internal" href="#installing">2. Installing</a></li>
+<li><a class="reference internal" href="#using">3. Using</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="jl_wrapper.html"
+                        title="previous chapter">Julia Wrapper</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="examples_options.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/julia_wrapper.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="examples_options.html" title="&lt;no title&gt;"
+             >next</a> </li>
+        <li class="right" >
+          <a href="jl_wrapper.html" title="Julia Wrapper"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="jl_wrapper.html" >Julia Wrapper</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

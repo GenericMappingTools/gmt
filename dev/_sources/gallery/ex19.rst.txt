@@ -1,0 +1,30 @@
+.. _example_19:
+
+(19) Color patterns on maps
+---------------------------
+
+GMT 3.1 introduced color patterns and this examples give a few cases
+of how to use this new feature. We make a phony poster that advertises
+an international conference on GMT in Honolulu. We use
+:doc:`grdmath </grdmath>`, :doc:`makecpt </makecpt>`, and
+:doc:`grdimage </grdimage>` to draw pleasing color
+backgrounds on maps, and overlay
+:doc:`coast </coast>` clip paths to have the
+patterns change at the coastlines. The middle panel demonstrates a
+simple :doc:`coast </coast>` call where the built-in
+pattern # 86 is drawn at 100 dpi but with the black and white pixels
+replaced with color combinations. At the same time the ocean is filled
+with a repeating image of a circuit board (provides in PNG raster
+format). The text GMT in the center is an off-line PostScript file
+that was overlaid using :doc:`image </image>`. The final panel in the 3 by 1
+:doc:`subplot </subplot>` sequence repeats the top panel except that the land and sea images
+have changed places.
+
+.. literalinclude:: /_verbatim/ex19.txt
+   :language: bash
+
+.. figure:: /_images/ex19.*
+   :width: 500 px
+   :align: center
+
+   Using color patterns and additional PostScript material in illustrations.

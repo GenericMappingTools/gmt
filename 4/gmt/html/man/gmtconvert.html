@@ -1,0 +1,460 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:14 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GMTCONVERT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GMTCONVERT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#ASCII FORMAT PRECISION">ASCII FORMAT PRECISION</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">gmtconvert
+&minus; Converts, Pastes, and/or Extracts columns from ASCII
+and binary 1-D tables</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtconvert</b>
+[ <i>inputfiles</i> ] [ <b>&minus;A</b> ] [
+<b>&minus;D</b>[<i>template</i>] ] [
+<b>&minus;E</b>[<b>f</b>|<b>l</b>] ] [
+<b>&minus;F</b><i>cols</i> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [ <b>&minus;L</b> ]
+[ <b>&minus;I</b> ] [ <b>&minus;N</b> ] [
+<b>&minus;S</b>[<b>~</b>]<i>&quot;search string&quot;</i> ]
+[ <b>&minus;V</b> ] [ <b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;b</b>[<b>i</b>|<b>o</b>][<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ] [
+<b>&minus;g</b>[<b>a</b>]<b>x</b>|<b>y</b>|<b>d</b>|<b>X</b>|<b>Y</b>|<b>D</b>|[<i>col</i>]<b>z</b>[+|-]<i>gap</i>[<b>u</b>]
+] [ <b>&minus;m</b>[<b>i</b>|<b>o</b>][<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtconvert</b>
+reads its standard input [or inputfiles] and writes out the
+desired information to standard output. It can do a
+combination of three things: (1) convert between binary and
+ASCII data tables, (2) paste corresponding records from
+multiple files into a single file, (3) extract a subset of
+the columns, (4) only extract segments whose header matches
+a text pattern search, (5) just list all multisegment
+headers and no data records, and (6) extract first and last
+data record for each segment. Input (and hence output) may
+have multiple subheaders if <b>&minus;m</b> is selected, and
+ASCII tables may have regular headers as well. <i><br>
+datafile(s)</i></p>
+
+<p style="margin-left:22%;">ASCII (or binary, see
+<b>&minus;bi</b>) file(s) holding a number of data
+columns.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">The records from
+the input files should be pasted horizontally, not appended
+vertically. [Default processes one file at the time]. Note
+for binary input, all the files you want to paste must have
+the same number of columns (as set with
+<b>&minus;bi</b>).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">For multiple
+segment data, dump each segment to a separate output file
+[Default writes a multiple segment file to stdout]. Append a
+format template for the individual file names; this template
+<b>must</b> contain a C format specifier that can format an
+integer argument (the segment number); this is usually %d
+but could be %8.8d which gives leading zeros, etc. [Default
+is gmtconvert_segment_%d.d].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Only extract the
+first and last record for each segment of interest [Default
+extracts all records]. Optionally, append <b>f</b> or
+<b>l</b> to only extract the first or last record of each
+segment, respectively.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Give a
+comma-separated list of desired columns or ranges (0 is
+first column) [Default outputs all columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Invert the order of
+rows, i.e., output the final records in reverse order,
+starting with the last and ending up with the first input
+row [Default goes forward].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Only output a
+listing of all multisegment header records and no data
+records (requires <b>&minus;m</b> and ASCII data).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not write
+records that only contain NaNs in every field [Default
+writes all records].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Only output those
+segments whose header record contains the specified text
+string. To reverse the search, i.e., to output segments
+whose headers do <i>not</i> contain the specified pattern,
+use <b>&minus;S~</b>. Should your pattern happen to start
+with ~ you need to escape this character with a backslash
+&nbsp;[Default output all segments].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.
+[Default is same as input].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;g</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Examine the spacing
+between consecutive data points in order to impose breaks in
+the line. Append <b>x</b>|<b>X</b> or <b>y</b>|<b>Y</b> to
+define a gap when there is a large enough change in the x or
+y coordinates, respectively, or <b>d</b>|<b>D</b> for
+distance gaps; use upper case to calculate gaps from
+projected coordinates. For gap-testing on other columns use
+[<i>col</i>]<b>z</b>; if <i>col</i> is not prepended the it
+defaults to 2 (i.e., 3rd column). Append [+|-]<i>gap</i> and
+optionally a unit <b>u</b>. Regarding optional signs: -ve
+means previous minus current column value must exceed
+|<i>gap</i> to be a gap, +ve means current minus previous
+column value must exceed <i>gap</i>, and no sign means the
+absolute value of the difference must exceed <i>gap</i>. For
+geographic data (<b>x</b>|<b>y</b>|<b>d</b>), the unit
+<b>u</b> may be m<b>e</b>ter [Default], <b>k</b>ilometer,
+<b>m</b>iles, or <b>n</b>autical miles. For projected data
+(<b>X</b>|<b>Y</b>|<b>D</b>), choose from <b>i</b>nch,
+<b>c</b>entimeter, <b>m</b>eter, or <b>p</b>oints [Default
+unit set by MEASURE_UNIT]. Note: For
+<b>x</b>|<b>y</b>|<b>z</b> with time data the unit is
+instead controlled by TIME_UNIT. Repeat the option to
+specify multiple criteria, of which any can be met to
+produce a line break. Issue an additional <b>&minus;ga</b>
+to indicate that all criteria must be met instead.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file(s). Segments are separated by a special record. For
+ASCII files the first character must be <i>flag</i> [Default
+is &rsquo;&gt;&rsquo;]. For binary files all fields must be
+NaN and <b>&minus;b</b> must set the number of output
+columns explicitly. By default the <b>&minus;m</b> setting
+applies to both input and output. Use <b>&minus;mi</b> and
+<b>&minus;mo</b> to give separate settings to input and
+output.</p> </td>
+</table>
+
+<a name="ASCII FORMAT PRECISION"></a>
+<h2>ASCII FORMAT PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ASCII
+output formats of numerical data are controlled by
+parameters in your .gmtdefaults4 file. Longitude and
+latitude are formatted according to
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>, whereas other values are
+formatted according to <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>. Be aware that the
+format in effect can lead to loss of precision in the
+output, which can lead to various problems downstream. If
+you find the output is not written with enough precision,
+consider switching to binary output (<b>&minus;bo</b> if
+available) or specify more decimals using the
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> setting.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To convert the
+binary file test.b (single precision) with 4 columns to
+ASCII:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtconvert</b>
+test.b <b>&minus;bis</b> 4 &gt; test.dat</p>
+
+<p style="margin-left:11%; margin-top: 1em">To convert the
+multiple segment ASCII table test.d to a double precision
+binary file:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtconvert</b>
+test.d <b>&minus;m &minus;bo</b> &gt; test.b</p>
+
+<p style="margin-left:11%; margin-top: 1em">You have an
+ASCII table with 6 columns and you want to plot column 5
+versus column 0. Try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtconvert</b>
+table.d <b>&minus;F</b> 5,0 | psxy ...</p>
+
+<p style="margin-left:11%; margin-top: 1em">If the file
+instead is the binary file results.b which has 9
+single-precision values per record, we extract the last
+column and columns 4-6 and write ASCII with the command</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtconvert</b>
+results.b <b>&minus;F</b> 8,4-6 -bi9s | psxy ...</p>
+
+<p style="margin-left:11%; margin-top: 1em">You want to
+plot the 2nd column of a 2-column file left.d versus the
+first column of a file right.d:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtconvert</b>
+left.d right.d <b>&minus;A &minus;F</b> 1,2 | psxy ...</p>
+
+<p style="margin-left:11%; margin-top: 1em">To extract all
+segments in the file big_file.d whose headers contain the
+string &quot;RIDGE AXIS&quot;, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtconvert</b>
+big_file.d <b>&minus;m &minus;S</b>&quot;RIDGE AXIS&quot;
+&gt; subset.d</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="minmax.html">minmax</A></i>(1)</p>
+<hr>
+</body>
+</html>

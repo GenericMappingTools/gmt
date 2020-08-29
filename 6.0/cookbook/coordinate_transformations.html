@@ -1,0 +1,558 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>5. GMT Coordinate Transformations &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6. GMT Map Projections" href="map_projections.html" />
+    <link rel="prev" title="4. Standardized command line options" href="options.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preface.html">1. Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html">2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">3. General Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="options.html">4. Standardized command line options</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">5. GMT Coordinate Transformations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cartesian-transformations">5.1. Cartesian transformations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cartesian-linear-transformation-jx-jx">5.1.1. Cartesian linear transformation (<strong>-Jx</strong> <strong>-JX</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cartesian-logarithmic-projection">5.1.2. Cartesian logarithmic projection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cartesian-power-projection">5.1.3. Cartesian power projection <code class="docutils literal notranslate"><span class="pre">…</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#linear-projection-with-polar-coordinates-jp-jp">5.2. Linear projection with polar coordinates (<strong>-Jp</strong> <strong>-JP</strong>) <code class="docutils literal notranslate"><span class="pre">…</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="map_projections.html">6. GMT Map Projections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplemental_packages.html">7. GMT Supplemental Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html">8. GMT File Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="include_figures.html">9. Including GMT Graphics into your Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predefined_patterns.html">10. Predefined Bit and Hachure Patterns in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="octal_codes.html">11. Chart of Octal Codes for Characters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postscript_fonts.html">12. PostScript Fonts Used by GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">13. Color Space: The Final Frontier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_filtering.html">14. Filtering of Data in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_unix_platforms.html">15. GMT on non-UNIX Platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpts.html">16. Of Colors and Color Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_symbols.html">17. Custom Plot Symbols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contour_annotations.html">18. Annotation of Contours and “Quoted Lines”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ogrgmt_format.html">19. The GMT Vector Data Format for OGR Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="one-liner.html">20. GMT Modern Mode One-line Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../cookbook.html">GMT Cookbook</a> &raquo;</li>
+        
+      <li>5. GMT Coordinate Transformations</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/cookbook/coordinate_transformations.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="gmt-coordinate-transformations">
+<h1>5. GMT Coordinate Transformations<a class="headerlink" href="#gmt-coordinate-transformations" title="Permalink to this headline">¶</a></h1>
+<p>GMT programs read real-world coordinates and convert them to positions
+on a plot. This is achieved by selecting one of several coordinate
+transformations or projections. We distinguish between three sets of
+such conversions:</p>
+<ul class="simple">
+<li>Cartesian coordinate transformations</li>
+<li>Polar coordinate transformations</li>
+<li>Map coordinate transformations</li>
+</ul>
+<p>The next Chapter will be dedicated to GMT map projections in its
+entirety. Meanwhile, the present Chapter will summarize the properties
+of the Cartesian and Polar coordinate transformations available in
+GMT, list which parameters define them, and demonstrate how they are
+used to create simple plot axes. We will mostly be using
+<a class="reference internal" href="../basemap.html"><span class="doc">basemap</span></a> (and occasionally <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a>) to demonstrate the various
+transformations. Our illustrations may differ from those you reproduce
+with the same commands because of different settings in our <code class="docutils literal notranslate"><span class="pre">gmt.conf</span></code> file.)
+Finally, note that while we will specify dimensions in inches (by
+appending <strong>i</strong>), you may want to use cm (<strong>c</strong>), or points (<strong>p</strong>) as
+unit instead (see the <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a> man page).</p>
+<div class="section" id="cartesian-transformations">
+<h2>5.1. Cartesian transformations<a class="headerlink" href="#cartesian-transformations" title="Permalink to this headline">¶</a></h2>
+<p>GMT Cartesian coordinate transformations come in three flavors:</p>
+<ul class="simple">
+<li>Linear coordinate transformation</li>
+<li>Log<span class="math notranslate nohighlight">\(_{10}\)</span> coordinate transformation</li>
+<li>Power (exponential) coordinate transformation</li>
+</ul>
+<p>These transformations convert input coordinates <em>(x,y)</em> to
+locations <em>(x’, y’)</em> on a plot. There is no coupling between
+<em>x</em> and <em>y</em> (i.e., <em>x’ = f(x)</em> and <em>y’ = f(y)</em>);
+it is a <strong>one-dimensional</strong> projection. Hence, we may use separate
+transformations for the <em>x</em>- and <em>y</em>-axes (and
+<em>z</em>-axes for 3-D plots). Below, we will use the expression
+<em>u’ = f(u)</em>, where <em>u</em> is either <em>x</em> or <em>y</em> (or
+<em>z</em> for 3-D plots). The coefficients in <em>f(u)</em> depend on the
+desired plot size (or scale), the chosen <em>(x,y)</em> domain, and the
+nature of <em>f</em> itself.</p>
+<p>Two subsets of linear will be discussed separately; these are a polar
+(cylindrical) projection and a linear projection applied to geographic
+coordinates (with a 360º periodicity in the <em>x</em>-coordinate). We
+will show examples of all of these projections using dummy data sets
+created with <a class="reference internal" href="../gmtmath.html"><span class="doc">gmtmath</span></a>, a “Reverse
+Polish Notation” (RPN) calculator that operates on or creates table data:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -T0/100/1  T <span class="nv">SQRT</span> <span class="o">=</span> sqrt.txt
+gmt math -T0/100/10 T <span class="nv">SQRT</span> <span class="o">=</span> sqrt10.txt
+</pre></div>
+</div>
+</div></blockquote>
+<div class="section" id="cartesian-linear-transformation-jx-jx">
+<h3>5.1.1. Cartesian linear transformation (<strong>-Jx</strong> <strong>-JX</strong>)<a class="headerlink" href="#cartesian-linear-transformation-jx-jx" title="Permalink to this headline">¶</a></h3>
+<p>There are in fact three different uses of the Cartesian linear
+transformation, each associated with specific command line options. The
+different manifestations result from specific properties of three kinds
+of data:</p>
+<ol class="arabic">
+<li><p class="first">Regular floating point coordinates</p>
+</li>
+<li><p class="first">Geographic coordinates</p>
+</li>
+<li><p class="first">Calendar time coordinates</p>
+<p>Examples of Cartesian (left), circular (middle), and geo-vectors (right) for different
+attribute specifications. Note that both full and half arrow-heads can be specified, as well as no head at all.</p>
+</li>
+</ol>
+<div class="section" id="regular-floating-point-coordinates">
+<h4>5.1.1.1. Regular floating point coordinates<a class="headerlink" href="#regular-floating-point-coordinates" title="Permalink to this headline">¶</a></h4>
+<p>Selection of the Cartesian linear transformation with regular floating
+point coordinates will result in a simple linear scaling
+<em>u’ = au + b</em> of the input coordinates. The projection is defined
+by stating scale in inches/unit (<strong>-Jx</strong>) or axis length in inches (<strong>-JX</strong>).
+If the <em>y</em>-scale or <em>y</em>-axis length is different from that of the
+<em>x</em>-axis (which is most often the case), separate the two scales (or
+lengths) by a slash, e.g., <strong>-Jx</strong>0.1i/0.5i or <strong>-JX</strong>8i/5i. Thus,
+our <span class="math notranslate nohighlight">\(y = \sqrt{x}\)</span> data sets will plot as shown in
+Figure <a class="reference internal" href="#gmt-linear"><span class="std std-ref">Linear transformation of Cartesian coordinates</span></a>.</p>
+<div class="figure align-center" id="id1">
+<span id="gmt-linear"></span><a class="reference internal image-reference" href="../_images/GMT_linear.png"><img alt="../_images/GMT_linear.png" src="../_images/GMT_linear.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Linear transformation of Cartesian coordinates.</span></p>
+</div>
+<p>The complete commands given to produce this plot were</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_linear
+	gmt plot -R0/100/0/10 -JX3i/1.5i -Bag -BWSne+gsnow -Wthick,blue,- sqrt.txt
+	gmt plot -St0.1i -N -Gred -Wfaint sqrt10.txt
+gmt end show
+</pre></div>
+</div>
+<p>Normally, the user’s <em>x</em>-values will increase to the right and the
+<em>y</em>-values will increase upwards. It should be noted that in many
+situations it is desirable to have the direction of positive coordinates
+be reversed. For example, when plotting depth on the <em>y</em>-axis it makes
+more sense to have the positive direction downwards. All that is
+required to reverse the sense of positive direction is to supply a
+negative scale (or axis length). Finally, sometimes it is convenient to
+specify the width (or height) of a map and let the other dimension be
+computed based on the implied scale and the range of the other axis. To
+do this, simply specify the length to be recomputed as 0.</p>
+</div>
+<div class="section" id="geographic-coordinates">
+<h4>5.1.1.2. Geographic coordinates<a class="headerlink" href="#geographic-coordinates" title="Permalink to this headline">¶</a></h4>
+<div class="figure align-center" id="id2">
+<span id="gmt-linear-d"></span><a class="reference internal image-reference" href="../_images/GMT_linear_d.png"><img alt="../_images/GMT_linear_d.png" src="../_images/GMT_linear_d.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Linear transformation of map coordinates.</span></p>
+</div>
+<p>While the Cartesian linear projection is primarily designed for regular
+floating point <em>x</em>,<em>y</em> data, it is sometimes necessary to plot
+geographical data in a linear projection. This poses a problem since
+longitudes have a 360º periodicity. GMT therefore needs to be informed
+that it has been given geographical coordinates even though a linear
+transformation has been chosen. We do so by adding a <strong>g</strong> (for
+geographical) or <strong>d</strong> (for degrees) directly after <strong>-R</strong> or by
+appending a <strong>g</strong> or <strong>d</strong> to the end of the <strong>-Jx</strong> (or <strong>-JX</strong>)
+option. As an example, we want to plot a crude world map centered on
+125ºE. Our command will be</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_linear_d
+	gmt <span class="nb">set</span> MAP_GRID_CROSS_SIZE_PRIMARY <span class="m">0</span>.1i MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF
+	gmt coast -Rg-55/305/-90/90 -Jx0.014i -Bagf -BWSen -Dc -A1000 -Glightbrown -Wthinnest -Slightblue
+gmt end show
+</pre></div>
+</div>
+<p>with the result reproduced in
+Figure <a class="reference internal" href="#gmt-linear-d"><span class="std std-ref">Linear transformation of map coordinates</span></a>.</p>
+</div>
+<div class="section" id="calendar-time-coordinates">
+<h4>5.1.1.3. Calendar time coordinates<a class="headerlink" href="#calendar-time-coordinates" title="Permalink to this headline">¶</a></h4>
+<div class="figure align-center" id="id3">
+<span id="gmt-linear-cal"></span><a class="reference internal image-reference" href="../_images/GMT_linear_cal.png"><img alt="../_images/GMT_linear_cal.png" src="../_images/GMT_linear_cal.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Linear transformation of calendar coordinates.</span></p>
+</div>
+<p>Several particular issues arise when we seek to make linear plots using
+calendar date/time as the input coordinates. As far as setting up the
+coordinate transformation we must indicate whether our input data have
+absolute time coordinates or relative time coordinates. For the former
+we append <strong>T</strong> after the axis scale (or width), while for the latter we
+append <strong>t</strong> at the end of the <strong>-Jx</strong> (or <strong>-JX</strong>) option. However,
+other command line arguments (like the <strong>-R</strong> option) may already
+specify whether the time coordinate is absolute or relative. An absolute
+time entry must be given as [<em>date</em>]<strong>T</strong>[<em>clock</em>] (with <em>date</em>
+given as <em>yyyy</em>[-<em>mm</em>[-<em>dd</em>]], <em>yyyy</em>[-<em>jjj</em>], or
+<em>yyyy</em>[-<strong>W</strong><em>ww</em>[-<em>d</em>]], and <em>clock</em> using the
+<em>hh</em>[:<em>mm</em>[:<em>ss</em>[<em>.xxx</em>]]] 24-hour clock format) whereas the
+relative time is simply given as the units of time since the epoch
+followed by <strong>t</strong> (see <a class="reference internal" href="../gmt.conf.html#time-unit"><span class="std std-ref">TIME_UNIT</span></a> and <a class="reference internal" href="../gmt.conf.html#time-epoch"><span class="std std-ref">TIME_EPOCH</span></a> for
+information on specifying the time unit and the epoch). As a simple
+example, we will make a plot of a school week calendar
+(Figure <a class="reference internal" href="#gmt-linear-cal"><span class="std std-ref">Linear transformation of calendar coordinates</span></a>).</p>
+<p>When the coordinate ranges provided by the <strong>-R</strong> option and the
+projection type given by <strong>-JX</strong> (including the optional <strong>d</strong>, <strong>g</strong>,
+<strong>t</strong> or <strong>T</strong>) conflict, GMT will warn the users about it. In
+general, the options provided with <strong>-JX</strong> will prevail.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_linear_cal
+	gmt <span class="nb">set</span> FORMAT_DATE_MAP o TIME_WEEK_START Sunday <span class="nv">FORMAT_CLOCK_MAP</span><span class="o">=</span>-hham FORMAT_TIME_PRIMARY_MAP full
+	gmt basemap -R2001-9-24T/2001-9-29T/T07:0/T15:0 -JX4i/-2i -Bxa1Kf1kg1d -Bya1Hg1h -BWsNe+glightyellow
+gmt end show
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="cartesian-logarithmic-projection">
+<h3>5.1.2. Cartesian logarithmic projection<a class="headerlink" href="#cartesian-logarithmic-projection" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-center" id="id4">
+<span id="gmt-log"></span><a class="reference internal image-reference" href="../_images/GMT_log.png"><img alt="../_images/GMT_log.png" src="../_images/GMT_log.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Logarithmic transformation of x–coordinates.</span></p>
+</div>
+<p>The <span class="math notranslate nohighlight">\(\log_{10}\)</span> transformation is simply
+<span class="math notranslate nohighlight">\(u' = a \log_{10}(u) + b\)</span> and is selected by appending an <strong>l</strong>
+(lower case L) immediately following the scale (or axis length) value.
+Hence, to produce a plot in which the <em>x</em>-axis is logarithmic (the
+<em>y</em>-axis remains linear, i.e., a semi-log plot), try (Figure <a class="reference internal" href="#gmt-log"><span class="std std-ref">Logarithmic
+transformation</span></a>)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_log
+	gmt plot -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque -Wthick,blue,- -h sqrt.txt
+	gmt plot -Ss0.1i -N -Gred -W -h sqrt10.txt
+gmt end show
+</pre></div>
+</div>
+<p>Note that if <em>x</em>- and <em>y</em>-scaling are different and a
+<span class="math notranslate nohighlight">\(\log_{10}-\log_{10}\)</span> plot is desired, the <strong>l</strong> must be
+appended twice: Once after the <em>x</em>-scale (before the /) and once after
+the <em>y</em>-scale.</p>
+</div>
+<div class="section" id="cartesian-power-projection">
+<h3>5.1.3. Cartesian power projection <a class="reference internal" href="../gmt.html#jx-full"><span class="std std-ref">…</span></a><a class="headerlink" href="#cartesian-power-projection" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-center" id="id5">
+<span id="gmt-pow"></span><a class="reference internal image-reference" href="../_images/GMT_pow.png"><img alt="../_images/GMT_pow.png" src="../_images/GMT_pow.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Exponential or power transformation of x–coordinates.</span></p>
+</div>
+<p>This projection uses <span class="math notranslate nohighlight">\(u' = a u^b + c\)</span> and allows us to explore
+exponential relationships like <span class="math notranslate nohighlight">\(x^p\)</span> versus <span class="math notranslate nohighlight">\(y^q\)</span>.
+While <em>p</em> and <em>q</em> can be any values, we will select <em>p
+= 0.5</em> and <em>q = 1</em> which means we will plot <em>x</em> versus
+<span class="math notranslate nohighlight">\(\sqrt{x}\)</span>. We indicate this scaling by appending a <strong>p</strong> (lower
+case P) followed by the desired exponent, in our case 0.5. Since
+<em>q = 1</em> we do not need to specify <strong>p</strong>1 since it is identical
+to the linear transformation. Thus our command becomes (Figure <a class="reference internal" href="#gmt-pow"><span class="std std-ref">Power
+transformation</span></a>)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_pow
+	gmt plot -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory -Wthick sqrt.txt 
+	gmt plot -Sc0.075i -Ggreen -W sqrt10.txt
+gmt end show
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="linear-projection-with-polar-coordinates-jp-jp">
+<h2>5.2. Linear projection with polar coordinates (<strong>-Jp</strong> <strong>-JP</strong>) <a class="reference internal" href="../gmt.html#jp-full"><span class="std std-ref">…</span></a><a class="headerlink" href="#linear-projection-with-polar-coordinates-jp-jp" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center" id="id6">
+<span id="gmt-polar"></span><a class="reference internal image-reference" href="../_images/GMT_polar.png"><img alt="../_images/GMT_polar.png" src="../_images/GMT_polar.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Polar (Cylindrical) transformation of (<span class="math notranslate nohighlight">\(\theta, r\)</span>) coordinates.</span></p>
+</div>
+<p>This transformation converts polar coordinates (angle <span class="math notranslate nohighlight">\(\theta\)</span> and
+radius <em>r</em>) to positions on a plot. Now <span class="math notranslate nohighlight">\(x' = f(\theta,r)\)</span>
+and <span class="math notranslate nohighlight">\(y' = g(\theta,r)\)</span>, hence it is similar to a regular map
+projection because <em>x</em> and <em>y</em> are coupled and <em>x</em>
+(i.e., <span class="math notranslate nohighlight">\(\theta\)</span>) has a 360º periodicity. With input and output
+points both in the plane it is a <strong>two-dimensional</strong> projection. The
+transformation comes in two flavors:</p>
+<ol class="arabic simple">
+<li>Normally, <span class="math notranslate nohighlight">\(\theta\)</span> is understood to be directions
+counter-clockwise from the horizontal axis, but we may choose to
+specify an angular offset [whose default value is zero]. We will call
+this offset <span class="math notranslate nohighlight">\(\theta_0\)</span>. Then,
+<span class="math notranslate nohighlight">\(x' = f(\theta, r) = ar \cos (\theta-\theta_0) + b\)</span> and
+<span class="math notranslate nohighlight">\(y' = g(\theta, r) = ar \sin (\theta-\theta_0) + c\)</span>.</li>
+<li>Alternatively, <span class="math notranslate nohighlight">\(\theta\)</span> can be interpreted to be azimuths
+clockwise from the vertical axis, yet we may again choose to specify
+the angular offset [whose default value is zero]. Then,
+<span class="math notranslate nohighlight">\(x' = f(\theta, r) = ar \cos (90 - (\theta-\theta_0)) + b\)</span> and
+<span class="math notranslate nohighlight">\(y' = g(\theta, r) = ar \sin (90 - (\theta-\theta_0)) + c\)</span>.</li>
+</ol>
+<p>Consequently, the polar transformation is defined by providing</p>
+<ul class="simple">
+<li>scale in inches/unit (<strong>-Jp</strong>) or full width of plot in inches (<strong>-JP</strong>)</li>
+<li>Optionally, insert <strong>a</strong> after <strong>p| P</strong> to indicate CW
+azimuths rather than CCW directions</li>
+<li>Optionally, append /<em>origin</em> in degrees to indicate an angular offset [0]</li>
+<li>Optionally, append <strong>r</strong> to reverse the radial direction (here,
+<em>south</em> and <em>north</em> must be elevations in 0–90 range).</li>
+<li>Optionally, append <strong>z</strong> to annotate depths rather than radius.</li>
+</ul>
+<p>As an example of this projection we will create a gridded data set in
+polar coordinates <span class="math notranslate nohighlight">\(z(\theta, r) = r^2 \cdot \cos{4\theta}\)</span> using
+<a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a>, a RPN calculator that
+operates on or creates grid files.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_polar
+	gmt grdmath -R0/360/2/4 -I6/0.1 X <span class="m">4</span> MUL PI MUL <span class="m">180</span> DIV COS Y <span class="m">2</span> POW <span class="nv">MUL</span> <span class="o">=</span> tt.nc
+	gmt grdcontour tt.nc -JP3i -B30 -BNs+ghoneydew -C2 -S4 --FORMAT_GEO_MAP<span class="o">=</span>+ddd 
+gmt end show
+</pre></div>
+</div>
+<p>We used <a class="reference internal" href="../grdcontour.html"><span class="doc">grdcontour</span></a> to make a
+contour map of this data. Because the data file only contains values
+with <span class="math notranslate nohighlight">\(2 \leq r \leq 4\)</span>, a donut shaped plot appears in
+Figure <a class="reference internal" href="#gmt-polar"><span class="std std-ref">Polar transformation</span></a>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="map_projections.html" class="btn btn-neutral float-right" title="6. GMT Map Projections" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="options.html" class="btn btn-neutral float-left" title="4. Standardized command line options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

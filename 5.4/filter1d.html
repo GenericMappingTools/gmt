@@ -1,0 +1,350 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>filter1d &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="fitcircle" href="fitcircle.html" />
+    <link rel="prev" title="blockmode" href="blockmode.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="fitcircle.html" title="fitcircle"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="blockmode.html" title="blockmode"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="filter1d">
+<span id="index-0"></span><h1>filter1d<a class="headerlink" href="#filter1d" title="Permalink to this headline">¶</a></h1>
+<p>filter1d - Time domain filtering of 1-D data tables</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>filter1d</strong> [ <em>table</em> ] <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>type&lt;width&gt;</em>[<em>modifiers</em>]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>increment</em> ] [ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>lack_width</em> ] [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>t_col</em> ] [ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><em>q_factor</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>symmetry_factor</em> ] [ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>t_min/t_max/t_inc</em>[<strong>+n</strong>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>filter1d</strong> is a general time domain filter for multiple column time
+series data. The user specifies which column is the time (i.e., the
+independent variable). (See <strong>-N</strong> option below). The fastest operation
+occurs when the input time series are equally spaced and have no gaps or
+outliers and the special options are not needed. <strong>filter1d</strong> has
+options <strong>-L</strong>, <strong>-Q</strong>, and <strong>-S</strong> for unevenly sampled data with gaps.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><strong>type</strong><em>width</em>[<em>modifiers</em>]</dt>
+<dd><p class="first">Sets the filter <strong>type</strong>. Choose among convolution and non-convolution
+filters. Append the filter code followed by the full filter
+<em>width</em> in same units as time column. By default we
+perform low-pass filtering; append <strong>+h</strong> to select high-pass filtering.
+Some filters allow for optional arguments and modifiers. Available convolution
+filter types are:</p>
+<p>(<strong>b</strong>) Boxcar: All weights are equal.</p>
+<p>(<strong>c</strong>) Cosine Arch: Weights follow a cosine arch curve.</p>
+<p>(<strong>g</strong>) Gaussian: Weights are given by the Gaussian function.</p>
+<p>(<strong>f</strong>) Custom: Instead of <em>width</em> give name of a one-column file
+with your own weight coefficients.</p>
+<p>Non-convolution filter types are:</p>
+<p>(<strong>m</strong>) Median: Returns median value.</p>
+<p>(<strong>p</strong>) Maximum likelihood probability (a mode estimator): Return
+modal value. If more than one mode is found we return their average
+value. Append <strong>+l</strong> or <strong>+u</strong> if you rather want
+to return the lowermost or uppermost of the modal values.</p>
+<p>(<strong>l</strong>) Lower: Return the minimum of all values.</p>
+<p>(<strong>L</strong>) Lower: Return minimum of all positive values only.</p>
+<p>(<strong>u</strong>) Upper: Return maximum of all values.</p>
+<p>(<strong>U</strong>) Upper: Return maximum or all negative values only.</p>
+<p>Upper case type <strong>B</strong>, <strong>C</strong>, <strong>G</strong>, <strong>M</strong>, <strong>P</strong>, <strong>F</strong> will use
+robust filter versions: i.e., replace outliers (2.5 L1 scale off
+median) with median during filtering.</p>
+<p class="last">In the case of <strong>L</strong>|<strong>U</strong> it is possible that no data passes
+the initial sign test; in that case the filter will return 0.0.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>increment</em></dt>
+<dd><em>increment</em> is used when series is NOT equidistantly sampled. Then
+<em>increment</em> will be the abscissae resolution, i.e., all abscissae
+will be rounded off to a multiple of <em>increment</em>. Alternatively,
+resample data with <a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a>.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong></dt>
+<dd>Include Ends of time series in output. Default loses half the filter-width of data at each end.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong><em>lack_width</em></dt>
+<dd>Checks for Lack of data condition. If input data has a gap exceeding
+<em>width</em> then no output will be given at that point [Default does not check Lack].</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong><em>t_col</em></dt>
+<dd>Indicates which column contains the independent variable (time). The
+left-most column is # 0, the right-most is # (<em>n_cols</em> - 1).  [Default is 0].</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong><em>q_factor</em></dt>
+<dd>Assess Quality of output value by checking mean weight in
+convolution. Enter <em>q_factor</em> between 0 and 1. If mean weight &lt;
+<em>q_factor</em>, output is suppressed at this point [Default does not check Quality].</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><em>symmetry_factor</em></dt>
+<dd>Checks symmetry of data about window center. Enter a factor between
+0 and 1. If ( (abs(n_left - n_right)) / (n_left + n_right) ) &gt;
+<em>factor</em>, then no output will be given at this point [Default does
+not check Symmetry].</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong><em>t_min/t_max/t_inc</em>[<strong>+</strong>]</dt>
+<dd>Make evenly spaced time-steps from <em>t_min</em> to <em>t_max</em> by <em>t_inc</em>
+[Default uses input times]. Append <strong>+n</strong> to <em>t_inc</em> if you are
+specifying the number of equidistant points instead.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output. [Default is same as input].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em> <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] <a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine data gaps and line breaks.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-o</strong><em>cols</em>[,…] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select output columns (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="ascii-format-precision">
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-geo-out"><span class="std std-ref">FORMAT_GEO_OUT</span></a>, absolute time is
+under the control of <a class="reference internal" href="gmt.conf.html#format-date-out"><span class="std std-ref">FORMAT_DATE_OUT</span></a> and
+<a class="reference internal" href="gmt.conf.html#format-clock-out"><span class="std std-ref">FORMAT_CLOCK_OUT</span></a>, whereas general floating point values are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a>. Be aware that the format in effect
+can lead to loss of precision in ASCII output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a> setting.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To filter the data set in the file cruise.gmtd containing evenly spaced
+gravity, magnetics, topography, and distance (in m) with a 10 km
+Gaussian filter, removing outliers, and output a filtered value every 2
+km between 0 and 100 km:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">filter1d</span> <span class="n">cruise</span><span class="o">.</span><span class="n">gmtd</span> <span class="o">-</span><span class="n">T0</span><span class="o">/</span><span class="mf">1.0e5</span><span class="o">/</span><span class="mi">2000</span> <span class="o">-</span><span class="n">FG10000</span> <span class="o">-</span><span class="n">N3</span> <span class="o">-</span><span class="n">V</span> <span class="o">&gt;</span> <span class="n">filtered_cruise</span><span class="o">.</span><span class="n">gmtd</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Data along track often have uneven sampling and gaps which we do not
+want to interpolate using <a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a>. To find the median depth in a 50
+km window every 25 km along the track of cruise v3312, stored in
+v3312.dt, checking for gaps of 10km and asymmetry of 0.3:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">filter1d</span> <span class="n">v3312</span><span class="o">.</span><span class="n">dt</span> <span class="o">-</span><span class="n">FM50</span> <span class="o">-</span><span class="n">T0</span><span class="o">/</span><span class="mi">100000</span><span class="o">/</span><span class="mi">25</span> <span class="o">-</span><span class="n">L10</span> <span class="o">-</span><span class="n">S0</span><span class="o">.</span><span class="mi">3</span> <span class="o">&gt;</span> <span class="n">v3312_filt</span><span class="o">.</span><span class="n">dt</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a> , <a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a> , <a class="reference internal" href="splitxyz.html"><span class="doc">splitxyz</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">filter1d</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#ascii-format-precision">ASCII Format Precision</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="blockmode.html"
+                        title="previous chapter">blockmode</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="fitcircle.html"
+                        title="next chapter">fitcircle</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/filter1d.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="fitcircle.html" title="fitcircle"
+             >next</a> </li>
+        <li class="right" >
+          <a href="blockmode.html" title="blockmode"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

@@ -1,0 +1,278 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:44 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>X2SYS_SOLVE</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>X2SYS_SOLVE</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">x2sys_solve
+&minus; Determine systematic corrections from crossovers</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_solve
+&minus;C</b><i>column</i> <b>&minus;T</b><i>TAG</i>
+<b>&minus;E</b><i>mode</i> [ <i>COE_list.d</i> ] [
+<b>&minus;V</b> ] [ <b>&minus;W</b> ] [ <b>&minus;Z</b> ] [
+<b>&minus;bi</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_solve</b>
+will use the supplied crossover information to solve for
+systematic corrections that can then be applied per track to
+improve data quality. Several systematic corrections can be
+solved for using a least-squares approach. Note: Only one
+data column can be processed at the time.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify the x2sys
+<i>TAG</i> which tracks the attributes of this data
+type.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify which data
+column you want to process. Needed for proper formatting of
+the output correction table and must match the same option
+used in <b><A HREF="x2sys_list.html">x2sys_list</A></b> when preparing the input data.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">The correction type
+you wish to model. Choose among the following functions
+<i>f</i>(<i>p</i>), where <i>p</i> are the <i>m</i>
+parameters per track that we will fit simultaneously using a
+least squares approach:</p></td>
+</table>
+
+<p style="margin-left:22%;"><b>c</b> will fit
+<i>f</i>(<i>p</i>) = <i>a</i> (a constant offset); records
+must contain cruise ID1, ID2, COE. <b><br>
+d</b> will fit <i>f</i>(<i>p</i>) = <i>a</i> + <i>b</i> *
+<i>d</i> (linear drift; <i>d</i> is distance; records must
+contain cruise ID1, ID2, d1, d2, COE. <b><br>
+g</b> will fit <i>f</i>(<i>p</i>) = <i>a</i> + <i>b</i>
+sin(y)^2 (1980-1930 gravity correction); records must
+contain cruise ID1, ID2, latitude y, COE. <b><br>
+h</b> will fit <i>f</i>(<i>p</i>) = <i>a</i> + <i>b</i>
+cos(H) + <i>c</i> cos(2H) + <i>d</i> sin(H) + <i>e</i>
+sin(2H) (magnetic heading correction); records must contain
+cruise ID1, ID2, heading H, COE. <b><br>
+s</b> will fit <i>f</i>(<i>p</i>) = <i>a</i> * z (a unit
+scale correction); records must contain cruise ID1, ID2, z1,
+z2. <b><br>
+t</b> will fit <i>f</i>(<i>p</i>) = <i>a</i> + <i>b</i> *
+(<i>t - t0</i>) (linear drift; <i>t0</i> is the start time
+of the track); records must contain cruise ID1, ID2, t1-t0,
+t2-t0, COE.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.
+<i><br>
+COE_list.d</i></p>
+
+<p style="margin-left:22%;">Name of file with the required
+crossover columns as produced by <b><A HREF="x2sys_list.html">x2sys_list</A></b>. NOTE: If
+<b>&minus;bi</b> is used then the first two columns are
+expected to hold the integer track IDs; otherwise we expect
+those columns to hold the text string names of the two
+tracks.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Means that each
+input records has an extra column with the composite weight
+for each crossover record. These are used to obtain a
+weighted least squares solution [no weights].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">For
+<b>&minus;Ed</b> and <b>&minus;Et</b>, determine the
+earliest time or shortest distance for each track, then use
+these values as the local origin for time duration or
+distance calculations. The local origin is then included in
+the correction table [Default uses 0].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read.</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To fit a simple
+bias offset to faa for all tracks under the MGD77 tag,
+try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="x2sys_list.html">x2sys_list</A></b>
+COE_data.txt <b>&minus;V &minus;T</b> MGD77 <b>&minus;C</b>
+faa <b>&minus;F</b> nc &gt; faa_coe.txt <b><br>
+x2sys_solve</b> faa_coe.txt <b>&minus;V &minus;T</b> MGD77
+<b>&minus;C</b> faa <b>&minus;E</b> c &gt; coe_table.txt</p>
+
+<p style="margin-left:11%; margin-top: 1em">To fit a faa
+linear drift with time instead, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="x2sys_list.html">x2sys_list</A></b>
+COE_data.txt <b>&minus;V &minus;T</b> MGD77 <b>&minus;C</b>
+faa <b>&minus;F</b> nTc &gt; faa_coe.txt <b><br>
+x2sys_solve</b> faa_coe.txt <b>&minus;V &minus;T</b> MGD77
+<b>&minus;C</b> faa <b>&minus;E</b> t &gt; coe_table.txt</p>
+
+<p style="margin-left:11%; margin-top: 1em">To estimate
+heading corrections based on magnetic crossovers associated
+with the tag MGD77 from the file COE_data.txt, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="x2sys_list.html">x2sys_list</A></b>
+COE_data.txt <b>&minus;V &minus;T</b> MGD77 <b>&minus;C</b>
+mag <b>&minus;F</b> nhc &gt; mag_coe.txt <b><br>
+x2sys_solve</b> mag_coe.txt <b>&minus;V &minus;T</b> MGD77
+<b>&minus;C</b> mag <b>&minus;E</b> h &gt; coe_table.txt</p>
+
+<p style="margin-left:11%; margin-top: 1em">To estimate
+unit scale corrections based on bathymetry crossovers,
+try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="x2sys_list.html">x2sys_list</A></b>
+COE_data.txt <b>&minus;V &minus;T</b> MGD77 <b>&minus;C</b>
+depth <b>&minus;F</b> nz &gt; depth_coe.txt <b><br>
+x2sys_solve</b> depth_coe.txt <b>&minus;V &minus;T</b> MGD77
+<b>&minus;C</b> depth <b>&minus;E</b> s &gt;
+coe_table.txt</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="x2sys_binlist.html">x2sys_binlist</A></i>(1),
+<i><A HREF="x2sys_cross.html">x2sys_cross</A></i>(1), <i><A HREF="x2sys_datalist.html">x2sys_datalist</A></i>(1),
+<i><A HREF="x2sys_get.html">x2sys_get</A></i>(1), <i><A HREF="x2sys_init.html">x2sys_init</A></i>(1),
+<i><A HREF="x2sys_list.html">x2sys_list</A></i>(1), <i><A HREF="x2sys_put.html">x2sys_put</A></i>(1),
+<i><A HREF="x2sys_report.html">x2sys_report</A></i>(1)</p>
+<hr>
+</body>
+</html>

@@ -1,0 +1,309 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>img2google &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="MISC" href="../../SUP_MISC.html" />
+    <link rel="prev" title="IMGSRC" href="../../SUP_IMGSRC.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../SUP_MISC.html" title="MISC"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="../../SUP_IMGSRC.html" title="IMGSRC"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../SUP_IMGSRC.html" accesskey="U">IMGSRC</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="img2google">
+<span id="index-0"></span><h1>img2google<a class="headerlink" href="#img2google" title="Permalink to this headline">¶</a></h1>
+<p>img2google - Create Google Earth KML overlay tiles from bathymetry
+Mercator img grid</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>img2google</strong>
+<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
+[ <em>imgfile</em> ]
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>mode</em>[<em>altitude</em>] ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong> ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>fademin/fademax</em> ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>prefix</em> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>LODmin/LODmax</em> ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>layername</em> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>doctitle</em> ]
+[ <a class="reference internal" href="#u"><span> <strong>-U</strong></span></a></strong><em>URL</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong> ]</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>img2google</strong> is a shell script that reads a 1x1 minute Mercator surface relief img file and
+creates a Google Earth overlay KML file and associated PNG tile for the
+specified region. If no input file is given we use topo.18.1.img.</p>
+<dl class="docutils">
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
+Append <strong>+r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Alternatively for grid creation, give <strong>R</strong><em>code</em><em>lon</em>/<em>lat</em>/<em>nx</em>/<em>ny</em>, where
+<em>code</em> is a 2-character combination of L, C, R (for left, center, or right)
+and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
+indicates which point on a rectangular region the <em>lon</em>/<em>lat</em> coordinate
+refers to, and the grid dimensions <em>nx</em> and <em>ny</em> with grid spacings via
+<strong>-I</strong> is used to create the corresponding region.
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing, if applicable) are copied from
+the grid. Appending <strong>+u</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.
+For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.
+In case of perspective view (<strong>-p</strong>), a z-range (<em>zmin</em>, <em>zmax</em>)
+can be appended to indicate the third dimension. This needs to be
+done only when using the <strong>-Jz</strong> option, not when using only the
+<strong>-p</strong> option. In the latter case a perspective view of the plane is
+plotted, with no third dimension.  </dd>
+</dl>
+</div>
+<div class="section" id="options">
+<h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>imgfile</em></dt>
+<dd>An img format bathymetry/topography file such as those created by
+Sandwell and Smith. If this files does not exist in the current
+directory and the user has set the environment variable
+<strong>$GMT_DATADIR</strong>, then <a class="reference internal" href="img2grd.html"><span class="doc">img2grd</span></a> will try
+to find <em>imgfile</em> in <strong>$GMT_DATADIR</strong>.</dd>
+</dl>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong></dt>
+<dd>Selects one of 5 altitude modes recognized by Google Earth that
+determines the altitude (in m) of the image: <strong>G</strong> clamped to the
+ground, <strong>g</strong> append altitude relative to ground, <strong>a</strong> append absolute
+altitude, <strong>s</strong> append altitude relative to seafloor, and <strong>S</strong> clamp it
+to the seafloor [Default].</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong></dt>
+<dd>Turn on clipping so that only portions below sea level will be visible
+in the image [no clipping].</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong></dt>
+<dd>Sets the distance over which the geometry fades, from fully opaque to
+fully transparent. These ramp values, expressed in screen pixels, are
+applied at the minimum and maximum end of the LOD (visibility) limits,
+respectively. [no fading (0/0)].</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong></dt>
+<dd>Specify the prefix for the output image file (the extensions are set
+automatically). Default uses the naming
+topoN|S<em>&lt;north&gt;</em>E|W&lt;<em>west</em>&gt;.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong></dt>
+<dd>Measurement in screen pixels that represents the minimum limit of the
+visibility range for a given Region Google Earth calculates the size of
+the Region when projected onto screen space. Then it computes the square
+root of the Region’s area (if, for example, the Region is square and the
+viewpoint is directly above the Region, and the Region is not tilted,
+this measurement is equal to the width of the projected Region). If this
+measurement falls within the limits defined by <em>LODmin</em> and <em>LODmax</em>
+(and if the region is in view), the Region is active. If this limit is
+not reached, the associated geometry is considered to be too far from
+the user’s viewpoint to be drawn. <em>LODmax</em> represents the maximum limit
+of the visibility range for a given Region. A value of 1, the default,
+indicates “active to infinite size.” [always active].</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong></dt>
+<dd>Append the layername of the image (use quotes if strings contain spaces)
+[topoN|S&lt;<em>north</em>&gt;E|W&lt;<em>west</em>&gt;].</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong></dt>
+<dd>Append the document title (use quotes if strings contain spaces)
+[“Predicted bathymetry”].</dd>
+</dl>
+<dl class="docutils" id="u">
+<dt><strong>-U</strong></dt>
+<dd>By default, images are referenced locally relative to the KML file.
+Specify an URL to prepend a server address to the image name reference
+[local].</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="z">
+<dt><strong>-Z</strong></dt>
+<dd>Uses zip (which must be installed) to create a *.kmz file for easy
+distribution; append <strong>+</strong> to delete the KML and PNG file after zipping
+[No zipping].</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To create a 10x10 degree Google Earth KML tile for the region
+<strong>-R</strong>170/180/20/30 using the default <em>topo.18.1.img</em> and output
+naming convention, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">img2google</span> <span class="o">-</span><span class="n">R170</span><span class="o">/</span><span class="mi">180</span><span class="o">/</span><span class="mi">20</span><span class="o">/</span><span class="mi">30</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To make the same tile with a previous file such as <em>topo.15.1.img</em>, run in verbose
+mode, clip so only oceanic areas are visible, name the output oldimage,
+specify the KML metadata directly (including setting the image altitude
+to 10 km), and make a single *.kmz file, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">img2google</span> <span class="n">topo</span><span class="o">.</span><span class="mf">15.1</span><span class="o">.</span><span class="n">img</span> <span class="o">-</span><span class="n">R170</span><span class="o">/</span><span class="mi">180</span><span class="o">/</span><span class="mi">20</span><span class="o">/</span><span class="mi">30</span> <span class="o">-</span><span class="n">Aa10000</span> <span class="o">-</span><span class="n">C</span> <span class="o">-</span><span class="n">Goldimage</span> \
+<span class="o">-</span><span class="n">N</span><span class="s2">&quot;My KML title&quot;</span> <span class="o">-</span><span class="n">T</span><span class="s2">&quot;My KML title&quot;</span> <span class="o">-</span><span class="n">Uhttp</span><span class="p">:</span><span class="o">//</span><span class="n">my</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">images</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">Z</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="data-sets">
+<h2>DATA SETS<a class="headerlink" href="#data-sets" title="Permalink to this headline">¶</a></h2>
+<p>For topo.18.1.img and other Sandwell/Smith altimetry-derived Mercator
+grids, visit <a class="reference external" href="http://topex.ucsd.edu">http://topex.ucsd.edu</a>.</p>
+</div>
+<div class="section" id="see-also">
+<h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>
+<a class="reference internal" href="img2grd.html"><span class="doc">img2grd</span></a>,
+<a class="reference internal" href="../../psconvert.html"><span class="doc">psconvert</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">img2google</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#options">Options</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#data-sets">DATA SETS</a></li>
+<li><a class="reference internal" href="#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../../SUP_IMGSRC.html"
+                        title="previous chapter">IMGSRC</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../SUP_MISC.html"
+                        title="next chapter">MISC</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/img/img2google.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../SUP_MISC.html" title="MISC"
+             >next</a> </li>
+        <li class="right" >
+          <a href="../../SUP_IMGSRC.html" title="IMGSRC"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../SUP_IMGSRC.html" >IMGSRC</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

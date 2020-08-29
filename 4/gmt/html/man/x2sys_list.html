@@ -1,0 +1,381 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:43 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>X2SYS_LIST</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>X2SYS_LIST</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">x2sys_list
+&minus; Output a subset of crossovers from data base</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_list
+&minus;C</b><i>column</i> <b>&minus;T</b><i>TAG</i> [
+<i>coedbase.txt</i> ] [ <b>&minus;A</b><i>asymm_max</i> ] [
+<b>&minus;F</b><i>acdhiInNtTvwxyz</i> ] [
+<b>&minus;I</b>[<i>list</i>] ] [
+<b>&minus;L</b>[<i>corrtable</i>] ] [
+<b>&minus;N</b><i>nx_min</i> ] [ <b>&minus;Qe</b>|<b>i</b> ]
+[
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;S</b>[<b>+</b>]<i>track</i> ] [
+<b>&minus;V</b> ] [ <b>&minus;W</b>[<i>list</i>] ] [
+<b>&minus;bo</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;m</b>[<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_list</b>
+will read the crossover ASCII data base <i>coedbase.txt</i>
+(or <i>stdin</i>) and extract a subset of the crossovers
+based on the other arguments. The output may be ASCII or
+binary.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify which data
+column you want to process. Crossovers related to this
+column name must be present in the crossover data base.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify the x2sys
+<i>TAG</i> which tracks the attributes of this data
+type.</p> </td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.
+<i><br>
+coedbase.txt</i></p>
+
+<p style="margin-left:22%;">The name of the input ASCII
+crossover error data base as produced by <b><A HREF="x2sys_cross.html">x2sys_cross</A></b>.
+If not given we read standard input instead.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies maximum
+asymmetry in the distribution of crossovers relative to the
+mid point in time (or distance, if time is not available).
+Asymmetry is computed as (n_right - n_left)/(n_right +
+n_left), referring the the number of crossovers that falls
+in the left or right half of the range. Symmetric
+distributions will have values close to zero. If specified,
+we exclude tracks whose asymmetry exceeds the specify cutoff
+in absolute value [1, i.e., include all].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify your
+desired output using any combination of
+<i>acdhiInNtTvwxyz</i>, in any order. Do not use space
+between the letters, and note your selection is
+case-sensitive. The output will be ASCII (or binary, see
+<b>&minus;bo</b>) columns of values. Description of codes:
+<b>a</b> is the angle (&lt; 90) defined by the crossing
+tracks, <b>c</b> is crossover value of chosen observation
+(see <b>&minus;C</b>), <b>d</b> is distance along track,
+<b>h</b> is heading along track, <b>i</b> is the signed time
+interval between the visit at the crossover of the two
+tracks involved, <b>I</b> is same as <b>i</b> but is
+unsigned, <b>n</b> is the names of the two tracks, <b>N</b>
+is the id numbers of the two tracks, <b>t</b> is time along
+track in <i>date</i><b>T</b><i>clock</i> format (NaN if not
+available), <b>T</b> is elapsed time since start of track
+along track (NaN if not available), <b>v</b> is speed along
+track, <b>w</b> is the composite weight, <b>x</b> is
+<i>x</i>-coordinate (or longitude), <b>y</b> is
+<i>y</i>-coordinate (or latitude), and <b>z</b> is observed
+value (see <b>&minus;C</b>) along track. If <b>&minus;S</b>
+is not specified then <b>d,h,n,N,t,T,v</b> results in two
+output columns each: first for track one and next for track
+two (in lexical order of track names); otherwise, they refer
+to the specified track only (except for <b>n,N</b> which
+then refers to the other track). The sign convention for
+<b>c,i</b> is track one minus track two (lexically sorted).
+Time intervals will be returned according to the
+<b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> GMT defaults setting.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Name of ASCII file
+with a list of track names (one per record) that should be
+excluded from consideration [Default includes all
+tracks].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Apply optimal
+corrections to the chosen observable. Append the correction
+table to use [Default uses the correction table
+<i>TAG</i>_corrections.txt which is expected to reside in
+the <b>$X2SYS_HOME</b>/<i>TAG</i> directory]. For the format
+of this file, see <b><A HREF="x2sys_solve.html">x2sys_solve</A></b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Only report data
+from pairs that generated at least <i>nx_min</i> crossovers
+between them [use all pairs].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Append <b>e</b> for
+external crossovers or <b>i</b> for internal crossovers only
+[Default is all crossovers].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> specify the Region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+Cartesian data just give <i>xmin/xmax/ymin/ymax</i>. This
+option limits the COEs to those that fall inside the
+specified domain.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Name of a single
+track. If given we restrict output to those crossovers
+involving this track [Default output is crossovers involving
+any track pair]. Prepend a &rsquo;+&rsquo; to make it print
+info relative to both tracks [Default is selected track].
+This applies only to common information such as distance,
+time, heading (see <b>&minus;F</b> for details).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Name of ASCII file
+with a list of track names and their relative weights (one
+track per record) that should be used to calculate the
+composite crossover weight (output code <b>w</b> above).
+[Default sets weights to 1].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+output format. Segments with crossovers for a single track
+pair are separated by a record whose first character is
+<i>flag</i> and contains the two track names. [Default is
+&rsquo;&gt;&rsquo;].</p> </td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To find all the
+magnetic crossovers associated with the tag MGD77 from the
+file COE_data.txt, restricted to occupy a certain region in
+the south Pacific, and return location, time, and crossover
+value, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_list</b>
+COE_data.txt <b>&minus;V &minus;T</b> MGD77 <b>&minus;R</b>
+180/240/-60/-30 <b>&minus;C</b> mag <b>&minus;F</b> xytz
+&gt; mag_coe.txt</p>
+
+<p style="margin-left:11%; margin-top: 1em">To find all the
+faa crossovers globally that involves track 12345678 and
+output time since start of the year, using a binary double
+precision format, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_list</b>
+COE_data.txt <b>&minus;V &minus;T</b> MGD77 <b>&minus;C</b>
+faa <b>&minus;S</b> 12345678 <b>&minus;F</b> Tz
+<b>&minus;bod</b> &gt; faa_coe.b</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="x2sys_binlist.html">x2sys_binlist</A></i>(1),
+<i><A HREF="x2sys_cross.html">x2sys_cross</A></i>(1), <i><A HREF="x2sys_datalist.html">x2sys_datalist</A></i>(1),
+<i><A HREF="x2sys_get.html">x2sys_get</A></i>(1), <i><A HREF="x2sys_init.html">x2sys_init</A></i>(1),
+<i><A HREF="x2sys_put.html">x2sys_put</A></i>(1), <i><A HREF="x2sys_report.html">x2sys_report</A></i>(1),
+<i><A HREF="x2sys_solve.html">x2sys_solve</A></i>(1)</p>
+<hr>
+</body>
+</html>

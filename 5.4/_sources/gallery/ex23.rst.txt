@@ -1,0 +1,38 @@
+.. _example_23:
+
+(23) All great-circle paths lead to Rome
+----------------------------------------
+
+While motorists recently have started to question the old saying "all
+roads lead to Rome", aircraft pilots have known from the start that only
+one great-circle path connects the points of departure and
+arrival [1]_. This provides the inspiration for our next example which
+uses :doc:`grdmath </grdmath>` to calculate distances
+from Rome to anywhere on Earth and
+:doc:`grdcontour </grdcontour>` to contour these
+distances. We pick five cities that we connect to Rome with great circle
+arcs, and label these cities with their names and distances (in km) from
+Rome, all laid down on top of a beautiful world map. Note that we
+specify that contour labels only be placed along the straight map-line
+connecting Rome to its antipode, and request curved labels that follows
+the shape of the contours.
+
+The script produces the plot in Figure; note
+how interesting the path to Seattle appears in this particular
+projection (Hammer). We also note that Rome's antipode lies somewhere
+near the Chatham plateau (antipodes will be revisited in Example
+:ref:`example_25`).
+
+.. literalinclude:: /_verbatim/example_23.txt
+   :language: bash
+
+.. figure:: /_images/example_23.*
+   :width: 500 px
+   :align: center
+
+   All great-circle paths lead to Rome.
+
+
+.. [1]
+   Pedants who wish to argue about the "other" arc going the long way
+   should consider using it.

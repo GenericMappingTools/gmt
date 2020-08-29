@@ -1,0 +1,181 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(1) Contour maps &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(2) Image presentations" href="ex02.html" />
+    <link rel="prev" title="The GMT historical collection" href="../Gallery.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex02.html" title="(2) Image presentations"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="../Gallery.html" title="The GMT historical collection"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="contour-maps">
+<span id="example-01"></span><h1>(1) Contour maps<a class="headerlink" href="#contour-maps" title="Permalink to this headline">¶</a></h1>
+<p>We want to create two contour maps of the low order geoid using the
+Hammer equal area projection. Our gridded data file is called <code class="docutils literal notranslate"><span class="pre">osu91a1f_16.nc</span></code> and
+contains a global 1 by 1 gridded geoid (we will see how to make gridded
+files later). We would like to show one map centered on Greenwich and
+one centered on the dateline. Positive contours should be drawn with a
+solid pen and negative contours with a dashed pen. Annotations should
+occur for every 50 m contour level, and both contour maps should show
+the continents in light brown in the background. Finally, we want a
+rectangular frame surrounding the two maps. This is how it is done:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 01</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Make two contour maps based on the data in the file osu91a1f_16.nc</span>
+<span class="c1"># GMT modules:	gmtset, grdcontour, psbasemap, pscoast</span>
+<span class="c1"># Unix progs:	rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_01.ps
+gmt <span class="nb">set</span> MAP_GRID_CROSS_SIZE_PRIMARY <span class="m">0</span> FONT_ANNOT_PRIMARY 10p
+gmt psbasemap -R0/6.5/0/7.5 -Jx1i -B0 -P -K &gt; <span class="nv">$ps</span>
+gmt pscoast -Rg -JH0/6i -X0.25i -Y0.2i -O -K -Bg30 -Dc -Glightbrown -Slightblue &gt;&gt; <span class="nv">$ps</span>
+gmt grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- <span class="se">\</span>
+            -O -K -T+d0.1i/0.02i &gt;&gt; <span class="nv">$ps</span>
+gmt grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1/1000 -O -K -T+d0.1i/0.02i &gt;&gt; <span class="nv">$ps</span>
+gmt pscoast -Rg -JH6i -Y3.4i -O -K -B+t<span class="s2">&quot;Low Order Geoid&quot;</span> -Bg30 -Dc -Glightbrown <span class="se">\</span>
+            -Slightblue &gt;&gt; <span class="nv">$ps</span>
+gmt grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- <span class="se">\</span>
+            -O -K -T+d0.1i/0.02i+l &gt;&gt; <span class="nv">$ps</span>
+gmt grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1/1000 -O -T+d0.1i/0.02i+l &gt;&gt; <span class="nv">$ps</span>
+rm -f gmt.conf
+</pre></div>
+</div>
+<p>The first command draws a box surrounding the maps. This is followed by
+two sequences of <a class="reference internal" href="../pscoast.html"><span class="doc">pscoast</span></a>, <a class="reference internal" href="../grdcontour.html"><span class="doc">grdcontour</span></a>,
+<a class="reference internal" href="../grdcontour.html"><span class="doc">grdcontour</span></a>. They differ in that the
+first is centered on Greenwich; the second on the dateline. We use the
+limit option (<strong>-L</strong>) in <a class="reference internal" href="../grdcontour.html"><span class="doc">grdcontour</span></a>
+to select negative contours only and plot those with a dashed pen, then
+positive contours only and draw with a solid pen [Default]. The <strong>-T</strong>
+option causes tick marks pointing in the downhill direction to be drawn
+on the innermost, closed contours. For the upper panel we also added -
+and + to the local lows and highs. You can find this illustration as</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_01.png"><img alt="../_images/example_01.png" src="../_images/example_01.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Contour maps of gridded data.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../Gallery.html"
+                        title="previous chapter">The GMT historical collection</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex02.html"
+                        title="next chapter">(2) Image presentations</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex01.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex02.html" title="(2) Image presentations"
+             >next</a> </li>
+        <li class="right" >
+          <a href="../Gallery.html" title="The GMT historical collection"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

@@ -1,0 +1,351 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>grdgradient &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="grdhisteq" href="grdhisteq.html" />
+    <link rel="prev" title="grdfilter" href="grdfilter.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="grdhisteq.html" title="grdhisteq"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="grdfilter.html" title="grdfilter"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="grdgradient">
+<span id="index-0"></span><h1>grdgradient<a class="headerlink" href="#grdgradient" title="Permalink to this headline">¶</a></h1>
+<p>grdgradient - Compute directional derivative or gradient from a grid</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdgradient</strong> <em>in_grdfile</em> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>out_grdfile</em>
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>azim</em>[/<em>azim2</em>] ] [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<strong>a</strong>][<strong>c</strong>][<strong>o</strong>][<strong>n</strong>] ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<strong>m</strong>|<strong>s</strong>|<strong>p</strong>]<em>azim/elev</em>[<strong>+a</strong><em>ambient</em>][<strong>+d</strong><em>diffuse</em>][<strong>+p</strong><em>specular</em>][<strong>+s</strong><em>shine</em>] ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>flag</em> ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong>[<strong>e</strong>|<strong>t</strong>][<em>amp</em>][<strong>+s</strong><em>sigma</em>][<strong>+o</strong><em>offset</em>] ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ] [ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>slopefile</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ] [ <strong>-fg</strong> ]
+[ <strong>-n</strong><a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">flags</span></a> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdgradient</strong> may be used to compute the directional derivative in a
+given direction (<strong>-A</strong>), or to find the direction (<strong>-S</strong>) [and the magnitude
+(<strong>-D</strong>)] of the vector gradient of the data.</p>
+<p>Estimated values in the first/last row/column of output depend on
+boundary conditions (see <strong>-L</strong>).</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>in_grdfile</em></dt>
+<dd>2-D grid file from which to compute directional derivative. (See GRID FILE FORMATS below).</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>out_grdfile</em></dt>
+<dd>Name of the output grid file for the directional derivative. (See
+GRID FILE FORMATS below).</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong><em>azim</em>[/<em>azim2</em>]</dt>
+<dd>Azimuthal direction for a directional derivative; <em>azim</em> is the
+angle in the x,y plane measured in degrees positive clockwise from
+north (the +y direction) toward east (the +x direction). The
+negative of the directional derivative, -[dz/dx*sin(<em>azim</em>) +
+dz/dy*cos(<em>azim</em>)], is found; negation yields positive values
+when the slope of z(x,y) is downhill in the <em>azim</em> direction, the
+correct sense for shading the illumination of an image (see
+<a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> and <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>) by a light source above the x,y plane
+shining from the <em>azim</em> direction. Optionally, supply two azimuths,
+<strong>-A</strong><em>azim</em>/<em>azim2</em>, in which case the gradients in each of these
+directions are calculated and the one larger in magnitude is
+retained; this is useful for illuminating data with two directions
+of lineated structures, e.g., <strong>-A</strong><em>0</em>/<em>270</em> illuminates from the
+north (top) and west (left).  Finally, if <em>azim</em> is a file it must
+be a grid of the same domain, spacing and registration as <em>in_grdfile</em>
+and we will update the azimuth at each output node when computing the
+directional derivatives.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong>[<strong>a</strong>][<strong>c</strong>][<strong>o</strong>][<strong>n</strong>]</dt>
+<dd>Find the direction of the positive (up-slope) gradient of the data.
+To instead find the aspect (the down-slope direction), use <strong>-Da</strong>.
+By default, directions are measured clockwise from north, as <em>azim</em> in <strong>-A</strong>
+above. Append <strong>c</strong> to use conventional Cartesian angles measured
+counterclockwise from the positive x (east) direction. Append <strong>o</strong>
+to report orientations (0-180) rather than directions (0-360).
+Append <strong>n</strong> to add 90 degrees to all angles (e.g., to give
+local strikes of the surface ).</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong>[<strong>m</strong>|<strong>s</strong>|<strong>p</strong>]<em>azim/elev</em>[<strong>+a</strong><em>ambient</em>][<strong>+d</strong><em>diffuse</em>][<strong>+p</strong><em>specular</em>][<strong>+s</strong><em>shine</em>]</dt>
+<dd>Compute Lambertian radiance appropriate to use with <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> and <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>.
+The Lambertian Reflection assumes an ideal surface that
+reflects all the light that strikes it and the surface appears
+equally bright from all viewing directions. Here, <em>azim</em> and <em>elev</em> are
+the azimuth and elevation of the light vector. Optionally, supply
+<em>ambient</em> [0.55], <em>diffuse</em> [0.6], <em>specular</em> [0.4], or <em>shine</em> [10],
+which are parameters that control the reflectance properties of the
+surface. Default values are given in the brackets. Use <strong>-Es</strong> for a
+simpler Lambertian algorithm. Note that with this form you only have
+to provide azimuth and elevation. Alternatively, use <strong>-Ep</strong> for
+the Peucker piecewise linear approximation (simpler but faster
+algorithm; in this case the <em>azim</em> and <em>elev</em> are hardwired to 315
+and 45 degrees. This means that even if you provide other values
+they will be ignored.)</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong><em>flag</em></dt>
+<dd>Boundary condition <em>flag</em> may be <em>x</em> or <em>y</em> or <em>xy</em> indicating data
+is periodic in range of x or y or both, or <em>flag</em> may be <em>g</em>
+indicating geographical conditions (x and y are lon and lat).
+[Default uses “natural” conditions (second partial derivative normal
+to edge is zero).]</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong>[<strong>e</strong>|<strong>t</strong>][<em>amp</em>][<strong>+s</strong><em>sigma</em>][<strong>+o</strong><em>offset</em>]</dt>
+<dd>Normalization. [Default is no normalization.] The actual gradients <em>g</em>
+are offset and scaled to produce normalized gradients <em>gn</em> with a
+maximum output magnitude of <em>amp</em>. If <em>amp</em> is not given, default
+<em>amp</em> = 1. If <em>offset</em> is not given, it is set to the average of
+<em>g</em>. <strong>-N</strong> yields <em>gn</em> = <em>amp</em> * (<em>g</em> - <em>offset</em>)/max(abs(<em>g</em> -
+<em>offset</em>)). <strong>-Ne</strong> normalizes using a cumulative Laplace
+distribution yielding <em>gn</em> = <em>amp</em> * (1.0 -
+exp(sqrt(2) * (<em>g</em> - <em>offset</em>)/ <em>sigma</em>)), where
+<em>sigma</em> is estimated using the L1 norm of (<em>g</em> - <em>offset</em>) if it is
+not given. <strong>-Nt</strong> normalizes using a cumulative Cauchy distribution
+yielding <em>gn</em> = (2 * <em>amp</em> / PI) * atan( (<em>g</em> - <em>offset</em>)/
+<em>sigma</em>) where <em>sigma</em> is estimated using the L2 norm of (<em>g</em> -
+<em>offset</em>) if it is not given.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest. Using the <strong>-R</strong> option
+will select a subsection of <em>in_grdfile</em> grid. If this subsection
+exceeds the boundaries of the grid, only the common region will be extracted.</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><em>slopefile</em></dt>
+<dd>Name of output grid file with scalar magnitudes of gradient vectors.
+Requires <strong>-D</strong> but makes <strong>-G</strong> optional.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+<dt><strong>-fg</strong></dt>
+<dd>Geographic grids (dimensions of longitude, latitude) will be converted to
+meters via a “Flat Earth” approximation using the current ellipsoid parameters.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+c</strong>][<strong>+t</strong><em>threshold</em>] <a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select interpolation mode for grids.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="grid-distance-units">
+<h2>Grid Distance Units<a class="headerlink" href="#grid-distance-units" title="Permalink to this headline">¶</a></h2>
+<p>If the grid does not have meter as the horizontal unit, append <strong>+u</strong><em>unit</em> to the input file name to convert from the
+specified unit to meter.  If your grid is geographic, convert distances to meters by supplying <strong>-fg</strong> instead.</p>
+</div>
+<div class="section" id="hints">
+<h2>Hints<a class="headerlink" href="#hints" title="Permalink to this headline">¶</a></h2>
+<p>If you don’t know what <strong>-N</strong> options to use to make an intensity file
+for <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> or <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>, a good first try is <strong>-Ne</strong>0.6.</p>
+<p>Usually 255 shades are more than enough for visualization purposes. You
+can save 75% disk space by appending =nb/a to the output filename
+<em>out_grdfile</em>.</p>
+<p>If you want to make several illuminated maps of subregions of a large
+data set, and you need the illumination effects to be consistent across
+all the maps, use the <strong>-N</strong> option and supply the same value of <em>sigma</em>
+and <em>offset</em> to <strong>grdgradient</strong> for each map. A good guess is <em>offset</em> =
+0 and <em>sigma</em> found by <a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a> <strong>-L2</strong> or <strong>-L1</strong> applied to an
+unnormalized gradient grd.</p>
+<p>If you simply need the <em>x</em>- or <em>y</em>-derivatives of the grid, use <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>.</p>
+</div>
+<div class="section" id="grid-file-formats">
+<h2>Grid File Formats<a class="headerlink" href="#grid-file-formats" title="Permalink to this headline">¶</a></h2>
+<p>By default GMT writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, GMT is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called “packing” of grids, writing out floating point
+data as 1- or 2-byte integers. <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">(more …)</span></a></p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To make a file for illuminating the data in geoid.nc using exp-
+normalized gradients in the range [-0.6,0.6] imitating light sources in
+the north and west directions:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdgradient</span> <span class="n">geoid</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">A0</span><span class="o">/</span><span class="mi">270</span> <span class="o">-</span><span class="n">Ggradients</span><span class="o">.</span><span class="n">nc</span><span class="o">=</span><span class="n">nb</span><span class="o">/</span><span class="n">a</span> <span class="o">-</span><span class="n">Ne0</span><span class="o">.</span><span class="mi">6</span> <span class="o">-</span><span class="n">V</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To find the azimuth orientations of seafloor fabric in the file topo.nc:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdgradient</span> <span class="n">topo</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Dno</span> <span class="o">-</span><span class="n">Gazimuths</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">V</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Horn, B.K.P., Hill-Shading and the Reflectance Map, Proceedings of the
+IEEE, Vol. 69, No. 1, January 1981, pp. 14-47.
+(<a class="reference external" href="http://people.csail.mit.edu/bkph/papers/Hill-Shading.pdf">http://people.csail.mit.edu/bkph/papers/Hill-Shading.pdf</a>)</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>
+<a class="reference internal" href="grdhisteq.html"><span class="doc">grdhisteq</span></a>,
+<a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a>,
+<a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>,
+<a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a>, <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>,
+<a class="reference internal" href="grdvector.html"><span class="doc">grdvector</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">grdgradient</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#grid-distance-units">Grid Distance Units</a></li>
+<li><a class="reference internal" href="#hints">Hints</a></li>
+<li><a class="reference internal" href="#grid-file-formats">Grid File Formats</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grdfilter.html"
+                        title="previous chapter">grdfilter</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grdhisteq.html"
+                        title="next chapter">grdhisteq</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/grdgradient.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="grdhisteq.html" title="grdhisteq"
+             >next</a> </li>
+        <li class="right" >
+          <a href="grdfilter.html" title="grdfilter"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

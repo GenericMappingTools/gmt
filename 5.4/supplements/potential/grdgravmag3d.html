@@ -1,0 +1,343 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>grdgravmag3d &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="grdredpol" href="grdredpol.html" />
+    <link rel="prev" title="grdflexure" href="grdflexure.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="grdredpol.html" title="grdredpol"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="grdflexure.html" title="grdflexure"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="grdgravmag3d">
+<span id="index-0"></span><h1>grdgravmag3d<a class="headerlink" href="#grdgravmag3d" title="Permalink to this headline">¶</a></h1>
+<p>grdgravmag3d - Compute the gravity effect of a grid by the method of Okabe</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdgravmag3d</strong> <em>grdfile_top</em> [<em>grdfile_bot</em>] [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>density</em> ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>thick</em> ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>xy_file</em> ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outgrid</em> ]
+[ <a class="reference internal" href="#h"><span> <strong>-H</strong></span></a></strong><em>&lt;…&gt;</em> ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>increment</em> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>z_obs</em> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong>[<strong>n</strong><em>n_pad</em>]|[<em>pad_dist</em>]|[&lt;w/e/s/n&gt;] ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>radius</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong><em>level</em>[<strong>b</strong>|<strong>t</strong>] ]
+[ <strong>-fg</strong> ]
+[ <strong>-x</strong><em>+a|n|-n</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdgravmag3d</strong> will compute the gravity anomaly of a body described by
+one or (optionally) two grids The output can either be along a given set
+of xy locations or on a grid. This method is not particularly fast but
+allows computing the anomaly of arbitrarily complex shapes.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>grdfile_top</em> [<em>grdfile_bot</em>]</dt>
+<dd>Grid file whose gravity effect is going to be computed. If two grids are
+provided then the gravity/magnetic effect of the volume between them is computed.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>density</em></dt>
+<dd>Sets body density in SI. This option is mutually exclusive with <strong>-H</strong></dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><em>xy_file</em></dt>
+<dd>Provide locations where the anomaly will be computed. Note this
+option is mutually exclusive with <strong>-G</strong>.</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>outgrid</em></dt>
+<dd>Output the gravity anomaly at nodes of this grid file.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong><em>thickness</em></dt>
+<dd>To provide the layer thickness in m [Default = 500 m].</dd>
+</dl>
+<dl class="docutils" id="h">
+<dt><strong>-H</strong><em>f_dec/f_dip/m_int/m_dec/m_dip</em> <strong>-H</strong><em>+m&lt;magfile&gt;</em>  <strong>-H</strong><em>x|y|z|h|t</em> <strong>-H</strong><em>+i|+g|+r|+f|+n</em></dt>
+<dd><p class="first">Sets parameters for computation of magnetic anomaly (Can be used multiple times).</p>
+<blockquote>
+<div><p>f_dec/f_dip -&gt; geomagnetic declination/inclination</p>
+<p>m_int/m_dec/m_dip -&gt; body magnetic intensity/declination/inclination</p>
+</div></blockquote>
+<p>OR for a grid mode</p>
+<blockquote>
+<div>+m&lt;magfile&gt; where ‘magfile’ is the name of the magnetic intensity file.</div></blockquote>
+<p>To compute a component, specify any of:</p>
+<blockquote class="last">
+<div><p>x|X|e|E  to compute the E-W component.</p>
+<p>y|Y|n|N  to compute the N-S component.</p>
+<p>z|Z      to compute the Vertical component.</p>
+<p>h|H      to compute the Horizontal component.</p>
+<p>t|T|f|F  to compute the total field.</p>
+<p>For a variable inclination and declination use IGRF. Set any of <strong>-H</strong><em>+i|+g|+r|+f|+n</em> to do that</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>]]</dt>
+<dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
+append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>: Append
+<strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc seconds. If one
+of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or <strong>u</strong> is appended
+instead, the increment is assumed to be given in meter, foot, km, Mile,
+nautical mile or US survey foot, respectively, and will be converted to
+the equivalent degrees longitude at the middle latitude of the region
+(the conversion depends on <a class="reference internal" href="../../gmt.conf.html#projection-parameters"><span class="std std-ref">PROJ_ELLIPSOID</span></a>). If <em>y_inc</em> is given
+but set to 0 it will be reset equal to <em>x_inc</em>; otherwise it will be
+converted to degrees latitude. <strong>All coordinates</strong>: If <strong>+e</strong> is appended
+then the corresponding max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly
+adjusted to fit exactly the given increment [by default the increment
+may be adjusted slightly to fit the given domain]. Finally, instead of
+giving an increment you may specify the <em>number of nodes</em> desired by
+appending <strong>+n</strong> to the supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The resulting
+increment value depends on whether you have selected a
+gridline-registered or pixel-registered grid; see <a class="reference internal" href="../../GMT_Docs.html#app-file-formats"><span class="std std-ref">GMT File Formats</span></a> for
+details. Note: if <strong>-R</strong><em>grdfile</em> is used then the grid spacing has
+already been initialized; use <strong>-I</strong> to override the values.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong><em>z_obs</em></dt>
+<dd>Sets level of observation [Default = 0]. That is the height (z) at
+which anomalies are computed.</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong>[<strong>n</strong><em>n_pad</em>]|[<em>pad_dist</em>]|[&lt;w/e/s/n&gt;]</dt>
+<dd><dl class="first last docutils">
+<dt>Extend the domain of computation with respect to output <strong>-R</strong> region.</dt>
+<dd><p class="first"><strong>-Qn</strong><em>n_pad</em> artificially extends the width of the outer rim of
+cells to have a fake width of <em>n_pad</em> * dx[/dy].</p>
+<p><strong>-Q</strong><em>pad_dist</em> extend the region by west-pad, east+pad, etc.</p>
+<p class="last"><strong>-Q</strong><em>region</em> Same syntax as <strong>-R</strong>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest. Note: this overrides the source grid region (Default: use same region as input)</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><em>radius</em></dt>
+<dd>Set search radius in km (valid only in the two grids mode OR when <strong>-E</strong>) [Default = 30 km].
+This option serves to speed up the computation by not computing the effect of prisms that
+are further away than <em>radius</em> from the current node.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="z">
+<dt><strong>-Z</strong><em>level</em>[<strong>b</strong>|<strong>t</strong>]</dt>
+<dd>level of reference plane [Default = 0]. Use this option when the
+triangles describe a non-closed surface and the volume is defined
+from each triangle and this reference level. An example will be the
+water depth to compute a Bouguer anomaly. Use <strong>-Zb</strong> or <strong>Zt</strong> to close
+the body at its bottom (for example, to compute the effect of a dome) or
+at its top (to compute the effect of a <em>spoon</em>).</dd>
+<dt><strong>-fg</strong></dt>
+<dd>Geographic grids (dimensions of longitude, latitude) will be converted to
+meters via a “Flat Earth” approximation using the current ellipsoid parameters.</dd>
+<dt><strong>-x</strong><em>+a|n|-n</em></dt>
+<dd><p class="first">Choose the number of processors used in multi-threading (Only available with multi-threading builds).</p>
+<blockquote class="last">
+<div><p><em>+a</em> Use all available processors.</p>
+<p><em>n</em>  Use n processors (not more than max available off course).</p>
+<p><em>-n</em> Use (all - n) processors.</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="grid-distance-units">
+<h2>Grid Distance Units<a class="headerlink" href="#grid-distance-units" title="Permalink to this headline">¶</a></h2>
+<p>If the grid does not have meter as the horizontal unit, append <strong>+u</strong><em>unit</em> to the input file name to convert from the
+specified unit to meter. If your grid is geographic, convert distances to meters by supplying <strong>-fg</strong> instead.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Suppose you want to compute the gravity effect of the phantom “Sandy
+Island” together with its not phantom seamount</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdgravmag3d</span> <span class="n">sandy_bat</span><span class="o">.</span><span class="n">grd</span> <span class="o">-</span><span class="n">C1700</span> <span class="o">-</span><span class="n">Z</span><span class="o">-</span><span class="mi">4300</span> <span class="o">-</span><span class="n">fg</span> <span class="o">-</span><span class="n">I1m</span> <span class="o">-</span><span class="n">Gsandy_okb</span><span class="o">.</span><span class="n">grd</span> <span class="o">-</span><span class="n">V</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To compute the vertical component due to a magnetization stored in <em>mag.grd</em> over a zone defined by
+the surface <em>bat.grd</em>, using variable declination and inclination provided the the IGRF and using 4
+processors, do:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdgravmag3d</span> <span class="n">bat</span><span class="o">.</span><span class="n">grd</span> <span class="o">-</span><span class="n">E10000</span> <span class="o">-</span><span class="n">Gcomp_Z</span><span class="o">.</span><span class="n">grd</span> <span class="o">-</span><span class="n">Hz</span> <span class="o">-</span><span class="n">H</span><span class="o">+</span><span class="n">n</span> <span class="o">-</span><span class="n">H</span><span class="o">+</span><span class="n">mmag</span><span class="o">.</span><span class="n">grd</span> <span class="o">-</span><span class="n">x4</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">S50</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtgravmag3d.html"><span class="doc">gmtgravmag3d</span></a>,
+<a class="reference internal" href="talwani2d.html"><span class="doc">talwani2d</span></a>,
+<a class="reference internal" href="talwani3d.html"><span class="doc">talwani3d</span></a></p>
+</div>
+<div class="section" id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h2>
+<p>Okabe, M., Analytical expressions for gravity anomalies due to
+polyhedral bodies and translation into magnetic anomalies, <em>Geophysics</em>,
+44, (1979), p 730-741.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">grdgravmag3d</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#grid-distance-units">Grid Distance Units</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+<li><a class="reference internal" href="#reference">Reference</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grdflexure.html"
+                        title="previous chapter">grdflexure</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grdredpol.html"
+                        title="next chapter">grdredpol</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/potential/grdgravmag3d.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="grdredpol.html" title="grdredpol"
+             >next</a> </li>
+        <li class="right" >
+          <a href="grdflexure.html" title="grdflexure"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

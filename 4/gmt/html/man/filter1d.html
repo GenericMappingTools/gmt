@@ -1,0 +1,410 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:11 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>FILTER1D</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>FILTER1D</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#ASCII FORMAT PRECISION">ASCII FORMAT PRECISION</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">filter1d
+&minus; Time domain filtering of 1-D time series</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>filter1d</b>
+[ <i>infile</i> ]
+<b>&minus;F</b><i>&lt;type&gt;&lt;width&gt;</i>[<i>mode</i>]
+[ <b>&minus;D</b><i>increment</i> ] [ <b>&minus;E</b> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;I</b><i>ignore_val</i> ] [
+<b>&minus;L</b><i>lack_width</i> ] [
+<b>&minus;N</b><i>n_cols/t_col</i> ] [
+<b>&minus;Q</b><i>q_factor</i> ] [
+<b>&minus;S</b><i>symmetry_factor</i> ] [
+<b>&minus;T</b><i>start/stop/int</i> ] [ <b>&minus;V</b> ] [
+<b>&minus;b</b>[<b>i</b>|<b>o</b>][<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>filter1d</b>
+is a general time domain filter for multiple column time
+series data. The user specifies the number of columns of
+input and which column is the time. (See <b>&minus;N</b>
+option below). The fastest operation occurs when the input
+time series are equally spaced and have no gaps or outliers
+and the special options are not needed. <b>filter1d</b> has
+options <b>-L</b>, <b>-Q</b>, and <b>-S</b> for unevenly
+sampled data with gaps.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em" valign="top"><i>infile</i></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multi-column ASCII
+(or binary, see <b>&minus;b</b>) file holding data values to
+be filtered.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the filter
+type. Choose among convolution and non-convolution filters.
+Append the filter code followed by the full filter
+<i>width</i> in same units as time column. Available
+convolution filters are:</p></td>
+</table>
+
+<p style="margin-left:22%;">(<b>b</b>) Boxcar: All weights
+are equal. <br>
+(<b>c</b>) Cosine Arch: Weights follow a cosine arch curve.
+<br>
+(<b>g</b>) Gaussian: Weights are given by the Gaussian
+function. <br>
+(<b>f</b>) Custom: Instead of <i>width</i> give name of a
+one-column file with your own weight coefficients. <br>
+Non-convolution filters are: <br>
+(<b>m</b>) Median: Returns median value. <br>
+(<b>p</b>) Maximum likelihood probability (a mode
+estimator): Return modal value. If more than one mode is
+found we return their average value. Append - or + to the
+filter width if you rather want to return the smallest or
+largest of the modal values. <br>
+(<b>l</b>) Lower: Return the minimum of all values. <br>
+(<b>L</b>) Lower: Return minimum of all positive values
+only. <br>
+(<b>u</b>) Upper: Return maximum of all values. <br>
+(<b>U</b>) Upper: Return maximum or all negative values
+only. <br>
+Upper case type <b>B, C, G, M, P, F</b> will use robust
+filter versions: i.e., replace outliers (2.5 L1 scale off
+median) with median during filtering. <br>
+In the case of <b>L|U</b> it is possible that no data passes
+the initial sign test; in that case the filter will return
+0.0.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>increment</i> is
+used when series is NOT equidistantly sampled. Then
+<i>increment</i> will be the abscissae resolution, i.e., all
+abscissae will be rounded off to a multiple of
+<i>increment</i>. Alternatively, resample data with
+<b><A HREF="sample1d.html">sample1d</A></b>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Include Ends of
+time series in output. Default loses half the filter-width
+of data at each end.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">To ignore values;
+If an input value equals <i>ignore_val</i> it will be set to
+NaN.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Checks for Lack of
+data condition. If input data has a gap exceeding
+<i>width</i> then no output will be given at that point
+[Default does not check Lack].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets number of
+columns in input and which column contains the independent
+variable (time). The left-most column is # 0, the right-most
+is # (<i>n_cols</i> - 1). [Default is <i>n_cols</i> = 2,
+<i>t_col</i> = 0; i.e., file has t, f(t) pairs].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">assess Quality of
+output value by checking mean weight in convolution. Enter
+<i>q_factor</i> between 0 and 1. If mean weight &lt;
+<i>q_factor</i>, output is suppressed at this point [Default
+does not check Quality].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Checks symmetry of
+data about window center. Enter a factor between 0 and 1. If
+( (abs(n_left - n_right)) / (n_left + n_right) ) &gt;
+<i>factor</i>, then no output will be given at this point
+[Default does not check Symmetry].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Make evenly spaced
+timesteps from <i>start</i> to <i>stop</i> by <i>int</i>
+[Default uses input times].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.
+[Default is same as input].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+</table>
+
+<a name="ASCII FORMAT PRECISION"></a>
+<h2>ASCII FORMAT PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ASCII
+output formats of numerical data are controlled by
+parameters in your .gmtdefaults4 file. Longitude and
+latitude are formatted according to
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>, whereas other values are
+formatted according to <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>. Be aware that the
+format in effect can lead to loss of precision in the
+output, which can lead to various problems downstream. If
+you find the output is not written with enough precision,
+consider switching to binary output (<b>&minus;bo</b> if
+available) or specify more decimals using the
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> setting.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To filter the
+data set in the file cruise.gmtd containing evenly spaced
+gravity, magnetics, topography, and distance (in m) with a
+10 km Gaussian filter, removing outliers, and output a
+filtered value every 2 km between 0 and 100 km:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>filter1d</b>
+cruise.gmtd <b>&minus;T</b> 0/1.0e5/2000 <b>&minus;FG</b>
+10000 <b>&minus;N</b> 4/3 <b>&minus;V</b> &gt;
+filtered_cruise.gmtd</p>
+
+<p style="margin-left:11%; margin-top: 1em">Data along
+track often have uneven sampling and gaps which we do not
+want to interpolate using <b><A HREF="sample1d.html">sample1d</A></b>. To find the
+median depth in a 50 km window every 25 km along the track
+of cruise v3312, stored in v3312.dt, checking for gaps of
+10km and asymmetry of 0.3:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>filter1d</b>
+v3312.dt <b>&minus;FM</b> 50 <b>&minus;T</b> 0/100000/25
+<b>&minus;L</b> 10 <b>&minus;S</b> 0.3 &gt;
+v3312_filt.dt</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="sample1d.html">sample1d</A></i>(1)</p>
+<hr>
+</body>
+</html>

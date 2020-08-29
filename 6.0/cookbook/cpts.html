@@ -1,0 +1,354 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>16. Of Colors and Color Legends &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="17. Custom Plot Symbols" href="custom_symbols.html" />
+    <link rel="prev" title="15. GMT on non-UNIX Platforms" href="non_unix_platforms.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preface.html">1. Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html">2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">3. General Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="options.html">4. Standardized command line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinate_transformations.html">5. GMT Coordinate Transformations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="map_projections.html">6. GMT Map Projections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplemental_packages.html">7. GMT Supplemental Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html">8. GMT File Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="include_figures.html">9. Including GMT Graphics into your Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predefined_patterns.html">10. Predefined Bit and Hachure Patterns in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="octal_codes.html">11. Chart of Octal Codes for Characters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postscript_fonts.html">12. PostScript Fonts Used by GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">13. Color Space: The Final Frontier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_filtering.html">14. Filtering of Data in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_unix_platforms.html">15. GMT on non-UNIX Platforms</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">16. Of Colors and Color Legends</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#built-in-color-palette-tables-cpt">16.1. Built-in color palette tables (CPT)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#labeled-and-non-equidistant-color-legends">16.2. Labeled and non-equidistant color legends</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="custom_symbols.html">17. Custom Plot Symbols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contour_annotations.html">18. Annotation of Contours and “Quoted Lines”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ogrgmt_format.html">19. The GMT Vector Data Format for OGR Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="one-liner.html">20. GMT Modern Mode One-line Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../cookbook.html">GMT Cookbook</a> &raquo;</li>
+        
+      <li>16. Of Colors and Color Legends</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/cookbook/cpts.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="of-colors-and-color-legends">
+<span id="id1"></span><h1>16. Of Colors and Color Legends<a class="headerlink" href="#of-colors-and-color-legends" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="built-in-color-palette-tables-cpt">
+<h2>16.1. Built-in color palette tables (CPT)<a class="headerlink" href="#built-in-color-palette-tables-cpt" title="Permalink to this headline">¶</a></h2>
+<p>Figures <a class="reference internal" href="#cpt-files-a"><span class="std std-ref">CPTs a</span></a>, <a class="reference internal" href="#cpt-files-b"><span class="std std-ref">b</span></a> and
+<a class="reference internal" href="#cpt-files-c"><span class="std std-ref">b</span></a> show the built-in
+color palettes, stored in so-called CPTs <a class="footnote-reference" href="#id3" id="id2">[35]</a>. The programs
+<a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a> and
+<a class="reference internal" href="../grd2cpt.html"><span class="doc">grd2cpt</span></a> are used to access these
+master CPTs and translate/scale them to fit the user’s range of
+<em>z</em>-values. The top half of the color bars in the Figure shows the
+original color scale, which can be either discrete or continuous, though
+some (like <strong>globe</strong>) are a mix of the two. The bottom half the color
+bar are built by using <a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a>
+<strong>-T</strong>-1/1/0.25, thus splitting the color scale into 8 discrete colors.</p>
+<div class="figure align-center" id="id4">
+<span id="cpt-files-a"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1a.png"><img alt="../_images/GMT_App_M_1a.png" src="../_images/GMT_App_M_1a.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">The first 24 of the standard CPTs supported by GMT.</span></p>
+</div>
+<div class="figure align-center" id="id5">
+<span id="cpt-files-b"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1b.png"><img alt="../_images/GMT_App_M_1b.png" src="../_images/GMT_App_M_1b.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">The second 22 of the standard CPTs supported by GMT.</span></p>
+</div>
+<div class="figure align-center" id="id6">
+<span id="cpt-files-c"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1c.png"><img alt="../_images/GMT_App_M_1c.png" src="../_images/GMT_App_M_1c.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">The 24 scientific color maps by Fabio Crameri supported by GMT.</span></p>
+</div>
+<p>For additional color tables, visit
+<a class="reference external" href="http://soliton.vm.bytemark.co.uk/pub/cpt-city/">cpt-city</a> and
+<a class="reference external" href="http://www.fabiocrameri.ch/colourmaps.php">Scientific Colour-Maps</a>.</p>
+</div>
+<div class="section" id="labeled-and-non-equidistant-color-legends">
+<h2>16.2. Labeled and non-equidistant color legends<a class="headerlink" href="#labeled-and-non-equidistant-color-legends" title="Permalink to this headline">¶</a></h2>
+<p>The use of color legends has already been introduced in Examples
+<a class="reference internal" href="../gallery/ex02.html#example-02"><span class="std std-ref">2</span></a>, <a class="reference internal" href="../gallery/ex16.html#example-16"><span class="std std-ref">16</span></a>, and <a class="reference internal" href="../gallery/ex17.html#example-17"><span class="std std-ref">17</span></a>.
+Things become a bit more
+complicated when you want to label the legend with names for certain
+intervals (like geological time periods in the example below). To
+accomplish that, one should add a semi-colon and the label name at the
+end of a line in the CPT and add the <strong>-L</strong> option to the
+<a class="reference internal" href="../colorbar.html"><span class="doc">colorbar</span></a> command that draws the color
+legend. This option also makes all intervals in the legend of equal
+length, even it the numerical values are not equally spaced.</p>
+<p>Normally, the name labels are plotted at the lower end of the intervals.
+But by adding a <em>gap</em> amount (even when zero) to the <strong>-L</strong> option, they
+are centered. The example below also shows how to annotate ranges using
+<strong>-Li</strong> (in which case no name labels should appear in the CPT),
+and how to switch the color bar around (by using a negative length).</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/GMT_App_M_2.png"><img alt="../_images/GMT_App_M_2.png" src="../_images/GMT_App_M_2.png" style="width: 600px;" /></a>
+</div>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[35]</a></td><td>The 3rd palette is called <em>categorical</em> and produces a set of
+colors suitable for categorical plots.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="custom_symbols.html" class="btn btn-neutral float-right" title="17. Custom Plot Symbols" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="non_unix_platforms.html" class="btn btn-neutral float-left" title="15. GMT on non-UNIX Platforms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

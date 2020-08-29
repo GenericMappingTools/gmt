@@ -1,0 +1,678 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mgd77manage &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mgd77path" href="mgd77path.html" />
+    <link rel="prev" title="mgd77magref" href="mgd77magref.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../modules.html">GMT Modules</a> &raquo;</li>
+        
+      <li>mgd77manage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/supplements/mgd77/mgd77manage.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mgd77manage">
+<span id="index-0"></span><h1>mgd77manage<a class="headerlink" href="#mgd77manage" title="Permalink to this headline">¶</a></h1>
+<p>Manage the content of MGD77+ files</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt mgd77manage</strong> <em>GEODAS-ids</em>
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><strong>a</strong>|<strong>c</strong>|<strong>d</strong>|<strong>D</strong>|<strong>e</strong>|<strong>E</strong>|<strong>g</strong>|<strong>i</strong>|<strong>n</strong>|<strong>t</strong>|<strong>T</strong><em>fileinfo</em>[<strong>+f</strong>]]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>abbrev1</em>,<em>abbrev2</em>,…) ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>empty</em> ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong> ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>abbrev</em>/<em>name</em>/<em>unit</em>/<strong>t</strong>/<em>scale</em>/<em>offset</em>/<em>comment</em> ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>unit</em> ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-bi</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-j</strong><a class="reference internal" href="../../gmt.html#distcalc-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-n</strong><a class="reference internal" href="../../gmt.html#n-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>mgd77manage</strong> deals with maintaining extra custom columns in MGD77+
+netCDF files. You can either delete one or more columns, add a new
+column, update an existing column with new data, or supply error
+correction information (*.e77 files). New data may come from a table
+(ASCII unless <strong>-bi</strong> is used), be based on
+existing columns and certain theoretical expressions, or they may be
+obtained by sampling a grid (choose between GMT grid or a Sandwell/Smith
+Mercator *.img grid) along track. The new data will be appended to the
+MGD77+ file in the form of an extra data column of specified type. The
+data file will be modified; no new file will be created. For the big
+issues, see the DISCUSSION section below.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>NGDC-ids</em></dt>
+<dd><p class="first">Can be one or more of five kinds of specifiers:</p>
+<ol class="arabic simple">
+<li>8-character GEODAS IDs, e.g., 01010083, JA010010etc., etc.</li>
+<li>2-character <em>agency</em> codes which will return all cruises from each agency.</li>
+<li>4-character &lt;agency&gt;&lt;vessel&gt; codes, which will return all cruises from those vessels.</li>
+<li>=<em>list</em>, where <em>list</em> is a table with GEODAS IDs, one per line.</li>
+<li>If nothing is specified we return all cruises in the data base.</li>
+</ol>
+<p class="last">(See mgd77info <strong>-L</strong> for agency and vessel codes). If no file
+extension is given then we search for files with one of the four
+known extensions.  The search order (and the extensions) tried
+is MGD77+ (“.nc”), MGD77T (“.m77t”), MGD77 (“.mgd77” ) and plain
+text file (“.dat”).  Use <strong>-I</strong> to ignore one or more of these
+file types). Cruise files will be looked
+for first in the current directory and second in all directories
+listed in <strong>$MGD77_HOME</strong>/mgd77_paths.txt [If <strong>$MGD77_HOME</strong> is
+not set it will default to <strong>$GMT_SHAREDIR</strong>/mgd77].</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong><strong>a</strong>|<strong>c</strong>|<strong>d</strong>|<strong>D</strong>|<strong>e</strong>|<strong>E</strong>|<strong>g</strong>|<strong>i</strong>|<strong>n</strong>|<strong>t</strong>|<strong>T</strong><em>fileinfo</em>[<strong>+f</strong>]</dt>
+<dd><p class="first">Add a new data column. If an existing column with the same
+abbreviation already exists in the file we will cowardly refuse to
+update the file. Append <strong>+f</strong> to overcome this reluctance
+(However, sometimes an existing column cannot be upgraded without
+first deleting it; if so you will be warned). Select a column source
+code among <strong>a</strong>, <strong>c</strong>, <strong>d</strong>, <strong>D</strong>, <strong>e</strong>, <strong>g</strong>, <strong>i</strong>, <strong>n</strong>,
+<strong>t</strong>, or <strong>T</strong>; detailed descriptions for each choice follow:</p>
+<p><strong>a</strong> Append filename of a single column table to add. File must
+have the same number of rows as the MGD77+ file. If no file is given
+we read from stdin instead.</p>
+<p><strong>c</strong> Create a new column that derives from existing data or
+formulas for corrections and reference fields. Append <strong>c</strong> for the
+Carter corrections subtracted from uncorrected depths, <strong>g</strong> for the
+IGF gravity reference field (a.k.a “normal gravity”), <strong>m</strong> for the
+IGRF total field magnetic reference field, and <strong>r</strong> for recomputed
+magnetic anomaly (append 1 or 2 to specify which total field column
+to use [1]). For gravity we choose the reference field based on the
+parameter Gravity Theoretical Formula Code in the cruise’s MGD77
+header. If this is not set or is invalid we default to the IGF 1980.
+You can override this behavior by appending the desired code: 1 =
+Heiskanen 1924, 2 = International 1930, 3 = IGF1967, or 4 = IGF1980.</p>
+<p><strong>d</strong> Append filename of a two-column table with the first column
+holding distances along track and the second column holding data
+values. If no file is given we read from stdin instead. Records with
+matching distances in the MGD77+ file will be assigned the new
+values; at other distances we set them to NaN. Alternatively, give
+upper case <strong>D</strong> instead and we will interpolate the column at all
+record distances. See <strong>-N</strong> for choosing distance units and <strong>-j</strong>
+for choosing how distances are calculated.</p>
+<p><strong>e</strong> Expects to find an e77 error/correction log from
+<a class="reference internal" href="mgd77sniffer.html"><span class="doc">mgd77sniffer</span></a> with the name <em>GEODAS_ID</em>.e77 in the current
+directory or in $MGD77_HOME/E77; this file will examined and used
+to make modifications to the header values, specify a systematic
+correction for certain columns (such as scale and offset), specify
+that a certain anomaly should be recalculated from the observations
+(e.g., recalculate mag from mtf1 and the latest IGRF), and add or
+update the special column <strong>flag</strong> which may hold bitflags (0 =
+GOOD, 1 = BAD) for each data field in the standard MGD77 data set.
+Any fixed correction terms found (such as needing to scale a field
+by 0.1 or 10 because the source agency used incorrect units) will be
+written as attributes to the netCDF MGD77+ file and applied when the
+data are read by <a class="reference internal" href="mgd77list.html"><span class="doc">mgd77list</span></a>. Ephemeral corrections such as those
+determined by crossover analysis are not kept in the data files but
+reside in correction tables (see <a class="reference internal" href="mgd77list.html"><span class="doc">mgd77list</span></a> for details). By
+default, the first character of each header line in the e77 file
+(which is ?, Y or N) will be consulted to see if the corresponding
+adjustment should be applied. If any undecided settings are found
+(i.i, ?) we will abort and make no changes. Only records marked Y
+will be processed. You can override this behavior by appending one
+or more modifiers to the <strong>-Ae</strong> command: <strong>h</strong> will ignore all
+header corrections, <strong>f</strong> will ignore all fixed systematic trend
+corrections, <strong>n</strong>, <strong>v</strong>, and <strong>s</strong> will ignore bitflags pertaining
+to navigation, data values, and data slopes, respectively. Use
+<strong>-Ae+f</strong> to replace any existing E77 corrections in the file with
+the new values. Finally, e77 corrections will not be applied if the
+E77 file has not been verified. Use <strong>-AE</strong> to ignore the
+verification status.</p>
+<p><strong>g</strong> Sample a GMT geographic (lon, lat) grid along the track given
+by the MGD77+ file using bicubic interpolation (however, see
+<strong>-n</strong>). Append name of a GMT grid file.</p>
+<p><strong>i</strong> Sample a Sandwell/Smith Mercator *.img grid along the track
+given by the MGD77+ file using bicubic interpolation (however, see
+<strong>-n</strong>). Append the img grid filename, followed by the
+comma-separated data scale (typically 1 or 0.1), the IMG file mode
+(0-3), and optionally the img grid max latitude [80.738]. The modes
+stand for the following: (0) Img files with no constraint code,
+returns data at all points, (1) Img file with constraints coded,
+return data at all points, (2) Img file with constraints coded,
+return data only at constrained points and NaN elsewhere, and
+(3) Img file with constraints coded, return 1 at constraints and 0 elsewhere.</p>
+<p><strong>n</strong> Append filename of a two-column table with the first column
+holding the record number (0 to nrows - 1) and the second column
+holding data values. If no file is given we read from stdin instead.
+Records with matching record numbers in the MGD77+ file will be
+assigned the new values; at other records we set them to NaN.</p>
+<p class="last"><strong>t</strong> Append filename of a two-column table with the first column
+holding absolute times along track and the second column holding
+data values. If no file is given we read from stdin instead. Records
+with matching times in the MGD77+ file will be assigned the new
+values; at other times we set them to NaN. Alternatively, give upper
+case <strong>T</strong> instead and we will interpolate the column at all record
+times.</p>
+</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>abbrev1</em>,<em>abbrev2</em>,…)</dt>
+<dd>Give a comma-separated list of column abbreviations that you want to
+delete from the MGD77+ files. Do NOT use this option to remove
+columns that you are replacing with new data (use <strong>-A…+f</strong> instead).
+Because we cannot remove variables from netCDF files we must create
+a new file without the columns to be deleted. Once the file is
+successfully created we temporarily rename the old file, change the
+new filename to the old filename, and finally remove the old,
+renamed file.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong><em>empty</em></dt>
+<dd>Give a single character that will be repeated to fill empty string
+values, e.g., “9” will yield a string like “99999…” [9].</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong></dt>
+<dd>Force mode. When this mode is active you are empowered to delete or
+replace even the standard MGD77 set of columns. You better know what
+you are doing!</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>abbrev</em>/<em>name</em>/<em>unit</em>/<strong>t</strong>/<em>scale</em>/<em>offset</em>/<em>comment</em></dt>
+<dd>In addition to file information we must specify additional
+information about the extra column. Specify a short (16 char or
+less, using lower case letters, digits, or underscores only)
+abbreviation for the selected data, its more descriptive name, the
+data unit, the data type 1-character code (<strong>b</strong>yte, <strong>s</strong>hort,
+<strong>f</strong>loat, <strong>i</strong>nt, <strong>d</strong>ouble, or <strong>t</strong>ext) you want used
+for storage in the netCDF file, any scale and offset we should apply
+to the data to make them fit inside the range implied by the chosen
+storage type, and a general comment (&lt; 128 characters) regarding
+what these data represent. Note: If text data type is selected then
+the terms “values” in the <strong>-A</strong> discussion refer to your text data.
+Furthermore, the discussion on interpolation does not apply and the
+NaN value becomes a “no string” value (see <strong>-E</strong> for what this is).
+Place quotes around terms with more than one word (e.g., “Corrected Depth”).</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong><em>unit</em></dt>
+<dd>Append the distance unit (see <a class="reference internal" href="#units">Units</a>). [Default is <strong>-Nk</strong> (km)].
+Only relevant when <strong>-Ag</strong>|<strong>i</strong> is selected.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest. Only relevant when <strong>-Ag</strong>|<strong>i</strong> is selected.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary format for primary input. This applies to the input 1- or 2-column data files specified under some
+of the <strong>-A</strong> options. The binary input option is only available for
+numerical data columns.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-di</strong><em>nodata</em> <a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-je</strong>|<strong>f</strong>|<strong>g</strong> <a class="reference internal" href="../../gmt.html#distcalc-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine how spherical distances are calculated.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+c</strong>][<strong>+t</strong><em>threshold</em>] <a class="reference internal" href="../../gmt.html#n-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select interpolation mode for grids.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt>
+<dd>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</dd>
+</dl>
+</div>
+<div class="section" id="units">
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
+<p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
+and <strong>u</strong> for US survey foot. By default we compute such distances using
+a spherical approximation with great circles (<strong>-jg</strong>) using the authalic radius
+(see <a class="reference internal" href="../../gmt.conf.html#proj-mean-radius"><span class="std std-ref">PROJ_MEAN_RADIUS</span></a>). You can use <strong>-jf</strong> to perform
+“Flat Earth” calculations (quicker but less accurate) or <strong>-je</strong> to perform
+exact geodesic calculations (slower but more accurate; see
+<a class="reference internal" href="../../gmt.conf.html#proj-geodesic"><span class="std std-ref">PROJ_GEODESIC</span></a> for method used).</p>
+</div>
+<div class="section" id="consequences-of-grid-resampling">
+<h2>Consequences of grid resampling<a class="headerlink" href="#consequences-of-grid-resampling" title="Permalink to this headline">¶</a></h2>
+<p>Resample or sampling of grids will use various algorithms (see <strong>-n</strong>) that may lead
+to possible distortions or unexpected results in the resampled values.
+One expected effect of resampling with splines is the tendency for the new
+resampled values to slightly exceed the global min/max limits of the original
+grid.  If this is unacceptable, you can impose clipping of the resampled values
+values so they do not exceed the input min/max values by adding <strong>+c</strong> to
+your <strong>-n</strong> option.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To append Geosat/ERS-1 gravity version 11.2 as an extra data column in
+the cruises 01010047.nc and 01010008.nc, storing the values as mGal*10
+in a 2-byte short integer, try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mgd77manage <span class="m">01010047</span> <span class="m">01010008</span> -Ai10/1/grav.11.2.img <span class="se">\</span>
+    -Isatgrav/<span class="s2">&quot;Geosat/ERS-1 gravity&quot;</span>/<span class="s2">&quot;mGal&quot;</span>/s/10/0/<span class="s2">&quot;Sandwell/Smith version 11.2&quot;</span> -V
+</pre></div>
+</div>
+</div></blockquote>
+<p>To append a filtered version of magnetics as an extra data column of
+type float for the cruise 01010047.nc, and interpolate the filtered data
+at the times given in the MGD77+ file, try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mgd77manage <span class="m">01010047</span> -ATmymag.tm -Ifiltmag/<span class="s2">&quot;Intermediate-wavelength \</span>
+<span class="s2">    magnetic residuals&quot;</span>/<span class="s2">&quot;nTesla&quot;</span>/f/1/0/<span class="s2">&quot;Useful for looking for isochrons&quot;</span> -V
+</pre></div>
+</div>
+</div></blockquote>
+<p>To delete the existing extra columns satfaa, coastdist, and satvgg from
+all MGD77+ files, try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt <span class="nv">mgd77manage</span> <span class="o">=</span>allmgd77.lis -Dsatfaa,coastdist,satvgg -V
+</pre></div>
+</div>
+</div></blockquote>
+<p>To create a 4-byte float column with the correct IGRF reference field in
+all MGD77+ files, try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt <span class="nv">mgd77manage</span> <span class="o">=</span>allmgd77.lis -Acm -Iigrf/<span class="s2">&quot;IGRF reference \</span>
+<span class="s2">    field&quot;</span>/<span class="s2">&quot;nTesla&quot;</span>/f/1/0/<span class="s2">&quot;IGRF version 10 for 1990-2010&quot;</span> -V
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="discussion">
+<h2>Discussion<a class="headerlink" href="#discussion" title="Permalink to this headline">¶</a></h2>
+<p><strong>1. Preamble</strong></p>
+<p>The mgd77 supplement is an attempt to (1) improve on the
+limited functionality of the existing mgg supplement, (2) incorporate
+some of the ideas from Scripps’ gmt+ supplement by allowing extra data
+columns, and (3) add new capabilities for managing marine
+geophysical trackline data stored in an architecture-independent CF-1.0-
+and COARDS-compliant netCDF file format. Here are some of the underlying
+ideas and steps you need to take to maintain your files.</p>
+<p><strong>2. Introduction</strong></p>
+<p>Our starting point is the MGD77 ASCII data files distributed from NCEI
+on CD-ROMS, DVD-ROMS, and via FTP. Using Geodas to install the files
+locally we choose the “Carter corrected depth” option which will fill in
+the depth column using the two-way travel-times and the Carter tables if
+twt is present. This step yields ~5000 individual cruise files. Place
+these in one or more sub-directories of your choice, list these
+sub-directories (one per line) in the file mgd77_paths.txt, and place
+that file in the directory pointed to by <strong>$MGD77_HOME</strong>; if not set
+this variable defaults to <strong>$GMT_SHAREDIR</strong>/mgd77.</p>
+<p><strong>3. Conversion</strong></p>
+<p>Convert the ASCII MGD77 files to the new netCDF MGD77+ format using
+<a class="reference internal" href="mgd77convert.html"><span class="doc">mgd77convert</span></a>. Typically, you will make a list of all the cruises to
+be converted (with or without extension), and you then run</p>
+<blockquote>
+<div>mgd77convert =cruises.lis -Fa -Tc -V -Lwe+l &gt; log.txt</div></blockquote>
+<p>The verbose settings will ensure that all problems found during
+conversion will be reported. The new *.nc files may also be placed in
+one or more separate sub-directories and these should also be listed in
+the mgd77_paths.txt file. We suggest you place the directories with
+*.nc files ahead of the *.mgd77 directories. When you later want to
+limit a search to files of a certain extension you should use the <strong>-I</strong>
+option.</p>
+<p><strong>4. Adding new columns</strong></p>
+<p><strong>mgd77manage</strong> will allow you to add additional data columns to your
+*.nc files. These can be anything, including text strings, but most
+likely are numerical values sampled along the track from a supplied grid
+or an existing column that have been filtered or manipulated for a
+particular purpose. The format supports up to 32 such extra columns. See
+this man page for how to add columns. You may later decide to remove
+some of these columns or update the data associated with a certain
+column. Data extraction tools such as <a class="reference internal" href="mgd77list.html"><span class="doc">mgd77list</span></a> can be used to
+extract a mix of standard MGD77 columns (navigation, time, and the usual
+geophysical observations) and your custom columns.</p>
+<p><strong>5. Error sources</strong></p>
+<p>Before we discuss how to correct errors we will first list the different
+classes of errors associated with MGD77 data: (1) Header record errors
+occur when some of the information fields in the header do not comply
+with the MGD77 specification or required information is missing.
+<a class="reference internal" href="mgd77convert.html"><span class="doc">mgd77convert</span></a> will list these errors when the extended verbose
+setting is selected. These errors typically do not affect the data and
+are instead errors in the <em>meta-data</em> (2). Fixed
+systematic errors occur when a particular data column, despite the MGD77
+specification, has been encoded incorrectly. This usually means the data
+will be off by a constant factor such as 10 or 0.1, or in some cases
+even 1.8288 which converts fathoms to meters. (3) Unknown systematic
+errors occur when the instrument that recorded the data or the
+processing that followed introduced signals that appear to be systematic
+functions of time along track, latitude, heading, or some other
+combination of terms that have a physical or logical explanation. These
+terms may sometimes be resolved by data analysis techniques such as
+along-track and across-track investigations, and will result in
+correction terms that when applied to the data will remove these
+unwanted signals in an optimal way. Because these correction terms may
+change when new data are considered in their determination, such
+corrections are considered to be ephemeral. (4) Individual data points
+or sequences of data may violate rules such as being outside of possible
+ranges or in other ways violate sanity. Furthermore, sequences of points
+that may be within valid ranges may give rise to data gradients that are
+unreasonable. The status of every point can therefore be determined and
+this gives rise to bitflags GOOD or BAD. Our policy is that error
+sources 1, 2, and 4 will be corrected by supplying the information as
+meta-data in the relevant *.nc files, whereas the corrections for error
+source 3 (because they will constantly be improved) will be maintained
+in a separate list of corrections.</p>
+<p><strong>6. Finding errors</strong></p>
+<p>The <a class="reference internal" href="mgd77sniffer.html"><span class="doc">mgd77sniffer</span></a> is a tool that does a thorough along-track sanity
+check of the original MGD77 ASCII files and produces a corresponding
+*.e77 error log. All problems found are encoded in the error log, and
+recommended fixed correction terms are given, if needed. An analyst may
+verify that the suggested corrections are indeed valid (we only want to
+correct truly obvious unit errors), edit these error logs and modify
+such correction terms and activate them by changing the relevant code
+key (see <a class="reference internal" href="mgd77sniffer.html"><span class="doc">mgd77sniffer</span></a> for more details). <strong>mgd77manage</strong> can ingest
+these error logs and (1) correct bad header records given
+the suggestions in the log, (2) insert scale/offset correction terms to
+be used when reading certain columns, and (3) insert any
+bit-flags found. Rerun this step if you later find other problems as all
+E77 settings or flags will be recreated based on the latest E77 log.</p>
+<p><strong>7. Error corrections</strong></p>
+<p>The extraction program <a class="reference internal" href="mgd77list.html"><span class="doc">mgd77list</span></a> allows for corrections to be
+applied on-the-fly when data are requested. First, data with BAD
+bitflags are suppressed. Second, data with fixed systematic correction
+terms are corrected accordingly. Third, data with ephemeral correction
+terms will have those corrections applied (if a correction table is
+supplied). All of these steps require the presence of the relevant
+meta-data and all can be overruled by the user. In addition, users may
+add their own bitflags as separate data columns and use
+<a class="reference internal" href="mgd77list.html"><span class="doc">mgd77list</span></a>’s logical tests to further dictate which data are
+suppressed from output.</p>
+</div>
+<div class="section" id="credits">
+<h2>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
+<p>The IGRF calculations are based on a Fortran program written by Susan
+Macmillan, British Geological Survey, translated to C via f2c by Joaquim
+Luis, and adapted to GMT style by Paul Wessel.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="mgd77convert.html"><span class="doc">mgd77convert</span></a>,
+<a class="reference internal" href="mgd77list.html"><span class="doc">mgd77list</span></a>,
+<a class="reference internal" href="mgd77info.html"><span class="doc">mgd77info</span></a>,
+<a class="reference internal" href="mgd77sniffer.html"><span class="doc">mgd77sniffer</span></a>
+<a class="reference internal" href="mgd77track.html"><span class="doc">mgd77track</span></a>
+<a class="reference internal" href="../x2sys/x2sys_init.html"><span class="doc">x2sys_init</span></a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>The Marine Geophysical Data Exchange Format - MGD77, see
+<a class="reference external" href="http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt">http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt</a></p>
+<p>IGRF, see <a class="reference external" href="http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html">http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mgd77path.html" class="btn btn-neutral float-right" title="mgd77path" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mgd77magref.html" class="btn btn-neutral float-left" title="mgd77magref" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

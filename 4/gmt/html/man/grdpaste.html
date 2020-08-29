@@ -1,0 +1,188 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:21 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GRDPASTE</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GRDPASTE</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#GRID FILE FORMATS">GRID FILE FORMATS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">grdpaste
+&minus; Paste together two <i>.grd</i> files along a common
+edge.</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdpaste</b>
+<i>file_a.grd file_b.grd</i>
+<b>&minus;G</b><i>outfile.grd</i> [ <b>&minus;V</b> ] [
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdpaste</b>
+will combine <i>file_a.grd</i> and <i>file_b.grd</i> into
+<i>outfile.grd</i> by pasting them together along their
+common edge. Files <i>file_a.grd</i> and <i>file_b.grd</i>
+must have the same dx, dy and have one edge in common. If in
+doubt, check with <b><A HREF="grdinfo.html">grdinfo</A></b> and use <b><A HREF="grdcut.html">grdcut</A></b>
+and/or <b><A HREF="grdsample.html">grdsample</A></b> if necessary to prepare the edge
+joint. For geographical grids, use <b>&minus;f</b> to handle
+periodic longitudes. <i><br>
+file_a.grd</i></p>
+
+<p style="margin-left:22%;">One of two files to be pasted
+together.</p>
+
+<p style="margin-left:11%;"><i>file_b.grd</i></p>
+
+<p style="margin-left:22%;">The other of two files to be
+pasted together.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;G</b><i>outfile.grd</i></p>
+
+<p style="margin-left:22%;">The name for the combined
+output.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+</table>
+
+<a name="GRID FILE FORMATS"></a>
+<h2>GRID FILE FORMATS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">By default
+<b><A HREF="GMT.html">GMT</A></b> writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, <b><A HREF="GMT.html">GMT</A></b> is
+able to produce grid files in many other commonly used grid
+file formats and also facilitates so called
+&quot;packing&quot; of grids, writing out floating point
+data as 2- or 4-byte integers. To specify the precision,
+scale and offset, the user should add the suffix
+<b>=</b><i>id</i>[<b>/</b><i>scale</i><b>/</b><i>offset</i>[<b>/</b><i>nan</i>]],
+where <i>id</i> is a two-letter identifier of the grid type
+and precision, and <i>scale</i> and <i>offset</i> are
+optional scale factor and offset to be applied to all grid
+values, and <i>nan</i> is the value used to indicate missing
+data. When reading grids, the format is generally
+automatically recognized. If not, the same suffix can be
+added to input grid file names. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1)
+and Section 4.17 of the GMT Technical Reference and Cookbook
+for more information.</p>
+
+<p style="margin-left:11%; margin-top: 1em">When reading a
+netCDF file that contains multiple grids, <b><A HREF="GMT.html">GMT</A></b> will
+read, by default, the first 2-dimensional grid that can find
+in that file. To coax <b><A HREF="GMT.html">GMT</A></b> into reading another
+multi-dimensional variable in the grid file, append
+<b>?</b><i>varname</i> to the file name, where
+<i>varname</i> is the name of the variable. Note that you
+may need to escape the special meaning of <b>?</b> in your
+shell program by putting a backslash in front of it, or by
+placing the filename and suffix between quotes or double
+quotes. The <b>?</b><i>varname</i> suffix can also be used
+for output grids to specify a variable name different from
+the default: &quot;z&quot;. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and
+Section 4.18 of the GMT Technical Reference and Cookbook for
+more information, particularly on how to read splices of 3-,
+4-, or 5-dimensional grids.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Suppose
+file_a.grd is 150E - 180E and 0 - 30N, and file_b.grd is
+150E - 180E, -30S - 0, then you can make outfile.grd which
+will be 150 - 180 and -30S - 30N by:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdpaste</b>
+file_a.grd file_b.grd <b>&minus;G</b> outfile.grd
+<b>&minus;V &minus;fg</b></p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grdcut.html">grdcut</A></i>(1), <i><A HREF="grdinfo.html">grdinfo</A></i>(1), <i><A HREF="grdsample.html">grdsample</A></i>(1)</p>
+<hr>
+</body>
+</html>

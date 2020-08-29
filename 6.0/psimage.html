@@ -1,0 +1,485 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>psimage &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pslegend" href="pslegend.html" />
+    <link rel="prev" title="pshistogram" href="pshistogram.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules_classic.html">GMT Modules (Classic Mode)</a> &raquo;</li>
+        
+      <li>psimage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/psimage.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="psimage">
+<span id="index-0"></span><h1>psimage<a class="headerlink" href="#psimage" title="Permalink to this headline">¶</a></h1>
+<p>Plot raster or EPS images</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt psimage</strong> <em>imagefile</em>
+[ <a class="reference internal" href="#b"><span> <strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>refpoint</em> ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>box</em> ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong>[<em>color</em>][<strong>+b</strong>|<strong>+f</strong>|<strong>+t</strong>] ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong> ]
+[ <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em> ]
+[ <a class="reference internal" href="#k"><span> <strong>-K</strong></span></a></strong> ]
+[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong> ]
+[ <a class="reference internal" href="#o"><span> <strong>-O</strong></span></a></strong> ]
+[ <a class="reference internal" href="#p"><span> <strong>-P</strong></span></a></strong> ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>] ]
+[ <a class="reference internal" href="#u"><span> <strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#x"><span> <strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>[<strong>u</strong>]] ]
+[ <a class="reference internal" href="#y"><span> <strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>[<strong>u</strong>]] ]
+[ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">transp</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>image</strong> reads an Encapsulated PostScript file or a raster image
+file and plots it on a map. The image can be scaled arbitrarily, and
+1-bit raster images can be (1) inverted, i.e., black
+pixels (on) becomes white (off) and vice versa, or
+(2) colorized, by assigning different foreground and
+background colors, and (3) made transparent where one of
+back- or foreground is painted only. As an option, the user may choose
+to convert colored raster images to grayscale using TV’s
+YIQ-transformation. For raster files, the user can select which color to
+be made transparent. The user may also choose to replicate the image
+which, when preceded by appropriate clip paths, may allow larger
+custom-designed fill patterns to be implemented (the <strong>-Gp</strong> mechanism
+offered in most GMT programs is limited to rasters smaller than 146
+by 146).</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>imagefile</em></dt>
+<dd>This must be an Encapsulated PostScript (EPS) file or a raster
+image. An EPS file must contain an appropriate BoundingBox. A raster
+file can have a depth of 1, 8, 24, or 32 bits and is read via GDAL.
+Note: If GDAL was not configured during GMT installation then only
+EPS files are supported.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+r</strong><em>dpi</em><strong>+w</strong>[<strong>-</strong>]<em>width</em>[/<em>height</em>][<strong>+j</strong><em>justify</em>][<strong>+n</strong><em>nx</em>[/<em>ny</em>] ][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt>
+<dd>Sets reference point on the map for the image using one of four coordinate systems:
+(1) Use <strong>-Dg</strong> for map (user) coordinates, (2) use <strong>-Dj</strong> or <strong>-DJ</strong> for setting <em>refpoint</em> via
+a 2-char justification code that refers to the (invisible) map domain rectangle,
+(3) use <strong>-Dn</strong> for normalized (0-1) coordinates, or (4) use <strong>-Dx</strong> for plot coordinates
+(inches, cm, etc.).  All but <strong>-Dx</strong> requires both <strong>-R</strong> and <strong>-J</strong> to be specified.
+By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
+can be changed by appending <strong>+j</strong> followed by a 2-char justification code <em>justify</em> (see <a class="reference internal" href="text.html"><span class="doc">text</span></a>).
+Note: If <strong>-Dj</strong> is used then <em>justify</em> defaults to the same as <em>refpoint</em>,
+if <strong>-DJ</strong> is used then <em>justify</em> defaults to the mirror opposite of <em>refpoint</em>.
+Add <strong>+o</strong> to offset the color scale by <em>dx</em>/<em>dy</em> away from the <em>refpoint</em> point in
+the direction implied by <em>justify</em> (or the direction implied by <strong>-Dj</strong> or <strong>-DJ</strong>).
+Specify image size in one of two ways:
+Use <strong>+r</strong><em>dpi</em> to set the dpi of the image in dots per inch, or use
+<strong>+w</strong>[<strong>-</strong>]<em>width</em>[/<em>height</em>] to
+set the width (and height) of the image in plot coordinates
+(inches, cm, etc.). If <em>height</em> is not given, the original aspect
+ratio of the image is maintained. If <em>width</em> is negative we use the
+absolute value and interpolate image to the device resolution using
+the PostScript image operator. Optionally, use <strong>+n</strong><em>nx</em>[/<em>ny</em>] to
+replicate the image <em>nx</em> times horizontally and <em>ny</em> times
+vertically. If <em>ny</em> is omitted, it will be identical to <em>nx</em> [Default is 1/1].</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong>[<strong>+c</strong><em>clearances</em>][<strong>+g</strong><em>fill</em>][<strong>+i</strong>[[<em>gap</em>/]<em>pen</em>]][<strong>+p</strong>[<em>pen</em>]][<strong>+r</strong>[<em>radius</em>]][<strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]]]</dt>
+<dd>Without further options, draws a rectangular border around the image using
+<strong>MAP_FRAME_PEN</strong>; specify a different pen with <strong>+p</strong><em>pen</em>.
+Add <strong>+g</strong><em>fill</em> to fill the image box [no fill].
+Append <strong>+c</strong><em>clearance</em> where <em>clearance</em> is either <em>gap</em>, <em>xgap</em>/<em>ygap</em>,
+or <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> where these items are uniform, separate in
+x- and y-direction, or individual side spacings between scale and border.
+Append <strong>+i</strong> to draw a secondary, inner border as well. We use a uniform
+<em>gap</em> between borders of 2<strong>p</strong> and the <strong>MAP_DEFAULTS_PEN</strong>
+unless other values are specified. Append <strong>+r</strong> to draw rounded
+rectangular borders instead, with a 6<strong>p</strong> corner radius. You can
+override this radius by appending another value. Finally, append
+<strong>+s</strong> to draw an offset background shaded region. Here, <em>dx</em>/<em>dy</em>
+indicates the shift relative to the foreground frame
+[4<strong>p</strong>/-4<strong>p</strong>] and <em>shade</em> sets the fill style to use for shading [gray50].</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong>[<em>color</em>][<strong>+b</strong>|<strong>+f</strong>|<strong>+t</strong>]</dt>
+<dd>Change certain pixel values to another color or make them transparent.
+For 1-bit images you can specify an alternate <em>color</em> for the background (<strong>+b</strong>)
+or the foreground (<strong>+f</strong>) pixels, or give no color to make those pixels
+transparent.  Alternatively, for color images you can select a single <em>color</em>
+that should be made transparent instead  (<strong>+t</strong>).</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong></dt>
+<dd>Invert 1-bit image before plotting. This is what is done when you
+use <strong>-GP</strong> to invert patterns in other GMT plotting programs.  Ignored
+if used with color images.</dd>
+</dl>
+<dl class="docutils" id="j">
+<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select map projection. (Used only with <strong>-p</strong>)</dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-M</strong></dt>
+<dd>Convert color image to monochrome grayshades using the (television)
+YIQ-transformation.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest. (Used only with <strong>-p</strong>)</dd>
+</dl>
+<p>For perspective view <strong>-p</strong>, optionally append /<em>zmin</em>/<em>zmax</em>. <a class="reference internal" href="gmt.html#rz-full"><span class="std std-ref">(more …)</span></a>  </p>
+<dl class="docutils" id="u">
+<dt><strong>-U</strong>[<em>label</em>][<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>] <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Draw GMT time stamp logo on plot.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<p id="x"><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>[<strong>u</strong>]]</p>
+<dl class="docutils">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>[<strong>u</strong>]] <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Shift plot origin.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select perspective view. (Requires <strong>-R</strong> and <strong>-J</strong> for proper functioning).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set transparency level in percent.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt>
+<dd>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</dd>
+</dl>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>-G</strong> and <strong>-I</strong> options are for raster images only. They have
+no effect when placing Encapsulated <em>PostScript</em> files.</p>
+</div>
+<div class="section" id="classic-mode-arguments">
+<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this headline">¶</a></h2>
+<p>These options are used to manipulate the building of layered GMT PostScript plots in classic mode.
+They are not available when using GMT modern mode.</p>
+<dl class="docutils" id="k">
+<dt><strong>-K</strong> <a class="reference internal" href="gmt.html#k-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Do not finalize the PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="o">
+<dt><strong>-O</strong> <a class="reference internal" href="gmt.html#o-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Append to existing PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="p">
+<dt><strong>-P</strong> <a class="reference internal" href="gmt.html#p-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select “Portrait” plot orientation.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To plot the remote image needle.jpg, scaling it be 7 cm wide (height is scaled
+accordingly), use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psimage @needle.jpg -Dx0/0+w7c &gt; image.ps
+</pre></div>
+</div>
+<p>To plot the same file but reversing the bands, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psimage @needle.jpg+b2,1,0 -Dx0/0+w7c &gt; image.ps
+</pre></div>
+</div>
+<p>To only plot its red band as gray shade, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psimage @needle.jpg+b0 -Dx0/0+w7c &gt; image.ps
+</pre></div>
+</div>
+<p>To include an Encapsulated PostScript file gallo.eps with its upper
+right corner 2 inch to the right and 1 inch up from the current
+location, and have its width scaled to 3 inches, while keeping the
+aspect ratio, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psimage @gallo.eps -Dx2i/1i+jTR+w3i &gt; image.ps
+</pre></div>
+</div>
+<p>To replicate the 1-bit remote raster image vader1.png, colorize it
+(dark gray background and yellow foreground), and setting each of 6 by 12 tiles
+to be 2.5 cm wide, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psimage @vader1.png -Gdarkgray+b -Gyellow+f -Dx0/0+w2.5c+n6/12 -P &gt; image.ps
+</pre></div>
+</div>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>, <a class="reference internal" href="gmtlogo.html"><span class="doc">gmtlogo</span></a>
+<a class="reference internal" href="pslegend.html"><span class="doc">pslegend</span></a>, <a class="reference internal" href="psscale.html"><span class="doc">psscale</span></a>
+<a class="reference internal" href="psxy.html"><span class="doc">psxy</span></a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pslegend.html" class="btn btn-neutral float-right" title="pslegend" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pshistogram.html" class="btn btn-neutral float-left" title="pshistogram" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

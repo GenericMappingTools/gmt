@@ -1,0 +1,194 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(26) General vertical perspective projection &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(27) Plotting Sandwell/Smith Mercator img grids" href="ex27.html" />
+    <link rel="prev" title="(25) Global distribution of antipodes" href="ex25.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex27.html" title="(27) Plotting Sandwell/Smith Mercator img grids"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex25.html" title="(25) Global distribution of antipodes"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="general-vertical-perspective-projection">
+<span id="example-26"></span><h1>(26) General vertical perspective projection<a class="headerlink" href="#general-vertical-perspective-projection" title="Permalink to this headline">¶</a></h1>
+<p>Next, we present a recent extension to the <strong>-JG</strong> projection option
+which allows the user to specify a particular altitude (this was always
+at infinity before), as well as several further parameters to limit the
+view from the chosen vantage point. In this example we show a view of
+the eastern continental US from a height of 160 km. Below we add a view
+with a specific tilt of 55 and azimuth 210; here we have chosen a
+boresight twist of 45. We view the land from New York towards
+Washington, D.C.</p>
+<p>At this point the full projection has not been properly optimized and
+the map annotations will need additional work. Also, note that the
+projection is only implemented in
+<a class="reference internal" href="../pscoast.html"><span class="doc">pscoast</span></a> and
+<a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a>. We hope to refine this
+further and extend the availability of the full projection to all of the
+GMT mapping programs.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#		GMT EXAMPLE 26</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Demonstrate general vertical perspective projection</span>
+<span class="c1"># GMT modules:	pscoast</span>
+<span class="c1"># Unix progs:	rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_26.ps
+
+<span class="c1"># first do an overhead of the east coast from 160 km altitude point straight down</span>
+
+<span class="nv">latitude</span><span class="o">=</span><span class="m">41</span>.5
+<span class="nv">longitude</span><span class="o">=</span>-74.0
+<span class="nv">altitude</span><span class="o">=</span><span class="m">160</span>.0
+<span class="nv">tilt</span><span class="o">=</span><span class="m">0</span>
+<span class="nv">azimuth</span><span class="o">=</span><span class="m">0</span>
+<span class="nv">twist</span><span class="o">=</span><span class="m">0</span>
+<span class="nv">Width</span><span class="o">=</span><span class="m">0</span>.0
+<span class="nv">Height</span><span class="o">=</span><span class="m">0</span>.0
+
+<span class="nv">PROJ</span><span class="o">=</span>-JG<span class="si">${</span><span class="nv">longitude</span><span class="si">}</span>/<span class="si">${</span><span class="nv">latitude</span><span class="si">}</span>/<span class="si">${</span><span class="nv">altitude</span><span class="si">}</span>/<span class="si">${</span><span class="nv">azimuth</span><span class="si">}</span>/<span class="si">${</span><span class="nv">tilt</span><span class="si">}</span>/<span class="si">${</span><span class="nv">twist</span><span class="si">}</span>/<span class="si">${</span><span class="nv">Width</span><span class="si">}</span>/<span class="si">${</span><span class="nv">Height</span><span class="si">}</span>/4i
+
+gmt pscoast -Rg <span class="nv">$PROJ</span> -X1i -B5g5 -Glightbrown -Slightblue -W -Dl -N1/1p,red -N2,0.5p -P -K <span class="se">\</span>
+	-Y5i &gt; <span class="nv">$ps</span>
+
+<span class="c1"># now point from an altitude of 160 km with a specific tilt and azimuth and with a wider restricted</span>
+<span class="c1"># view and a boresight twist of 45 degrees</span>
+
+<span class="nv">tilt</span><span class="o">=</span><span class="m">55</span>
+<span class="nv">azimuth</span><span class="o">=</span><span class="m">210</span>
+<span class="nv">twist</span><span class="o">=</span><span class="m">45</span>
+<span class="nv">Width</span><span class="o">=</span><span class="m">30</span>.0
+<span class="nv">Height</span><span class="o">=</span><span class="m">30</span>.0
+
+<span class="nv">PROJ</span><span class="o">=</span>-JG<span class="si">${</span><span class="nv">longitude</span><span class="si">}</span>/<span class="si">${</span><span class="nv">latitude</span><span class="si">}</span>/<span class="si">${</span><span class="nv">altitude</span><span class="si">}</span>/<span class="si">${</span><span class="nv">azimuth</span><span class="si">}</span>/<span class="si">${</span><span class="nv">tilt</span><span class="si">}</span>/<span class="si">${</span><span class="nv">twist</span><span class="si">}</span>/<span class="si">${</span><span class="nv">Width</span><span class="si">}</span>/<span class="si">${</span><span class="nv">Height</span><span class="si">}</span>/5i
+
+gmt pscoast -R <span class="nv">$PROJ</span> -B5g5 -Glightbrown -Slightblue -W -Ia/blue -Di -Na -O -X1i -Y-4i &gt;&gt; <span class="nv">$ps</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_26.png"><img alt="../_images/example_26.png" src="../_images/example_26.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">General vertical perspective projection.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex25.html"
+                        title="previous chapter">(25) Global distribution of antipodes</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex27.html"
+                        title="next chapter">(27) Plotting Sandwell/Smith Mercator img grids</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex26.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex27.html" title="(27) Plotting Sandwell/Smith Mercator img grids"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex25.html" title="(25) Global distribution of antipodes"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

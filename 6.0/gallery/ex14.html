@@ -1,0 +1,334 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>(14) Gridding of data and trend surfaces &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(15) Gridding, contouring, and masking of unconstrained areas" href="ex15.html" />
+    <link rel="prev" title="(13) Plotting of vector fields" href="ex13.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+        
+      <li>(14) Gridding of data and trend surfaces</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/gallery/ex14.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="gridding-of-data-and-trend-surfaces">
+<span id="example-14"></span><h1>(14) Gridding of data and trend surfaces<a class="headerlink" href="#gridding-of-data-and-trend-surfaces" title="Permalink to this headline">¶</a></h1>
+<p>This example shows how one goes from randomly spaced data points to an
+evenly sampled surface. We arrange for four panels using the <a class="reference internal" href="../subplot.html"><span class="doc">subplot</span></a>
+command.  First we plot the distribution and values of our
+raw data set (same as in Example <a class="reference internal" href="ex12.html#example-12"><span class="std std-ref">(12) Optimal triangulation of data</span></a>). We choose an equidistant grid and run
+<a class="reference internal" href="../blockmean.html"><span class="doc">blockmean</span></a> which preprocesses the
+data to avoid aliasing. The dashed lines indicate the logical blocks
+used by <a class="reference internal" href="../blockmean.html"><span class="doc">blockmean</span></a>; all points inside
+a given bin will be averaged. The logical blocks are drawn from a
+temporary file we make on the fly within the shell script. The processed
+data is then gridded with the <a class="reference internal" href="../surface.html"><span class="doc">surface</span></a>
+program and contoured every 25 units. A most important point here is
+that <a class="reference internal" href="../blockmean.html"><span class="doc">blockmean</span></a>, <a class="reference internal" href="../blockmedian.html"><span class="doc">blockmedian</span></a>, or
+<a class="reference internal" href="../blockmode.html"><span class="doc">blockmode</span></a> should always be run prior
+to running <a class="reference internal" href="../surface.html"><span class="doc">surface</span></a>, and both of these
+steps must use the same grid interval. We use
+<a class="reference internal" href="../grdtrend.html"><span class="doc">grdtrend</span></a> to fit a bicubic trend
+surface to the gridded data, contour it as well, and sample both grid
+files along a diagonal transect using
+<a class="reference internal" href="../grdtrack.html"><span class="doc">grdtrack</span></a>. The bottom panel compares
+the gridded (solid line) and bicubic trend (dashed line) along the
+transect using <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#		GMT EXAMPLE 14</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Showing simple gridding, contouring, and resampling along tracks</span>
+<span class="c1"># GMT modules:	blockmean, grdcontour, grdtrack, grdtrend, project, text,</span>
+<span class="c1"># GMT modules:	set, plot, surface, subplot</span>
+<span class="c1"># Unix progs:	rm</span>
+<span class="c1">#</span>
+gmt begin ex14
+	gmt <span class="nb">set</span> MAP_GRID_PEN_PRIMARY thinnest,-
+	<span class="c1"># calculate mean data and grids</span>
+	gmt blockmean @Table_5_11.txt -R0/7/0/7 -I1 &gt; mean.xyz
+	gmt surface mean.xyz -Gdata.nc
+	gmt grdtrend data.nc -N10 -Ttrend.nc
+	gmt project -C0/0 -E7/7 -G0.1 -N &gt; track
+	<span class="c1"># Sample along diagonal</span>
+	gmt grdtrack track -Gdata.nc -o2,3 &gt; data.d
+	gmt grdtrack track -Gtrend.nc -o2,3 &gt; trend.d
+	gmt plot -Ra -JX6i/1.4i data.d -Wthick -Bx1 -By50 -BWSne
+	gmt plot trend.d -Wthinner,-
+	gmt subplot begin 2x2 -M0.05i -Ff6i/6i -BWSne -Yh+0.4i
+		<span class="c1"># First draw network and label the nodes</span>
+		gmt plot @Table_5_11.txt -R0/7/0/7 -Sc0.05i -Gblack -c0,0
+		gmt text @Table_5_11.txt -D0.1c/0 -F+f6p+jLM -N
+		<span class="c1"># Then draw gmt blockmean cells and label data values using one decimal</span>
+		gmt plot mean.xyz -Ss0.05i -Gblack -c0,1
+		gmt text -D0.15c/0 -F+f6p+jLM+z%.1f -Gwhite -W -C0.01i -N mean.xyz
+		<span class="c1"># Then gmt surface and contour the data</span>
+		gmt grdcontour data.nc -C25 -A50 -Gd3i -S4 -c1,0
+		gmt plot mean.xyz -Ss0.05i -Gblack
+		<span class="c1"># Fit bicubic trend to data and compare to gridded gmt surface</span>
+		gmt grdcontour trend.nc -C25 -A50 -Glct/cb -S4 -c1,1
+		gmt plot track -Wthick,.
+	gmt subplot end
+gmt end show
+rm -f mean.xyz track trend.nc data.nc data.d trend.d
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/ex14.png"><img alt="../_images/ex14.png" src="../_images/ex14.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Gridding of data and trend surfaces.</span></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ex15.html" class="btn btn-neutral float-right" title="(15) Gridding, contouring, and masking of unconstrained areas" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ex13.html" class="btn btn-neutral float-left" title="(13) Plotting of vector fields" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

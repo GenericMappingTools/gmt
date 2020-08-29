@@ -1,0 +1,21 @@
+.. _example_08:
+
+(8) A 3-D histogram
+-------------------
+
+The program :doc:`psxyz </psxyz>` allows us to plot
+three-dimensional symbols, including columnar plots. As a simple
+demonstration, we will convert a gridded netCDF of bathymetry into an
+ASCII *xyz* table and use the height information to draw a 2-D
+histogram in a 3-D perspective view. Our gridded bathymetry file is
+called ``guinea_bay.nc`` and covers the region from 0 to 5 E and 0 to 5 N. Depth ranges
+from -5000 meter to sea-level. We produce the Figure by running this script:
+
+.. literalinclude:: /_verbatim/example_08.txt
+   :language: bash
+
+.. figure:: /_images/example_08.*
+   :width: 500 px
+   :align: center
+
+   A 3-D histogram.

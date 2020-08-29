@@ -1,0 +1,390 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>gpsgridder &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="gravfft" href="gravfft.html" />
+    <link rel="prev" title="gmtgravmag3d" href="gmtgravmag3d.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="gravfft.html" title="gravfft"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="gmtgravmag3d.html" title="gmtgravmag3d"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gpsgridder">
+<span id="index-0"></span><h1>gpsgridder<a class="headerlink" href="#gpsgridder" title="Permalink to this headline">¶</a></h1>
+<p>gpsgridder - Interpolate GPS strain vectors using Green’s functions for elastic deformation</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gpsgridder</strong> [ <em>table</em> ]
+<a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outfile</em>
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>increment</em> ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong>[<strong>n</strong>|<strong>r</strong>|<strong>v</strong>]<em>value</em>[<strong>+f</strong><em>file</em>] ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<em>misfitfile</em>] ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>d</strong>|<strong>f</strong>]<em>fudge</em>]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong> ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>nodefile</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>nu</em> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>maskgrid</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<strong>w</strong>]]
+[ <strong>-b</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="../../gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-x</strong>[[-]<em>n</em>] ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>gpsgridder</strong> grids 2-D vector data such as GPS velocities by using a coupled
+model based on 2-D elasticity.  The degree of coupling can be tuned by adjusting
+the effective Poisson’s ratio. The solution field can be tuned to extremes such
+as incompressible (1), typical elastic (0.5) or even an unphysical value of -1
+that basically removes the elastic coupling of vector interpolation.  Smoothing
+is offered via the optional elimination of small eigenvalues.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>table with GPS strain rates at discrete locations.  We expect the input
+format to be <em>x y u v</em> [ <em>du dv</em> ] (see <strong>-W</strong> to specify data uncertainties
+or weights).  If <em>lon lat</em> is given you must supply <strong>-fg</strong> and we will
+use a flat Earth approximation in the calculation of distances.</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>outfile</em></dt>
+<dd>Name of resulting output file. (1) If options <strong>-R</strong>, <strong>-I</strong>, and
+possibly <strong>-r</strong> are set we produce two equidistant output grids. In
+this case, <em>outfile</em> must be a name template containing the C format
+specifier %s, which will be replaced with u and v, respectively.
+(2) If option <strong>-T</strong> is selected then <strong>-R</strong>, <strong>-I</strong> cannot be given
+as the <em>maskgrid</em> determines the region and increments. Again, the
+<em>outfile</em> must be a name template for the two output grids.
+(3) If <strong>-N</strong> is selected then the output is a single ASCII (or binary; see
+<strong>-bo</strong>) table written to <em>outfile</em>; if <strong>-G</strong> is not given then
+this table is written to standard output. The <strong>-G</strong> option is ignored
+if <strong>-C</strong> or <strong>-C</strong>0 is given.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong>[<strong>n</strong>|<strong>r</strong>|<strong>v</strong>]<em>value</em>[<strong>+f</strong><em>file</em>]</dt>
+<dd>Find an approximate surface fit: Solve the linear system for the
+spline coefficients by SVD and eliminate the contribution from all
+eigenvalues whose ratio to the largest eigenvalue is less than <em>value</em>
+[Default uses Gauss-Jordan elimination to solve the linear system
+and fit the data exactly]. Optionally, append <strong>+f</strong><em>file</em> to save the
+eigenvalue ratios to the specified file for further analysis.
+Finally, if a negative <em>value</em> is given then <strong>+f</strong><em>file</em> is required and
+execution will stop after saving the eigenvalues, i.e., no surface
+output is produced.  Specify <strong>-Cv</strong><em>value</em> to use the
+largest eigenvalues needed to explain <em>value</em> % of the data variance.
+Specify <strong>-Cr</strong><em>value</em> to use the largest eigenvalues needed to leave approximately <em>value</em>
+as the model misfit.  If <em>value</em> is not given then <strong>-W</strong> is required and we
+compute <em>value</em> as the rms of the given data uncertainties.
+Alternatively, use <strong>-Cn</strong><em>value</em> to select the <em>value</em> largest eigenvalues.
+If a <em>file</em> is given with <strong>-Cv</strong> then we save the eigenvalues instead
+of the ratios.
+Note: 1/4 of the total number of data constraints is a good starting point
+for further experiments.</dd>
+</dl>
+<p id="e"><strong>E</strong>[<em>misfitfile</em>]</p>
+<blockquote>
+<div>Evaluate the spline exactly at the input data locations and report
+statistics of the misfit (mean, standard deviation, and rms) for <em>u</em> and
+<em>v</em> separately and combined.  Optionally, append a filename and we will
+write the data table, augmented by two extra columns after each of the
+<em>u</em> and <em>v</em> columns holding the spline estimates and misfits.</div></blockquote>
+<dl class="docutils" id="f">
+<dt><a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>d</strong>|<strong>f</strong>]<em>fudge</em></dt>
+<dd>The Green’s functions are proportional to terms like 1/r^2 and log(r)
+and thus blow up for r == 0.  To prevent that we offer two fudging schemes:
+<strong>-Fd</strong><em>del_radius</em> lets you add a constant offset to all radii
+and must be specified in the user units.  Alternatively, use
+<strong>-Ff</strong><em>factor</em> which will compute <em>del_radius</em> from the product
+of the shortest inter-point distance and <em>factor</em> [0.01].</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>]]</dt>
+<dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
+append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>: Append
+<strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc seconds. If one
+of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or <strong>u</strong> is appended
+instead, the increment is assumed to be given in meter, foot, km, Mile,
+nautical mile or US survey foot, respectively, and will be converted to
+the equivalent degrees longitude at the middle latitude of the region
+(the conversion depends on <a class="reference internal" href="../../gmt.conf.html#projection-parameters"><span class="std std-ref">PROJ_ELLIPSOID</span></a>). If <em>y_inc</em> is given
+but set to 0 it will be reset equal to <em>x_inc</em>; otherwise it will be
+converted to degrees latitude. <strong>All coordinates</strong>: If <strong>+e</strong> is appended
+then the corresponding max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly
+adjusted to fit exactly the given increment [by default the increment
+may be adjusted slightly to fit the given domain]. Finally, instead of
+giving an increment you may specify the <em>number of nodes</em> desired by
+appending <strong>+n</strong> to the supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The resulting
+increment value depends on whether you have selected a
+gridline-registered or pixel-registered grid; see <a class="reference internal" href="../../GMT_Docs.html#app-file-formats"><span class="std std-ref">GMT File Formats</span></a> for
+details. Note: if <strong>-R</strong><em>grdfile</em> is used then the grid spacing has
+already been initialized; use <strong>-I</strong> to override the values.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong></dt>
+<dd>Leave trend alone.  Do <em>not</em> remove a planer (2-D) trend from the
+data before fitting the spline.  [Default removes least squares plane,
+fits normalized residuals, and restores plane].</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong><em>nodefile</em></dt>
+<dd>ASCII file with coordinates of desired output locations <strong>x</strong> in the
+first column(s). The resulting <em>w</em> values are appended to each
+record and written to the file given in <strong>-G</strong> [or stdout if not
+specified]; see <strong>-bo</strong> for binary output
+instead. This option eliminates the need to specify options <strong>-R</strong>,
+<strong>-I</strong>, and <strong>-r</strong>.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest.  </dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><em>nu</em></dt>
+<dd>Specify Poisson’s ratio to use for this 2-D elastic sheet [0.5].
+Note: 1.0 is incompressible in a 2-D formulation while -1
+removes all coupling between the two directions.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong><em>maskgrid</em></dt>
+<dd>Only evaluate the solutions at the nodes
+in the <em>maskgrid</em> that are not set to NaN. This option eliminates
+the need to specify options <strong>-R</strong>, <strong>-I</strong> (and <strong>-r</strong>).</dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong>[<strong>w</strong>]</dt>
+<dd>One-sigma data uncertainties for <em>u</em> and <em>v</em> are provided in the last two columns.
+We then compute weights that are inversely proportional to the uncertainties.
+Append <strong>w</strong> if weights are given instead of uncertainties.  This results in
+a weighted least squares fit.  Note that <strong>-W</strong> only has an effect if <strong>-C</strong> is used.
+[Default uses no weights or uncertainties].
+Note: At present the <strong>-W</strong> option is <em>unstable</em>.  We do not yet know if it reflects
+a coding bug or a theoretical limitation.  Users beware, and make sure you compare
+the results with non-weighted output for basic sanity checking.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em> <a class="reference internal" href="../../gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+<dt><strong>-fg</strong></dt>
+<dd>Geographic grids (dimensions of longitude, latitude) will be converted to
+meters via a “Flat Earth” approximation using the current ellipsoid parameters.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s). Not used with binary data.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-r</strong> <a class="reference internal" href="../../gmt.html#nodereg-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set pixel node registration [gridline].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="../../gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc9">Units</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
+and <strong>u</strong> for US survey foot. By default we compute such distances using
+a spherical approximation with great circles. Prepend <strong>-</strong> to a
+distance (or the unit is no distance is given) to perform “Flat Earth”
+calculations (quicker but less accurate) or prepend <strong>+</strong> to perform
+exact geodesic calculations (slower but more accurate).</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To compute the <em>u</em> and <em>v</em> strain rate grids from the GPS data set <em>gps.txt</em>,
+containing <em>x y u v du dv</em>, on a 2x2 arc minute grid for California, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">gpsgridder</span> <span class="n">gps</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">R</span><span class="o">-</span><span class="mi">125</span><span class="o">/-</span><span class="mi">114</span><span class="o">/</span><span class="mi">31</span><span class="o">/</span><span class="mi">41</span> <span class="o">-</span><span class="n">I2m</span> <span class="o">-</span><span class="n">fg</span> <span class="o">-</span><span class="n">W</span> <span class="o">-</span><span class="n">r</span> <span class="o">-</span><span class="n">Ggps_strain_</span><span class="o">%</span><span class="n">s</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">V</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Haines, A. J. et al., 2015, <em>Enhanced Surface Imaging of Crustal Deformation</em>, SpringerBriefs in Earth Sciences,
+doi:10.1007/978-3-319-21578-5_2.</p>
+<p>Sandwell, D. T. and P. Wessel, 2016, Interpolation of 2-D Vector Data Using Constraints from Elasticity,
+<em>Geophys. Res. Lett., 43</em>, 10,703-10,709,
+<a class="reference external" href="http://dx.doi.org/10.1002/2016GL070340">http://dx.doi.org/10.1002/2016GL070340</a></p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="../../greenspline.html"><span class="doc">greenspline</span></a>
+<a class="reference internal" href="../../nearneighbor.html"><span class="doc">nearneighbor</span></a>,
+<a class="reference internal" href="../../surface.html"><span class="doc">surface</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gpsgridder</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id1">Units</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gmtgravmag3d.html"
+                        title="previous chapter">gmtgravmag3d</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gravfft.html"
+                        title="next chapter">gravfft</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/potential/gpsgridder.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="gravfft.html" title="gravfft"
+             >next</a> </li>
+        <li class="right" >
+          <a href="gmtgravmag3d.html" title="gmtgravmag3d"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

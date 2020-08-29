@@ -1,0 +1,35 @@
+.. _example_22:
+
+(22) World-wide seismicity the last 7 days
+------------------------------------------
+
+The next example uses the command-line tool **curl** to obtain a data
+file from a specified URL [1]_. In the example script this line is
+commented out so the example will run even if you do not have **wget**
+(we use the remote file ``usgs_quakes_22.txt`` which normally would be created by **curl**);
+remove the comments to get the actual current seismicity plot using the
+live data. The main purpose of this script is not to show how to plot a
+map background and a few circles, but rather demonstrate how a map
+legend may be composed using the module
+:doc:`legend </legend>`. Some scripting is used to
+pull out information from the data file that is later used in the
+legend. The legend will normally have the email address of the script
+owner; here that command is commented out and the user is hardwired to
+"GMT guru". The USGS logo, taken from their web page and converted to a
+Sun raster file, is used to spice up the legend.
+
+The script produces the plot in Figure,
+giving the URL where these and similar data can be obtained.
+
+.. literalinclude:: /_verbatim/ex22.txt
+   :language: bash
+
+.. figure:: /_images/ex22.*
+   :width: 500 px
+   :align: center
+
+   World-wide seismicity the last 7 days.
+
+
+.. [1]
+   You can also use the utility **curl**

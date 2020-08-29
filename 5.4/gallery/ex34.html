@@ -1,0 +1,167 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(34) Using country polygons for plotting and shading &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(35) Spherical triangulation and distance calculations" href="ex35.html" />
+    <link rel="prev" title="(33) Stacking automatically generated cross-profiles" href="ex33.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex35.html" title="(35) Spherical triangulation and distance calculations"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex33.html" title="(33) Stacking automatically generated cross-profiles"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="using-country-polygons-for-plotting-and-shading">
+<span id="example-34"></span><h1>(34) Using country polygons for plotting and shading<a class="headerlink" href="#using-country-polygons-for-plotting-and-shading" title="Permalink to this headline">¶</a></h1>
+<p>The script produces the plot in Figure. Here
+we demonstrate how <a class="reference internal" href="../pscoast.html"><span class="doc">pscoast</span></a> can be used to extract
+and plot country polygons.  We show two panels; one in which we do
+a basic basemap and another where we lay down a color topography
+image and then place a transparent layer identifying the future
+Franco-Italian Union whose untimely breakup in 2045 the historians
+will continue to debate for some time.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT EXAMPLE 34</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate pscoast with DCW country polygons</span>
+<span class="c1"># GMT modules:  gmtset, pscoast, makecpt, grdimage</span>
+<span class="c1"># Unix progs:   rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_34.ps
+gmt <span class="nb">set</span> FORMAT_GEO_MAP dddF
+gmt pscoast -JM4.5i -R-6/20/35/52 -EFR,IT+gP300/8 -Glightgray -Baf -BWSne -P -K -X2i &gt; <span class="nv">$ps</span>
+<span class="c1"># Extract a subset of ETOPO2m for this part of Europe</span>
+<span class="c1"># gmt grdcut etopo2m_grd.nc -R -GFR+IT.nc=ns</span>
+gmt makecpt -Cglobe -T-5000/5000 &gt; z.cpt
+gmt grdimage FR+IT.nc -I+a15+ne0.75 -Cz.cpt -J -O -K -Y4.5i <span class="se">\</span>
+	-Baf -BWsnE+t<span class="s2">&quot;Franco-Italian Union, 2042-45&quot;</span> &gt;&gt; <span class="nv">$ps</span>
+gmt pscoast -J -R -EFR,IT+gred@60 -O &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># cleanup</span>
+rm -f gmt.conf z.cpt
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_34.png"><img alt="../_images/example_34.png" src="../_images/example_34.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Using country polygons for plotting and shading.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex33.html"
+                        title="previous chapter">(33) Stacking automatically generated cross-profiles</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex35.html"
+                        title="next chapter">(35) Spherical triangulation and distance calculations</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex34.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex35.html" title="(35) Spherical triangulation and distance calculations"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex33.html" title="(33) Stacking automatically generated cross-profiles"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

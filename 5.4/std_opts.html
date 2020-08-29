@@ -1,0 +1,224 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>Common Options &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="GMT -J codes" href="proj_codes_GMT.html" />
+    <link rel="prev" title="Module Purpose" href="quick_ref.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="proj_codes_GMT.html" title="GMT -J codes"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="quick_ref.html" title="Module Purpose"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="common-options">
+<h1>Common Options<a class="headerlink" href="#common-options" title="Permalink to this headline">¶</a></h1>
+<table border="1" class="docutils">
+<colgroup>
+<col width="48%" />
+<col width="52%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head" colspan="2"><strong>STANDARDIZED COMMAND LINE OPTIONS</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>-B</strong><em>information</em></td>
+<td>Specify map frame and axes parameters <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-J</strong><em>parameters</em></td>
+<td>Select map projection <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-K</strong></td>
+<td>Append more PS later <a class="reference internal" href="gmt.html#k-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-O</strong></td>
+<td>This is an overlay plot <a class="reference internal" href="gmt.html#o-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-P</strong></td>
+<td>Select Portrait orientation <a class="reference internal" href="gmt.html#p-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-R</strong><em>west/east/south/north</em>[<em>/zmin/zmax</em>][<strong>+r</strong>]</td>
+<td>Specify Region of interest <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-U</strong>[[<em>just</em>]/<em>dx</em>/<em>dy</em>/][<em>label</em>]</td>
+<td>Plot time-stamp on plot <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-V</strong>[<em>verbosity</em>]</td>
+<td>Run in verbose mode <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>r</strong>]<em>off</em>[<strong>u</strong>]</td>
+<td>Shift plot origin in <em>x</em>-direction <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>r</strong>]<em>off</em>[<strong>u</strong>]</td>
+<td>Shift plot origin in <em>y</em>-direction <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-a</strong><em>name=col,…</em></td>
+<td>Associates aspatial data with columns <a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-b</strong>[<strong>i</strong>|<strong>o</strong>][<em>ncol</em>][<strong>t</strong>]</td>
+<td>Select binary input or output <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em></td>
+<td>Replace columns with <em>nodata</em> with NaN <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>| -e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>]</td>
+<td>Filter data records that match the given pattern <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em></td>
+<td>Set formatting of ASCII input or output <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-g</strong>[<strong>+</strong>]<strong>x</strong>|<strong>X</strong>|<strong>y</strong>|<strong>Y</strong>|<strong>d</strong>|<strong>D</strong><em>gap</em>[<strong>u</strong>]</td>
+<td>Segment data by detecting gaps <a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n_headers</em>]</td>
+<td>ASCII [<em>I</em>|<em>O</em>] tables have header record[s] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-i</strong><em>columns</em></td>
+<td>Selection of input columns <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-o</strong><em>columns</em></td>
+<td>Selection of output columns <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-n</strong>[<em>type</em>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>]
+[<strong>+c</strong>][<strong>+t</strong><em>threshold</em>]</td>
+<td>Set grid interpolation mode <a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-p</strong><em>azim</em>[<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0/lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0/y0</em>]</td>
+<td>Control 3-D perspective view <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-r</strong></td>
+<td>Sets grid registration <a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-s</strong>[<strong>z</strong>|<em>cols</em>]</td>
+<td>Control treatment of NaN records <a class="reference internal" href="gmt.html#s-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-t</strong><em>transparency</em></td>
+<td>Set layer PDF transparency <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-even"><td><strong>-x</strong>[[-]<em>n</em>]</td>
+<td>Set number of cores in multi-threaded modules <a class="reference internal" href="gmt.html#core-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>]</td>
+<td>Expect <em>y</em>/<em>x</em> input rather than <em>x</em>/<em>y</em> <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(…)</span></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="quick_ref.html"
+                        title="previous chapter">Module Purpose</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="proj_codes_GMT.html"
+                        title="next chapter">GMT -J codes</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/std_opts.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="proj_codes_GMT.html" title="GMT -J codes"
+             >next</a> </li>
+        <li class="right" >
+          <a href="quick_ref.html" title="Module Purpose"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

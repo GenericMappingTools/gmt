@@ -1,0 +1,296 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:11 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>FITCIRCLE</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>FITCIRCLE</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#ASCII FORMAT PRECISION">ASCII FORMAT PRECISION</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">fitcircle
+&minus; find mean position and pole of best-fit great [or
+small] circle to points on a sphere.</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>fitcircle</b>
+[ <i>xyfile</i> ] <b>&minus;L</b><i>norm</i> [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;S</b>[<i>lat</i>] ] [ <b>&minus;V</b> ] [
+<b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;bi</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>fitcircle</b>
+reads lon,lat [or lat,lon] values from the first two columns
+on standard input [or <i>xyfile</i>]. These are converted to
+Cartesian three-vectors on the unit sphere. Then two
+locations are found: the mean of the input positions, and
+the pole to the great circle which best fits the input
+positions. The user may choose one or both of two possible
+solutions to this problem. The first is called
+<b>&minus;L1</b> and the second is called <b>&minus;L2</b>.
+When the data are closely grouped along a great circle both
+solutions are similar. If the data have large dispersion,
+the pole to the great circle will be less well determined
+than the mean. Compare both solutions as a qualitative
+check.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The
+<b>&minus;L1</b> solution is so called because it
+approximates the minimization of the sum of absolute values
+of cosines of angular distances. This solution finds the
+mean position as the Fisher average of the data, and the
+pole position as the Fisher average of the cross-products
+between the mean and the data. Averaging cross-products
+gives weight to points in proportion to their distance from
+the mean, analogous to the &quot;leverage&quot; of distant
+points in linear regression in the plane.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The
+<b>&minus;L2</b> solution is so called because it
+approximates the minimization of the sum of squares of
+cosines of angular distances. It creates a 3 by 3 matrix of
+sums of squares of components of the data vectors. The
+eigenvectors of this matrix give the mean and pole
+locations. This method may be more subject to roundoff
+errors when there are thousands of data. The pole is given
+by the eigenvector corresponding to the smallest eigenvalue;
+it is the least-well represented factor in the data and is
+not easily estimated by either method.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify the desired
+<i>norm</i> as 1 or 2, or use <b>&minus;L</b> or
+<b>&minus;L3</b> to see both solutions.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xyfile</i></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">ASCII [or binary,
+see <b>&minus;b</b>] file containing lon,lat [lat,lon]
+values in the first 2 columns. If no file is specified,
+<b>fitcircle</b> will read from standard input.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Attempt to fit a
+small circle instead of a great circle. The pole will be
+constrained to lie on the great circle connecting the pole
+of the best-fit great circle and the mean location of the
+data. Optionally append the desired fixed latitude of the
+small circle [Default will determine the latitude].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 2 input columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+</table>
+
+<a name="ASCII FORMAT PRECISION"></a>
+<h2>ASCII FORMAT PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ASCII
+output formats of numerical data are controlled by
+parameters in your .gmtdefaults4 file. Longitude and
+latitude are formatted according to
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>, whereas other values are
+formatted according to <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>. Be aware that the
+format in effect can lead to loss of precision in the
+output, which can lead to various problems downstream. If
+you find the output is not written with enough precision,
+consider switching to binary output (<b>&minus;bo</b> if
+available) or specify more decimals using the
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> setting.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Suppose you
+have lon,lat,grav data along a twisty ship track in the file
+ship.xyg. You want to project this data onto a great circle
+and resample it in distance, in order to filter it or check
+its spectrum. Do the following:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>fitcircle</b>
+ship.xyg <b>&minus;L</b> 2</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="project.html">project</A></b>
+ship.xyg <b>&minus;C</b><i>ox</i>/<i>oy</i>
+<b>&minus;T</b><i>px</i>/<i>py</i> <b>&minus;S &minus;F</b>
+pz | <b>sample1d &minus;S</b>&minus;100 <b>&minus;I</b> 1
+&gt; output.pg</p>
+
+<p style="margin-left:11%; margin-top: 1em">Here,
+<i>ox</i>/<i>oy</i> is the lon/lat of the mean from
+<b>fitcircle</b>, and <i>px</i>/<i>py</i> is the lon/lat of
+the pole. The file output.pg has distance, gravity data
+sampled every 1 km along the great circle which best fits
+ship.xyg</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="project.html">project</A></i>(1), <i><A HREF="sample1d.html">sample1d</A></i>(1)</p>
+<hr>
+</body>
+</html>

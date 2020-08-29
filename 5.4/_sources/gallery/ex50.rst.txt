@@ -1,0 +1,23 @@
+.. _example_50:
+
+(50) Probability distributions
+------------------------------
+
+This example presents visually the various probability
+distributions available in :doc:`gmtmath </gmtmath>` (as well
+as :doc:`grdmath </grdmath>`).  We evaluate and display both
+the probability density function (pdf) and the cumulative
+distribution function (cdf) for each case.  The left column shows the density
+functions while the right column shows the cumulative functions.
+In addition to the distributions you can also use :doc:`gmtmath </gmtmath>`
+to evaluate critical values for the distributions for chosen
+confidence levels.
+
+.. literalinclude:: /_verbatim/example_50.txt
+   :language: bash
+
+.. figure:: /_images/example_50.*
+   :width: 500 px
+   :align: center
+
+   Probability distributions.

@@ -1,0 +1,373 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>(20) Custom plot symbols &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(21) Time-series of RedHat stock price" href="ex21.html" />
+    <link rel="prev" title="(19) Color patterns on maps" href="ex19.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+        
+      <li>(20) Custom plot symbols</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/gallery/ex20.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="custom-plot-symbols">
+<span id="example-20"></span><h1>(20) Custom plot symbols<a class="headerlink" href="#custom-plot-symbols" title="Permalink to this headline">¶</a></h1>
+<p>One is often required to make special maps that shows the distribution
+of certain features but one would prefer to use a custom symbol instead
+of the built-in circles, squares, triangles, etc. in the GMT plotting
+programs <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> and
+<a class="reference internal" href="../plot3d.html"><span class="doc">plot3d</span></a>. Here we demonstrate one approach
+that allows for a fair bit of flexibility in designing ones own symbols.
+The following recipe is used when designing a new symbol.</p>
+<ol class="arabic simple">
+<li>Use <a class="reference internal" href="../basemap.html"><span class="doc">basemap</span></a> (or engineering
+paper!) to set up an empty grid that goes from -0.5 to +0.5 in both
+<em>x</em> and <em>y</em>. Use ruler and compass to draw your new symbol using
+straight lines, arcs of circles, and stand-alone geometrical objects
+(see <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> man page for a full
+description of symbol design). In this Section we will create two new
+symbols: a volcano and a bulls eye.</li>
+</ol>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/GMT_volcano.png"><img alt="../_images/GMT_volcano.png" src="../_images/GMT_volcano.png" style="width: 500px;" /></a>
+</div>
+<ol class="arabic">
+<li><p class="first">After designing the symbol we will encode it using a simple set of
+rules. In our case we describe our volcano and bulls eye using these
+three freeform polygon generators:</p>
+<p><span class="math notranslate nohighlight">\(x_0\)</span> <span class="math notranslate nohighlight">\(y_0\)</span> <em>r</em> <strong>C</strong> [ <strong>-G</strong><em>fill</em> ] [
+<strong>-W</strong><em>pen</em> ] Draw <span class="math notranslate nohighlight">\(x_0\)</span> <span class="math notranslate nohighlight">\(y_0\)</span> <strong>M</strong> [ <strong>-G</strong><em>fill</em> ]
+[ <strong>-W</strong><em>pen</em> ] Start new element at <span class="math notranslate nohighlight">\(x_0\)</span>, <span class="math notranslate nohighlight">\(y_0\)</span></p>
+<p><span class="math notranslate nohighlight">\(x_1\)</span> <span class="math notranslate nohighlight">\(y_1\)</span> <strong>D</strong> Draw straight line from current point
+to <span class="math notranslate nohighlight">\(x_1\)</span>, <span class="math notranslate nohighlight">\(y_1\)</span> around (<span class="math notranslate nohighlight">\(x_0\)</span>, <span class="math notranslate nohighlight">\(y_0\)</span>)</p>
+<p><span class="math notranslate nohighlight">\(x_0\)</span> <span class="math notranslate nohighlight">\(y_0\)</span> <em>r</em> <span class="math notranslate nohighlight">\(\alpha_1\)</span> <span class="math notranslate nohighlight">\(\alpha_2\)</span>
+<strong>A</strong> Draw arc segment of radius <em>r</em> from angle
+<span class="math notranslate nohighlight">\(\alpha_1\)</span> to <span class="math notranslate nohighlight">\(\alpha_2\)</span></p>
+<p>We also add a few stand-alone circles (for other symbols, see
+<a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> man page):</p>
+<p><span class="math notranslate nohighlight">\(x_0\)</span> <span class="math notranslate nohighlight">\(y_0\)</span> <em>r</em> <strong>C</strong> [ <strong>-G</strong><em>fill</em> ] [
+<strong>-W</strong><em>pen</em> ] Draw <span class="math notranslate nohighlight">\(x_0\)</span> <span class="math notranslate nohighlight">\(y_0\)</span> <em>r</em> <strong>c</strong> [
+<strong>-G</strong><em>fill</em> ] [ <strong>-W</strong><em>pen</em> ] Draw single circle of radius
+<em>r</em> around <span class="math notranslate nohighlight">\(x_0\)</span>, <span class="math notranslate nohighlight">\(y_0\)</span></p>
+<p>The optional <strong>-G</strong> and <strong>-W</strong> can be used to hardwire the color fill
+and pen for segments (use <strong>-</strong> to disallow fill or line for any
+specific feature). By default the segments are painted based on the
+values of the command line settings.</p>
+<p>Manually applying these rules to our volcano symbol results in a
+definition file <code class="docutils literal notranslate"><span class="pre">volcano.def</span></code>:</p>
+<p>Without much further discussion we also make a definition file <code class="docutils literal notranslate"><span class="pre">bullseye.def</span></code> for a
+multi-colored bulls eye symbol. Note that the symbol can be created
+beyond the -0.5 to +0.5 range, as shown by the red lines. There is no
+limit in GMT to the size of the symbols. The center, however, will
+always be at (0,0). This is the point to which the coordinates in
+<a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> refers.</p>
+<p>The values refer to positions and dimensions illustrated in the
+Figure above.</p>
+</li>
+<li><p class="first">Given proper definition files we may now use them with
+<a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> or <a class="reference internal" href="../plot3d.html"><span class="doc">plot3d</span></a>.</p>
+</li>
+</ol>
+<p>We are now ready to give it a try. Based on the hotspot locations in the remote
+file <code class="docutils literal notranslate"><span class="pre">hotspots.txt</span></code> (with a 3rd column giving the desired symbol sizes in inches) we
+lay down a world map and overlay red volcano symbols using our
+custom-built volcano symbol and <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a>. We
+do something similar with the bulls eye symbols. Without the <strong>-G</strong>
+option, however, they get the colors defined in <code class="docutils literal notranslate"><span class="pre">bullseye.def</span></code>.</p>
+<p>Here is our final map script that produces the Figure:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#		GMT EXAMPLE 20</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Extend GMT to plot custom symbols</span>
+<span class="c1"># GMT modules:	coast, plot</span>
+<span class="c1"># Unix progs:	rm, cat</span>
+<span class="c1">#</span>
+<span class="c1"># Plot a world-map with volcano symbols of different sizes at hotspot locations</span>
+<span class="c1"># using table from Muller et al., 1993, Geology.</span>
+gmt begin ex20
+	gmt <span class="nb">set</span> PROJ_LENGTH_UNIT inch
+	gmt coast -Rg -JR9i -B -B+t<span class="s2">&quot;Hotspot Islands and Hot Cities&quot;</span> -Gdarkgreen -Slightblue -A5000
+	gmt plot @hotspots.txt -Skvolcano -Wthinnest -Gred
+
+	<span class="c1"># Overlay a few bullseyes at NY, Cairo, Perth, and Montevideo</span>
+	cat &gt; cities.txt <span class="s">&lt;&lt;- END</span>
+<span class="s">	74W	40.45N	0.5</span>
+<span class="s">	31.15E	30.03N	0.5</span>
+<span class="s">	115.49E	31.58S	0.5</span>
+<span class="s">	56.16W	34.9S	0.5</span>
+<span class="s">	END</span>
+	gmt plot cities.txt -Sk@bullseye
+	rm -f cities.txt
+gmt end show
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/ex20.png"><img alt="../_images/ex20.png" src="../_images/ex20.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Using custom symbols in GMT.</span></p>
+</div>
+<p>Given these guidelines you can easily make your own symbols. Symbols
+with more than one color can be obtained by making several symbol
+components. E.g., to have yellow smoke coming out of red volcanoes we
+would make two symbols: one with just the cone and caldera and the other
+with the bubbles. These would be plotted consecutively using the desired
+colors. Alternatively, like in <code class="docutils literal notranslate"><span class="pre">bullseye.def</span></code>, we may specify colors directly for the
+various segments. Note that the custom symbols (<a class="reference internal" href="../cookbook/custom_symbols.html"><span class="doc">Custom Plot Symbols</span></a>),
+unlike the built-in symbols in GMT, can be used with the built-in
+patterns (<a class="reference internal" href="../cookbook/predefined_patterns.html"><span class="doc">Predefined Bit and Hachure Patterns in GMT</span></a>). Other approaches are also possible, of course.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ex21.html" class="btn btn-neutral float-right" title="(21) Time-series of RedHat stock price" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ex19.html" class="btn btn-neutral float-left" title="(19) Color patterns on maps" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

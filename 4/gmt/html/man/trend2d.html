@@ -1,0 +1,417 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:32 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>TREND2D</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>TREND2D</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#REMARKS">REMARKS</a><br>
+<a href="#ASCII FORMAT PRECISION">ASCII FORMAT PRECISION</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">trend2d &minus;
+Fit a [weighted] [robust] polynomial model for z = f(x,y) to
+xyz[w] data.</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>trend2d
+&minus;Fxyzmrw &minus;N</b><i>n_model</i>[<b>r</b>] [
+<i>xyz[w]file</i> ] [ <b>&minus;C</b><i>condition_number</i>
+] [ <b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;I</b>[<i>confidence_level</i>] ] [ <b>&minus;V</b>
+] [ <b>&minus;W</b> ] [ <b>&minus;:</b>[<b>i</b>|<b>o</b>] ]
+[
+<b>&minus;b</b>[<b>i</b>|<b>o</b>][<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>trend2d</b>
+reads x,y,z [and w] values from the first three [four]
+columns on standard input [or <i>xyz[w]file</i>] and fits a
+regression model z = f(x,y) + e by [weighted] least squares.
+The fit may be made robust by iterative reweighting of the
+data. The user may also search for the number of terms in
+f(x,y) which significantly reduce the variance in z. n_model
+may be in [1,10] to fit a model of the following form
+(similar to grdtrend):</p>
+
+<p style="margin-left:11%; margin-top: 1em">m1 + m2*x +
+m3*y + m4*x*y + m5*x*x + m6*y*y + m7*x*x*x + m8*x*x*y +
+m9*x*y*y + m10*y*y*y.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The user must
+specify <b>&minus;N</b><i>n_model</i>, the number of model
+parameters to use; thus, <b>&minus;N</b><i>4</i> fits a
+bilinear trend, <b>&minus;N</b><i>6</i> a quadratic surface,
+and so on. Optionally, append <b>r</b> to perform a robust
+fit. In this case, the program will iteratively reweight the
+data based on a robust scale estimate, in order to converge
+to a solution insensitive to outliers. This may be handy
+when separating a &quot;regional&quot; field from a
+&quot;residual&quot; which should have non-zero mean, such
+as a local mountain on a regional surface.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify up to six
+letters from the set {x y z m r w} in any order to create
+columns of ASCII [or binary] output. x = x, y = y, z = z, m
+= model f(x,y), r = residual z - m, w = weight used in
+fitting.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify the number
+of terms in the model, <i>n_model</i>, and append <b>r</b>
+to do a robust fit. E.g., a robust bilinear model is
+<b>&minus;N</b><i>4</i><b>r</b>.</p> </td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i>xyz[w]file</i></p>
+
+<p style="margin-left:22%;">ASCII [or binary, see
+<b>&minus;b</b>] file containing x,y,z [w] values in the
+first 3 [4] columns. If no file is specified, <b>trend2d</b>
+will read from standard input.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set the maximum
+allowed condition number for the matrix solution.
+<b>trend2d</b> fits a damped least squares model, retaining
+only that part of the eigenvalue spectrum such that the
+ratio of the largest eigenvalue to the smallest eigenvalue
+is <i>condition_#</i>. [Default: <i>condition_#</i> =
+1.0e06. ].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Iteratively
+increase the number of model parameters, starting at one,
+until <i>n_model</i> is reached or the reduction in variance
+of the model is not significant at the
+<i>confidence_level</i> level. You may set <b>&minus;I</b>
+only, without an attached number; in this case the fit will
+be iterative with a default confidence level of 0.51. Or
+choose your own level between 0 and 1. See remarks
+section.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Weights are
+supplied in input column 4. Do a weighted least squares fit
+[or start with these weights when doing the iterative robust
+fit]. [Default reads only the first 3 columns.]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 3 (or 4 if
+<b>&minus;W</b> is set) input columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.
+[Default is 1-6 columns as set by <b>&minus;F</b>].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+</table>
+
+<a name="REMARKS"></a>
+<h2>REMARKS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The domain of x
+and y will be shifted and scaled to [-1, 1] and the basis
+functions are built from Chebyshev polynomials. These have a
+numerical advantage in the form of the matrix which must be
+inverted and allow more accurate solutions. In many
+applications of <b>trend2d</b> the user has data located
+approximately along a line in the x,y plane which makes an
+angle with the x axis (such as data collected along a road
+or ship track). In this case the accuracy could be improved
+by a rotation of the x,y axes. <b>trend2d</b> does not
+search for such a rotation; instead, it may find that the
+matrix problem has deficient rank. However, the solution is
+computed using the generalized inverse and should still work
+out OK. The user should check the results graphically if
+<b>trend2d</b> shows deficient rank. NOTE: The model
+parameters listed with <b>&minus;V</b> are Chebyshev
+coefficients; they are not numerically equivalent to the m#s
+in the equation described above. The description above is to
+allow the user to match <b>&minus;N</b> with the order of
+the polynomial surface. For evaluating Chebyshev
+polynomials, see <b><A HREF="grdmath.html">grdmath</A></b>.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The
+<b>&minus;N</b><i>n_model</i><b>r</b> (robust) and
+<b>&minus;I</b> (iterative) options evaluate the
+significance of the improvement in model misfit Chi-Squared
+by an F test. The default confidence limit is set at 0.51;
+it can be changed with the <b>&minus;I</b> option. The user
+may be surprised to find that in most cases the reduction in
+variance achieved by increasing the number of terms in a
+model is not significant at a very high degree of
+confidence. For example, with 120 degrees of freedom,
+Chi-Squared must decrease by 26% or more to be significant
+at the 95% confidence level. If you want to keep iterating
+as long as Chi-Squared is decreasing, set
+<i>confidence_level</i> to zero.</p>
+
+<p style="margin-left:11%; margin-top: 1em">A low
+confidence limit (such as the default value of 0.51) is
+needed to make the robust method work. This method
+iteratively reweights the data to reduce the influence of
+outliers. The weight is based on the Median Absolute
+Deviation and a formula from Huber [1964], and is 95%
+efficient when the model residuals have an outlier-free
+normal distribution. This means that the influence of
+outliers is reduced only slightly at each iteration;
+consequently the reduction in Chi-Squared is not very
+significant. If the procedure needs a few iterations to
+successfully attenuate their effect, the significance level
+of the F test must be kept low.</p>
+
+<a name="ASCII FORMAT PRECISION"></a>
+<h2>ASCII FORMAT PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ASCII
+output formats of numerical data are controlled by
+parameters in your .gmtdefaults4 file. Longitude and
+latitude are formatted according to
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>, whereas other values are
+formatted according to <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>. Be aware that the
+format in effect can lead to loss of precision in the
+output, which can lead to various problems downstream. If
+you find the output is not written with enough precision,
+consider switching to binary output (<b>&minus;bo</b> if
+available) or specify more decimals using the
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> setting.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To remove a
+planar trend from data.xyz by ordinary least squares,
+use:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>trend2d</b>
+data.xyz <b>&minus;F</b> xyr <b>&minus;N</b> 2 &gt;
+detrended_data.xyz</p>
+
+<p style="margin-left:11%; margin-top: 1em">To make the
+above planar trend robust with respect to outliers, use:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>trend2d</b>
+data.xzy <b>&minus;F</b> xyr <b>&minus;N</b> 2<b>r</b> &gt;
+detrended_data.xyz</p>
+
+<p style="margin-left:11%; margin-top: 1em">To find out how
+many terms (up to 10) in a robust interpolant are
+significant in fitting data.xyz, use:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>trend2d</b>
+data.xyz <b>&minus;N</b> 10<b>r &minus;I &minus;V</b></p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grdmath.html">grdmath</A></i>(1), <i><A HREF="grdtrend.html">grdtrend</A></i>(1), <i><A HREF="trend1d.html">trend1d</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Huber, P. J.,
+1964, Robust estimation of a location parameter, <i>Ann.
+Math. Stat., 35,</i> 73-101.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Menke, W.,
+1989, Geophysical Data Analysis: Discrete Inverse Theory,
+Revised Edition, Academic Press, San Diego.</p>
+<hr>
+</body>
+</html>

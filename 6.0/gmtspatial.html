@@ -1,0 +1,637 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>gmtspatial &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gmtvector" href="gmtvector.html" />
+    <link rel="prev" title="gmtsimplify" href="gmtsimplify.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">GMT Modules</a> &raquo;</li>
+        
+      <li>gmtspatial</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/gmtspatial.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="gmtspatial">
+<span id="index-0"></span><h1>gmtspatial<a class="headerlink" href="#gmtspatial" title="Permalink to this headline">¶</a></h1>
+<p>Geospatial operations on points, lines and polygons</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt spatial</strong> [ <em>table</em> ] [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong>[<strong>a</strong><em>min_dist</em>][<em>unit</em>]]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong> ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<strong>+f</strong><em>file</em>][<strong>+a</strong><em>amax</em>][<strong>+d</strong><em>dmax</em>][<strong>+c|C</strong><em>cmax</em>][<strong>+s</strong><em>fact</em>] ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><strong>+p</strong>|<strong>n</strong> ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>l</strong>] ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong>[<strong>e</strong>|<strong>i</strong>] ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>pfile</em>[<strong>+a</strong>][<strong>+p</strong><em>start</em>][<strong>+r</strong>][<strong>+z</strong>] ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong>[<em>unit</em>][<strong>+c</strong><em>min</em>[/<em>max</em>]][<strong>+h</strong>][<strong>+l</strong>][<strong>+p</strong>][<strong>+s</strong>[<strong>a</strong>|<strong>d</strong>]] ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><strong>h</strong>|<strong>i</strong>|<strong>u</strong>|<strong>s</strong>|<strong>j</strong> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong>[<em>clippolygon</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-j</strong><a class="reference internal" href="gmt.html#distcalc-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>spatial</strong> reads one or more data files (which may be multisegment
+files) that contains closed polygons and operates of these polygons in
+the specified way. Operations include area calculation, handedness
+reversals, and polygon intersections.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<p>None.</p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </dd>
+</dl>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong>[<strong>a</strong><em>min_dist</em>][<em>unit</em>]</dt>
+<dd>Perform spatial nearest neighbor (NN) analysis: Determine the nearest
+neighbor of each point and report the NN distances and the point IDs
+involved in each pair (IDs are the input record numbers starting at 0).
+Use <strong>-Aa</strong> to decimate a data set so that no NN distance is lower than
+the threshold <em>min_dist</em>.  In this case we write out the (possibly
+averaged) coordinates and the updated NN distances and point IDs.  A
+negative point number means the original point was replaced by a weighted
+average (the absolute ID value gives the ID of the first original point
+ID to be included in the average.).  Note: The input data are assumed to
+contain (<em>lon, lat</em>) or (<em>x, y</em>), optionally followed by a <em>z</em> and a <em>weight</em> [1] column.
+We compute a weighted average of the location and <em>z</em> (if present).</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong></dt>
+<dd>Clips polygons to the map region, including map boundary to the
+polygon as needed. The result is a closed polygon (see <strong>-T</strong> for
+truncation instead). Requires <strong>-R</strong>.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong>[<strong>+f</strong><em>file</em>][<strong>+a</strong><em>amax</em>][<strong>+d</strong><em>dmax</em>][<strong>+c|C</strong><em>cmax</em>][<strong>+s</strong><em>fact</em>]</dt>
+<dd>Check for duplicates among the input lines or polygons, or, if
+<em>file</em> is given via <strong>+f</strong>, check if the input features already
+exist among the features in <em>file</em>. We consider the cases of exact
+(same number and coordinates) and approximate matches (average
+distance between nearest points of two features is less than a
+threshold). We also consider that some features may have been
+reversed. Features are considered approximate matches if their
+minimum distance is less than <em>dmax</em> [0] (see <a class="reference internal" href="#units">Units</a>) and their
+closeness (defined as the ratio between the average distance between
+the features divided by their average length) is less than <em>cmax</em>
+[0.01]. For each duplicate found, the output record begins with the
+single letter Y (exact match) or ~ (approximate match). If the two
+matching segments differ in length by more than a factor of 2 then
+we consider the duplicate to be either a subset (-) or a superset
+(+). Finally, we also note if two lines are the result of splitting
+a continuous line across the Dateline (|).
+For polygons we also consider the fractional difference in
+areas; duplicates must differ by less than <em>amax</em> [0.01]. By
+default, we compute the mean line separation. Use <strong>+C</strong><em>cmin</em> to
+instead compute the median line separation and therefore a robust
+closeness value. Also by default we consider all distances between
+points on one line and another. Append <strong>+p</strong> to limit the
+comparison to points that project perpendicularly to points on the
+other line (and not its extension).</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong><strong>+p</strong>|<strong>n</strong></dt>
+<dd>Reset the handedness of all polygons to match the given <strong>+p</strong>
+(counter-clockwise; positive) or <strong>+n</strong> (clockwise; negative). Implies <strong>-Q+</strong>.</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong>[<strong>l</strong>]</dt>
+<dd>Force input data to become polygons on output, i.e., close them explicitly if not
+already closed.  Optionally, append <strong>l</strong> to force line geometry.</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong>[<strong>e</strong>|<strong>i</strong>]</dt>
+<dd>Determine the intersection locations between all pairs of polygons.
+Append <strong>i</strong> to only compute internal (i.e., self-intersecting
+polygons) crossovers or <strong>e</strong> to only compute external (i.e.,
+between pairs of polygons) crossovers [Default is both].</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong><em>pfile</em>[<strong>+a</strong>][<strong>+p</strong><em>start</em>][<strong>+r</strong>][<strong>+z</strong>]</dt>
+<dd>Determine if one (or all, with <strong>+a</strong>) points of each feature in the
+input data are inside any of the polygons given in the <em>pfile</em>. If
+inside, then report which polygon it is; the polygon ID is either
+taken from the aspatial value assigned to Z, the segment header
+(first <strong>-Z</strong>, then <strong>-L</strong> are scanned), or it is assigned the
+running number that is initialized to <em>start</em> [0]. By default the
+input segment that are found to be inside a polygon are written to
+stdout with the polygon ID encoded in the segment header as
+<strong>-Z</strong><em>ID</em>. Alternatively, append <strong>+r</strong> to just report which
+polygon contains a feature or <strong>+z</strong> to have the IDs added as an
+extra data column on output. Segments that fail to be inside a
+polygon are not written out. If more than one polygon contains the
+same segment we skip the second (and further) scenario.</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong>[<em>unit</em>][<strong>+c</strong><em>min</em>[/<em>max</em>]][<strong>+h</strong>][<strong>+l</strong>][<strong>+p</strong>][<strong>+s</strong>[<strong>a</strong>|<strong>d</strong>]]</dt>
+<dd>Measure the area of all polygons or length of line segments. Use
+<strong>-Q+h</strong> to append the area to each polygons segment header [Default
+simply writes the area to stdout]. For polygons we also compute the
+centroid location while for line data we compute the mid-point
+(half-length) position. Append a distance unit to select the unit
+used (see <a class="reference internal" href="#units">Units</a>). Note that the area will depend on the current
+setting of <a class="reference internal" href="gmt.conf.html#proj-ellipsoid"><span class="std std-ref">PROJ_ELLIPSOID</span></a>; this should be a
+recent ellipsoid to get accurate results. The centroid is computed
+using the mean of the 3-D Cartesian vectors making up the polygon
+vertices, while the area is obtained via an equal-area projection.
+Normally, all input segments
+will be be reflected on output.  Use <strong>c</strong> to restrict processing to
+those whose length (or area for polygons) fall inside the specified
+range set by <em>min</em> and <em>max</em>.  If <em>max</em> is not set it defaults to infinity.
+To sort the segments based on their lengths or area, use <strong>s</strong> and
+append <strong>a</strong> for ascending and <strong>d</strong> for descending order [ascending].
+By default, we consider open polygons as lines.
+Append <strong>+p</strong> to close open polygons and thus consider all input
+as polygons, or append <strong>+l</strong> to consider all input as lines, even
+if closed.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
+Append <strong>+r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Set geographic regions by specifying ISO country codes from the Digital Chart of the World using
+<strong>-R</strong><em>code1,code2,…</em>[<strong>+r</strong>|<strong>R</strong>[<em>incs</em>]] instead:
+Append one or more comma-separated countries using the 2-character
+ISO 3166-1 alpha-2 convention.  To select a state of a country
+(if available), append .state, e.g, US.TX for Texas.  To specify a
+whole continent, prepend = to any of the continent codes AF (Africa),
+AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
+NA (North America), or SA (South America).  Use <strong>+r</strong> to modify the bounding box coordinates from the polygon(s):
+Append <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> to adjust the
+region to be a multiple of these steps [no adjustment]. Alternatively, use <strong>+R</strong> to extend the region
+outward by adding these increments instead [no extension].
+Alternatively for grid creation, give <strong>R</strong><em>code</em><em>lon</em>/<em>lat</em>/<em>nx</em>/<em>ny</em>, where
+<em>code</em> is a 2-character combination of L, C, R (for left, center, or right)
+and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
+indicates which point on a rectangular region the <em>lon</em>/<em>lat</em> coordinate
+refers to, and the grid dimensions <em>nx</em> and <em>ny</em> with grid spacings via
+<strong>-I</strong> is used to create the corresponding region.
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing and registration, if applicable) are copied from
+the grid. Appending <strong>+u</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.
+For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.
+In case of perspective view (<strong>-p</strong>), a z-range (<em>zmin</em>, <em>zmax</em>)
+can be appended to indicate the third dimension. This needs to be
+done only when using the <strong>-Jz</strong> option, not when using only the
+<strong>-p</strong> option. In the latter case a perspective view of the plane is
+plotted, with no third dimension. Clips polygons to the map
+region, including map boundary to the polygon as needed. The result
+is a closed polygon.</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><strong>h</strong>|<strong>i</strong>|<strong>j</strong>|<strong>s</strong>|<strong>u</strong></dt>
+<dd>Spatial processing of polygons. Choose from <strong>-Sh</strong> which identifies
+perimeter and hole polygons (and flags/reverses them), <strong>-Si</strong> which returns
+the intersection of polygons (closed), <strong>-Su</strong> which returns the
+union of polygons (closed), <strong>-Ss</strong> which will split polygons that
+straddle the Dateline, and <strong>-Sj</strong> which will join polygons that
+were split by the Dateline.  Note: Only <strong>-Ss</strong> has been implemented.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong>[<em>clippolygon</em>]</dt>
+<dd>Truncate polygons against the specified polygon given, possibly
+resulting in open polygons. If no argument is given to <strong>-T</strong> we
+create a clipping polygon from <strong>-R</strong> which then is required. Note
+that when the <strong>-R</strong> clipping is in effect we will also look for
+polygons of length 4 or 5 that exactly match the <strong>-R</strong> clipping polygon.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary format for primary input. [Default is 2 input columns].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output. [Default is same as input].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em> <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> | <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong><em>gap</em>[<strong>u</strong>][<strong>+n</strong>|<strong>p</strong>] <a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine data gaps and line breaks.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<em>t</em>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column, <em>t</em> is trailing text, append <em>word</em> to read one word only).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-je</strong>|<strong>f</strong>|<strong>g</strong> <a class="reference internal" href="gmt.html#distcalc-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine how spherical distances are calculated.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-o</strong><em>cols</em>[,…][<em>t</em>[<em>word</em>]] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select output columns (0 is first column; <em>t</em> is trailing text, append <em>word</em> to write one word only).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt>
+<dd>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</dd>
+</dl>
+</div>
+<div class="section" id="units">
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
+<p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
+and <strong>u</strong> for US survey foot. By default we compute such distances using
+a spherical approximation with great circles (<strong>-jg</strong>) using the authalic radius
+(see <a class="reference internal" href="gmt.conf.html#proj-mean-radius"><span class="std std-ref">PROJ_MEAN_RADIUS</span></a>). You can use <strong>-jf</strong> to perform
+“Flat Earth” calculations (quicker but less accurate) or <strong>-je</strong> to perform
+exact geodesic calculations (slower but more accurate; see
+<a class="reference internal" href="gmt.conf.html#proj-geodesic"><span class="std std-ref">PROJ_GEODESIC</span></a> for method used).</p>
+</div>
+<div class="section" id="inside-outside-status">
+<h2>Inside/outside Status<a class="headerlink" href="#inside-outside-status" title="Permalink to this headline">¶</a></h2>
+<p>To determine if a point is inside, outside, or exactly on the boundary of a polygon
+we need to balance the complexity (and execution time) of the algorithm with the
+type of data and shape of the polygons.  For any Cartesian data we use a non-zero
+winding algorithm, which is quite fast.  For geographic data we will also use this algorithm
+as long as (1) the polygons do not include a geographic pole, and (2) the longitude extent
+of the polygons is less than 360.  If this is the situation we also carefully adjust
+the test point longitude for any 360 degree offsets, if appropriate.  Otherwise,
+we employ a full spherical ray-shooting method to determine a points status.</p>
+</div>
+<div class="section" id="ascii-format-precision">
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-geo-out"><span class="std std-ref">FORMAT_GEO_OUT</span></a>, absolute time is
+under the control of <a class="reference internal" href="gmt.conf.html#format-date-out"><span class="std std-ref">FORMAT_DATE_OUT</span></a> and
+<a class="reference internal" href="gmt.conf.html#format-clock-out"><span class="std std-ref">FORMAT_CLOCK_OUT</span></a>, whereas general floating point values are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a>. Be aware that the format in effect
+can lead to loss of precision in ASCII output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a> setting.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To determine the centroid of the remote GSHHH high-resolution polygon for Australia,
+as well as the land area in km squared, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt spatial @GSHHS_h_Australia.txt -fg -Qk
+</pre></div>
+</div>
+<p>To turn all lines in the multisegment file lines.txt into closed polygons,
+run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt spatial lines.txt -F &gt; polygons.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>To compute the area of all geographic polygons in the multisegment file
+polygons.txt, run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt spatial polygons.txt -Q &gt; areas.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>Same data, but now orient all polygons to go counter-clockwise and write
+their areas to the segment headers, run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt spatial polygons.txt -Q+h -E+p &gt; areas.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>To determine the areas of all the polygon segments in the file janmayen_land_full.txt,
+add this information to the segment headers, sort the segments from largest
+to smallest in area but only keep polygons with area larger than 1000 sq. meters, run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt spatial -Qe+h+p+c1000+sd -V janmayen_land_full.txt &gt; largest_pols.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>To determine the intersections between the polygons A.txt and B.txt, run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt spatial A.txt B.txt -Ie &gt; crossovers.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>To truncate polygons A.txt against polygon B.txt, resulting in an open line segment, run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt spatial A.txt -TB.txt &gt; line.txt
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>OGR/GMT files are considered complete datasets and thus you cannot specify more than one
+at a given time. This causes problems if you want to examine the intersections of
+two OGR/GMT files.  The solution is to convert them to regular datasets via
+<a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a> and then run <strong>gmt spatial</strong> on the converted files.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a>,
+<a class="reference internal" href="gmtselect.html"><span class="doc">gmtselect</span></a>,
+<a class="reference internal" href="gmtsimplify.html"><span class="doc">gmtsimplify</span></a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="gmtvector.html" class="btn btn-neutral float-right" title="gmtvector" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="gmtsimplify.html" class="btn btn-neutral float-left" title="gmtsimplify" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

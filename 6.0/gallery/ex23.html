@@ -1,0 +1,346 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>(23) All great-circle paths lead to Rome &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(24) Data selection based on geospatial criteria" href="ex24.html" />
+    <link rel="prev" title="(22) World-wide seismicity the last 7 days" href="ex22.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+        
+      <li>(23) All great-circle paths lead to Rome</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/gallery/ex23.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="all-great-circle-paths-lead-to-rome">
+<span id="example-23"></span><h1>(23) All great-circle paths lead to Rome<a class="headerlink" href="#all-great-circle-paths-lead-to-rome" title="Permalink to this headline">¶</a></h1>
+<p>While motorists recently have started to question the old saying “all
+roads lead to Rome”, aircraft pilots have known from the start that only
+one great-circle path connects the points of departure and
+arrival <a class="footnote-reference" href="#id2" id="id1">[1]</a>. This provides the inspiration for our next example which
+uses <a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a> to calculate distances
+from Rome to anywhere on Earth and
+<a class="reference internal" href="../grdcontour.html"><span class="doc">grdcontour</span></a> to contour these
+distances. We pick five cities that we connect to Rome with great circle
+arcs, and label these cities with their names and distances (in km) from
+Rome, all laid down on top of a beautiful world map. Note that we
+specify that contour labels only be placed along the straight map-line
+connecting Rome to its antipode, and request curved labels that follows
+the shape of the contours.</p>
+<p>The script produces the plot in Figure; note
+how interesting the path to Seattle appears in this particular
+projection (Hammer). We also note that Rome’s antipode lies somewhere
+near the Chatham plateau (antipodes will be revisited in Example
+<a class="reference internal" href="ex25.html#example-25"><span class="std std-ref">(25) Global distribution of antipodes</span></a>).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#		GMT EXAMPLE 23</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Plot distances from Rome and draw shortest paths</span>
+<span class="c1"># GMT modules:	grdmath, grdcontour, coast, plot, text, grdtrack</span>
+<span class="c1"># Unix progs:	echo, cat</span>
+<span class="c1">#</span>
+gmt begin ex23
+	<span class="c1"># Position and name of central point:</span>
+	<span class="nv">lon</span><span class="o">=</span><span class="m">12</span>.50
+	<span class="nv">lat</span><span class="o">=</span><span class="m">41</span>.99
+	<span class="nv">name</span><span class="o">=</span><span class="s2">&quot;Rome&quot;</span>
+
+	<span class="c1"># Calculate distances (km) to all points on a global 1x1 grid</span>
+	gmt grdmath -Rg -I1 <span class="nv">$lon</span> <span class="nv">$lat</span> <span class="nv">SDIST</span> <span class="o">=</span> dist.nc
+
+	<span class="c1"># Location info for 5 other cities + label justification</span>
+	cat <span class="s">&lt;&lt;- END &gt; cities.txt</span>
+<span class="s">	105.87	21.02	LM	HANOI</span>
+<span class="s">	282.95	-12.1	LM	LIMA</span>
+<span class="s">	178.42	-18.13	LM	SUVA</span>
+<span class="s">	237.67	47.58	RM	SEATTLE</span>
+<span class="s">	28.20	-25.75	LM	PRETORIA</span>
+<span class="s">	END</span>
+	gmt coast -Rg -JH90/9i -Glightgreen -Sblue -A1000 -Bg30 -B+t<span class="s2">&quot;Distances from </span><span class="nv">$name</span><span class="s2"> to the World&quot;</span> -Wthinnest
+
+	gmt grdcontour dist.nc -A1000+v+u<span class="s2">&quot; km&quot;</span>+fwhite -Glz-/z+ -S8 -C500 -Wathin,white -Wcthinnest,white,-
+
+	<span class="c1"># For each of the cities, plot great circle arc to Rome with gmt plot</span>
+	gmt plot -Wthickest,red -Fr<span class="nv">$lon</span>/<span class="nv">$lat</span> cities.txt
+
+	<span class="c1"># Plot red squares at cities and plot names:</span>
+	gmt plot -Ss0.2 -Gred -Wthinnest cities.txt
+	gmt text -Dj0.15/0 -F+f12p,Courier-Bold,red+j -N cities.txt
+	<span class="c1"># Place a yellow star at Rome</span>
+	<span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$lon</span><span class="s2"> </span><span class="nv">$lat</span><span class="s2">&quot;</span> <span class="p">|</span> gmt plot -Sa0.2i -Gyellow -Wthin
+
+	<span class="c1"># Sample the distance grid at the cities and use the distance in integer km for labels</span>
+	gmt grdtrack -Gdist.nc cities.txt -o0-2 --FORMAT_FLOAT_OUT<span class="o">=</span><span class="m">0</span>:%g,1:%g,2:%.0f <span class="se">\</span>
+		<span class="p">|</span> gmt text -D0/-0.2i -N -Gwhite -W -C0.02i -F+f12p,Helvetica-Bold+jCT
+
+	<span class="c1"># Clean up after ourselves:</span>
+	rm -f cities.txt dist.nc
+gmt end show
+</pre></div>
+</div>
+<div class="figure align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/ex23.png"><img alt="../_images/ex23.png" src="../_images/ex23.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">All great-circle paths lead to Rome.</span></p>
+</div>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Pedants who wish to argue about the “other” arc going the long way
+should consider using it.</td></tr>
+</tbody>
+</table>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ex24.html" class="btn btn-neutral float-right" title="(24) Data selection based on geospatial criteria" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ex22.html" class="btn btn-neutral float-left" title="(22) World-wide seismicity the last 7 days" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

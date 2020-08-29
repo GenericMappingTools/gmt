@@ -1,0 +1,211 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:40 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>NC2XY</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>NC2XY</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#TIME COORDINATES">TIME COORDINATES</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">nc2xy &minus;
+Converting netCDF column file(s) to ASCII xy data</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>nc2xy</b>
+<i>files</i> [ <b>&minus;F</b><i>var1/var2/...</i> ] [
+<b>&minus;S</b>[<b>r</b>] ] [ <b>&minus;V</b> ] [
+<b>&minus;f</b><i>colinfo</i> ] [ <b>&minus;bo</b> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>nc2xy</b>
+reads one or more netCDF files with column data and writes
+out those columns in ASCII format to standard output, so
+that they can be used by <b><A HREF="psxy.html">psxy</A></b>, <b><A HREF="psxyz.html">psxyz</A></b>, or
+<b><A HREF="xyz2grd.html">xyz2grd</A></b>. Modify the precision of the ASCII output
+format by editing the <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> parameter in your
+.gmtdefaults4 file or use
+<b>&minus;&minus;D_FORMAT</b>=<i>value</i> on the command
+line.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em" valign="top"><i>files</i></p></td>
+<td width="4%"></td>
+<td width="58%">
+
+
+<p style="margin-top: 1em" valign="top">Names of netCDF
+files to be converted.</p></td>
+<td width="20%">
+</td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify up to 10
+names of the variables (separated by slashes) to be printed
+out. All variables to be 1-dimensional and be of equal
+length. When omited, the first two variables in the netCDF
+file will be printed.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Suppress output for
+records with one or more NaN values [Default outputs all
+nodes]. Append <b>r</b> to reverse the suppression, i.e.,
+only output the records with at least one NaN value.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates). See also <b>TIME COORDINATES</b>
+below.</p> </td>
+</table>
+
+<a name="TIME COORDINATES"></a>
+<h2>TIME COORDINATES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Time
+coordinates in netCDF files will be recognized as such. The
+variable&rsquo;s <b>unit</b> attribute is parsed to
+determine the unit and epoch of the time coordinate in the
+grid. Values are then converted to the internal time system
+specified by <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> and <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> in the
+.gmtdefaults file or on the command line. The default output
+is relative time in that time system, or absolute time when
+using the option <b>&minus;f0T</b>, <b>&minus;f1T</b>,
+etc.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To print out
+latitude, longitude and height in a netCDF file as ASCII
+records, while suppressing all NaN values:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>nc2xy
+&minus;F</b> lat/lon/height <b>&minus;S</b> trackfile.nc
+&gt; trackfile.xy</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="gmtdefaults.html">gmtdefaults</A></i>(1),
+<i><A HREF="GMT.html">GMT</A></i>(1), <i><A HREF="psxy.html">psxy</A></i>(1), <i><A HREF="psxyz.html">psxyz</A></i>(1),
+<i><A HREF="xyz2grd.html">xyz2grd</A></i>(1)</p>
+<hr>
+</body>
+</html>

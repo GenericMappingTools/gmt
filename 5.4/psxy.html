@@ -1,0 +1,1052 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>psxy &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="psxyz" href="psxyz.html" />
+    <link rel="prev" title="pswiggle" href="pswiggle.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="psxyz.html" title="psxyz"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="pswiggle.html" title="pswiggle"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="psxy">
+<span id="index-0"></span><h1>psxy<a class="headerlink" href="#psxy" title="Permalink to this headline">¶</a></h1>
+<p>psxy - Plot lines, polygons, and symbols on maps</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>psxy</strong> [ <em>table</em> ] <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em>
+<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>]
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong>[<strong>m</strong>|<strong>p</strong>|<strong>x</strong>|<strong>y</strong>] ]
+[ <a class="reference internal" href="#b"><span> <strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>cpt</em> ] [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>dx</em>/<em>dy</em> ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<strong>x</strong>|<strong>y</strong>|<strong>X</strong>|<strong>Y</strong>][<strong>+a</strong>][<strong>+cl</strong>|<strong>f</strong>][<strong>+n</strong>][<strong>+w</strong><em>cap</em>][<strong>+p</strong><em>pen</em>] ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>c</strong>|<strong>n</strong>|<strong>r</strong>][<em>refpoint</em>] ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>fill</em> ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>intens</em> ]
+[ <a class="reference internal" href="#k"><span> <strong>-K</strong></span></a></strong> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong>[<strong>+b</strong>|<strong>d</strong>|<strong>D</strong>][<strong>+xl</strong>|<strong>r</strong>|<em>x0</em>][<strong>+yl</strong>|<strong>r</strong>|<em>y0</em>][<strong>+p</strong><em>pen</em>] ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong>[<strong>c</strong>|<strong>r</strong>] ]
+[ <a class="reference internal" href="#o"><span> <strong>-O</strong></span></a></strong> ] [ <a class="reference internal" href="#p"><span> <strong>-P</strong></span></a></strong> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong>[<em>symbol</em>][<em>size</em>[<strong>u</strong>] ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong> ]
+[ <a class="reference internal" href="#u"><span> <strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<em>pen</em>][<em>attr</em>] ]
+[ <a class="reference internal" href="#x"><span> <strong>-X</strong></span></a></strong><em>x_offset</em> ]
+[ <a class="reference internal" href="#y"><span> <strong>-Y</strong></span></a></strong><em>y_offset</em> ]
+[ <strong>-a</strong><a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-bi</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">transp</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>psxy</strong> reads (<em>x</em>,<em>y</em>) pairs from <em>files</em> [or standard input] and
+generates PostScript code that will plot lines, polygons, or symbols
+at those locations on a map. If a symbol is selected and no symbol size
+given, then <strong>psxy</strong> will interpret the third column of the input data
+as symbol size. Symbols whose <em>size</em> is &lt;= 0 are skipped. If no symbols
+are specified then the symbol code (see <strong>-S</strong> below) must be present as
+last column in the input. If <strong>-S</strong> is not used, a line connecting the
+data points will be drawn instead. To explicitly close polygons, use
+<strong>-L</strong>. Select a fill with <strong>-G</strong>. If <strong>-G</strong> is set, <strong>-W</strong> will control
+whether the polygon outline is drawn or not. If a symbol is selected,
+<strong>-G</strong> and <strong>-W</strong> determines the fill and outline/no outline,
+respectively. The PostScript code is written to standard output.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="j">
+<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select map projection.  </dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest.  </dd>
+</dl>
+<p>For perspective view <strong>p</strong>, optionally append /<em>zmin</em>/<em>zmax</em>. <a class="reference internal" href="gmt.html#rz-full"><span class="std std-ref">(more …)</span></a>  </p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input. Use <strong>-T</strong> to ignore all input files, including standard input (see below).</dd>
+</dl>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong>[<strong>m</strong>|<strong>p</strong>|<strong>x</strong>|<strong>y</strong>]</dt>
+<dd>By default, geographic line segments are drawn as great circle arcs. To draw them as
+straight lines, use the <strong>-A</strong> flag.  Alternatively, add <strong>m</strong> to draw
+the line by first following a meridian, then a parallel. Or append <strong>p</strong>
+to start following a parallel, then a meridian. (This can be practical
+to draw a line along parallels, for example).  For Cartesian data, points
+are simply connected, unless you append <strong>x</strong> or <strong>y</strong> to draw stair-case
+curves that whose first move is along <em>x</em> or <em>y</em>, respectively.</dd>
+</dl>
+<dl class="docutils" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set map boundary frame and axes attributes.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>cpt</em></dt>
+<dd>Give a CPT or specify <strong>-C</strong><em>color1,color2</em>[<em>,color3</em>,…]
+to build a linear continuous CPT from those colors automatically.
+In this case <em>color</em><strong>n</strong> can be a r/g/b triplet, a color name,
+or an HTML hexadecimal color (e.g. #aabbcc ).
+If <strong>-S</strong> is set, let symbol fill color be
+determined by the z-value in the third column. Additional fields are
+shifted over by one column (optional size would be 4th rather than 3rd
+field, etc.). If <strong>-S</strong> is not set, then <strong>psxy</strong> expects the user to
+supply a multisegment file where each segment header contains a
+<strong>-Z</strong><em>val</em> string. The <em>val</em> will control the color of the line or
+polygon (if <strong>-L</strong> is set) via the CPT.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>dx</em>/<em>dy</em></dt>
+<dd>Offset the plot symbol or line locations by the given amounts <em>dx/dy</em>
+[Default is no offset]. If <em>dy</em> is not given it is set equal to <em>dx</em>.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong>[<strong>x</strong>|<strong>y</strong>|<strong>X</strong>|<strong>Y</strong>][<strong>+a</strong>][<strong>+cl</strong>|<strong>f</strong>][<strong>+n</strong>][<strong>+w</strong><em>cap</em>][<strong>+p</strong><em>pen</em>]</dt>
+<dd>Draw symmetrical error bars. Append <strong>x</strong> and/or <strong>y</strong> to indicate which bars you
+want to draw (Default is both x and y). The x and/or y errors must be
+stored in the columns after the (x,y) pair [or (x,y,z) triplet]. If
+<strong>+a</strong> is appended then we will draw asymmetrical error bars; these requires
+two rather than one extra data column, with the low and high value.
+If upper case <strong>X</strong> and/or <strong>Y</strong> are used we will instead draw
+“box-and-whisker” (or “stem-and-leaf”) symbols. The x (or y) coordinate
+is then taken as the median value, and four more columns are expected to
+contain the minimum (0% quantile), the 25% quantile, the 75% quantile,
+and the maximum (100% quantile) values. The 25-75% box may be filled by
+using <strong>-G</strong>. If <strong>+n</strong> is appended the we draw a notched
+“box-and-whisker” symbol where the notch width reflects the uncertainty
+in the median. This symbol requires a 5th extra data column to contain the
+number of points in the distribution.  The <strong>+w</strong> modifier sets the
+<em>cap</em> width that indicates the length of the end-cap on the error bars
+[7<strong>p</strong>]. Pen attributes for error bars may also be set via <strong>+p</strong><em>pen</em>.
+[Defaults: width = default, color = black, style = solid]. When <strong>-C</strong> is
+used we can control how the look-up color is applied to our symbol.
+Append <strong>+cf</strong> to use it to fill the symbol, while <strong>+cl</strong> will just
+set the error pen color and turn off symbol fill.  Giving <strong>+c</strong> will
+set both color items.</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong>[<strong>c</strong>|<strong>n</strong>|<strong>r</strong>][<strong>a</strong>|<strong>f</strong>|<strong>s</strong>|<strong>r</strong>|<em>refpoint</em>]</dt>
+<dd>Alter the way points are connected (by specifying a <em>scheme</em>) and data are grouped (by specifying a <em>method</em>).
+Append one of three line connection schemes:
+<strong>c</strong>: Draw continuous line segments for each group [Default].
+<strong>r</strong>: Draw line segments from a reference point reset for each group.
+<strong>n</strong>: Draw networks of line segments between all points in each group.
+Optionally, append the one of four segmentation methods to define the group:
+<strong>a</strong>: Ignore all segment headers, i.e., let all points belong to a single group,
+and set group reference point to the very first point of the first file.
+<strong>f</strong>: Consider all data in each file to be a single separate group and
+reset the group reference point to the first point of each group.
+<strong>s</strong>: Segment headers are honored so each segment is a group; the group
+reference point is reset to the first point of each incoming segment [Default].
+<strong>r</strong>: Same as <strong>s</strong>, but the group reference point is reset after
+each record to the previous point (this method is only available with the <strong>-Fr</strong> scheme).
+Instead of the codes <strong>a</strong>|<strong>f</strong>|<strong>s</strong>|<strong>r</strong> you may append
+the coordinates of a <em>refpoint</em> which will serve as a fixed external
+reference point for all groups.</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>fill</em></dt>
+<dd>Select color or pattern for filling of symbols or polygons [Default is no fill].
+Note that <strong>psxy</strong> will search for <strong>-G</strong> and <strong>-W</strong> strings in all the
+segment headers and let any values thus found over-ride the command line settings.</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>intens</em></dt>
+<dd>Use the supplied <em>intens</em> value (nominally in the -1 to + 1 range) to
+modulate the fill color by simulating illumination [none].</dd>
+</dl>
+<dl class="docutils" id="k">
+<dt><strong>-K</strong> <a class="reference internal" href="gmt.html#k-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Do not finalize the PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong>[<strong>+b</strong>|<strong>d</strong>|<strong>D</strong>][<strong>+xl</strong>|<strong>r</strong>|<em>x0</em>][<strong>+yl</strong>|<strong>r</strong>|<em>y0</em>][<strong>+p</strong><em>pen</em>] <a href="#openModal">Example</a>
+<div id="openModal" class="modalDialog">
+ <div>
+     <a href="#close" title="Close" class="close">X</a>
+     <h2>-L example</h2>
+     <p>
+     ps=filler.ps</br>
+     cat << EOF > t.txt</br>
+     1 1</br>
+     2 3</br>
+     3 2</br>
+     4 4</br>
+     EOF</br>
+     gmt psxy -R0/5/0/5 -JX3i -P -K -B0 t.txt -Gred -W2p -L+yb > $ps</br>
+     gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+yt -X3.25i >> $ps</br>
+     gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+xl -X-3.25i -Y3.25i >> $ps</br>
+     gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+xr -X3.25i >> $ps</br>
+     gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+y4 -X-3.25i -Y3.25i >> $ps</br>
+     gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+x4.5 -X3.25i >> $ps</br>
+     gmt psxy -R -J -O -T >> $ps</br>
+     </p>
+ </div>
+</div></dt>
+<dd>Force closed polygons.  Alternatively, append modifiers to build a polygon from a line segment.
+Append <strong>+d</strong> to build symmetrical envelope around y(x) using deviations dy(x) given in extra column 3.
+Append <strong>+D</strong> to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from extra columns 3-4.
+Append <strong>+b</strong> to build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from extra columns 3-4.
+Append <strong>+xl</strong>|<strong>r</strong>|<em>x0</em> to connect first and last point to anchor points at either xmin, xmax, or x0, or
+append <strong>+yb</strong>|<strong>t</strong>|<em>y0</em> to connect first and last point to anchor points at either ymin, ymax, or y0.
+Polygon may be painted (<strong>-G</strong>) and optionally outlined by adding <strong>+p</strong><em>pen</em> [no outline].</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong>[<strong>c</strong>|<strong>r</strong>]</dt>
+<dd>Do NOT clip symbols that fall outside map border [Default plots points
+whose coordinates are strictly inside the map border only]. The option does not apply to lines and polygons
+which are always clipped to the map region. For periodic (360-longitude)
+maps we must plot all symbols twice in case they are clipped by the repeating
+boundary. The <strong>-N</strong> will turn off clipping and not plot repeating symbols.
+Use <strong>-Nr</strong> to turn off clipping but retain the plotting of such repeating symbols, or
+use <strong>-Nc</strong> to retain clipping but turn off plotting of repeating symbols.</dd>
+</dl>
+<dl class="docutils" id="o">
+<dt><strong>-O</strong> <a class="reference internal" href="gmt.html#o-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Append to existing PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="p">
+<dt><strong>-P</strong> <a class="reference internal" href="gmt.html#p-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select “Portrait” plot orientation.</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong>[<em>symbol</em>][<em>size</em>[<strong>u</strong>]]</dt>
+<dd><p class="first">Plot symbols (including vectors, pie slices, fronts, decorated or quoted lines).
+If present, <em>size</em> is symbol size in the unit set in
+<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> (unless <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> is appended). If the symbol
+code (see below) is not given it will be read from the last column in
+the input data; this cannot be used in conjunction with binary input.
+Optionally, append <strong>c</strong>, <strong>i</strong>, or
+<strong>p</strong> to indicate that the size information in the input data is in
+units of cm, inch, or point, respectively [Default is
+<a class="reference internal" href="gmt.conf.html#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a>]. Note: if you provide <em>both</em> size and symbol via the
+input file you must use <a class="reference internal" href="gmt.conf.html#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a> to indicate the unit
+used for the symbol size or append the units to the sizes in the file.
+If symbol sizes are expected via the third data column then you may convert
+those values to suitable symbol sizes via the <strong>-i</strong> mechanism.</p>
+<p>The uppercase symbols <strong>A</strong>, <strong>C</strong>, <strong>D</strong>, <strong>G</strong>, <strong>H</strong>, <strong>I</strong>, <strong>N</strong>,
+<strong>S</strong>, <strong>T</strong> are normalized to have the same area as a circle with
+diameter <em>size</em>, while the size of the corresponding lowercase symbols
+refers to the diameter of a circumscribed circle.</p>
+<p>You can change symbols by adding the required <strong>-S</strong> option to any of
+your multisegment headers.</p>
+<p>Choose between these symbol codes:</p>
+<dl class="last docutils">
+<dt><strong>-S-</strong></dt>
+<dd>x-dash (-). <em>size</em> is the length of a short horizontal (x-dir) line segment.</dd>
+<dt><strong>-S+</strong></dt>
+<dd>plus (+). <em>size</em> is diameter of circumscribing circle.</dd>
+<dt><strong>-Sa</strong></dt>
+<dd>st<strong>a</strong>r. <em>size</em> is diameter of circumscribing circle.</dd>
+<dt><strong>-Sb</strong>[<em>size</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>|<strong>u</strong>]][<strong>b</strong>[<em>base</em>]]</dt>
+<dd>Vertical <strong>b</strong>ar extending from <em>base</em> to y. <em>size</em> is bar width.
+Append <strong>u</strong> if <em>size</em> is in x-units [Default is plot-distance units].
+By default, <em>base</em> = ymin. Append <strong>b</strong>[<em>base</em>] to change this
+value. If <em>base</em> is not appended then we read it from the last input
+data column.</dd>
+<dt><strong>-SB</strong>[<em>size</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>|<strong>u</strong>]][<strong>b</strong>[<em>base</em>]]</dt>
+<dd>Horizontal <strong>b</strong>ar extending from <em>base</em> to x. <em>size</em> is bar width.
+Append <strong>u</strong> if <em>size</em> is in y-units [Default is plot-distance units].
+By default, <em>base</em> = xmin. Append <strong>b</strong>[<em>base</em>] to change this
+value. If <em>base</em> is not appended then we read it from the last input
+data column.</dd>
+<dt><strong>-Sc</strong></dt>
+<dd><strong>c</strong>ircle. <em>size</em> is diameter of circle.</dd>
+<dt><strong>-Sd</strong></dt>
+<dd><strong>d</strong>iamond. <em>size</em> is diameter of circumscribing circle.</dd>
+<dt><strong>-Se</strong></dt>
+<dd><strong>e</strong>llipse. Direction (in degrees counter-clockwise from horizontal),
+major_axis, and minor_axis must be found in columns 3, 4, and 5.</dd>
+<dt><strong>-SE</strong></dt>
+<dd>Same as <strong>-Se</strong>, except azimuth (in degrees east of north) should be
+given instead of direction. The azimuth will be mapped into an angle
+based on the chosen map projection (<strong>-Se</strong> leaves the directions
+unchanged.)  Furthermore, the axes lengths must be given in geographical instead of
+plot-distance units. An exception occurs for a linear projection in
+which we assume the ellipse axes are given in the same units as <strong>-R</strong>.
+For degenerate ellipses (circles) with just the diameter given, use <strong>-SE-</strong>.
+The diameter is excepted to be given in column 3.  Alternatively, append
+the desired diameter to <strong>-SE-</strong> and this fixed diameter is used instead.
+For allowable geographical units, see UNITS.</dd>
+<dt><strong>-Sf</strong><em>gap</em>[/<em>size</em>][<strong>+l</strong>|<strong>+r</strong>][<strong>+b+c+f+s+t</strong>][<strong>+o</strong><em>offset</em>][<strong>+p</strong>[<em>pen</em>]].</dt>
+<dd>Draw a <strong>f</strong>ront. Supply distance <em>gap</em> between symbols and symbol <em>size</em>. If <em>gap</em> is
+negative, it is interpreted to mean the number of symbols along the
+front instead. If <em>size</em> is missing it is set to 30% of the <em>gap</em>, except
+when <em>gap</em> is negative and <em>size</em> is thus required.  Append <strong>+l</strong> or
+<strong>+r</strong> to plot symbols on the left or
+right side of the front [Default is centered]. Append <strong>+</strong><em>type</em> to
+specify which symbol to plot: <strong>b</strong>ox, <strong>c</strong>ircle, <strong>f</strong>ault,
+<strong>s</strong>lip, or <strong>t</strong>riangle. [Default is <strong>f</strong>ault]. Slip means
+left-lateral or right-lateral strike-slip arrows (centered is not an
+option). The <strong>+s</strong> modifier optionally accepts the angle used to draw
+the vector [20].  Alternatively, use <strong>+S</strong> which draws arcuate arrow
+heads.  Append <strong>+o</strong><em>offset</em> to offset the first symbol from the
+beginning of the front by that amount [0]. The chosen symbol is drawn
+with the same pen as set for the line (i.e., via <strong>-W</strong>).  The use an
+alternate pen, append <strong>+p</strong><em>pen</em>.  To skip the outline, just use
+<strong>+p</strong>.  Note: By placing <strong>-Sf</strong>
+options in the segment header you can change the front types on a
+segment-by-segment basis.</dd>
+<dt><strong>-Sg</strong></dt>
+<dd>octa<strong>g</strong>on. <em>size</em> is diameter of circumscribing circle.</dd>
+<dt><strong>-Sh</strong></dt>
+<dd><strong>h</strong>exagon. <em>size</em> is diameter of circumscribing circle.</dd>
+<dt><strong>-Si</strong></dt>
+<dd><strong>i</strong>nverted triangle. <em>size</em> is diameter of circumscribing circle.</dd>
+<dt><strong>-Sj</strong></dt>
+<dd>Rotated rectangle. Direction (in degrees counter-clockwise from
+horizontal), x-dimension, and y-dimension must be found in columns 3, 4,
+and 5.</dd>
+<dt><strong>-SJ</strong></dt>
+<dd>Same as <strong>-Sj</strong>, except azimuth (in degrees east of north) should be
+given instead of direction. The azimuth will be mapped into an angle
+based on the chosen map projection (<strong>-Sj</strong> leaves the directions
+unchanged.) Furthermore, the dimensions must be given in geographical instead of
+plot-distance units.
+For a degenerate rectangle (square) with one dimension given, use <strong>-SJ-</strong>.
+The dimension is excepted to be given in column 3.  Alternatively, append
+the dimension diameter to <strong>-SJ-</strong> and this fixed dimension is used instead.
+An exception occurs for a linear projection in
+which we assume the dimensions are given in the same units as <strong>-R</strong>.
+For allowable geographical units, see UNITS.</dd>
+<dt><strong>-Sk</strong></dt>
+<dd><strong>k</strong>ustom symbol. Append <em>name</em>/<em>size</em>, and we will look for a
+definition file called <em>name</em>.def in (1) the current
+directory or (2) in ~/.gmt or (3) in
+<strong>$GMT_SHAREDIR</strong>/custom. The symbol as defined in that file is of size
+1.0 by default; the appended <em>size</em> will scale symbol accordingly. Users
+may add their own custom *.def files; see CUSTOM SYMBOLS below.</dd>
+<dt><strong>-Sl</strong></dt>
+<dd><strong>l</strong>etter or text string (less than 256 characters). Give size, and
+append <strong>+t</strong><em>string</em> after the size. Note that the size is only approximate;
+no individual scaling is done for different characters. Remember to
+escape special characters like *. Optionally, you may append <strong>+f</strong><em>font</em>
+to select a particular font [Default is <a class="reference internal" href="gmt.conf.html#font-annot-primary"><span class="std std-ref">FONT_ANNOT_PRIMARY</span></a>] and
+<strong>+j</strong><em>justify</em> to change justification [CM].</dd>
+<dt><strong>-Sm</strong></dt>
+<dd><strong>m</strong>ath angle arc, optionally with one or two arrow heads [Default is
+no arrow heads]. The <em>size</em> is the length of the vector head. Arc width
+is set by <strong>-W</strong>. The radius of the arc and its start and stop
+directions (in degrees counter-clockwise from horizontal) must be given
+in columns 3-5. See VECTOR ATTRIBUTES for specifying other attributes.</dd>
+<dt><strong>-SM</strong></dt>
+<dd>Same as <strong>-Sm</strong> but switches to straight angle symbol if angles subtend
+90 degrees exactly.</dd>
+<dt><strong>-Sn</strong></dt>
+<dd>pe<strong>n</strong>tagon. <em>size</em> is diameter of circumscribing circle.</dd>
+<dt><strong>-Sp</strong></dt>
+<dd><strong>p</strong>oint. No size needs to be specified (1 pixel is used).</dd>
+<dt><strong>-Sq</strong></dt>
+<dd><p class="first"><strong>q</strong>uoted line, i.e., lines with annotations such as contours. Append
+[<strong>d</strong>|<strong>D</strong>|<strong>f</strong>|<strong>l</strong>|<strong>L</strong>|<strong>n</strong>|<strong>N</strong>|<strong>s</strong>|<strong>S</strong>|<strong>x</strong>|<strong>X</strong>]<em>info</em>[:<em>labelinfo</em>].
+The required argument controls the placement of labels along the quoted
+lines. Choose among six controlling algorithms:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt><strong>d</strong><em>dist</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>] or <strong>D</strong><em>dist</em>[<strong>d</strong>|<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>m</strong>|<strong>M</strong>|<strong>n</strong>|<strong>s</strong>]</dt>
+<dd>For lower case <strong>d</strong>, give distances between labels on the plot in
+your preferred measurement unit <strong>c</strong> (cm), <strong>i</strong> (inch), or <strong>p</strong>
+(points), while for upper case <strong>D</strong>, specify distances in map units
+and append the unit; choose among <strong>e</strong> (m), <strong>f</strong> (foot), <strong>k</strong>
+(km), <strong>M</strong> (mile), <strong>n</strong> (nautical mile) or <strong>u</strong> (US survey foot),
+and <strong>d</strong> (arc degree), <strong>m</strong> (arc minute), or <strong>s</strong> (arc second).
+[Default is 10<strong>c</strong> or 4<strong>i</strong>]. As an option, you can append
+/<em>fraction</em> which is used to place the very first label for each
+contour when the cumulative along-contour distance equals <em>fraction
+* dist</em> [0.25].</dd>
+<dt><strong>f</strong><em>ffile.d</em></dt>
+<dd>Reads the ASCII file <em>ffile.d</em> and places labels at locations in the
+file that matches locations along the quoted lines. Inexact matches
+and points outside the region are skipped.</dd>
+<dt><strong>l</strong>|<strong>L</strong><em>line1</em>[,<em>line2</em>,…]</dt>
+<dd>Give the coordinates of the end points for one or more comma-separated straight line segments.
+Labels will be placed where these lines intersect the quoted lines.
+The format of each <em>line</em> specification is <em>start_lon</em>/<em>start_lat</em>/<em>stop_lon</em>/<em>stop_lat</em>.
+Both <em>start_lon</em>/<em>start_lat</em> and <em>stop_lon</em>/<em>stop_lat</em> can be replaced by a 2-character key
+that uses the justification format employed in <strong>pstext</strong> to indicate a point on the frame or
+center of the map, given as [LCR][BMT].
+<strong>L</strong> will interpret the point pairs as defining great circles [Default is straight line].</dd>
+<dt><strong>n</strong>|<strong>N</strong><em>n_label</em></dt>
+<dd>Specifies the number of equidistant labels for quoted lines
+[1]. Upper case <strong>N</strong> starts labeling exactly at the start of the
+line [Default centers them along the line]. <strong>N</strong>-1 places one
+justified label at start, while <strong>N</strong>+1 places one justified label
+at the end of quoted lines. Optionally, append
+/<em>min_dist</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>] to enforce that a
+minimum distance separation between successive labels is enforced.</dd>
+<dt><strong>s</strong>|<strong>S</strong><em>n_label</em></dt>
+<dd>Same as <strong>n</strong>|<strong>N</strong><em>n_label</em> but implies that the input data are
+first to be converted into a series of 2-point line segments before plotting.</dd>
+<dt><strong>x</strong>|<strong>X</strong><em>xfile.d</em></dt>
+<dd>Reads the multisegment file <em>xfile.d</em> and places labels at the
+intersections between the quoted lines and the lines in <em>xfile.d</em>.
+<strong>X</strong> will resample the lines first along great-circle arcs.
+In addition, you may optionally append
+<strong>+r</strong><em>radius</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>] to set a minimum
+label separation in the x-y plane [no limitation].</dd>
+</dl>
+<p>The optional <em>labelinfo</em> controls the specifics of the label
+formatting and consists of a concatenated string made up of any of
+the following control arguments:</p>
+<dl class="docutils">
+<dt><strong>+a</strong><em>angle</em></dt>
+<dd>For annotations at a fixed angle, <strong>+an</strong> for line-normal, or
+<strong>+ap</strong> for line-parallel [Default].</dd>
+<dt><strong>+c</strong><em>dx</em>[/<em>dy</em>]</dt>
+<dd>Sets the clearance between label and optional text box. Append
+<strong>c</strong>|<strong>i</strong>|<strong>p</strong> to specify the unit or % to indicate a
+percentage of the label font size [15%].</dd>
+<dt><strong>+d</strong></dt>
+<dd>Turns on debug which will draw helper points and lines to illustrate
+the workings of the quoted line setup.</dd>
+<dt><strong>+e</strong></dt>
+<dd>Delay the plotting of the text. This is used to build a clip path
+based on the text, then lay down other overlays while that clip path
+is in effect, then turning of clipping with psclip <strong>-Cs</strong> which
+finally plots the original text.</dd>
+<dt><strong>+f</strong><em>font</em></dt>
+<dd>Sets the desired font [Default <a class="reference internal" href="gmt.conf.html#font-annot-primary"><span class="std std-ref">FONT_ANNOT_PRIMARY</span></a> with its
+size changed to 9p].</dd>
+<dt><strong>+g</strong>[<em>color</em>]</dt>
+<dd>Selects opaque text boxes [Default is transparent]; optionally
+specify the color [Default is <a class="reference internal" href="gmt.conf.html#ps-page-color"><span class="std std-ref">PS_PAGE_COLOR</span></a>].</dd>
+<dt><strong>+j</strong><em>just</em></dt>
+<dd>Sets label justification [Default is MC]. Ignored when
+<strong>-SqN</strong>|<strong>n</strong>+|-1 is used.</dd>
+<dt><strong>+l</strong><em>label</em></dt>
+<dd>Sets the constant label text.</dd>
+<dt><strong>+L</strong><em>flag</em></dt>
+<dd><p class="first">Sets the label text according to the specified flag:</p>
+<p class="last"><strong>+Lh</strong>
+Take the label from the current segment header (first scan for
+an embedded <strong>-L</strong><em>label</em> option, if not use the first word
+following the segment flag). For multiple-word labels, enclose
+entire label in double quotes.
+<strong>+Ld</strong>
+Take the Cartesian plot distances along the line as the label;
+append <strong>c</strong>|<strong>i</strong>|<strong>p</strong> as the unit [Default is
+<a class="reference internal" href="gmt.conf.html#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a>].
+<strong>+LD</strong>
+Calculate actual map distances; append
+<strong>d|e|f|k|n|M|n|s</strong> as the unit [Default is
+<strong>d</strong>(egrees), unless label placement was based on map
+distances along the lines in which case we use the same unit
+specified for that algorithm]. Requires a map projection to be
+used.
+<strong>+Lf</strong>
+Use text after the 2nd column in the fixed label location file
+as the label. Requires the fixed label location setting.
+<strong>+Lx</strong>
+As <strong>+Lh</strong> but use the headers in the <em>xfile.d</em> instead.
+Requires the crossing file option.</p>
+</dd>
+<dt><strong>+n</strong><em>dx</em>[/<em>dy</em>]</dt>
+<dd>Nudges the placement of labels by the specified amount (append
+<strong>c</strong>|<strong>i</strong>|<strong>p</strong> to specify the units). Increments
+are considered in the coordinate system defined by the
+orientation of the line; use <strong>+N</strong> to force increments in the
+plot x/y coordinates system [no nudging]. Not allowed with <strong>+v</strong>.</dd>
+<dt><strong>+o</strong></dt>
+<dd>Selects rounded rectangular text box [Default is rectangular].
+Not applicable for curved text (<strong>+v</strong>) and only makes sense for
+opaque text boxes.</dd>
+<dt><strong>+p</strong>[<em>pen</em>]</dt>
+<dd>Draws the outline of text boxes [Default is no outline];
+optionally specify pen for outline [Default is width = 0.25p,
+color = black, style = solid].</dd>
+<dt><strong>+r</strong><em>min_rad</em></dt>
+<dd>Will not place labels where the line’s radius of curvature is
+less than <em>min_rad</em> [Default is 0].</dd>
+<dt><strong>+t</strong>[<em>file</em>]</dt>
+<dd>Saves line label x, y, and text to <em>file</em> [Line_labels.txt].
+Use <strong>+T</strong> to save x, y, angle, text instead.</dd>
+<dt><strong>+u</strong><em>unit</em></dt>
+<dd>Appends <em>unit</em> to all line labels. If <em>unit</em> starts with a
+leading hyphen (-) then there will be no space between label
+value and the unit. [Default is no unit].</dd>
+<dt><strong>+v</strong></dt>
+<dd>Specifies curved labels following the path [Default is straight
+labels].</dd>
+<dt><strong>+w</strong></dt>
+<dd>Specifies how many (<em>x</em>,<em>y</em>) points will be used to estimate
+label angles [Default is 10].</dd>
+<dt><strong>+x</strong>[<em>first</em>,<em>last</em>]</dt>
+<dd>Append the suffices <em>first</em> and <em>last</em> to the corresponding labels.
+This modifier is only available when <strong>-SqN2</strong> is in effect.  Used
+to annotate the start and end of a line (e.g., a cross-section),
+append two text strings separated by comma
+[Default just adds a prime to the second label].</dd>
+<dt><strong>+=</strong><em>prefix</em></dt>
+<dd>Prepends <em>prefix</em> to all line labels. If <em>prefix</em> starts with a
+leading hyphen (-) then there will be no space between label
+value and the prefix. [Default is no prefix].</dd>
+</dl>
+</div></blockquote>
+<p class="last">Note: By placing <strong>-Sq</strong> options in the segment header you can change
+the quoted text attributes on a segment-by-segment basis.</p>
+</dd>
+<dt><strong>-Sr</strong></dt>
+<dd><strong>r</strong>ectangle. No size needs to be specified, but the x- and
+y-dimensions must be found in columns 3 and 4.</dd>
+<dt><strong>-SR</strong></dt>
+<dd><strong>R</strong>ounded rectangle. No size needs to be specified, but the x-
+and y-dimensions and corner radius must be found in columns 3, 4,
+and 5.</dd>
+<dt><strong>-Ss</strong></dt>
+<dd><strong>s</strong>quare. <em>size</em> is diameter of circumscribing circle.</dd>
+<dt><strong>-St</strong></dt>
+<dd><strong>t</strong>riangle. <em>size</em> is diameter of circumscribing circle.</dd>
+<dt><strong>-Sv</strong></dt>
+<dd><strong>v</strong>ector. Direction (in degrees counter-clockwise from
+horizontal) and length must be found in columns 3 and 4, and <em>size</em>,
+if not specified on the command-line, should be  present in column 5.
+The <em>size</em> is the length of the vector head. Vector width is set by <strong>-W</strong>.
+See VECTOR ATTRIBUTES for specifying other attributes.</dd>
+<dt><strong>-SV</strong></dt>
+<dd>Same as <strong>-Sv</strong>, except azimuth (in degrees east of north) should be
+given instead of direction. The azimuth will be mapped into an angle
+based on the chosen map projection (<strong>-Sv</strong> leaves the directions
+unchanged.) See VECTOR ATTRIBUTES for specifying other attributes.</dd>
+<dt><strong>-Sw</strong></dt>
+<dd>pie <strong>w</strong>edge. Start and stop directions (in degrees
+counter-clockwise from horizontal) for pie slice must be found in
+columns 3 and 4.  Append <strong>+a</strong> to just draw the arc line or <strong>+r</strong>
+to just draw the radial lines.</dd>
+<dt><strong>-SW</strong></dt>
+<dd>Same as <strong>-Sw</strong>, except azimuths (in degrees east of north) should
+be given instead of the two directions. The azimuths will be mapped
+into angles based on the chosen map projection (<strong>-Sw</strong> leaves the
+directions unchanged.)  For geo-wedges, specify <em>size</em> as a radial
+geographical distance.  For allowable geographical units, see UNITS.
+Append <strong>+a</strong> to just draw the arc or <strong>+r</strong> to just draw the radial lines.</dd>
+<dt><strong>-Sx</strong></dt>
+<dd>cross (x). <em>size</em> is diameter of circumscribing circle.</dd>
+<dt><strong>-Sy</strong></dt>
+<dd>y-dash (|). <em>size</em> is the length of a short vertical (y-dir) line
+segment.</dd>
+<dt><strong>-S=</strong></dt>
+<dd>geovector. Azimuth (in degrees east from north) and geographical length
+must be found in columns 3 and 4. The <em>size</em> is the length of the
+vector head. Vector width is set by <strong>-W</strong>. See VECTOR ATTRIBUTES
+for specifying attributes.  Note: Geovector stems are drawn as thin
+filled polygons and hence pen attributes like dashed and dotted are
+not available.  For allowable geographical units, see UNITS.</dd>
+<dt><strong>-S~</strong></dt>
+<dd><p class="first">decorated line, i.e., lines with symbols along them. Append
+[<strong>d</strong>|<strong>D</strong>|<strong>f</strong>|<strong>l</strong>|<strong>L</strong>|<strong>n</strong>|<strong>N</strong>|<strong>s</strong>|<strong>S</strong>|<strong>x</strong>|<strong>X</strong>]<em>info</em>[:<em>symbolinfo</em>].
+The required argument controls the placement of symbols along the decorated
+lines. Choose among six controlling algorithms:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt><strong>d</strong><em>dist</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>] or <strong>D</strong><em>dist</em>[<strong>d</strong>|<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>m</strong>|<strong>M</strong>|<strong>n</strong>|<strong>s</strong>]</dt>
+<dd>For lower case <strong>d</strong>, give distances between symbols on the plot in
+your preferred measurement unit <strong>c</strong> (cm), <strong>i</strong> (inch), or <strong>p</strong>
+(points), while for upper case <strong>D</strong>, specify distances in map units
+and append the unit; choose among <strong>e</strong> (m), <strong>f</strong> (foot), <strong>k</strong>
+(km), <strong>M</strong> (mile), <strong>n</strong> (nautical mile) or <strong>u</strong> (US survey foot),
+and <strong>d</strong> (arc degree), <strong>m</strong> (arc minute), or <strong>s</strong> (arc second).
+[Default is 10<strong>c</strong> or 4<strong>i</strong>]. As an option, you can append
+/<em>fraction</em> which is used to place the very first symbol for each
+line when the cumulative along-line distance equals <em>fraction
+* dist</em> [0.25].</dd>
+<dt><strong>f</strong><em>ffile.d</em></dt>
+<dd>Reads the ASCII file <em>ffile.d</em> and places symbols at locations in the
+file that matches locations along the decorated lines. Inexact matches
+and points outside the region are skipped.</dd>
+<dt><strong>l</strong>|<strong>L</strong><em>line1</em>[,<em>line2</em>,…]</dt>
+<dd>Give the coordinates of the end points for one or more comma-separated straight line segments.
+Symbols will be placed where these lines intersect the decorated lines.
+The format of each <em>line</em> specification is <em>start_lon</em>/<em>start_lat</em>/<em>stop_lon</em>/<em>stop_lat</em>.
+Both <em>start_lon</em>/<em>start_lat</em> and <em>stop_lon</em>/<em>stop_lat</em> can be replaced by a 2-character key
+that uses the justification format employed in <strong>pstext</strong> to indicate a point on the frame or
+center of the map, given as [LCR][BMT].
+<strong>L</strong> will interpret the point pairs as defining great circles [Default is straight line].</dd>
+<dt><strong>n</strong>|<strong>N</strong><em>n_symbol</em></dt>
+<dd>Specifies the number of equidistant symbols for decorated lines
+[1]. Upper case <strong>N</strong> starts placing symbols exactly at the start of the
+line [Default centers them along the line]. <strong>N</strong>-1 places one symbol
+at start, while <strong>N</strong>+1 places one symbol
+at the end of decorated lines. Optionally, append
+/<em>min_dist</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>] to enforce that a
+minimum distance separation between successive symbols is enforced.</dd>
+<dt><strong>s</strong>|<strong>S</strong><em>n_symbol</em></dt>
+<dd>Same as <strong>n</strong>|<strong>N</strong><em>n_symbol</em> but implies that the input data are
+first to be converted into a series of 2-point line segments before plotting.</dd>
+<dt><strong>x</strong>|<strong>X</strong><em>xfile.d</em></dt>
+<dd>Reads the multisegment file <em>xfile.d</em> and places symbols at the
+intersections between the decorated lines and the lines in <em>xfile.d</em>.
+<strong>X</strong> will resample the lines first along great-circle arcs.</dd>
+</dl>
+<p>The optional <em>symbolinfo</em> controls the specifics of the symbol selection and
+formatting and consists of a concatenated string made up of any of
+the following control arguments:</p>
+<dl class="docutils">
+<dt><strong>+a</strong><em>angle</em></dt>
+<dd>For symbols at a fixed angle, <strong>+an</strong> for line-normal, or
+<strong>+ap</strong> for line-parallel [Default].</dd>
+<dt><strong>+d</strong></dt>
+<dd>Turns on debug which will draw helper points and lines to illustrate
+the workings of the decorated line setup.</dd>
+<dt><strong>+g</strong>[<em>fill</em>]</dt>
+<dd>Sets the symbol fill [no fill].</dd>
+<dt><strong>+n</strong><em>dx</em>[/<em>dy</em>]</dt>
+<dd>Nudges the placement of symbols by the specified amount (append
+<strong>c</strong>|<strong>i</strong>|<strong>p</strong> to specify the units). Increments
+are considered in the coordinate system defined by the
+orientation of the line; use <strong>+N</strong> to force increments in the
+plot x/y coordinates system [no nudging].</dd>
+<dt><strong>+p</strong>[<em>pen</em>]</dt>
+<dd>Draws the outline of symbols [Default is no outline];
+optionally specify pen for outline [Default is width = 0.25p,
+color = black, style = solid].</dd>
+<dt><strong>+s</strong>&lt;symbol&gt;&lt;size&gt;</dt>
+<dd>Specifies the code and size of the decorative symbol.</dd>
+<dt><strong>+w</strong></dt>
+<dd>Specifies how many (<em>x</em>,<em>y</em>) points will be used to estimate
+symbol angles [Default is 10].</dd>
+</dl>
+</div></blockquote>
+<p class="last">Note: By placing <strong>-S~</strong> options in the segment header you can change
+the decorated lines on a segment-by-segment basis.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong></dt>
+<dd>Ignore all input files, including standard input. This is the same
+as specifying /dev/null (or NUL for Windows users) as input file.
+Use this to activate only the options that are not related to
+plotting of lines or symbols, such as <strong>psxy</strong> <strong>-R</strong> <strong>-J</strong> <strong>-O</strong>
+<strong>-T</strong> to terminate a sequence of GMT plotting commands without
+producing any plotting output.</dd>
+</dl>
+<dl class="docutils" id="u">
+<dt><strong>-U</strong>[[<em>just</em>]/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Draw GMT time stamp logo on plot.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong>[<em>pen</em>][<em>attr</em>] <a class="reference internal" href="GMT_Docs.html#wpen-attrib"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set pen attributes for lines or the outline of symbols [Defaults:
+width = default, color = black, style = solid]. If the modifier <strong>+cl</strong>
+is appended then the color of the line are taken from the CPT (see
+<strong>-C</strong>). If instead modifier <strong>+cf</strong> is appended then the color from the cpt
+file is applied to symbol fill.  Use just <strong>+c</strong> for both effects.
+You can also append one or more additional line attribute modifiers:
+<strong>+o</strong><em>offset</em><strong>u</strong> will start and stop drawing the line the given distance offsets
+from the end point.  Append unit <strong>u</strong> from <strong>c</strong>|<strong>i</strong>|<strong>p</strong> to
+indicate plot distance on the map or append map distance units instead (see below)
+[Cartesian distances];
+<strong>+s</strong> will draw the line using a <em>PostScript</em> Bezier spline [linear spline];
+<strong>+v</strong><em>vspecs</em> will place a vector head at the ends of the lines.  You can
+use <strong>+vb</strong> and <strong>+ve</strong> to specify separate vector specs at each end [shared specs].
+Because <strong>+v</strong> may take additional modifiers it must necessarily be given
+at the end of the pen specification.
+See the <a class="reference internal" href="#vec-attributes"><span class="std std-ref">Vector Attributes</span></a> for more information.</dd>
+</dl>
+<p id="x"><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]</p>
+<dl class="docutils">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]] <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Shift plot origin.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input. [Default is the required number of columns given the chosen settings].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-a</strong><em>col</em>=<em>name</em>[<em>…</em>] <a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set aspatial column associations <em>col</em>=<em>name</em>.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-di</strong><em>nodata</em> <a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] <a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine data gaps and line breaks. The <strong>-g</strong> option is ignored if <strong>-S</strong> is set.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select perspective view.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set PDF transparency level in percent.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc9">Units</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
+and <strong>u</strong> for US survey foot. By default we compute such distances using
+a spherical approximation with great circles. Prepend <strong>-</strong> to a
+distance (or the unit is no distance is given) to perform “Flat Earth”
+calculations (quicker but less accurate) or prepend <strong>+</strong> to perform
+exact geodesic calculations (slower but more accurate).</p>
+</div>
+<div class="section" id="vector-attributes">
+<span id="vec-attributes"></span><h2>Vector Attributes<a class="headerlink" href="#vector-attributes" title="Permalink to this headline">¶</a></h2>
+<p>Several modifiers may be appended to the vector-producing options to
+specify the placement of vector heads, their shapes, and the
+justification of the vector. Below, left and right refers to the
+side of the vector line when viewed from the start point to the
+end point of the segment:</p>
+<blockquote>
+<div><p><strong>+a</strong><em>angle</em> sets the angle of the vector head apex [30].</p>
+<p><strong>+b</strong> places a vector head at the beginning of the vector path [none].
+Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
+<strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain arrow,
+and <strong>I</strong> for plain tail.
+Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
+side of this head [both sides].</p>
+<p><strong>+e</strong> places a vector head at the end of the vector path [none].
+Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
+<strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain arrow,
+and <strong>I</strong> for plain tail.
+Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
+side of this head [both sides].</p>
+<p><strong>+g</strong>-|<em>fill</em> turns off vector head fill (if -) or sets the vector
+head fill [Default fill is used, which may be no fill].</p>
+<p><strong>+h</strong><em>shape</em> sets the shape of the vector head (range -2/2). Default
+is controlled by <a class="reference internal" href="gmt.conf.html#map-vector-shape"><span class="std std-ref">MAP_VECTOR_SHAPE</span></a> [0].</p>
+<p><strong>+l</strong> draws half-arrows, using only the left side of specified heads [both sides].</p>
+<p><strong>+m</strong> places a vector head at the mid-point the vector path [none].
+Append <strong>f</strong> or <strong>r</strong> for forward or reverse direction of the vector [forward].
+Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle, or
+<strong>a</strong> for arrow head [Default].
+Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
+side of this head [both sides].  Cannot be combined with <strong>+b</strong> or <strong>+e</strong>.</p>
+<p><strong>+n</strong><em>norm</em> scales down vector attributes (pen thickness, head size)
+with decreasing length, where vectors shorter than <em>norm</em> will have
+their attributes scaled by length/<em>norm</em> [arrow attributes remains
+invariant to length].</p>
+<p><strong>+o</strong><em>plon</em>/<em>plat</em> specifies the oblique pole for the great or
+small circles.  Only needed for great circles if <strong>+q</strong> is given.</p>
+<p><strong>+p</strong>[-][<em>pen</em>] sets the vector pen attributes. If <em>pen</em> has a
+leading - then the head outline is not drawn. [Default pen is used, and
+head outline is drawn]</p>
+<p><strong>+q</strong> means the input <em>angle</em>, <em>length</em> data instead represent the <em>start</em> and <em>stop</em>
+opening angles of the arc segment relative to the given point.</p>
+<p><strong>+r</strong> draws half-arrows, using only the right side of specified heads [both sides].</p>
+<p><strong>+t</strong>[<strong>b</strong>|<strong>e</strong>]<em>trim</em> will shift the beginning or end point (or both)
+along the vector segment by the given <em>trim</em>; append suitable unit. If the modifiers
+<strong>b</strong>|<strong>e</strong> are not used then <em>trim</em> may be two values separated by a slash,
+which is used to specify different trims for the two ends.  Positive trims
+will shorted the vector while negative trims will lengthen it [no trim].</p>
+</div></blockquote>
+<p>In addition, all but circular vectors may take these modifiers:</p>
+<blockquote>
+<div><p><strong>+j</strong><em>just</em> determines how the input <em>x</em>,<em>y</em> point relates to the
+vector. Choose from <strong>b</strong>eginning [default], <strong>e</strong>nd, or <strong>c</strong>enter.</p>
+<p><strong>+s</strong> means the input <em>angle</em>, <em>length</em> are instead the <em>x</em>, <em>y</em>
+coordinates of the vector end point.</p>
+</div></blockquote>
+<p>Finally, Cartesian vectors may take these modifiers:</p>
+<blockquote>
+<div><strong>+z</strong><em>scale</em>[<em>unit</em>] expects input <em>dx</em>,<em>dy</em> vector components and
+uses the <em>scale</em> to convert to polar coordinates with length in given unit.</div></blockquote>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To plot solid red circles (diameter = 0.2 cm) at the positions listed
+in the file DSDP.txt on a Mercator map at 0.3 cm/degree of the area 100E to
+160E, 20S to 30N, with automatic tick-marks and gridlines, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">psxy</span> <span class="n">DSDP</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">R100</span><span class="o">/</span><span class="mi">160</span><span class="o">/-</span><span class="mi">20</span><span class="o">/</span><span class="mi">30</span> <span class="o">-</span><span class="n">Jm0</span><span class="o">.</span><span class="mi">3</span><span class="n">c</span> <span class="o">-</span><span class="n">Sc0</span><span class="o">.</span><span class="mi">2</span><span class="n">c</span> <span class="o">-</span><span class="n">Gred</span> <span class="o">-</span><span class="n">Bafg</span> <span class="o">&gt;</span> <span class="nb">map</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To plot the xyz values in the file quakes.xyzm as circles with size
+given by the magnitude in the 4th column and color based on the depth in
+the third using the CPT rgb.cpt on a linear map, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">psxy</span> <span class="n">quakes</span><span class="o">.</span><span class="n">xyzm</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mi">1000</span><span class="o">/</span><span class="mi">0</span><span class="o">/</span><span class="mi">1000</span> <span class="o">-</span><span class="n">JX6i</span> <span class="o">-</span><span class="n">Sc</span> <span class="o">-</span><span class="n">Crgb</span> <span class="o">-</span><span class="n">B200</span> <span class="o">&gt;</span> <span class="nb">map</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To plot the file trench.txt on a Mercator map, with white triangles with
+sides 0.25 inch on the left side of the line, spaced every 0.8 inch, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">psxy</span> <span class="n">trench</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">R150</span><span class="o">/</span><span class="mi">200</span><span class="o">/</span><span class="mi">20</span><span class="o">/</span><span class="mi">50</span> <span class="o">-</span><span class="n">Jm0</span><span class="o">.</span><span class="mi">15</span><span class="n">i</span> <span class="o">-</span><span class="n">Sf0</span><span class="o">.</span><span class="mi">8</span><span class="n">i</span><span class="o">/</span><span class="mf">0.1</span><span class="n">i</span><span class="o">+</span><span class="n">l</span><span class="o">+</span><span class="n">t</span> <span class="o">-</span><span class="n">Gwhite</span> <span class="o">-</span><span class="n">W</span> <span class="o">-</span><span class="n">B10</span> <span class="o">&gt;</span> <span class="nb">map</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To plot the data in the file misc.d as symbols determined by the code in
+the last column, and with size given by the magnitude in the 4th column,
+and color based on the third column via the CPT chrome on a
+linear map, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">psxy</span> <span class="n">misc</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mi">100</span><span class="o">/-</span><span class="mi">50</span><span class="o">/</span><span class="mi">100</span> <span class="o">-</span><span class="n">JX6i</span> <span class="o">-</span><span class="n">S</span> <span class="o">-</span><span class="n">Cchrome</span> <span class="o">-</span><span class="n">B20</span> <span class="o">&gt;</span> <span class="nb">map</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>If you need to place vectors on a plot you can choose among
+straight Cartesian vectors, math circular vectors, or geo-vectors (these
+form small or great circles on the Earth).  These can have optional heads at either
+end, and heads may be the traditional arrow, a circle, or a terminal cross-line.
+To place a few vectors with
+a circle at the start location and an arrow head at the end, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">psxy</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mi">50</span><span class="o">/-</span><span class="mi">50</span><span class="o">/</span><span class="mi">50</span> <span class="o">-</span><span class="n">JX6i</span> <span class="o">-</span><span class="n">Sv0</span><span class="o">.</span><span class="mi">15</span><span class="n">i</span><span class="o">+</span><span class="n">bc</span><span class="o">+</span><span class="n">ea</span> <span class="o">-</span><span class="n">Gyellow</span> <span class="o">-</span><span class="n">W0</span><span class="o">.</span><span class="mi">5</span><span class="n">p</span> <span class="o">-</span><span class="n">Baf</span> <span class="o">&lt;&lt;</span> <span class="n">EOF</span> <span class="o">&gt;</span> <span class="nb">map</span><span class="o">.</span><span class="n">ps</span>
+<span class="mi">10</span> <span class="mi">10</span> <span class="mi">45</span> <span class="mi">2</span><span class="n">i</span>
+<span class="mi">30</span> <span class="o">-</span><span class="mi">20</span> <span class="mi">0</span> <span class="mf">1.5</span><span class="n">i</span>
+<span class="n">EOF</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To plot vectors (red vector heads, solid stem) from the file data.txt that contains
+record of the form lon, lat, dx, dy, where dx, dy are the Cartesian
+vector components given in user units, and these user units should be converted
+to cm given the scale 3.60, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">psxy</span> <span class="o">-</span><span class="n">R20</span><span class="o">/</span><span class="mi">40</span><span class="o">/-</span><span class="mi">20</span><span class="o">/</span><span class="mi">0</span> <span class="o">-</span><span class="n">JM6i</span> <span class="o">-</span><span class="n">Sv0</span><span class="o">.</span><span class="mi">15</span><span class="n">i</span><span class="o">+</span><span class="n">e</span><span class="o">+</span><span class="n">z3</span><span class="o">.</span><span class="mi">6</span><span class="n">c</span> <span class="o">-</span><span class="n">Gred</span> <span class="o">-</span><span class="n">W0</span><span class="o">.</span><span class="mi">25</span><span class="n">p</span> <span class="o">-</span><span class="n">Baf</span> <span class="n">data</span><span class="o">.</span><span class="n">txt</span> <span class="o">&gt;</span> <span class="nb">map</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="segment-header-parsing">
+<h2>Segment Header Parsing<a class="headerlink" href="#segment-header-parsing" title="Permalink to this headline">¶</a></h2>
+<p>Segment header records may contain one of more of the following options:</p>
+<dl class="docutils">
+<dt><strong>-G</strong><em>fill</em></dt>
+<dd>Use the new <em>fill</em> and turn filling on</dd>
+<dt><strong>-G-</strong></dt>
+<dd>Turn filling off</dd>
+<dt><strong>-G</strong></dt>
+<dd>Revert to default fill (none if not set on command line)</dd>
+<dt><strong>-W</strong><em>pen</em></dt>
+<dd>Use the new <em>pen</em> and turn outline on</dd>
+<dt><strong>-W</strong></dt>
+<dd>Revert to default pen <a class="reference internal" href="gmt.conf.html#map-default-pen"><span class="std std-ref">MAP_DEFAULT_PEN</span></a>
+(if not set on command line)</dd>
+<dt><strong>-W-</strong></dt>
+<dd>Turn outline off</dd>
+<dt><strong>-Z</strong><em>zval</em></dt>
+<dd>Obtain fill via cpt lookup using z-value <em>zval</em></dd>
+<dt><strong>-Z</strong><em>NaN</em></dt>
+<dd>Get the NaN color from the CPT</dd>
+</dl>
+</div>
+<div class="section" id="custom-symbols">
+<h2>Custom Symbols<a class="headerlink" href="#custom-symbols" title="Permalink to this headline">¶</a></h2>
+<p><strong>psxy</strong> allows users to define and plot their own custom symbols. This
+is done by encoding the symbol using our custom symbol macro code
+described in Appendix N. Put all the macro codes for your new symbol in
+a file whose extension must be .def; you may then address the symbol
+without giving the extension (e.g., the symbol file tsunami.def is used
+by specifying <strong>-Sk</strong><em>tsunami/size</em>. The definition file can contain
+any number of plot code records, as well as blank lines and comment
+lines (starting with #). <strong>psxy</strong> will look for the definition files in
+(1) the current directory, (2) the ~/.gmt directory, and
+(3) the <strong>$GMT_SHAREDIR</strong>/custom directory, in that order.
+Freeform polygons (made up of straight line segments and arcs of
+circles) can be designed - these polygons can be painted and filled with
+a pattern. Other standard geometric symbols can also be used. See Appendix
+<a class="reference internal" href="GMT_Docs.html#app-custom-symbols"><span class="std std-ref">Custom Plot Symbols</span></a> for macro definitions.</p>
+</div>
+<div class="section" id="polar-caps">
+<h2>Polar Caps<a class="headerlink" href="#polar-caps" title="Permalink to this headline">¶</a></h2>
+<p><strong>psxy</strong> will automatically determine if a closed polygon is containing
+a geographic pole, i.e., being a polar cap.  Such polygons requires special
+treatment under the hood to ensure proper filling.  Many tools such
+as GIS packages are unable to handle polygons covering a pole and some
+cannot handle polygons crossing the Dateline.  They work around this
+problem by splitting polygons into a west and east polygon or inserting
+artificial helper lines that makes a cut into the pole and back.  Such
+doctored polygons may be misrepresented in GMT.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
+<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
+<a class="reference internal" href="psbasemap.html"><span class="doc">psbasemap</span></a>, <a class="reference internal" href="psxyz.html"><span class="doc">psxyz</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">psxy</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id1">Units</a></li>
+<li><a class="reference internal" href="#vector-attributes">Vector Attributes</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#segment-header-parsing">Segment Header Parsing</a></li>
+<li><a class="reference internal" href="#custom-symbols">Custom Symbols</a></li>
+<li><a class="reference internal" href="#polar-caps">Polar Caps</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pswiggle.html"
+                        title="previous chapter">pswiggle</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="psxyz.html"
+                        title="next chapter">psxyz</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/psxy.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="psxyz.html" title="psxyz"
+             >next</a> </li>
+        <li class="right" >
+          <a href="pswiggle.html" title="pswiggle"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

@@ -1,0 +1,367 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>(32) Draping an image over topography &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(33) Stacking automatically generated cross-profiles" href="ex33.html" />
+    <link rel="prev" title="(31) Using non-default fonts in PostScript" href="ex31.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+        
+      <li>(32) Draping an image over topography</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/gallery/ex32.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="draping-an-image-over-topography">
+<span id="example-32"></span><h1>(32) Draping an image over topography<a class="headerlink" href="#draping-an-image-over-topography" title="Permalink to this headline">¶</a></h1>
+<p>In some cases, it is nice to “drape” an arbitrary image over a
+topographic map. We have already seen how to use
+<a class="reference internal" href="../image.html"><span class="doc">image</span></a> to plot an image anywhere in
+out plot. But here are aim is different, we want to manipulate an image
+to shade it and plot it in 3-D over topography. This example was
+originally created by Stephan Eickschen for a flyer emphasizing the
+historical economical and cultural bond between Brussels, Maastricht and
+Bonn. Obviously, the flag of the European Union came to mind as a good
+“background”.</p>
+<p>To avoid adding large files to this example, some steps have been
+already done. First we get the EU flag directly from the web and convert
+it to a grid with values ranging from 0 to 255, where the higher values
+will become yellow and the lower values blue. This use of
+<a class="reference internal" href="../grdconvert.html"><span class="doc">grdconvert</span></a> requires GDAL support.
+<a class="reference internal" href="../grdedit.html"><span class="doc">grdedit</span></a> then adds the right grid dimension.</p>
+<p>The second step is to reformat the GTOPO30 DEM file to a netCDF grid as
+well and then subsample it at the same pixels as the EU flag. We then
+illuminate the topography grid so we can use it later to emphasize the
+topography. The colors that we will use are those of the proper flag.
+Lower values will become blue and the upper values yellow.</p>
+<p>The call the <a class="reference internal" href="../grdview.html"><span class="doc">grdview</span></a> plots a
+topography map of northwest continental Europe, with the flagged draped
+over it and with shading to show the little topography there is.
+<a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> is used in conjunction with
+<a class="reference internal" href="../grdtrack.html"><span class="doc">grdtrack</span></a> and <a class="reference internal" href="../plot3d.html"><span class="doc">plot3d</span></a> to plot
+borders “at altitude”. Something similar is done at the end to plot some
+symbols and names for cities.</p>
+<p>The script produces the plot in the Figure <cite>fig_ex32</cite>. Note
+that the PNG image of the flag can be downloaded directly in the call
+the <a class="reference internal" href="../grdconvert.html"><span class="doc">grdconvert</span></a>, but we have
+commented that out in the example because it requires compilation with
+GDAL support. You will also see the
+<a class="reference internal" href="../grdcut.html"><span class="doc">grdcut</span></a> command commented out because we
+did not want to store the 58 MB DEM file, whose location is mentioned in the script.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#		GMT EXAMPLE 32</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Illustrate draping of an image over topography</span>
+<span class="c1"># GMT modules:	grdcut, grdedit, grdgradient, grdconvert, grdtrack, grdview</span>
+<span class="c1"># GMT modules:	coast, text, plot3d, makecpt</span>
+<span class="c1"># Unix progs:	cat, rm</span>
+<span class="c1"># Credits:	Original by Stephan Eickschen</span>
+<span class="c1">#</span>
+gmt begin ex32
+	<span class="c1"># Here we get and convert the flag of Europe directly from the web through grdconvert using</span>
+	<span class="c1"># GDAL support. We take into account the dimension of the flag (1000x667 pixels)</span>
+	<span class="c1"># for a ratio of 3x2.</span>
+	<span class="c1"># Because GDAL support will not be standard for most users, we have stored</span>
+	<span class="c1"># the result, @euflag.nc in this directory.</span>
+
+	<span class="nv">Rflag</span><span class="o">=</span>-R3/9/50/54
+	<span class="c1"># gmt grdconvert \</span>
+	<span class="c1">#   http://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/1000px-Flag_of_Europe.svg.png=gd \</span>
+	<span class="c1">#   euflag.nc=ns</span>
+	<span class="c1"># gmt grdedit euflag.nc -fg $Rflag</span>
+
+	<span class="c1"># Now get the topography for the same area from GTOPO30 and store it as@topo_32.nc.</span>
+	<span class="c1"># The DEM file comes from http://eros.usgs.gov/#/Find_Data/Products_and_Data_Available/gtopo30/w020n90</span>
+	<span class="c1"># We make a gradient grid as well, which we will use to &quot;illuminate&quot; the flag.</span>
+
+	<span class="c1"># gmt grdcut W020N90.DEM $Rflag -Gtopo_32.nc=ns</span>
+
+	<span class="c1"># The color map assigns &quot;Reflex Blue&quot; to the lower half of the 0-255 range and</span>
+	<span class="c1"># &quot;Yellow&quot; to the upper half.</span>
+	gmt makecpt -C0/51/153,255/204/0 -T0,127,255 -N
+
+	<span class="c1"># The next step is the plotting of the image.</span>
+	<span class="c1"># We use gmt grdview to plot the topography, euflag.nc to give the color, and illum.nc to give</span>
+	<span class="c1"># the shading.</span>
+	<span class="nv">Rplot</span><span class="o">=</span><span class="nv">$Rflag</span>/-10/790
+	gmt grdview @topo_32.nc -JM13c <span class="nv">$Rplot</span> -C -G@euflag.nc -I+a0/270+ne0.6 -Qc -JZ1c -p157.5/30
+
+	<span class="c1"># We now add borders. Because we have a 3-D plot, we want them to be plotted &quot;at elevation&quot;.</span>
+	<span class="c1"># So we write out the borders, pipe them through grdtrack and then plot them with plot3d.</span>
+	gmt coast <span class="nv">$Rflag</span> -Df -M -N1 <span class="p">|</span> gmt grdtrack -G@topo_32.nc -s+a <span class="p">|</span> gmt plot3d <span class="nv">$Rplot</span> -JZ -p -W1p,white
+
+	<span class="c1"># Finally, we add dots and names for three cities.</span>
+	<span class="c1"># Again, gmt grdtrack is used to put the dots &quot;at elevation&quot;.</span>
+	cat <span class="s">&lt;&lt;- EOF &gt; cities.txt</span>
+<span class="s">	05:41:27 50:51:05 Maastricht</span>
+<span class="s">	04:21:00 50:51:00 Bruxelles</span>
+<span class="s">	07:07:03 50:43:09 Bonn</span>
+<span class="s">	EOF</span>
+
+	gmt grdtrack -G@topo_32.nc cities.txt <span class="p">|</span> gmt plot3d <span class="nv">$Rplot</span> -JZ -p -Sc7p -W1p,white -Gred
+	gmt text -JZ -p -F+f12p,Helvetica-Bold,red+jRM -Dj0.1i/0 cities.txt
+
+	<span class="c1"># cleanup</span>
+	rm -f cities.txt
+gmt end show
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<span id="fig-ex32"></span><a class="reference internal image-reference" href="../_images/ex32.png"><img alt="../_images/ex32.png" src="../_images/ex32.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Draping an image over topography</span></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ex33.html" class="btn btn-neutral float-right" title="(33) Stacking automatically generated cross-profiles" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ex31.html" class="btn btn-neutral float-left" title="(31) Using non-default fonts in PostScript" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

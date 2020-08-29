@@ -1,0 +1,622 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:32 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>XYZ2GRD</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>XYZ2GRD</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#GRID VALUES PRECISION">GRID VALUES PRECISION</a><br>
+<a href="#GRID FILE FORMATS">GRID FILE FORMATS</a><br>
+<a href="#GEOGRAPHICAL AND TIME COORDINATES">GEOGRAPHICAL AND TIME COORDINATES</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">xyz2grd &minus;
+Converting an ASCII or binary table to grid file format</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>xyz2grd</b>
+<i>xyzfile</i> <b>&minus;G</b><i>grdfile</i>
+<b>&minus;I</b><i>xinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>][/<i>yinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>]]
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+[ <b>&minus;A</b>[<b>n|z|u|l</b>] ] [
+<b>&minus;D</b><i>xname</i>/<i>yname</i>/<i>zname</i>/<i>scale</i>/<i>offset</i>/<i>title</i>/<i>remark</i>
+] [ <b>&minus;E</b>[<i>nodata</i>] ] [ <b>&minus;F</b> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;N</b><i>nodata</i> ] [
+<b>&minus;S</b>[<i>zfile</i>] ] [ <b>&minus;V</b> ] [
+<b>&minus;Z</b>[<i>flags</i>] ] [
+<b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;bi</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b><i>colinfo</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>xyz2grd</b>
+reads a z or xyz table and creates a binary grid file.
+<b>xyz2grd</b> will report if some of the nodes are not
+filled in with data. Such unconstrained nodes are set to a
+value specified by the user [Default is NaN]. Nodes with
+more than one value will be set to the average value. As an
+option (using <b>&minus;Z</b>), a 1-column z-table may be
+read assuming all nodes are present (z-tables can be in
+organized in a number of formats, see <b>&minus;Z</b>
+below.) <i><br>
+[xy]zfile</i></p>
+
+<p style="margin-left:22%;">ASCII [or binary] file holding
+z or (x,y,z) values. xyz triplets do not have to be sorted
+(for binary triplets, see <b>&minus;b</b>). 1-column z
+tables must be sorted and the <b>&minus;Z</b> must be
+set).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>grdfile</i> is
+the name of the binary output grid file. (See GRID FILE
+FORMAT below.)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>x_inc</i> [and
+optionally <i>y_inc</i>] is the grid spacing. Optionally,
+append a suffix modifier. <b>Geographical (degrees)
+coordinates</b>: Append <b>m</b> to indicate arc minutes or
+<b>c</b> to indicate arc seconds. If one of the units
+<b>e</b>, <b>k</b>, <b>i</b>, or <b>n</b> is appended
+instead, the increment is assumed to be given in meter, km,
+miles, or nautical miles, respectively, and will be
+converted to the equivalent degrees longitude at the middle
+latitude of the region (the conversion depends on
+<b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b>). If /<i>y_inc</i> is given but set to 0 it
+will be reset equal to <i>x_inc</i>; otherwise it will be
+converted to degrees latitude. <b>All coordinates</b>: If
+<b>=</b> is appended then the corresponding max <i>x</i>
+(<i>east</i>) or <i>y</i> (<i>north</i>) may be slightly
+adjusted to fit exactly the given increment [by default the
+increment may be adjusted slightly to fit the given domain].
+Finally, instead of giving an increment you may specify the
+<i>number of nodes</i> desired by appending <b>+</b> to the
+supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The
+resulting increment value depends on whether you have
+selected a gridline-registered or pixel-registered grid; see
+Appendix B for details. Note: if
+<b>&minus;R</b><i>grdfile</i> is used then grid spacing has
+already been initialized; use <b>&minus;I</b> to override
+the values.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xmin</i>,
+<i>xmax</i>, <i>ymin</i>, and <i>ymax</i> specify the Region
+of interest. For geographic regions, these limits correspond
+to <i>west, east, south,</i> and <i>north</i> and you may
+specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+calendar time coordinates you may either give (a) relative
+time (relative to the selected <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and in the
+selected <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>; append <b>t</b> to
+<b>&minus;JX</b>|<b>x</b>), or (b) absolute time of the form
+[<i>date</i>]<b>T</b>[<i>clock</i>] (append <b>T</b> to
+<b>&minus;JX</b>|<b>x</b>). At least one of <i>date</i> and
+<i>clock</i> must be present; the <b>T</b> is always
+required. The <i>date</i> string must be of the form
+[-]yyyy[-mm[-dd]] (Gregorian calendar) or yyyy[-Www[-d]]
+(ISO week calendar), while the <i>clock</i> string must be
+of the form hh:mm:ss[.xxx]. The use of delimiters and their
+type and positions must be exactly as indicated (however,
+input, output and plot formats are customizable; see
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b>).</p> </td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Add up multiple
+values that belong to the same node (same as
+<b>&minus;Az</b>). Append <b>n</b> to simply count the
+number of data points that were assigned to each node.
+Append <b>l</b> or <b>u</b> to find the lowest (minimum) or
+upper (maximum) value at each node, respectively. [Default
+(no <b>&minus;A</b> option) will calculate mean value].
+Ignored if <b>&minus;Z</b> is given.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Give values for
+<i>xname, yname, zname, scale, offset, title,</i> and
+<i>remark</i>. To leave some of these values untouched,
+specify = as the value. Alternatively, to allow
+&quot;/&quot; to be part of one of the values, use any
+non-alphanumeric character (and not the equal sign) as
+separator by both starting and ending with it. For example:
+<b>&minus;D</b>:<i>xname</i>:<i>yname</i>:<i>zname</i>:<i>scale</i>:<i>offset</i>:<i>title</i>:<i>remark</i>:</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Convert an ESRI
+ArcInfo ASCII interchange grid format file to a <b><A HREF="GMT.html">GMT</A></b>
+grid. Append <i>nodata</i> which is a data value that should
+be set to NaN in the grid [If we find the optional 6th
+record in the file we will use it instead]. The values
+normally given by <b>&minus;R</b>, <b>&minus;I</b>, and
+<b>&minus;F</b> are determined from the ESRI header
+instead.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Force pixel node
+registration [Default is gridline registration]. (Node
+registrations are defined in <b><A HREF="GMT.html">GMT</A></b> Cookbook Appendix B
+on grid file formats.)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped. Not used
+with binary data.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">No data. Set nodes
+with no input xyz triplet to this value [Default is NaN].
+For z-tables, this option is used to replace z-values that
+equal <i>nodata</i> with NaN.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Swap the byte-order
+of the input only. No grid file is produced. You must also
+supply the <b>&minus;Z</b> option. The output is written to
+<i>zfile</i> (or stdout if not supplied).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Read a 1-column
+ASCII [or binary] table. This assumes that all the nodes are
+present and sorted according to specified ordering
+convention contained in <i>flags</i>. If incoming data
+represents rows, make <i>flags</i> start with <b>T</b>(op)
+if first row is y = ymax or <b>B</b>(ottom) if first row is
+y = ymin. Then, append <b>L</b> or <b>R</b> to indicate that
+first element is at left or right end of row. Likewise for
+column formats: start with <b>L</b> or <b>R</b> to position
+first column, and then append <b>T</b> or <b>B</b> to
+position first element in a row. For gridline registered
+grids: If data are periodic in x but the incoming data do
+not contain the (redundant) column at x = xmax, append
+<b>x</b>. For data periodic in y without redundant row at y
+= ymax, append <b>y</b>. Append <b>s</b><i>n</i> to skip the
+first <i>n</i> number of bytes (probably a header). If the
+byte-order needs to be swapped, append <b>w</b>. Select one
+of several data types (all binary except <b>a</b>):</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>A</b> ASCII representation of one or
+more floating point values per record</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>a</b> ASCII representation of a single
+item per record</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>c</b> signed 1-byte character</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>u</b> unsigned 1-byte character</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>h</b> short 2-byte integer</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>H</b> unsigned short 2-byte integer</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>i</b> 4-byte integer</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>l</b> long (4- or 8-byte) integer
+[architecture-dependent!]</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>f</b> 4-byte floating point single
+precision</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>d</b> 8-byte floating point double
+precision</p> </td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Default format
+is scanline orientation of ASCII numbers:
+<b>&minus;ZTLa</b>. Note that <b>&minus;Z</b> only applies
+to 1-column input. The difference between <b>A</b> and
+<b>a</b> is that the latter can decode both
+<i>date</i>T<i>clock</i> and <i>ddd:mm:ss[.xx]</i> formats
+while the former is strictly for regular floating point
+values.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 3 input columns]. This
+option only applies to xyz input files; see <b>&minus;Z</b>
+for z tables.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+</table>
+
+<a name="GRID VALUES PRECISION"></a>
+<h2>GRID VALUES PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Regardless of
+the precision of the input data, GMT programs that create
+grid files will internally hold the grids in 4-byte floating
+point arrays. This is done to conserve memory and
+furthermore most if not all real data can be stored using
+4-byte floating point values. Data with higher precision
+(i.e., double precision values) will lose that precision
+once GMT operates on the grid or writes out new grids. To
+limit loss of precision when processing data you should
+always consider normalizing the data prior to
+processing.</p>
+
+<a name="GRID FILE FORMATS"></a>
+<h2>GRID FILE FORMATS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">By default
+<b><A HREF="GMT.html">GMT</A></b> writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, <b><A HREF="GMT.html">GMT</A></b> is
+able to produce grid files in many other commonly used grid
+file formats and also facilitates so called
+&quot;packing&quot; of grids, writing out floating point
+data as 2- or 4-byte integers. To specify the precision,
+scale and offset, the user should add the suffix
+<b>=</b><i>id</i>[<b>/</b><i>scale</i><b>/</b><i>offset</i>[<b>/</b><i>nan</i>]],
+where <i>id</i> is a two-letter identifier of the grid type
+and precision, and <i>scale</i> and <i>offset</i> are
+optional scale factor and offset to be applied to all grid
+values, and <i>nan</i> is the value used to indicate missing
+data. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and Section 4.17 of the GMT
+Technical Reference and Cookbook for more information.</p>
+
+<p style="margin-left:11%; margin-top: 1em">When writing a
+netCDF file, the grid is stored by default with the variable
+name &quot;z&quot;. To specify another variable name
+<i>varname</i>, append <b>?</b><i>varname</i> to the file
+name. Note that you may need to escape the special meaning
+of <b>?</b> in your shell program by putting a backslash in
+front of it, or by placing the filename and suffix between
+quotes or double quotes.</p>
+
+<a name="GEOGRAPHICAL AND TIME COORDINATES"></a>
+<h2>GEOGRAPHICAL AND TIME COORDINATES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">When the output
+grid type is netCDF, the coordinates will be labeled
+&quot;longitude&quot;, &quot;latitude&quot;, or
+&quot;time&quot; based on the attributes of the input data
+or grid (if any) or on the <b>&minus;f</b> or
+<b>&minus;R</b> options. For example, both <b>&minus;f0x
+&minus;f1t</b> and <b>&minus;R</b> 90w/90e/0t/3t will result
+in a longitude/time grid. When the x, y, or z coordinate is
+time, it will be stored in the grid as relative time since
+epoch as specified by <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> and <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>
+in the .gmtdefaults file or on the command line. In
+addition, the <b>unit</b> attribute of the time variable
+will indicate both this unit and epoch.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To create a
+grid file from the ASCII data in hawaii_grv.xyz, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>xyz2grd</b>
+hawaii_grv.xyz <b>&minus;D</b>
+degree/degree/mGal/1/0/&quot;Hawaiian
+Gravity&quot;/&quot;GRS-80 Ellipsoid used&quot;
+<b>&minus;G</b> hawaii_grv_new.grd <b>&minus;R</b>
+198/208/18/25 <b>&minus;I</b> 5<b>m &minus;V</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">To create a
+grid file from the raw binary (3-column, single-precision)
+scanline-oriented data raw.b, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>xyz2grd</b>
+raw.b <b>&minus;D</b> m/m/m/1/0/=/= <b>&minus;G</b> raw.grd
+<b>&minus;R</b> 0/100/0/100 <b>&minus;I</b> 1 <b>&minus;V
+&minus;Z &minus;b</b> 3</p>
+
+<p style="margin-left:11%; margin-top: 1em">To make a grid
+file from the raw binary USGS DEM (short integer)
+scanline-oriented data topo30. on the NGDC global relief
+Data CD-ROM, with values of -9999 indicate missing data, one
+must on some machine reverse the byte-order. On such
+machines (like Sun), use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>xyz2grd</b>
+topo30. <b>&minus;D</b> m/m/m/1/0/=/= <b>&minus;G</b>
+ustopo.grd <b>&minus;R</b> 234/294/24/50 <b>&minus;I</b> 30c
+<b>&minus;N</b>-9999 <b>&minus;B &minus;ZTLhw</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">Say you have
+received a binary file with 4-byte floating points that were
+written on a machine of different byte-order than yours. You
+can swap the byte-order with</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>xyz2grd</b>
+floats.bin <b>&minus;S</b> new_floats.bin <b>&minus;V
+&minus;Zf</b></p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grd2xyz.html">grd2xyz</A></i>(1), <i><A HREF="grdedit.html">grdedit</A></i>(1)</p>
+<hr>
+</body>
+</html>

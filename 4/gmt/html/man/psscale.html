@@ -1,0 +1,444 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:28 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>PSSCALE</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>PSSCALE</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#NOTES">NOTES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">psscale &minus;
+Plot gray scale or color scale on maps</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>psscale
+&minus;D</b><i>xpos</i>/<i>ypos</i>/<i>length</i>/<i>width</i>[<b>h</b>]
+[ <b>&minus;A</b>[<b>a</b>|<b>l</b>|<b>c</b>] ] [
+<b>&minus;B</b>[<b>p</b>|<b>s</b>]<i>parameters</i> ] [
+<b>&minus;C</b><i>cpt_file</i> ] [
+<b>&minus;E</b>[<b>b</b>|<b>f</b>][<i>length</i>] ] [
+<b>&minus;I</b>[<i>max_intens</i>|<i>low_i</i>/<i>high_i</i>]
+] [ <b>&minus;K</b> ] [
+<b>&minus;L</b>[<b>i</b>][<i>gap</i>] ] [ <b>&minus;M</b> ]
+[ <b>&minus;N</b><i>dpi</i> ] [ <b>&minus;O</b> ] [
+<b>&minus;P</b> ] [ <b>&minus;Q</b> ] [
+<b>&minus;U</b>[<i>just</i>/<i>dx</i>/<i>dy</i>/][<b>c</b>|<i>label</i>]
+] [ <b>&minus;V</b> ] [
+<b>&minus;X</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>x-shift</i>[<b>u</b>]]
+] [
+<b>&minus;Y</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>y-shift</i>[<b>u</b>]]
+] [ <b>&minus;Z</b><i>zfile</i> ] [
+<b>&minus;c</b><i>copies</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>psscale</b>
+plots gray scales or color scales on maps. Both horizontal
+and vertical scales are supported. For cpt_files with
+gradational colors (i.e., the lower and upper boundary of an
+interval have different r/g/b values) <b>psscale</b> will
+interpolate to give a continuous scale. Variations in
+intensity due to shading/illumination may be displayed by
+setting the option <b>&minus;I</b>. Colors may be spaced
+according to a linear scale, all be equal size, or by
+providing a file with individual tile widths.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Defines the
+position of the center/top (for horizontal scale) or
+center/left (for vertical scale) and the dimensions of the
+scale. Give a negative length to reverse the scalebar.
+Append <i>h</i> to get a horizontal scale [Default is
+vertical].</p> </td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Place annotations
+and labels above (instead of below) horizontal scalebars and
+to the left (instead of the right) of vertical scalebars.
+Append <b>a</b> or <b>l</b> to move only the annotations or
+the label to the other side. Append <b>c</b> if you want to
+print a vertical label as a column of characters (does not
+work with special characters).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;B</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set annotation,
+tick, and gridline interval for the colorbar. The x-axis
+label will plot beneath a horizontal bar (or vertically to
+the right of a vertical bar), except when using
+<b>&minus;A</b>. As an option, use the y-axis label to plot
+the data unit to the right of a horizontal bar (and above a
+vertical bar). If <b>&minus;B</b> is omitted, or no
+annotation intervals are provided, the default is to
+annotate every color level based on the numerical entries in
+the cpt file (which may be overridden by ULB flags in the
+cpt file). To specify custom text annotations for intervals,
+you must append ;<i>annotation</i> to each z-slice in the
+cpt file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>cpt_file</i> is
+the color palette file to be used. By default all color
+changes are annotated. To use a subset, add an extra column
+to the cpt-file with a L, U, or B to annotate Lower, Upper,
+or Both color segment boundaries (but see <b>&minus;B</b>).
+If not given, <b>psscale</b> will read stdin. Like
+<b><A HREF="grdview.html">grdview</A></b>, <b>psscale</b> can understand pattern
+specifications in the cpt file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Add sidebar
+triangles for <b>b</b>ack- and/or <b>f</b>oreground colors.
+Add <b>f</b> or <b>b</b> for only one sidebar triangle
+[Default gives both]. Optionally, append triangle height
+[Default is half the barwidth].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Add illumination
+effects. Optionally, set the range of intensities from - to
++ <i>max_intens</i>. If not specified, 1 is used.
+Alternatively, append <i>low/high</i> intensities to specify
+an asymmetric range [Default is no illumination].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;K</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">More
+<i>PostScript</i> code will be appended later [Default
+terminates the plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Gives equal-sized
+color rectangles. Default scales rectangles according to the
+z-range in the cpt-file (Also see <b>&minus;Z</b>). If set,
+any equal interval annotation set with <b>&minus;B</b> will
+be ignored. If <i>gap</i> is appended and the cpt table is
+discrete we will center each annotation on each rectangle,
+using the lower boundary z-value for the annotation. If
+<b>i</b> is prepended we annotate the interval range
+instead. If <b>&minus;I</b> is used then each rectangle will
+have its constant color modified by the specified
+intensity.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force a monochrome
+graybar using the (television) YIQ transformation.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Effective
+dots-per-inch for the rectangular image making up the color
+scale [300].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;O</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Overlay
+plot mode [Default initializes a new plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;P</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Portrait
+plotting mode [Default is Landscape, see <b><A HREF="gmtdefaults.html">gmtdefaults</A></b>
+to change this].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Select logarithmic
+scale and power of ten annotations. All z-values in the cpt
+file will be converted to p = log10(z) and only integer p
+values will be annotated using the 10^p format [Default is
+linear scale].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not separate
+different colour intervals with black lines.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;U</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw Unix System
+time stamp on plot. By adding <i>just/dx/dy/</i>, the user
+may specify the justification of the stamp and where the
+stamp should fall on the page relative to lower left corner
+of the plot. For example, BL/0/0 will align the lower left
+corner of the time stamp with the lower left corner of the
+plot. Optionally, append a <i>label</i>, or <b>c</b> (which
+will plot the command string.). The <b><A HREF="GMT.html">GMT</A></b> parameters
+<b><A HREF="gmtdefaults.html#UNIX_TIME">UNIX_TIME</A></b>, <b><A HREF="gmtdefaults.html#UNIX_TIME_POS">UNIX_TIME_POS</A></b>, and
+<b><A HREF="gmtdefaults.html#UNIX_TIME_FORMAT">UNIX_TIME_FORMAT</A></b> can affect the appearance; see the
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b> man page for details. The time string
+will be in the locale set by the environment variable
+<b>TZ</b> (generally local time).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;X
+&minus;Y</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Shift plot origin
+relative to the current origin by (<i>x-shift,y-shift</i>)
+and optionally append the length unit (<b>c</b>, <b>i</b>,
+<b>m</b>, <b>p</b>). You can prepend <b>a</b> to shift the
+origin back to the original position after plotting, or
+prepend <b>r</b> [Default] to reset the current origin to
+the new location. If <b>&minus;O</b> is used then the
+default (<i>x-shift,y-shift</i>) is (0,0), otherwise it is
+(r1i, r1i) or (r2.5c, r2.5c). Alternatively, give <b>c</b>
+to align the center coordinate (x or y) of the plot with the
+center of the page based on current page size.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">File with
+colorbar-width per color entry. By default, width of entry
+is scaled to color range, i.e., z = 0-100 gives twice the
+width as z = 100-150 (Also see <b>&minus;L</b>).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;c</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies the
+number of plot copies. [Default is 1].</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To append a
+vertical color scale (7.5 cm long; 1.25 cm wide) to the
+right of a plot that is 6 inch wide and 4 inch high, using
+illumination, and show back- and foreground colors, and
+annotating every 5 units, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psscale
+&minus;D</b> 6.5<b>i</b>/2<b>i</b>/7.5<b>c</b>/1.25<b>c
+&minus;O &minus;C</b> colors.cpt <b>&minus;I &minus;E
+&minus;B</b> 5:BATHYMETRY:/:m: &gt;&gt; map.ps</p>
+
+<a name="NOTES"></a>
+<h2>NOTES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">When the cpt
+file is discrete and no illumination is specified, the color
+bar will be painted using polygons. For all other cases we
+must paint with an image. Some color printers may give
+slightly different colors for the two methods given
+identical RGB values.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="makecpt.html">makecpt</A></i>(1), <i><A HREF="grd2cpt.html">grd2cpt</A></i>(1)</p>
+<hr>
+</body>
+</html>

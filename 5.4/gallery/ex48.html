@@ -1,0 +1,200 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(48) Line networks, map embellishments, and curved titles &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(49) Analysis of the Atlantic seafloor depth/age relationship" href="ex49.html" />
+    <link rel="prev" title="(47) Linear regression using different norms and types" href="ex47.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex49.html" title="(49) Analysis of the Atlantic seafloor depth/age relationship"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex47.html" title="(47) Linear regression using different norms and types"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="line-networks-map-embellishments-and-curved-titles">
+<span id="example-48"></span><h1>(48) Line networks, map embellishments, and curved titles<a class="headerlink" href="#line-networks-map-embellishments-and-curved-titles" title="Permalink to this headline">¶</a></h1>
+<p>In this example we show how the module <a class="reference internal" href="../psxy.html"><span class="doc">psxy</span></a>
+can be used to create a network of lines based on a file with
+just the nodes (the siz airports).  We also demonstrate how the
+lines can be shortened by (a) a given measure (here 250 km)
+and then (b) the length of the added vector heads.  The airspace
+closest to each airport is identified as spherical Voronoi
+cells by <a class="reference internal" href="../sphtriangulate.html"><span class="doc">sphtriangulate</span></a> and filled
+with transparent coloring, allowing us to see the seafloor
+texture beneath.  Finally,
+we add six local spiderweb azimuth/distance gridlines and
+set a curved plot title.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT EXAMPLE 48</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate use of trimmed lines with vectors, networks, and local spiderwebs</span>
+<span class="c1"># GMT modules:  makecpt, pscoast, psxy, sphtriangulate, grdimate, gmtmath, pstext</span>
+<span class="c1">#</span>
+
+<span class="nv">ps</span><span class="o">=</span>example_48.ps
+
+cat <span class="s">&lt;&lt; EOF &gt; airports.txt</span>
+<span class="s">157.8583W	21.3069N	61	300	HNL	BC	0.6i</span>
+<span class="s">149.5585W	17.5516S	-120	120	PPT	TC	0.6i</span>
+<span class="s">139.6917E	35.6895N	56	170	HND	RB	0.3i</span>
+<span class="s">70.6693W	33.4489S	215	322	SCL	TL	0.25i</span>
+<span class="s">151.2070E	33.8675S	-10	145	SYD	TR	0.85i</span>
+<span class="s">118.2437W	34.0522N	142	306	LAX	BL	0.80i</span>
+<span class="s">EOF</span>
+gmt makecpt -Ccategorical -T0/6/1 -N &gt; t.cpt
+gmt makecpt -Clightgray -T-12000,12000 -N &gt; g.cpt
+gmt sphtriangulate airports.txt -Qv &gt; near_area.txt
+gmt grdimage etopo10m.nc -I+a45+nt2 -Cg.cpt -Rg -JG205/-10/7i -P -K -Xc &gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K near_area.txt -L -Ct.cpt -t65 &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K -SW2000k -Gwhite@40 airports.txt &gt;&gt; <span class="nv">$ps</span>
+gmt pscoast -R -J -Gblack -A500 -O -K -Bafg &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Make a 15 degrees by 250 km spiderweb grid around each airport</span>
+<span class="c1"># First to the arcs of different radii</span>
+gmt math -T500/2000/250 -o0 <span class="nv">T</span> <span class="o">=</span> tmp
+<span class="k">while</span> <span class="nb">read</span> radius<span class="p">;</span> <span class="k">do</span>
+	gmt psxy -R -J -O -K -SW<span class="si">${</span><span class="nv">radius</span><span class="si">}</span>k+a -W0.5p airports.txt &gt;&gt; <span class="nv">$ps</span>
+<span class="k">done</span> &lt; tmp
+<span class="c1"># Then do every 15 degree radial lines but in multiples of 15. Also place labels.</span>
+<span class="nv">daz</span><span class="o">=</span><span class="m">15</span>
+<span class="k">while</span> <span class="nb">read</span> lon lat az1 az2 label just off<span class="p">;</span> <span class="k">do</span>
+	<span class="nv">az1</span><span class="o">=</span><span class="sb">`</span>gmt math -Q <span class="nv">$az1</span> <span class="nv">$daz</span> DIV CEIL  <span class="nv">$daz</span> <span class="nv">MUL</span> <span class="o">=</span><span class="sb">`</span>
+	<span class="nv">az2</span><span class="o">=</span><span class="sb">`</span>gmt math -Q <span class="nv">$az2</span> <span class="nv">$daz</span> DIV FLOOR <span class="nv">$daz</span> <span class="nv">MUL</span> <span class="o">=</span><span class="sb">`</span>
+	gmt math -T<span class="si">${</span><span class="nv">az1</span><span class="si">}</span>/<span class="si">${</span><span class="nv">az2</span><span class="si">}</span>/<span class="nv">$daz</span> -N4/2 -fg -C0 <span class="m">0</span> <span class="nv">$lon</span> ADD -C1 <span class="nv">$lat</span> ADD -C3 <span class="m">2000</span> <span class="nv">ADD</span> <span class="o">=</span> <span class="p">|</span> gmt psxy -R -J -O -K -S<span class="o">=</span><span class="m">0</span>.1 -W0.5p &gt;&gt; <span class="nv">$ps</span>
+	<span class="nb">echo</span> <span class="nv">$lon</span> <span class="nv">$lat</span> <span class="nv">$label</span> <span class="p">|</span> gmt pstext -R -J -O -K -DJ<span class="si">${</span><span class="nv">off</span><span class="si">}</span>+v0.5p,white -F+f16p+j<span class="si">${</span><span class="nv">just</span><span class="si">}</span> -N &gt;&gt; <span class="nv">$ps</span>
+	<span class="nb">echo</span> <span class="nv">$lon</span> <span class="nv">$lat</span> <span class="nv">$label</span> <span class="p">|</span> gmt pstext -R -J -O -K -DJ<span class="si">${</span><span class="nv">off</span><span class="si">}</span>+v0.25p -F+f16p+j<span class="si">${</span><span class="nv">just</span><span class="si">}</span> -N -Gwhite -W0.25p -TO &gt;&gt; <span class="nv">$ps</span>
+<span class="k">done</span> &lt; airports.txt
+<span class="c1"># Plot trimmed lines and overlay airport locations</span>
+gmt psxy airports.txt -R -J -O -K -Fn -W1.5p+o250k+v0.2i+gred+h0.5 &gt;&gt; <span class="nv">$ps</span>
+gmt psxy airports.txt -R -J -O -K -SE-500 -Gorange -W0.25p &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Make an arc of radius 4.5 inches from 45 to 135 degrees around map center and use it to place text</span>
+gmt math -T45/135/1 T -C0 COSD -C1 SIND -Ca <span class="m">4</span>.5 <span class="nv">MUL</span> <span class="o">=</span> path.txt
+<span class="c1"># Move up 3.5 inches so origin is at the map center</span>
+gmt psxy -R-3.5/3.5/0/6 -Jx1i -O -Y3.5i path.txt -Sqn1:+l<span class="s2">&quot;IMPORTANT PACIFIC AIRPORTS&quot;</span>+v+f32p -Wfaint,white -N &gt;&gt; <span class="nv">$ps</span>
+rm -f airports.txt g.cpt t.cpt near_area.txt path.txt tmp
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_48.png"><img alt="../_images/example_48.png" src="../_images/example_48.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Line networks, map embellishments, and curved titles.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex47.html"
+                        title="previous chapter">(47) Linear regression using different norms and types</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex49.html"
+                        title="next chapter">(49) Analysis of the Atlantic seafloor depth/age relationship</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex48.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex49.html" title="(49) Analysis of the Atlantic seafloor depth/age relationship"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex47.html" title="(47) Linear regression using different norms and types"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

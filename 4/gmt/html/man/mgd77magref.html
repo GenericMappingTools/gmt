@@ -1,0 +1,473 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:36 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>MGD77MAGREF</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>MGD77MAGREF</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#TIME SETTINGS">TIME SETTINGS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">mgd77magref
+&minus; Evaluate the IGRF or CM4 magnetic field models</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77magref</b>
+[ <i>inputfile</i> ] [
+<b>&minus;A</b>[<b>+a</b><i>alt</i><b>+t</b><i>date</i><b>+y</b>]
+] [ <b>&minus;C</b><i>cm4file</i> ] [
+<b>&minus;D</b><i>Dstfile</i> ] [
+<b>&minus;E</b><i>f107file</i> ] [
+<b>&minus;F</b><i>flags</i> ] [ <b>&minus;G</b> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;Sc</b>|<b>l</b><i>low/high</i> ] [ <b>&minus;V</b>
+] [ <b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;b</b>[<b>i</b>|<b>o</b>][<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ] [
+<b>&minus;m</b>[<b>i</b>|<b>o</b>][<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77magref</b>
+will evaluate the IGRF or the CM4 geomagnetic models at the
+specified locations and times.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.
+<i><br>
+inputfile</i></p>
+
+<p style="margin-left:22%;">Contains the moments in
+space-time where we want to evaluate the magnetic reference
+field. The first two columns must contain longitude and
+latitude (however, see <b>&minus;:</b> for latitude and
+longitude instead). Normally, the third and fourth columns
+must contain altitude (in km) and time, respectively, but if
+one or both of these are constant for all records they can
+be supplied via the <b>&minus;A</b> option instead and are
+thus not expected in the input file. If no input file is
+given we read <i>stdin</i>. A note about the CM4 validity
+domain. The core field of CM4 is valid from 1960-2002.5 but
+the ionospheric and magnetospheric fields are computed after
+the <i>Dst</i> and <i>F10.7</i> coefficient files. We
+extended here those coefficient files up to 2007, which
+means that one can compute external contributions up until
+2007 but the Secular Variation will be biased (non
+reliable). New indices files may be retrieved
+from:ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/DST/
+(the <i>Dst</i> coefficients) and
+ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SOLAR_RADIO/FLUX/
+(The <i>F10.7</i> index file is a MONTHPLT.ABS). NOTE: since
+the <i>Dst</i> files in the .../DST/ directory are still
+only up to 2007, for GMT4.5.3 we extended the <i>Dst</i>
+until April 2010 by reformatting the data in the preliminary
+file Est_Ist_index_0_mean.pli, which is at
+ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/EST_IST/</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Adjusts how the
+input record is interpreted. Append <b>+a</b> to set a fixed
+<i>altitude</i> (in km) that should apply to all data
+records [Default expects <i>altitude</i> to be in the 3rd
+column of all records]. Append <b>+t</b> to set a fixed
+<i>time</i> that should apply to all data records [Default
+expects <i>time</i> to be in the 4th column of all records].
+Finally, append <b>+y</b> to indicate that all times are
+specified as decimal years [Default is ISO
+<i>date</i>T<i>colck</i> format].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify an
+alternate CM4 coefficient file [umdl.CM4].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify an
+alternate file with hourly means of the Dst index for CM4
+[Dst_all.wdc]. Alternatively, simply specify a single index
+to apply for all records.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify an
+alternate file with monthly means of absolute F10.7 solar
+radio flux for CM4 [F107_mon.plt]. Alternatively, simply
+specify a single flux to apply for all records.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects output
+items; <i>flags</i> is a string made up of one or more of
+these characters:</p></td>
+</table>
+
+<p style="margin-left:22%;"><b>r</b> means output all input
+columns before adding the items below <b><br>
+t</b> means list total field (nT). <b><br>
+h</b> means list horizontal field (nT). <b><br>
+x</b> means list X component (nT, positive north). <b><br>
+y</b> means list Y component (nT, positive east). <b><br>
+z</b> means list Z component (nT, positive down). <b><br>
+d</b> means list declination (deg, clockwise from north).
+<b><br>
+i</b> means list inclination (deg, positive down). <br>
+Append one or more number to indicate the requested field
+contribution(s): <b><br>
+0</b> means IGRF field (no combinations allowed) <b><br>
+1</b> means CM4 Core field <b><br>
+2</b> means CM4 Lithospheric field <b><br>
+3</b> means CM4 Primary Magnetospheric field <b><br>
+4</b> means CM4 Induced Magnetospheric field <b><br>
+5</b> means CM4 Primary ionospheric field <b><br>
+6</b> means CM4 Induced ionospheric field <b><br>
+7</b> means CM4 Toroidal field <b><br>
+9</b> means Core field from IGRF and other contributions
+from CM4. DO NOT USE BOTH 1 AND 9. <br>
+Appending several numbers (1-7) will add up the different
+contributions. For example <b>&minus;Ft</b>/<b>12</b>
+computes the total field due to Core and Lithospheric
+sources. Two special cases are allowed, which mix which Core
+field from IGRF and other sources from CM4.
+<b>&minus;Ft</b>/<b>934</b> computes Core field due to IGRF
+plus terms 3 and 4 from CM4 (but you can add others).
+<b>&minus;Ft</b>/<b>934</b> the same as above but output the
+field components. The data is written out in the order they
+appear in <i>flags</i> [Default is
+<b>&minus;Frthxyzdi</b>/<b>1</b>].</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies that
+coordinates are geocentric [geodetic].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Computes J field
+vectors from certain external sources.</p></td>
+</table>
+
+<p style="margin-left:22%;"><b>r</b> means output all input
+columns before adding the items below (all in Ampers/m).
+<b><br>
+t</b> means list magnitude field. <b><br>
+x</b> means list X component. <b><br>
+y</b> means list Y component. <b><br>
+z</b> means list Z or current function Psi. <br>
+Append a number to indicate the requested J contribution:
+<b><br>
+1</b> means Induced Magnetospheric field. <b><br>
+2</b> means Primary ionospheric field. <b><br>
+3</b> means Induced ionospheric field. <b><br>
+4</b> means Poloidal field.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sc</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Limits the
+wavelengths of the core field contribution to the band
+indicated by the low and high spherical harmonic order
+[1/13].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sl</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Limits the
+wavelengths of the lithosphere field contribution to the
+band indicated by the low and high spherical harmonic order
+[14/65].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 4 input columns unless
+<b>&minus;A</b> is used].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.
+[Default is reflected by <b>&minus;F</b>].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file(s). Segments are separated by a special record. For
+ASCII files the first character must be <i>flag</i> [Default
+is &rsquo;&gt;&rsquo;]. For binary files all fields must be
+NaN and <b>&minus;b</b> must set the number of output
+columns explicitly. By default the <b>&minus;m</b> setting
+applies to both input and output. Use <b>&minus;mi</b> and
+<b>&minus;mo</b> to give separate settings to input and
+output.</p> </td>
+</table>
+
+<a name="TIME SETTINGS"></a>
+<h2>TIME SETTINGS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">If binary input
+files are used then absolute time are stored as time
+relative to the selected epoch. However, since the epoch
+used is not stored in the data files there can be problems
+decoding the correct time. The mgd77 supplement uses the
+Unix time system as its default; thus you should make sure
+that binary data files with time uses the same system (see
+the GMT default TIME_SYSTEM).</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To get the CM4
+Total field, Declination and Inclination due to all but
+lithospheric and toroidal field at a one point location and
+decimal time 2000.0, try</p>
+
+<p style="margin-left:11%; margin-top: 1em">echo -28 38 0
+2000.0 | <b>mgd77magref &minus;A</b>+y <b>&minus;F</b>
+tdi/13456</p>
+
+<p style="margin-left:11%; margin-top: 1em">To do the same
+as above but at noon (Universal Time) of first May 2001,
+try</p>
+
+<p style="margin-left:11%; margin-top: 1em">echo -28 38 0
+2001-05-01T12:00:00 | <b>mgd77magref &minus;F</b>
+tdi/13456</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1)
+<i><A HREF="mgd77info.html">mgd77info</A></i>(1) <i><A HREF="mgd77list.html">mgd77list</A></i>(1)
+<i><A HREF="mgd77manage.html">mgd77manage</A></i>(1) <i><A HREF="mgd77track.html">mgd77track</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P., and
+W. H. F. Smith, 2018, The Generic Mapping Tools (GMT)
+version 4.5.18 Technical Reference &amp; Cookbook,
+SOEST/NOAA. <br>
+Wessel, P., and W. H. F. Smith, 1998, New, Improved Version
+of Generic Mapping Tools Released, EOS Trans., AGU, 79 (47),
+p. 579. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released, EOS Trans., AGU, 76 (33), p.
+329. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released,
+http://www.agu.org/eos_elec/95154e.html, Copyright 1995 by
+the American Geophysical Union. <br>
+Wessel, P., and W. H. F. Smith, 1991, Free Software Helps
+Map and Display Data, EOS Trans., AGU, 72 (41), p. 441. <br>
+&quot;Comprehensive Modeling of the Geomagnetic Field&quot;,
+see <i>http://denali.gsfc.nasa.gov/cm/</i>. <br>
+&quot;The International Geomagnetic Reference Field
+(IGRF)&quot;, see
+<i>http://www.iugg.org/IAGA/iaga_pages/pubs_prods/igrf.htm</i>.</p>
+<hr>
+</body>
+</html>

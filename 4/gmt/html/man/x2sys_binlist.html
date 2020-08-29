@@ -1,0 +1,209 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:43 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>X2SYS_BINLIST</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>X2SYS_BINLIST</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">x2sys_binlist
+&minus; Create bin-index files from track data files</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_binlist</b>
+<i>track(s)</i> <b>&minus;T</b><i>TAG</i> [ <b>&minus;D</b>
+] [ <b>&minus;E</b> ] [ <b>&minus;V</b> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_binlist</b>
+reads one or more track data files and produces a
+multi-segment ASCII track bin-index file (tbf) with the
+track name in the header and one data record per bin
+crossed; these records contain <i>lon, lat, index,
+flags</i>[, <i>dist</i>], where <i>lon, lat</i> are the
+coordinates of the center of the bin, the <i>index</i> is
+the 1-D number of the bin, and <i>flags</i> is a bitflag
+that describes which data fields were available in this bin.
+The optional <i>dist</i> requires <b>&minus;D</b>. The input
+files can be of any format, which must be described and
+passed with the <b>&minus;T</b> option. The bin-index
+listing is a crude representation of where the track goes
+and is used by the data archivist to build an x2sys track
+data base for miscellaneous track queries, such as when
+needing to determine which tracks should be compared in a
+crossover analysis. You must run <b>x2ys_init</b> to
+initialize the tag before you can run the indexing.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em" valign="top"><i>tracks</i></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Can be one or more
+ASCII, native binary, or COARDS netCDF 1-D data files. To
+supply the data files via a text file with a list of tracks
+(one per record), specify the name of the track list after a
+leading equal-sign (e.g., =tracks.lis). If the names are
+missing their file extension we will append the suffix
+specified for this <i>TAG</i>. Track files will be searched
+for first in the current directory and second in all
+directories listed in
+<b>$X2SYS_HOME</b>/<i>TAG</i>/<i>TAG</i>_paths.txt (if it
+exists). [If <b>$X2SYS_HOME</b> is not set it will default
+to <b>$GMT_SHAREDIR</b>/x2sys]. (Note: MGD77 files will also
+be looked for via <b>MGD77_HOME</b>/mgd77_paths.txt and
+*.gmt files will be searched for via
+<b>$GMT_SHAREDIR</b>/mgg/gmtfile_paths).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify the x2sys
+<i>TAG</i> which tracks the attributes of this data
+type.</p> </td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Calculate the
+length of trackline segments per bin [Default skips this
+step]. The length fragments are given as the 5th output
+column (after the <i>flags</i>). The length units are
+obtained via the TAB setting (see <b><A HREF="x2sys_init.html">x2sys_init</A></b>).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Convert geographic
+data to a cylindrical equal-area projection prior to
+binning. Basically, we apply the projection
+<b>&minus;JY</b><i>lon0</i>/37:04:17.166076/360, where
+<i>lon0</i> is the mid-longitude of the region. Requires
+<b>&minus;D</b>, geographical data, and a global region
+(e.g., <b>&minus;Rg</b> or <b>&minus;Rd</b>). This option is
+useful for statistics related to trackline density but
+should not be used when preparing bin-index files for the
+x2sys track data bases.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To create a bin
+index file from the MGD77 file 01030061.mgd77 using the
+settings associated with the tag MGD77, do</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_binlist</b>
+01030061.mgd77 <b>&minus;T</b> MGD77 &gt; 01030061.tbf</p>
+
+<p style="margin-left:11%; margin-top: 1em">To create a
+track bin index file of all MGD77+ files residing in the
+current directory using the settings associated with the tag
+MGD77+ and calculate track distances, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_binlist</b>
+*.nc <b>&minus;T</b> MGD77+ &minus;D <b>&gt; all.tbf</b></p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="x2sys_cross.html">x2sys_cross</A></i>(1),
+<i><A HREF="x2sys_datalist.html">x2sys_datalist</A></i>(1), <i><A HREF="x2sys_get.html">x2sys_get</A></i>(1),
+<i><A HREF="x2sys_init.html">x2sys_init</A></i>(1), <i><A HREF="x2sys_put.html">x2sys_put</A></i>(1),
+<i><A HREF="x2sys_report.html">x2sys_report</A></i>(1), <i><A HREF="x2sys_solve.html">x2sys_solve</A></i>(1)</p>
+<hr>
+</body>
+</html>

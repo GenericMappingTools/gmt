@@ -1,0 +1,373 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>blockmode &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="filter1d" href="filter1d.html" />
+    <link rel="prev" title="blockmedian" href="blockmedian.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="filter1d.html" title="filter1d"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="blockmedian.html" title="blockmedian"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="blockmode">
+<span id="index-0"></span><h1>blockmode<a class="headerlink" href="#blockmode" title="Permalink to this headline">¶</a></h1>
+<p>blockmode - Block average (<em>x</em>,<em>y</em>,<em>z</em>) data tables by mode estimation</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>blockmode</strong> [ <em>table</em> ]
+<a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>increment</em>
+<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong> ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<em>width</em>][<strong>+c</strong>][<strong>+a</strong>|<strong>+l</strong>|<strong>+h</strong> ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><strong>r</strong>|<strong>s</strong>[<strong>-</strong>] ] [ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<strong>i</strong>|<strong>o</strong>][<strong>+s</strong>] ]
+[ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-r</strong> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>blockmode</strong> reads arbitrarily located (<em>x</em>,<em>y</em>,<em>z</em>) triples [or
+optionally weighted quadruples (<em>x</em>,<em>y</em>,<em>z</em>,<em>w</em>)] from standard
+input [or <em>table</em>] and writes to standard output mode estimates of
+position and value for every non-empty block in a grid region defined by
+the <strong>-R</strong> and <strong>-I</strong> arguments. Either <a class="reference internal" href="blockmean.html"><span class="doc">blockmean</span></a>,
+<a class="reference internal" href="blockmedian.html"><span class="doc">blockmedian</span></a>,
+or <strong>blockmode</strong> should be used as a pre-processor before running
+<a class="reference internal" href="surface.html"><span class="doc">surface</span></a> to avoid aliasing short wavelengths. These routines are also
+generally useful for decimating or averaging (<em>x</em>,<em>y</em>,<em>z</em>) data. You
+can modify the precision of the output format by editing the
+<a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a> parameter in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file, or you may
+choose binary input and/or output to avoid loss of precision.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>]]</dt>
+<dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
+append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>: Append
+<strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc seconds. If one
+of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or <strong>u</strong> is appended
+instead, the increment is assumed to be given in meter, foot, km, Mile,
+nautical mile or US survey foot, respectively, and will be converted to
+the equivalent degrees longitude at the middle latitude of the region
+(the conversion depends on <a class="reference internal" href="gmt.conf.html#projection-parameters"><span class="std std-ref">PROJ_ELLIPSOID</span></a>). If <em>y_inc</em> is given
+but set to 0 it will be reset equal to <em>x_inc</em>; otherwise it will be
+converted to degrees latitude. <strong>All coordinates</strong>: If <strong>+e</strong> is appended
+then the corresponding max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly
+adjusted to fit exactly the given increment [by default the increment
+may be adjusted slightly to fit the given domain]. Finally, instead of
+giving an increment you may specify the <em>number of nodes</em> desired by
+appending <strong>+n</strong> to the supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The resulting
+increment value depends on whether you have selected a
+gridline-registered or pixel-registered grid; see <a class="reference internal" href="GMT_Docs.html#app-file-formats"><span class="std std-ref">GMT File Formats</span></a> for
+details. Note: if <strong>-R</strong><em>grdfile</em> is used then the grid spacing has
+already been initialized; use <strong>-I</strong> to override the values.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest.  </dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>3 [or 4, see <strong>-W</strong>] column ASCII data table file(s) [or binary, see
+<strong>-bi</strong>] holding (<em>x</em>,<em>y</em>,<em>z</em>[,<em>w</em>])
+data values. [<em>w</em>] is an optional weight for the data. If no file
+is specified, <strong>blockmode</strong> will read from standard input.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong></dt>
+<dd>Use the center of the block as the output location [Default uses the
+modal xy location (but see <strong>-Q</strong>)]. <strong>-C</strong> overrides <strong>-Q</strong>.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong>[<em>width</em>][<strong>+c</strong>][<strong>+a</strong>|<strong>+l</strong>|<strong>+h</strong> ]</dt>
+<dd>Perform unweighted mode calculation via histogram binning, using the
+specified histogram <em>width</em>. Append <strong>+c</strong> to center bins so that
+their mid point is a multiple of <em>width</em> [uncentered].
+If multiple modes are found for a block we return the average mode [<strong>+a</strong>].
+Append <strong>+l</strong> or <strong>+h</strong> to return the low of high mode instead, respectively.
+If <em>width</em> is not given it will default to 1 provided your data set only
+contains integers. Also, for integer data and integer bin <em>width</em> we
+enforce bin centering (<strong>+c</strong>) and select the lowest mode (<strong>+l</strong>) if
+there are multiples. [Default mode is normally the Least Median of Squares (LMS) statistic].</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong></dt>
+<dd>Provide Extended report which includes <strong>s</strong> (the L1 scale of the
+mode), <strong>l</strong>, the lowest value, and <strong>h</strong>, the high value for each
+block. Output order becomes
+<em>x</em>,<em>y</em>,<em>z</em>,<em>s</em>,<em>l</em>,<em>h</em>[,<em>w</em>]. [Default outputs
+<em>x</em>,<em>y</em>,<em>z</em>[,<em>w</em>]. See <strong>-W</strong> for <em>w</em> output.</dd>
+<dt><strong>-E</strong><strong>r</strong>|<strong>s</strong>[<strong>-</strong>]</dt>
+<dd>Provide source id <strong>s</strong> or record number <strong>r</strong> output, i.e., append
+the source id or record number associated with the modal value. If
+tied then report the record number of the higher of the two values;
+append <strong>-</strong> to instead report the record number of the lower value.
+Note that both <strong>-E</strong> and <strong>-E</strong><strong>r</strong>[<strong>-</strong>] may be specified.
+For <strong>-E</strong><strong>s</strong> we expect input records of the form
+<em>x</em>,<em>y</em>,<em>z</em>[,<em>w</em>],<em>sid</em>, where <em>sid</em> is an unsigned integer
+source id.</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong></dt>
+<dd>(Quicker) Finds mode <em>z</em> and mean (<em>x</em>,<em>y</em>) [Default finds mode
+<em>x</em>, mode <em>y</em>, mode <em>z</em>].</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong>[<strong>i</strong>|<strong>o</strong>][<strong>+s</strong>]</dt>
+<dd>Weighted modifier[s]. Unweighted input and output have 3 columns
+<em>x</em>,<em>y</em>,<em>z</em>; Weighted i/o has 4 columns <em>x</em>,<em>y</em>,<em>z</em>,<em>w</em>.
+Weights can be used in input to construct weighted modal values for each
+block. Weight sums can be reported in output for later combining
+several runs, etc. Use <strong>-W</strong> for weighted i/o, <strong>-Wi</strong> for weighted
+input only, and <strong>-Wo</strong> for weighted output only. [Default uses unweighted i/o].
+If your weights are actually uncertainties (one sigma)
+then append <strong>+s</strong> and we compute weight = 1/sigma.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input. [Default is 3 (or 4 if <strong>-Wi</strong> is set)].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output. [Default is 3 (or 4 if <strong>-Wo</strong> is set)]. <strong>-E</strong> adds 3 additional columns.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em> <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-o</strong><em>cols</em>[,…] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select output columns (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-r</strong> <a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set pixel node registration [gridline]. Each block is the locus of points nearest the grid value location. Consider an example with
+<strong>-R</strong>10/15/10/15 and <strong>-I</strong>1: With the <strong>-r</strong> option, 10 &lt;=
+(<em>x</em>,<em>y</em>) &lt; 11 is one of 25 blocks; without it 9.5 &lt;= (<em>x</em>,<em>y</em>)
+&lt; 10.5 is one of 36 blocks.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="ascii-format-precision">
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-geo-out"><span class="std std-ref">FORMAT_GEO_OUT</span></a>, absolute time is
+under the control of <a class="reference internal" href="gmt.conf.html#format-date-out"><span class="std std-ref">FORMAT_DATE_OUT</span></a> and
+<a class="reference internal" href="gmt.conf.html#format-clock-out"><span class="std std-ref">FORMAT_CLOCK_OUT</span></a>, whereas general floating point values are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a>. Be aware that the format in effect
+can lead to loss of precision in ASCII output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a> setting.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To find 5 by 5 minute block mode estimates from the double precision
+binary data in hawaii_b.xyg and output an ASCII table, run:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">blockmode</span> <span class="n">hawaii_b</span><span class="o">.</span><span class="n">xyg</span> <span class="o">-</span><span class="n">R198</span><span class="o">/</span><span class="mi">208</span><span class="o">/</span><span class="mi">18</span><span class="o">/</span><span class="mi">25</span> <span class="o">-</span><span class="n">I5m</span> <span class="o">-</span><span class="n">bi3d</span> <span class="o">&gt;</span> <span class="n">hawaii_5x5</span><span class="o">.</span><span class="n">xyg</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To determine the most frequently occurring values per 5x5 block using histogram binning, with
+data representing integer counts, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">blockmode</span> <span class="n">data</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mi">100</span><span class="o">/</span><span class="mi">0</span><span class="o">/</span><span class="mi">100</span> <span class="o">-</span><span class="n">I5</span> <span class="o">-</span><span class="n">r</span> <span class="o">-</span><span class="n">C</span> <span class="o">-</span><span class="n">D</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="blockmean.html"><span class="doc">blockmean</span></a>,
+<a class="reference internal" href="blockmedian.html"><span class="doc">blockmedian</span></a>, <a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
+<a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a>,
+<a class="reference internal" href="nearneighbor.html"><span class="doc">nearneighbor</span></a>,
+<a class="reference internal" href="sphtriangulate.html"><span class="doc">sphtriangulate</span></a>,
+<a class="reference internal" href="surface.html"><span class="doc">surface</span></a>,
+<a class="reference internal" href="triangulate.html"><span class="doc">triangulate</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">blockmode</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#ascii-format-precision">ASCII Format Precision</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="blockmedian.html"
+                        title="previous chapter">blockmedian</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="filter1d.html"
+                        title="next chapter">filter1d</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/blockmode.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="filter1d.html" title="filter1d"
+             >next</a> </li>
+        <li class="right" >
+          <a href="blockmedian.html" title="blockmedian"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

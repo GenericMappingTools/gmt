@@ -1,0 +1,278 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:23 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>MAKECPT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>MAKECPT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">makecpt &minus;
+Make GMT color palette tables</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>makecpt</b>
+[ <b>&minus;C</b><i>table</i> ] [ <b>&minus;D</b> ] [
+<b>&minus;I</b> ] [ <b>&minus;M</b> ] [ <b>&minus;N</b> ] [
+<b>&minus;Q</b>[<b>i|o</b>] ] [
+<b>&minus;T</b><i>z0/z1/dz</i> |
+<b>&minus;T</b><i>ztable</i> ] [ <b>&minus;V</b> ] [
+<b>&minus;Z</b> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>makecpt</b>
+is a utility that will help you make color palette tables
+(cpt files). You define an equidistant set of contour
+intervals or pass your own z-table, and create a new cpt
+file based on an existing master cpt file. The resulting cpt
+file can be reversed relative to the master cpt, and can be
+made continuous or discrete. <br>
+The color palette includes three additional colors beyond
+the range of z-values. These are the background color (B)
+assigned to values lower than the lowest <i>z</i>-value, the
+foreground color (F) assigned to values higher than the
+highest <i>z</i>-value, and the NaN color (N) painted
+whereever values are undefined. <br>
+If the master cpt file includes B, F, and N entries, these
+will be copied into the new master file. If not, the
+parameters <b><A HREF="gmtdefaults.html#COLOR_BACKGROUND">COLOR_BACKGROUND</A></b>, <b><A HREF="gmtdefaults.html#COLOR_FOREGROUND">COLOR_FOREGROUND</A></b>,
+and <b><A HREF="gmtdefaults.html#COLOR_NAN">COLOR_NAN</A></b> from the .gmtdefaults4 file or the
+command line will be used. This default behavior can be
+overruled using the options <b>&minus;D</b>, <b>&minus;M</b>
+or <b>&minus;N</b>. <br>
+The color model (RGB, HSV or CMYK) of the palette created by
+<b>makecpt</b> will be the same as specified in the header
+of the master cpt file. When there is no <b><A HREF="gmtdefaults.html#COLOR_MODEL">COLOR_MODEL</A></b>
+entry in the master cpt file, the <b><A HREF="gmtdefaults.html#COLOR_MODEL">COLOR_MODEL</A></b>
+specified in the .gmtdefaults4 file or on the command line
+will be used.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects the master
+color table <i>table</i> to use in the interpolation. Choose
+among the built-in tables (type <b>makecpt</b> to see the
+list) or give the name of an existing cpt file [Default
+gives a rainbow cpt file].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Select the colors
+for lowest and highest <i>z</i>-values in the output cpt
+file as the back- and foreground colors that will be written
+to the cpt file [Default uses the colors specified in the
+master file, or those defined by the parameters
+<b><A HREF="gmtdefaults.html#COLOR_BACKGROUND">COLOR_BACKGROUND</A></b>, <b><A HREF="gmtdefaults.html#COLOR_FOREGROUND">COLOR_FOREGROUND</A></b>, and
+<b><A HREF="gmtdefaults.html#COLOR_NAN">COLOR_NAN</A></b>].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Reverses the sense
+of color progression in the master cpt file. Also exchanges
+the foreground and background colors, including those
+specified by the parameters <b><A HREF="gmtdefaults.html#COLOR_BACKGROUND">COLOR_BACKGROUND</A></b> and
+<b><A HREF="gmtdefaults.html#COLOR_FOREGROUND">COLOR_FOREGROUND</A></b>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Overrule
+background, foreground, and NaN colors specified in the
+master cpt file with the values of the parameters
+<b><A HREF="gmtdefaults.html#COLOR_BACKGROUND">COLOR_BACKGROUND</A></b>, <b><A HREF="gmtdefaults.html#COLOR_FOREGROUND">COLOR_FOREGROUND</A></b>, and
+<b><A HREF="gmtdefaults.html#COLOR_NAN">COLOR_NAN</A></b> specified in the .gmtdefaults4 file or on
+the command line. When combined with <b>&minus;D</b>, only
+<b><A HREF="gmtdefaults.html#COLOR_NAN">COLOR_NAN</A></b> is considered.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not write out
+the background, foreground, and NaN-color fields [Default
+will write them].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects a
+logarithmic interpolation scheme [Default is linear].
+<b>&minus;Qi</b> expects input z-values to be log10(z),
+assigns colors, and writes out z [Default]. <b>&minus;Qo</b>
+takes log10(z) first, assigns colors, and writes out z.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Defines the range
+of the new cpt file by giving the lowest and highest z-value
+and the interval. Alternatively, give the name of a ASCII
+file that has one z-value per record. If not given, the
+existing range in the master cpt file will be used
+intact.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Creates a
+continuous cpt file [Default is discontinuous, i.e.,
+constant colors for each interval].</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To make a cpt
+file with z-values from -200 to 200, with discrete color
+changes every 25, and using a polar blue-white-red
+colortable:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>makecpt
+&minus;C</b><i>polar</i> <b>&minus;T</b>-200/200/25 &gt;
+colors.cpt</p>
+
+<p style="margin-left:11%; margin-top: 1em">To make an
+equidistant cpt file from z = -2 to 6, in steps of 1, using
+continuous default rainbow colors:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>makecpt
+&minus;T</b>-2/6/1 <b>&minus;Z</b> &gt; rainbow.cpt</p>
+
+<p style="margin-left:11%; margin-top: 1em">To make a GEBCO
+look-alike cpt file for bathymetry, run</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>makecpt
+&minus;C</b> gebco &gt; my_gebco.cpt</p>
+
+<a name="BUGS"></a>
+<h2>BUGS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Since
+<b>makecpt</b> will also interpolate from any existing .cpt
+file you may have in your directory, you cannot use one of
+the listed cpt names as an output filename; hence the
+my_gebco.cpt in the example.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grd2cpt.html">grd2cpt</A></i>(1)</p>
+<hr>
+</body>
+</html>

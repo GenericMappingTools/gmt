@@ -1,0 +1,388 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>(11) A 3-D RGB color cube &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(12) Optimal triangulation of data" href="ex12.html" />
+    <link rel="prev" title="(10) A geographical bar graph plot" href="ex10.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+        
+      <li>(11) A 3-D RGB color cube</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/gallery/ex11.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="a-3-d-rgb-color-cube">
+<span id="example-11"></span><h1>(11) A 3-D RGB color cube<a class="headerlink" href="#a-3-d-rgb-color-cube" title="Permalink to this headline">¶</a></h1>
+<p>In this example we generate a series of 6 color images, arranged so that
+they can be cut out and assembled into a 3-D color cube. The six faces
+of the cube represent the outside of the R-G-B color space. On each face
+one of the color components is fixed at either 0 or 255 and the other
+two components vary smoothly across the face from 0 to 255. The cube is
+configured as a right-handed coordinate system with <em>x-y-z</em> mapping
+R-G-B. Hence, the 8 corners of the cube represent the primaries red,
+green, and blue, plus the secondaries cyan, magenta and yellow, plus
+black and white.</p>
+<p>The 6 color faces are generated by feeding
+<a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a> three grids, one for each
+color component (R, G, and B). In some cases the X or Y axes of a face
+are reversed by specifying a negative width or height in order to change
+the variation of the color value in that direction from ascending to
+descending, or vice versa.</p>
+<p>A number of rays emanating from the white and black corners indicate the
+Hue value (ranging from 0 to 360). The dashed and dotted lines near the
+white corner reflect saturation levels, running from 0 to 1 (in black
+font). On these 3 faces the brightness is a constant value of 1. On the
+other 3 faces of the cube, around the black corner, the white decimal
+numbers indicate brightnesses between 0 and 1, with saturation fixed at 1.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#		GMT EXAMPLE 11</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Create a 3-D RGB Cube</span>
+<span class="c1"># GMT modules:	set, grdimage, grdmath, text, plot</span>
+<span class="c1"># Unix progs:	rm</span>
+gmt begin ex11
+<span class="c1"># Use gmt plot to plot &quot;cut-along-the-dotted&quot; lines.</span>
+	gmt <span class="nb">set</span> MAP_TICK_LENGTH_PRIMARY <span class="m">0</span>
+
+	<span class="c1"># First, create grids of ascending X and Y and constant 0.</span>
+	<span class="c1"># These are to be used to represent R, G and B values of the darker 3 faces of the cube.</span>
+	gmt grdmath -I1 -R0/255/0/255 <span class="nv">X</span> <span class="o">=</span> x1.nc
+	gmt grdmath <span class="nv">Y</span> <span class="o">=</span> y1.nc
+	gmt grdmath <span class="nv">0</span> <span class="o">=</span> c1.nc
+
+	<span class="c1"># Second, create grids of descending X and Y and constant 255.</span>
+	<span class="c1"># These are to be used to represent R, G and B values of the lighter 3 faces of the cube.</span>
+	gmt grdmath <span class="m">255</span> X <span class="nv">SUB</span> <span class="o">=</span> x2.nc
+	gmt grdmath <span class="m">255</span> Y <span class="nv">SUB</span> <span class="o">=</span> y2.nc
+	gmt grdmath <span class="nv">255</span>       <span class="o">=</span> c2.nc
+
+	gmt plot @cut-here_11.txt -Wthinnest,. -R-51/306/0/1071 -JX3.5i/10.5i -X2.5i -Y0.5i
+
+	gmt <span class="nb">set</span> FONT_ANNOT_PRIMARY 12p,Helvetica-Bold
+
+	gmt grdimage x1.nc y1.nc c1.nc -JX2.5i/-2.5i -X0.5i -R0/255/0/255
+	gmt plot -Wthinner,white,- @rays_11.txt
+	gmt text --FONT<span class="o">=</span>white -F+a+f <span class="s">&lt;&lt;- END</span>
+<span class="s">	128 128 -45 12p 60\217</span>
+<span class="s">	102  26 -90 12p 0.4</span>
+<span class="s">	204  26 -90 12p 0.8</span>
+<span class="s">	10  140 180 16p G</span>
+<span class="s">	END</span>
+	<span class="nb">echo</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">128</span> <span class="p">|</span> gmt plot -N -Sv0.15i+s+e -Gwhite -W2p,white
+
+	gmt grdimage x1.nc c1.nc y1.nc -JX2.5i/2.5i -Y2.5i
+	gmt plot -Wthinner,white,- @rays_11.txt
+	gmt text --FONT<span class="o">=</span>white -F+a+f <span class="s">&lt;&lt;- END</span>
+<span class="s">	128 128  45 12p 300\217</span>
+<span class="s">	26  102   0 12p 0.4</span>
+<span class="s">	26  204   0 12p 0.8</span>
+<span class="s">	140  10 -90 16p R</span>
+<span class="s">	100 100 -45 16p V</span>
+<span class="s">	END</span>
+	<span class="nb">echo</span> <span class="m">0</span> <span class="m">0</span> <span class="m">128</span> <span class="m">0</span> <span class="p">|</span> gmt plot -N -Sv0.15i+s+e -Gwhite -W2p,white
+	<span class="nb">echo</span> <span class="m">0</span> <span class="m">0</span> <span class="m">90</span> <span class="m">90</span> <span class="p">|</span> gmt plot -N -Sv0.15i+s+e -Gwhite -W2p,white
+
+	gmt grdimage c1.nc x1.nc y1.nc -JX-2.5i/2.5i -X-2.5i
+	gmt plot -Wthinner,white,- @rays_11.txt
+	gmt text --FONT<span class="o">=</span>white -F+a+f <span class="s">&lt;&lt;- END</span>
+<span class="s">	128 128 135 12p 180\217</span>
+<span class="s">	102  26  90 12p 0.4</span>
+<span class="s">	204  26  90 12p 0.8</span>
+<span class="s">	10  140   0 16p B</span>
+<span class="s">	END</span>
+	<span class="nb">echo</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span> <span class="m">128</span> <span class="p">|</span> gmt plot -N -Sv0.15i+s+e -Gwhite -W2p,white
+	<span class="nb">echo</span> <span class="m">0</span> <span class="m">0</span> <span class="m">128</span> <span class="m">0</span> <span class="p">|</span> gmt plot -N -Sv0.15i+s+e -Gwhite -W2p,white
+
+	gmt grdimage x2.nc y2.nc c2.nc -JX-2.5i/-2.5i -X2.5i -Y2.5i
+	gmt plot -Wthinner,black,- @rays_11.txt
+	gmt text -F+a+f <span class="s">&lt;&lt;- END</span>
+<span class="s">	128 128 225 12p 240\217</span>
+<span class="s">	102  26 270 12p 0.4</span>
+<span class="s">	204  26 270 12p 0.8</span>
+<span class="s">	END</span>
+
+	gmt grdimage c2.nc y2.nc x2.nc -JX2.5i/-2.5i -X2.5i
+	gmt plot -Wthinner,black,- @rays_11.txt
+	gmt text -F+a+f <span class="s">&lt;&lt;- END</span>
+<span class="s">	128 128 -45 12p 0\217</span>
+<span class="s">	26  102   0 12p 0.4</span>
+<span class="s">	26  204   0 12p 0.8</span>
+<span class="s">	100 100  45 16p S</span>
+<span class="s">	204  66  90 16p H</span>
+<span class="s">	END</span>
+	<span class="nb">echo</span> <span class="m">0</span> <span class="m">0</span> <span class="m">90</span> <span class="m">90</span> <span class="p">|</span> gmt plot -N -Sv0.15i+s+e -Gblack -W2p
+	<span class="nb">echo</span> <span class="m">204</span> <span class="m">204</span> <span class="m">204</span> <span class="m">76</span> <span class="p">|</span> gmt plot -N -Sv0.15i+s+e -Gblack -W2p
+
+	gmt grdimage x2.nc c2.nc y2.nc -JX-2.5i/2.5i -X-2.5i -Y2.5i
+	gmt plot -Wthinner,black,- @rays_11.txt
+	gmt text -F+a+f <span class="s">&lt;&lt;- END</span>
+<span class="s">	128 128 135 12p 120\217</span>
+<span class="s">	26  102 180 12p 0.4</span>
+<span class="s">	26  204 180 12p 0.8</span>
+<span class="s">	200 200 225 16p GMT</span>
+<span class="s">	END</span>
+
+	rm -f *.nc
+gmt end show
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<span id="fig-ex11"></span><a class="reference internal image-reference" href="../_images/ex11.png"><img alt="../_images/ex11.png" src="../_images/ex11.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">The RGB color cube</span></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ex12.html" class="btn btn-neutral float-right" title="(12) Optimal triangulation of data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ex10.html" class="btn btn-neutral float-left" title="(10) A geographical bar graph plot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

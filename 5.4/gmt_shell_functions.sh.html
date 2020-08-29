@@ -1,0 +1,278 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>gmt_shell_functions.sh &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gmt.conf" href="gmt.conf.html" />
+    <link rel="prev" title="fitcircle" href="fitcircle.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="gmt.conf.html" title="gmt.conf"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="fitcircle.html" title="fitcircle"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gmt-shell-functions-sh">
+<span id="index-0"></span><h1>gmt_shell_functions.sh<a class="headerlink" href="#gmt-shell-functions-sh" title="Permalink to this headline">¶</a></h1>
+<p>gmt_shell_functions.sh - Practical functions to be used in GMT Bourne Again shell scripts</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt_init_tmpdir</strong></p>
+<p><strong>gmt_remove_tmpdir</strong></p>
+<p><strong>gmt_clean_up</strong> [<em>prefix</em>]</p>
+<p><strong>gmt_message</strong> <em>message</em></p>
+<p><strong>gmt_abort</strong> <em>message</em></p>
+<p><strong>gmt_build_movie</strong> [<strong>-d</strong> <em>directory</em>] [<strong>-n</strong>] [<strong>-r</strong> <em>framerate</em>] [<strong>-v</strong>] <em>namestem</em></p>
+<p><strong>gmt_build_gif</strong> [<strong>-d</strong> <em>directory</em>] [<strong>-l</strong> <em>loop</em>] [<strong>-r</strong> <em>delay</em>] <em>namestem</em></p>
+<p><strong>gmt_build_kmz</strong> <strong>-p</strong> <em>prefix</em> [ <strong>-r</strong> ] <em>files</em></p>
+<p><strong>gmt_get_nrecords</strong> <em>file(s)</em></p>
+<p><strong>gmt_get_ndatarecords</strong> <em>file(s)</em></p>
+<p><strong>gmt_get_nfields</strong> <em>string</em></p>
+<p><strong>gmt_get_field</strong> <em>string</em></p>
+<p><strong>gmt_get_region</strong> <em>file(s)</em> [<em>options</em>]</p>
+<p><strong>gmt_get_gridregion</strong> <em>file</em> [<em>options</em>]</p>
+<p><strong>gmt_get_map_width</strong> <strong>-R</strong> <strong>-J</strong></p>
+<p><strong>gmt_get_map_height</strong> <strong>-R</strong> <strong>-J</strong></p>
+<dl class="docutils">
+<dt><strong>gmt_movie_script</strong> [<strong>-c</strong> <em>canvas</em> OR <strong>-e</strong> <em>dpi</em> <strong>-h</strong> <em>height</em> <strong>-w</strong> <em>width</em>] [<strong>-f</strong> <em>format</em>]</dt>
+<dd>[<strong>-g</strong> <em>fill</em>] [<strong>-n</strong> <em>frames</em>] [<strong>-m</strong> <em>margin</em>] [<strong>-r</strong> <em>rate</em>] <em>namestem</em></dd>
+</dl>
+<p><strong>gmt_launch_jobs</strong> [<strong>-c</strong> <em>n_cores</em>] [<strong>-l</strong> <em>nlines_per_cluster</em>] [<strong>-n</strong>] [<strong>-v</strong>] [<strong>-w</strong>] <em>commandfile</em></p>
+<p><strong>gmt_set_psfile</strong> <em>scriptfile</em></p>
+<p><strong>gmt_set_pdffile</strong> <em>scriptfile</em></p>
+<p><strong>gmt_set_framename</strong> <em>prefix framenumber</em></p>
+<p><strong>gmt_set_framenext</strong> <em>framenumber</em></p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt_shell_functions.sh</strong> provides a set of functions to Bourne
+(again) shell scripts in support of GMT. The calling shell script
+should include the following line, before the functions can be used:</p>
+<p><strong>. gmt_shell_functions.sh</strong></p>
+<p>Once included in a shell script, <strong>gmt_shell_functions.sh</strong> allows
+GMT users to do some scripting more easily than otherwise. The
+functions made available are:</p>
+<dl class="docutils">
+<dt><strong>gmt_init_tmpdir</strong></dt>
+<dd>Creates a temporary directory in <strong>/tmp</strong> or (when defined) in the
+directory specified by the environment variable <strong>TMPDIR</strong>. The name
+of the temporary directory is returned as environment variable
+<strong>GMT_TMPDIR</strong>. This function also causes GMT to run in
+‘isolation mode’, i.e., all temporary files will be created in
+<strong>GMT_TMPDIR</strong> and the <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file will not be adjusted.</dd>
+<dt><strong>gmt_remove_tmpdir</strong></dt>
+<dd>Removes the temporary directory and unsets the <strong>GMT_TMPDIR</strong>
+environment variable.</dd>
+<dt><strong>gmt_cleanup</strong></dt>
+<dd>Remove all files and directories in which the current process number
+is part of the file name. If the optional <em>prefix</em> is given then we
+also delete all files and directories that begins with the given prefix.</dd>
+<dt><strong>gmt_message</strong></dt>
+<dd>Send a message to standard error.</dd>
+<dt><strong>gmt_abort</strong></dt>
+<dd>Send a message to standard error and exit the shell.</dd>
+<dt><strong>gmt_get_nrecords</strong></dt>
+<dd>Returns the total number of lines in <em>file(s)</em></dd>
+<dt><strong>gmt_get_ndatarecords</strong></dt>
+<dd>Returns the total number of data records in <em>file(s)</em>, i.e., not counting headers.</dd>
+<dt><strong>gmt_get_nfields</strong></dt>
+<dd>Returns the number of fields or words in <em>string</em></dd>
+<dt><strong>gmt_get_field</strong></dt>
+<dd>Returns the given <em>field</em> in a <em>string</em>. Must pass <em>string</em> between
+double quotes to preserve it as one item.</dd>
+<dt><strong>gmt_get_region</strong></dt>
+<dd>Returns the region in the form w/e/s/n based on the data in table
+<em>file(s)</em>. Optionally add <strong>-I</strong><em>dx</em>/<em>dy</em> to round off the answer.</dd>
+<dt><strong>gmt_get_gridregion</strong></dt>
+<dd>Returns the region in the form w/e/s/n based on the header of a grid
+<em>file</em>. Optionally add <strong>-I</strong><em>dx</em>/<em>dy</em> to round off the answer.</dd>
+<dt><strong>gmt_get_map_width</strong></dt>
+<dd>Expects the user to give the desired <strong>-R</strong> <strong>-J</strong> settings and
+returns the map width in the current measurement unit.</dd>
+<dt><strong>gmt_get_map_height</strong></dt>
+<dd>Expects the user to give the desired <strong>-R</strong> <strong>-J</strong> settings and
+returns the map height in the current measurement unit.</dd>
+<dt><strong>gmt_movie_script</strong></dt>
+<dd>Creates an animation bash script template based on the arguments
+that set size, number of frames, video format etc.
+Without arguments the function will display its usage.</dd>
+<dt><strong>gmt_launch_jobs</strong></dt>
+<dd>Takes a file with a long list of commands and splits them into
+many chunks that can be executed concurrently. Without arguments
+the function will display its usage.  Note: It is your responsibility
+to make sure no race conditions occur (i.e., multiple commands
+writing to the same file).</dd>
+<dt><strong>gmt_set_psfile</strong></dt>
+<dd>Create the output PostScript file name based on the base name of a
+given file (usually the script name <strong>$0</strong>).</dd>
+<dt><strong>gmt_set_framename</strong></dt>
+<dd>Returns a lexically ordered filename stem (i.e., no extension) given
+the file prefix and the current frame number, using a width of 6 for
+the integer including leading zeros. Useful when creating animations
+and lexically sorted filenames are required.</dd>
+<dt><strong>gmt_set_framenext</strong></dt>
+<dd>Accepts the current frame integer counter and returns the next
+integer counter.</dd>
+<dt><strong>gmt_build_movie</strong></dt>
+<dd>Accepts a <em>namestem</em> which gives the prefix of a series of image files
+with names <em>dir</em>/<em>namestem</em>_*.*.  Optional argument sets the
+directory [same as <em>namestem</em>], and frame rate [24].
+Without arguments the function will display its usage.</dd>
+<dt><strong>gmt_build_gif</strong></dt>
+<dd>Accepts a <em>namestem</em> which gives the prefix of a series of image files
+with names <em>dir</em>/<em>namestem</em>_*.*.  Optional argument sets the
+directory [same as <em>namestem</em>], loop count and frame rate [24].
+Without arguments the function will display its usage.</dd>
+<dt><strong>gmt_build_kmz</strong></dt>
+<dd>Accepts <strong>-p</strong> <em>prefix</em> [ <strong>-r</strong> ] and any number of KML files and
+and the images they may refer to, and builds a single KMZ file with
+the name <em>prefix</em>.kmz.
+Without arguments the function will display its usage.</dd>
+</dl>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>1. These functions only work in the Bourne shell (<strong>sh</strong>) and their
+derivatives (like <strong>ash</strong>, <strong>bash</strong>, <strong>ksh</strong> and <strong>zsh</strong>). These
+functions do not work in the C shell (<strong>csh</strong>) or their derivatives
+(like <strong>tcsh</strong>), and cannot be used in DOS batch scripts either.</p>
+<p>2. <strong>gmt_shell_functions.sh</strong> were first introduced in GMT version
+4.2.2 and have since been regularly expanded with other practical
+scripting short-cuts. If you want to suggest other functions, please do
+so by adding a New Issue request on gmt.soest.hawaii.edu.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a> , <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> ,
+<a class="reference internal" href="gmtinfo.html"><span class="doc">gmtinfo</span></a> , <a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gmt_shell_functions.sh</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="fitcircle.html"
+                        title="previous chapter">fitcircle</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gmt.conf.html"
+                        title="next chapter">gmt.conf</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/gmt_shell_functions.sh.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="gmt.conf.html" title="gmt.conf"
+             >next</a> </li>
+        <li class="right" >
+          <a href="fitcircle.html" title="fitcircle"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

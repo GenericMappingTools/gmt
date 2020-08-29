@@ -1,0 +1,765 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>19. The GMT Vector Data Format for OGR Compatibility &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="20. GMT Modern Mode One-line Commands" href="one-liner.html" />
+    <link rel="prev" title="18. Annotation of Contours and “Quoted Lines”" href="contour_annotations.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preface.html">1. Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html">2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">3. General Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="options.html">4. Standardized command line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinate_transformations.html">5. GMT Coordinate Transformations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="map_projections.html">6. GMT Map Projections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplemental_packages.html">7. GMT Supplemental Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html">8. GMT File Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="include_figures.html">9. Including GMT Graphics into your Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predefined_patterns.html">10. Predefined Bit and Hachure Patterns in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="octal_codes.html">11. Chart of Octal Codes for Characters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postscript_fonts.html">12. PostScript Fonts Used by GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">13. Color Space: The Final Frontier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_filtering.html">14. Filtering of Data in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_unix_platforms.html">15. GMT on non-UNIX Platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpts.html">16. Of Colors and Color Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_symbols.html">17. Custom Plot Symbols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contour_annotations.html">18. Annotation of Contours and “Quoted Lines”</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">19. The GMT Vector Data Format for OGR Compatibility</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#background">19.1. Background</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-ogr-gmt-format">19.2. The OGR/GMT format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ogr-gmt-metadata">19.3. OGR/GMT Metadata</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#format-version">19.3.1. Format version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geometry-types">19.3.2. Geometry types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#domain-and-map-projections">19.3.3. Domain and map projections</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#declaration-of-aspatial-fields">19.3.4. Declaration of aspatial fields</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#ogr-gmt-data">19.4. OGR/GMT Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#embedding-aspatial-data">19.4.1. Embedding aspatial data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#polygon-topologies">19.4.2. Polygon topologies</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">19.5. Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="one-liner.html">20. GMT Modern Mode One-line Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../cookbook.html">GMT Cookbook</a> &raquo;</li>
+        
+      <li>19. The GMT Vector Data Format for OGR Compatibility</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/cookbook/ogrgmt_format.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="the-gmt-vector-data-format-for-ogr-compatibility">
+<span id="ogr-compat"></span><h1>19. The GMT Vector Data Format for OGR Compatibility<a class="headerlink" href="#the-gmt-vector-data-format-for-ogr-compatibility" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="background">
+<h2>19.1. Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>The National Institute for Water and Atmospheric Research (NIWA) in New
+Zealand has funded the implementation of a GMT driver (read and write)
+for the OGR package. OGR is an Open Source toolkit for accessing or
+reformatting vector (spatial) data stored in a variety of formats and is
+part of the. The intention was to enable the easy rendering (using
+GMT) of spatial data held in non-GMT formats, and the export of
+vector data (e.g., contours) created by GMT for use with other GIS and
+mapping packages. While <strong>ogr2ogr</strong> has had the capability to write
+this new format since 2009, GMT 4 did not have the capability to use
+the extra information.</p>
+<p>GMT now allows for more advanced vector data, including donut
+polygons (polygons with holes) and aspatial attribute data. At the same
+time, the spatial data implementation will not disrupt older GMT 4
+programs since all the new information are written via comments.</p>
+<p>The identification of spatial feature types in GMT files generally
+follows the technical description, (which is largely consistent with the
+OGC SFS specification). This specification provides for non-topological
+point, line and polygon (area) features, as well as multipoint,
+multiline and multipolygon features, and was written by
+<a class="reference external" href="http://www.niwa.co.nz/key-contacts/brent-wood/">Brent Wood</a>
+based on input from Paul Wessel and others on the GMT team.</p>
+</div>
+<div class="section" id="the-ogr-gmt-format">
+<h2>19.2. The OGR/GMT format<a class="headerlink" href="#the-ogr-gmt-format" title="Permalink to this headline">¶</a></h2>
+<p>Several key properties of the OGR/GMT format is summarized below:</p>
+<ul class="simple">
+<li>All new data fields are stored as comment lines, i.e., in lines
+starting with a “#”. OGR/GMT files are therefore compatible with
+GMT 4 binaries, which will simply ignore this new information.</li>
+<li>To be consistent with current practice in GMT, data fields are
+represented as whitespace-separated strings within the comments, each
+identified by the “&#64;” character as a prefix, followed by a single
+character identifying the content of the field. To avoid confusion
+between words and strings, the word (field) separator within strings
+will be the “|” (pipe or vertical bar) character.</li>
+<li>Standard UNIX “&quot; escaping is used, such as \n for newline in a string.</li>
+<li>All new data are stored before the spatial data (coordinates) in the
+file, so when any GMT program is processing the coordinate data
+for a feature, it will already have parsed any non-spatial
+information for each feature, which may impact on how the spatial
+data is treated (e.g., utilizing the aspatial attribute data for a
+feature to control symbology).</li>
+<li>The first comment line must specify the version of the OGR/GMT data
+format, to allow for future changes or enhancements to be supported
+by future GMT programs. This document describes v1.0.</li>
+<li>For consistency with other GIS formats (such as shapefiles) the
+OGR/GMT format explicitly contains a field specifying whether the
+features are points, linestrings or polygons, or the “multi” versions
+of these. (Other shapefile feature types will not be supported at
+this stage). At present, GMT programs are informed of this via
+command line parameters. This will now be explicit in the data file,
+but does not preclude command line switches setting symbologies for
+plotting polygons as lines (perimeters) or with fills, as is
+currently the practice.</li>
+<li>Note that what is currently called a “multiline” (multi-segment) file
+in GMT parlance is generally a set of “lines” in shapefile/OGR
+usage. A multiline in this context is a single feature comprising
+multiple lines. For example, all the transects from a particular
+survey may be stored as lines, each with it’s own attribute set, such
+as transect number, date/time, etc. They may also be stored as a
+single multiline feature with one attribute set, such as trip ID.
+This difference is explicitly stored in the data in OGR/shapefiles,
+but currently specified only on the command line in GMT. This
+applies also to points and polygons. The GMT equivalent to
+{multipoint, multiline, multipolygon} datatypes is multiple
+GMT files, each comprising a single {multipoint, multiline,
+multipolygon} feature.</li>
+<li>The new GMT vector data files includes a header comment specifying
+the type of spatial features it contains, as well as the description
+of the aspatial attribute data to be associated with each feature.
+Unlike the shapefile format, which stores the spatial and aspatial
+attribute data in separate files, the GMT format will store all
+data in a single file.</li>
+<li>All the features in a GMT file must be of the same type.</li>
+</ul>
+</div>
+<div class="section" id="ogr-gmt-metadata">
+<h2>19.3. OGR/GMT Metadata<a class="headerlink" href="#ogr-gmt-metadata" title="Permalink to this headline">¶</a></h2>
+<p>Several pieces of metadata information must be present in the header of
+the OGR/GMT file, followed by both spatial and aspatial data. In this
+section we look at the metadata.</p>
+<div class="section" id="format-version">
+<h3>19.3.1. Format version<a class="headerlink" href="#format-version" title="Permalink to this headline">¶</a></h3>
+<p>The comment header line will include a version identifier providing for
+possible different versions in future. It is indicated by the <strong>&#64;V</strong>
+sequence.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="16%" />
+<col width="72%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Code</strong></th>
+<th class="head"><strong>Argument</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>V</td>
+<td>GMT1.0</td>
+<td>Data in this file is stored using v1.0 of the OGR/GMT data format</td>
+</tr>
+</tbody>
+</table>
+<p>An OGR/GMT file must therefore begin with the line</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @VGMT1.0</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Parsing of the OGR/GMT format is only activated if the version
+code-sequence has been found.</p>
+</div>
+<div class="section" id="geometry-types">
+<h3>19.3.2. Geometry types<a class="headerlink" href="#geometry-types" title="Permalink to this headline">¶</a></h3>
+<p>The words and characters used to specify the geometry type (preceded by
+the <strong>&#64;G</strong> code sequence on the header comment line), are listed in
+Table <a class="reference internal" href="#tbl-geometries"><span class="std std-ref">geometries</span></a>.</p>
+<table border="1" class="docutils" id="tbl-geometries">
+<colgroup>
+<col width="9%" />
+<col width="15%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Code</strong></th>
+<th class="head"><strong>Geometry</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>G</td>
+<td>POINT</td>
+<td>File with point features</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>(Each point will have it’s own attribute/header line preceding the point coordinates)</td>
+</tr>
+<tr class="row-even"><td>G</td>
+<td>MULTIPOINT</td>
+<td>File with a single multipoint feature</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>(All the point features are a single multipoint, with the same attribute/header</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>information)</td>
+</tr>
+<tr class="row-odd"><td>G</td>
+<td>LINESTRING</td>
+<td>File with features comprising multiple single lines</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>(Effectively the current GMT multiline file, each line feature will have it’s own</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>attribute and header data)</td>
+</tr>
+<tr class="row-even"><td>G</td>
+<td>MULTILINESTRING</td>
+<td>File with features comprising a multiline</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>(All the line features in the file are a single multiline feature, only one attribute</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>and header which applies to all the lines)</td>
+</tr>
+<tr class="row-odd"><td>G</td>
+<td>POLYGON</td>
+<td>File with one or more polygons</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>(Similar to a line file, except the features are closed polygons)</td>
+</tr>
+<tr class="row-odd"><td>G</td>
+<td>MULTIPOLYGON</td>
+<td>File with a single multipolygon</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>(Similar to a GMT multiline file, except the feature is a closed multipolygon)</td>
+</tr>
+</tbody>
+</table>
+<p>An example GMT polygon file header using this specification (in format 1.0) is</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @VGMT1.0 @GPOLYGON</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="domain-and-map-projections">
+<h3>19.3.3. Domain and map projections<a class="headerlink" href="#domain-and-map-projections" title="Permalink to this headline">¶</a></h3>
+<p>The new format will also support region and projection information. The
+region will be stored in GMT <strong>-R</strong> format (i.e., <strong>-R</strong><em>W/E/S/N</em>,
+where the <em>W/E/S/N</em> values represent the extent of features); the <strong>&#64;R</strong>
+code sequence marks the domain information. A sample region header is:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @R150/190/-45/-54</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Projection information will be represented as four optional strings,
+prefixed by <strong>&#64;J</strong> (J being the GMT character for projection
+information. The <strong>&#64;J</strong> code will be followed by a character identifying
+the format, as shown in Table <a class="reference internal" href="#tbl-projectspec"><span class="std std-ref">projectspec</span></a>.</p>
+<table border="1" class="docutils" id="tbl-projectspec">
+<colgroup>
+<col width="11%" />
+<col width="89%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Code</strong></th>
+<th class="head"><strong>Projection Specification</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>&#64;Je</td>
+<td>EPSG code for the projection</td>
+</tr>
+<tr class="row-odd"><td>&#64;Jg</td>
+<td>A string representing the projection parameters as used by GMT</td>
+</tr>
+<tr class="row-even"><td>&#64;Jp</td>
+<td>A string comprising the Proj.4 parameters representing the projection parameters</td>
+</tr>
+<tr class="row-odd"><td>&#64;Jw</td>
+<td>A string comprising the OGR WKT (well known text) representation of the projection parameters</td>
+</tr>
+</tbody>
+</table>
+<p>Sample projection strings are:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @Je4326 @JgX @Jp&quot;+proj=longlat +ellps=WGS84+datum=WGS84 +no_defs&quot;</span>
+<span class="c1"># @Jw&quot;GEOGCS[\&quot;WGS84\&quot;,DATUM[\&quot;WGS_1984\&quot;,SPHEROID\&quot;WGS84\&quot;,6378137,\</span>
+<span class="m">298</span>.257223563,AUTHORITY<span class="o">[</span><span class="se">\&quot;</span>EPSG<span class="se">\&quot;</span>,<span class="se">\&quot;</span><span class="m">7030</span><span class="se">\&quot;</span><span class="o">]]</span>,TOWGS84<span class="o">[</span><span class="m">0</span>,0,0,0,0,0,0<span class="o">]</span>,
+AUTHORITY<span class="o">[</span><span class="se">\&quot;</span>EPSG<span class="se">\&quot;</span>,<span class="se">\&quot;</span><span class="m">6326</span><span class="se">\&quot;</span><span class="o">]]</span>,PRIMEM<span class="o">[</span><span class="se">\&quot;</span>Greenwich<span class="se">\&quot;</span>,0,<span class="se">\</span>
+AUTHORITY<span class="o">[</span><span class="se">\&quot;</span>EPSG<span class="se">\&quot;</span>,<span class="se">\&quot;</span><span class="m">8901</span><span class="se">\&quot;</span><span class="o">]]</span>,UNIT<span class="o">[</span><span class="se">\&quot;</span>degree<span class="se">\&quot;</span>,0.01745329251994328,<span class="se">\</span>
+AUTHORITY<span class="o">[</span><span class="se">\&quot;</span>EPSG<span class="se">\&quot;</span>,<span class="se">\&quot;</span><span class="m">9122</span><span class="se">\&quot;</span><span class="o">]]</span>,AUTHORITY<span class="o">[</span><span class="se">\&quot;</span>EPSG<span class="se">\&quot;</span>,<span class="se">\&quot;</span><span class="m">4326</span><span class="se">\&quot;</span><span class="o">]]</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note that an OGR-generated file will not have a <strong>&#64;Jg</strong> string, as OGR
+does not have any knowledge of the GMT projection specification
+format. GMT supports at least one of the other formats to provide
+interoperability with other Open Source related GIS software packages.
+One relatively simple approach, (with some limitations), would be a
+lookup table matching EPSG codes to GMT strings.</p>
+</div>
+<div class="section" id="declaration-of-aspatial-fields">
+<h3>19.3.4. Declaration of aspatial fields<a class="headerlink" href="#declaration-of-aspatial-fields" title="Permalink to this headline">¶</a></h3>
+<p>The string describing the aspatial field names associated with the
+features is flagged by the <strong>&#64;N</strong> prefix.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="27%" />
+<col width="61%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Code</strong></th>
+<th class="head"><strong>Argument</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>N</td>
+<td>word|word|word</td>
+<td>A “|” -separated string of names of the attribute field names</td>
+</tr>
+</tbody>
+</table>
+<p>Any name containing a space must be quoted. The <strong>&#64;N</strong> selection must be
+combined with a matching string specifying the data type for each of the
+named fields, using the <strong>&#64;T</strong> prefix.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="28%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Code</strong></th>
+<th class="head"><strong>Argument</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>T</td>
+<td>word|word|word</td>
+<td>A “|” -separated string of the attribute field data types</td>
+</tr>
+</tbody>
+</table>
+<p>Available datatypes should largely follow the shapefile (DB3)
+specification, including <strong>string</strong>, <strong>integer</strong>, <strong>double</strong>,
+<strong>datetime</strong>, and <strong>logical</strong> (boolean). In OGR/GMT vector files, they
+will be stored as appropriately formatted text strings.</p>
+<p>An example header record containing all these is</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @VGMT1.0 @GPOLYGON @Nname|depth|id @Tstring|double|integer</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="ogr-gmt-data">
+<h2>19.4. OGR/GMT Data<a class="headerlink" href="#ogr-gmt-data" title="Permalink to this headline">¶</a></h2>
+<p>All generic fields must be at the start of the file before any
+feature-specific content (feature attribute data follow the metadata, as
+do the feature coordinates, separated by a comment line comprising “#
+FEATURE_DATA”. Provided each string is formatted as specified, and
+occurs on a line prefixed with “#” (i.e., is a comment), the format is
+free form, in that as many comment lines as desired may be used, with
+one or more parameter strings in any order in any line. E.g., one
+parameter per line, or all parameters on one line.</p>
+<div class="section" id="embedding-aspatial-data">
+<h3>19.4.1. Embedding aspatial data<a class="headerlink" href="#embedding-aspatial-data" title="Permalink to this headline">¶</a></h3>
+<p>Following this header line is the data itself, both aspatial and
+spatial. For line and polygon (including multiline and multipolygon)
+data, features are separated using a predefined character, by default
+“&gt;”. For point (and multipoint) data, no such separator is required. The
+comment line containing the aspatial data for each feature will
+immediately precede the coordinate line(s). Thus in the case of lines
+and polygons, it will immediately follow the “&gt;” line. The data line
+will be a comment flag (“#”) followed by <strong>&#64;D</strong>, followed by a string of
+“|”-separated words comprising the data fields defined in the
+header record.</p>
+<p>To allow for names and values containing spaces, such string items among
+the <strong>&#64;N</strong> or <strong>&#64;D</strong> specifiers must be enclosed in double quotes.
+(Where double quotes or pipe characters are included in the string, they
+must be escaped using “&quot;). Where any data values are
+null, they will be represented as no characters between the field
+separator, (e.g., #&#64;D|||). A Sample header
+and corresponding data line for points are</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @VGMT1.0 @GPOINT @Nname|depth|id @Tstring|double|integer</span>
+<span class="c1"># @D&quot;Point 1&quot;|-34.5|1</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>while for a polygon it may look like</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @VGMT1.0 @GPOLYGON @Nname|depth|id @Tstring|double|integer</span>
+&gt;
+<span class="c1"># @D&quot;Area 1&quot;|-34.5|1</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="polygon-topologies">
+<h3>19.4.2. Polygon topologies<a class="headerlink" href="#polygon-topologies" title="Permalink to this headline">¶</a></h3>
+<p>New to GMT is the concept of polygon holes. Most other formats do
+support this structure, so that a polygon is specified as a sequence of
+point defining the perimeter, optionally followed by similar coordinate
+sequences defining any holes (the “donut” polygon concept).</p>
+<p>To implement this in a way which is compatible with previous
+GMT versions, each polygon feature must be able to be identified as
+the outer perimeter, or an inner ring (hole). This is done using a
+<strong>&#64;P</strong> or <strong>&#64;H</strong> on the data comment preceding the polygon coordinates.
+The <strong>&#64;P</strong> specifies a new feature boundary (perimeter), any following
+<strong>&#64;H</strong> polygons are holes, and must be within the preceding <strong>&#64;P</strong>
+polygon (as described in the shapefile specification). Any <strong>&#64;H</strong>
+polygons will NOT have any <strong>&#64;D</strong> values, as the aspatial attribute data
+pertain to the entire feature, the <strong>&#64;H</strong> polygons are not new polygons,
+but are merely a continuation of the definition of the same feature.
+Note: The perimeter and the hole(s) must have different handedness.
+E.g., if the perimeter goes counter-clockwise then the holes must go
+clockwise, and vice versa.  This is important to follow if you are creating
+such features manually.</p>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>19.5. Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Sample point, line and polygon files are (the new data structures are in
+lines starting with “#” in strings prefixed with “&#64;”). Here is a typical
+point file:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @VGMT1.0 @GPOINT @Nname|depth|id</span>
+<span class="c1"># @Tstring|double|integer</span>
+<span class="c1"># @R178.43/178.5/-57.98/-34.5</span>
+<span class="c1"># @Je4326</span>
+<span class="c1"># @Jp&quot;+proj=longlat +ellps=WGS84 +datum=WGS84+no_defs&quot;</span>
+<span class="c1"># FEATURE_DATA</span>
+<span class="c1"># @D&quot;point 1&quot;|-34.5|1</span>
+<span class="m">178</span>.5 -45.7
+<span class="c1"># @D&quot;Point 2&quot;|-57.98|2</span>
+<span class="m">178</span>.43 -46.8
+...
+</pre></div>
+</div>
+</div></blockquote>
+<p>Next is an example of a line file:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @VGMT1.0 @GLINESTRING @Nname|depth|id</span>
+<span class="c1"># @Tstring|double|integer</span>
+<span class="c1"># @R178.1/178.6/-48.7/-45.6</span>
+<span class="c1"># @Jp&quot;+proj=longlat +ellps=WGS84 +datum=WGS84+no_defs&quot;</span>
+<span class="c1"># FEATURE_DATA</span>
+&gt; -W0.25p
+<span class="c1"># @D&quot;Line 1&quot;|-50|1</span>
+<span class="m">178</span>.5 -45.7
+<span class="m">178</span>.6 -48.2
+<span class="m">178</span>.4 -48.7
+<span class="m">178</span>.1 -45.6
+&gt; -W0.25p
+<span class="c1"># @D&quot;Line 2&quot;|-57.98|$</span>
+<span class="m">178</span>.43 -46.8
+...
+</pre></div>
+</div>
+</div></blockquote>
+<p>Finally we show an example of a polygon file:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @VGMT1.0 @GPOLYGON @Npolygonname|substrate|id @Tstring|string|integer</span>
+<span class="c1"># @R178.1/178.6/-48.7/-45.6</span>
+<span class="c1"># @Jj@Jp&quot;+proj=longlat +ellps=WGS84 +datum=WGS84+no_defs&quot;</span>
+<span class="c1"># FEATURE_DATA</span>
+&gt; -Gblue -W0.25p
+<span class="c1"># @P</span>
+<span class="c1"># @D&quot;Area 1&quot;|finesand|1</span>
+<span class="m">178</span>.1 -45.6
+<span class="m">178</span>.1 -48.2
+<span class="m">178</span>.5 -48.2
+<span class="m">178</span>.5 -45.6
+<span class="m">178</span>.1 -45.6
+&gt;
+<span class="c1"># @H</span>
+<span class="c1"># First hole in the preceding perimeter, so is technically still</span>
+<span class="c1"># part of the same geometry, despite the preceding &gt; character.</span>
+<span class="c1"># No attribute data is provided, as this is inherited.</span>
+<span class="m">178</span>.2 -45.4
+<span class="m">178</span>.2 -46.5
+<span class="m">178</span>.4 -46.5
+<span class="m">178</span>.4 -45.4
+<span class="m">178</span>.2 -45.4
+&gt;
+<span class="c1"># @P</span>
+...
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="one-liner.html" class="btn btn-neutral float-right" title="20. GMT Modern Mode One-line Commands" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="contour_annotations.html" class="btn btn-neutral float-left" title="18. Annotation of Contours and “Quoted Lines”" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

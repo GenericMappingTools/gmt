@@ -1,0 +1,390 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>gshhg &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="img2grd" href="../img/img2grd.html" />
+    <link rel="prev" title="xyz2grd" href="../../xyz2grd.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../img/img2grd.html" title="img2grd"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="../../xyz2grd.html" title="xyz2grd"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gshhg">
+<span id="index-0"></span><h1>gshhg<a class="headerlink" href="#gshhg" title="Permalink to this headline">¶</a></h1>
+<p>gshhg - Extract data tables from binary GSHHG or WDBII data files</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gshhg</strong> <em>binaryfile.b</em> [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>min</em> ] [ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong> ] [ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>id</em> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong> ] [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>level</em> ] [ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><strong>e</strong>|<strong>i</strong> ]
+[ <strong>-bo</strong><a class="reference internal" href="../../gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-do</strong><a class="reference internal" href="../../gmt.html#do-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>gshhg</strong> reads the binary coastline (GSHHG) or political boundary or
+river (WDBII) files and writes an ASCII (or binary; see <strong>-b</strong>) listing
+to standard output. It automatically
+handles byte-swabbing between different architectures. Optionally, only
+segment header info can be displayed. The header info has the format <em>ID
+npoints hierarchical-level source area f_area west east south north
+container ancestor</em>, where hierarchical levels for coastline polygons go
+from 1 (shoreline) to 4 (lake inside island inside lake inside land).
+Source is either W (World Vector Shoreline) or C (CIA World Data Bank
+II); lower case is used if a lake is a river-lake. The <em>west east south
+north</em> is the enclosing rectangle, <em>area</em> is the polygon area in km^2
+while <em>f_area</em> is the actual area of the ancestor polygon, <em>container</em>
+is the ID of the polygon that contains this polygon (-1 if none), and
+<em>ancestor</em> is the ID of the polygon in the full resolution set that was
+reduced to yield this polygon (-1 if full resolution since there is no
+ancestor). For line data the header is simply <em>ID npoints
+hierarchical-level source west east south north</em>. For more information
+about the file formats, see TECHNICAL INFORMATION below.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>binaryfile.b</em></dt>
+<dd>GSHHG or WDBII binary data file as distributed with the GSHHG data
+supplement. Any of the 5 standard resolutions (full, high,
+intermediate, low, crude) can be used.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong><em>min</em></dt>
+<dd>Only output information for the polygon if its area equals or
+exceeds <em>min</em> [Default outputs all polygons].</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong></dt>
+<dd>Write output that can be imported into GNU Octave or Matlab by
+ending segments with a NaN-record.</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>id</em></dt>
+<dd>Only output information for the polygon that matches <em>id</em>. Use
+<strong>-Ic</strong> to get all the continents only [Default outputs all
+polygons].  See below for the <em>id</em> of the largest polygons.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong></dt>
+<dd>Only output a listing of polygon or line segment headers [Default
+outputs headers and data records].</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong></dt>
+<dd>Only output features whose level matches the given <em>level</em> [Default
+will output all levels].</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Qe</strong>|<strong>i</strong></dt>
+<dd>Control what to do with river-lakes (river sections large enough to
+be stored as closed polygons). Use <strong>-Qe</strong> to exclude them and
+<strong>-Qi</strong> to exclude everything else instead [Default outputs all
+polygons].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="../../gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-do</strong><em>nodata</em> <a class="reference internal" href="../../gmt.html#do-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace output columns that equal NaN with <em>nodata</em>.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-o</strong><em>cols</em>[,…] <a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select output columns (0 is first column).</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To convert the entire intermediate GSHHG binary data to ASCII files for
+Octave/Matlab, run</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">gshhg</span> <span class="n">gshhs_i</span><span class="o">.</span><span class="n">b</span> <span class="o">--</span><span class="n">IO_SEGMENT_MARKER</span><span class="o">=</span><span class="n">N</span> <span class="o">&gt;</span> <span class="n">gshhs_i</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To only get a listing of the headers for the river data set at full
+resolution, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">gshhg</span> <span class="n">wdb_rivers_f</span><span class="o">.</span><span class="n">b</span> <span class="o">-</span><span class="n">L</span> <span class="o">&gt;</span> <span class="n">riverlisting</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To only extract lakes, excluding river-lakes, from the high resolution
+file, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">gshhg</span> <span class="n">gshhs_h</span><span class="o">.</span><span class="n">b</span> <span class="o">-</span><span class="n">Ee</span> <span class="o">-</span><span class="n">N2</span> <span class="o">&gt;</span> <span class="n">all_lakes</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="specific-polygons">
+<h2>Specific Polygons<a class="headerlink" href="#specific-polygons" title="Permalink to this headline">¶</a></h2>
+<p>None of the polygons have any name information associated with them (i.e.,
+the metadata does not contain this information).  However, here are the
+largest polygons:</p>
+<table border="1" class="docutils" id="tbl-polygons">
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">ID</th>
+<th class="head">Landmass</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>Eurasia</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>Africa</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>North America</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>South America</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>Antarctica (AC grounding line)</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>Antarctica (AC ice line)</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>Australia</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>Greenland</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>New Guinea</td>
+</tr>
+<tr class="row-odd"><td>9</td>
+<td>Borneo</td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>Madagascar</td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>Baffin Island</td>
+</tr>
+<tr class="row-even"><td>12</td>
+<td>Indonesia</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="technical-information">
+<h2>Technical Information<a class="headerlink" href="#technical-information" title="Permalink to this headline">¶</a></h2>
+<p>Users who wish to access the GSHHG or WDBII data directly from their
+custom programs should consult the gshhg.c and gshhg.h source code and
+familiarize themselves with the data format and how various information
+flags are packed into a single 4-byte integer. While we do not maintain
+any Octave/Matlab code to read these files we are aware that both
+MathWorks and IDL have made such tools available to their users.
+However, they tend not to update their code and our file structure has
+evolved considerably over time, breaking their code. Here, some general
+technical comments on the binary data files are given.
+<strong>GSHHG</strong>: These files contain completely closed polygons of continents
+and islands (level 1), lakes (level 2), islands-in-lakes (level 3) and
+ponds-in-islands-in-lakes (level 4); a particular level can be extracted
+using the <strong>-N</strong> option. Continents are identified as the first 6
+polygons and can be extracted via the <strong>-Ic</strong> option. The IDs for the
+continents are Eurasia (0), Africa (1), North America
+(2), South America (3), Antarctica (4), and Australia
+(5). Files are sorted on area from large to small.
+There are two sub-groups for level 2: Regular lakes and the so-called
+“river-lakes”, the latter being sections of a river that are so wide to
+warrant a polygon representation. These river-lakes are flagged in the
+header (also see <strong>-Q</strong>). All five resolutions are free of
+self-intersections. Areas of all features have been computed using a
+Lambert azimuthal equal-area projection centered on the polygon
+centroids, using WGS-84 as the ellipsoid. GMT use the GSHHG as a
+starting point but then partition the polygons into pieces using a
+resolution-dependent binning system; parts of the world are then rebuilt
+into closed polygons on the fly as needed. For more information on GSHHG
+processing, see Wessel and Smith (1996).
+<strong>WDBII</strong>. These files contain sets of line segments not necessarily in
+any particular order. Thus, it is not possible to extract information
+pertaining to just one river or one country. Furthermore, the 4 lower
+resolutions derive directly from the full resolution by application of
+the Douglas-Peucker algorithm (see gshhg_dp), hence self-intersections
+are increasingly likely as the resolution is degraded. Note that the
+river-lakes included in GSHHG are also duplicated in the WDBII river
+files so that each data set can be a stand-alone representation. Users
+who wish to access both data sets can recognize the river-lakes features
+by examining the header structure (see the source code for details);
+they are also the only closed polygons in the WDBII river file. There
+are many levels (classes) in the river file: River-lakes (0), Permanent
+major rivers (1), Additional major rivers
+(2), Additional rivers (3), Minor rivers (4), Intermittent rivers -- major
+(6), Intermittent rivers -- additional (7), Intermittent rivers -- minor
+(8), Major canals (10), Canals of lesser importance
+(11), and Canals -- irrigation type (12). For the border file there are
+three levels: National boundaries (1), Internal
+domestic boundaries (2), and international
+maritime boundaries (3). Individual levels or
+classes may be extracted via <strong>-N</strong>.</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Douglas, D. H., and T. K. Peucker, 1973, Algorithms for the reduction of
+the number of points required to represent a digitized line of its
+caricature, <em>Can. Cartogr., 10</em>, 112-122.</p>
+<p>Gorny, A. J., 1977, <em>World Data Bank II General User GuideRep. PB
+271869</em>, 10pp, Central Intelligence Agency, Washington, DC.</p>
+<p>Soluri, E. A., and V. A. Woodson, 1990, World Vector Shoreline, <em>Int.
+Hydrograph. Rev., LXVII(1)</em>, 27-35.</p>
+<p>Wessel, P., and W. H. F. Smith, 1996, A global, self-consistent,
+hierarchical, high-resolution shoreline database, <em>J. Geophys. Res.,
+101(B4)</em>, 8741-8743.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gshhg</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#specific-polygons">Specific Polygons</a></li>
+<li><a class="reference internal" href="#technical-information">Technical Information</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../../xyz2grd.html"
+                        title="previous chapter">xyz2grd</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../img/img2grd.html"
+                        title="next chapter">img2grd</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/gshhg/gshhg.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../img/img2grd.html" title="img2grd"
+             >next</a> </li>
+        <li class="right" >
+          <a href="../../xyz2grd.html" title="xyz2grd"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

@@ -1,0 +1,4155 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:20 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GRDMATH</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GRDMATH</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#NOTES ON OPERATORS">NOTES ON OPERATORS</a><br>
+<a href="#GRID VALUES PRECISION">GRID VALUES PRECISION</a><br>
+<a href="#GRID FILE FORMATS">GRID FILE FORMATS</a><br>
+<a href="#GEOGRAPHICAL AND TIME COORDINATES">GEOGRAPHICAL AND TIME COORDINATES</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">grdmath &minus;
+Reverse Polish Notation calculator for grid files</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdmath</b>
+[ <b>&minus;F</b> ] [
+<b>&minus;I</b><i>xinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>][/<i>yinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>]]
+] [ <b>&minus;M</b> ] [ <b>&minus;N</b> ] [
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;V</b> ] [
+<b>&minus;bi</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b><i>colinfo</i> ] <i>operand</i> [
+<i>operand</i> ] <b>OPERATOR</b> [ <i>operand</i> ]
+<b>OPERATOR</b> ... <b>=</b> <i>outgrdfile</i></p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdmath</b>
+will perform operations like add, subtract, multiply, and
+divide on one or more grid files or constants using Reverse
+Polish Notation (RPN) syntax (e.g., Hewlett-Packard
+calculator-style). Arbitrarily complicated expressions may
+therefore be evaluated; the final result is written to an
+output grid file. When two grids are on the stack, each
+element in file A is modified by the corresponding element
+in file B. However, some operators only require one operand
+(see below). If no grid files are used in the expression
+then options <b>&minus;R</b>, <b>&minus;I</b> must be set
+(and optionally <b>&minus;F</b>). The expression <b>=</b>
+<i>outgrdfile</i> can occur as many times as the depth of
+the stack allows. <i><br>
+operand</i></p>
+
+<p style="margin-left:22%;">If <i>operand</i> can be opened
+as a file it will be read as a grid file. If not a file, it
+is interpreted as a numerical constant or a special symbol
+(see below).</p>
+
+<p style="margin-left:11%;"><i>outgrdfile</i></p>
+
+<p style="margin-left:22%;">The name of a 2-D grid file
+that will hold the final result. (See GRID FILE FORMATS
+below).</p>
+
+<p style="margin-left:11%;"><b>OPERATORS</b></p>
+
+<p style="margin-left:22%;">Choose among the following 147
+operators. &quot;args&quot; are the number of input and
+output arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">Operator</p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">args</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Returns</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ABS</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">abs (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ACOS</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">acos (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ACOSH</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">acosh (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ACOT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">acot (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ACSC</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">acsc (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ADD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A + B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>AND</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">NaN if A and B == NaN, B if A == NaN, else
+A.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ASEC</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">asec (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ASIN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">asin (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ASINH</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">asinh (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ATAN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">atan (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ATAN2</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">atan2 (A, B).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ATANH</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">atanh (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>BEI</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">bei (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>BER</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">ber (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CAZ</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Cartesian azimuth from grid nodes to stack
+x,y.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CBAZ</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Cartesian backazimuth from grid nodes to
+stack x,y.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CDIST</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Cartesian distance between grid nodes and
+stack x,y.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CEIL</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">ceil (A) (smallest integer &gt;= A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CHICRIT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Critical value for
+chi-squared-distribution, with alpha = A and n = B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CHIDIST</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">chi-squared-distribution P(chi2,n), with
+chi2 = A and n = B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CORRCOEFF</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Correlation coefficient r(A, B).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>COS</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">cos (A) (A in radians).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>COSD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">cos (A) (A in degrees).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>COSH</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">cosh (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>COT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">cot (A) (A in radians).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>COTD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">cot (A) (A in degrees).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CPOISS</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Cumulative Poisson distribution
+F(x,lambda), with x = A and lambda = B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CSC</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">csc (A) (A in radians).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CSCD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">csc (A) (A in degrees).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CURV</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Curvature of A (Laplacian).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>D2DX2</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">d^2(A)/dx^2 2nd derivative.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>D2DXY</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">d^2(A)/dxdy 2nd derivative.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>D2DY2</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">d^2(A)/dy^2 2nd derivative.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>D2R</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Converts Degrees to Radians.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>DDX</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">d(A)/dx Central 1st derivative.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>DDY</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">d(A)/dy Central 1st derivative.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>DEG2KM</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Converts Spherical Degrees to
+Kilometers.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>DILOG</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">dilog (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>DIV</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A / B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>DUP</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 2</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Places duplicate of A on the stack.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>EQ</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if A == B, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ERF</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Error function erf (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ERFC</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Complementary Error function erfc (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ERFINV</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Inverse error function of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>EXCH</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 2</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Exchanges A and B on the stack.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>EXP</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">exp (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>EXTREMA</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Local Extrema: +2/-2 is max/min, +1/-1 is
+saddle with max/min in x, 0 elsewhere.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>FACT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A! (A factorial).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>FCRIT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">3 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Critical value for F-distribution, with
+alpha = A, n1 = B, and n2 = C.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>FDIST</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">3 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">F-distribution Q(F,n1,n2), with F = A, n1 =
+B, and n2 = C.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>FLIPLR</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Reverse order of values in each row.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>FLIPUD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Reverse order of values in each column.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>FLOOR</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">floor (A) (greatest integer &lt;= A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>FMOD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A % B (remainder after truncated
+division).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>GE</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if A &gt;= B, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>GT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if A &gt; B, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>HYPOT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">hypot (A, B) = sqrt (A*A + B*B).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>I0</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Modified Bessel function of A (1st kind,
+order 0).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>I1</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Modified Bessel function of A (1st kind,
+order 1).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>IN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Modified Bessel function of A (1st kind,
+order B).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>INRANGE</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">3 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if B &lt;= A &lt;= C, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>INSIDE</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 when inside or on polygon(s) in A, else
+0.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>INV</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 / A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ISNAN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if A == NaN, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>J0</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Bessel function of A (1st kind, order
+0).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>J1</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Bessel function of A (1st kind, order
+1).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>JN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Bessel function of A (1st kind, order
+B).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>K0</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Modified Kelvin function of A (2nd kind,
+order 0).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>K1</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Modified Bessel function of A (2nd kind,
+order 1).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>KEI</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">kei (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>KER</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">ker (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>KM2DEG</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Converts Kilometers to Spherical
+Degrees.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>KN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Modified Bessel function of A (2nd kind,
+order B).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>KURT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Kurtosis of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LDIST</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Compute distance from lines in
+multi-segment ASCII file A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LE</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if A &lt;= B, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LMSSCL</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">LMS scale estimate (LMS STD) of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LOG</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">log (A) (natural log).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LOG10</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">log10 (A) (base 10).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LOG1P</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">log (1+A) (accurate for small A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LOG2</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">log2 (A) (base 2).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LOWER</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">The lowest (minimum) value of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LRAND</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Laplace random noise with mean A and std.
+deviation B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if A &lt; B, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MAD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Median Absolute Deviation (L1 STD) of
+A.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MAX</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Maximum of A and B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MEAN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Mean value of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MED</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Median value of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MIN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Minimum of A and B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MOD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A mod B (remainder after floored
+division).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MODE</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Mode value (Least Median of Squares) of
+A.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MUL</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A * B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>NAN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">NaN if A == B, else A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>NEG</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">-A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>NEQ</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if A != B, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>NOT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">NaN if A == NaN, 1 if A == 0, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>NRAND</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Normal, random values with mean A and std.
+deviation B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>OR</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">NaN if A or B == NaN, else A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>PDIST</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Compute distance from points in ASCII file
+A.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>PLM</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">3 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Associated Legendre polynomial P(A) degree
+B order C.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>PLMg</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">3 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Normalized associated Legendre polynomial
+P(A) degree B order C (geophysical convention).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>POP</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 0</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Delete top element from the stack.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>POW</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A ^ B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>PQUANT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">The B&rsquo;th Quantile (0-100%) of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>PSI</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Psi (or Digamma) of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>PV</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">3 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Legendre function Pv(A) of degree v =
+real(B) + imag(C).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>QV</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">3 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Legendre function Qv(A) of degree v =
+real(B) + imag(C).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>R2</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">R2 = A^2 + B^2.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>R2D</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Convert Radians to Degrees.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>RAND</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Uniform random values between A and B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>RINT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">rint (A) (nearest integer).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ROTX</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Rotate A by the (constant) shift B in
+x-direction.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ROTY</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Rotate A by the (constant) shift B in
+y-direction.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SAZ</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Spherical azimuth from grid nodes to stack
+x,y.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SBAZ</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Spherical backazimuth from grid nodes to
+stack x,y.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SDIST</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Spherical (Great circle|geodesic) distance
+(in km) between grid nodes and stack lon,lat (A, B).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SEC</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sec (A) (A in radians).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SECD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sec (A) (A in degrees).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SIGN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sign (+1 or -1) of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SIN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sin (A) (A in radians).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SINC</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sinc (A) (sin (pi*A)/(pi*A)).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SIND</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sin (A) (A in degrees).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SINH</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sinh (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SKEW</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Skewness of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SQR</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A^2.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SQRT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sqrt (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>STD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Standard deviation of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>STEP</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Heaviside step function: H(A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>STEPX</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Heaviside step function in x: H(x-A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>STEPY</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Heaviside step function in y: H(y-A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SUB</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A - B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>TAN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">tan (A) (A in radians).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>TAND</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">tan (A) (A in degrees).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>TANH</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">tanh (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>TCRIT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Critical value for Student&rsquo;s
+t-distribution, with alpha = A and n = B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>TDIST</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Student&rsquo;s t-distribution A(t,n), with
+t = A, and n = B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>TN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Chebyshev polynomial Tn(-1&lt;t&lt;+1,n),
+with t = A, and n = B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>UPPER</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">The highest (maximum) value of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>XOR</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">0 if A == NaN and B == NaN, NaN if B ==
+NaN, else A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>Y0</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Bessel function of A (2nd kind, order
+0).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>Y1</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Bessel function of A (2nd kind, order
+1).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>YLM</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 2</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Re and Im orthonormalized spherical
+harmonics degree A order B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>YLMg</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 2</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Cos and Sin normalized spherical harmonics
+degree A order B (geophysical convention).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>YN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Bessel function of A (2nd kind, order
+B).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ZCRIT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Critical value for the normal-distribution,
+with alpha = A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ZDIST</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Cumulative normal-distribution C(x), with x
+= A.</p></td>
+</table>
+
+<p style="margin-left:11%;"><b>SYMBOLS</b></p>
+
+<p style="margin-left:22%;">The following symbols have
+special meaning:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>PI</b></p></td>
+<td width="77%">
+
+
+<p valign="top">3.1415926...</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>E</b></p></td>
+<td width="77%">
+
+
+<p valign="top">2.7182818...</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>EULER</b></p></td>
+<td width="77%">
+
+
+<p valign="top">0.5772156...</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>XMIN</b></p></td>
+<td width="77%">
+
+
+<p valign="top">Minimum x value</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>XMAX</b></p></td>
+<td width="77%">
+
+
+<p valign="top">Maximum x value</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>XINC</b></p></td>
+<td width="77%">
+
+
+<p valign="top">x increment</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>NX</b></p></td>
+<td width="77%">
+
+
+<p valign="top">The number of x nodes</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>YMIN</b></p></td>
+<td width="77%">
+
+
+<p valign="top">Minimum y value</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>YMAX</b></p></td>
+<td width="77%">
+
+
+<p valign="top">Maximum y value</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>YINC</b></p></td>
+<td width="77%">
+
+
+<p valign="top">y increment</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>NY</b></p></td>
+<td width="77%">
+
+
+<p valign="top">The number of y nodes</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>X</b></p></td>
+<td width="77%">
+
+
+<p valign="top">Grid with x-coordinates</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>Y</b></p></td>
+<td width="77%">
+
+
+<p valign="top">Grid with y-coordinates</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>Xn</b></p></td>
+<td width="77%">
+
+
+<p valign="top">Grid with normalized [-1 to +1]
+x-coordinates</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>Yn</b></p></td>
+<td width="77%">
+
+
+<p valign="top">Grid with normalized [-1 to +1]
+y-coordinates</p> </td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force pixel node
+registration [Default is gridline registration]. (Node
+registrations are defined in <b><A HREF="GMT.html">GMT</A></b> Cookbook Appendix B
+on grid file formats.) Only used with <b>&minus;R
+&minus;I</b>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>x_inc</i> [and
+optionally <i>y_inc</i>] is the grid spacing. Optionally,
+append a suffix modifier. <b>Geographical (degrees)
+coordinates</b>: Append <b>m</b> to indicate arc minutes or
+<b>c</b> to indicate arc seconds. If one of the units
+<b>e</b>, <b>k</b>, <b>i</b>, or <b>n</b> is appended
+instead, the increment is assumed to be given in meter, km,
+miles, or nautical miles, respectively, and will be
+converted to the equivalent degrees longitude at the middle
+latitude of the region (the conversion depends on
+<b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b>). If /<i>y_inc</i> is given but set to 0 it
+will be reset equal to <i>x_inc</i>; otherwise it will be
+converted to degrees latitude. <b>All coordinates</b>: If
+<b>=</b> is appended then the corresponding max <i>x</i>
+(<i>east</i>) or <i>y</i> (<i>north</i>) may be slightly
+adjusted to fit exactly the given increment [by default the
+increment may be adjusted slightly to fit the given domain].
+Finally, instead of giving an increment you may specify the
+<i>number of nodes</i> desired by appending <b>+</b> to the
+supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The
+resulting increment value depends on whether you have
+selected a gridline-registered or pixel-registered grid; see
+Appendix B for details. Note: if
+<b>&minus;R</b><i>grdfile</i> is used then grid spacing has
+already been initialized; use <b>&minus;I</b> to override
+the values.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">By default any
+derivatives calculated are in z_units/ x(or y)_units.
+However, the user may choose this option to convert dx,dy in
+degrees of longitude,latitude into meters using a flat Earth
+approximation, so that gradients are in z_units/meter.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Turn off strict
+domain match checking when multiple grids are manipulated
+[Default will insist that each grid domain is within 1e-4 *
+grid_spacing of the domain of the first grid listed].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xmin</i>,
+<i>xmax</i>, <i>ymin</i>, and <i>ymax</i> specify the Region
+of interest. For geographic regions, these limits correspond
+to <i>west, east, south,</i> and <i>north</i> and you may
+specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+calendar time coordinates you may either give (a) relative
+time (relative to the selected <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and in the
+selected <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>; append <b>t</b> to
+<b>&minus;JX</b>|<b>x</b>), or (b) absolute time of the form
+[<i>date</i>]<b>T</b>[<i>clock</i>] (append <b>T</b> to
+<b>&minus;JX</b>|<b>x</b>). At least one of <i>date</i> and
+<i>clock</i> must be present; the <b>T</b> is always
+required. The <i>date</i> string must be of the form
+[-]yyyy[-mm[-dd]] (Gregorian calendar) or yyyy[-Www[-d]]
+(ISO week calendar), while the <i>clock</i> string must be
+of the form hh:mm:ss[.xxx]. The use of delimiters and their
+type and positions must be exactly as indicated (however,
+input, output and plot formats are customizable; see
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b>).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. The binary input option only
+applies to the data files needed by operators <b>LDIST</b>,
+<b>PDIST</b>, and <b>INSIDE</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+</table>
+
+<a name="NOTES ON OPERATORS"></a>
+<h2>NOTES ON OPERATORS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">(1) The
+operator <b>SDIST</b> calculates spherical distances in km
+between the (lon, lat) point on the stack and all node
+positions in the grid. The grid domain and the (lon, lat)
+point are expected to be in degrees. Similarly, the
+<b>SAZ</b> and <b>SBAZ</b> operators calculate spherical
+azimuth and back-azimuths in degrees, respectively. A few
+operators (<b>PDIST</b>, <b>LDIST</b>, and <b>INSIDE</b>)
+expects their argument to be a single file with points,
+lines, or polygons, respectively. These distances will be in
+km (for geographical data, i.e, <b>&minus;fg</b> and
+Cartesian otherwise. Be aware that <b>LDIST</b> in
+particular can be slow for large grids and numerous line
+segments. Note: If the current <b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b> is not
+spherical then geodesics are used in the calculations.</p>
+
+<p style="margin-left:11%; margin-top: 1em">(2) The
+operator <b>PLM</b> calculates the associated Legendre
+polynomial of degree L and order M (0 &lt;= M &lt;= L), and
+its argument is the sine of the latitude. <b>PLM</b> is not
+normalized and includes the Condon-Shortley phase (-1)^M.
+<b>PLMg</b> is normalized in the way that is most commonly
+used in geophysics. The C-S phase can be added by using -M
+as argument. <b>PLM</b> will overflow at higher degrees,
+whereas <b>PLMg</b> is stable until ultra high degrees (at
+least 3000).</p>
+
+<p style="margin-left:11%; margin-top: 1em">(3) The
+operators <b>YLM</b> and <b>YLMg</b> calculate normalized
+spherical harmonics for degree L and order M (0 &lt;= M
+&lt;= L) for all positions in the grid, which is assumed to
+be in degrees. <b>YLM</b> and <b>YLMg</b> return two grids,
+the real (cosine) and imaginary (sine) component of the
+complex spherical harmonic. Use the <b>POP</b> operator (and
+<b>EXCH</b>) to get rid of one of them, or save both by
+giving two consecutive = file.grd calls. <br>
+The orthonormalized complex harmonics <b>YLM</b> are most
+commonly used in physics and seismology. The square of
+<b>YLM</b> integrates to 1 over a sphere. In geophysics,
+<b>YLMg</b> is normalized to produce unit power when
+averaging the cosine and sine terms (separately!) over a
+sphere (i.e., their squares each integrate to 4 pi). The
+Condon-Shortley phase (-1)^M is not included in <b>YLM</b>
+or <b>YLMg</b>, but it can be added by using -M as
+argument.</p>
+
+<p style="margin-left:11%; margin-top: 1em">(4) All the
+derivatives are based on central finite differences, with
+natural boundary conditions.</p>
+
+<p style="margin-left:11%; margin-top: 1em">(5) Files that
+have the same names as some operators, e.g., <b>ADD</b>,
+<b>SIGN</b>, <b>=</b>, etc. should be identified by
+prepending the current directory (i.e., ./LOG).</p>
+
+<p style="margin-left:11%; margin-top: 1em">(6) Piping of
+files is not allowed.</p>
+
+<p style="margin-left:11%; margin-top: 1em">(7) The stack
+depth limit is hard-wired to 100.</p>
+
+<p style="margin-left:11%; margin-top: 1em">(8) All
+functions expecting a positive radius (e.g., <b>LOG</b>,
+<b>KEI</b>, etc.) are passed the absolute value of their
+argument.</p>
+
+<a name="GRID VALUES PRECISION"></a>
+<h2>GRID VALUES PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Regardless of
+the precision of the input data, GMT programs that create
+grid files will internally hold the grids in 4-byte floating
+point arrays. This is done to conserve memory and
+furthermore most if not all real data can be stored using
+4-byte floating point values. Data with higher precision
+(i.e., double precision values) will lose that precision
+once GMT operates on the grid or writes out new grids. To
+limit loss of precision when processing data you should
+always consider normalizing the data prior to
+processing.</p>
+
+<a name="GRID FILE FORMATS"></a>
+<h2>GRID FILE FORMATS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">By default
+<b><A HREF="GMT.html">GMT</A></b> writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, <b><A HREF="GMT.html">GMT</A></b> is
+able to produce grid files in many other commonly used grid
+file formats and also facilitates so called
+&quot;packing&quot; of grids, writing out floating point
+data as 2- or 4-byte integers. To specify the precision,
+scale and offset, the user should add the suffix
+<b>=</b><i>id</i>[<b>/</b><i>scale</i><b>/</b><i>offset</i>[<b>/</b><i>nan</i>]],
+where <i>id</i> is a two-letter identifier of the grid type
+and precision, and <i>scale</i> and <i>offset</i> are
+optional scale factor and offset to be applied to all grid
+values, and <i>nan</i> is the value used to indicate missing
+data. When reading grids, the format is generally
+automatically recognized. If not, the same suffix can be
+added to input grid file names. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1)
+and Section 4.17 of the GMT Technical Reference and Cookbook
+for more information.</p>
+
+<p style="margin-left:11%; margin-top: 1em">When reading a
+netCDF file that contains multiple grids, <b><A HREF="GMT.html">GMT</A></b> will
+read, by default, the first 2-dimensional grid that can find
+in that file. To coax <b><A HREF="GMT.html">GMT</A></b> into reading another
+multi-dimensional variable in the grid file, append
+<b>?</b><i>varname</i> to the file name, where
+<i>varname</i> is the name of the variable. Note that you
+may need to escape the special meaning of <b>?</b> in your
+shell program by putting a backslash in front of it, or by
+placing the filename and suffix between quotes or double
+quotes. The <b>?</b><i>varname</i> suffix can also be used
+for output grids to specify a variable name different from
+the default: &quot;z&quot;. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and
+Section 4.18 of the GMT Technical Reference and Cookbook for
+more information, particularly on how to read splices of 3-,
+4-, or 5-dimensional grids.</p>
+
+<a name="GEOGRAPHICAL AND TIME COORDINATES"></a>
+<h2>GEOGRAPHICAL AND TIME COORDINATES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">When the output
+grid type is netCDF, the coordinates will be labeled
+&quot;longitude&quot;, &quot;latitude&quot;, or
+&quot;time&quot; based on the attributes of the input data
+or grid (if any) or on the <b>&minus;f</b> or
+<b>&minus;R</b> options. For example, both <b>&minus;f0x
+&minus;f1t</b> and <b>&minus;R</b> 90w/90e/0t/3t will result
+in a longitude/time grid. When the x, y, or z coordinate is
+time, it will be stored in the grid as relative time since
+epoch as specified by <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> and <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>
+in the .gmtdefaults file or on the command line. In
+addition, the <b>unit</b> attribute of the time variable
+will indicate both this unit and epoch.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To take log10
+of the average of 2 files, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdmath</b>
+file1.grd file2.grd <b>ADD</b> 0.5 <b>MUL LOG10 =</b>
+file3.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">Given the file
+ages.grd, which holds seafloor ages in m.y., use the
+relation depth(in m) = 2500 + 350 * sqrt (age) to estimate
+normal seafloor depths:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdmath</b>
+ages.grd <b>SQRT</b> 350 <b>MUL</b> 2500 <b>ADD =</b>
+depths.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">To find the
+angle a (in degrees) of the largest principal stress from
+the stress tensor given by the three files s_xx.grd
+s_yy.grd, and s_xy.grd from the relation tan (2*a) = 2 *
+s_xy / (s_xx - s_yy), use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdmath</b>
+2 s_xy.grd <b>MUL</b> s_xx.grd s_yy.grd <b>SUB DIV ATAN</b>
+2 <b>DIV =</b> direction.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">To calculate
+the fully normalized spherical harmonic of degree 8 and
+order 4 on a 1 by 1 degree world map, using the real
+amplitude 0.4 and the imaginary amplitude 1.1:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdmath
+&minus;R</b> 0/360/-90/90 <b>&minus;I</b> 1 8 4 <b>YML</b>
+1.1 <b>MUL EXCH</b> 0.4 <b>MUL ADD</b> = harm.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">To extract the
+locations of local maxima that exceed 100 mGal in the file
+faa.grd:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdmath</b>
+faa.grd <b>DUP EXTREMA</b> 2 <b>EQ MUL DUP</b> 100 <b>GT
+MUL</b> 0 <b>NAN</b> = z.grd <b><br>
+grd2xyz</b> z.grd <b>&minus;S</b> &gt; max.xyz</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Abramowitz, M.,
+and I. A. Stegun, 1964, <i>Handbook of Mathematical
+Functions</i>, Applied Mathematics Series, vol. 55, Dover,
+New York. <br>
+Holmes, S. A., and W. E. Featherstone, 2002, A unified
+approach to the Clenshaw summation and the recursive
+computation of very high degree and order normalised
+associated Legendre functions. <i>Journal of Geodesy</i>,
+76, 279-299. <br>
+Press, W. H., S. A. Teukolsky, W. T. Vetterling, and B. P.
+Flannery, 1992, <i>Numerical Recipes</i>, 2nd edition,
+Cambridge Univ., New York. <br>
+Spanier, J., and K. B. Oldman, 1987, <i>An Atlas of
+Functions</i>, Hemisphere Publishing Corp.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="gmtmath.html">gmtmath</A></i>(1), <i><A HREF="grd2xyz.html">grd2xyz</A></i>(1), <i><A HREF="grdedit.html">grdedit</A></i>(1),
+<i><A HREF="grdinfo.html">grdinfo</A></i>(1), <i><A HREF="xyz2grd.html">xyz2grd</A></i>(1)</p>
+<hr>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:44 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>X2SYS_REPORT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>X2SYS_REPORT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">x2sys_report
+&minus; Report statistics from crossover data base</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_report
+&minus;C</b><i>column</i> <b>&minus;T</b><i>TAG</i> [
+<i>coedbase.txt</i> ] [ <b>&minus;A</b> ] [
+<b>&minus;I</b>[<i>list</i>] ] [
+<b>&minus;L</b>[<i>corrtable</i>] ] [
+<b>&minus;N</b><i>nx_min</i> ] [ <b>&minus;Qe</b>|<b>i</b> ]
+[
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;S</b><i>track</i> ] [ <b>&minus;V</b> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_report</b>
+will read the input crossover ASCII data base
+<i>coedbase.txt</i> (or <i>stdin</i>) and report on the
+statistics of crossovers (<i>n, mean, stdev, rms,
+weight</i>) for each track. Options are available to let you
+exclude tracks and limit the output.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify which data
+column you want to process. Crossovers related to this
+column name must be present in the crossover data base.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify the x2sys
+<i>TAG</i> which tracks the attributes of this data
+type.</p> </td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.
+<i><br>
+coedbase.txt</i></p>
+
+<p style="margin-left:22%;">The name of the input ASCII
+crossover error data base as produced by <b><A HREF="x2sys_cross.html">x2sys_cross</A></b>.
+If not given we read standard input instead.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Eliminate COEs by
+distributing the COE between the two tracks in proportion to
+track weight and producing (dist, adjustment) spline knots
+files for each track (for the selected <i>column</i>). Such
+adjustments may be used by <b><A HREF="x2sys_datalist.html">x2sys_datalist</A></b>. The
+adjustment files are called <i>track.column</i>.adj and are
+placed in the <b>$X2SYS_HOME</b>/<i>TAG</i> directory. For
+background information on how these adjustments are
+designed, see <i>Mittal</i> [1984].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Name of ASCII file
+with a list of track names (one per record) that should be
+excluded from consideration [Default includes all
+tracks].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Apply optimal
+corrections to the chosen observable. Append the correction
+table to use [Default uses the correction table
+<i>TAG</i>_corrections.txt which is expected to reside in
+the <b>$X2SYS_HOME</b>/<i>TAG</i> directory]. For the format
+of this file, see <b><A HREF="x2sys_solve.html">x2sys_solve</A></b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Only report data
+from tracks involved in at least <i>nx_min</i> crossovers
+[all tracks].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Append <b>e</b> for
+external crossovers or <b>i</b> for internal crossovers only
+[Default is external].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> specify the Region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+Cartesian data just give <i>xmin/xmax/ymin/ymax</i>. This
+option bases the statistics on those COE that fall inside
+the specified domain.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Name of a single
+track. If given we restrict output to those crossovers
+involving this track [Default output is crossovers involving
+any track pair].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To report
+statistics of all the external magnetic crossovers
+associated with the tag MGD77 from the file COE_data.txt,
+restricted to occupy a certain region in the south Pacific,
+try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_report</b>
+COE_data.txt <b>&minus;V &minus;T</b> MGD77 <b>&minus;R</b>
+180/240/-60/-30 <b>&minus;C</b> mag &gt; mag_report.txt</p>
+
+<p style="margin-left:11%; margin-top: 1em">To report on
+the faa crossovers globally that involves track 12345678,
+try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x2sys_report</b>
+COE_data.txt <b>&minus;V &minus;T</b> MGD77 <b>&minus;C</b>
+faa <b>&minus;S</b> 12345678 &gt; faa_report.txt</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Mittal, P. K.
+(1984), Algorithm for error adjustment of potential field
+data along a survey network, <i>Geophysics, 49</i>(4),
+467-469.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="x2sys_binlist.html">x2sys_binlist</A></i>(1)
+<i><A HREF="x2sys_cross.html">x2sys_cross</A></i>(1) <i><A HREF="x2sys_datalist.html">x2sys_datalist</A></i>(1)
+<i><A HREF="x2sys_get.html">x2sys_get</A></i>(1) <i><A HREF="x2sys_init.html">x2sys_init</A></i>(1)
+<i><A HREF="x2sys_list.html">x2sys_list</A></i>(1) <i><A HREF="x2sys_put.html">x2sys_put</A></i>(1)
+<i><A HREF="x2sys_solve.html">x2sys_solve</A></i>(1)</p>
+<hr>
+</body>
+</html>

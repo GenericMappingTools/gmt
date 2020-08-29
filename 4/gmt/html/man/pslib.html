@@ -1,0 +1,913 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:27 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>PSLIB</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>PSLIB</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#FUNCTION CALLS">FUNCTION CALLS</a><br>
+<a href="#AUTHOR">AUTHOR</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">pslib 4.3
+&minus; A <i>PostScript</i> based plotting library</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>pslib</b>
+was created to make the generation of <i>PostScript</i> page
+description code easier. It is a library that contains a
+series of tools that can be used to create plots. The
+resulting <i>PostScript</i> code is ASCII text and can be
+edited using any text editor. Thus, it is fairly easy to
+modify a plot file even after it has been created, e.g., to
+change text strings, set new gray shades or colors,
+experiment with various pen widths, etc. <b>pslib</b> is
+written in C but now includes FORTRAN bindings (thanks to
+John Goff, WHOI) and can therefore be called from both C and
+FORTRAN programs. To use this library, you must link your
+plotting program with pslib.a. <b>pslib</b> is the core of
+the <b><A HREF="GMT.html">GMT</A></b> graphics programs. <b>pslib</b> output
+conforms to the Adobe Encapsulated <i>PostScript</i> File
+Specification Version 3.0 (EPSL), and may be used as EPS
+files and inserted into, say, a Word document on a Mac. See
+Appendix F in the Technical Reference for detailed
+instructions.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Before any
+<b>pslib</b> calls can be issued, the plotting system must
+be initialized. This is done by calling <b>ps_plotinit</b>
+(or <b>ps_plotinit_hires</b>), which defines macros, sets up
+the plot-coordinate system, scales, and [optionally] opens a
+file where all the <i>PostScript</i> code will be written.
+Normally, the plot code is written to <i>stdout</i>. The
+measure unit for sizes and positions can be set to be
+centimeter (c), inch (i), or meter (m). When all plotting is
+done, you must terminate the plotting system by calling
+<b>ps_plotend</b>.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>pslib</b>
+uses the direct color model where red, green, and blue are
+given separately, each must be in the range from 0-255. If
+red &lt; 0 then no fill operation takes place. Most
+plot-items can be plotted with or without outlines. If
+outline is desired (i.e., set to 1), it will be drawn using
+the current linewidth and pattern. <b>pslib</b> uses highly
+optimized macro substitutions and scales the coordinates
+depending on the resolution of the hardcopy device so that
+the output file is kept as compact as possible.</p>
+
+<p style="margin-left:11%; margin-top: 1em">A wide variety
+of output devices that support <i>PostScript</i> exist,
+including laserwriters (color or monochrome) and
+workstations running <i>PostScript</i> based window systems
+like Sun&rsquo;s OpenWindows. xnews (part of OpenWindows) or
+ghostscript (public domain) can be used to create
+rasterfiles at a user-defined resolution (DPI), making it
+possible to render <i>PostScript</i> on a Versatec and other
+non-<i>PostScript</i> raster devices. Regular Sun
+rasterfiles created under NeWS from <i>PostScript</i> files
+can be sent to a variety of color hardcopy units. Check the
+devices available on your network.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The
+<b>pslib</b> is now fully 64-bit compliant. However, only a
+few function parameters are affected by this (such as the
+number of point in an array which can now be a 64-bit
+integer). These few parameters are here given the type
+<b>long</b> to distinguish them from <b>int</b>. Note that
+under standard 32-bit compilation they are equivalent. Users
+of this library under 64-bit mode must make sure they pass
+proper <b>long</b> variables (under Unix flavors) or
+<b>__int64</b> under Windows 64.</p>
+
+<a name="FUNCTION CALLS"></a>
+<h2>FUNCTION CALLS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The following
+is a list of available functions and a short description of
+what they do and what parameters they expect. All floating
+point variables are expected to be <b>double</b> (i.e., 8
+bytes), whereas all integers are assumed to be 4 bytes long.
+All plotting functions are declared as functions returning
+an int. Currently, the return value is undefined.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_arc</b> (<i>x, y, radius, angle1, angle2, status</i>)
+<b><br>
+double</b> <i>x, y, radius, angle1, angle2</i>; <b><br>
+int</b> <i>status</i>;</p>
+
+<p style="margin-left:26%;">Draws a circular arc centered
+on (<i>x,y</i>) from angle <i>angle1</i> to <i>angle2</i>.
+Angles must be given in decimal degrees. If angle1 &gt;
+angle2, a negative arc is drawn. <i>status</i> is a value
+from 0 through 3. 1 means set new anchor point, 2 means
+stroke the circle, 3 means both, 0 means none of the
+above.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_axis</b> (<i>xpos, ypos, length, startval, stopval,
+tickval, label, annotpointsize, side</i>) <b><br>
+double</b> <i>xpos, ypos, length, startval, stopval,
+tickval</i>; <b><br>
+double</b> <i>annotpointsize, side</i>; <b><br>
+char</b> <i>*label</i>;</p>
+
+<p style="margin-left:26%;">Plots an axis with tickmarks,
+annotation, and label. <i>xpos, ypos</i>, and <i>length</i>
+are in inches (or cm or meters), <i>annotpointsize</i> in
+points (72 points = 1 inch), else data units are used.
+<i>side</i> can be 0, 1, 2, or 3, which selects lower
+x-axis, right y-axis, upper x-axis, or left y-axis,
+respectively. labelpointsize = 1.5 * <i>annotpointsize</i>.
+A negative <i>tickval</i> will reverse the sense of positive
+direction, e.g., to have the y-axis be positive down.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_bitimage</b> (<i>xpos, ypos, xlength, ylength, buffer,
+nx, ny, invert, f_rgb, b_rgb</i>) <b><br>
+double</b> <i>xpos, ypos, xlength, ylength</i>; <b><br>
+unsigned char</b> <i>buffer[]</i>; <b><br>
+int</b> <i>nx, ny, invert, f_rgb[3], b_rgb[3]</i>;</p>
+
+<p style="margin-left:26%;">Plots a 1-bit image using the
+given foreground color <i>f_rgb</i> and background color
+<i>b_rgb</i>. Specify position of lower left corner and size
+(in inches) of image. <i>buffer</i> is an unsigned character
+array with 8 pixels per byte. <i>nx,ny</i> refers to the
+number of pixels in image. The rowlength of <i>buffer</i>
+must be an integral number of 8. <i>buffer</i>[0] is upper
+left corner. <i>buffer</i> values are stored as columns,
+starting at the lower left corner and ending at the upper
+right corner. If <i>invert</i> is 0 then the bits that are 1
+are painted with the foreground color, while bits that are 0
+are painted with the backgound color. If <i>invert</i> is 1,
+foreground and background are switched. To get a partly
+transparent image, set the first index of the foreground or
+background color to -1, i.e., f_rgb[0]=-1 or b_rgb[0]=1. See
+the Adobe Systems <i>PostScript</i> Reference Manual for
+more details.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_circle</b> (<i>xcenter, ycenter, diameter, rgb,
+outline</i>) <b><br>
+double</b> <i>xcenter, ycenter, diameter</i>; <b><br>
+int</b> <i>rgb[3], outline</i>;</p>
+
+<p style="margin-left:26%;">Plots a circle and fills it
+with the specified color. If <i>outline</i> == 1, the
+outline will be drawn using current pen-width and
+-pattern.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_clipoff</b> ()</p>
+
+<p style="margin-left:26%;">Resets the clip path to what it
+was before the last call to <b>ps_clipon</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_clipon</b> (<i>xarray, yarray, npoints, rgb, flag</i>)
+<b><br>
+double</b> <i>xarray[], yarray[]</i>; <b><br>
+long</b> <i>npoints</i>; <b><br>
+int</b> <i>rgb[3], flag</i>;</p>
+
+<p style="margin-left:26%;">Sets up a user-definable clip
+path. Plotting outside this polygon will be clipped until
+<b>ps_clipoff</b> is called. If <i>red</i> &gt;= 0 the
+inside of the path is filled with the specified color.
+<i>flag</i> is used to create complex clip paths consisting
+of several disconnected regions, and takes on values 0-3.
+<i>flag</i> = 1 means this is the first path in a
+multi-segment clip path. <i>flag</i> = 2 means this is the
+last segment. Thus, for a single path, <i>flag</i> = 3.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_colorimage</b> (<i>xpos, ypos, xlength, ylength,
+buffer, nx, ny, depth</i>) <b><br>
+double</b> <i>xpos, ypos, xlength, ylength</i>; <b><br>
+unsigned char</b> <i>buffer[]</i>; <b><br>
+int</b> <i>nx, ny, depth</i>;</p>
+
+<p style="margin-left:26%;">Plots a 1-, 2-, 4-, 8-, or
+24-bit deep image. This functions sets up a call to the
+<i>PostScript</i> colorimage or image operators. <i>xpos,
+ypos, xlength, ylength</i> specify the position of lower
+left corner and size (in inches) of image. The pixel values
+are stored in <i>buffer</i>, an unsigned character array in
+scanline orientation with gray shade or r/g/b values (0 -
+255) where 0 is black, 255 is white. <i>buffer[0]</i> is
+upper left corner. <i>depth</i> is number of bits per pixel
+(24, 8, 4, 2, or 1). <i>nx,ny</i> refers to the number of
+pixels in image. The rowlength of <i>buffer</i> must be an
+integral number of 8/<i>depth</i>. E.g. if <i>depth</i> = 4,
+then <i>buffer[j]</i>/16 gives shade for pixel[2j-1] and
+<i>buffer[j]</i>%16 (mod 16) gives shade for pixel[2j]. When
+<i>-depth</i> is passed instead then &quot;hardware&quot;
+interpolation of the image is requested. If <i>-nx</i> is
+passed with 8- or 24-bit images then the first one or three
+bytes of <i>buffer</i> holds the gray or r/g/b color for
+pixels that are to be masked out using the <i>PostScript</i>
+Level 3 Color Mask method. See the Adobe Systems
+<i>PostScript</i> Reference Manual for more details.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_colortiles</b> (<i>x0, y0, xlength, ylength, buffer,
+nx, ny</i>) <b><br>
+double</b> <i>x0, y0, xlength, ylength</i>; <b><br>
+int</b> <i>nx, ny</i>; <b><br>
+unsigned char</b> <i>buffer[]</i>;</p>
+
+<p style="margin-left:26%;">Plots a true color image based
+on individual color tiles. <i>x0, y0</i> is the location of
+the lower left corner of the image in inches. <i>xlength,
+ylength</i> is the image size in inches. <i>buffer</i>
+contains rgb triplets stored as rgbrgbrgb... <i>nx, ny</i>
+is the image size in pixels.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_command</b> (<i>text</i>) <b><br>
+char</b> <i>*text</i>;</p>
+
+<p style="margin-left:26%;">Writes a raw <i>PostScript</i>
+command to the <i>PostScript</i> output file, e.g., &quot;1
+setlinejoin&quot;.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_comment</b> (<i>text</i>) <b><br>
+char</b> <i>*text</i>;</p>
+
+<p style="margin-left:26%;">Writes a comment (<i>text</i>)
+to the <i>PostScript</i> output file, e.g., &quot;Start of
+graph 2&quot;.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_cross</b> (<i>xcenter, ycenter, diameter</i>) <b><br>
+double</b> <i>xcenter, ycenter, diameter</i>;</p>
+
+<p style="margin-left:26%;">Plots a cross (x) at the
+specified point using current pen-width and -pattern that
+fits inside a circle of given diameter. No fill
+possible.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_diamond</b> (<i>xcenter, ycenter, diameter, rgb,
+outline</i>) <b><br>
+double</b> <i>xcenter, ycenter, diameter</i>; <b><br>
+int</b> <i>rgb[3], outline</i>;</p>
+
+<p style="margin-left:26%;">Plots a diamond and fills it
+with the specified color. If <i>outline</i> == 1, the
+outline will be drawn using current pen-width and -pattern.
+The symbol will fit inside a circle of given diameter.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_ellipse</b> (<i>xcenter, ycenter, angle, major, minor,
+rgb, outline</i>) <b><br>
+double</b> <i>xcenter, ycenter, angle, major, minor</i>;
+<b><br>
+int</b> <i>rgb[3], outline</i>;</p>
+
+<p style="margin-left:26%;">Plots a ellipse with its major
+axis rotated by <i>angle</i> degrees and fills it with the
+specified color. If <i>outline</i> == 1, the outline will be
+drawn using current pen-width and -pattern.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_encode_font</b> (<i>font_no</i>) <b><br>
+int</b> <i>font_no</i>;</p>
+
+<p style="margin-left:26%;">Will reencode this font using
+the current encoding vector if it is not
+StandardEncoding.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_epsimage</b> (<i>xpos, ypos, xlength, ylength, buffer,
+size, nx, ny, ox, oy</i>) <b><br>
+double</b> <i>xpos, ypos, xlength, ylength</i>; <b><br>
+unsigned char</b> <i>buffer[]</i>; <b><br>
+int</b> <i>size, nx, ny, ox, oy</i>;</p>
+
+<p style="margin-left:26%;">Plots an Encapsulated
+<i>PostScript</i> (EPS) image. The EPS file is stored in
+<i>buffer</i> and has <i>size</i> bytes. This functions
+simply includes the image in the <i>PostScript</i> output
+stream within an appropriate wrapper. Specify position of
+lower left corner and size (in inches) of image.
+<i>nx,ny,ox,oy</i> refers to the width, height and origin
+(lower left corner) of the BoundingBox.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_flush</b> ()</p>
+
+<p style="margin-left:26%;">Flushes the output buffer.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_hexagon</b> (<i>xcenter, ycenter, diameter, rgb,
+outline</i>) <b><br>
+double</b> <i>xcenter, ycenter, diameter</i>; <b><br>
+int</b> <i>rgb[3], outline</i>;</p>
+
+<p style="margin-left:26%;">Plots a hexagon and fills it
+with the specified color. If <i>outline</i> == 1, the
+outline will be drawn using current pen-width and -pattern.
+The symbol will fit inside a circle of given diameter.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_image</b> (<i>xpos, ypos, xlength, ylength, buffer,
+nx, ny, bits</i>) <b><br>
+double</b> <i>xpos, ypos, xlength, ylength</i>; <b><br>
+unsigned char</b> <i>buffer[]</i>; <b><br>
+int</b> <i>nx, ny, bits</i>;</p>
+
+<p style="margin-left:26%;">Obsolete, simply passes
+arguments to <b>ps_colorimage</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_imagefill</b> (<i>x, y, n, image, imagefile, invert,
+dpi, outline, f_rgb, b_rgb</i>) <b><br>
+double</b> <i>x[], y[], x0, y0</i>; <b><br>
+int</b> <i>n, image, invert, dpi, outline, f_rgb[3],
+b_rgb[3]</i>; <b><br>
+char</b> <i>imagefile</i>;</p>
+
+<p style="margin-left:26%;">Similar to <b>ps_polygon</b>,
+but fills the area with an image pattern rather than a color
+or grayshade. <i>x</i> and <i>y</i> hold the arrays of
+<i>n</i> points. 90 predefined patterns are available (See
+<b><A HREF="GMT.html">GMT</A></b> Appendix E). <i>image</i> gives the image number
+(1-90). If set to 0, <i>imagefile</i> must be the name to
+the user&rsquo;s image, which must be stored as a Sun 1-,
+8-, or 24-bit rasterfile. <br>
+1-bit images only: (i) The set pixels (1) are colored using
+the RGB combination in <i>f_rgb</i>, while the unset pixels
+(0) are painted with <i>b_rgb</i>. Set the f_rgb[0] to -1 to
+make set pixels transparent. Set b_rgb[0] to -1 to make the
+unset pixels transparent. (ii) If <i>invert</i> is TRUE (1),
+the set and unset pixels are interchanged before plotting.
+<br>
+The unit size of the image is controlled by <i>dpi</i> (in
+dots-per-inch). If set to zero, the image is plotted at the
+device resolution. If <i>outline</i> is TRUE, the current
+penwidth is used to draw the polygon outline.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_itriangle</b> (<i>xcenter, ycenter, diameter, rgb,
+outline</i>) <b><br>
+double</b> <i>xcenter, ycenter, diameter</i>; <b><br>
+int</b> <i>rgb[3], outline</i>;</p>
+
+<p style="margin-left:26%;">Plots an inverted and fills it
+with the specified color. If <i>outline</i> == 1, the
+outline will be drawn using current pen-width and -pattern.
+The symbol will fit inside a circle of given diameter.</p>
+
+<p style="margin-left:22%; margin-top: 1em">long
+<b>ps_line</b> (<i>xarray, yarray, npoints, type, close,
+dummy</i>) <b><br>
+double</b> <i>xarray[], yarray[]</i>; <b><br>
+long</b> <i>npoints</i>; <b><br>
+int</b> <i>type, close, dummy</i>;</p>
+
+<p style="margin-left:26%;">Draw a continuous line from the
+positions in the x-y arrays. If <i>close</i> == 1, the first
+and last point will automatically be closed by the
+<i>PostScript</i> driver. If this is the first segment in a
+multi-segment path, set <i>type</i> == 1. To end the
+segments and have the line(s) drawn, set <i>type</i> == 2.
+Thus, for a single segment, <i>type</i> must be 3. The line
+is drawn using the current penwidth. The <i>dummy</i> is an
+obsolete parameter no longer used internally.</p>
+
+<p style="margin-left:22%; margin-top: 1em">unsigned char
+<b>*ps_load_image</b> (<i>fp, header</i>) <b><br>
+FILE</b> <i>*fp</i>; <b><br>
+struct imageinfo</b> <i>*header</i>;</p>
+
+<p style="margin-left:26%;">Reads the image contents of the
+EPS file or Sun rasterfile pointed to by the open
+filepointer <i>fp</i>. The routine can handle Encapsulated
+<i>PostScript</i> files or 1-, 8-, 24-, or 32-bit
+rasterfiles in old, standard, run-length encoded, or
+RGB-style Sun format.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_octagon</b> (<i>xcenter, ycenter, diameter, rgb,
+outline</i>) <b><br>
+double</b> <i>xcenter, ycenter, diameter</i>; <b><br>
+int</b> <i>rgb[3], outline</i>;</p>
+
+<p style="margin-left:26%;">Plots a octagon and fills it
+with the specified color. If <i>outline</i> == 1, the
+outline will be drawn using current pen-width and -pattern.
+The symbol will fit inside a circle of given diameter.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_patch</b> (<i>xarray, yarray, npoints, rgb,
+outline</i>) <b><br>
+double</b> <i>xarray[], yarray[]</i>; <b><br>
+long</b> <i>npoints</i>; <b><br>
+int</b> <i>rgb[3], outline</i>;</p>
+
+<p style="margin-left:26%;">Identical to <b>ps_polygon</b>
+except polygon must be &lt; 20 points long and there will be
+no attempt to shorten the path by discarding unnecessary
+intermediate points along straight segments. Primarily used
+when painting large number of small polygons and not waste
+output space. If more than 20 points are given we pass the
+buck to <b>ps_polygon</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_pentagon</b> (<i>xcenter, ycenter, diameter, rgb,
+outline</i>) <b><br>
+double</b> <i>xcenter, ycenter, diameter</i>; <b><br>
+int</b> <i>rgb[3], outline</i>;</p>
+
+<p style="margin-left:26%;">Plots a pentagon and fills it
+with the specified color. If <i>outline</i> == 1, the
+outline will be drawn using current pen-width and -pattern.
+The symbol will fit inside a circle of given diameter.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_pie</b> (<i>xcenter, ycenter, radius, azimuth1,
+azimuth2, rgb, outline</i>) <b><br>
+double</b> <i>xcenter, ycenter, radius, azimuth1,
+azimuth2</i>; <b><br>
+int</b> <i>rgb[3], outline</i>;</p>
+
+<p style="margin-left:26%;">Plots a sector of a circle and
+paints it with the specified RGB combination. If
+<i>outline</i> == 1, the outline will be drawn using current
+pen-width and -pattern.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_plot</b> (<i>xabs, yabs, kpen</i>) <b><br>
+double</b> <i>xabs, yabs</i>; <b><br>
+int</b> <i>kpen;</i></p>
+
+<p style="margin-left:26%;">Absolute move (<i>kpen</i>=3)
+or draw (<i>kpen=</i>2), using current linewidth. Use
+(<i>kpen=</i>-2) to make sure the line is stroked.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_plotend</b> (<i>last_page</i>) <b><br>
+int</b> <i>last_page</i>;</p>
+
+<p style="margin-left:26%;">Terminates the plotting
+sequence and closes plot file (if other than <i>stdout</i>).
+If <i>last_page</i> == 1, then a <i>PostScript</i> showpage
+command is issued, which initiates the printing process on
+hardcopy devices.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_plotinit</b> (<i>plotfile, overlay, mode, xoff, yoff,
+xscl, yscl, ncopies, dpi, unit, pagesize, rgb, encoding,
+eps</i>) <b><br>
+char</b> <i>*plotfile, *encoding;</i> <b><br>
+int</b> <i>overlay, mode, ncopies, dpi, unit</i>; <b><br>
+double</b> <i>xoff, yoff, xscl, yscl</i>; <b><br>
+int</b> <i>pagesize[2], rgb[3]</i>; <b>struct EPS *</b>
+<i>eps</i>;</p>
+
+<p style="margin-left:26%;">Initializes the plotting. If
+<i>plotfile</i> == NULL (or &quot;&quot;), then output is
+sent to <i>stdout</i>, else output is sent to
+<i>plotfile</i>. <i>overlay</i> should be 1 only if you plan
+to append it to some existing <i>PostScript</i> file.
+<i>mode</i> contains three flags in the three lowest bits.
+The lowest bit controls the plot orientation and can be 0
+(Landscape) or 1 (Portrait). The next bit, if set to 1, will
+re-encode the fonts to include European accented characters
+using the now-obsolete <b><A HREF="GMT.html">GMT</A></b> 3.4 encoding. To use the
+ISOLatin1 encoding set the 5th bit to 1. The third bit
+controls the format used to write <i>PostScript</i> images:
+0 means binary, 1 means hexadecimal. Most printers needs the
+latter while some can handle binary which are 50% smaller
+and therefore execute faster. <i>xoff,yoff</i> are used to
+move the origin from the default position in the lower left
+corner. <i>xscl,yscl</i> are used to scale the entire plot
+(Usually set to 1.0, 1.0). Set <i>ncopies</i> to get more
+than 1 copy. <i>dpi</i> sets the hardcopy resolution in dots
+pr units. For optimum plot quality and processing speed,
+choose <i>dpi</i> to match the intended plotter resolution.
+Examples are 300 for most laserwriters, 2540 for
+Linotype-300, and ~85 for Sun screens. When in doubt, use
+300. <i>unit</i> can be any of 0 (cm), 1 (inch), or 2 (m),
+telling the plot system what units are used for distance and
+sizes. Note that, regardless of choice of unit, dpi is still
+in dots-pr-inch. <i>pagesize</i> means the physical width
+and height of the plotting media in points, (typically 612
+by 792 for Letter or 595 by 842 for A4 laserwriter plotters.
+The <i>rgb</i> array holds the color of the page (usually
+white = 255,255,255). The <i>encoding</i> is the name of a
+character encoding scheme to be used, e.g., Standard,
+ISOLatin1, ISO-8859-2, etc. The EPS structure is defined in
+the pslib.h include file and contains information that will
+make up the comments header of a EPS file. Programmers who
+plan to call pslib routines should read the comments in
+pslib.h first. Note that the FORTRAN binding does not expect
+this last argument.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_plotinit_hires</b> (<i>plotfile, overlay, mode, xoff,
+yoff, xscl, yscl, ncopies, dpi, unit, pagesize, rgb,
+encoding, eps</i>) <b><br>
+char</b> <i>*plotfile, *encoding;</i> <b><br>
+int</b> <i>overlay, mode, ncopies, dpi, unit, rgb[3]</i>;
+<b><br>
+double</b> <i>xoff, yoff, xscl, yscl</i>; <b><br>
+double</b> <i>pagesize[2]</i>; <b>struct EPS *</b>
+<i>eps</i>;</p>
+
+<p style="margin-left:26%;">Same as <b>ps_plotinit</b> but
+expects the page size to be given in double precision
+points.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_plotr</b> (<i>xrel, yrel, kpen</i>) <b><br>
+double</b> <i>xrel, yrel</i>; <b><br>
+int</b> <i>kpen</i>;</p>
+
+<p style="margin-left:26%;">Move (<i>kpen</i> = 3) or draw
+(<i>kpen</i> = 2) relative to current point (see
+<b>ps_plot</b>). Use (<i>kpen=</i>-2) to make sure the line
+is stroked.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_plus</b> (<i>xcenter, ycenter, diameter</i>) <b><br>
+double</b> <i>xcenter, ycenter, diameter</i>;</p>
+
+<p style="margin-left:26%;">Plots a plus (+) at the
+specified point using current pen-width and -pattern that
+fits inside a circle of given diameter. No fill
+possible.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_point</b> (<i>xcenter, ycenter, diameter</i>) <b><br>
+double</b> <i>xcenter, ycenter, diameter</i>;</p>
+
+<p style="margin-left:26%;">Plots a point (dot) using
+current pen with given diameter. Note the linecap setting
+must first be set to 1 for this function to work.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_polygon</b> (<i>xarray, yarray, npoints, rgb,
+outline</i>) <b><br>
+double</b> <i>xarray[], yarray[]</i>; <b><br>
+long</b> <i>npoints</i>; <b><br>
+int</b> <i>rgb[3], outline</i>;</p>
+
+<p style="margin-left:26%;">Creates a colored polygon from
+the positions in the x-y arrays. Polygon will automatically
+be closed by the <i>PostScript</i> driver. If <i>outline</i>
+== 0, no outline is drawn. If <i>outline</i> == 1, the
+outline is drawn using current penwidth.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_rect</b> (<i>x1, y1, x2, y2, rgb, outline</i>) <b><br>
+double</b> <i>x1, y1, x2, y2</i>; <br>
+int <i>rgb[3], outline;</i></p>
+
+<p style="margin-left:26%;">Plots a colored rectangle.
+(<i>x1,y1)</i> and (<i>x2,y2</i>) are any two corners on a
+diagonal. If <i>outline</i> == 1, the outline will be drawn
+using current pen-width and -pattern.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_rotaterect</b> (<i>x, y, angle, xsize, ysize, rgb,
+outline</i>) <b><br>
+double</b> <i>x, y, angle, xsize, ysize</i>; <br>
+int <i>rgb[3], outline;</i></p>
+
+<p style="margin-left:26%;">Plots a colored rectangle
+rotated <i>angle</i> degrees from baseline. (<i>x,y)</i> is
+the center and (<i>xsize,ysize</i>) are the dimensions. If
+<i>outline</i> == 1, the outline will be drawn using current
+pen-width and -pattern.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_rotatetrans</b> (<i>x, y, angle</i>) <b><br>
+double</b> <i>x, y, angle</i>;</p>
+
+<p style="margin-left:26%;">Rotates the coordinate system
+by <i>angle</i> degrees, then translates origin to
+(<i>x,y</i>).</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_segment</b> (<i>x0, y0, x1, y1</i>) <b><br>
+double</b> <i>x0, y0, x1, y1;</i></p>
+
+<p style="margin-left:26%;">Draws a line segment between
+the two points using current pen attributes.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_setdash</b> (<i>pattern, offset</i>) <b><br>
+char</b> <i>*pattern;</i> <b><br>
+int</b> <i>offset;</i></p>
+
+<p style="margin-left:26%;">Changes the current
+dashpattern. The character string <i>pattern</i> is set to
+the desired pattern. E.g., &quot;4 2&quot; and <i>offset</i>
+= 1 will plot like:</p>
+
+<p style="margin-left:34%;">x ---- ---- ----</p>
+
+<p style="margin-left:26%;">etc, where x is starting point
+(The x is not plotted). That is, the line is made up of a
+repeating pattern of a 4 units long line and a 2 unit long
+gap, starting 1 unit after the x. To reset to solid line,
+specify <i>pattern</i> = NULL (&quot;&quot;) and
+<i>offset</i> = 0. Units are in dpi units.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_setfill</b> (<i>rgb, outline</i>) <b><br>
+int</b> <i>rgb[3], outline</i>;</p>
+
+<p style="margin-left:26%;">Sets the current fill color and
+whether or not outline is needed for symbols.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_setfont</b> (<i>fontnr</i>) <b><br>
+int</b> <i>fontnr</i>;</p>
+
+<p style="margin-left:26%;">Changes the current font number
+to <i>fontnr</i>. The fonts available are: 0 = Helvetica, 1
+= H. Bold, 2 = H. Oblique, 3 = H. Bold-Oblique, 4 = Times, 5
+= T. Bold, 6 = T. Italic, 7 = T. Bold Italic, 8 = Courier, 9
+= C. Bold, 10 = C Oblique, 11 = C Bold Oblique, 12 = Symbol,
+13 = AvantGarde-Book, 14 = A.-BookOblique, 15 = A.-Demi, 16
+= A.-DemiOblique, 17 = Bookman-Demi, 18 = B.-DemiItalic, 19
+= B.-Light, 20 = B.-LightItalic, 21 = Helvetica-Narrow, 22 =
+H-N-Bold, 23 = H-N-Oblique, 24 = H-N-BoldOblique, 25 =
+NewCenturySchlbk-Roman, 26 = N.-Italic, 27 = N.-Bold, 28 =
+N.-BoldItalic, 29 = Palatino-Roman, 30 = P.-Italic, 31 =
+P.-Bold, 32 = P.-BoldItalic, 33 = ZapfChancery-MediumItalic,
+34 = ZapfDingbats, 35 = Ryumin-Light-EUC-H, 36 =
+Ryumin-Light-EUC-V, 37 = GothicBBB-Medium-EUC-H, and 38 =
+GothicBBB-Medium-EUC-V. If <i>fontnr</i> is outside this
+range, it is set to 0.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_setformat</b> (<i>n_decimals</i>) <b><br>
+int</b> <i>n_decimals</i>;</p>
+
+<p style="margin-left:26%;">Sets number of decimals to be
+used when writing color or gray values. The default setting
+of 3 gives 1000 choices per red, green, and blue value,
+which is more than the 255 choices offered by most 24-bit
+platforms. Choosing a lower value will make the output file
+smaller at the expense of less color resolution. Still, a
+value of 2 gives 100 x 100 x 100 = 1 million colors, more
+than most eyes can distinguish. For a setting of 1, you will
+have 10 nuances per primary color and a total of 1000 unique
+combinations.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_setline</b> (<i>linewidth</i>) <b><br>
+int</b> <i>linewidth</i>;</p>
+
+<p style="margin-left:26%;">Changes the current linewidth
+in DPI units. 0 gives thinnest line, but the use of 0 is
+implementation-dependent (Works fine on most
+laserwriters).</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_setlinecap</b> (<i>cap</i>) <b><br>
+int</b> <i>cap</i>;</p>
+
+<p style="margin-left:26%;">Changes the current linecap. 0
+gives butt cap [Default], 1 gives round, and 2 gives
+square.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_setlinejoin</b> (<i>join</i>) <b><br>
+int</b> <i>join</i>;</p>
+
+<p style="margin-left:26%;">Changes the current linejoin. 0
+gives mitered [Default], 1 gives round, and 2 gives bevel
+joins.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_setmiterlimit</b> (<i>limit</i>) <b><br>
+int</b> <i>limit</i>;</p>
+
+<p style="margin-left:26%;">Changes the current miter
+limit. 0 gives default miter, other values are the cutoff-,
+acute- angle when mitering takes place.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_setpaint</b> (<i>rgb</i>) <b><br>
+int</b> <i>rgb[3]</i>;</p>
+
+<p style="margin-left:26%;">Changes the current RGB setting
+for pens and text.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_square</b> (<i>xcenter, ycenter, diameter, rgb,
+outline</i>) <b><br>
+double</b> <i>xcenter, ycenter, diameter</i>; <b><br>
+int</b> <i>rgb[3], outline</i>;</p>
+
+<p style="margin-left:26%;">Plots a square and fills it
+with the specified color. If <i>outline</i> == 1, the
+outline will be drawn using current pen-width and -pattern.
+The symbol will fit inside a circle of given diameter.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_star</b> (<i>xcenter, ycenter, diameter, rgb,
+outline</i>) <b><br>
+double</b> <i>xcenter, ycenter, diameter</i>; <b><br>
+int</b> <i>rgb[3], outline</i>;</p>
+
+<p style="margin-left:26%;">Plots a star and fills it with
+the specified color. If <i>outline</i> == 1, the outline
+will be drawn using current pen-width and -pattern. The
+symbol will fit inside a circle of given diameter.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_text</b> (<i>x, y, pointsize, text, angle, justify,
+form</i>) <b><br>
+double</b> <i>x, y, pointsize, angle</i>; <b><br>
+char</b> <i>*text</i>; <b><br>
+int</b> <i>justify, form</i>;</p>
+
+<p style="margin-left:26%;">The <i>text</i> is plotted
+starting at (<i>x,y</i>), and will make an <i>angle</i> with
+the horizontal. The point (<i>x,y</i>) maps onto different
+points of the textstring by giving various values for
+<i>justify</i>. It is used as follows:</p>
+
+
+<p style="margin-left:42%; margin-top: 1em">9------------10-----------
+11 <br>
+| | <br>
+5 6 7 <br>
+| | <br>
+1------------ 2------------ 3</p>
+
+<p style="margin-left:26%;">The box represents the
+textstring. E.g., to plot a textstring with its center of
+gravity at (<i>x,y</i>), you must use <i>justify</i> == 6.
+If <i>justify</i> is negative, then all leading and trailing
+blanks are stripped before plotting. Certain character
+sequences (flags) have special meaning to ps_text. @~
+toggles between current font and the Mathematical Symbols
+font. @%<i>no</i>% sets font to <i>no</i>; @%% resets to
+starting font. @- turns subscript on/off, @+ turns
+superscript on/off, @# turns small caps on/off, and @\ will
+make a composite character of the following two character.
+@;<i>r/g/b</i>; changes the font color (@;; resets it),
+@:<i>size</i>: changes the font size (@:: resets it), and @_
+toggles underline on/off. Give fontsize in points (72 points
+= 1 inch). Normally, the text is typed using solid
+characters. To draw outline characters, set <i>form</i> ==
+1. If <i>pointsize</i> is negative it means that the current
+point has already been set before <b>ps_text</b> was called
+and that (<i>x,y</i>) should be ignored.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_textbox</b> (<i>x, y, pointsize, text, angle, justify,
+outline, dx, dy, rgb</i>) <b><br>
+double</b> <i>x, y, angle, pointsize, dx, dy</i>; <b><br>
+char</b> <i>*text</i>; <b><br>
+int</b> <i>justify, outline, rgb[3]</i>;</p>
+
+<p style="margin-left:26%;">This function is used in
+conjugation with <b>ps_text</b> when a box surrounding the
+text string is desired. Taking most of the arguments of
+<b>ps_text</b>, the user must also specify the color of the
+resulting rectangle, and whether its outline should be
+drawn. More room between text and rectangle can be obtained
+by setting <i>dx</i> and <i>dy</i> accordingly.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_transrotate</b> (<i>x, y, angle</i>) <b><br>
+double</b> <i>x, y, angle</i>;</p>
+
+<p style="margin-left:26%;">Translates the origin to
+(<i>x,y</i>), then rotates the coordinate system by
+<i>angle</i> degrees.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_triangle</b> (<i>xcenter, ycenter, diameter, rgb,
+outline</i>) <b><br>
+double</b> <i>xcenter, ycenter, diameter</i>; <b><br>
+int</b> <i>rgb[3], outline</i>;</p>
+
+<p style="margin-left:26%;">Plots a triangle and paints it
+with the specified RGB combination. If <i>outline</i> == 1,
+the outline will be drawn using current pen-width and
+-pattern. The symbol will fit inside a circle of given
+diameter.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_vector</b> (<i>xtail, ytail, xtip, ytip, tailwidth,
+headlength, headwidth, headshape, rgb, outline</i>) <b><br>
+double</b> <i>xtail, ytail, xtip, ytip, tailwidth,
+headlength, headwidth, headshape</i>; <b><br>
+int</b> <i>rgb[3], outline</i>;</p>
+
+<p style="margin-left:26%;">Draws a vector of size and
+appearance as specified by the various parameters.
+<i>headshape</i> can take on values from 0-1 and specifies
+how far the intersection point between the base of a
+straight vector head and the vector line is moved toward the
+tip. 0 gives a triangular head, 1.0 gives an arrow shaped
+head. If <i>outline</i> == 1, the outline will be drawn
+using current penwidth. Add 8 to <i>outline</i> for a
+double-headed vector.</p>
+
+<p style="margin-left:22%; margin-top: 1em">void
+<b>ps_words</b> (<i>x, y, text, n_words, line_space,
+par_width, par_just, font, font_size, angle, rgb, justify,
+draw_box, x_off, y_off, x_gap, y_gap, boxpen_width,
+boxpen_texture, boxpen_offset, boxpen_rgb, vecpen_width,
+vecpen_texture, vecpen_offset, vecpen_rgb, boxfill_rgb</i>)
+<b><br>
+double</b> <i>x, y, line_space, par_width, angle, x_off,
+y_off, x_gap, y_gap</i>; <b><br>
+long</b> <i>n_words</i>; <b><br>
+int</b> <i>font, font_size, justify, draw_box, boxpen_width,
+boxpen_offset</i>; <b><br>
+int</b> <i>boxpen_rgb[3], vecpen_width, vecpen_offset,
+vecpen_rgb[3], boxfill_rgb[3]</i>; <b><br>
+char</b> <i>**text, *boxpen_texture,
+*vecpen_texture</i>;</p>
+
+<p style="margin-left:26%;">Typesets paragraphs of text.
+<i>text</i> is an array of the words to typeset, using the
+given line-spacing and paragraph width. The whole text block
+is positioned at <i>x, y</i> which is the anchor point on
+the box as indicated by <i>justify</i> (see ps_text). The
+whole block is then shifted by <i>x_off, y_off</i>. Inside
+the box, text is justified left, centered, right, or
+justified as governed by <i>par_just</i> (lcrj).
+<i>draw_box</i> contains 4 bit flags pertaining to the
+surrounding outline box. If on, the first (lowest) bit draws
+the box outline. The second bit fills the box interior. The
+third bit makes the outline box have rounded corners (unless
+<i>x_gap, y_gap</i>, which specifies the padding between the
+text and the box, are zero), while the forth bit draws a
+line from the original <i>x, y</i> point to the shifted
+position. The escape sequences described for ps_text applies
+as well.</p>
+
+<a name="AUTHOR"></a>
+<h2>AUTHOR</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Paul Wessel,
+School of Ocean and Earth Science and Technology, 1680
+East-West Road, Honolulu, Hawaii 96822, (808) 956-4778,
+Internet address: pwessel@hawaii.edu.</p>
+
+<a name="BUGS"></a>
+<h2>BUGS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Caveat Emptor:
+The author is <b>not</b> responsible for any disasters,
+suicide attempts, or ulcers caused by correct <b>or</b>
+incorrect use of <b>pslib</b>. If you find bugs, please
+report them to the author by electronic mail. Be sure to
+provide enough detail so that I can recreate the
+problem.</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Adobe Systems
+Inc., 1990, <i>PostScript</i> language reference manual, 2nd
+edition, Addison-Wesley, (ISBN 0-201-18127-4).</p>
+<hr>
+</body>
+</html>

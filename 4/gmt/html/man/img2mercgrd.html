@@ -1,0 +1,410 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:33 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>IMG2MERCGRD</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>IMG2MERCGRD</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">img2mercgrd
+&minus; Extract region of img, preserving Mercator, save as
+grd</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>img2mercgrd</b>
+<i>imgfile</i> <b>&minus;G</b><i>grdfile</i>
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+<b>&minus;T</b><i>type</i> [ <b>&minus;C</b> ] [
+<b>&minus;D</b>[<i>minlat/maxlat</i>] ] [
+<b>&minus;N</b><i>navg</i> ] [ <b>&minus;S</b><i>scale</i> ]
+[ <b>&minus;V</b> ] [ <b>&minus;W</b><i>maxlon</i> ] [
+<b>&minus;m</b><i>minutes</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>img2mercgrd</b>
+reads an img format file and creates a grid file. The
+Spherical Mercator projection of the img file is preserved,
+so that the region <b>&minus;R</b> set by the user is
+modified slightly; the modified region corresponds to the
+edges of pixels [or groups of <i>navg</i> pixels]. The grid
+file header is set so that the x and y axis lengths
+represent distance from the west and south edges of the
+image, measured in user default units, with <b>&minus;Jm</b>
+1 and the adjusted <b>&minus;R</b>. By setting the default
+<b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b> = Sphere, the user can make overlays with
+the adjusted <b>&minus;R</b> so that they match. See
+<b>EXAMPLES</b> below. The adjusted <b>&minus;R</b> is also
+written in the grdheader remark, so it can be found later.
+The <b>&minus;T</b><i>type</i> selects all data or only data
+at constrained pixels, and can be used to create a grid of
+1s and 0s indicating constraint locations. The output grid
+file is pixel registered; it inherits this from the img
+file. <i><br>
+imgfile</i></p>
+
+<p style="margin-left:22%;">An img format file such as the
+marine gravity or seafloor topography fields estimated from
+satellite altimeter data by Sandwell and Smith. If the user
+has set an environment variable <b>$GMT_IMGDIR</b>, then
+<b>img2mercgrd</b> will try to find <i>imgfile</i> in
+<b>$GMT_IMGDIR</b>; else it will try to open <i>imgfile</i>
+directly.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>grdfile</i> is
+the name of the output grid file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> specify the Region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>type</i> handles
+the encoding of constraint information. <i>type</i> = 0
+indicates that no such information is encoded in the img
+file (used for pre-1995 versions of the gravity data; all
+more recent files do not support this choice) and gets all
+data. <i>type</i> &gt; 0 indicates that constraint
+information is encoded (1995 and later (current) versions of
+the img files) so that one may produce a grid file as
+follows: <b>&minus;T</b><i>1</i> gets data values at all
+points, <b>&minus;T</b><i>2</i> gets data values at
+constrained points and NaN at interpolated points;
+<b>&minus;T</b><i>3</i> gets 1 at constrained points and 0
+at interpolated points.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set the x and y
+Mercator coordinates relative to projection center (lon =
+lat = 0) [Default is relative to lower left corner of
+grid].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Use the extended
+latitude range -80.738/+80.738. Alternatively, append
+<i>minlat/maxlat</i> as the latitude extent of the input img
+file. [Default is -72.006/72.006].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Average the values
+in the input img pixels into <i>navg</i> by <i>navg</i>
+squares, and create one output pixel for each such square.
+If used with <b>&minus;T</b><i>3</i> it will report an
+average constraint between 0 and 1. If used with
+<b>&minus;T</b><i>2</i> the output will be average data
+value or NaN according to whether average constraint is &gt;
+0.5. <i>navg</i> must evenly divide into the dimensions of
+the imgfile in pixels. [Default <i>1</i> does no
+averaging].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiply the img
+file values by <i>scale</i> before storing in grid file.
+[Default is 1.0]. (img topo files are stored in (corrected)
+meters; gravity files in mGal*10; vertical deflection files
+in microradians*10, vertical gravity gradient files in
+Eotvos*10. Use <b>&minus;S</b> 0.1 for those files.)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;]. Particularly recommended here,
+as it is helpful to see how the coordinates are
+adjusted.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Indicate
+<i>minutes</i> as the width of an input img pixel in minutes
+of longitude. [Default is 2.0].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Indicate
+<i>maxlon</i> as the maximum longitude extent of the input
+img file. Versions since 1995 have had <i>maxlon</i> =
+360.0, while some earlier files had <i>maxlon</i> = 390.0.
+[Default is 360.0].</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To extract data
+in the region <b>&minus;R</b>-40/40/-70/-30 from
+<i>world_grav.img.7.2</i>, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>img2mercgrd</b>
+world_grav.img.7.2 <b>&minus;G</b> merc_grav.grd
+<b>&minus;R</b>-40/40/-70/-30 <b>&minus;T</b> 1
+<b>&minus;V</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">Note that the
+<b>&minus;V</b> option tells us that the range was adjusted
+to <b>&minus;R</b>-40/40/-70.0004681551/-29.9945810754. We
+can also use <b><A HREF="grdinfo.html">grdinfo</A></b> to find that the grid file
+header shows its region to be <b>&minus;R</b>
+0/80/0/67.9666667 This is the range of x,y we will get from
+a Spherical Mercator projection using
+<b>&minus;R</b>-40/40/-70.0004681551/-29.9945810754 and
+<b>&minus;Jm</b> 1. Thus, to take ship.lonlatgrav and use it
+to sample the merc_grav.grd, we can do this:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtset
+ELLIPSOID</b> Sphere <b><br>
+mapproject &minus;R</b>-40/40/-70.0004681551/-29.9945810754
+<b>&minus;Jm</b> 1 ship.lonlatgrav | <b>grdtrack
+&minus;G</b> merc_grav.grd | <b>mapproject
+&minus;R</b>-40/40/-70.0004681551/-29.9945810754
+<b>&minus;Jm</b> 1 <b>&minus;I</b> &gt;
+ship.lonlatgravsat</p>
+
+<p style="margin-left:11%; margin-top: 1em">It is
+recommended to use the above method of projecting and
+unprojecting the data in such an application, because then
+there is only one interpolation step (in <b><A HREF="grdtrack.html">grdtrack</A></b>).
+If one first tries to convert the grid file to lon,lat and
+then sample it, there are two interpolation steps (in
+conversion and in sampling).</p>
+
+<p style="margin-left:11%; margin-top: 1em">To make a
+lon,lat grid from the above grid we can use</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="grdproject.html">grdproject</A></b>
+merc_grav.grd
+<b>&minus;R</b>-40/40/-70.0004681551/-29.9945810754
+<b>&minus;Jm</b> 1 <b>&minus;I &minus;F &minus;D</b> 2m
+<b>&minus;G</b> grav.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">In some cases
+this will not be easy as the <b>&minus;R</b> in the two
+coordinate systems may not align well. When this happens, we
+can also use (in fact, it may be always better to use)</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="grd2xyz.html">grd2xyz</A></b>
+merc_grav.grd | <b>mapproject
+&minus;R</b>-40/40/-70.0004681551/-29.994581075
+<b>&minus;Jm</b> 1 <b>&minus;I</b> | <b>surface
+&minus;R</b>-40/40/-70/70 <b>&minus;I</b> 2m <b>&minus;G</b>
+grav.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">To make a
+Mercator map of the above region, suppose our .gmtdefaults4
+<b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> is inch. Then since the above
+merc_grav.grd file is projected with <b>&minus;Jm</b> 1 it
+is 80 inches wide. We can make a map 8 inches wide by using
+<b>&minus;Jx</b> 0.1 on any map programs applied to this
+grid (e.g., <b><A HREF="grdcontour.html">grdcontour</A></b>, <b><A HREF="grdimage.html">grdimage</A></b>,
+<b><A HREF="grdview.html">grdview</A></b>), and then for overlays which work in lon,lat
+(e.g., <b><A HREF="psxy.html">psxy</A></b>, <b><A HREF="pscoast.html">pscoast</A></b>) we can use the above
+adjusted <b>&minus;R</b> and <b>&minus;Jm</b> 0.1 to get the
+two systems to match up.</p>
+
+<p style="margin-left:11%; margin-top: 1em">However, we can
+be smarter than this. Realizing that the input img file had
+pixels 2.0 minutes wide (or checking the nx and ny with
+grdinfo merc_grav.grd) we realize that merc_grav.grd used
+the full resolution of the img file and it has 2400 by 2039
+pixels, and at 8 inches wide this is 300 pixels per inch. We
+decide we don&rsquo;t need that many and we will be
+satisfied with 100 pixels per inch, so we want to average
+the data into 3 by 3 squares. (If we want a contour plot we
+will probably choose to average the data much more (e.g., 6
+by 6) to get smooth contours.) Since 2039 isn&rsquo;t
+divisible by 3 we will get a different adjusted OPT(R) this
+time:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>img2mercgrd</b>
+world_grav.img.7.2 <b>&minus;G</b> merc_grav_2.grd
+<b>&minus;R</b>-40/40/-70/-30 <b>&minus;T</b> 1
+<b>&minus;N</b> 3 <b>&minus;V</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">This time we
+find the adjusted region is
+<b>&minus;R</b>-40/40/-70.023256525/-29.9368261101 and the
+output is 800 by 601 pixels, a better size for us. Now we
+can create an artificial illumination file for this using
+<b><A HREF="grdgradient.html">grdgradient</A></b>:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="grdgradient.html">grdgradient</A></b>
+merc_grav_2.grd <b>&minus;G</b> illum.grd <b>&minus;A</b>
+0/270 <b>&minus;N</b> e0.6</p>
+
+<p style="margin-left:11%; margin-top: 1em">and if we also
+have a cpt file called &quot;grav.cpt&quot; we can create a
+color shaded relief map like this:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="grdimage.html">grdimage</A></b>
+merc_grav_2.grd <b>&minus;I</b> illum.grd <b>&minus;C</b>
+grav.cpt <b>&minus;Jx</b> 0.1 <b>&minus;K</b> &gt; map.ps
+<b><br>
+psbasemap &minus;R</b>-40/40/-70.023256525/-29.9368261101
+<b>&minus;Jm</b> 0.1 <b>&minus;B</b> a10 <b>&minus;O</b>
+&gt;&gt; map.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">Suppose you
+want to obtain only the constrained data values from an img
+file, in lat/lon coordinates. Then run <b>img2mercgrd</b>
+with the <b>&minus;T</b> 2 option, use <b><A HREF="grd2xyz.html">grd2xyz</A></b> to
+dump the values, pipe through grep -v NaN to eliminate NaNs,
+and pipe through <b><A HREF="mapproject.html">mapproject</A></b> with the inverse
+projection as above.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grdproject.html">grdproject</A></i>(1), <i><A HREF="mapproject.html">mapproject</A></i>(1)</p>
+<hr>
+</body>
+</html>

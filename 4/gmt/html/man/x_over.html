@@ -1,0 +1,226 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:45 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>X_OVER</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>X_OVER</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#BEWARE">BEWARE</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x_over</b>
+&minus; Find and compute Cross-Over Errors</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x_over</b>
+<i>leg_1</i> [ <i>leg_2</i> ] [ <b>&minus;A</b> ] [
+<b>&minus;C</b> ] [ <b>&minus;L</b> ] [ <b>&minus;V</b> ] [
+<b>&minus;W</b><i>timegap</i> ] [ <b>&minus;G</b><i>fact</i>
+] [ <b>&minus;M</b><i>fact</i> ] [
+<b>&minus;T</b><i>fact</i> ] [ <b>&minus;N</b><i>np_int</i>
+]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x_over</b>
+is used to inspect two cruises to see if they intersect, and
+if so report the time, position, discrepancies in
+gravity/magnetics/bathymetry, heading for each track
+segment, and the average values of the geophysical
+observables at the cross-over point. The names of the legs
+are passed on the command line. If they are identical or
+only one name is passed, then <b>x_over</b> looks for
+internal cross-overs. The optional parameters are:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Use an Akima spline
+to interpolate the geophysical field at the cross-over
+point.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Use a Natural Cubic
+spline function instead.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Use a linear
+interpolant [Default].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not compute
+cross-overs if the 2 nearest points are more than
+<i>timegap</i> minutes apart.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Scale gravity by
+<i>fact</i> [Default is 0.1 since gmt-files store gravity in
+g.u.]</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Scale magnetic
+anomaly by <i>fact</i> [1.0].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Scale bathymetry by
+<i>fact</i> [1.0].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify how many
+points to use in the interpolation [Default is 6].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;]. Report the number of cross-overs
+for this pair of legs.</p></td>
+</table>
+
+<a name="BEWARE"></a>
+<h2>BEWARE</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The COEs found
+are printed out to standard output in ASCII format. The
+first record contains the leg names and their start year,
+whereas subsequent records have the data for each COE
+encountered. The fields written out are lat, lon, time along
+track #1, time along track #2, x_gravity, x_magnetics,
+x_bathymetry, average gravity, average magnetics, average
+bathymetry, heading along track #1, and heading along track
+#2. Sign convention: If lega and legb are passed on the
+command line, then the COE value is Value (lega) - Value
+(legb). It is recommended that the Akima spline is used
+instead of the natural cubic spline, since it is less
+sensitive to outliers that tend to introduce wild
+oscillations in the interpolation.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="x_system.html">x_system</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P.
+XOVER: A Cross-over Error Detector for Track Data,
+<i>Computers &amp; Geosciences, 15</i>, 333-346.</p>
+<hr>
+</body>
+</html>

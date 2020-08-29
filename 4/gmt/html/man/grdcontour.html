@@ -1,0 +1,1088 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:17 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GRDCONTOUR</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GRDCONTOUR</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#ASCII FORMAT PRECISION">ASCII FORMAT PRECISION</a><br>
+<a href="#FILE FORMATS">FILE FORMATS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">grdcontour
+&minus; Contouring of 2-D gridded data sets</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdcontour</b>
+<i>grdfile</i> <b>&minus;C</b><i>cont_int</i>
+<b>&minus;J</b><i>parameters</i> [
+<b>&minus;A</b>[<b>-</b>|<i>annot_int</i>][<i>labelinfo</i>]
+] [ <b>&minus;B</b>[<b>p</b>|<b>s</b>]<i>parameters</i> ] [
+<b>&minus;D</b><i>dumpfile</i> ] [
+<b>&minus;E</b><i>azimuth/elevation</i> ] [
+<b>&minus;F</b>[<b>l</b>|<b>r</b>] ] [
+<b>&minus;G</b>[<b>d</b>|<b>f</b>|<b>n</b>|<b>l</b>|<b>L</b>|<b>x</b>|<b>X</b>]<i>params</i>
+] [ <b>&minus;K</b> ] [ <b>&minus;L</b><i>low/high</i> ] [
+<b>&minus;O</b> ] [ <b>&minus;P</b> ] [
+<b>&minus;Q</b><i>cut</i> ] [
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;S</b><i>smoothfactor</i> ] [
+<b>&minus;T</b>[<b>+|-</b>][<i>gap/length</i>][<b>:</b><i>LH</i>]
+] [
+<b>&minus;U</b>[<i>just</i>/<i>dx</i>/<i>dy</i>/][<b>c</b>|<i>label</i>]
+] [ <b>&minus;V</b> ] [
+<b>&minus;W</b>[<b>+</b>][<i>type</i>]<i>pen</i> ] [
+<b>&minus;X</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>x-shift</i>[<b>u</b>]]
+] [
+<b>&minus;Y</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>y-shift</i>[<b>u</b>]]
+] [ <b>&minus;Z</b>[<i>factor</i>[/<i>shift</i>]][<b>p</b>]
+] [ <b>&minus;c</b><i>copies</i> ] [
+<b>&minus;bo</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;m</b>[<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdcontour</b>
+reads a 2-D grid file and produces a contour map by tracing
+each contour through the grid. As an option, the x/y/z
+positions of the contour lines may be dumped to a single
+multisegment file or many separate files. <i>PostScript</i>
+code is generated and sent to standard output. Various
+options that affect the plotting are available. <i><br>
+grdfile</i></p>
+
+<p style="margin-left:22%;">2-D gridded data set to be
+contoured. (See GRID FILE FORMATS below).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">The contours to be
+drawn may be specified in one of three possible ways:</p></td>
+</table>
+
+<p style="margin-left:22%;">(1) If <i>cont_int</i> has the
+suffix &quot;.cpt&quot; and can be opened as a file, it is
+assumed to be a color palette table. The color boundaries
+are then used as contour levels. If the cpt-file has
+annotation flags in the last column then those contours will
+be annotated. By default all contours are labeled; use
+<b>&minus;A&minus;</b> to disable all annotations. <br>
+(2) If <i>cont_int</i> is a file but not a cpt-file, it is
+expected to contain contour levels in column 1 and a
+C(ontour) OR A(nnotate) in col 2. The levels marked C (or c)
+are contoured, the levels marked A (or a) are contoured and
+annotated. Optionally, a third column may be present and
+contain the fixed annotation angle for this contour level.
+<br>
+(3) If no file is found, then <i>cont_int</i> is interpreted
+as a constant contour interval. If <b>&minus;A</b> is set
+and <b>&minus;C</b> is not, then the contour interval is set
+equal to the specified annotation interval. <br>
+If a file is given and <b>&minus;T</b> is set, then only
+contours marked with upper case C or A will have tickmarks.
+In all cases the contour values have the same units as the
+grid.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;J</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects the map
+projection. Scale is UNIT/degree, 1:xxxxx, or width in UNIT
+(upper case modifier). UNIT is cm, inch, or m, depending on
+the <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> setting in .gmtdefaults4, but this
+can be overridden on the command line by appending <b>c</b>,
+<b>i</b>, or <b>m</b> to the scale/width value. When central
+meridian is optional, default is center of longitude range
+on <b>&minus;R</b> option. Default standard parallel is the
+equator. For map height, max dimension, or min dimension,
+append <b>h</b>, <b>+</b>, or <b>-</b> to the width,
+respectively.</p> </td>
+</table>
+
+<p style="margin-left:22%;">More details can be found in
+the <b><A HREF="psbasemap.html">psbasemap</A></b> man pages.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CYLINDRICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jc</b><i>lon0/lat0/scale</i>
+(Cassini) <b><br>
+
+&minus;Jcyl_stere</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Stereographic) <b><br>
+&minus;Jj</b>[<i>lon0/</i>]<i>scale</i> (Miller) <b><br>
+&minus;Jm</b>[<i>lon0</i>/[<i>lat0/</i>]]<i>scale</i>
+(Mercator) <b><br>
+&minus;Jm</b><i>lon0/lat0/scale</i> (Mercator - Give
+meridian and standard parallel) <b><br>
+&minus;Jo</b>[<b>a</b>]<i>lon0/lat0/azimuth/scale</i>
+(Oblique Mercator - point and azimuth) <b><br>
+&minus;Jo</b>[<b>b</b>]<i>lon0/lat0/lon1/lat1/scale</i>
+(Oblique Mercator - two points) <b><br>
+&minus;Joc</b><i>lon0/lat0/lonp/latp/scale</i> (Oblique
+Mercator - point and pole) <b><br>
+&minus;Jq</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equidistant) <b><br>
+&minus;Jt</b><i>lon0/</i>[<i>lat0/</i>]<i>scale</i> (TM -
+Transverse Mercator) <b><br>
+&minus;Ju</b><i>zone/scale</i> (UTM - Universal Transverse
+Mercator) <b><br>
+&minus;Jy</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equal-Area)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CONIC
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jb</b><i>lon0/lat0/lat1/lat2/scale</i>
+(Albers) <b><br>
+&minus;Jd</b><i>lon0/lat0/lat1/lat2/scale</i> (Conic
+Equidistant) <b><br>
+&minus;Jl</b><i>lon0/lat0/lat1/lat2/scale</i> (Lambert Conic
+Conformal) <b><br>
+&minus;Jpoly</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+((American) Polyconic)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>AZIMUTHAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Ja</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Lambert Azimuthal Equal-Area) <b><br>
+&minus;Je</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Azimuthal Equidistant) <b><br>
+&minus;Jf</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Gnomonic) <b><br>
+&minus;Jg</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Orthographic) <b><br>
+
+&minus;Jg</b><i>lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale</i>
+(General Perspective). <b><br>
+&minus;Js</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(General Stereographic)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>MISCELLANEOUS
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jh</b>[<i>lon0/</i>]<i>scale</i>
+(Hammer) <b><br>
+&minus;Ji</b>[<i>lon0/</i>]<i>scale</i> (Sinusoidal) <b><br>
+&minus;Jkf</b>[<i>lon0/</i>]<i>scale</i> (Eckert IV) <b><br>
+&minus;Jk</b>[<b>s</b>][<i>lon0/</i>]<i>scale</i> (Eckert
+VI) <b><br>
+&minus;Jn</b>[<i>lon0/</i>]<i>scale</i> (Robinson) <b><br>
+&minus;Jr</b>[<i>lon0/</i>]<i>scale</i> (Winkel Tripel)
+<b><br>
+&minus;Jv</b>[<i>lon0/</i>]<i>scale</i> (Van der Grinten)
+<b><br>
+&minus;Jw</b>[<i>lon0/</i>]<i>scale</i> (Mollweide)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>NON-GEOGRAPHICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jp</b>[<b>a</b>]<i>scale</i>[<i>/origin</i>][<b>r</b>|<b>z</b>]
+(Polar coordinates (theta,r)) <b><br>
+
+&minus;Jx</b><i>x-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>][<i>/y-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>]]
+(Linear, log, and power scaling)</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>annot_int</i> is
+annotation interval in data units; it is ignored if contour
+levels are given in a file. [Default is no annotations].
+Append <b>-</b> to disable all annotations implied by
+<b>&minus;C</b>. The optional <i>labelinfo</i> controls the
+specifics of the label formatting and consists of a
+concatenated string made up of any of the following control
+arguments:</p> </td>
+</table>
+
+<p style="margin-left:22%;"><b>+a</b><i>angle</i></p>
+
+<p style="margin-left:32%;">For annotations at a fixed
+angle, <b>+an</b> for line-normal, or <b>+ap</b> for
+line-parallel [Default]. By appending the <b>u</b> or
+<b>d</b> we get annotations whose top face the next upper or
+lower annotation, respectively.</p>
+
+
+<p style="margin-left:22%;"><b>+c</b><i>dx</i>[/<i>dy</i>]</p>
+
+<p style="margin-left:32%;">Sets the clearance between
+label and optional text box. Append <b>c|i|m|p</b> to
+specify the unit or % to indicate a percentage of the label
+font size [15%].</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em" valign="top"><b>+d</b></p></td>
+<td width="1%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Turns on debug
+which will draw helper points and lines to illustrate the
+workings of the quoted line setup.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>+f</b><i>font</i></p> </td>
+<td width="1%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the desired
+font [Default <b><A HREF="gmtdefaults.html#ANNOT_FONT_PRIMARY">ANNOT_FONT_PRIMARY</A></b>].</p></td>
+</table>
+
+<p style="margin-left:22%;"><b>+g</b>[<i>color</i>]</p>
+
+<p style="margin-left:32%;">Selects opaque text boxes
+[Default is transparent]; optionally specify the color
+[Default is <b><A HREF="gmtdefaults.html#PAGE_COLOR">PAGE_COLOR</A></b>]. (See SPECIFYING COLOR
+below).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>+j</b><i>just</i></p> </td>
+<td width="1%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Sets label
+justification [Default is MC]. Ignored when -SqN|n+|-1 is
+used.</p> </td>
+</table>
+
+<p style="margin-left:22%;"><b>+k</b><i>color</i></p>
+
+<p style="margin-left:32%;">Sets color of text labels
+[Default is <b><A HREF="gmtdefaults.html#COLOR_BACKGROUND">COLOR_BACKGROUND</A></b>]. (See SPECIFYING COLOR
+below).</p>
+
+
+<p style="margin-left:22%;"><b>+n</b><i>dx</i>[/<i>dy</i>]</p>
+
+<p style="margin-left:32%;">Nudges the placement of labels
+by the specified amount (append <b>c|i|m|p</b> to specify
+the units). Increments are considered in the coordinate
+system defined by the orientation of the line; use <b>+N</b>
+to force increments in the plot x/y coordinates system [no
+nudging].</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="3%">
+
+
+<p style="margin-top: 1em" valign="top"><b>+o</b></p></td>
+<td width="7%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Selects rounded
+rectangular text box [Default is rectangular]. Not
+applicable for curved text (<b>+v</b>) and only makes sense
+for opaque text boxes.</p></td>
+</table>
+
+<p style="margin-left:22%;"><b>+p</b>[<i>pen</i>]</p>
+
+<p style="margin-left:32%;">Draws the outline of text
+boxsets [Default is no outline]; optionally specify pen for
+outline [Default is width = 0.25p, color = black, texture =
+solid]. (See SPECIFYING PENS below).</p>
+
+<p style="margin-left:22%;"><b>+r</b><i>min_rad</i></p>
+
+<p style="margin-left:32%;">Will not place labels where the
+line&rsquo;s radius of curvature is less than <i>min_rad</i>
+[Default is 0].</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>+s</b><i>size</i></p> </td>
+<td width="1%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the desired
+font size in points [Default is 9].</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>+u</b><i>unit</i></p> </td>
+<td width="1%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Appends <i>unit</i>
+to all line labels. If <i>unit</i> starts with a leading
+hyphen (-) then there will be no space between label value
+and the unit. If <i>z</i> is appended we use the unit
+specified in the grid file. [Default is no unit].</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em" valign="top"><b>+v</b></p></td>
+<td width="1%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies curved
+labels following the path [Default is straight labels].</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em" valign="top"><b>+w</b></p></td>
+<td width="1%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies how many
+(<i>x, y</i>) points will be used to estimate label angles
+[Default is 10].</p></td>
+</table>
+
+<p style="margin-left:22%;"><b>+=</b><i>prefix</i></p>
+
+<p style="margin-left:32%;">Prepends <i>prefix</i> to all
+line labels. If <i>prefix</i> starts with a leading hyphen
+(-) then there will be no space between label value and the
+prefix. [Default is no prefix].</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;B</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets map boundary
+annotation and tickmark intervals; see the <b><A HREF="psbasemap.html">psbasemap</A></b>
+man page for all the details.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Dump the (x,y,z)
+coordinates of each contour to separate files, one for each
+contour segment. The files will be named
+<i>dumpfile_cont_segment[_i]</i>.xyz (or <i>.b</i> is
+<b>&minus;b</b> is selected), where <i>cont</i> is the
+contour value and <i>segment</i> is a running segment number
+for each contour interval (for closed contours we append
+_i.) If the prefix is given as &rsquo;-&rsquo; the file
+names are instead <i>C#_i</i> (interior) or <i>C#_e</i>
+(external) plus extension, and # is just a running number.
+This allows us to make short file names that will work with
+GNU utilities under DOS. However, when <b>&minus;m</b> is
+used in conjunction with <b>&minus;D</b> a single
+multisegment file is created instead.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the
+viewpoint&rsquo;s azimuth and elevation (for perspective
+view) [180/90]. For frames used for animation, you may want
+to append <b>+</b> to fix the center of your data domain (or
+specify a particular world coordinate point with
+<b>+w</b><i>lon0</i>/<i>lat</i>[/<i>z</i>]) which will
+project to the center of your page size (or specify the
+coordinates of the projected view point with
+<b>+v</b><i>x0</i>/<i>y0).</i></p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force dumped
+contours to be oriented so that higher z-values are to the
+left (<b>&minus;Fl</b> [Default]) or right (<b>-Fr</b>) as
+we move along the contour [Default is arbitrary
+orientation]. Requires <b>&minus;D</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Controls the
+placement of labels along the contours. Choose among five
+controlling algorithms:</p></td>
+</table>
+
+
+<p style="margin-left:22%;"><b>&minus;Gd</b><i>dist</i>[<b>c</b>|<b>i</b>|<b>m</b>|<b>p</b>]
+or
+<b>&minus;GD</b><i>dist</i>[<b>d</b>|<b>e</b>|<b>k</b>|<b>m</b>|<b>n</b>]</p>
+
+<p style="margin-left:32%;">For lower case <b>d</b>, give
+distances between labels on the plot in your preferred
+measurement unit <b>c</b> (cm), <b>i</b> (inch), <b>m</b>
+(meter), or <b>p</b> (points), while for upper case
+<b>D</b>, specify distances in map units and append the
+unit; choose among <b>e</b> (m), <b>k</b> (km), <b>m</b>
+(mile), <b>n</b> (nautical mile), or <b>d</b> (spherical
+degree). [Default is 10<b>c</b> or 4<b>i</b>].</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Gf</b><i>ffile.d</i></p>
+
+<p style="margin-left:32%;">Reads the ascii file
+<i>ffile.d</i> and places labels at locations in the file
+that matches locations along the contours. Inexact matches
+and points outside the region are skipped.</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Gl|L</b><i>line1</i>[,<i>line2</i>,...]</p>
+
+<p style="margin-left:32%;">Give the coordinates of the end
+points for one or more comma-separated straight line
+segments. Labels will be placed where these lines intersect
+the contours. The format of each <i>line</i> specification
+is
+<i>start_lon</i>/<i>start_lat</i>/<i>stop_lon</i>/<i>stop_lat</i>.
+Both <i>start_lon</i>/<i>start_lat</i> and
+<i>stop_lon</i>/<i>stop_lat</i> can be replaced by a
+2-character key that uses the justification format employed
+in <b><A HREF="pstext.html">pstext</A></b> to indicate a point on the map, given as
+[LCR][BMT]. In addition, you may use Z+ and Z- which
+correspond to the locations of the global max and min
+locations in the grid, respectively. <b>&minus;GL</b> will
+interpret the point pairs as defining great circles [Default
+is straight line].</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Gn|N</b><i>n_label</i></p>
+
+<p style="margin-left:32%;">Specifies the number of
+equidistant labels for contours line [1]. Upper case
+<b>&minus;GN</b> starts labeling exactly at the start of the
+line [Default centers them along the line].
+<b>&minus;GN</b>-1 places one justified label at start,
+while <b>&minus;GN</b>+1 places one justified label at the
+end of contours. Optionally, append
+/<i>min_dist</i>[c|i|m|p] to enforce that a minimum distance
+separation between successive labels is enforced.</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Gx|X</b><i>xfile.d</i></p>
+
+<p style="margin-left:32%;">Reads the multi-segment file
+<i>xfile.d</i> and places labels at the intersections
+between the contours and the lines in<i>xfile.d</i>.
+<b>&minus;GX</b> will resample the lines first along
+great-circle arcs.</p>
+
+<p style="margin-left:22%; margin-top: 1em">In addition,
+you may optionally append
+<b>+r</b><i>radius</i>[<b>c</b>|<b>i</b>|<b>m</b>|<b>p</b>]
+to set a minimum label separation in the x-y plane [no
+limitation].</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;K</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">More
+<i>PostScript</i> code will be appended later [Default
+terminates the plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Limit range: Do not
+draw contours for data values below <i>low</i> or above
+<i>high</i>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;O</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Overlay
+plot mode [Default initializes a new plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;P</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Portrait
+plotting mode [Default is Landscape, see <b><A HREF="gmtdefaults.html">gmtdefaults</A></b>
+to change this].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not draw
+contours with less than <i>cut</i> number of points [Draw
+all contours].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xmin</i>,
+<i>xmax</i>, <i>ymin</i>, and <i>ymax</i> specify the Region
+of interest. For geographic regions, these limits correspond
+to <i>west, east, south,</i> and <i>north</i> and you may
+specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+calendar time coordinates you may either give (a) relative
+time (relative to the selected <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and in the
+selected <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>; append <b>t</b> to
+<b>&minus;JX</b>|<b>x</b>), or (b) absolute time of the form
+[<i>date</i>]<b>T</b>[<i>clock</i>] (append <b>T</b> to
+<b>&minus;JX</b>|<b>x</b>). At least one of <i>date</i> and
+<i>clock</i> must be present; the <b>T</b> is always
+required. The <i>date</i> string must be of the form
+[-]yyyy[-mm[-dd]] (Gregorian calendar) or yyyy[-Www[-d]]
+(ISO week calendar), while the <i>clock</i> string must be
+of the form hh:mm:ss[.xxx]. The use of delimiters and their
+type and positions must be exactly as indicated (however,
+input, output and plot formats are customizable; see
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b>). [Default is region defined in the grid
+file].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Used to resample
+the contour lines at roughly every
+(gridbox_size/<i>smoothfactor</i>) interval.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Will draw tickmarks
+pointing in the downward direction every <i>gap</i> along
+the innermost closed contours. Append <i>gap</i> and
+tickmark length or use defaults [0.5<b>c</b>/0.1c or
+0.2<b>i</b>/0.04i]. User may choose to tick only local highs
+or local lows by specifying <b>&minus;T+</b> or
+<b>&minus;T&minus;</b>, respectively. Appending <b>:LH</b>
+will plot the characters L and H at the center of closed
+innermost contours (local lows and highs). L and H can be
+any single character (e.g., LH, -+, etc.) If a file is given
+by <b>&minus;C</b> and <b>&minus;T</b> is set, then only
+contours marked with upper case C or A will have tickmarks
+[and annotation].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;U</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw Unix System
+time stamp on plot. By adding <i>just/dx/dy/</i>, the user
+may specify the justification of the stamp and where the
+stamp should fall on the page relative to lower left corner
+of the plot. For example, BL/0/0 will align the lower left
+corner of the time stamp with the lower left corner of the
+plot. Optionally, append a <i>label</i>, or <b>c</b> (which
+will plot the command string.). The <b><A HREF="GMT.html">GMT</A></b> parameters
+<b><A HREF="gmtdefaults.html#UNIX_TIME">UNIX_TIME</A></b>, <b><A HREF="gmtdefaults.html#UNIX_TIME_POS">UNIX_TIME_POS</A></b>, and
+<b><A HREF="gmtdefaults.html#UNIX_TIME_FORMAT">UNIX_TIME_FORMAT</A></b> can affect the appearance; see the
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b> man page for details. The time string
+will be in the locale set by the environment variable
+<b>TZ</b> (generally local time).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>type</i>, if
+present, can be <b>a</b> for annotated contours or <b>c</b>
+for regular contours [Default]. <i>pen</i> sets the
+attributes for the particular line. Default values for
+annotated contours: width = 0.75p, color = black, texture =
+solid. Regular contours have default width = 0.25p. (See
+SPECIFYING PENS below). If the <b>+</b> flag is specified
+then the color of the contour lines are taken from the cpt
+file (see <b>&minus;C</b>).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;X
+&minus;Y</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Shift plot origin
+relative to the current origin by (<i>x-shift,y-shift</i>)
+and optionally append the length unit (<b>c</b>, <b>i</b>,
+<b>m</b>, <b>p</b>). You can prepend <b>a</b> to shift the
+origin back to the original position after plotting, or
+prepend <b>r</b> [Default] to reset the current origin to
+the new location. If <b>&minus;O</b> is used then the
+default (<i>x-shift,y-shift</i>) is (0,0), otherwise it is
+(r1i, r1i) or (r2.5c, r2.5c). Alternatively, give <b>c</b>
+to align the center coordinate (x or y) of the plot with the
+center of the page based on current page size.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Use to subtract
+<i>shift</i> from the data and multiply the results by
+<i>factor</i> before contouring starts [1/0]. (Numbers in
+<b>&minus;A</b>, <b>&minus;C</b>, <b>&minus;L</b> refer to
+values after scaling and translation have occurred.) Append
+<b>p</b> to indicate that this grid file contains z-values
+that are periodic in 360 degrees (e.g., phase data, angular
+distributions) and that special precautions must be taken
+when determining 0-contours.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;c</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies the
+number of plot copies. [Default is 1].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">When used in
+conjunction with <b>&minus;D</b> a single multisegment file
+is created, and each contour section is preceded by a header
+record whose first column is <i>flag</i> followed by the
+contour level.</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+PENS</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p valign="top"><i>pen</i></p></td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p valign="top">The attributes of lines and symbol outlines
+as defined by <i>pen</i> is a comma delimetered list of
+<i>width</i>, <i>color</i> and <i>texture</i>, each of which
+is optional. <i>width</i> can be indicated as a measure
+(points, centimeters, inches) or as <b>faint</b>,
+<b>thin</b>[<b>ner</b>|<b>nest</b>],
+<b>thick</b>[<b>er</b>|<b>est</b>],
+<b>fat</b>[<b>ter</b>|<b>test</b>], or <b>obese</b>.
+<i>color</i> specifies a gray shade or color (see SPECIFYING
+COLOR below). <i>texture</i> is a combination of dashes
+&lsquo;-&rsquo; and dots &lsquo;.&rsquo;.</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+COLOR</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>color</i></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p valign="top">The <i>color</i> of lines, areas and
+patterns can be specified by a valid color name; by a gray
+shade (in the range 0&minus;255); by a decimal color code
+(r/g/b, each in range 0&minus;255; h-s-v, ranges
+0&minus;360, 0&minus;1, 0&minus;1; or c/m/y/k, each in range
+0&minus;1); or by a hexadecimal color code (#rrggbb, as used
+in HTML). See the <b><A HREF="gmtcolors.html">gmtcolors</A></b> manpage for more
+information and a full list of color names.</p></td>
+</table>
+
+<a name="ASCII FORMAT PRECISION"></a>
+<h2>ASCII FORMAT PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ASCII
+output formats of numerical data are controlled by
+parameters in your .gmtdefaults4 file. Longitude and
+latitude are formatted according to
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>, whereas other values are
+formatted according to <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>. Be aware that the
+format in effect can lead to loss of precision in the
+output, which can lead to various problems downstream. If
+you find the output is not written with enough precision,
+consider switching to binary output (<b>&minus;bo</b> if
+available) or specify more decimals using the
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> setting.</p>
+
+<a name="FILE FORMATS"></a>
+<h2>FILE FORMATS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="GMT.html">GMT</A></b> is
+able to recognize many of the commonly used grid file
+formats, as well as the precision, scale and offset of the
+values contained in the grid file. When <b><A HREF="GMT.html">GMT</A></b> needs a
+little help with that, you can add the suffix
+<b>=</b><i>id</i>[<b>/</b><i>scale</i><b>/</b><i>offset</i>[<b>/</b><i>nan</i>]],
+where <i>id</i> is a two-letter identifier of the grid type
+and precision, and <i>scale</i> and <i>offset</i> are
+optional scale factor and offset to be applied to all grid
+values, and <i>nan</i> is the value used to indicate missing
+data. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and Section 4.17 of the GMT
+Technical Reference and Cookbook for more information.</p>
+
+<p style="margin-left:11%; margin-top: 1em">When reading a
+netCDF file that contains multiple grids, <b><A HREF="GMT.html">GMT</A></b> will
+read, by default, the first 2-dimensional grid that can find
+in that file. To coax <b><A HREF="GMT.html">GMT</A></b> into reading another
+multi-dimensional variable in the grid file, append
+<b>?</b><i>varname</i> to the file name, where
+<i>varname</i> is the name of the variable. Note that you
+may need to escape the special meaning of <b>?</b> in your
+shell program by putting a backslash in front of it, or by
+placing the filename and suffix between quotes or double
+quotes. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and Section 4.18 of the
+GMT Technical Reference and Cookbook for more information,
+particularly on how to read splices of 3-, 4-, or
+5-dimensional grids.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To contour the
+file hawaii_grav.grd every 25 mGal on a Mercator map at 0.5
+inch/degree, annotate every 50 mGal (using fontsize = 10),
+using 1 degree tickmarks, and draw 30 minute gridlines:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdcontour</b>
+hawaii_grav.grd <b>&minus;Jm</b> 0.5<b>i &minus;C</b> 25
+<b>&minus;A</b> 50<b>+s</b>10 <b>&minus;B</b>
+1<b>g</b>30<b>m</b> &gt; hawaii_grav.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">To contour the
+file image.grd using the levels in the file cont.d on a
+linear projection at 0.1 cm/x-unit and 50 cm/y-unit, using
+20 (x) and 0.1 (y) tickmarks, smooth the contours a bit, use
+&quot;RMS Misfit&quot; as plot-title, use a thick red pen
+for annotated contours, and a thin, dashed, blue pen for the
+rest, and send the output to the default printer:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdcontour</b>
+image.grd <b>&minus;Jx</b> 0.1<b>c</b>/50.0<b>c &minus;C</b>
+cont.d <b>&minus;S</b> 4 <b>&minus;B</b> 20/0.1:.&quot;RMS
+Misfit&quot;: <b>&minus;Wa</b> thick,red <b>&minus;Wc</b>
+thinnest,blue,- | lp</p>
+
+<p style="margin-left:11%; margin-top: 1em">The labeling of
+local highs and lows may plot outside the innermost contour
+since only the mean value of the contour coordinates is used
+to position the label.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="gmtdefaults.html">gmtdefaults</A></i>(1), <i><A HREF="gmtcolors.html">gmtcolors</A></i>(5),
+<i><A HREF="psbasemap.html">psbasemap</A></i>(1), <i><A HREF="grdimage.html">grdimage</A></i>(1), <i><A HREF="grdview.html">grdview</A></i>(1),
+<i><A HREF="pscontour.html">pscontour</A></i>(1)</p>
+<hr>
+</body>
+</html>

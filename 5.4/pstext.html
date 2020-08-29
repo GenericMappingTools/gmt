@@ -1,0 +1,471 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>pstext &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pswiggle" href="pswiggle.html" />
+    <link rel="prev" title="psternary" href="psternary.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="pswiggle.html" title="pswiggle"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="psternary.html" title="psternary"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pstext">
+<span id="index-0"></span><h1>pstext<a class="headerlink" href="#pstext" title="Permalink to this headline">¶</a></h1>
+<p>pstext - Plot or typeset text on maps</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>pstext</strong> [ <em>textfiles</em> ] <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em>
+<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>]
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong> ]
+<a class="reference internal" href="#b"><span> <strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em>
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<strong>j</strong>|<strong>J</strong>]<em>dx</em>[/<em>dy</em>][<strong>+v</strong>[<em>pen</em>]] ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>+a</strong>[<em>angle</em>]][<strong>+c</strong>[<em>justify</em>]][<strong>+f</strong>[<em>font</em>]][<strong>+j</strong>[<em>justify</em>]][<strong>+h</strong>|<strong>+l</strong>|<strong>+r</strong>[<em>first</em>] |<strong>+t</strong><em>text</em>|<strong>+z</strong>[<em>format</em>]] ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>color</em> ]
+[ <a class="reference internal" href="#k"><span> <strong>-K</strong></span></a></strong> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong> ] [ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong> ] [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ] [ <a class="reference internal" href="#o"><span> <strong>-O</strong></span></a></strong> ] [ <a class="reference internal" href="#p"><span> <strong>-P</strong></span></a></strong> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><strong>l</strong>|<strong>u</strong> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><strong>o</strong>|<strong>O</strong>|<strong>c</strong>|<strong>C</strong> ] [
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong><em>pen</em> ]
+[ <a class="reference internal" href="#x"><span> <strong>-X</strong></span></a></strong><em>x_offset</em> ]
+[ <a class="reference internal" href="#y"><span> <strong>-Y</strong></span></a></strong><em>y_offset</em> ]
+[ <a class="reference internal" href="#u"><span> <strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong> ] [ <strong>-a</strong><em>col</em>=<em>name</em>[…] ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">transp</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>pstext</strong> plots text strings of variable size, font type, and
+orientation. Various map projections are provided, with the option to
+draw and annotate the map boundaries. PostScript code is written to
+standard output. Greek characters, subscript, superscript, and small
+caps are supported as follows: The sequence &#64;~ toggles between the
+selected font and Greek (Symbol). &#64;%<em>no</em>% sets the font to <em>no</em>; &#64;%%
+resets the font to the starting font, &#64;- toggles subscripts on/off, &#64;+
+toggles superscript on/off, &#64;# toggles small caps on/off, &#64;;<em>color</em>;
+changes the font color (&#64;;; resets it), &#64;:<em>size</em>: changes the font
+size (&#64;:: resets it), and &#64;_ toggles underline on/off. &#64;&#64; prints the &#64;
+sign. &#64;e, &#64;o, &#64;a, &#64;E, &#64;O, &#64;A give the accented Scandinavian characters.
+Composite characters (overstrike) may be indicated with the
+&#64;!&lt;char1&gt;&lt;char2&gt; sequence, which will print the two characters on top of
+each other. To learn the octal codes for symbols not available on the
+keyboard and some accented European characters, see Section <a class="reference internal" href="GMT_Docs.html#char-esc-seq"><span class="std std-ref">Character escape sequences</span></a> and
+Appendix <a class="reference internal" href="GMT_Docs.html#chart-octal-codes-for-chars"><span class="std std-ref">Chart of Octal Codes for Characters</span></a> in the GMT Technical Reference and Cookbook. Note that
+<a class="reference internal" href="gmt.conf.html#ps-char-encoding"><span class="std std-ref">PS_CHAR_ENCODING</span></a> must be set to an extended character set in your
+<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file in order to use the accented characters. Using the
+<strong>-G</strong> or <strong>-W</strong> options, a rectangle underlying the text may be plotted
+(does not work for strings with sub/super scripts, symbols, or composite
+characters, except in paragraph mode (<strong>-M</strong>)).</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="j">
+<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select map projection.  </dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest.  </dd>
+</dl>
+<p>For perspective view <strong>p</strong>, optionally append /<em>zmin</em>/<em>zmax</em>. <a class="reference internal" href="gmt.html#rz-full"><span class="std std-ref">(more …)</span></a>  </p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>textfiles</em></dt>
+<dd>This is one or more files containing 1 or more records with (<em>x</em>,
+<em>y</em>[, <em>font</em>, <em>angle</em>, <em>justify</em>], <em>text</em>). The attributes in
+brackets can alternatively be set directly via <strong>-F</strong>. If no files
+are given, <strong>pstext</strong> will read standard input. <em>font</em> is a font
+specification with format [<em>size</em>,][<em>font</em>,][<em>color</em>] where
+<em>size</em> is text size in points, <em>font</em> is the font to use, and
+<em>color</em> sets the font color. To draw outline fonts you append
+=<em>pen</em> to the font specification. The <em>angle</em> is measured in degrees
+counter-clockwise from horizontal, and <em>justify</em> sets the alignment.
+If <em>font</em> is not an integer, then it is taken to be a text string
+with the desired font name (see <strong>-L</strong> for available fonts). The
+alignment refers to the part of the text string that will be mapped
+onto the (<em>x</em>,<em>y</em>) point. Choose a 2 character combination of L,
+C, R (for left, center, or right) and T, M, B for top, middle, or
+bottom. e.g., BL for lower left.</dd>
+</dl>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong></dt>
+<dd>Angles are given as azimuths; convert them to directions using the
+current projection.</dd>
+</dl>
+<dl class="docutils" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set map boundary frame and axes attributes.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>dx/dy</em></dt>
+<dd>Sets the clearance between the text and the surrounding box [15%].
+Only used if <strong>-W</strong> or <strong>-G</strong> are specified. Append the unit you
+want (<strong>c</strong>m, <strong>i</strong>nch, or <strong>p</strong>oint; if not given we consult
+<a class="reference internal" href="gmt.conf.html#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a>) or % for a percentage of the font size.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong>[<strong>j</strong>|<strong>J</strong>]<em>dx</em>[/<em>dy</em>][<strong>+v</strong>[<em>pen</em>]]</dt>
+<dd>Offsets the text from the projected (<em>x</em>,<em>y</em>) point by <em>dx</em>,<em>dy</em>
+[0/0]. If <em>dy</em> is not specified then it is set equal to <em>dx</em>. Use
+<strong>-Dj</strong> to offset the text away from the point instead (i.e., the
+text justification will determine the direction of the shift). Using
+<strong>-DJ</strong> will shorten diagonal offsets at corners by
+sqrt(2). Optionally, append <strong>+v</strong> which will draw
+a line from the original point to the shifted point; append a <em>pen</em>
+to change the attributes for this line.</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong>[<strong>+a</strong>[<em>angle</em>]][<strong>+c</strong>[<em>justify</em>]][<strong>+f</strong>[<em>font</em>]][<strong>+j</strong>[<em>justify</em>]][<strong>+h</strong>|<strong>+l</strong>|<strong>+r</strong>[<em>first</em>] |<strong>+t</strong><em>text</em>|<strong>+z</strong>[<em>format</em>]]</dt>
+<dd>By default, text will be placed horizontally, using the primary
+annotation font attributes (<a class="reference internal" href="gmt.conf.html#font-annot-primary"><span class="std std-ref">FONT_ANNOT_PRIMARY</span></a>), and centered
+on the data point. Use this option to override these defaults by
+specifying up to three text attributes (font, angle, and
+justification) directly on the command line. Use <strong>+f</strong> to set the
+font (size,fontname,color); if no font info is given then the input
+file must have this information in one of its columns. Use <strong>+a</strong> to
+set the angle; if no angle is given then the input file must have
+this as a column. Alternatively, use <strong>+A</strong> to force text-baselines
+to convert into the -90/+90 range.  Use <strong>+j</strong> to set the justification; if no
+justification is given then the input file must have this as a
+column. Items read from the data file should be in the same order as
+specified with the <strong>-F</strong> option. Example:
+<strong>-F</strong><strong>+f</strong>12p,Helvetica-Bold,red<strong>+j+a</strong> selects a 12p red
+Helvetica-Bold font and expects to read the justification and angle
+from the file, in that order, after <em>x</em>, <em>y</em> and before <em>text</em>.
+In addition, the <strong>+c</strong> justification lets us use x,y coordinates extracted from the
+<strong>-R</strong> string instead of providing them in the input file. For example <strong>-F+c</strong>TL
+gets the <em>x_min</em>, <em>y_max</em> from the <strong>-R</strong> string and plots the text
+at the Upper Left corner of the map.  Normally, the text to be plotted
+comes from the data record.  Instead, use <strong>+h</strong> or <strong>+l</strong> to select the
+text as the most recent segment header or segment label, respectively in
+a multisegment input file, <strong>+r</strong> to use the record number (counting up from <em>first</em>),
+<strong>+t</strong><em>text</em> to set a fixed text string, or <strong>+z</strong> to format incoming <em>z</em> values
+to a string using the supplied <em>format</em> [use FORMAT_FLOAT_MAP].</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>color</em></dt>
+<dd>Sets the shade or color used for filling the text box [Default is no
+fill]. Alternatively, use <strong>-Gc</strong> to plot the text and then use the
+text dimensions (and <strong>-C</strong>) to build clip paths and turn clipping on.
+This clipping can then be turned off later with <a class="reference internal" href="psclip.html"><span class="doc">psclip</span></a> <strong>-C</strong>.
+To <strong>not</strong> plot the text but activate clipping, use <strong>-GC</strong> instead.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-Jz</strong>|<strong>Z</strong><em>parameters</em> <a class="reference internal" href="gmt.html#jz-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set z-axis scaling; same syntax as <strong>-Jx</strong>.</dd>
+</dl>
+<dl class="docutils" id="k">
+<dt><strong>-K</strong> <a class="reference internal" href="gmt.html#k-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Do not finalize the PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong></dt>
+<dd>Lists the font-numbers and font-names available, then exits.</dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-M</strong></dt>
+<dd>Paragraph mode. Files must be multiple segment files. Segments are
+separated by a special record whose first character must be <em>flag</em>
+[Default is <strong>&gt;</strong>]. Starting in the 3rd column, we expect to find
+information pertaining to the typesetting of a text paragraph (the
+remaining lines until next segment header). The information expected
+is (<em>x y</em> [<em>font angle justify</em>] <em>linespace parwidth parjust</em>),
+where <em>x y font angle justify</em> are defined above (<em>font</em>, <em>angle</em>,
+and <em>justify</em> can be set via <strong>-F</strong>), while <em>linespace</em> and
+<em>parwidth</em> are the linespacing and paragraph width, respectively.
+The justification of the text paragraph is governed by <em>parjust</em>
+which may be <strong>l</strong>(eft), <strong>c</strong>(enter), <strong>r</strong>(ight), or
+<strong>j</strong>(ustified). The segment header is followed by one or more
+lines with paragraph text. Text may contain the escape sequences
+discussed above. Separate paragraphs with a blank line.  Note that
+here, the justification set via <strong>-F+j</strong> applies to the box alignment
+since the text justification is set by <em>parjust</em>.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong></dt>
+<dd>Do NOT clip text at map boundaries [Default will clip].</dd>
+</dl>
+<dl class="docutils" id="o">
+<dt><strong>-O</strong> <a class="reference internal" href="gmt.html#o-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Append to existing PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="p">
+<dt><strong>-P</strong> <a class="reference internal" href="gmt.html#p-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select “Portrait” plot orientation.</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong></dt>
+<dd>Change all text to either <strong>l</strong>ower or <strong>u</strong>pper case [Default
+leaves all text as is].</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong></dt>
+<dd>Specify the shape of the textbox when using <strong>-G</strong> and/or <strong>-W</strong>.
+Choose lower case <strong>o</strong> to get a straight rectangle [Default].
+Choose upper case <strong>O</strong> to get a rounded rectangle. In paragraph
+mode (<strong>-M</strong>) you can also choose lower case <strong>c</strong> to get a concave
+rectangle or upper case <strong>C</strong> to get a convex rectangle.</dd>
+</dl>
+<dl class="docutils" id="u">
+<dt><strong>-U</strong>[[<em>just</em>]/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Draw GMT time stamp logo on plot.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong><em>pen</em></dt>
+<dd>Sets the pen used to draw a rectangle around the text string (see
+<strong>-T</strong>) [Default is width = default, color = black, style = solid].</dd>
+</dl>
+<p id="x"><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]</p>
+<dl class="docutils">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]] <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Shift plot origin.</dd>
+</dl>
+<dl class="docutils" id="z">
+<dt><strong>-Z</strong></dt>
+<dd>For 3-D projections: expect each item to have its own level given in
+the 3rd column, and <strong>-N</strong> is implicitly set. (Not implemented for
+paragraph mode).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-a</strong><em>col</em>=<em>name</em>[<em>…</em>] <a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set aspatial column associations <em>col</em>=<em>name</em>.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select perspective view. (Not implemented for paragraph mode).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set PDF transparency level in percent.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To plot just the red outlines of the (lon lat text strings) stored in the
+file text.d on a Mercator plot with the given specifications, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">pstext</span> <span class="n">text</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span><span class="n">R</span><span class="o">-</span><span class="mi">30</span><span class="o">/</span><span class="mi">30</span><span class="o">/-</span><span class="mi">10</span><span class="o">/</span><span class="mi">20</span> <span class="o">-</span><span class="n">Jm0</span><span class="o">.</span><span class="mi">1</span><span class="n">i</span> <span class="o">-</span><span class="n">P</span> <span class="o">-</span><span class="n">F</span><span class="o">+</span><span class="n">f18p</span><span class="p">,</span><span class="n">Helvetica</span><span class="p">,</span><span class="o">-=</span><span class="mf">0.5</span><span class="n">p</span><span class="p">,</span><span class="n">red</span> <span class="o">-</span><span class="n">B5</span> <span class="o">&gt;</span> <span class="n">plot</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To plot a text at the upper left corner of a 10 cm map</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="n">TopLeft</span> <span class="o">|</span> <span class="n">gmt</span> <span class="n">pstext</span> <span class="o">-</span><span class="n">R1</span><span class="o">/</span><span class="mi">10</span><span class="o">/</span><span class="mi">1</span><span class="o">/</span><span class="mi">10</span> <span class="o">-</span><span class="n">JX10</span> <span class="o">-</span><span class="n">F</span><span class="o">+</span><span class="n">cTL</span> <span class="o">-</span><span class="n">P</span> <span class="o">&gt;</span> <span class="n">plot</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To add a typeset figure caption for a 3-inch wide illustration, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">pstext</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mi">3</span><span class="o">/</span><span class="mi">0</span><span class="o">/</span><span class="mi">5</span> <span class="o">-</span><span class="n">JX3i</span> <span class="o">-</span><span class="n">O</span> <span class="o">-</span><span class="n">h1</span> <span class="o">-</span><span class="n">M</span> <span class="o">-</span><span class="n">N</span> <span class="o">-</span><span class="n">F</span><span class="o">+</span><span class="n">f12</span><span class="p">,</span><span class="n">Times</span><span class="o">-</span><span class="n">Roman</span><span class="o">+</span><span class="n">jLT</span> <span class="o">&lt;&lt;</span> <span class="n">EOF</span> <span class="o">&gt;&gt;</span> <span class="n">figure</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">This</span> <span class="ow">is</span> <span class="n">an</span> <span class="n">unmarked</span> <span class="n">header</span> <span class="n">record</span> <span class="ow">not</span> <span class="n">starting</span> <span class="k">with</span> <span class="c1">#</span>
+<span class="o">&gt;</span> <span class="mi">0</span> <span class="o">-</span><span class="mf">0.5</span> <span class="mi">13</span><span class="n">p</span> <span class="mi">3</span><span class="n">i</span> <span class="n">j</span>
+<span class="o">@%</span><span class="mi">5</span><span class="o">%</span><span class="n">Figure</span> <span class="mf">1.</span><span class="o">@%%</span> <span class="n">This</span> <span class="n">illustration</span> <span class="n">shows</span> <span class="n">nothing</span> <span class="n">useful</span><span class="p">,</span> <span class="n">but</span> <span class="n">it</span> <span class="n">still</span> <span class="n">needs</span>
+<span class="n">a</span> <span class="n">figure</span> <span class="n">caption</span><span class="o">.</span> <span class="n">Highlighted</span> <span class="ow">in</span> <span class="o">@</span><span class="p">;</span><span class="mi">255</span><span class="o">/</span><span class="mi">0</span><span class="o">/</span><span class="mi">0</span><span class="p">;</span><span class="n">red</span><span class="o">@</span><span class="p">;;</span> <span class="n">you</span> <span class="n">can</span> <span class="n">see</span> <span class="n">the</span> <span class="n">locations</span>
+<span class="n">of</span> <span class="n">cities</span> <span class="n">where</span> <span class="n">it</span> <span class="ow">is</span> <span class="o">@</span>\<span class="n">_impossible</span><span class="o">@</span>\<span class="n">_</span> <span class="n">to</span> <span class="n">get</span> <span class="nb">any</span> <span class="n">good</span> <span class="n">Thai</span> <span class="n">food</span><span class="p">;</span> <span class="n">these</span> <span class="n">are</span> <span class="n">to</span> <span class="n">be</span> <span class="n">avoided</span><span class="o">.</span>
+<span class="n">EOF</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="windows-remarks">
+<h2>Windows Remarks<a class="headerlink" href="#windows-remarks" title="Permalink to this headline">¶</a></h2>
+<p>Note that under Windows, the percent sign (%) is a variable indicator
+(like $ under Unix). To indicate a plain percentage sign in a batch
+script you need to repeat it (%%); hence the font switching mechanism
+(&#64;%<em>font</em>% and &#64;%%) may require twice the number of percent signs.
+This only applies to text inside a script or that otherwise is processed
+by DOS. Data files that are opened and read by <strong>pstext</strong> do not need
+such duplication.</p>
+</div>
+<div class="section" id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h2>
+<p>In paragraph mode, the presence of composite characters and other escape
+sequences may lead to unfortunate word splitting. Also, if a font is
+requested with an outline pen it will not be used in paragraph mode.
+Note if any single word is wider than your chosen paragraph width then
+the paragraph width is automatically enlarged to fit the widest word.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
+<a class="reference internal" href="psclip.html"><span class="doc">psclip</span></a>,
+<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
+<a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a>,
+<a class="reference internal" href="psbasemap.html"><span class="doc">psbasemap</span></a>,
+<a class="reference internal" href="pslegend.html"><span class="doc">pslegend</span></a>, <a class="reference internal" href="psxy.html"><span class="doc">psxy</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pstext</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#windows-remarks">Windows Remarks</a></li>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="psternary.html"
+                        title="previous chapter">psternary</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pswiggle.html"
+                        title="next chapter">pswiggle</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pstext.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="pswiggle.html" title="pswiggle"
+             >next</a> </li>
+        <li class="right" >
+          <a href="psternary.html" title="psternary"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

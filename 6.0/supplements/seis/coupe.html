@@ -1,0 +1,691 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>coupe &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="meca" href="meca.html" />
+    <link rel="prev" title="segy2grd" href="../segy/segy2grd.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../modules.html">GMT Modules</a> &raquo;</li>
+        
+      <li>coupe</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/supplements/seis/coupe.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="coupe">
+<span id="index-0"></span><h1>coupe<a class="headerlink" href="#coupe" title="Permalink to this headline">¶</a></h1>
+<p>Plot cross-sections of focal mechanisms</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt coupe</strong> [ <em>files</em> ] <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em>
+<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>parameters</em>
+<a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>&lt;format&gt;&lt;scale&gt;</em>[<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]
+[ <a class="reference internal" href="#b"><span> <strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>fill</em> ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>mode</em>[<em>args</em>] ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>fill</em> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>[pen]</em> ]
+[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong> ] [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>nplane</em>[/<em>pen</em>] ]
+[ <a class="reference internal" href="#u"><span> <strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong><em>pen</em> ]
+[ <a class="reference internal" href="#x"><span> <strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>[<strong>u</strong>]] ]
+[ <a class="reference internal" href="#y"><span> <strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>[<strong>u</strong>]] ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong><em>cpt</em> ]
+[ <strong>-di</strong><a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-p</strong><a class="reference internal" href="../../gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="../../gmt.html#t-full"><span class="std std-ref">transp</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Reads data values from <em>files</em> [or standard input] and
+will plot symbols, lines or polygons on
+a cross-section. Focal mechanisms may be specified and require
+additional columns of data.  The name “coupe” comes from the French
+verb “to cut”.  The best translation is a (vertical) cross section.</p>
+<p>Unless <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong> is used, new file is created with the new coordinates
+(<strong>x</strong>, <strong>y</strong>) and the mechanism (from lower focal half-sphere for
+horizontal plane, to half-sphere behind a vertical plane). When the
+plane is not horizontal,
+- north direction becomes upwards steepest descent direction of the plane (u)
+- east direction becomes strike direction of the plane (s)
+- down direction (= north^east) becomes u^s
+Axis angles are defined in the same way as in horizontal plane in the new system.
+Moment tensor (initially in r, t, f system that is up, south, east) is
+defined in (-u^s, -u, s) system.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </dd>
+</dl>
+<dl class="docutils" id="j">
+<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="../../gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select map projection.  </dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
+Append <strong>+r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Set geographic regions by specifying ISO country codes from the Digital Chart of the World using
+<strong>-R</strong><em>code1,code2,…</em>[<strong>+r</strong>|<strong>R</strong>[<em>incs</em>]] instead:
+Append one or more comma-separated countries using the 2-character
+ISO 3166-1 alpha-2 convention.  To select a state of a country
+(if available), append .state, e.g, US.TX for Texas.  To specify a
+whole continent, prepend = to any of the continent codes AF (Africa),
+AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
+NA (North America), or SA (South America).  Use <strong>+r</strong> to modify the bounding box coordinates from the polygon(s):
+Append <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> to adjust the
+region to be a multiple of these steps [no adjustment]. Alternatively, use <strong>+R</strong> to extend the region
+outward by adding these increments instead [no extension].
+Alternatively for grid creation, give <strong>R</strong><em>code</em><em>lon</em>/<em>lat</em>/<em>nx</em>/<em>ny</em>, where
+<em>code</em> is a 2-character combination of L, C, R (for left, center, or right)
+and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
+indicates which point on a rectangular region the <em>lon</em>/<em>lat</em> coordinate
+refers to, and the grid dimensions <em>nx</em> and <em>ny</em> with grid spacings via
+<strong>-I</strong> is used to create the corresponding region.
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing and registration, if applicable) are copied from
+the grid. Appending <strong>+u</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.
+For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.
+In case of perspective view (<strong>-p</strong>), a z-range (<em>zmin</em>, <em>zmax</em>)
+can be appended to indicate the third dimension. This needs to be
+done only when using the <strong>-Jz</strong> option, not when using only the
+<strong>-p</strong> option. In the latter case a perspective view of the plane is
+plotted, with no third dimension. If frame is defined from cross-section parameters
+(see <strong>-A</strong> this option is not taken into account, but must be present.</dd>
+</dl>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong></dt>
+<dd><p class="first">selects the cross-section.</p>
+<dl class="last docutils">
+<dt><strong>-Aa</strong><em>lon1/lat1/lon2/lat2/dip/p_width/dmin/dmax</em>[<strong>+f</strong>]</dt>
+<dd><em>lon</em> and <em>lat</em> are the longitude and latitude of points 1 and 2
+limiting the length of the cross-section. <em>dip</em> is the dip of the plane
+on which the cross-section is made. <em>p_width</em> is the width of the
+cross-section on each side of a vertical plane or above and under an
+oblique plane. <em>dmin</em> and <em>dmax</em> are the distances min and max from
+horizontal plane, along steepest descent direction. Add <strong>+f</strong> to get the
+frame from the cross-section parameters.</dd>
+<dt><strong>-Ab</strong><em>lon1/lat1/strike/p_length/dip/p_width/dmin/dmax</em>[<strong>+f</strong>]</dt>
+<dd><em>lon1</em> and <em>lat1</em> are the longitude and latitude of the beginning of the
+cross-section. <em>strike</em> is the azimuth of the direction of the
+cross-section. <em>p_length</em> is the length along which the cross-section
+is made. The other parameters are the same as for <strong>-Aa</strong> option.</dd>
+<dt><strong>-Ac</strong><em>x1/y1/x2/y2/dip/p_width/dmin/dmax</em>[<strong>+f</strong>]</dt>
+<dd>The same as <strong>-Aa</strong> option with <em>x</em> and <em>y</em> cartesian coordinates.</dd>
+<dt><strong>-Ad</strong><em>x1/y1/strike/p_length/dip/p_width/dmin/dmax</em>[<strong>+f</strong>]</dt>
+<dd>The same as <strong>-Ab</strong> option with <em>x</em> and <em>y</em> cartesian coordinates.</dd>
+</dl>
+</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><em>&lt;format&gt;&lt;scale&gt;</em>[<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt>
+<dd><p class="first">Selects the meaning of the columns in the data file.
+<em>scale</em> adjusts the scaling of the radius of the “beach ball”, which will be proportional to
+the magnitude. <em>scale</em> is the size for magnitude = 5 (i.e. scalar seismic moment M0 = 4.0E23 dynes-cm).
+The color or shade of the compressive quadrants can
+be specified with the <strong>-G</strong> option. The color or shade of the extensive
+quadrants can be specified with the <strong>-E</strong> option. Append <strong>+f</strong><em>font</em>
+to change the font of the text string; append <strong>+j</strong><em>justify</em> to change
+the text location relative to the beachball (default is above the beachball);
+append <strong>+o</strong> to offset the text string by <em>dx/dy</em>.</p>
+<p class="last">In order to use the same file to plot cross-sections, depth is in third column.
+Nevertheless, it is possible to use “old style” <strong>psvelomeca</strong> input
+files without depth in third column using the <strong>-Fo</strong> option.</p>
+</dd>
+<dt><strong>-Sa</strong><em>scale</em>[<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt>
+<dd><p class="first">Focal mechanisms in Aki and Richards convention.
+Parameters are expected to be in the following columns:</p>
+<p><strong>1</strong>,<strong>2</strong>:
+longitude, latitude of event (<strong>-:</strong> option interchanges order)</p>
+<p><strong>3</strong>:
+depth of event in kilometers</p>
+<p><strong>4</strong>,<strong>5</strong>,<strong>6</strong>:
+strike, dip and rake in degrees</p>
+<p><strong>7</strong>:
+magnitude</p>
+<p><strong>8</strong>,<strong>9</strong>:
+longitude, latitude at which to place beachball if <strong>-C</strong> is used (optional).
+Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+latitude given in columns 1 and 2. The <strong>-:</strong> option will interchange the order of
+columns (1,2) and (8,9).</p>
+<p class="last"><strong>10</strong>:
+Text string to appear above or below the beach ball (optional).</p>
+</dd>
+<dt><strong>-Sc</strong><em>scale</em>[<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt>
+<dd><p class="first">Focal mechanisms in Global CMT convention.
+Parameters are expected to be in the following columns:</p>
+<p><strong>1</strong>,<strong>2</strong>:
+longitude, latitude of event (<strong>-:</strong> option interchanges order)</p>
+<p><strong>3</strong>:
+depth of event in kilometers</p>
+<p><strong>4</strong>,<strong>5</strong>,<strong>6</strong>:
+strike, dip, and rake of plane 1</p>
+<p><strong>7</strong>,<strong>8</strong>,<strong>9</strong>:
+strike, dip, and rake of plane 2</p>
+<p><strong>10</strong>,<strong>11</strong>:
+mantissa and exponent of moment in dyne-cm</p>
+<p><strong>12</strong>,<strong>13</strong>:
+longitude, latitude at which to place beachball if <strong>-C</strong> is used (optional).
+Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+latitude given in columns 1 and 2. The <strong>-:</strong> option will interchange the order of
+columns (1,2) and (12,13).</p>
+<p class="last"><strong>14</strong>:
+Text string to appear above or below the beach ball (optional).</p>
+</dd>
+<dt><strong>-Sm|d|z</strong><em>scale</em>[<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt>
+<dd><p class="first">Seismic moment tensor.
+<strong>-Sm</strong> plots the full seismic moment tensor.
+<strong>-Sz</strong> plots the deviatoric part of the moment tensor (zero trace).
+<strong>-Sd</strong> plots the closest double couple defined from the moment tensor (zero trace and zero determinant).
+Global CMT moment tensors are deviatoric, so <strong>-Sm</strong> and <strong>-Sz</strong> will produce the same result,
+but <strong>-Sd</strong> will not, unless the input moment tensor is already a double couple.
+Parameters are expected to be in the following columns:</p>
+<p><strong>1</strong>,<strong>2</strong>:
+longitude, latitude of event (<strong>-:</strong> option interchanges order)</p>
+<p><strong>3</strong>:
+depth of event in kilometers</p>
+<p><strong>4</strong>,<strong>5</strong>,<strong>6</strong>,<strong>7</strong>,<strong>8</strong>,<strong>9</strong>:
+mrr, mtt, mff, mrt, mrf, mtf in 10*exponent dynes-cm</p>
+<p><strong>10</strong>:
+exponent</p>
+<p><strong>11</strong>,<strong>12</strong>:
+longitude, latitude at which to place beachball if <strong>-C</strong> is used (optional).
+Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+latitude given in columns 1 and 2. The <strong>-:</strong> option will interchange the order of
+columns (1,2) and (11,12).</p>
+<p class="last"><strong>13</strong>:
+Text string to appear above or below the beach ball (optional).</p>
+</dd>
+<dt><strong>-Sp</strong><em>scale</em>[<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt>
+<dd><p class="first">Focal mechanisms given with partial data on both planes.
+Parameters are expected to be in the following columns:</p>
+<p><strong>1</strong>,<strong>2</strong>:
+longitude, latitude of event (<strong>-:</strong> option interchanges order)</p>
+<p><strong>3</strong>:
+depth of event in kilometers</p>
+<p><strong>4</strong>,<strong>5</strong>:
+strike, dip of plane 1</p>
+<p><strong>6</strong>:
+strike of plane 2</p>
+<p><strong>7</strong>:
+must be -1/+1 for a normal/inverse fault</p>
+<p><strong>8</strong>:
+magnitude</p>
+<p><strong>9</strong>,<strong>10</strong>:
+longitude, latitude at which to place beachball if <strong>-C</strong> is used (optional).
+Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+latitude given in columns 1 and 2. The <strong>-:</strong> option will interchange the order of
+columns (1,2) and (9,10).</p>
+<p class="last"><strong>11</strong>:
+Text string to appear above or below the beach ball (optional).</p>
+</dd>
+<dt><strong>-Sx|y|t</strong><em>scale</em>[<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt>
+<dd><p class="first">Principal axis.
+Use <strong>-Sx</strong> to plot full seismic moment tensor.
+Use <strong>-Sy</strong> to plot the closest double couple defined from the moment tensor (zero trace and zero determinant).
+Use <strong>-St</strong> to plot the deviatoric part of the moment tensor (zero trace).
+Parameters are expected to be in the following columns:</p>
+<p><strong>1</strong>,<strong>2</strong>:
+longitude, latitude of event (<strong>-:</strong> option interchanges order)</p>
+<p><strong>3</strong>:
+depth of event in kilometers</p>
+<p><strong>4</strong>,<strong>5</strong>,<strong>6</strong>,<strong>7</strong>,<strong>8</strong>,<strong>9</strong>,<strong>10</strong>,<strong>11</strong>,<strong>12</strong>:
+value (in 10*exponent dynes-cm), azimuth, plunge of T, N, P axis.</p>
+<p><strong>13</strong>:
+exponent</p>
+<p><strong>14</strong>,<strong>15</strong>:
+longitude, latitude at which to place beachball if <strong>-C</strong> is used (optional).
+Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+latitude given in columns 1 and 2. The <strong>-:</strong> option will interchange the order of
+columns (1,2) and (14,15).</p>
+<p class="last"><strong>16</strong>:
+Text string to appear above or below the beach ball (optional).</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> <a class="reference internal" href="../../gmt.html#b-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set map boundary frame and axes attributes.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong><em>fill</em> <a class="reference internal" href="../../cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Sets color or fill pattern for extensive quadrants [Default is white].</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><em>mode</em>[<em>args</em>]</dt>
+<dd>Sets one or more attributes; repeatable. The various combinations are</dd>
+<dt><strong>-Fs</strong><em>symbol</em>[<em>size</em>][<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt>
+<dd><p class="first">selects a symbol instead of mechanism. Choose from the following:
+(<strong>c</strong>) circle, (<strong>d</strong>) diamond, (<strong>i</strong>) itriangle, (<strong>s</strong>) square,
+(<strong>t</strong>) triangle, (<strong>x</strong>) cross. <em>size</em> is the symbol size in
+<strong>PROJ_LENGTH_UNIT</strong> (unless <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> is appended
+to indicate that the size information is in units of cm, inches, meters,
+or points, respectively). If <em>size</em> must be read, it must be in column 4
+and the text string will start in column 5. Parameters are expected to
+be in the following columns:</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt><strong>1</strong>,<strong>2</strong>:</dt>
+<dd>longitude, latitude of event (<strong>-:</strong> option interchanges order)</dd>
+<dt><strong>3</strong>:</dt>
+<dd>depth of event in kilometers</dd>
+<dt><strong>4</strong>:</dt>
+<dd>Text string to appear above the beach ball (default) or under (add <strong>+u</strong>).</dd>
+</dl>
+</div></blockquote>
+</dd>
+<dt><strong>-Fa</strong>[<em>size</em>[/<em>Psymbol</em>[<em>Tsymbol</em>]]]</dt>
+<dd>Computes and plots P and T axes with symbols. Optionally specify
+<em>size</em> and (separate) P and T axis symbols from the following:
+(<strong>c</strong>) circle, (<strong>d</strong>) diamond, (<strong>h</strong>) hexagon, (<strong>i</strong>) inverse
+triangle, (<strong>p</strong>) point, (<strong>s</strong>) square, (<strong>t</strong>) triangle, (<strong>x</strong>)
+cross. [Default: 6<strong>p</strong>/<strong>cc</strong>]</dd>
+<dt><strong>-Fe</strong><em>fill</em> <a class="reference internal" href="../../cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Sets the color or fill pattern for the T axis symbol. [Default as set by <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>]</dd>
+<dt><strong>-Fg</strong><em>fill</em> <a class="reference internal" href="../../cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Sets the color or fill pattern for the P axis symbol. [Default as set by <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong>]</dd>
+<dt><strong>-Fp</strong>[<em>pen</em>]</dt>
+<dd>Draws the P axis outline using current pen (see <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>), or sets pen attributes.</dd>
+<dt><strong>-Fr</strong>[<em>fill</em>]</dt>
+<dd>Draw a box behind the label (if any). [Default fill is white]</dd>
+<dt><strong>-Ft</strong>[<em>pen</em>]</dt>
+<dd>Draws the T axis outline using current pen (see <strong>-W</strong>), or sets pen attributes.</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>fill</em> <a class="reference internal" href="../../cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Sets color or fill pattern for compressional quadrants [Default is black].</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong>[<em>pen</em>]</dt>
+<dd>Draws the “beach ball” outline using current pen (see <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>) or
+sets pen attributes.</dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-M</strong></dt>
+<dd>Same size for any magnitude.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong></dt>
+<dd>Does <strong>NOT</strong> skip symbols that fall outside map border [Default plots points inside border only].</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong></dt>
+<dd>Suppress the production of files with cross-section and mechanism information.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong>[<em>nplane</em>][<strong>/</strong><em>pen</em>]</dt>
+<dd><p class="first">Plots the nodal planes and outlines the bubble which is transparent.
+If <em>nplane</em> is</p>
+<p><em>0</em>: both nodal planes are plotted;</p>
+<p><em>1</em>: only the first nodal plane is plotted;</p>
+<p><em>2</em>: only the second nodal plane is plotted.</p>
+<p>Append <strong>/</strong><em>pen</em> to set the pen attributes for this feature.
+Default pen is as set by <strong>-W</strong>. [Default: 0].</p>
+<p class="last">For double couple mechanisms, the <strong>-T</strong> option renders the beach ball transparent
+by drawing only the nodal planes and the circumference.
+For non-double couple mechanisms, <strong>-T</strong><em>0</em> option overlays best double couple transparently.</p>
+</dd>
+</dl>
+<dl class="docutils" id="u">
+<dt><strong>-U</strong>[<em>label</em>][<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>] <a class="reference internal" href="../../gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Draw GMT time stamp logo on plot.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong>[<strong>-</strong>|<strong>+</strong>][<em>pen</em>][<em>attr</em>] <a class="reference internal" href="../../cookbook/features.html#wpen-attrib"><span class="std std-ref">(more …)</span></a></dt>
+<dd>set pen attributes for text string or default pen attributes for
+fault plane edges. [Defaults: width = default, color = black, style = solid].</dd>
+</dl>
+<p id="x"><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>[<strong>u</strong>]]</p>
+<dl class="docutils">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>[<strong>u</strong>]] <a class="reference internal" href="../../gmt.html#xy-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Shift plot origin.</dd>
+</dl>
+<dl class="docutils" id="z">
+<dt><strong>-Z</strong><em>cpt</em></dt>
+<dd>Give a CPT and let compressive part color be
+determined by the z-value in the third column.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-di</strong><em>nodata</em> <a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> | <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<em>t</em>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column, <em>t</em> is trailing text, append <em>word</em> to read one word only).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="../../gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select perspective view.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="../../gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set transparency level in percent.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="../../gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt>
+<dd>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</dd>
+</dl>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.</p>
+<p>Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.</p>
+<p>F. A. Dahlen and Jeroen Tromp, Theoretical Global Seismology, Princeton, 1998, p.167. Definition of scalar moment.</p>
+<p>Cliff Frohlich, Cliff’s Nodes Concerning Plotting Nodal Lines for P, Sh and Sv,
+Seismological Research Letters, Volume 67, Number 1, January-February, 1996</p>
+<p>Thorne Lay, Terry C. Wallace, Modern Global Seismology, Academic Press, 1995, p.384.</p>
+<p>W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery, Numerical
+Recipes in C, Cambridge University press (routine jacobi)</p>
+</div>
+<div class="section" id="author">
+<h2>Author<a class="headerlink" href="#author" title="Permalink to this headline">¶</a></h2>
+<p>Genevieve Patau, <a class="reference external" href="http://www.ipgp.fr/rech/sismogenese/">Laboratory of Seismogenesis</a>,
+Institut de Physique du Globe de Paris, Departement de Sismologie, Paris, France</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="meca.html"><span class="doc">meca</span></a>,
+<a class="reference internal" href="polar.html"><span class="doc">polar</span></a>,
+<a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="../../basemap.html"><span class="doc">basemap</span></a>,
+<a class="reference internal" href="../../plot.html"><span class="doc">plot</span></a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="meca.html" class="btn btn-neutral float-right" title="meca" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../segy/segy2grd.html" class="btn btn-neutral float-left" title="segy2grd" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

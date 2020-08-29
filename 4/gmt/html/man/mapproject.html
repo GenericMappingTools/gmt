@@ -1,0 +1,1213 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:23 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>MAPPROJECT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>MAPPROJECT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#ASCII FORMAT PRECISION">ASCII FORMAT PRECISION</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#RESTRICTIONS">RESTRICTIONS</a><br>
+<a href="#ELLIPSOIDS AND SPHEROIDS">ELLIPSOIDS AND SPHEROIDS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">mapproject
+&minus; Forward and Inverse map transformation of 2-D
+coordinates</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mapproject</b>
+<i>infiles</i> <b>&minus;J</b><i>parameters</i>
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+[
+<b>&minus;Ab</b>|<b>B</b>|<b>f</b>|<b>F</b>[<i>lon0</i>/<i>lat0</i>]
+] [ <b>&minus;C</b>[<i>dx</i>/<i>dy</i>] ] [
+<b>&minus;Dc</b>|<b>i</b>|<b>m</b>|<b>p</b> ] [
+<b>&minus;E</b>[<i>datum</i>] ] [
+<b>&minus;F</b>[<b>k</b>|<b>m</b>|<b>n</b>|<b>i</b>|<b>c</b>|<b>p</b>]
+] [
+<b>&minus;G</b>[<i>x0</i>/<i>y0</i>][<b>+</b>|<b>-</b>][/<i>unit</i>]
+] [ <b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;I</b> ] [
+<b>&minus;L</b><i>line.xy</i>[/<i>unit</i>][<b>+</b>] ] [
+<b>&minus;Q</b>[<b>d</b>|<b>e</b> ] [ <b>&minus;S</b> ] [
+<b>&minus;T</b>[<b>h</b>]<i>from</i>[/<i>to</i>] ] [
+<b>&minus;V</b> ] [ <b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;b</b>[<b>i</b>|<b>o</b>][<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ] [
+<b>&minus;g</b>[<b>a</b>]<b>x</b>|<b>y</b>|<b>d</b>|<b>X</b>|<b>Y</b>|<b>D</b>|[<i>col</i>]<b>z</b>[+|-]<i>gap</i>[<b>u</b>]
+] [ <b>&minus;m</b>[<b>i</b>|<b>o</b>][<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mapproject</b>
+reads (longitude, latitude) positions from <i>infiles</i>
+[or standard input] and computes (x,y) coordinates using the
+specified map projection and scales. Optionally, it can read
+(x,y) positions and compute (longitude, latitude) values
+doing the inverse transformation. This can be used to
+transform linear (x,y) points obtained by digitizing a map
+of known projection to geographical coordinates. May also
+calculate distances along track, to a fixed point, or
+closest approach to a line. Finally, can be used to perform
+various datum conversions. Additional data fields are
+permitted after the first 2 columns which must have
+(longitude,latitude) or (x,y). See option <b>&minus;:</b> on
+how to read (latitude,longitude) files. <i><br>
+infiles</i></p>
+
+<p style="margin-left:22%;">Data file(s) to be transformed.
+If not given, standard input is read.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;J</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects the map
+projection. The following character determines the
+projection. If the character is upper case then the
+argument(s) supplied as scale(s) is interpreted to be the
+map width (or axis lengths), else the scale argument(s) is
+the map scale (see its definition for each projection). UNIT
+is cm, inch, or m, depending on the <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b>
+setting in .gmtdefaults4, but this can be overridden on the
+command line by appending <b>c</b>, <b>i</b>, or <b>m</b> to
+the <i>scale</i> or <i>width</i> values. Append <b>h</b>,
+<b>+</b>, or <b>-</b> to the given <i>width</i> if you
+instead want to set map height, the maximum dimension, or
+the minimum dimension, respectively [Default is <b>w</b> for
+width].</p> </td>
+</table>
+
+<p style="margin-left:22%;">In case the central meridian is
+an optional parameter and it is being omitted, then the
+center of the longitude range given by the <b>&minus;R</b>
+option is used. The default standard parallel is the
+equator. <br>
+The ellipsoid used in the map projections is user-definable
+by editing the .gmtdefaults4 file in your home directory. 73
+commonly used ellipsoids and spheroids are currently
+supported, and users may also specify their own custum
+ellipsoid parameters [Default is WGS-84]. Several GMT
+parameters can affect the projection: <b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b>,
+<b><A HREF="gmtdefaults.html#INTERPOLANT">INTERPOLANT</A></b>, <b><A HREF="gmtdefaults.html#MAP_SCALE_FACTOR">MAP_SCALE_FACTOR</A></b>, and
+<b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b>; see the <b><A HREF="gmtdefaults.html">gmtdefaults</A></b> man page for
+details. <br>
+Choose one of the following projections (The <b>E</b> or
+<b>C</b> after projection names stands for Equal-Area and
+Conformal, respectively):</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CYLINDRICAL
+PROJECTIONS: <br>
+&minus;Jc</b><i>lon0/lat0/scale</i> or
+<b>&minus;JC</b><i>lon0/lat0/width</i> (Cassini).</p>
+
+<p style="margin-left:32%;">Give projection center
+<i>lon0/lat0</i> and <i>scale</i> (<b>1:</b><i>xxxx</i> or
+UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jcyl_stere</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+or <b><br>
+
+&minus;JCyl_stere</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>width</i>
+(Cylindrical Stereographic).</p>
+
+<p style="margin-left:32%;">Give central meridian
+<i>lon0</i> (optional), standard parallel <i>lat0</i>
+(optional), and <i>scale</i> along parallel
+(<b>1:</b><i>xxxx</i> or UNIT/degree). The standard parallel
+is typically one of these (but can be any value):</p>
+
+<p style="margin-left:43%;">66.159467 - Miller&rsquo;s
+modified Gall <br>
+55 - Kamenetskiy&rsquo;s First <br>
+45 - Gall&rsquo;s Stereographic <br>
+30 - Bolshoi Sovietskii Atlas Mira or Kamenetskiy&rsquo;s
+Second <br>
+0 - Braun&rsquo;s Cylindrical</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jj</b>[<i>lon0/</i>]<i>scale</i>
+or <b>&minus;JJ</b>[<i>lon0/</i>]<i>width</i> (Miller
+Cylindrical <br>
+Projection).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i>
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jm</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+or
+<b>&minus;JM</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>width</i></p>
+
+<p style="margin-left:32%;">Give central meridian
+<i>lon0</i> (optional), standard parallel <i>lat0</i>
+(optional), and <i>scale</i> along parallel
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jo</b><i>parameters</i>
+(Oblique Mercator <b>[C]</b>).</p>
+
+<p style="margin-left:32%;">Typically used with
+<b>&minus;R</b>&lt;...&gt;<b>r</b>, otherwise region is in
+oblique coordinates. Specify one of: <b><br>
+&minus;Jo</b>[<b>a</b>]<i>lon0/lat0/azimuth/scale</i> or
+<b><br>
+&minus;JO</b>[<b>a</b>]<i>lon0/lat0/azimuth/width</i></p>
+
+<p style="margin-left:43%;">Set projection center
+<i>lon0/lat0</i>, <i>azimuth</i> of oblique equator, and
+<i>scale</i>.</p>
+
+
+<p style="margin-left:32%;"><b>&minus;Jo</b>[<b>b</b>]<i>lon0/lat0/lon1/lat1/scale</i>
+or <b><br>
+&minus;JO</b>[<b>b</b>]<i>lon0/lat0/lon1/lat1/scale</i></p>
+
+<p style="margin-left:43%;">Set projection center
+<i>lon0/lat0</i>, another point on the oblique equator
+<i>lon1/lat1</i>, and <i>scale</i>.</p>
+
+
+<p style="margin-left:32%;"><b>&minus;Joc</b><i>lon0/lat0/lonp/latp/scale</i>
+or <b><br>
+&minus;JOc</b><i>lon0/lat0/lonp/latp/scale</i></p>
+
+<p style="margin-left:43%;">Set projection center
+<i>lon0/lat0</i>, pole of oblique projection
+<i>lonp/latp</i>, and <i>scale</i>.</p>
+
+<p style="margin-left:32%; margin-top: 1em">Give
+<i>scale</i> along oblique equator (<b>1:</b><i>xxxx</i> or
+UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jq</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+or <b>&minus;JQ</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>width</i>
+(Cylindrical <br>
+Equidistant).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional), standard parallel <i>lat0</i>
+(optional), and <i>scale</i> (<b>1:</b><i>xxxx</i> or
+UNIT/degree). The standard parallel is typically one of
+these (but can be any value):</p>
+
+<p style="margin-left:43%;">61.7 - Grafarend and Niermann,
+minimum linear distortion <br>
+50.5 - Ronald Miller Equirectangular <br>
+43.5 - Ronald Miller, minimum continental distortion <br>
+42 - Grafarend and Niermann <br>
+37.5 - Ronald Miller, minimum overall distortion <br>
+0 - Plate Carree, Simple Cylindrical, Plain/Plane Chart</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jt</b><i>lon0/</i>[<i>lat0/</i>]<i>scale</i>
+or
+<b>&minus;JT</b><i>lon0/</i>[<i>lat0/</i>]<i>width</i></p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i>, central parallel <i>lat0</i> (optional), and
+<i>scale</i> (<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Ju</b><i>zone/scale</i>
+or <b>&minus;JU</b><i>zone/width</i> (UTM - Universal
+Transverse <br>
+Mercator <b>[C]</b>).</p>
+
+<p style="margin-left:32%;">Give the UTM zone
+(A,B,1-60[C-X],Y,Z)) and <i>scale</i> (<b>1:</b><i>xxxx</i>
+or UNIT/degree). <br>
+Zones: If C-X not given, prepend - or + to enforce southern
+or northern hemisphere conventions [northern if south &gt;
+0].</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jy</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+or <b>&minus;JY</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>width</i>
+(Cylindrical <br>
+Equal-Area <b>[E]</b>).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional), standard parallel <i>lat0</i>
+(optional), and <i>scale</i> (<b>1:</b><i>xxxx</i> or
+UNIT/degree). The standard parallel is typically one of
+these (but can be any value):</p>
+
+<p style="margin-left:43%;">50 - Balthasart <br>
+45 - Gall <br>
+37.0666 - Caster <br>
+37.4 - Trystan Edwards <br>
+37.5 - Hobo-Dyer <br>
+30 - Behrman <br>
+0 - Lambert (default)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CONIC
+PROJECTIONS: <br>
+&minus;Jb</b><i>lon0/lat0/lat1/lat2/scale</i> or
+<b>&minus;JB</b><i>lon0/lat0/lat1/lat2/width</i> <br>
+(Albers <b>[E]</b>).</p>
+
+<p style="margin-left:32%;">Give projection center
+<i>lon0/lat0</i>, two standard parallels <i>lat1/lat2</i>,
+and <i>scale</i> (<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jd</b><i>lon0/lat0/lat1/lat2/scale</i>
+or <b>&minus;JD</b><i>lon0/lat0/lat1/lat2/width</i> <br>
+(Conic Equidistant)</p>
+
+<p style="margin-left:32%;">Give projection center
+<i>lon0/lat0</i>, two standard parallels <i>lat1/lat2</i>,
+and <i>scale</i> (<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jl</b><i>lon0/lat0/lat1/lat2/scale</i>
+or <b>&minus;JL</b><i>lon0/lat0/lat1/lat2/width</i> <br>
+(Lambert <b>[C]</b>)</p>
+
+<p style="margin-left:32%;">Give origin <i>lon0/lat0</i>,
+two standard parallels <i>lat1/lat2</i>, and <i>scale</i>
+along these (<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jpoly</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+or
+<b>&minus;JPoly</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>width</i>
+<br>
+((American) Polyconic).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional), reference parallel <i>lat0</i>
+(optional, default = equator), and <i>scale</i> along
+central meridian (<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>AZIMUTHAL
+PROJECTIONS:</b></p>
+
+<p style="margin-left:22%; margin-top: 1em">Except for
+polar aspects, <b>&minus;R</b> w/e/s/n will be reset to
+<b>&minus;Rg</b>. Use <b>&minus;R</b>&lt;...&gt;<b>r</b> for
+smaller regions. <b><br>
+&minus;Ja</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+or
+<b>&minus;JA</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/width</i>
+<br>
+(Lambert <b>[E]</b>).</p>
+
+<p style="margin-left:32%;"><i>lon0/lat0</i> specifies the
+projection center. <i>horizon</i> specifies the max distance
+from projection center (in degrees, &lt;= 180, default 90).
+Give <i>scale</i> as <b>1:</b><i>xxxx</i> or
+<i>radius/lat</i>, where <i>radius</i> is distance in UNIT
+from origin to the oblique latitude <i>lat</i>.</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Je</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+or
+<b>&minus;JE</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/width</i>
+<br>
+(Azimuthal Equidistant).</p>
+
+<p style="margin-left:32%;"><i>lon0/lat0</i> specifies the
+projection center. <i>horizon</i> specifies the max distance
+from projection center (in degrees, &lt;= 180, default 180).
+Give <i>scale</i> as <b>1:</b><i>xxxx</i> or
+<i>radius/lat</i>, where <i>radius</i> is distance in UNIT
+from origin to the oblique latitude <i>lat</i>.</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jf</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+or
+<b>&minus;JF</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/width</i>
+<br>
+(Gnomonic).</p>
+
+<p style="margin-left:32%;"><i>lon0/lat0</i> specifies the
+projection center. <i>horizon</i> specifies the max distance
+from projection center (in degrees, &lt; 90, default 60).
+Give <i>scale</i> as <b>1:</b><i>xxxx</i> or
+<i>radius/lat</i>, where <i>radius</i> is distance in UNIT
+from origin to the oblique latitude <i>lat</i>.</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jg</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+or
+<b>&minus;JG</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/width</i>
+<br>
+(Orthographic).</p>
+
+<p style="margin-left:32%;"><i>lon0/lat0</i> specifies the
+projection center. <i>horizon</i> specifies the max distance
+from projection center (in degrees, &lt;= 90, default 90).
+Give <i>scale</i> as <b>1:</b><i>xxxx</i> or
+<i>radius/lat</i>, where <i>radius</i> is distance in UNIT
+from origin to the oblique latitude <i>lat</i>.</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jg</b><i>lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale</i>
+or <b><br>
+
+&minus;JG</b><i>lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/width</i>
+<br>
+(General Perspective).</p>
+
+<p style="margin-left:32%;"><i>lon0/lat0</i> specifies the
+projection center. <i>altitude</i> is the height (in km) of
+the viewpoint above local sea level. If <i>altitude</i> is
+less than 10, then it is the distance from the center of the
+earth to the viewpoint in earth radii. If <i>altitude</i>
+has a suffix <b>r</b> then it is the radius from the center
+of the earth in kilometers. <i>azimuth</i> is measured to
+the east of north of view. <i>tilt</i> is the upward tilt of
+the plane of projection. If <i>tilt</i> is negative, then
+the viewpoint is centered on the horizon. Further, specify
+the clockwise <i>twist</i>, <i>Width</i>, and <i>Height</i>
+of the viewpoint in degrees. Give <i>scale</i> as
+<b>1:</b><i>xxxx</i> or <i>radius/lat</i>, where
+<i>radius</i> is distance in UNIT from origin to the oblique
+latitude <i>lat</i>.</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Js</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+or
+<b>&minus;JS</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/width</i>
+<br>
+(General Stereographic <b>[C]</b>).</p>
+
+<p style="margin-left:32%;"><i>lon0/lat0</i> specifies the
+projection center. <i>horizon</i> specifies the max distance
+from projection center (in degrees, &lt; 180, default 90).
+Give <i>scale</i> as <b>1:</b><i>xxxx</i> (true at pole) or
+<i>lat</i>/<b>1:</b><i>xxxx</i> (true at standard parallel
+<i>lat</i>) or <i>radius/lat</i> (<i>radius</i> in UNIT from
+origin to the oblique latitude <i>lat</i>). Note if
+<b>1:</b><i>xxxx</i> is used then to specify <i>horizon</i>
+you must also specify the <i>lat</i> as +-90 to avoid
+ambiguity.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>MISCELLANEOUS
+PROJECTIONS: <br>
+&minus;Jh</b>[<i>lon0/</i>]<i>scale</i> or
+<b>&minus;JH</b>[<i>lon0/</i>]<i>width</i> (Hammer
+<b>[E]</b>).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Ji</b>[<i>lon0/</i>]<i>scale</i>
+or <b>&minus;JI</b>[<i>lon0/</i>]<i>width</i> (Sinusoidal
+<b>[E]</b>).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jkf</b>[<i>lon0/</i>]<i>scale</i>
+or <b>&minus;JKf</b>[<i>lon0/</i>]<i>width</i> (Eckert IV)
+<b>[E]</b>).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jk</b>[<b>s</b>][<i>lon0/</i>]<i>scale</i>
+or <b>&minus;JK</b>[<b>s</b>][<i>lon0/</i>]<i>width</i>
+(Eckert VI) <b>[E]</b>).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jn</b>[<i>lon0/</i>]<i>scale</i>
+or <b>&minus;JN</b>[<i>lon0/</i>]<i>width</i>
+(Robinson).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jr</b>[<i>lon0/</i>]<i>scale</i>
+<b>&minus;JR</b>[<i>lon0/</i>]<i>width</i> (Winkel
+Tripel).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jv</b>[<i>lon0/</i>]<i>scale</i>
+or <b>&minus;JV</b>[<i>lon0/</i>]<i>width</i> (Van der
+Grinten).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jw</b>[<i>lon0/</i>]<i>scale</i>
+or <b>&minus;JW</b>[<i>lon0/</i>]<i>width</i> (Mollweide
+<b>[E]</b>).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>NON-GEOGRAPHICAL
+PROJECTIONS: <br>
+
+&minus;Jp</b>[<b>a</b>]<i>scale</i>[<i>/origin</i>][<b>r</b>|<b>z</b>]
+or
+<b>&minus;JP</b>[<b>a</b>]<i>width</i>[<i>/origin</i>][<b>r</b>|<b>z</b>]
+(Polar <br>
+coordinates (theta,r))</p>
+
+<p style="margin-left:32%;">Optionally insert <b>a</b>
+after <b>&minus;Jp</b> [ or <b>&minus;JP</b>] for azimuths
+CW from North instead of directions CCW from East [Default].
+Optionally append /<i>origin</i> in degrees to indicate an
+angular offset [0]). Finally, append <b>r</b> if r is
+elevations in degrees (requires s &gt;= 0 and n &lt;= 90) or
+<b>z</b> if you want to annotate depth rather than radius
+[Default]. Give <i>scale</i> in UNIT/r-unit.</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jx</b><i>x-scale</i>[<i>/y-scale</i>]
+or <b>&minus;JX</b><i>width</i>[<i>/height</i>] (Linear,
+log, and <br>
+power scaling)</p>
+
+<p style="margin-left:32%;">Give <i>x-scale</i>
+(<b>1:</b><i>xxxx</i> or UNIT/x-unit) and/or <i>y-scale</i>
+(<b>1:</b><i>xxxx</i> or UNIT/y-unit); or specify
+<i>width</i> and/or <i>height</i> in UNIT.
+<i>y-scale</i>=<i>x-scale</i> if not specified separately
+and using <b>1:</b><i>xxxx</i> implies that x-unit and
+y-unit are in meters. Use negative scale(s) to reverse the
+direction of an axis (e.g., to have y be positive down). Set
+<i>height</i> or <i>width</i> to 0 to have it recomputed
+based on the implied scale of the other axis. Optionally,
+append to <i>x-scale</i>, <i>y-scale</i>, <i>width</i> or
+<i>height</i> one of the following:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="10%">
+
+
+<p style="margin-top: 1em" valign="top"><b>d</b></p></td>
+<td width="1%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em" valign="top">Data are
+geographical coordinates (in degrees).</p></td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="10%">
+
+
+<p style="margin-top: 1em" valign="top"><b>l</b></p></td>
+<td width="1%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em" valign="top">Take log10 of
+values before scaling.</p></td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="10%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>p</b><i>power</i></p> </td>
+<td width="1%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em" valign="top">Raise values to
+<i>power</i> before scaling.</p></td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="10%">
+
+
+<p style="margin-top: 1em" valign="top"><b>t</b></p></td>
+<td width="1%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em" valign="top">Input coordinates
+are time relative to <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>.</p></td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="10%">
+
+
+<p style="margin-top: 1em" valign="top"><b>T</b></p></td>
+<td width="1%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em" valign="top">Input coordinates
+are absolute time.</p></td>
+</table>
+
+<p style="margin-left:32%; margin-top: 1em">Default axis
+lengths (see <b><A HREF="gmtdefaults.html">gmtdefaults</A></b>) can be invoked using
+<b>&minus;JXh</b> (for landscape); <b>&minus;JXv</b> (for
+portrait) will swap the x- and y-axis lengths. The default
+unit for this installation is either cm or inch, as defined
+in the file share/gmt_setup.conf. However, you may change
+this by editing your .gmtdefaults4 file(s).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xmin</i>,
+<i>xmax</i>, <i>ymin</i>, and <i>ymax</i> specify the Region
+of interest. For geographic regions, these limits correspond
+to <i>west, east, south,</i> and <i>north</i> and you may
+specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+calendar time coordinates you may either give (a) relative
+time (relative to the selected <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and in the
+selected <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>; append <b>t</b> to
+<b>&minus;JX</b>|<b>x</b>), or (b) absolute time of the form
+[<i>date</i>]<b>T</b>[<i>clock</i>] (append <b>T</b> to
+<b>&minus;JX</b>|<b>x</b>). At least one of <i>date</i> and
+<i>clock</i> must be present; the <b>T</b> is always
+required. The <i>date</i> string must be of the form
+[-]yyyy[-mm[-dd]] (Gregorian calendar) or yyyy[-Www[-d]]
+(ISO week calendar), while the <i>clock</i> string must be
+of the form hh:mm:ss[.xxx]. The use of delimiters and their
+type and positions must be exactly as indicated (however,
+input, output and plot formats are customizable; see
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b>). Special case for the UTM projection: If
+<b>&minus;C</b> is used and <b>&minus;R</b> is not given
+then the region is set to coincide with the given UTM zone
+so as to preserve the full ellipsoidal solution (See
+RESTRICTIONS for more information).</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.
+<i><br>
+infile(s)</i></p>
+
+<p style="margin-left:22%;">input file(s) with 2 or more
+columns. If no file(s) is given, <b>mapproject</b> will read
+the standard input.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;A</b>[<b>f</b>|<b>b</b>]</p>
+
+<p style="margin-left:22%;"><b>&minus;A</b> calculates the
+(forward) azimuth from fixed point <i>lon/lat</i> to each
+data point. Use <b>&minus;Ab</b> to get back-azimuth from
+data points to fixed point. Upper case <b>F</b> or <b>B</b>
+will convert from geodetic to geocentric latitudes and
+estimate azimuth of geodesics (assuming the current
+ellipsoid is not a sphere). If no fixed point is given then
+we compute the azimuth (or back-azimuth) from the previous
+point.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set center of
+projected coordinates to be at map projection center
+[Default is lower left corner]. Optionally, add offsets in
+the projected units to be added (or subtracted when
+<b>&minus;I</b> is set) to (from) the projected coordinates,
+such as false eastings and northings for particular
+projection zones [0/0]. The unit used for the offsets is the
+plot distance unit in effect (see <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b>)
+unless <b>&minus;F</b> is used, in which case the offsets
+are always in meters.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Temporarily
+override <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> and use <b>c</b> (cm), <b>i</b>
+(inch), <b>m</b> (meter), or <b>p</b> (points) instead.
+Cannot be used with <b>&minus;F</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Convert from
+geodetic (lon, lat, height) to Earth Centered Earth Fixed
+(ECEF) (x,y,z) coordinates (add <b>&minus;I</b> for the
+inverse conversion). Append datum ID (see <b>&minus;Qd</b>)
+or give <i>ellipsoid</i>:<i>dx,dy,dz</i> where
+<i>ellipsoid</i> may be an ellipsoid ID (see
+<b>&minus;Qe</b>) or given as <i>a</i>[,<i>inv_f</i>], where
+<i>a</i> is the semi-major axis and <i>inv_f</i> is the
+inverse flattening (0 if omitted). If <i>datum</i> is - or
+not given we assume WGS-84.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force 1:1 scaling,
+i.e., output (or input, see <b>&minus;I</b>) data are in
+actual projected meters. To specify other units, append
+<b>k</b> (km), <b>m</b> (mile), <b>n</b> (nautical mile),
+<b>i</b> (inch), <b>c</b> (cm), or <b>p</b> (points).
+Without <b>&minus;F</b>, the output (or input, see
+<b>&minus;I</b>) are in the units specified by
+<b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> (but see <b>&minus;D</b>).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Calculate distances
+along track OR to the optional point set with
+<b>&minus;G</b><i>x0/y0</i>. Append <i>unit)</i>, the
+distance unit; choose among <b>e</b> (m), <b>k</b> (km),
+<b>m</b> (mile), <b>n</b> (nautical mile), <b>d</b>
+(spherical degree), <b>c</b> (Cartesian distance using input
+coordinates) or <b>C</b> (Cartesian distance using projected
+coordinates). The last unit requires <b>&minus;R</b> and
+<b>&minus;J</b> to be set. Upper case <b>E</b>, <b>K</b>,
+<b>M</b>, <b>N</b>, or <b>D</b> will use exact methods for
+geodesic distances (Rudoe&rsquo;s method for distances in
+length units and employing geocentric latitudes in degree
+calculations, assuming the current ellipsoid is not
+spherical). With no fixed point we calculate cumulate
+distances along track. To obtain incremental distance
+between successive points, use <b>&minus;G-</b>. To specify
+the 2nd point via two extra columns in the input file,
+choose <b>&minus;G+</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do the Inverse
+transformation, i.e., get (longitude,latitude) from (x,y)
+data.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Determine the
+shortest distance from the input data points to the line(s)
+given in the ASCII multi-segment file <i>line.xy</i>. The
+distance and the coordinates of the nearest point will be
+appended to the output as three new columns. Append the
+distance unit; choose among <b>e</b> (m), <b>k</b> (km),
+<b>m</b> (mile), <b>n</b> (nautical mile), <b>d</b>
+(spherical degree), <b>c</b> (Cartesian distance using input
+coordinates) or <b>C</b> (Cartesian distance using projected
+coordinates). The last unit requires <b>&minus;R</b> and
+<b>&minus;J</b> to be set. A spherical approximation is used
+for geographic data. Finally, append <b>+</b> to report the
+line segment id and the fractional point number instead of
+lon/lat of the nearest point.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">List all projection
+parameters. To only list datums, use <b>&minus;Qd</b>. To
+only list ellipsoids, use <b>&minus;Qe</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Suppress points
+that fall outside the region.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Coordinate
+conversions between datums <i>from</i> and <i>to</i> using
+the standard Molodensky transformation. Use <b>&minus;Th</b>
+if 3rd input column has height above ellipsoid [Default
+assumes height = 0, i.e., on the ellipsoid]. Specify datums
+using the datum ID (see <b>&minus;Qd</b>) or give
+<i>ellipsoid</i>:<i>dx,dy,dz</i> where <i>ellipsoid</i> may
+be an ellipsoid ID (see <b>&minus;Qe</b>) or given as
+<i>a</i>[,<i>inv_f</i>], where <i>a</i> is the semi-major
+axis and <i>inv_f</i> is the inverse flattening (0 if
+omitted). If <i>datum</i> is - or not given we assume
+WGS-84. <b>&minus;T</b> may be used in conjunction with
+<b>&minus;R &minus;J</b> to change the datum before
+coordinate projection (add <b>&minus;I</b> to apply the
+datum conversion after the inverse projection). Make sure
+that the <b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b> setting is correct for your
+case.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 2 input columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.
+[Default is same as input].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;g</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Examine the spacing
+between consecutive data points in order to impose breaks in
+the line. Append <b>x</b>|<b>X</b> or <b>y</b>|<b>Y</b> to
+define a gap when there is a large enough change in the x or
+y coordinates, respectively, or <b>d</b>|<b>D</b> for
+distance gaps; use upper case to calculate gaps from
+projected coordinates. For gap-testing on other columns use
+[<i>col</i>]<b>z</b>; if <i>col</i> is not prepended the it
+defaults to 2 (i.e., 3rd column). Append [+|-]<i>gap</i> and
+optionally a unit <b>u</b>. Regarding optional signs: -ve
+means previous minus current column value must exceed
+|<i>gap</i> to be a gap, +ve means current minus previous
+column value must exceed <i>gap</i>, and no sign means the
+absolute value of the difference must exceed <i>gap</i>. For
+geographic data (<b>x</b>|<b>y</b>|<b>d</b>), the unit
+<b>u</b> may be m<b>e</b>ter [Default], <b>k</b>ilometer,
+<b>m</b>iles, or <b>n</b>autical miles. For projected data
+(<b>X</b>|<b>Y</b>|<b>D</b>), choose from <b>i</b>nch,
+<b>c</b>entimeter, <b>m</b>eter, or <b>p</b>oints [Default
+unit set by MEASURE_UNIT]. Note: For
+<b>x</b>|<b>y</b>|<b>z</b> with time data the unit is
+instead controlled by TIME_UNIT. Repeat the option to
+specify multiple criteria, of which any can be met to
+produce a line break. Issue an additional <b>&minus;ga</b>
+to indicate that all criteria must be met instead.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file(s). Segments are separated by a special record. For
+ASCII files the first character must be <i>flag</i> [Default
+is &rsquo;&gt;&rsquo;]. For binary files all fields must be
+NaN and <b>&minus;b</b> must set the number of output
+columns explicitly. By default the <b>&minus;m</b> setting
+applies to both input and output. Use <b>&minus;mi</b> and
+<b>&minus;mo</b> to give separate settings to input and
+output.</p> </td>
+</table>
+
+<a name="ASCII FORMAT PRECISION"></a>
+<h2>ASCII FORMAT PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ASCII
+output formats of numerical data are controlled by
+parameters in your .gmtdefaults4 file. Longitude and
+latitude are formatted according to
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>, whereas other values are
+formatted according to <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>. Be aware that the
+format in effect can lead to loss of precision in the
+output, which can lead to various problems downstream. If
+you find the output is not written with enough precision,
+consider switching to binary output (<b>&minus;bo</b> if
+available) or specify more decimals using the
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> setting.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To transform a
+file with (longitude,latitude) into (x,y) positions in cm on
+a Mercator grid for a given scale of 0.5 cm per degree,
+run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mapproject</b>
+lonlatfile <b>&minus;R</b> 20/50/12/25 <b>&minus;Jm</b>
+0.5<b>c</b> &gt; xyfile</p>
+
+<p style="margin-left:11%; margin-top: 1em">To transform
+several 2-column, binary, double precision files with
+(latitude,longitude) into (x,y) positions in inch on a
+Transverse Mercator grid (central longitude 75W) for scale =
+1:500000 and suppress those points that would fall outside
+the map area, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mapproject</b>
+tracks.* <b>&minus;R</b>-80/-70/20/40
+<b>&minus;Jt</b>-75/1:500000 <b>&minus;: &minus;S &minus;Di
+&minus;bo &minus;bi</b> 2 &gt; tmfile.b</p>
+
+<p style="margin-left:11%; margin-top: 1em">To convert the
+geodetic coordinates (lon, lat, height) in the file old.dat
+from the NAD27 CONUS datum (Datum ID 131 which uses the
+Clarke-1866 ellipsoid) to WGS 84, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mapproject</b>
+old.dat <b>&minus;Th</b> 131 &gt; new.dat</p>
+
+<p style="margin-left:11%; margin-top: 1em">To compute the
+closest distance (in km) between each point in the input
+file quakes.dat and the line segments given in the
+multi-segment ASCII file coastline.xy, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mapproject</b>
+quakes.dat <b>&minus;L</b> coastline.xy/k &gt;
+quake_dist.dat</p>
+
+<a name="RESTRICTIONS"></a>
+<h2>RESTRICTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The rectangular
+input region set with <b>&minus;R</b> will in general be
+mapped into a non-rectangular grid. Unless <b>&minus;C</b>
+is set, the leftmost point on this grid has xvalue = 0.0,
+and the lowermost point will have yvalue = 0.0. Thus, before
+you digitize a map, run the extreme map coordinates through
+<b>mapproject</b> using the appropriate scale and see what
+(x,y) values they are mapped onto. Use these values when
+setting up for digitizing in order to have the inverse
+transformation work correctly, or alternatively, use
+<b>awk</b> to scale and shift the (x,y) values before
+transforming. <br>
+For some projections, a spherical solution may be used
+despite the user having selected an ellipsoid. This occurs
+when the users <b>&minus;R</b> setting implies a region that
+exceeds the domain in which the ellipsoidal series
+expansions are valid. These are the conditions: (1) Lambert
+Conformal Conic (<b>&minus;JL</b>) and Albers Equal-Area
+(<b>&minus;JB</b>) will use the spherical solution when the
+map scale exceeds 1.0E7. (2) Transverse Mercator
+(<b>&minus;JT</b>) and UTM (<b>&minus;JU</b>) will will use
+the spherical solution when either the west or east boundary
+given in <b>&minus;R</b> is more than 10 degrees from the
+central meridian, and (3) same for Cassini
+(<b>&minus;JC</b>) but with a limit of only 4 degrees.</p>
+
+<a name="ELLIPSOIDS AND SPHEROIDS"></a>
+<h2>ELLIPSOIDS AND SPHEROIDS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="GMT.html">GMT</A></b> will
+use ellipsoidal formulae if they are implemented and the
+user have selected an ellipsoid as the reference shape (see
+<b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b> in <b><A HREF="gmtdefaults.html">gmtdefaults</A></b>). The user needs to
+be aware of a few potential pitfalls: (1) For some
+projections, such as Transverse Mercator, Albers, and
+Lamberts conformal conic we use the ellipsoidal expressions
+when the areas mapped are small, and switch to the spherical
+expressions (and substituting the appropriate auxiliary
+latitudes) for larger maps. The ellipsoidal formulae are
+used as follows: (a) Transverse Mercator: When all points
+are within 10 degrees of central meridian, (b) Conic
+projections when longitudinal range is less than 90 degrees,
+(c) Cassini projection when all points are within 4 degrees
+of central meridian. (2) When you are trying to match some
+historical data (e.g., coordinates obtained with a certain
+projection and a certain reference ellipsoid) you may find
+that <b><A HREF="GMT.html">GMT</A></b> gives results that are slightly different.
+One likely source of this mismatch is that older
+calculations often used less significant digits. For
+instance, Snyder&rsquo;s examples often use the Clarke 1866
+ellipsoid (defined by him as having a flattening f =
+1/294.98). From f we get the eccentricity squared to be
+0.00676862818 (this is what <b><A HREF="GMT.html">GMT</A></b> uses), while Snyder
+rounds off and uses 0.00676866. This difference can give
+discrepancies of several tens of cm. If you need to
+reproduce coordinates projected with this slightly different
+eccentricity, you should specify your own ellipsoid with the
+same parameters as Clarke 1866, but with f = 1/294.97861076.
+Also, be aware that older data may be referenced to
+different datums, and unless you know which datum was used
+and convert all data to a common datum you may experience
+mismatches of tens to hundreds of meters. (3) Finally, be
+aware that <b><A HREF="gmtdefaults.html#MAP_SCALE_FACTOR">MAP_SCALE_FACTOR</A></b> have certain default
+values for some projections so you may have to override the
+setting in order to match results produced with other
+settings.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="gmtdefaults.html">gmtdefaults</A></i>(1),
+<i><A HREF="GMT.html">GMT</A></i>(1), <i><A HREF="project.html">project</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Bomford, G.,
+1952, Geodesy, Oxford U. Press. <br>
+Snyder, J. P., 1987, Map Projections &minus; A Working
+Manual, U.S. Geological Survey Prof. Paper 1395. <br>
+Vanicek, P. and Krakiwsky, E, 1982, Geodesy &minus; The
+Concepts, North-Holland Publ., ISBN: 0 444 86149 1.</p>
+<hr>
+</body>
+</html>

@@ -1,0 +1,695 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:23 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GREENSPLINE</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GREENSPLINE</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#1-D EXAMPLES">1-D EXAMPLES</a><br>
+<a href="#2-D EXAMPLES">2-D EXAMPLES</a><br>
+<a href="#3-D EXAMPLES">3-D EXAMPLES</a><br>
+<a href="#2-D SPHERICAL SURFACE EXAMPLES">2-D SPHERICAL SURFACE EXAMPLES</a><br>
+<a href="#CONSIDERATIONS">CONSIDERATIONS</a><br>
+<a href="#TENSION">TENSION</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">greenspline
+&minus; Interpolate 1-D, 2-D, 3-D Cartesian or spherical
+surface data using Green&rsquo;s function splines.</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>greenspline</b>
+[ <i>datafile(s)</i> ] [
+<b>&minus;A</b>[<b>1</b>|<b>2</b>|<b>3</b>|<b>4</b>|<b>5</b>,]<i>gradfile</i>
+] [ <b>&minus;C</b><i>cut</i>[/<i>file</i>] ] [
+<b>&minus;D</b><i>mode</i> ] [ <b>&minus;F</b> ] [
+<b>&minus;G</b><i>grdfile</i> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;I</b><i>xinc</i>[<i>yinc</i>[<i>zinc</i>]] ] [
+<b>&minus;L</b> ] [ <b>&minus;N</b><i>nodefile</i> ] [
+<b>&minus;Q</b><i>az</i>|<i>x/y/z</i> ] [
+<b>&minus;R</b><i>xmin</i>/<i>xmax</i>[/<i>ymin</i>/<i>ymax</i>[/<i>zminzmax</i>]]
+] [ <b>&minus;Sc|t|g|p|q</b>[<i>pars</i>] ] [
+<b>&minus;T</b><i>maskgrid</i> ] [ <b>&minus;V</b> ] [
+<b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;bi</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ] [
+<b>&minus;bo</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>greenspline</b>
+uses the Green&rsquo;s function G(<b>x</b>; <b>x&rsquo;</b>)
+for the chosen spline and geometry to interpolate data at
+regular [or arbitrary] output locations. Mathematically, the
+solution is composed as <i>w</i>(<b>x</b>) = sum
+{<i>c</i>(<i>i</i>) G(<b>x</b>; <b>x</b>(<i>i</i>))}, for
+<i>i</i> = 1, <i>n</i>, the number of data points
+{<b>x</b>(<i>i</i>), <i>w</i>(<i>i</i>)}. Once the <i>n</i>
+coefficients <i>c</i>(<i>i</i>) have been found then the sum
+can be evaluated at any output point <b>x</b>. Choose
+between ten minimum curvature, regularized, or continuous
+curvature splines in tension for either 1-D, 2-D, or 3-D
+Cartesian coordinates or spherical surface coordinates.
+After first removing a linear or planar trend (Cartesian
+geometries) or mean value (spherical surface) and
+normalizing these residuals, the least-squares matrix
+solution for the spline coefficients <i>c</i>(<i>i</i>) is
+found by solving the <i>n</i> by <i>n</i> linear system
+<i>w</i>(<i>j</i>) = sum-over-<i>i</i> {<i>c</i>(<i>i</i>)
+G(<b>x</b>(<i>j</i>); <b>x</b>(<i>i</i>))}, for <i>j</i> =
+1, <i>n</i>; this solution yields an exact interpolation of
+the supplied data points. Alternatively, you may choose to
+perform a singular value decomposition (SVD) and eliminate
+the contribution from the smallest eigenvalues; this
+approach yields an approximate solution. Trends and scales
+are restored when evaluating the output.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i>datafile(s)</i></p>
+
+<p style="margin-left:22%;">The name of one or more ASCII
+[or binary, see <b>&minus;bi</b>] files holding the
+<b>x</b>, <i>w</i> data points. If no file is given then we
+read standard input instead.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">The solution will
+partly be constrained by surface gradients <b>v</b> =
+<i>v</i>*<b>n</b>, where <i>v</i> is the gradient magnitude
+and <b>n</b> its unit vector direction. The gradient
+direction may be specified either by Cartesian components
+(either unit vector <b>n</b> and magnitude <i>v</i>
+separately or gradient components <b>v</b> directly) or
+angles w.r.t. the coordinate axes. Specify one of five input
+formats: <b>0</b>: For 1-D data there is no direction, just
+gradient magnitude (slope) so the input format is <i>x,
+gradient</i>. Options 1-2 are for 2-D data sets: <b>1</b>:
+records contain <i>x, y, azimuth, gradient</i>
+(<i>azimuth</i> in degrees is measured clockwise from the
+vertical (north) [Default]). <b>2</b>: records contain <i>x,
+y, gradient, azimuth</i> (<i>azimuth</i> in degrees is
+measured clockwise from the vertical (north)). Options 3-5
+are for either 2-D or 3-D data: <b>3</b>: records contain
+<b>x</b>, <i>direction(s), v</i> (<i>direction(s)</i> in
+degrees are measured counter-clockwise from the horizontal
+(and for 3-D the vertical axis). <b>4</b>: records contain
+<b>x</b>, <b>v</b>. <b>5</b>: records contain <b>x</b>,
+<b>n</b>, <i>v</i>. Append name of ASCII file with the
+surface gradients (following a comma if a format is
+specified).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Find an approximate
+surface fit: Solve the linear system for the spline
+coefficients by SVD and eliminate the contribution from all
+eigenvalues whose ratio to the largest eigenvalue is less
+than <i>cut</i> [Default uses Gauss-Jordan elimination to
+solve the linear system and fit the data exactly].
+Optionally, append /<i>file</i> to save the eigenvalue
+ratios to the specified file for further analysis. Finally,
+if a negative <i>cut</i> is given then /<i>file</i> is
+required and execution will stop after saving the
+eigenvalues, i.e., no surface output is produced.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the distance
+flag that determines how we calculate distances between data
+points. Select <i>mode</i> 0 for Cartesian 1-D spline
+interpolation: <b>&minus;D</b> 0 means (<i>x</i>) in user
+units, Cartesian distances, Select <i>mode</i> 1-3 for
+Cartesian 2-D surface spline interpolation: <b>&minus;D</b>
+1 means (<i>x,y</i>) in user units, Cartesian distances,
+<b>&minus;D</b> 2 for (<i>x,y</i>) in degrees, flat Earth
+distances, and <b>&minus;D</b> 3 for (<i>x,y</i>) in
+degrees, spherical distances in km. Then, if
+<b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b> is spherical, we compute great circle arcs,
+otherwise geodesics. Option <i>mode</i> = 4 applies to
+spherical surface spline interpolation only: <b>&minus;D</b>
+4 for (<i>x,y</i>) in degrees, use cosine of great circle
+(or geodesic) arcs. Select <i>mode</i> 5 for Cartesian 3-D
+surface spline interpolation: <b>&minus;D</b> 5 means
+(<i>x,y,z</i>) in user units, Cartesian distances.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force pixel
+registration. [Default is gridline registration].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Name of resulting
+output file. (1) If options <b>&minus;R</b>,
+<b>&minus;I</b>, and possibly <b>&minus;F</b> are set we
+produce an equidistant output table. This will be written to
+stdout unless <b>&minus;G</b> is specified. Note: for 2-D
+grids the <b>&minus;G</b> option is required. (2) If option
+<b>&minus;T</b> is selected then <b>&minus;G</b> is required
+and the output file is a 2-D binary grid file. Applies to
+2-D interpolation only. (3) If <b>&minus;N</b> is selected
+then the output is an ASCII (or binary; see
+<b>&minus;bo</b>) table; if <b>&minus;G</b> is not given
+then this table is written to standard output. Ignored if
+<b>&minus;C</b> or <b>&minus;C</b> 0 is given.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify equidistant
+sampling intervals, on for each dimension, separated by
+slashes.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do <i>not</i>
+remove a linear (1-D) or planer (2-D) trend when
+<b>&minus;D</b> selects mode 0-3 [For those Cartesian cases
+a least-squares line or plane is modeled and removed, then
+restored after fitting a spline to the residuals]. However,
+in mixed cases with both data values and gradients, or for
+spherical surface data, only the mean data value is removed
+(and later and restored).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">ASCII file with
+coordinates of desired output locations <b>x</b> in the
+first column(s). The resulting <i>w</i> values are appended
+to each record and written to the file given in
+<b>&minus;G</b> [or stdout if not specified]; see
+<b>&minus;bo</b> for binary output instead. This option
+eliminates the need to specify options <b>&minus;R</b>,
+<b>&minus;I</b>, and <b>&minus;F</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Rather than
+evaluate the surface, take the directional derivative in the
+<i>az</i> azimuth and return the magnitude of this
+derivative instead. For 3-D interpolation, specify the three
+components of the desired vector direction (the vector will
+be normalized before use).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify the domain
+for an equidistant lattice where output predictions are
+required. Requires <b>&minus;I</b> and optionally
+<b>&minus;F</b>.</p> </td>
+</table>
+
+<p style="margin-left:22%;"><i>1-D:</i> Give
+<i>xmin/xmax</i>, the minimum and maximum <i>x</i>
+coordinates. <i><br>
+2-D:</i> Give <i>xmin/xmax/ymin/ymax</i>, the minimum and
+maximum <i>x</i> and <i>y</i> coordinates. These may be
+Cartesian or geographical. If geographical, then <i>west,
+east, south,</i> and <i>north</i> specify the Region of
+interest, and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. The two shorthands
+<b>&minus;Rg</b> and <b>&minus;Rd</b> stand for global
+domain (0/360 and -180/+180 in longitude respectively, with
+-90/+90 in latitude). <i><br>
+3-D:</i> Give <i>xmin/xmax/ymin/ymax/zmin/zmax</i>, the
+minimum and maximum <i>x</i>, <i>y</i> and <i>z</i>
+coordinates. See the 2-D section if your horizontal
+coordinates are geographical; note the shorthands
+<b>&minus;Rg</b> and <b>&minus;Rd</b> cannot be used if a
+3-D domain is specified.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Select one of five
+different splines. The first two are used for 1-D, 2-D, or
+3-D Cartesian splines (see <b>&minus;D</b> for discussion).
+Note that all tension values are expected to be normalized
+tension in the range 0 &lt; <i>t</i> &lt; 1: (<b>c</b>)
+Minimum curvature spline [<i>Sandwell</i>, 1987], (<b>t</b>)
+Continuous curvature spline in tension [<i>Wessel and
+Bercovici</i>, 1998]; append <i>tension</i>[/<i>scale</i>]
+with <i>tension</i> in the 0&minus;1 range and optionally
+supply a length scale [Default is the average grid spacing].
+The next is a 2-D or 3-D spline: (<b>r</b>) Regularized
+spline in tension [<i>Mitasova and Mitas</i>, 1993]; again,
+append <i>tension</i> and optional <i>scale</i>. The last
+two are spherical surface splines and both imply
+<b>&minus;D</b> 4 and geographic data: (<b>p</b>) Minimum
+curvature spline [<i>Parker</i>, 1994], (<b>q</b>)
+Continuous curvature spline in tension [<i>Wessel and
+Becker</i>, 2008]; append <i>tension</i>. The G(<b>x</b>;
+<b>x&rsquo;</b>) for the last method is slower to compute;
+by specifying <b>&minus;SQ</b> you can speed up calculations
+by first pre-calculating G(<b>x</b>; <b>x&rsquo;</b>) for a
+dense set of <b>x</b> values (e.g., 100,001 nodes between -1
+to +1) and store them in look-up tables. Optionally append
+/<i>N</i> (an odd integer) to specify how many points in the
+spline to set [100001]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">For 2-D
+interpolation only. Only evaluate the solution at the nodes
+in the <i>maskgrid</i> that are not equal to NaN. This
+option eliminates the need to specify options
+<b>&minus;R</b>, <b>&minus;I</b>, and <b>&minus;F</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 2-4 input columns
+(<b>x</b>,<i>w</i>); the number depends on the chosen
+dimension].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.</p></td>
+</table>
+
+<a name="1-D EXAMPLES"></a>
+<h2>1-D EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To resample the
+<i>x,y</i> Gaussian random data created by <b><A HREF="gmtmath.html">gmtmath</A></b>
+and stored in 1D.txt, requesting output every 0.1 step from
+0 to 10, and using a minimum cubic spline, try</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtmath
+&minus;T</b> 0/10/1 0 1 <b>NRAND</b> = 1D.txt <b><br>
+psxy &minus;R</b>0/10/-5/5 <b>&minus;JX</b> 6i/3i
+<b>&minus;B</b> 2f1/1 <b>&minus;Sc</b> 0.1 <b>&minus;G</b>
+black 1D.txt <b>&minus;K</b> &gt; 1D.ps <b><br>
+greenspline</b> 1D.txt <b>&minus;R</b> 0/10 <b>&minus;I</b>
+0.1 <b>&minus;Sc &minus;V</b> | <b>psxy &minus;R &minus;J
+&minus;O &minus;W</b> thin &gt;&gt; 1D.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">To apply a
+spline in tension instead, using a tension of 0.7, try</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psxy
+&minus;R</b>0/10/-5/5 <b>&minus;JX</b> 6i/3i <b>&minus;B</b>
+2f1/1 <b>&minus;Sc</b> 0.1 <b>&minus;G</b> black 1D.txt
+<b>&minus;K</b> &gt; 1Dt.ps <b><br>
+greenspline</b> 1D.txt <b>&minus;R</b> 0/10 <b>&minus;I</b>
+0.1 <b>&minus;St</b> 0.7 <b>&minus;V</b> | <b>psxy &minus;R
+&minus;J &minus;O &minus;W</b> thin &gt;&gt; 1Dt.ps</p>
+
+<a name="2-D EXAMPLES"></a>
+<h2>2-D EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To make a
+uniform grid using the minimum curvature spline for the same
+Cartesian data set from Davis (1986) that is used in the GMT
+Cookbook example 16, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>greenspline</b>
+table_5.11 <b>&minus;R</b> 0/6.5/-0.2/6.5 <b>&minus;I</b>
+0.1 <b>&minus;Sc &minus;V &minus;D</b> 1 <b>&minus;G</b>
+S1987.grd <b><br>
+psxy &minus;R</b>0/6.5/-0.2/6.5 <b>&minus;JX</b> 6i
+<b>&minus;B</b> 2f1 <b>&minus;Sc</b> 0.1 <b>&minus;G</b>
+black table_5.11 <b>&minus;K</b> &gt; 2D.ps <b><br>
+grdcontour &minus;JX</b>6i <b>&minus;B</b> 2f1 <b>&minus;O
+&minus;C</b> 25 <b>&minus;A</b> 50 S1987.grd &gt;&gt;
+2D.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">To use
+Cartesian splines in tension but only evaluate the solution
+where the input mask grid is not NaN, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>greenspline</b>
+table_5.11 <b>&minus;T</b> mask.grd <b>&minus;St</b> 0.5
+<b>&minus;V &minus;D</b> 1 <b>&minus;G</b> WB1998.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">To use
+Cartesian generalized splines in tension and return the
+magnitude of the surface slope in the NW direction, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>greenspline</b>
+table_5.11 <b>&minus;R</b> 0/6.5/-0.2/6.5 <b>&minus;I</b>
+0.1 <b>&minus;Sr</b> 0.95 <b>&minus;V &minus;D</b> 1
+<b>&minus;Q</b>-45 <b>&minus;G</b> slopes.grd Finally, to
+use Cartesian minimum curvature splines in recovering a
+surface where the input data is a single surface value
+(pt.d) and the remaining constraints specify only the
+surface slope and direction (slopes.d), use</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>greenspline</b>
+pt.d <b>&minus;R</b>-3.2/3.2/-3.2/3.2 <b>&minus;I</b> 0.1
+<b>&minus;Sc &minus;V &minus;D</b> 1 <b>&minus;A</b>
+1,slopes.d <b>&minus;G</b> slopes.grd</p>
+
+<a name="3-D EXAMPLES"></a>
+<h2>3-D EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To create a
+uniform 3-D Cartesian grid table based on the data in
+table_5.23 in Davis (1986) that contains <i>x,y,z</i>
+locations and a measure of uranium oxide concentrations (in
+percent), try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>greenspline</b>
+table_5.23 <b>&minus;R</b> 5/40/-5/10/5/16 <b>&minus;I</b>
+0.25 <b>&minus;Sr</b> 0.85 <b>&minus;V &minus;D</b> 5
+<b>&minus;G</b> 3D_UO2.txt</p>
+
+<a name="2-D SPHERICAL SURFACE EXAMPLES"></a>
+<h2>2-D SPHERICAL SURFACE EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To recreate
+Parker&rsquo;s [1994] example on a global 1x1 degree grid,
+assuming the data are in file mag_obs_1990.d, try</p>
+
+<p style="margin-left:11%; margin-top: 1em">greenspline
+<b>&minus;V &minus;Rg &minus;Sp &minus;D</b> 3
+<b>&minus;I</b> 1 <b>&minus;G</b> P1994.grd
+mag_obs_1990.d</p>
+
+<p style="margin-left:11%; margin-top: 1em">To do the same
+problem but applying tension and use pre-calculated Green
+functions, use</p>
+
+<p style="margin-left:11%; margin-top: 1em">greenspline
+<b>&minus;V &minus;Rg &minus;SQ</b> 0.85 <b>&minus;D</b> 3
+<b>&minus;I</b> 1 <b>&minus;G</b> WB2008.grd
+mag_obs_1990.d</p>
+
+<a name="CONSIDERATIONS"></a>
+<h2>CONSIDERATIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">(1) For the
+Cartesian cases we use the free-space Green functions, hence
+no boundary conditions are applied at the edges of the
+specified domain. For most applications this is fine as the
+region typically is arbitrarily set to reflect the extent of
+your data. However, if your application requires particular
+boundary conditions then you may consider using
+<b><A HREF="surface.html">surface</A></b> instead. <br>
+(2) In all cases, the solution is obtained by inverting a
+<i>n</i> x <i>n</i> double precision matrix for the Green
+function coefficients, where <i>n</i> is the number of data
+constraints. Hence, your computer&rsquo;s memory may place
+restrictions on how large data sets you can process with
+<b>greenspline</b>. Pre-processing your data with
+<b><A HREF="blockmean.html">blockmean</A></b>, <b><A HREF="blockmedian.html">blockmedian</A></b>, or <b><A HREF="blockmode.html">blockmode</A></b> is
+recommended to avoid aliasing and may also control the size
+of <i>n</i>. For information, if <i>n</i> = 1024 then only 8
+Mb memory is needed, but for <i>n</i> = 10240 we need 800
+Mb. Note that <b>greenspline</b> is fully 64-bit compliant
+if compiled as such. <br>
+(3) The inversion for coefficients can become numerically
+unstable when data neighbors are very close compared to the
+overall span of the data. You can remedy this by
+pre-processing the data, e.g., by averaging closely spaced
+neighbors. Alternatively, you can improve stability by using
+the SVD solution and discard information associated with the
+smallest eigenvalues (see <b>&minus;C</b>).</p>
+
+<a name="TENSION"></a>
+<h2>TENSION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Tension is
+generally used to suppress spurious oscillations caused by
+the minimum curvature requirement, in particular when rapid
+gradient changes are present in the data. The proper amount
+of tension can only be determined by experimentation.
+Generally, very smooth data (such as potential fields) do
+not require much, if any tension, while rougher data (such
+as topography) will typically interpolate better with
+moderate tension. Make sure you try a range of values before
+choosing your final result. Note: the regularized spline in
+tension is only stable for a finite range of <i>scale</i>
+values; you must experiment to find the valid range and a
+useful setting. For more information on tension see the
+references below.</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Davis, J. C.,
+1986, <i>Statistics and Data Analysis in Geology</i>, 2nd
+Edition, 646 pp., Wiley, New York, <br>
+Mitasova, H., and L. Mitas, 1993, Interpolation by
+regularized spline with tension: I. Theory and
+implementation, <i>Math. Geol., 25</i>, 641&minus;655. <br>
+Parker, R. L., 1994, <i>Geophysical Inverse Theory</i>, 386
+pp., Princeton Univ. Press, Princeton, N.J. <br>
+Sandwell, D. T., 1987, Biharmonic spline interpolation of
+Geos-3 and Seasat altimeter data, <i>Geophys. Res. Lett.,
+14</i>, 139&minus;142. <br>
+Wessel, P., and D. Bercovici, 1998, Interpolation with
+splines in tension: a Green&rsquo;s function approach,
+<i>Math. Geol., 30</i>, 77&minus;93. <br>
+Wessel, P., and J. M. Becker, 2008, Interpolation using a
+generalized Green&rsquo;s function for a spherical surface
+spline in tension, <i>Geophys. J. Int, 174</i>, 21&minus;28.
+<br>
+Wessel, P., 2009, A general-purpose Green&rsquo;s function
+interpolator, <i>Computers &amp; Geosciences, 35</i>,
+1247&minus;1254, doi:10.1016/j.cageo.2008.08.012.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="gmtmath.html">gmtmath</A></i>(1), <i><A HREF="nearneighbor.html">nearneighbor</A></i>(1), <i><A HREF="psxy.html">psxy</A></i>(1),
+<i><A HREF="surface.html">surface</A></i>(1), <i><A HREF="triangulate.html">triangulate</A></i>(1),
+<i><A HREF="xyz2grd.html">xyz2grd</A></i>(1)</p>
+<hr>
+</body>
+</html>

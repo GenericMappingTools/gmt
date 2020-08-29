@@ -1,0 +1,294 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:19 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GRDINFO</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GRDINFO</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#GRID FILE FORMATS">GRID FILE FORMATS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">grdinfo &minus;
+Get information about the contents of a 2-D grid file</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdinfo</b>
+<i>grdfiles</i> [ <b>&minus;C</b> ] [ <b>&minus;F</b> ] [
+<b>&minus;I</b>[<i>dx</i>[/<i>dy</i>]] ][
+<b>&minus;L</b>[<b>0</b>|<b>1</b>|<b>2</b>] ] [
+<b>&minus;M</b> ] [ <b>&minus;T</b><i>dz</i> ] [
+<b>&minus;V</b> ] [
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdinfo</b>
+reads a 2-D binary grid file and reports various statistics
+for the (<i>x,y,z</i>) data in the grid file(s). The output
+information contains the minimum/maximum values for
+<i>x</i>, <i>y</i>, and <i>z</i>, where the min/max of
+<i>z</i> occur, the <i>x</i>- and <i>y</i>-increments, and
+the number of <i>x</i> and <i>y</i> nodes, and [optionally]
+the mean, standard deviation, and/or the median, L1 scale of
+<i>z</i>, and number of nodes set to NaN. <i><br>
+grdfile</i></p>
+
+<p style="margin-left:22%;">The name of one or several 2-D
+grid files. (See GRID FILE FORMATS below.)</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Formats the report
+using tab-separated fields on a single line. The output is
+<i>w e s n z0 z1 dx dy nx ny</i> [ <i>x0 y0 x1 y1</i> ] [
+<i>med scale</i> ] [ <i>mean std rms</i>] [<i>n_nan</i>].
+The data in brackets are output only if the corresponding
+options <b>&minus;M</b>, <b>&minus;L1</b>, <b>&minus;L2</b>,
+and <b>&minus;M</b> are used, respectively. If the
+<b>&minus;I</b> option is used, the output format is instead
+<i>NF w e s n z0 z1</i>, where <i>NF</i> is the total number
+of grids read and <i>w e s n</i> are rounded off (see
+<b>&minus;I</b>).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Report grid domain
+and x/y-increments in world mapping format [Default is
+generic]. Does not apply to the <b>&minus;C</b> option.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Report the min/max
+of the region to the nearest multiple of <i>dx</i> and
+<i>dy</i>, and output this in the form
+<b>&minus;R</b><i>w/e/s/n</i> (unless <b>&minus;C</b> is
+set). To report the actual grid region, select
+<b>&minus;I-</b>. If no argument is given then we report the
+grid increment in the form
+<b>&minus;I</b><i>xinc/yinc</i>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L0</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Report range of z
+after actually scanning the data, not just reporting what
+the header says.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L1</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Report median and
+L1 scale of z (L1 scale = 1.4826 * Median Absolute Deviation
+(MAD)).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L2</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Report mean,
+standard deviation, and rms of z.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Find and report the
+location of min/max z-values, and count and report the
+number of nodes set to NaN, if any.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Determine min and
+max z-value, round off to multiples of <i>dz</i>, and report
+as the text string <b>&minus;T</b><i>zmin/zmax/dz</i> for
+use by <b><A HREF="makecpt.html">makecpt</A></b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+</table>
+
+<a name="GRID FILE FORMATS"></a>
+<h2>GRID FILE FORMATS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="GMT.html">GMT</A></b> is
+able to recognize many of the commonly used grid file
+formats, as well as the precision, scale and offset of the
+values contained in the grid file. When <b><A HREF="GMT.html">GMT</A></b> needs a
+little help with that, you can add the suffix
+<b>=</b><i>id</i>[<b>/</b><i>scale</i><b>/</b><i>offset</i>[<b>/</b><i>nan</i>]],
+where <i>id</i> is a two-letter identifier of the grid type
+and precision, and <i>scale</i> and <i>offset</i> are
+optional scale factor and offset to be applied to all grid
+values, and <i>nan</i> is the value used to indicate missing
+data. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and Section 4.17 of the GMT
+Technical Reference and Cookbook for more information.</p>
+
+<p style="margin-left:11%; margin-top: 1em">When reading a
+netCDF file that contains multiple grids, <b><A HREF="GMT.html">GMT</A></b> will
+read, by default, the first 2-dimensional grid that can find
+in that file. To coax <b><A HREF="GMT.html">GMT</A></b> into reading another
+multi-dimensional variable in the grid file, append
+<b>?</b><i>varname</i> to the file name, where
+<i>varname</i> is the name of the variable. Note that you
+may need to escape the special meaning of <b>?</b> in your
+shell program by putting a backslash in front of it, or by
+placing the filename and suffix between quotes or double
+quotes. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and Section 4.18 of the
+GMT Technical Reference and Cookbook for more information,
+particularly on how to read splices of 3-, 4-, or
+5-dimensional grids.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To obtain all
+the information about the data set in file
+hawaii_topo.grd:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdinfo
+&minus;L1 &minus;L2 &minus;M</b> hawaii_topo.grd</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grd2cpt.html">grd2cpt</A></i>(1), <i><A HREF="grd2xyz.html">grd2xyz</A></i>(1), <i><A HREF="grdedit.html">grdedit</A></i>(1)</p>
+<hr>
+</body>
+</html>

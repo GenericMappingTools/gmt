@@ -1,0 +1,180 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(5) A 3-D illuminated surface (in bw) &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(6) Plotting of histograms" href="ex06.html" />
+    <link rel="prev" title="(4) A 3-D perspective mesh plot" href="ex04.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex06.html" title="(6) Plotting of histograms"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex04.html" title="(4) A 3-D perspective mesh plot"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="a-3-d-illuminated-surface-in-bw">
+<span id="example-05"></span><h1>(5) A 3-D illuminated surface (in bw)<a class="headerlink" href="#a-3-d-illuminated-surface-in-bw" title="Permalink to this headline">¶</a></h1>
+<p>Instead of a mesh plot we may choose to show 3-D surfaces using
+artificial illumination. For this example we will use
+<a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a> to make a grid file that
+contains the surface given by the function
+<span class="math notranslate nohighlight">\(z(x, y) = \cos (2\pi r/8)\cdot e^{-r/10}\)</span>, where
+<span class="math notranslate nohighlight">\(r^2 = (x^2 + y^2)\)</span>. The illumination is obtained by passing two
+grid files to <a class="reference internal" href="../grdview.html"><span class="doc">grdview</span></a>: One with the
+<em>z</em>-values (the surface) and another with intensity values (which should
+be in the 1 range). We use
+<a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a> to compute the
+horizontal gradients in the direction of the artificial light source.
+The <code class="docutils literal notranslate"><span class="pre">gray.cpt</span></code> file only has one line that states that all <em>z</em> values should have
+the gray level 128. Thus, variations in shade are entirely due to
+variations in gradients, or illuminations. We choose to illuminate from
+the SW and view the surface from SE:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 05</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Generate grid and show monochrome 3-D perspective</span>
+<span class="c1"># GMT modules:	grdmath, grdview, pstext</span>
+<span class="c1"># Unix progs:	echo, rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_05.ps
+gmt grdmath -R-15/15/-15/15 -I0.3 X Y HYPOT DUP <span class="m">2</span> MUL PI MUL <span class="m">8</span> DIV COS EXCH NEG <span class="m">10</span> DIV <span class="se">\</span>
+	EXP <span class="nv">MUL</span> <span class="o">=</span> sombrero.nc
+gmt makecpt -C128 -T-5,5 -N &gt; g.cpt
+gmt grdview sombrero.nc -JX6i -JZ2i -B5 -Bz0.5 -BSEwnZ -N-1+gwhite -Qs -I+a225+nt0.75 -X1.5i <span class="se">\</span>
+	-Cg.cpt -R-15/15/-15/15/-1/1 -K -p120/30 &gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="s2">&quot;4.1 5.5 z(r) = cos (2@~p@~r/8) @~\327@~e@+-r/10@+&quot;</span> <span class="p">|</span> gmt pstext -R0/11/0/8.5 -Jx1i <span class="se">\</span>
+	-F+f50p,ZapfChancery-MediumItalic+jBC -O &gt;&gt; <span class="nv">$ps</span>
+rm -f g.cpt sombrero.nc
+</pre></div>
+</div>
+<p>The variations in intensity could be made more dramatic by using
+<a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a> to scale the intensity file
+before running <a class="reference internal" href="../grdview.html"><span class="doc">grdview</span></a>. For very rough
+data sets one may improve the smoothness of the intensities by passing
+the output of <a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a> to
+<a class="reference internal" href="../grdhisteq.html"><span class="doc">grdhisteq</span></a>. The shell-script above
+will result in a plot like the one in Figure.</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_05.png"><img alt="../_images/example_05.png" src="../_images/example_05.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">3-D illuminated surface.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex04.html"
+                        title="previous chapter">(4) A 3-D perspective mesh plot</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex06.html"
+                        title="next chapter">(6) Plotting of histograms</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex05.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex06.html" title="(6) Plotting of histograms"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex04.html" title="(4) A 3-D perspective mesh plot"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

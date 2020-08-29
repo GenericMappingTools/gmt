@@ -1,0 +1,182 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(7) A simple location map &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(8) A 3-D histogram" href="ex08.html" />
+    <link rel="prev" title="(6) Plotting of histograms" href="ex06.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex08.html" title="(8) A 3-D histogram"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex06.html" title="(6) Plotting of histograms"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="a-simple-location-map">
+<span id="example-07"></span><h1>(7) A simple location map<a class="headerlink" href="#a-simple-location-map" title="Permalink to this headline">¶</a></h1>
+<p>Many scientific papers start out by showing a location map of the region
+of interest. This map will typically also contain certain features and
+labels. This example will present a location map for the equatorial
+Atlantic ocean, where fracture zones and mid-ocean ridge segments have
+been plotted. We also would like to plot earthquake locations and
+available isochrons. We have obtained one file, <code class="docutils literal notranslate"><span class="pre">quakes.xym</span></code>, which contains the
+position and magnitude of available earthquakes in the region. We choose
+to use magnitude/100 for the symbol-size in inches. The digital fracture
+zone traces (<code class="docutils literal notranslate"><span class="pre">fz.xy</span></code>) and isochrons (0 isochron as <code class="docutils literal notranslate"><span class="pre">ridge.xy</span></code>, the rest as <code class="docutils literal notranslate"><span class="pre">isochrons.xy</span></code>) were
+digitized from available maps <a class="footnote-reference" href="#id2" id="id1">[1]</a>. We create the final location map
+with the following script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 07</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Make a basemap with earthquakes and isochrons etc</span>
+<span class="c1"># GMT modules:	pscoast, pslegend, pstext, psxy</span>
+<span class="c1"># Unix progs:	</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_07.ps
+gmt pscoast -R-50/0/-10/20 -JM9i -K -Slightblue -GP300/26:FtanBdarkbrown -Dl -Wthinnest <span class="se">\</span>
+	-B10 --FORMAT_GEO_MAP<span class="o">=</span>dddF &gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K fz.xy -Wthinner,- &gt;&gt; <span class="nv">$ps</span>
+gmt psxy quakes.xym -R -J -O -K -h1 -Sci -i0,1,2+s0.01 -Gred -Wthinnest &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K isochron.xy -Wthin,blue &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K ridge.xy -Wthicker,orange &gt;&gt; <span class="nv">$ps</span>
+gmt pslegend -R -J -O -K -DjTR+w2.2i+o0.2i -F+pthick+ithinner+gwhite --FONT_ANNOT_PRIMARY<span class="o">=</span>18p,Times-Italic<span class="s">&lt;&lt; EOF &gt;&gt; $ps</span>
+<span class="s">S 0.1i c 0.08i red thinnest 0.3i ISC Earthquakes</span>
+<span class="s">EOF</span>
+gmt pstext -R -J -O -F+f30,Helvetica-Bold,white<span class="o">=</span>thin &gt;&gt; <span class="nv">$ps</span> <span class="s">&lt;&lt; END</span>
+<span class="s">-43 -5 SOUTH</span>
+<span class="s">-43 -8 AMERICA</span>
+<span class="s"> -7 11 AFRICA</span>
+<span class="s">END</span>
+</pre></div>
+</div>
+<p>Here a simple one-liner creates a simple legend in the upper-right corner.</p>
+<div class="figure align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/example_07.png"><img alt="../_images/example_07.png" src="../_images/example_07.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">A typical location map.</span></p>
+</div>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).</td></tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex06.html"
+                        title="previous chapter">(6) Plotting of histograms</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex08.html"
+                        title="next chapter">(8) A 3-D histogram</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex07.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex08.html" title="(8) A 3-D histogram"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex06.html" title="(6) Plotting of histograms"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

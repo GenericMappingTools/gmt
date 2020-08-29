@@ -1,0 +1,211 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(27) Plotting Sandwell/Smith Mercator img grids &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(28) Mixing UTM and geographic data sets" href="ex28.html" />
+    <link rel="prev" title="(26) General vertical perspective projection" href="ex26.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex28.html" title="(28) Mixing UTM and geographic data sets"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex26.html" title="(26) General vertical perspective projection"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="plotting-sandwell-smith-mercator-img-grids">
+<span id="example-27"></span><h1>(27) Plotting Sandwell/Smith Mercator img grids<a class="headerlink" href="#plotting-sandwell-smith-mercator-img-grids" title="Permalink to this headline">¶</a></h1>
+<p>Next, we show how to plot a data grid that is distributed in projected
+form. The gravity and predicted bathymetry grids produced by David
+Sandwell and Walter H. F. Smith are not geographical grids but instead
+given on a spherical Mercator grid. The GMT supplement imgsrc has
+tools to extract subsets of these large grids. If you need to make a
+non-Mercator map then you must extract a geographic grid using
+<a class="reference internal" href="../supplements/img/img2grd.html"><span class="doc">img2grd</span></a> and then plot it using your
+desired map projection. However, if you want to make a Mercator map then
+you can save time and preserve data quality by avoiding to re-project
+the data set twice since it is already in a Mercator projection. This
+example shows how this is accomplished. We use the <strong>-M</strong> option in
+<a class="reference internal" href="../supplements/img/img2grd.html"><span class="doc">img2grd</span></a> <a class="footnote-reference" href="#id2" id="id1">[1]</a> to pull out the grid
+in Mercator units (i.e., do <em>not</em> invert the Mercator projection) and
+then simply plot the grid using a linear projection with a suitable
+scale (here 0.25 inches per degrees of longitude). To overlay basemaps
+and features that has geographic longitude/latitude coordinates we must
+remember two key issues:</p>
+<ol class="arabic simple">
+<li>This is a <em>spherical</em> Mercator grid so we must use
+--<strong>PROJ_ELLIPSOID</strong>=Sphere with all commands that involve
+projections (or use <a class="reference internal" href="../gmtset.html"><span class="doc">gmtset</span></a> to change the setting).</li>
+<li>Select Mercator projection and use the same scale that was used with
+the linear projection.</li>
+</ol>
+<p>This map of the Tasman Sea shows the marine gravity anomalies with land
+painted black. A color scale bar was then added to complete the illustration.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 27</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Illustrates how to plot Mercator img grids</span>
+<span class="c1"># GMT modules:	makecpt, grdimage, grdinfo, pscoast</span>
+<span class="c1"># GMT supplement: img2grd (to read Sandwell/Smith img files)</span>
+<span class="c1"># Unix progs:	rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_27.ps
+
+<span class="c1"># Gravity in tasman_grav.nc is in 0.1 mGal increments and the grid</span>
+<span class="c1"># is already in projected Mercator x/y units.</span>
+
+<span class="c1"># Make a suitable cpt file for mGal</span>
+
+gmt makecpt -T-120/120 -Crainbow &gt; grav.cpt
+
+<span class="c1"># Since this is a Mercator grid we use a linear projection</span>
+
+gmt grdimage tasman_grav.nc<span class="o">=</span>ns+s0.1 -I+a45+nt1 -Jx0.25i -Cgrav.cpt -P -K &gt; <span class="nv">$ps</span>
+
+<span class="c1"># Then use gmt pscoast to plot land; get original -R from grid img remark</span>
+<span class="c1"># and use Mercator gmt projection with same scale as above on a spherical Earth</span>
+
+<span class="nv">R</span><span class="o">=</span><span class="sb">`</span>gmt grdinfo tasman_grav.nc -Ii<span class="sb">`</span>
+
+gmt pscoast <span class="nv">$R</span> -Jm0.25i -Ba10f5 -BWSne -O -K -Gblack --PROJ_ELLIPSOID<span class="o">=</span>Sphere <span class="se">\</span>
+	-Cwhite -Dh+ --FORMAT_GEO_MAP<span class="o">=</span>dddF &gt;&gt; <span class="nv">$ps</span>
+
+<span class="c1"># Put a color legend in top-left corner of the land mask</span>
+
+gmt psscale -DjTL+o1c+w2i/0.15i -R -J -Cgrav.cpt -Bx50f10 -By+lmGal -I -O -F+gwhite+p1p &gt;&gt; <span class="nv">$ps</span>
+
+<span class="c1"># Clean up</span>
+
+rm -f grav.cpt
+</pre></div>
+</div>
+<div class="figure align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/example_27.png"><img alt="../_images/example_27.png" src="../_images/example_27.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Plotting Sandwell/Smith Mercator img grids.</span></p>
+</div>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>You could also use <a class="reference internal" href="../supplements/img/img2grd.html"><span class="doc">img2grd</span></a>
+directly - your only option under DOS</td></tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex26.html"
+                        title="previous chapter">(26) General vertical perspective projection</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex28.html"
+                        title="next chapter">(28) Mixing UTM and geographic data sets</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex27.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex28.html" title="(28) Mixing UTM and geographic data sets"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex26.html" title="(26) General vertical perspective projection"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

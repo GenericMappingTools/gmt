@@ -1,0 +1,49 @@
+.. _example_25:
+
+(25) Global distribution of antipodes
+-------------------------------------
+
+As promised in Example :ref:`example_23`, we will study
+antipodes. The antipode of a point at :math:`(\phi, \lambda)` is the
+point at :math:`(-\phi, \lambda + 180)`. We seek an answer to the
+question that has plagued so many for so long: Given the distribution of
+land and ocean, how often is the antipode of a point on land also on
+land? And what about marine antipodes? We use :doc:`grdlandmask </grdlandmask>` and
+:doc:`grdmath </grdmath>` to map these distributions and
+calculate the area of the Earth (in percent) that goes with each of the
+three possibilities. To make sense of our
+:doc:`grdmath </grdmath>` equations below, note that we
+first calculate a grid that is +1 when a point and its antipode is on
+land, -1 if both are in the ocean, and 0 elsewhere. We then seek to
+calculate the area distribution of dry antipodes by only pulling out the
+nodes that equal +1. As each point represent an area approximated by
+:math:`\Delta \phi \times \Delta \lambda` where the
+:math:`\Delta \lambda` term's actual dimension depends on
+:math:`\cos (\phi)`, we need to allow for that shrinkage, normalize our
+sum to that of the whole area of the Earth, and finally convert that
+ratio to percent. Since the :math:`\Delta \lambda`, :math:`\Delta \phi`
+terms appear twice in these expressions they cancel out, leaving the
+somewhat intractable expressions below where the sum of
+:math:`\cos (\phi)` for all :math:`\phi` is known to equal :math:`2N_y / \pi`:
+
+In the end we obtain a funny-looking map depicting the antipodal
+distribution as well as displaying in legend form the requested
+percentages. Note that the script is
+set to evaluate a global 30 minute grid for expediency (*D = 30*),
+hence several smaller land masses that do have terrestrial antipodes do
+not show up. If you want a more accurate map you can set the parameter
+*D* to a smaller increment (try 5 and wait a few minutes).
+
+The call to :doc:`grdimage </grdimage>` includes the
+``-Sn`` to suspend interpolation and only return the value of the
+nearest neighbor. This option is particularly practical for plotting
+categorical data, like these, that should not be interpolated.
+
+.. literalinclude:: /_verbatim/example_25.txt
+   :language: bash
+
+.. figure:: /_images/example_25.*
+   :width: 500 px
+   :align: center
+
+   Global distribution of antipodes.

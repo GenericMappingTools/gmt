@@ -1,0 +1,385 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:40 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GMTSTITCH</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GMTSTITCH</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#ASCII FORMAT PRECISION">ASCII FORMAT PRECISION</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">gmtstitch
+&minus; Join line segments whose end points match within
+tolerance</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtstitch</b>
+[ <i>infiles</i> ] [ <b>&minus;C</b>[<i>closed</i>] ] [
+<b>&minus;D</b>[<i>template</i>] ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;L</b>[<i>linkfile</i>] ] [
+<b>&minus;Q</b>[<i>template</i>] ] [
+<b>&minus;T</b><i>cutoff</i>[<b>m</b>|<b>c</b>|<b>e</b>|<b>E</b>|<b>k</b>|<b>K</b>][/<i>nn_dist</i>]
+] [ <b>&minus;V</b> ] [ <b>&minus;:</b>[<b>i</b>|<b>o</b>] ]
+[
+<b>&minus;b</b>[<b>i</b>|<b>o</b>][<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [
+<b>&minus;bo</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;m</b>[<b>i</b>|<b>o</b>][<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtstitch</b>
+reads one or more data files (which may be multisegment
+files; see <b>&minus;m</b>) and examines the coordinates of
+the end points of all line segments. If a pair of end points
+are identical or closer to each other than the specified
+separation tolerance then the two line segments are joined
+into a single segment. The process repeats until all the
+remaining endpoints no longer pass the tolerance test; the
+resulting segments are then written out to standard output.
+It it is not clear what the separation tolerance should be
+then use <b>&minus;L</b> to get a list of all separation
+distances and analyze them to determine a suitable cutoff.
+<i><br>
+file(s)</i></p>
+
+<p style="margin-left:22%;">One of more data files. If none
+are supplied then we read standard input.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Write all the
+closed polygons to <i>closed</i> [gmtstitch_closed.d] and
+all other segments as they are to stdout. No stitching takes
+place. Use <b>&minus;T</b><i>cutoff</i> to set a minimum
+separation [0], and if <i>cutoff</i> is &gt; 0 then we also
+close the polygons on output.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">For multiple
+segment data, dump each segment to a separate output file
+[Default writes a multiple segment file to stdout]. Append a
+format template for the individual file names; this template
+<b>must</b> contain a C format specifier that can format an
+integer argument (the segment number); this is usually %d
+but could be %8.8d which gives leading zeros, etc.
+Optionally, it may also contain the format %c <i>before</i>
+the integer; this will then be replaced by C (closed) or O
+(open) to indicate segment type. [Default is
+gmtstitch_segment_%d.d]. Note that segment headers will be
+written in either case. For composite segments, a generic
+segment header will be written and the segment headers of
+individual pieces will be written out as comments to make it
+possible to identify where the stitched pieces came
+from.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Writes the link
+information to the specified file [links.d]. For each
+segment we write the original segment id, and for the
+beginning and end point of the segment we report the id of
+the closest segment, whether it is the beginning (B) or end
+(E) point that is closest, and the distance between those
+points in units determined by <b>&minus;T</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Used with
+<b>&minus;D</b> to a list file with the names of the
+individual output files. Optionally, append a filename
+template for the individual file names; this template
+<b>may</b> contain a C format specifier that can format an
+character (C or O for closed or open, respectively).
+[Default is gmtstitch_list.d].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies the
+separation tolerance in the data coordinate units [0].
+Append <b>m</b> or <b>c</b> for minutes or seconds, or
+<b>e</b> or <b>k</b> for meters or km (implies
+<b>&minus;fg</b> using use flat Earth approximation. Use
+<b>E</b> or <b>K</b> for exact geodesic distances; however.
+if the current ELLIPSOID is Sphere then spherical great
+circle distances are used. If two lines has endpoints that
+are closer than this cutoff they will be joined. Optionally,
+append /<i>nn_dist</i> which adds the requirement that a
+link will only be made if the second closest connection
+exceeds the <i>nn_dist</i>. The latter distance is assumed
+to be in the same units as <i>cutoff</i>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 2 input columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.
+[Default is same as input].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file(s). Segments are separated by a special record. For
+ASCII files the first character must be <i>flag</i> [Default
+is &rsquo;&gt;&rsquo;]. For binary files all fields must be
+NaN and <b>&minus;b</b> must set the number of output
+columns explicitly. By default the <b>&minus;m</b> setting
+applies to both input and output. Use <b>&minus;mi</b> and
+<b>&minus;mo</b> to give separate settings to input and
+output.</p> </td>
+</table>
+
+<a name="ASCII FORMAT PRECISION"></a>
+<h2>ASCII FORMAT PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ASCII
+output formats of numerical data are controlled by
+parameters in your .gmtdefaults4 file. Longitude and
+latitude are formatted according to
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>, whereas other values are
+formatted according to <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>. Be aware that the
+format in effect can lead to loss of precision in the
+output, which can lead to various problems downstream. If
+you find the output is not written with enough precision,
+consider switching to binary output (<b>&minus;bo</b> if
+available) or specify more decimals using the
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> setting.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To combine the
+digitized multisegment lines segment_*.d (whose coordinates
+are in cm) into as few complete lines as possible, assuming
+the end points slop could be up to 0.1 mm, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtstitch</b>
+segment_*.d <b>&minus;Tf</b> 0.1 <b>&minus;m</b> &gt;
+new_segments.d</p>
+
+<p style="margin-left:11%; margin-top: 1em">To combine the
+digitized segments in the multisegment file my_lines.d
+(whose coordinates are in lon,lat) into as few complete
+lines as possible, assuming the end points slop could be up
+to 150 m, and write the complete segments to separate files
+called Map_segment_0001.dat, Map_segment_0002.dat, etc.,
+run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtstitch</b>
+my_lines.d <b>&minus;Tf</b> 0.15k <b>&minus;m &minus;D</b>
+Map_segment_%4.4d.dat</p>
+
+<a name="BUGS"></a>
+<h2>BUGS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The line
+connection does not work if a line only has a single point.
+However, gmtstitch will correctly add the point to the
+nearest segment. Running gmtstitch again on the new set of
+lines will eventually connect all close lines.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="mapproject.html">mapproject</A></i>(1)</p>
+<hr>
+</body>
+</html>

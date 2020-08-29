@@ -1,0 +1,813 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:22 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GRDVIEW</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GRDVIEW</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#GRID FILE FORMATS">GRID FILE FORMATS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#REMARKS">REMARKS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">grdview &minus;
+Create 3-D perspective grayshaded/colored image or mesh from
+a 2-D grid file</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdview</b>
+<i>relief_file</i> <b>&minus;J</b><i>parameters</i> [
+<b>&minus;B</b>[<b>p</b>|<b>s</b>]<i>parameters</i> ] [
+<b>&minus;C</b><i>cptfile</i> ] [
+<b>&minus;E</b><i>azim</i>/<i>elev</i>[<b>+w</b><i>lon</i>/<i>lat</i>[/<i>z</i>]][<b>+v</b><i>x0</i>/<i>y0</i>]
+] [ <b>&minus;G</b><i>drapefile</i> |
+<b>&minus;G</b><i>grd_r</i>,<i>grd_g</i>,<i>grd_b</i> ] [
+<b>&minus;I</b><i>intensfile</i> ] [
+<b>&minus;Jz</b>|<b>Z</b><i>parameters</i> ] [
+<b>&minus;K</b> ] [ <b>&minus;L</b>[<i>flags</i>] ] [
+<b>&minus;N</b><i>level</i>[/<i>color</i>] ] [
+<b>&minus;O</b> ] [ <b>&minus;P</b> ] [
+<b>&minus;Q</b><i>type</i>[<b>g</b>] ] [
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[/<i>zmin</i>/<i>zmax</i>][<b>r</b>]
+] [ <b>&minus;S</b><i>smooth</i> ] [
+<b>&minus;T</b>[<b>s</b>][<b>o</b>[<i>pen</i>]] ] [
+<b>&minus;U</b>[<i>just</i>/<i>dx</i>/<i>dy</i>/][<b>c</b>|<i>label</i>]
+] [ <b>&minus;V</b> ] [ <b>&minus;W</b><i>type/pen</i> ] [
+<b>&minus;X</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>x-shift</i>[<b>u</b>]]
+] [
+<b>&minus;Y</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>y-shift</i>[<b>u</b>]]
+] [ <b>&minus;Z</b><i>zlevel</i> ] [
+<b>&minus;c</b><i>copies</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdview</b>
+reads a 2-D grid file and produces a 3-D perspective plot by
+drawing a mesh, painting a colored/grayshaded surface made
+up of polygons, or by scanline conversion of these polygons
+to a rasterimage. Options include draping a data set on top
+of a surface, plotting of contours on top of the surface,
+and apply artificial illumination based on intensities
+provided in a separate grid file. <i><br>
+relief_file</i></p>
+
+<p style="margin-left:22%;">2-D gridded data set to be
+imaged (the relief of the surface). (See GRID FILE FORMAT
+below.)</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;J</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects the map
+projection. Scale is UNIT/degree, 1:xxxxx, or width in UNIT
+(upper case modifier). UNIT is cm, inch, or m, depending on
+the <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> setting in .gmtdefaults4, but this
+can be overridden on the command line by appending <b>c</b>,
+<b>i</b>, or <b>m</b> to the scale/width value. When central
+meridian is optional, default is center of longitude range
+on <b>&minus;R</b> option. Default standard parallel is the
+equator. For map height, max dimension, or min dimension,
+append <b>h</b>, <b>+</b>, or <b>-</b> to the width,
+respectively.</p> </td>
+</table>
+
+<p style="margin-left:22%;">More details can be found in
+the <b><A HREF="psbasemap.html">psbasemap</A></b> man pages.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CYLINDRICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jc</b><i>lon0/lat0/scale</i>
+(Cassini) <b><br>
+
+&minus;Jcyl_stere</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Stereographic) <b><br>
+&minus;Jj</b>[<i>lon0/</i>]<i>scale</i> (Miller) <b><br>
+&minus;Jm</b>[<i>lon0</i>/[<i>lat0/</i>]]<i>scale</i>
+(Mercator) <b><br>
+&minus;Jm</b><i>lon0/lat0/scale</i> (Mercator - Give
+meridian and standard parallel) <b><br>
+&minus;Jo</b>[<b>a</b>]<i>lon0/lat0/azimuth/scale</i>
+(Oblique Mercator - point and azimuth) <b><br>
+&minus;Jo</b>[<b>b</b>]<i>lon0/lat0/lon1/lat1/scale</i>
+(Oblique Mercator - two points) <b><br>
+&minus;Joc</b><i>lon0/lat0/lonp/latp/scale</i> (Oblique
+Mercator - point and pole) <b><br>
+&minus;Jq</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equidistant) <b><br>
+&minus;Jt</b><i>lon0/</i>[<i>lat0/</i>]<i>scale</i> (TM -
+Transverse Mercator) <b><br>
+&minus;Ju</b><i>zone/scale</i> (UTM - Universal Transverse
+Mercator) <b><br>
+&minus;Jy</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equal-Area)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CONIC
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jb</b><i>lon0/lat0/lat1/lat2/scale</i>
+(Albers) <b><br>
+&minus;Jd</b><i>lon0/lat0/lat1/lat2/scale</i> (Conic
+Equidistant) <b><br>
+&minus;Jl</b><i>lon0/lat0/lat1/lat2/scale</i> (Lambert Conic
+Conformal) <b><br>
+&minus;Jpoly</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+((American) Polyconic)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>AZIMUTHAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Ja</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Lambert Azimuthal Equal-Area) <b><br>
+&minus;Je</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Azimuthal Equidistant) <b><br>
+&minus;Jf</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Gnomonic) <b><br>
+&minus;Jg</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Orthographic) <b><br>
+
+&minus;Jg</b><i>lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale</i>
+(General Perspective). <b><br>
+&minus;Js</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(General Stereographic)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>MISCELLANEOUS
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jh</b>[<i>lon0/</i>]<i>scale</i>
+(Hammer) <b><br>
+&minus;Ji</b>[<i>lon0/</i>]<i>scale</i> (Sinusoidal) <b><br>
+&minus;Jkf</b>[<i>lon0/</i>]<i>scale</i> (Eckert IV) <b><br>
+&minus;Jk</b>[<b>s</b>][<i>lon0/</i>]<i>scale</i> (Eckert
+VI) <b><br>
+&minus;Jn</b>[<i>lon0/</i>]<i>scale</i> (Robinson) <b><br>
+&minus;Jr</b>[<i>lon0/</i>]<i>scale</i> (Winkel Tripel)
+<b><br>
+&minus;Jv</b>[<i>lon0/</i>]<i>scale</i> (Van der Grinten)
+<b><br>
+&minus;Jw</b>[<i>lon0/</i>]<i>scale</i> (Mollweide)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>NON-GEOGRAPHICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jp</b>[<b>a</b>]<i>scale</i>[<i>/origin</i>][<b>r</b>|<b>z</b>]
+(Polar coordinates (theta,r)) <b><br>
+
+&minus;Jx</b><i>x-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>][<i>/y-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>]]
+(Linear, log, and power scaling)</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Jz</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the vertical
+scaling (for 3-D maps). Same syntax as <b>&minus;Jx</b>.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;B</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets map boundary
+annotation and tickmark intervals; see the <b><A HREF="psbasemap.html">psbasemap</A></b>
+man page for all the details.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">name of the color
+palette file. Must be present if you want (1) mesh plot with
+contours (<b>&minus;Qm</b>), or (2) shaded/colored
+perspective image (<b>&minus;Qs</b> or <b>&minus;Qi</b>).
+For <b>&minus;Qs</b>: You can specify that you want to skip
+a z-slice by setting red = -; to use a pattern give red =
+<b>P|p</b><i>dpi/pattern</i>[:<b>F</b><i>r/g/b</i>[<b>B</b><i>r/g/b</i>]].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the
+viewpoint&rsquo;s azimuth and elevation (for perspective
+view) [180/90]. For frames used for animation, you may want
+to append <b>+</b> to fix the center of your data domain (or
+specify a particular world coordinate point with
+<b>+w</b><i>lon0</i>/<i>lat</i>[/<i>z</i>]) which will
+project to the center of your page size (or specify the
+coordinates of the projected view point with
+<b>+v</b><i>x0</i>/<i>y0).</i></p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Drape the image in
+<i>drapefile</i> on top of the relief provided by
+<i>relief_file</i>. [Default is <i>relief_file</i>]. Note
+that <b>&minus;Jz</b> and <b>&minus;N</b> always refers to
+the <i>relief_file</i>. The <i>drapefile</i> only provides
+the information pertaining to colors, which is looked-up via
+the cpt file (see <b>&minus;C</b>). Alternatively, give
+three grid files separated by commas. These files must
+contain the red, green, and blue colors directly (in 0-255
+range) and no cpt file is needed. The <i>drapefile</i> may
+be of higher resolution than the <i>relief_file</i>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Gives the name of a
+grid file with intensities in the (-1,+1) range. [Default is
+no illumination].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;K</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">More
+<i>PostScript</i> code will be appended later [Default
+terminates the plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Boundary condition
+<i>flags</i> may be <i>x</i> or <i>y</i> or <i>xy</i>
+indicating data is periodic in range of x or y or both, or
+<i>flags</i> may be <i>g</i> indicating geographical
+conditions (x and y are lon and lat). [Default uses
+&quot;natural&quot; conditions (second partial derivative
+normal to edge is zero).] If no <i>flags</i> are set, use
+bilinear rather than the default bicubic resampling when
+draping is required.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draws a plane at
+this z-level. If the optional <i>color</i> is provided, the
+frontal facade between the plane and the data perimeter is
+colored. See <b>&minus;Wf</b> for setting the pen used for
+the outline. (See SPECIFYING COLOR below).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;O</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Overlay
+plot mode [Default initializes a new plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;P</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Portrait
+plotting mode [Default is Landscape, see <b><A HREF="gmtdefaults.html">gmtdefaults</A></b>
+to change this].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Select one of four
+settings: 1. Specify <b>m</b> for mesh plot [Default], and
+optionally append /<i>color</i> for a different mesh paint
+[white]. 2. Specify <b>s</b> for surface plot, and
+optionally append <b>m</b> to have mesh lines drawn on top
+of surface. 3. Specify <b>i</b> for image plot, and
+optionally append the effective dpi resolution for the
+rasterization [100]. 4. Specify <b>c</b>. Same as
+<b>&minus;Qi</b> but will make nodes with z = NaN
+transparent, using the colormasking feature in
+<i>PostScript</i> Level 3 (the PS device must support PS
+Level 3). For any of these choices, you may force a
+monochrome image by appending <b>g</b>. Colors are then
+converted to shades of gray using the (television) YIQ
+transformation.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xmin</i>,
+<i>xmax</i>, <i>ymin</i>, and <i>ymax</i> specify the Region
+of interest. For geographic regions, these limits correspond
+to <i>west, east, south,</i> and <i>north</i> and you may
+specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+calendar time coordinates you may either give (a) relative
+time (relative to the selected <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and in the
+selected <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>; append <b>t</b> to
+<b>&minus;JX</b>|<b>x</b>), or (b) absolute time of the form
+[<i>date</i>]<b>T</b>[<i>clock</i>] (append <b>T</b> to
+<b>&minus;JX</b>|<b>x</b>). At least one of <i>date</i> and
+<i>clock</i> must be present; the <b>T</b> is always
+required. The <i>date</i> string must be of the form
+[-]yyyy[-mm[-dd]] (Gregorian calendar) or yyyy[-Www[-d]]
+(ISO week calendar), while the <i>clock</i> string must be
+of the form hh:mm:ss[.xxx]. The use of delimiters and their
+type and positions must be exactly as indicated (however,
+input, output and plot formats are customizable; see
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b>). This option may be used to indicate the
+range used for the 3-D axes [Default is region given by the
+<i>relief_file</i>]. You may ask for a larger <i>w/e/s/n</i>
+region to have more room between the image and the axes. A
+smaller region than specified in the <i>relief_file</i> will
+result in a subset of the grid.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Smooth the contours
+before plotting (see <b><A HREF="grdcontour.html">grdcontour</A></b>) [Default is no
+smoothing].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Plot image without
+any interpolation. This involves converting each
+node-centered bin into a polygon which is then painted
+separately. Append <b>s</b> to skip nodes with z = NaN. This
+option is useful for categorical data where interpolating
+between values is meaningless. Optionally, append <b>o</b>
+to draw the tile outlines, and specify a custom pen if the
+default pen is not to your liking. As this option produces a
+flat surface it cannot be combined with <b>&minus;JZ</b> or
+<b>&minus;Jz</b>. (See SPECIFYING PENS below).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;U</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw Unix System
+time stamp on plot. By adding <i>just/dx/dy/</i>, the user
+may specify the justification of the stamp and where the
+stamp should fall on the page relative to lower left corner
+of the plot. For example, BL/0/0 will align the lower left
+corner of the time stamp with the lower left corner of the
+plot. Optionally, append a <i>label</i>, or <b>c</b> (which
+will plot the command string.). The <b><A HREF="GMT.html">GMT</A></b> parameters
+<b><A HREF="gmtdefaults.html#UNIX_TIME">UNIX_TIME</A></b>, <b><A HREF="gmtdefaults.html#UNIX_TIME_POS">UNIX_TIME_POS</A></b>, and
+<b><A HREF="gmtdefaults.html#UNIX_TIME_FORMAT">UNIX_TIME_FORMAT</A></b> can affect the appearance; see the
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b> man page for details. The time string
+will be in the locale set by the environment variable
+<b>TZ</b> (generally local time).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Wc</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw contour lines
+on top of surface or mesh (not image). Append pen attributes
+used for the contours. [Default: width = 0.75p, color =
+black, texture = solid]. (See SPECIFYING PENS below).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Wm</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the pen
+attributes used for the mesh. [Default: width = 0.25p, color
+= black, texture = solid]. You must also select
+<b>&minus;Qm</b> or <b>&minus;Qsm</b> for meshlines to be
+drawn.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Wf</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the pen
+attributes used for the facade. [Default: width = 0.25p,
+color = black, texture = solid]. You must also select
+<b>&minus;N</b> for the facade outline to be drawn. (See
+SPECIFYING PENS below).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;X
+&minus;Y</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Shift plot origin
+relative to the current origin by (<i>x-shift,y-shift</i>)
+and optionally append the length unit (<b>c</b>, <b>i</b>,
+<b>m</b>, <b>p</b>). You can prepend <b>a</b> to shift the
+origin back to the original position after plotting, or
+prepend <b>r</b> [Default] to reset the current origin to
+the new location. If <b>&minus;O</b> is used then the
+default (<i>x-shift,y-shift</i>) is (0,0), otherwise it is
+(r1i, r1i) or (r2.5c, r2.5c). Alternatively, give <b>c</b>
+to align the center coordinate (x or y) of the plot with the
+center of the page based on current page size.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the z-level of
+the basemap [Default is the bottom of the z-axis].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;c</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies the
+number of plot copies. [Default is 1].</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+PENS</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p valign="top"><i>pen</i></p></td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p valign="top">The attributes of lines and symbol outlines
+as defined by <i>pen</i> is a comma delimetered list of
+<i>width</i>, <i>color</i> and <i>texture</i>, each of which
+is optional. <i>width</i> can be indicated as a measure
+(points, centimeters, inches) or as <b>faint</b>,
+<b>thin</b>[<b>ner</b>|<b>nest</b>],
+<b>thick</b>[<b>er</b>|<b>est</b>],
+<b>fat</b>[<b>ter</b>|<b>test</b>], or <b>obese</b>.
+<i>color</i> specifies a gray shade or color (see SPECIFYING
+COLOR below). <i>texture</i> is a combination of dashes
+&lsquo;-&rsquo; and dots &lsquo;.&rsquo;.</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+COLOR</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>color</i></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p valign="top">The <i>color</i> of lines, areas and
+patterns can be specified by a valid color name; by a gray
+shade (in the range 0&minus;255); by a decimal color code
+(r/g/b, each in range 0&minus;255; h-s-v, ranges
+0&minus;360, 0&minus;1, 0&minus;1; or c/m/y/k, each in range
+0&minus;1); or by a hexadecimal color code (#rrggbb, as used
+in HTML). See the <b><A HREF="gmtcolors.html">gmtcolors</A></b> manpage for more
+information and a full list of color names.</p></td>
+</table>
+
+<a name="GRID FILE FORMATS"></a>
+<h2>GRID FILE FORMATS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="GMT.html">GMT</A></b> is
+able to recognize many of the commonly used grid file
+formats, as well as the precision, scale and offset of the
+values contained in the grid file. When <b><A HREF="GMT.html">GMT</A></b> needs a
+little help with that, you can add the suffix
+<b>=</b><i>id</i>[<b>/</b><i>scale</i><b>/</b><i>offset</i>[<b>/</b><i>nan</i>]],
+where <i>id</i> is a two-letter identifier of the grid type
+and precision, and <i>scale</i> and <i>offset</i> are
+optional scale factor and offset to be applied to all grid
+values, and <i>nan</i> is the value used to indicate missing
+data. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and Section 4.17 of the GMT
+Technical Reference and Cookbook for more information.</p>
+
+<p style="margin-left:11%; margin-top: 1em">When reading a
+netCDF file that contains multiple grids, <b><A HREF="GMT.html">GMT</A></b> will
+read, by default, the first 2-dimensional grid that can find
+in that file. To coax <b><A HREF="GMT.html">GMT</A></b> into reading another
+multi-dimensional variable in the grid file, append
+<b>?</b><i>varname</i> to the file name, where
+<i>varname</i> is the name of the variable. Note that you
+may need to escape the special meaning of <b>?</b> in your
+shell program by putting a backslash in front of it, or by
+placing the filename and suffix between quotes or double
+quotes. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and Section 4.18 of the
+GMT Technical Reference and Cookbook for more information,
+particularly on how to read splices of 3-, 4-, or
+5-dimensional grids.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To make a mesh
+plot from the file hawaii_grav.grd and drawing the contours
+given in the color palette file hawaii.cpt on a Lambert map
+at 1.5 cm/degree along the standard parallels 18 and 24,
+with vertical scale 20 mgal/cm, and looking at the surface
+from SW at 30 degree elevation, run</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdview</b>
+hawaii_grav.grd <b>&minus;Jl</b> 18/24/1.5<b>c &minus;C</b>
+hawaii.cpt <b>&minus;Jz</b> 0.05<b>c &minus;Qm
+&minus;N</b>-100 <b>&minus;E</b> 225/30 <b>&minus;Wc</b>
+&gt; hawaii_grav_image.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">To create a
+illuminated color perspective plot of the gridded data set
+image.grd, using the color palette file color.rgb, with
+linear scaling at 10 cm/x-unit and tickmarks every 5 units,
+with intensities provided by the file intens.grd, and
+looking from the SE, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdview</b>
+image.grd <b>&minus;Jx</b> 10.0<b>c &minus;C</b> color.rgb
+<b>&minus;Qs &minus;E</b> 135/30 <b>&minus;I</b> intens.grd
+&gt; image3D.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">To make the
+same plot using the rastering option with dpi = 50, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdview</b>
+image.grd <b>&minus;Jx</b> 10.0<b>c &minus;C</b> color.rgb
+<b>&minus;Qi</b> 50 <b>&minus;E</b> 135/30 <b>&minus;I</b>
+intens.grd &gt; image3D.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">To create a
+color <i>PostScript</i> perspective plot of the gridded data
+set magnetics.grd, using the color palette file
+mag_intens.cpt, draped over the relief given by the file
+topography.grd, with Mercator map width of 6 inch and
+tickmarks every 1 degree, with intensities provided by the
+file topo_intens.grd, and looking from the SE, run</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdview</b>
+topography.grd <b>&minus;JM</b> 6<b>i &minus;G</b>
+magnetics.grd <b>&minus;C</b> mag_intens.cpt <b>&minus;Qs
+&minus;E</b> 140/30 <b>&minus;I</b> topo_intens.grd &gt;
+draped3D.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">Given topo.grd
+and the Landsat image veggies.ras, first run <b><A HREF="gmt2rgb.html">gmt2rgb</A></b>
+to get the red, green, and blue grids, and then drape this
+image over the topography and shade the result for good
+measure. The commands are</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="gmt2rgb.html">gmt2rgb</A></b>
+veggies.ras <b>&minus;G</b> layer_%c.grd <b><br>
+grdview</b> topo.grd <b>&minus;JM</b> 6<b>i &minus;Qi
+&minus;E</b> 140/30 <b>&minus;I</b> topo_intens.grd
+<b>&minus;G</b> layer_r.grd,layer_g.grd,layer_b.grd &gt;
+image.ps</p>
+
+<a name="REMARKS"></a>
+<h2>REMARKS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">For the
+<b>&minus;Qs</b> option: <i>PostScript</i> provides no way
+of smoothly varying colors within a polygon, so colors can
+only vary from polygon to polygon. To obtain smooth images
+this way you may resample the grid file(s) using
+<b><A HREF="grdsample.html">grdsample</A></b> or use a finer grid size when running
+gridding programs like <b><A HREF="surface.html">surface</A></b> or
+<b><A HREF="nearneighbor.html">nearneighbor</A></b>. Unfortunately, this produces huge
+<i>PostScript</i> files. The alternative is to use the
+<b>&minus;Qi</b> option, which computes bilinear or bicubic
+continuous color variations within polygons by using
+scanline conversion to image the polygons.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="gmt2rgb.html">gmt2rgb</A></i>(1), <i><A HREF="gmtcolors.html">gmtcolors</A></i>(5),
+<i><A HREF="grdcontour.html">grdcontour</A></i>(1), <i><A HREF="grdimage.html">grdimage</A></i>(1),
+<i><A HREF="nearneighbor.html">nearneighbor</A></i>(1), <i><A HREF="psbasemap.html">psbasemap</A></i>(1),
+<i><A HREF="pscontour.html">pscontour</A></i>(1), <i><A HREF="pstext.html">pstext</A></i>(1), <i><A HREF="surface.html">surface</A></i>(1)</p>
+<hr>
+</body>
+</html>

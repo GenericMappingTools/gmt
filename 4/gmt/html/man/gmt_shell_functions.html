@@ -1,0 +1,200 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:11 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GMT_SHELL_FUNCTIONS.SH</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GMT_SHELL_FUNCTIONS.SH</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#NOTES">NOTES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em">gmt_shell_functions.sh
+&minus; Practical functions to be used in GMT bourne shell
+scripts</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmt_init_tmpdir
+<br>
+gmt_remove_tmpdir <br>
+gmt_clean_up</b> [<i>prefix</i>] <b><br>
+gmt_message</b> <i>message</i> <b><br>
+gmt_abort</b> <i>message</i> <b><br>
+gmt_nrecords</b> <i>file(s)</i> <b><br>
+gmt_nfields</b> <i>string</i> <b><br>
+gmt_get_field</b> <i>string</i> <b><br>
+gmt_get_region</b> <i>file(s)</i> [<i>options</i>] <b><br>
+gmt_get_gridregion</b> <i>file</i> [<i>options</i>] <b><br>
+gmt_get_map_width &minus;R &minus;J <br>
+gmt_get_map_height &minus;R &minus;J <br>
+gmt_set_psfile</b> <i>file</i> <b><br>
+gmt_set_framename</b> <i>prefix framenumber</i> <b><br>
+gmt_set_framenext</b> <i>framenumber</i></p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmt_shell_functions.sh</b>
+provides a set of functions to Bourne (again) shell scripts
+in support of <b><A HREF="GMT.html">GMT</A></b>. The calling shell script should
+include the following line, before the functions can be
+used:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>.
+gmt_shell_functions.sh</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">Once included
+in a shell script, <b>gmt_shell_functions.sh</b> allows
+<b><A HREF="GMT.html">GMT</A></b> users to do some scripting more easily than
+otherwise. The functions made available are: <b><br>
+gmt_init_tmpdir</b></p>
+
+<p style="margin-left:22%;">Creates a temporary directory
+in <b>/tmp</b> or (when defined) in the directory specified
+by the environment variable <b>TMPDIR</b>. The name of the
+temporary directory is returned as environment variable
+<b>GMT_TMPDIR</b>. This function also causes <b><A HREF="GMT.html">GMT</A></b> to
+run in &lsquo;isolation mode&rsquo;, i.e., all temporary
+files will be created in <b>GMT_TMPDIR</b> and the
+.gmtdefaults file will not be adjusted.</p>
+
+<p style="margin-left:11%;"><b>gmt_remove_tmpdir</b></p>
+
+<p style="margin-left:22%;">Removes the temporary directory
+and unsets the <b>GMT_TMPDIR</b> environment variable.</p>
+
+<p style="margin-left:11%;"><b>gmt_cleanup</b></p>
+
+<p style="margin-left:22%;">Remove all files and
+directories in which the current process number is part of
+the file name. If the optional <i>prefix</i> is given then
+we also delete all files and directories that begins with
+the given prefix.</p>
+
+<p style="margin-left:11%;"><b>gmt_message</b></p>
+
+<p style="margin-left:22%;">Send a message to standard
+error.</p>
+
+<p style="margin-left:11%;"><b>gmt_abort</b></p>
+
+<p style="margin-left:22%;">Send a message to standard
+error and exit the shell.</p>
+
+<p style="margin-left:11%;"><b>gmt_nrecords</b></p>
+
+<p style="margin-left:22%;">Returns the total number of
+lines in <i>file(s)</i></p>
+
+<p style="margin-left:11%;"><b>gmt_nfields</b></p>
+
+<p style="margin-left:22%;">Returns the number of fields or
+words in <i>string</i></p>
+
+<p style="margin-left:11%;"><b>gmt_get_field</b></p>
+
+<p style="margin-left:22%;">Returns the given <i>field</i>
+in a <i>string</i>. Must pass <i>string</i> between double
+quotes to preserve it as one item.</p>
+
+<p style="margin-left:11%;"><b>gmt_get_region</b></p>
+
+<p style="margin-left:22%;">Returns the region in the form
+w/e/s/n based on the data in table <i>file(s)</i>.
+Optionally add -I<i>dx</i>/<i>dy</i> to round off the
+answer.</p>
+
+<p style="margin-left:11%;"><b>gmt_get_gridregion</b></p>
+
+<p style="margin-left:22%;">Returns the region in the form
+w/e/s/n based on the header of a grid <i>file</i>.
+Optionally add -I<i>dx</i>/<i>dy</i> to round off the
+answer.</p>
+
+<p style="margin-left:11%;"><b>gmt_map_width</b></p>
+
+<p style="margin-left:22%;">Expects the user to give the
+desired <b>-R &minus;J</b> settings and returns the map
+width in the current measurement unit.</p>
+
+<p style="margin-left:11%;"><b>gmt_map_height</b></p>
+
+<p style="margin-left:22%;">Expects the user to give the
+desired <b>-R &minus;J</b> settings and returns the map
+height in the current measurement unit.</p>
+
+<p style="margin-left:11%;"><b>gmt_set_psfile</b></p>
+
+<p style="margin-left:22%;">Create the output
+<i>PostScript</i> file name based on the base name of a
+given file (usually the script name <b>$0</b>).</p>
+
+<p style="margin-left:11%;"><b>gmt_set_framename</b></p>
+
+<p style="margin-left:22%;">Returns a lexically ordered
+filename stem (i.e., no extension) given the file prefix and
+the current frame number, using a width of 6 for the integer
+including leading zeros. Useful when creating animations and
+lexically sorted filenames are required.</p>
+
+<p style="margin-left:11%;"><b>gmt_set_framenext</b></p>
+
+<p style="margin-left:22%;">Accepts the current frame
+integer counter and returns the next integer counter.</p>
+
+<a name="NOTES"></a>
+<h2>NOTES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">1. These
+functions only work in the bourne shell (<b>sh</b>) and
+their derivatives (like <b>ash</b>, <b>bash</b>, <b>ksh</b>
+and <b>zsh</b>). These functions do not work in the C shell
+(<b>csh</b>) or their derivatives (like <b>tcsh</b>), and
+cannot be used in DOS batch scripts either. <br>
+2. <b>gmt_shell_functions.sh</b> were first introduced in
+<b><A HREF="GMT.html">GMT</A></b> version 4.2.2 and have since been regularly
+expanded with other practical scripting short-cuts. If you
+want to suggest other functions, please do so by mailing to
+the GMT user forum on gmt.soest.hawaii.edu.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i>sh</i>(1), <i>bash</i>(1), <i><A HREF="minmax.html">minmax</A></i>(1),
+<i><A HREF="grdinfo.html">grdinfo</A></i>(1)</p>
+<hr>
+</body>
+</html>

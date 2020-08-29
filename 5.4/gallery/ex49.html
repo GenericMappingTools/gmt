@@ -1,0 +1,213 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(49) Analysis of the Atlantic seafloor depth/age relationship &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(50) Probability distributions" href="ex50.html" />
+    <link rel="prev" title="(48) Line networks, map embellishments, and curved titles" href="ex48.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex50.html" title="(50) Probability distributions"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex48.html" title="(48) Line networks, map embellishments, and curved titles"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="analysis-of-the-atlantic-seafloor-depth-age-relationship">
+<span id="example-49"></span><h1>(49) Analysis of the Atlantic seafloor depth/age relationship<a class="headerlink" href="#analysis-of-the-atlantic-seafloor-depth-age-relationship" title="Permalink to this headline">¶</a></h1>
+<p>In this example we show an example of data analysis using grids
+of seafloor depth and age for a region in the south Atlantic.
+We use module <a class="reference internal" href="../grdsample.html"><span class="doc">grdsample</span></a> to convert the age
+grid to the same pixel registration used by the depth grid.
+Dumping separate x,y,z triplets with <a class="reference internal" href="../grd2xyz.html"><span class="doc">grd2xyz</span></a>
+lets us paste the output back via <a class="reference internal" href="../gmtconvert.html"><span class="doc">gmtconvert</span></a>
+to make binary tables of age,depth,depth.  Here, depth is repeated in
+order to use <a class="reference internal" href="../blockmode.html"><span class="doc">blockmode</span></a> for modal depth estimation
+and <a class="reference internal" href="../xyz2grd.html"><span class="doc">xyz2grd</span></a> for mapping the data density.
+We image the density of (age,depth) points, overlay the modal depths
+and their robust uncertainty bars, and compute and plot two models
+for the expected depths as a function of age (see legend).  Note we
+place most of the legend twice to achieve the thin-on-thick pen
+effect in the legend.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT EXAMPLE 49</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate data analysis using the seafloor depth/age relationship</span>
+<span class="c1"># GMT modules:  blockmode, gmtmath, grdcontour, grdimage, grdsample, makecpt,</span>
+<span class="c1">#		psbasemap, pslegend, psscale, psxy, xyz2grd</span>
+<span class="c1">#</span>
+
+<span class="nv">ps</span><span class="o">=</span>example_49.ps
+
+<span class="c1"># Convert coarser age grid to pixel registration to match bathymetry grid</span>
+gmt grdsample age_gridline.nc -T -Gage_pixel.nc
+<span class="c1"># Image depths with color-coded age contours</span>
+gmt makecpt -Cabyss -T-7000/0 &gt; depth.cpt
+gmt grdimage depth_pixel.nc -Cdepth.cpt -JM6i -P -Baf -BWSne -X1.5i -K --FORMAT_GEO_MAP<span class="o">=</span>dddF &gt; <span class="nv">$ps</span>
+gmt psxy -Rdepth_pixel.nc -J -O -K -W1p ridge.gmt &gt;&gt; <span class="nv">$ps</span>
+gmt makecpt -Chot -T0/100/10 &gt; age.cpt
+gmt grdcontour age_pixel.nc -J -O -K -A+f14p -Cage.cpt -Wa0.1p+c -GL30W/22S/5E/13S &gt;&gt; <span class="nv">$ps</span>
+gmt psscale -Rdepth_pixel.nc -J -DjTR+w2i/0.15i+h+o0.3i/0.15i -Cdepth.cpt -Baf+u<span class="s2">&quot; km&quot;</span> -W0.001 -F+p1p+gbeige -O -K &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Obtain depth, age pairs by dumping grids and pasting results</span>
+gmt grd2xyz age_pixel.nc   -bof &gt; age.bin
+gmt grd2xyz depth_pixel.nc -bof &gt; depth.bin
+gmt convert -A age.bin depth.bin -bi3f -o2,5,5 -bo3f &gt; depth-age.bin
+<span class="c1"># Create and map density grid of (age,depth) distribution</span>
+gmt xyz2grd -R0/100/-6500/0 -I0.25/25 -r depth-age.bin -bi3f -An -Gdensity.nc
+gmt makecpt -Chot -T0/100 &gt; density.cpt
+gmt grdimage density.nc -JX6i/4i -Q -O -K -Cdensity.cpt -Y4.8i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Obtain modal depths every ~5 Myr</span>
+gmt blockmode -R0/100/-10000/0 -I5/10000 -r -E depth-age.bin -bi3f -o0,2,3 &gt; modal.txt
+<span class="c1"># Compute Parsons &amp; Sclater [1977] depth-age curve</span>
+<span class="c1"># depth(t) =   350 * sqrt(t) + 2500, t &lt; 70 Myr</span>
+<span class="c1">#	   =  6400 - 3200 exp (-t/62.8), t &gt; 70 Myr</span>
+gmt math -T0/100/0.1 T SQRT <span class="m">350</span> MUL <span class="m">2500</span> ADD T <span class="m">70</span> LE MUL <span class="m">6400</span> T <span class="m">62</span>.8 DIV NEG EXP <span class="m">3200</span> MUL SUB T <span class="m">70</span> GT MUL ADD <span class="nv">NEG</span> <span class="o">=</span> ps.txt
+gmt psxy -Rdensity.nc -J -O -K ps.txt -W4p,green &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K ps.txt -W1p &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Compute Stein &amp; Stein [1992] depth-age curve</span>
+<span class="c1"># depth(t) =  365 * sqrt(t) + 2600,  t &lt; 20 Myr</span>
+<span class="c1">#	   = 5651 - 2473 * exp (-0.0278*t), t &gt; 20 Myr</span>
+gmt math -T0/100/0.1 T SQRT <span class="m">365</span> MUL <span class="m">2600</span> ADD T <span class="m">20</span> LE MUL <span class="m">5651</span> T -0.0278 MUL EXP <span class="m">2473</span> MUL SUB T <span class="m">20</span> GT MUL ADD <span class="nv">NEG</span> <span class="o">=</span> ss.txt
+<span class="c1"># Plot curves and place the legend</span>
+gmt psxy -R -J -O -K ss.txt -W4p,white  &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K ss.txt -W1p &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -Ss0.4c -O -K -Gblue modal.txt -Ey+p1p,blue &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -Ss0.1c -O -K -Gwhite modal.txt &gt;&gt; <span class="nv">$ps</span>
+gmt psbasemap -R0/100/0/6.5 -JX6i/-4i -Bxaf+u<span class="s2">&quot; Myr&quot;</span> -Byaf+u<span class="s2">&quot; km&quot;</span> -BWsNe -O -K &gt;&gt; <span class="nv">$ps</span>
+gmt pslegend -R -J -O -K -DjRT+w2.5i+o0.1i -F+p1p+gbeige+s <span class="s">&lt;&lt; EOF &gt;&gt; $ps</span>
+<span class="s">S 0.2i - 0.35i - 4p,green 0.5i Parsons &amp; Sclater (1977)</span>
+<span class="s">S 0.2i - 0.35i - 4p,white 0.5i Stein &amp; Stein (1992)</span>
+<span class="s">S 0.2i s 0.15i blue - 0.5i Modal depth estimates</span>
+<span class="s">EOF</span>
+gmt pslegend -R -J -O -K -DjRT+w2.5i+o0.1i <span class="s">&lt;&lt; EOF &gt;&gt; $ps</span>
+<span class="s">S 0.2i - 0.35i - 1p 0.3i</span>
+<span class="s">S 0.2i - 0.35i - 1p 0.3i</span>
+<span class="s">S 0.2i s 0.1c white - 0.3i</span>
+<span class="s">EOF</span>
+gmt psxy -R -J -O -T &gt;&gt; <span class="nv">$ps</span>
+rm -f age_pixel.nc age.bin depth.bin depth-age.bin density.nc modal.txt ps.txt ss.txt *.cpt
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_49.png"><img alt="../_images/example_49.png" src="../_images/example_49.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Seafloor depth vs. age in the south Atlantic.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex48.html"
+                        title="previous chapter">(48) Line networks, map embellishments, and curved titles</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex50.html"
+                        title="next chapter">(50) Probability distributions</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex49.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex50.html" title="(50) Probability distributions"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex48.html" title="(48) Line networks, map embellishments, and curved titles"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

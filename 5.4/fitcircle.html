@@ -1,0 +1,321 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>fitcircle &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gmt_shell_functions.sh" href="gmt_shell_functions.sh.html" />
+    <link rel="prev" title="filter1d" href="filter1d.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="gmt_shell_functions.sh.html" title="gmt_shell_functions.sh"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="filter1d.html" title="filter1d"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="fitcircle">
+<span id="index-0"></span><h1>fitcircle<a class="headerlink" href="#fitcircle" title="Permalink to this headline">¶</a></h1>
+<p>fitcircle - find mean position and great [or small] circle fit to points on a sphere.</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>fitcircle</strong> [ <em>table</em> ] <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>norm</em> [ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>flags</em> ] [ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong>[<em>lat</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-bi</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>fitcircle</strong> reads lon,lat [or lat,lon] values from the first two
+columns on standard input [or <em>table</em>]. These are converted to
+Cartesian three-vectors on the unit sphere. Then two locations are
+found: the mean of the input positions, and the pole to the great circle
+which best fits the input positions. The user may choose one or both of
+two possible solutions to this problem. The first is called <strong>-L1</strong> and
+the second is called <strong>-L2</strong>. When the data are closely grouped along a
+great circle both solutions are similar. If the data have large
+dispersion, the pole to the great circle will be less well determined
+than the mean. Compare both solutions as a qualitative check.</p>
+<p>The <strong>-L1</strong> solution is so called because it approximates the
+minimization of the sum of absolute values of cosines of angular
+distances. This solution finds the mean position as the Fisher average
+of the data, and the pole position as the Fisher average of the
+cross-products between the mean and the data. Averaging cross-products
+gives weight to points in proportion to their distance from the mean,
+analogous to the “leverage” of distant points in linear regression in the plane.</p>
+<p>The <strong>-L2</strong> solution is so called because it approximates the
+minimization of the sum of squares of cosines of angular distances. It
+creates a 3 by 3 matrix of sums of squares of components of the data
+vectors. The eigenvectors of this matrix give the mean and pole
+locations. This method may be more subject to roundoff errors when there
+are thousands of data. The pole is given by the eigenvector
+corresponding to the smallest eigenvalue; it is the least-well
+represented factor in the data and is not easily estimated by either method.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong><em>norm</em></dt>
+<dd>Specify the desired <em>norm</em> as 1 or 2, or use <strong>-L</strong> or <strong>-L3</strong> to
+see both solutions.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII [or binary, see <strong>-bi</strong>] files containing lon,lat [or lat,lon; see
+<strong>-:</strong>[<strong>i</strong>|<strong>o</strong>]] values in the first 2 columns. If no
+file is specified, <strong>fitcircle</strong> will read from standard input.</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><strong>f</strong>|<strong>m</strong>|<strong>n</strong>|<strong>s</strong>|<strong>c</strong></dt>
+<dd>Normally, <strong>fitcircle</strong> will write its results in the form of a text report, with
+the values intermingled with report sentences.  Use <strong>-F</strong> to only return data
+coordinates, and append <em>flags</em> to specify which coordinates you would like. You
+can choose from <strong>f</strong> (Flat Earth mean location), <strong>m</strong> (mean location),
+<strong>n</strong> (north pole of great circle), <strong>s</strong> (south pole of great circle), and
+<strong>c</strong> (pole of small circle and its colatitude, which requires <strong>-S</strong>).</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong>[<em>lat</em>]</dt>
+<dd>Attempt to fit a small circle instead of a great circle. The pole
+will be constrained to lie on the great circle connecting the pole
+of the best-fit great circle and the mean location of the data.
+Optionally append the desired fixed latitude of the small circle
+[Default will determine the latitude].</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input. [Default is 2 input columns].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-di</strong><em>nodata</em> <a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] <a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine data gaps and line breaks.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-o</strong><em>cols</em>[,…] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select output columns (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="ascii-format-precision">
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-geo-out"><span class="std std-ref">FORMAT_GEO_OUT</span></a>, absolute time is
+under the control of <a class="reference internal" href="gmt.conf.html#format-date-out"><span class="std std-ref">FORMAT_DATE_OUT</span></a> and
+<a class="reference internal" href="gmt.conf.html#format-clock-out"><span class="std std-ref">FORMAT_CLOCK_OUT</span></a>, whereas general floating point values are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a>. Be aware that the format in effect
+can lead to loss of precision in ASCII output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a> setting.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Suppose you have lon,lat,grav data along a twisty ship track in the file
+ship.xyg. You want to project this data onto a great circle and resample
+it in distance, in order to filter it or check its spectrum. Do the
+following:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">fitcircle</span> <span class="n">ship</span><span class="o">.</span><span class="n">xyg</span> <span class="o">-</span><span class="n">L2</span>
+<span class="n">gmt</span> <span class="n">project</span> <span class="n">ship</span><span class="o">.</span><span class="n">xyg</span> <span class="o">-</span><span class="n">Cox</span><span class="o">/</span><span class="n">oy</span> <span class="o">-</span><span class="n">Tpx</span><span class="o">/</span><span class="n">py</span> <span class="o">-</span><span class="n">S</span> <span class="o">-</span><span class="n">Fpz</span> <span class="o">|</span> <span class="n">sample1d</span> <span class="o">-</span><span class="n">S</span><span class="o">-</span><span class="mi">100</span> <span class="o">-</span><span class="n">I1</span> <span class="o">&gt;</span> <span class="n">output</span><span class="o">.</span><span class="n">pg</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Here, <em>ox</em>/<em>oy</em> is the lon/lat of the mean from <strong>fitcircle</strong>, and
+<em>px</em>/<em>py</em> is the lon/lat of the pole. The file output.pg has distance,
+gravity data sampled every 1 km along the great circle which best fits
+ship.xyg</p>
+<p>If you have lon, lat points in the file data.txt and wish to return the northern
+hemisphere great circle pole location using the L2 norm, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">fitcircle</span> <span class="n">data</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">L2</span> <span class="o">-</span><span class="n">Fn</span> <span class="o">&gt;</span> <span class="n">pole</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="gmtvector.html"><span class="doc">gmtvector</span></a>,
+<a class="reference internal" href="project.html"><span class="doc">project</span></a>,
+<a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a>,
+<a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">fitcircle</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#ascii-format-precision">ASCII Format Precision</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="filter1d.html"
+                        title="previous chapter">filter1d</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gmt_shell_functions.sh.html"
+                        title="next chapter">gmt_shell_functions.sh</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/fitcircle.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="gmt_shell_functions.sh.html" title="gmt_shell_functions.sh"
+             >next</a> </li>
+        <li class="right" >
+          <a href="filter1d.html" title="filter1d"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

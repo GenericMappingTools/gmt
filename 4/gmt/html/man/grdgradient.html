@@ -1,0 +1,390 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:19 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GRDGRADIENT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GRDGRADIENT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#HINTS">HINTS</a><br>
+<a href="#GRID FILE FORMATS">GRID FILE FORMATS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">grdgradient
+&minus; Compute directional derivative or gradient from 2-D
+grid file representing z(x,y)</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdgradient</b>
+<i>in_grdfile</i> <b>&minus;G</b><i>out_grdfile</i> [
+<b>&minus;A</b><i>azim</i>[/<i>azim2</i>] ] [
+<b>&minus;D</b>[<b>c</b>][<b>o</b>][<b>n</b>] ] [
+<b>&minus;E</b>[<b>s|p</b>]<i>azim/elev</i>[/<i>ambient</i>/<i>diffuse</i>/<i>specular</i>/<i>shine</i>]
+] [ <b>&minus;L</b><i>flag</i> ] [ <b>&minus;M</b> ] [
+<b>&minus;N</b>[<b>e</b>][<b>t</b>][<i>amp</i>][/<i>sigma</i>[/<i>offset</i>]]
+] [ <b>&minus;S</b><i>slopefile</i> ] [ <b>&minus;V</b>
+]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdgradient</b>
+may be used to compute the directional derivative in a given
+direction (<b>&minus;A</b>), or the direction
+(<b>&minus;S</b>) [and the magnitude (<b>&minus;D</b>)] of
+the vector gradient of the data. <br>
+Estimated values in the first/last row/column of output
+depend on boundary conditions (see <b>&minus;L</b>). <i><br>
+in_grdfile</i></p>
+
+<p style="margin-left:22%;">2-D grid file from which to
+compute directional derivative. (See GRID FILE FORMATS
+below).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Name of the output
+grid file for the directional derivative. (See GRID FILE
+FORMATS below).</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Azimuthal direction
+for a directional derivative; <i>azim</i> is the angle in
+the x,y plane measured in degrees positive clockwise from
+north (the +y direction) toward east (the +x direction). The
+negative of the directional derivative,
+&minus;[dz/dx*sin(<i>azim</i>) + dz/dy*cos(<i>azim</i>)], is
+found; negation yields positive values when the slope of
+z(x,y) is downhill in the <i>azim</i> direction, the correct
+sense for shading the illumination of an image (see
+<b><A HREF="grdimage.html">grdimage</A></b> and <b><A HREF="grdview.html">grdview</A></b>) by a light source above
+the x,y plane shining from the <i>azim</i> direction.
+Optionally, supply two azimuths,
+<b>&minus;A</b><i>azim</i>/<i>azim2</i>, in which case the
+gradients in each of these directions are calculated and the
+one larger in magnitude is retained; this is useful for
+illuminating data with two directions of lineated
+structures, e.g., <b>&minus;A</b><i>0</i>/<i>270</i>
+illuminates from the north (top) and west (left).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Find the up-slope
+direction of the gradient of the data. By default, the
+directions are measured clockwise from north, as <i>azim</i>
+in <b>&minus;A</b> above. Append <b>c</b> to use
+conventional Cartesian angles measured counterclockwise from
+the positive x (east) direction. Append <b>o</b> to report
+orientations (0-180) rather than directions (0-360). Append
+<b>n</b> to add 90 degrees to all angles (e.g., to give
+orientation of lineated features).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Compute Lambertian
+radiance appropriate to use with <b><A HREF="grdimage.html">grdimage</A></b> and
+<b><A HREF="grdview.html">grdview</A></b>. The Lambertian Reflection assumes an ideal
+surface that reflects all the light that strikes it and the
+surface appears equally bright from all viewing directions.
+<i>azim</i> and <i>elev</i> are the azimuth and elevation of
+light vector. Optionally, supply <i>ambient diffuse specular
+shine</i> which are parameters that control the reflectance
+properties of the surface. Default values are: <i>0.55</i>/
+<i>0.6</i>/<i>0.4</i>/<i>10</i> To leave some of the values
+untouched, specify = as the new value. For example
+<b>&minus;E</b><i>60</i>/<i>30</i>/<i>=</i>/<i>0.5</i> sets
+the <i>azim elev</i> and <i>diffuse</i> to 60, 30 and 0.5
+and leaves the other reflectance parameters untouched.
+Append <b>s</b> to use a simpler Lambertian algorithm. Note
+that with this form you only have to provide the azimuth and
+elevation parameters. Append <b>p</b> to use the Peucker
+piecewise linear approximation (simpler but faster
+algorithm; in this case the <i>azim</i> and <i>elev</i> are
+hardwired to 315 and 45 degrees. This means that even if you
+provide other values they will be ignored.)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Boundary condition
+<i>flag</i> may be <i>x</i> or <i>y</i> or <i>xy</i>
+indicating data is periodic in range of x or y or both, or
+<i>flag</i> may be <i>g</i> indicating geographical
+conditions (x and y are lon and lat). [Default uses
+&quot;natural&quot; conditions (second partial derivative
+normal to edge is zero).]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">By default the
+units of <b>grdgradient</b> are in units_of_z/
+units_of_dx_and_dy. However, the user may choose this option
+to convert dx,dy in degrees of longitude,latitude into
+meters, so that the units of <b>grdgradient</b> are in
+z_units/meter.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Normalization.
+[Default: no normalization.] The actual gradients <i>g</i>
+are offset and scaled to produce normalized gradients
+<i>gn</i> with a maximum output magnitude of <i>amp</i>. If
+<i>amp</i> is not given, default <i>amp</i> = 1. If
+<i>offset</i> is not given, it is set to the average of
+<i>g</i>. <b>&minus;N</b> yields <i>gn</i> = <i>amp</i> *
+(<i>g</i> - <i>offset</i>)/max(abs(<i>g</i></p></td>
+</table>
+
+<p style="margin-left:22%;">- <i>offset</i>)).
+<b>&minus;Ne</b> normalizes using a cumulative Laplace
+distribution yielding <i>gn</i> = <i>amp</i> * (1.0 -
+exp(sqrt(2) * (<i>g</i> - <i>offset</i>)/ <i>sigma</i>))
+where <i>sigma</i> is estimated using the L1 norm of
+(<i>g</i> - <i>offset</i>) if it is not given.
+<b>&minus;Nt</b> normalizes using a cumulative Cauchy
+distribution yielding <i>gn</i> = (2 * <i>amp</i> / PI) *
+atan( (<i>g</i> - <i>offset</i>)/ <i>sigma</i>) where
+<i>sigma</i> is estimated using the L2 norm of (<i>g</i> -
+<i>offset</i>) if it is not given.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Name of output grid
+file with scalar magnitudes of gradient vectors. Requires
+<b>&minus;D</b> but makes <b>&minus;G</b> optional.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+</table>
+
+<a name="HINTS"></a>
+<h2>HINTS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">If you
+don&rsquo;t know what OPT(N) options to use to make an
+intensity file for <b><A HREF="grdimage.html">grdimage</A></b> or <b><A HREF="grdview.html">grdview</A></b>, a good
+first try is <b>&minus;Ne</b> 0.6.</p>
+
+<p style="margin-left:11%; margin-top: 1em">If you want to
+make several illuminated maps of subregions of a large data
+set, and you need the illumination effects to be consistent
+across all the maps, use the <b>&minus;N</b> option and
+supply the same value of <i>sigma</i> and <i>offset</i> to
+<b>grdgradient</b> for each map. A good guess is
+<i>offset</i> = 0 and <i>sigma</i> found by <b>grdinfo
+&minus;L2</b> or <b>&minus;L1</b> applied to an unnormalized
+gradient grd.</p>
+
+<p style="margin-left:11%; margin-top: 1em">If you simply
+need the <i>x</i>- or <i>y</i>-derivatives of the grid, use
+<b><A HREF="grdmath.html">grdmath</A></b>.</p>
+
+<a name="GRID FILE FORMATS"></a>
+<h2>GRID FILE FORMATS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">By default
+<b><A HREF="GMT.html">GMT</A></b> writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, <b><A HREF="GMT.html">GMT</A></b> is
+able to produce grid files in many other commonly used grid
+file formats and also facilitates so called
+&quot;packing&quot; of grids, writing out floating point
+data as 2- or 4-byte integers. To specify the precision,
+scale and offset, the user should add the suffix
+<b>=</b><i>id</i>[<b>/</b><i>scale</i><b>/</b><i>offset</i>[<b>/</b><i>nan</i>]],
+where <i>id</i> is a two-letter identifier of the grid type
+and precision, and <i>scale</i> and <i>offset</i> are
+optional scale factor and offset to be applied to all grid
+values, and <i>nan</i> is the value used to indicate missing
+data. When reading grids, the format is generally
+automatically recognized. If not, the same suffix can be
+added to input grid file names. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1)
+and Section 4.17 of the GMT Technical Reference and Cookbook
+for more information.</p>
+
+<p style="margin-left:11%; margin-top: 1em">When reading a
+netCDF file that contains multiple grids, <b><A HREF="GMT.html">GMT</A></b> will
+read, by default, the first 2-dimensional grid that can find
+in that file. To coax <b><A HREF="GMT.html">GMT</A></b> into reading another
+multi-dimensional variable in the grid file, append
+<b>?</b><i>varname</i> to the file name, where
+<i>varname</i> is the name of the variable. Note that you
+may need to escape the special meaning of <b>?</b> in your
+shell program by putting a backslash in front of it, or by
+placing the filename and suffix between quotes or double
+quotes. The <b>?</b><i>varname</i> suffix can also be used
+for output grids to specify a variable name different from
+the default: &quot;z&quot;. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and
+Section 4.18 of the GMT Technical Reference and Cookbook for
+more information, particularly on how to read splices of 3-,
+4-, or 5-dimensional grids.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To make a file
+for illuminating the data in geoid.grd using exp- normalized
+gradients imitating light sources in the north and west
+directions:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdgradient</b>
+geoid.grd <b>&minus;A</b> 0/270 <b>&minus;G</b>
+gradients.grd <b>&minus;Ne</b>0.6 <b>&minus;V</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">To find the
+azimuth orientations of seafloor fabric in the file
+topo.grd:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdgradient</b>
+topo.grd <b>&minus;Dno &minus;G</b> azimuths.grd
+<b>&minus;V</b></p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Horn, B.K.P.,
+Hill-Shading and the Reflectance Map, Proceedings of the
+IEEE, Vol. 69, No. 1, January 1981, pp. 14-47.
+(http://people.csail.mit.edu/
+bkph/papers/Hill-Shading.pdf)</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="gmtdefaults.html">gmtdefaults</A></i>(1), <i><A HREF="grdhisteq.html">grdhisteq</A></i>(1),
+<i><A HREF="grdimage.html">grdimage</A></i>(1), <i><A HREF="grdview.html">grdview</A></i>(1),
+<i><A HREF="grdvector.html">grdvector</A></i>(1)</p>
+<hr>
+</body>
+</html>

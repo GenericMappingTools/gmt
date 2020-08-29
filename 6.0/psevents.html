@@ -1,0 +1,564 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>psevents &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pshistogram" href="pshistogram.html" />
+    <link rel="prev" title="pscontour" href="pscontour.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules_classic.html">GMT Modules (Classic Mode)</a> &raquo;</li>
+        
+      <li>psevents</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/psevents.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="psevents">
+<span id="index-0"></span><h1>psevents<a class="headerlink" href="#psevents" title="Permalink to this headline">¶</a></h1>
+<p>Plot event symbols and labels for a moment in time</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt psevents</strong> [ <em>table</em> ] <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em> <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>symbol</em>[<em>size</em>[<em>unit</em>]]
+<a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>now</em>
+[ <a class="reference internal" href="#b"><span> <strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>cpt</em> ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<strong>j</strong>|<strong>J</strong>]<em>dx</em>[/<em>dy</em>][<strong>+v</strong>[<em>pen</em>]] ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><strong>s</strong>|<strong>t</strong>[<strong>+o</strong>|<strong>O</strong><em>dt</em>][<strong>+r</strong><em>dt</em>][<strong>+p</strong><em>dt</em>][<strong>+d</strong><em>dt</em>][<strong>+f</strong><em>dt</em>][<strong>+l</strong><em>dt</em>] ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>+a</strong><em>angle</em>][<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>][<strong>+r</strong>[<em>first</em>]|<strong>+z</strong>[<em>format</em>]] ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>color</em> ]
+[ <a class="reference internal" href="#k"><span> <strong>-K</strong></span></a></strong> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong>[<em>length</em>|<strong>t</strong>] ]
+[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong><strong>i</strong>|<strong>s</strong>|<strong>t</strong>[<em>val1</em>][<strong>+c</strong><em>val2</em>] ]
+[ <a class="reference internal" href="#o"><span> <strong>-O</strong></span></a></strong> ] [ <strong>-P</strong> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><em>prefix</em> ]
+[ <a class="reference internal" href="#u"><span> <strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong><em>pen</em> ]
+[ <a class="reference internal" href="#x"><span> <strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>[<strong>u</strong>]] ]
+[ <a class="reference internal" href="#y"><span> <strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>[<strong>u</strong>]] ]
+[ <strong>-bi</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Reads (<em>x</em>, <em>y</em>[, <em>z</em>] [, <em>size</em>], <em>time</em> [, <em>length</em>]) data from <em>table</em> [or standard
+input] and plots how the symbol for each event should look for the specified <em>now</em> time.
+The reason they may differ is that events may have different lengths and we may
+wish to accentuate the symbol attributes in ways to draw attention to an event when
+it first happens and perhaps tone it down after a while to reduce clutter and focus
+on more recent events. This module is typically used in conjunction with <a class="reference internal" href="movie.html"><span class="doc">movie</span></a>
+where the implicit loop over time is used to call it over a time-sequence and
+thus plot symbols as events unfold.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="j">
+<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select map projection.  </dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest.  </dd>
+</dl>
+<p>For perspective view <strong>-p</strong>, optionally append /<em>zmin</em>/<em>zmax</em>. <a class="reference internal" href="gmt.html#rz-full"><span class="std std-ref">(more …)</span></a>  </p>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><em>symbol</em>[<em>size</em>[<em>unit</em>]]</dt>
+<dd>Specify the symbol to use for the event.  Optionally, append symbol <em>size</em> with unit from
+(<strong>c</strong>|<strong>i</strong>|<strong>p</strong>).  If no <em>size</em> is given then we read an event-specific size
+from the data file’s third column (fourth if <strong>-C</strong> is used). Note: Not all the symbols that
+are available in <a class="reference internal" href="psxy.html"><span class="doc">psxy</span></a> can be used here.  At the moment we only support the basic
+symbols and custom symbols; bars, vectors, ellipses, fronts, decorated and quoted lines cannot
+be specified.  Symbols sizes read from a data file will be assumed to be in the unit controlled
+by <a class="reference internal" href="gmt.conf.html#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a> unless they have <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> appended.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong><em>now</em></dt>
+<dd>Set the current plot time.  If absolute times are used you must also use <strong>-fT</strong>.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </dd>
+</dl>
+<dl class="docutils" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set map boundary frame and axes attributes.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>cpt</em></dt>
+<dd>Use the <em>cpt</em> to convert <em>z</em> values given in the optional third column to assign symbol colors.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong>[<strong>j</strong>|<strong>J</strong>]<em>dx</em>[/<em>dy</em>][<strong>+v</strong>[<em>pen</em>]]</dt>
+<dd>Offset the text from the projected (<em>x</em>,<em>y</em>) point by <em>dx</em>,<em>dy</em>
+[0/0]. If <em>dy</em> is not specified then it is set equal to <em>dx</em>. Use
+<strong>-Dj</strong> to offset the text away from the point instead (i.e., the
+text justification will determine the direction of the shift). Using
+<strong>-DJ</strong> will shorten diagonal offsets at corners by
+sqrt(2). Optionally, append <strong>+v</strong> which will draw
+a line from the original point to the shifted point; append a <em>pen</em>
+to change the attributes for this line.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-Es</strong>|<strong>t</strong>[<strong>+o</strong>|<strong>O</strong><em>dt</em>][<strong>+r</strong><em>dt</em>][<strong>+p</strong><em>dt</em>][<strong>+d</strong><em>dt</em>][<strong>+f</strong><em>dt</em>][<strong>+l</strong><em>dt</em>]</dt>
+<dd>Set the time knots for the <strong>s</strong>ymbol or <strong>t</strong>ext time-functions.  Append
+<strong>+o</strong> to shift the event start and end times by a constant offset (basically shifting
+the event in time by <em>dt</em>; or use <strong>+O</strong> to only shift the start time, effectively shortening
+the duration of the event), <strong>+r</strong> to indicate the
+duration of the rise phase, <strong>+p</strong> to set the duration of the plateau phase, <strong>+d</strong>
+to specify the duration of the decay phase, and <strong>+f</strong> to set the duration of the
+fade phase.  These are all optional [and default to zero], and can be set separately for symbols and texts.
+If neither <strong>s</strong> or <strong>t</strong> is given then we set the time knots for both features. Note that <strong>+l</strong> is
+restricted to <strong>-Et</strong> and specifies an alternative duration (visibility) of the text [same duration as symbol].</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong>[<strong>+a</strong><em>angle</em>][<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>][<strong>+r</strong>[<em>first</em>]|<strong>+z</strong>[<em>format</em>]]</dt>
+<dd>By default, event label text will be placed horizontally, using the primary
+annotation font attributes (<a class="reference internal" href="gmt.conf.html#font-annot-primary"><span class="std std-ref">FONT_ANNOT_PRIMARY</span></a>), and centered
+on the data point. Use this option to override these defaults by specifying up to three
+text attributes (font, angle, and justification) directly on the command line. Use <strong>+f</strong>
+to set the font (size,fontname,color), <strong>+a</strong> to set the angle, and <strong>+j</strong> to set the justification.
+Normally, the text to be plotted is the trailing text.  Instead, use <strong>+r</strong> to use the
+record number (counting up from <em>first</em> [0]) or <strong>+z</strong> to format incoming <em>z</em> values (requires <strong>-C</strong>)
+to a string using the supplied <em>format</em> [use <a class="reference internal" href="gmt.conf.html#format-float-map"><span class="std std-ref">FORMAT_FLOAT_MAP</span></a>].</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>fill</em> <a class="reference internal" href="cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set constant shade or color for all symbols.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-Jz</strong>|<strong>Z</strong><em>parameters</em> <a class="reference internal" href="gmt.html#jz-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set z-axis scaling; same syntax as <strong>-Jx</strong>.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong>[<em>length</em>|<strong>t</strong>]</dt>
+<dd>Specify the length (i.e., duration) of the event.  Append a <em>length</em> if all events have the same length,
+append <strong>t</strong> if end-times instead of lengths are given in the file after the <em>time</em> column,
+or leave blank if lengths can be read from the input file after the <em>time</em> column.  If <strong>-L</strong> is not
+given we assume events have an infinite duration.</dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-M</strong><strong>i</strong>|<strong>s</strong>|<strong>t</strong>[<em>val1</em>][<strong>+c</strong><em>val2</em>]</dt>
+<dd>Modify the initial <strong>i</strong>ntensity, <strong>s</strong>ize magnification, or <strong>t</strong>ransparency of the symbol during
+the <em>rise</em> interval [1, 1, and 100, respectively].  Repeatable for the different attributes.
+Optionally, for finite-duration events you may append <strong>+c</strong> to set the corresponding terminal value
+during the coda [0, 0, 100, respectively].</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong><em>prefix</em></dt>
+<dd>Save the intermediate event symbols and labels to permanent files instead of removing them when done.
+Files will be named <em>prefix</em>_symbols.txt and <em>prefix</em>_labels.txt.</dd>
+</dl>
+<dl class="docutils" id="u">
+<dt><strong>-U</strong>[<em>label</em>][<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>] <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Draw GMT time stamp logo on plot.</dd>
+</dl>
+<dl class="docutils" id="id1">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong><em>pen</em></dt>
+<dd>Specify symbol outline pen attributes [Default is no outline].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary format for primary input. [Default is 3 input columns].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-di</strong><em>nodata</em> <a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> | <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<em>t</em>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column, <em>t</em> is trailing text, append <em>word</em> to read one word only).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select perspective view.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt>
+<dd>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</dd>
+</dl>
+</div>
+<div class="section" id="the-three-time-functions">
+<h2>The three time-functions<a class="headerlink" href="#the-three-time-functions" title="Permalink to this headline">¶</a></h2>
+<p>Events typically have either a finite length, e.g., the temporal extent of
+the reign of a particular monarch, or are infinite.  Here, infinite simply means
+its length exceeds the temporal extent of the time we are plotting.  In a movie,
+a basic representation of these events as points on a map would be to start plotting
+the symbol when the event starts and then keep the symbol visible on all frames until the
+event ends (or never stop plotting them in the infinite length case).  However, to draw
+attention to the arrival of a new event we can temporarily change three attributes of
+the symbol: Its size, color intensity, and transparency.  You can think of these three
+attributes as functions of time.  For some option settings, figure below
+illustrates how the symbol size may vary through the timespan of the movie.</p>
+<div class="figure align-center" id="id2">
+<a class="reference internal image-reference" href="_images/psevents_size.png"><img alt="_images/psevents_size.png" src="_images/psevents_size.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Implied evolution of one symbol’s size-variation as a function of time
+given the time-knots from <strong>-Es</strong> and the magnifications from <strong>-Ms</strong>.
+Here we temporarily magnify the symbol size five times before decaying
+to the intended size and eventually shrink it further down to a small
+size during the fade and coda phases.</span></p>
+</div>
+<p>Similarly, to draw attention to the newly arrived event you may want to whiten the color
+temporarily; this can be done via the <strong>-Mi</strong> option and figure below
+illustrates how intensity may vary accordingly.</p>
+<div class="figure align-center" id="id3">
+<a class="reference internal image-reference" href="_images/psevents_intensity.png"><img alt="_images/psevents_intensity.png" src="_images/psevents_intensity.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Implied evolution of one symbol’s color intensity as a function of time
+given the time-knots from <strong>-Es</strong> and the intensities from <strong>-Mi</strong>.  Here we
+seek to whiten the symbol during the event arrival, as well as darken it
+during a permanent code phase.</span></p>
+</div>
+<p>Finally, for finite events you may wish to either fade them out completely or
+simply fade them to a constant but still visible transparency; this future stage
+is referred to as the coda and levels can be specified via the <strong>-Mt</strong> option.
+Figure below illustrates how transparency may vary through time.</p>
+<div class="figure align-center" id="id4">
+<a class="reference internal image-reference" href="_images/psevents_transparency.png"><img alt="_images/psevents_transparency.png" src="_images/psevents_transparency.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Here we show how a symbol may go from being invisible to reaching full opaqueness
+at the event begin time, finally fading to a near-invisible stage after reaching
+its length.</span></p>
+</div>
+<p>While shown in these examples, the rise, plateau, fade, and coda periods are all optional
+and can be selected or ignored as you wish via <strong>-E</strong>.  You can choose to specify any or none
+of the three time histories.  By default the symbol size is constant, there is no intensity
+variation, and all symbols are opaque.  If trailing text is plotted (requires <strong>-Et</strong>) then
+only a transparency time-function is used.</p>
+</div>
+<div class="section" id="sorting-the-data">
+<h2>Sorting the data<a class="headerlink" href="#sorting-the-data" title="Permalink to this headline">¶</a></h2>
+<p>While only the events that should be visible will be plotted at the given time set via <strong>-T</strong>,
+the order of plotting is simply given by the order of records in the file.  Thus, if the
+file is <em>not</em> sorted into ascending time then later events might plot <em>beneath</em> earlier events.
+To prevent this, you can sort your file into ascending order via the <a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a> <strong>-N</strong> option.</p>
+</div>
+<div class="section" id="classic-mode-arguments">
+<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this headline">¶</a></h2>
+<p>These options are used to manipulate the building of layered GMT PostScript plots in classic mode.
+They are not available when using GMT modern mode.</p>
+<dl class="docutils" id="k">
+<dt><strong>-K</strong> <a class="reference internal" href="gmt.html#k-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Do not finalize the PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="o">
+<dt><strong>-O</strong> <a class="reference internal" href="gmt.html#o-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Append to existing PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="p">
+<dt><strong>-P</strong> <a class="reference internal" href="gmt.html#p-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select “Portrait” plot orientation.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To show the display of events visible for May 1, 2018 given the catalog of
+large (&gt;5) magnitude earthquakes that year, using a 2-day rise time during
+which we boost symbol size by a factor of 5 and wash out the color, followed
+by a decay over 6 days and then a final shrinking to half size and darken the
+color, we may try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert <span class="s2">&quot;https://earthquake.usgs.gov/fdsnws/event/1/query.csv?starttime=2018-01-01%2000:00:00&amp;endtime=2018-12-31%2000:00:00&amp;minmagnitude=5&amp;orderby=time-asc&quot;</span> <span class="se">\</span>
+    -i2,1,3,4+s50,0 -hi1 &gt; q.txt
+gmt makecpt -Cred,green,blue -T0,70,300,10000 &gt; q.cpt
+gmt psevents -Rg -JG200/5/6i -Baf q.txt -SE- -Cq.cpt --TIME_UNIT<span class="o">=</span>d -T2018-05-01T -Es+r2+d6 -Ms5+c0.5 -Mi1+c-0.6 -Mt+c0 -P &gt; tlayer.ps
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
+<a class="reference internal" href="psxy.html"><span class="doc">psxy</span></a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pshistogram.html" class="btn btn-neutral float-right" title="pshistogram" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pscontour.html" class="btn btn-neutral float-left" title="pscontour" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

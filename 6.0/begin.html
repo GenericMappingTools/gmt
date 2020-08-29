@@ -1,0 +1,436 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>begin &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="blockmean" href="blockmean.html" />
+    <link rel="prev" title="basemap" href="basemap.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">GMT Modules</a> &raquo;</li>
+        
+      <li>begin</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/begin.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="begin">
+<span id="index-0"></span><h1>begin<a class="headerlink" href="#begin" title="Permalink to this headline">¶</a></h1>
+<p>Initiate a new GMT modern mode session</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt begin</strong> [<em>prefix</em>] [<em>formats</em>] [<em>options</em>]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>begin</strong> module instructs GMT to begin a new modern mode session.  If your script only makes
+a single plot then this is the most opportune time to specify the name
+and format(s) of your plot.  However, if you want to create multiple illustrations within this session,
+you will instead use <a class="reference internal" href="figure.html"><span class="doc">figure</span></a> to name the figure(s) you wish to make.  The session
+keeps track of all default and history settings and isolates them from any other session
+that may run concurrently.  Thus, unlike classic mode, you can run multiple modern sessions
+simultaneously without having destructive interference in updating the history of common
+options.
+In addition to <em>prefix</em> and <em>formats</em>, you can supply a comma-separated series of
+<a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a> <em>options</em> (without their leading hyphens) that will override the default settings provided via
+<a class="reference internal" href="gmt.conf.html#ps-convert"><span class="std std-ref">PS_CONVERT</span></a> [<strong>A</strong>]. The only other available options control the verbosity.</p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="begin-prefix">
+<dt><em>prefix</em></dt>
+<dd>Name-stem used to construct the single final figure name [gmtsession].  The extension is appended
+automatically from your <em>formats</em> selection(s).  If your script only
+performs calculations or needs to make several figures then you will not use this argument.
+While not recommended, if your <em>prefix</em> has spaces in it then you must enclose your
+prefix in single or double quotes.</dd>
+</dl>
+<dl class="docutils" id="begin-formats">
+<dt><em>formats</em></dt>
+<dd>Give one or more comma-separated graphics extensions from the list of allowable
+<a class="reference internal" href="#tbl-formats"><span class="std std-ref">graphics formats</span></a>
+(default format is configurable via setting <a class="reference internal" href="gmt.conf.html#gmt-graphics-format"><span class="std std-ref">GMT_GRAPHICS_FORMAT</span></a> [pdf]).</dd>
+</dl>
+<dl class="docutils" id="begin-options">
+<dt><em>options</em></dt>
+<dd>Sets one or more comma-separated options (and possibly arguments) that
+can be passed to <a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a> when preparing a session figure [<strong>A</strong>].
+The valid subset of options are
+<strong>A</strong>[<em>args</em>],<strong>C</strong><em>args</em>,<strong>D</strong><em>dir</em>,<strong>E</strong><em>dpi</em>,<strong>H</strong><em>factor</em>,<strong>M</strong><em>args</em>,<strong>Q</strong><em>args</em>,<strong>S</strong>.
+Note that the leading hyphens should not be given.
+See the <a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a> documentation for details on these options.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="supported-graphic-formats">
+<h2>Supported Graphic Formats<a class="headerlink" href="#supported-graphic-formats" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils" id="tbl-formats">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Format</th>
+<th class="head">Explanation</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>bmp</td>
+<td>Microsoft Bit Map</td>
+</tr>
+<tr class="row-odd"><td>eps</td>
+<td>Encapsulated PostScript</td>
+</tr>
+<tr class="row-even"><td>jpg</td>
+<td>Joint Photographic Experts Group Format</td>
+</tr>
+<tr class="row-odd"><td>pdf</td>
+<td>Portable Document Format [Default]</td>
+</tr>
+<tr class="row-even"><td>png</td>
+<td>Portable Network Graphics</td>
+</tr>
+<tr class="row-odd"><td>PNG</td>
+<td>Portable Network Graphics (with transparency layer)</td>
+</tr>
+<tr class="row-even"><td>ppm</td>
+<td>Portable Pixel Map</td>
+</tr>
+<tr class="row-odd"><td>ps</td>
+<td>Plain PostScript</td>
+</tr>
+<tr class="row-even"><td>tif</td>
+<td>Tagged Image Format File</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To initiate a new modern session that will produce a single
+map called Figure_2 saved as both a PDF vector graphics file
+and an opaque PNG raster image, we would start our script thus:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin Figure_2 pdf,png
+</pre></div>
+</div>
+<p>If the modern session is only used for computations and no illustrations
+are produced then we do not need to give any further arguments:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin
+</pre></div>
+</div>
+<p>Should we give such a command and still produce a plot then it will automatically
+be called gmtsession.pdf (assuming <a class="reference internal" href="gmt.conf.html#gmt-graphics-format"><span class="std std-ref">GMT_GRAPHICS_FORMAT</span></a> is pdf).</p>
+<p>To set up proceedings for a jpg figure with 0.5c white margin, we would run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin <span class="s1">&#39;My Figure4&#39;</span> jpg A+m0.5c
+</pre></div>
+</div>
+</div>
+<div class="section" id="note-on-postscript">
+<h2>Note on PostScript<a class="headerlink" href="#note-on-postscript" title="Permalink to this headline">¶</a></h2>
+<p>If the user selects <strong>ps</strong> as one of the formats, then please be aware that
+it is recommended you first set the desired paper size.  With <strong>ps</strong>, GMT needs to
+work with a fixed paper size since, unlike the <strong>eps</strong> format, there will be
+no cropping to BoundingBox.  If no paper size is specified via <a class="reference internal" href="gmt.conf.html#ps-media"><span class="std std-ref">PS_MEDIA</span></a>
+then GMT will default to A4 and issue a warning; GMT is unable to determine if that
+size is adequate for your plot but if the canvas width exceeds A4 paper width we will
+switch page orientation to landscape. For all other formats the final dimension will
+be determined automatically.</p>
+</div>
+<div class="section" id="note-on-unix-shells">
+<h2>Note on UNIX shells<a class="headerlink" href="#note-on-unix-shells" title="Permalink to this headline">¶</a></h2>
+<p>Modern mode works by communicating across gmt modules via the shell script’s (or terminal’s)
+process ID, which is the common parent process ID (PPID) for each module.  This number is used to
+create the unique session directories where gmt keeps its book-keeping records.  However, inconsistencies
+across various UNIX shells and other differences in their implementations may occasionally lead
+to problems for gmt to properly determine the unique PPID.  The most common situation is
+related to a shell spawning sub-shells when you are linking two or more processes via UNIX pipes.
+Each sub-shell will then have its own process ID and gmt modules started by the sub-shell will then
+have that ID as PPID and it will differ from the one determined by gmt begin.
+If you are using pipes in your modern mode script and you get strange errors about not finding gmt6.#####
+then you can add this command to the top of your script to make the issue go away (in Bourne shell):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">GMT_SESSION_NAME</span><span class="o">=</span><span class="nv">$$</span>
+</pre></div>
+</div>
+<p>or in C shell:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>setenv GMT_SESSION_NAME <span class="nv">$$</span>
+</pre></div>
+</div>
+<p>This setting is prescribed if you create a new script with <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">--new-script</span></code>.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="clear.html"><span class="doc">clear</span></a>,
+<a class="reference internal" href="docs.html"><span class="doc">docs</span></a>,
+<a class="reference internal" href="end.html"><span class="doc">end</span></a>,
+<a class="reference internal" href="figure.html"><span class="doc">figure</span></a>,
+<a class="reference internal" href="inset.html"><span class="doc">inset</span></a>,
+<a class="reference internal" href="subplot.html"><span class="doc">subplot</span></a>,
+<a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="blockmean.html" class="btn btn-neutral float-right" title="blockmean" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="basemap.html" class="btn btn-neutral float-left" title="basemap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

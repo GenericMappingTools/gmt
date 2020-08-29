@@ -1,0 +1,289 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:42 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>ROTCONVERTER</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>ROTCONVERTER</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">rotconverter
+&minus; Manipulate finite and stage rotations</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rotconverter</b>
+[ <b>+</b>|<b>-</b> ] <i>rotA</i> [ <b>+</b>|<b>-</b>
+<i>rotB</i> ] [ <b>+</b>|<b>-</b> <i>rotC</i> ] ... [
+<b>&minus;C</b>[<b>a</b>|<b>t</b>]] [ <b>&minus;D</b> ] [
+<b>&minus;E</b>[<i>fact</i>] ] [
+<b>&minus;F</b><i>in</i>/<i>out</i> ] [ <b>&minus;N</b> ] [
+<b>&minus;S</b> ] [ <b>&minus;T</b> ] [ <b>&minus;V</b>
+]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rotconverter</b>
+reads one or more plate motion models (rotations) stored in
+the given files. If more than one plate motion model is
+given we will add or subtract them in the order they were
+listed. The minus sign means we should first transpose the
+rotation and then add it to the previous rotation. The input
+files must all be of the same type (stage poles or finite
+rotations) which may differ from the desired output format;
+see <b>&minus;F</b>. If a file cannot be opened we will
+attempt to decode the file name as a single rotation whose
+parameters are separated by slashes.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">No space between the option flag and the
+associated arguments. Use upper case for the option flags
+and lower case for modifiers.</p></td>
+</table>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p style="margin-top: 1em" valign="top"><i>rotX</i></p></td>
+<td width="5%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Name of a file with
+a plate motion model. Separate several files with desired
+operator (+ or -). The very first file may also have a
+leading minus to imply a transpose. If any of the specified
+rotation models cannot be opened as a file, we will try to
+decode the file name as
+<i>lon/lat/tstart</i>[<i>/tstop</i>]/<i>angle</i> for a
+single rotation given on the command line. The <i>tstop</i>
+argument is required for stage poles only. For a single
+finite rotation without any time information, give
+<i>lon/lat/angle</i> only.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Write out a column
+header record identifying the various columns [Default is no
+header record]. Append <b>a</b> to indicate opening angles
+and <b>t</b> to indicate opening rates [Default].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Report longitudes
+use the -180/+180 range [Default is 0/360].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Scale opening
+angles by <i>fact</i> on output. Requires stage pole output
+(see <b>&minus;F</b>).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify both the
+input and output format for rotations. The <i>in</i> and
+<i>out</i> flags must be either <b>f</b> or <b>s</b> for
+finite or stage rotations, respectively. Note that both must
+be specified if <b>&minus;F</b> is set [Default is
+<b>&minus;Fff</b> (both input and output are finite
+rotations)].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Place all output
+poles in the northern hemisphere [Default reports positive
+rotation angles].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Place all output
+poles in the southern hemisphere [Default reports positive
+rotation angles].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Transpose the final
+result, i.e., change the sign of the rotation angles.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;]. Report statistics of extracted
+rotations.</p> </td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To convert the
+finite rotations in the file model_finite.APM to stage
+poles, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rotconverter</b>
+model_finite.APM <b>&minus;Ffs</b> &gt; model_stages.APM</p>
+
+<p style="margin-left:11%; margin-top: 1em">To obtain Nazca
+motion relative to Pacific hotspots by adding the motion of
+Nazca relative to a fixed Pacific to the Pacific-Hotspot
+reference model DC85_stages.d, and report the result as
+finite reconstruction poles in the northern hemisphere,
+try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rotconverter</b>
+DC85_stages.APM + Pac_Naz_stages.RPM <b>&minus;N
+&minus;Fsf</b> &gt; Naz_HS_finite.APM</p>
+
+<p style="margin-left:11%; margin-top: 1em">To add the
+final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0,
+40.0, 11.4), try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rotconverter</b>
+150.1/70.5/-20.3 + 145/40/11.4</p>
+
+<p style="margin-left:11%; margin-top: 1em">which prints
+out 157.32, -80.44, 11.97.</p>
+
+<p style="margin-left:11%; margin-top: 1em">To make stage
+rotations suitable for generating flowlines (fracture zones)
+from a model of relative plate motions PL1-PL2.RPM, assuming
+symmetric spreading,, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rotconverter</b>
+PL1-PL2.RPM <b>&minus;E &minus;Ffs</b> &gt; PL1-PL2_half.RPM
+<b><br>
+rotconverter</b> - PL1-PL2.RPM <b>&minus;E &minus;Ffs</b>
+&gt; PL2-PL1_half.RPM</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="backtracker.html">backtracker</A></i>(1),
+<i><A HREF="grdrotater.html">grdrotater</A></i>(1), <i><A HREF="grdspotter.html">grdspotter</A></i>(1),
+<i><A HREF="hotspotter.html">hotspotter</A></i>(1), <i><A HREF="originator.html">originator</A></i>(1)</p>
+<hr>
+</body>
+</html>

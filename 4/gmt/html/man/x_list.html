@@ -1,0 +1,286 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:45 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>X_LIST</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>X_LIST</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x_list</b>
+&minus; Extract Cross-Over Information from the Data
+Base.</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x_list</b> [
+<i>leg1</i> ] [ <i>leg2</i> ] [
+<b>&minus;</b><i>dataflags</i> ] [
+<b>&minus;R</b><i>west/east/south/north</i> ] [
+<b>&minus;X</b><i>xbase</i> ] [ <b>&minus;H</b> ] [
+<b>&minus;I</b> ] [ <b>&minus;V</b> ] [
+<b>&minus;C</b><i>corrfile</i> ] [
+<b>&minus;Z</b><i>ignorefile</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x_list</b>
+will allow the user to extract information from the
+xx_base.b and xx_legs.b files. Several options can be passed
+on the command line in order to specify which parameters to
+extract. They are: <i><br>
+leg1 leg2</i></p>
+
+<p style="margin-left:22%;">If two legs are specified, the
+cross-overs they have in common are returned. If one leg is
+specified, all the external cross-overs involving this leg
+are returned, OR only its internal cross-overs if &minus;I
+is selected. If no legs are given, all the external (or
+internal with &minus;I) cross-overs are returned. This
+program is useful if one wants to look at, say, gravity COEs
+versus time from port for a particular leg, etc.</p>
+
+<p style="margin-left:11%;"><i>dataflags</i></p>
+
+<p style="margin-left:22%;">This is a string of any
+combination of the following:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top"><b>l</b> means list both legnames.</p></td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top"><b>t</b> means list time.</p></td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top"><b>x</b> means list longitude.</p></td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top"><b>y</b> means list latitude.</p></td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top"><b>g</b> means list gravity COEs.</p></td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top"><b>m</b> means list magnetics COEs.</p></td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top"><b>b</b> means list bathymetry COEs.</p></td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top"><b>G</b> means list average gravity at
+cross-over.</p> </td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top"><b>M</b> means list average magnetic
+anomaly at cross-over.</p></td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top"><b>B</b> means list average bathymetry at
+cross-over.</p> </td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top"><b>h</b> means list heading of ship at
+cross-over.</p> </td>
+</table>
+
+<p style="margin-left:22%;">The components are written out
+in the order they appear in <i>dataflags</i>. The default
+output is <b>&minus;txygmbGMBhl</b>. When internal COEs are
+desired, the time reported is the elapsed time since the
+ship first occupied the cross-over point. For external COEs
+the time means time from the start of the year in
+seconds.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Only return
+cross-overs inside the specified region <i>west, east,
+south,</i> and <i>north</i>. [Default is world].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;X</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Indicate alternate
+<i>xx_base.b</i> file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Issue one header
+record on output.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Report on internal
+COEs [Default is external COEs].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Apply cross-over
+correction to the data (i.e., reports the cross-over value
+after the best-fitting corrections have been applied to both
+legs). If no <i>corrfile</i> is given, the default
+correction file is assumed.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Ignore those legs
+that appear in the <i>ignorefile</i>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+</table>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="x_system.html">x_system</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P.
+XOVER: A Cross-over Error Detector for Track Data,
+<i>Computers &amp; Geosciences, 15</i>, 333-346.</p>
+<hr>
+</body>
+</html>

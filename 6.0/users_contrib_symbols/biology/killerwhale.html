@@ -1,0 +1,380 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>A Killer Whale &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="A Killer Whale (high)" href="killerwhale_high.html" />
+    <link rel="prev" title="A Jumpback tail (low)" href="jumpback_low.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../users_contrib_symbols.html">Users Symbol Contributions</a> &raquo;</li>
+        
+      <li>A Killer Whale</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/users_contrib_symbols/biology/killerwhale.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="a-killer-whale">
+<span id="killerwhale"></span><h1>A Killer Whale<a class="headerlink" href="#a-killer-whale" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#Orcinus orca - Killer Whale</span>
+<span class="c1">#normal</span>
+<span class="c1">#Pablo Valdes - aug 2007</span>
+<span class="m">0</span>	<span class="m">15</span>.7	M -G10/10/10 
+<span class="m">0</span>	<span class="m">0</span>	D
+<span class="m">0</span>	<span class="m">15</span>.7	D
+<span class="m">1</span>	<span class="m">15</span>.4	D
+<span class="m">2</span>	<span class="m">15</span>.4	D
+<span class="m">2</span>.8	<span class="m">15</span>.7	D
+<span class="m">2</span>.8	<span class="m">16</span>	D
+<span class="m">2</span>.5	<span class="m">16</span>.5	D
+<span class="m">0</span>.5	<span class="m">16</span>.8	D
+<span class="m">2</span>.5	<span class="m">16</span>.5	D
+<span class="m">3</span>.5	<span class="m">16</span>.5	D
+<span class="m">6</span>	<span class="m">17</span>	D
+<span class="m">10</span>	<span class="m">18</span>	D
+<span class="m">11</span>	<span class="m">18</span>.2	D
+<span class="m">13</span>.5	<span class="m">18</span>.4	D
+<span class="m">15</span>	<span class="m">18</span>	D
+<span class="m">17</span>	<span class="m">17</span>.5	D
+<span class="m">18</span>	<span class="m">17</span>	D
+<span class="m">17</span>.5	<span class="m">16</span>	D
+<span class="m">17</span>.5	<span class="m">15</span>	D
+<span class="m">18</span>	<span class="m">14</span>	D
+<span class="m">19</span>	<span class="m">15</span>	D
+<span class="m">19</span>.6	<span class="m">16</span>	D
+<span class="m">19</span>.6	<span class="m">16</span>.5	D
+<span class="m">20</span>	<span class="m">16</span>.5	D
+<span class="m">22</span>.5	<span class="m">18</span>	D
+<span class="m">21</span>	<span class="m">18</span>.5	D
+<span class="m">18</span>.5	<span class="m">18</span>	D
+<span class="m">17</span>	<span class="m">19</span>.5	D
+<span class="m">15</span>	<span class="m">20</span>.5	D
+<span class="m">14</span>	<span class="m">21</span>	D
+<span class="m">12</span>	<span class="m">21</span>.8	D
+<span class="m">9</span>	<span class="m">22</span>.5	D
+<span class="m">5</span>.5	<span class="m">22</span>.8	D
+<span class="m">5</span>	<span class="m">23</span>.5	D
+<span class="m">4</span>.6	<span class="m">24</span>.5	D
+<span class="m">4</span>.6	<span class="m">25</span>.5	D
+<span class="m">4</span>	<span class="m">25</span>	D
+<span class="m">3</span>.5	<span class="m">23</span>	D
+<span class="m">3</span>.2	<span class="m">22</span>.2	D
+<span class="m">2</span>.5	<span class="m">22</span>	D
+<span class="m">0</span>	<span class="m">21</span>	D
+-3	<span class="m">19</span>	D
+-4.5	<span class="m">18</span>	D
+-5.5	<span class="m">17</span>	D
+-6	<span class="m">16</span>	D
+-6	<span class="m">15</span>.4	D
+-5.5	<span class="m">15</span>	D
+-4	<span class="m">16</span>.2	D
+-3.5	<span class="m">16</span>.4	D
+-4	<span class="m">16</span>.2	D
+-5.5	<span class="m">15</span>	D
+-5	<span class="m">14</span>.9	D
+-4	<span class="m">15</span>	D
+-2	<span class="m">15</span>.5	D
+-0.5	<span class="m">16</span>	D
+<span class="m">0</span>	<span class="m">15</span>.7	D
+<span class="m">0</span>	<span class="m">0</span>	D
+<span class="m">0</span>	<span class="m">0</span>	<span class="m">0</span>.6	c	-Gblack
+<span class="c1">#ventral patch</span>
+<span class="m">6</span>	<span class="m">17</span>	M -Gwhite
+<span class="m">6</span>.5	<span class="m">17</span>.2	D
+<span class="m">6</span>.6	<span class="m">18</span>	D
+<span class="m">7</span>.4	<span class="m">19</span>	D
+<span class="m">8</span>	<span class="m">19</span>.5	D
+<span class="m">9</span>	<span class="m">20</span>	D
+<span class="m">11</span>	<span class="m">20</span>	D
+<span class="m">12</span>	<span class="m">19</span>.5	D
+<span class="m">12</span>	<span class="m">19</span>	D
+<span class="m">10</span>	<span class="m">18</span>.6	D
+<span class="m">9</span>	<span class="m">18</span>.3	D
+<span class="m">10</span>	<span class="m">18</span>	D
+<span class="m">6</span>	<span class="m">17</span>	D
+<span class="c1">#white patch behind the eye</span>
+-3	<span class="m">17</span>	M	-Gwhite -Wwhite
+-2.2	<span class="m">17</span>.6	D
+-2	<span class="m">18</span>	D
+-2.5	<span class="m">18</span>	D
+-3.6	<span class="m">17</span>.5	D
+-4	<span class="m">17</span>	D
+-3.6	<span class="m">16</span>.8	D
+-3	<span class="m">17</span>	D
+<span class="c1">#</span>
+-4	<span class="m">16</span>.2	M	-Gwhite
+-5.5	<span class="m">15</span>	D
+-5	<span class="m">14</span>.9	D
+-4	<span class="m">15</span>	D
+-2	<span class="m">15</span>.5	D
+-0.5	<span class="m">16</span>	D
+-1	<span class="m">16</span>.3	D
+-0.6	<span class="m">16</span>.7	D
+-2	<span class="m">16</span>.9	D
+-3.5	<span class="m">16</span>.4	D
+-4	<span class="m">16</span>.2	D
+<span class="c1">#gray saddle patch behind dorsal fin</span>
+<span class="m">4</span>.5	<span class="m">20</span>.5	M -W100/100/100 -G170/170/170
+<span class="m">5</span>.5	<span class="m">21</span>	D
+<span class="m">6</span>	<span class="m">21</span>.5	D
+<span class="m">6</span>.7	<span class="m">22</span>	D
+<span class="m">9</span>	<span class="m">22</span>.4	D
+<span class="m">5</span>.5	<span class="m">22</span>.5	D
+<span class="m">5</span>	<span class="m">22</span>	D
+<span class="m">5</span>	<span class="m">21</span>	D
+<span class="m">4</span>.5	<span class="m">20</span>.5	D
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="killerwhale_high.html" class="btn btn-neutral float-right" title="A Killer Whale (high)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="jumpback_low.html" class="btn btn-neutral float-left" title="A Jumpback tail (low)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

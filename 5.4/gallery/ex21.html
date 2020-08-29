@@ -1,0 +1,252 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(21) Time-series of RedHat stock price &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(22) World-wide seismicity the last 7 days" href="ex22.html" />
+    <link rel="prev" title="(20) Custom plot symbols" href="ex20.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex22.html" title="(22) World-wide seismicity the last 7 days"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex20.html" title="(20) Custom plot symbols"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="time-series-of-redhat-stock-price">
+<span id="example-21"></span><h1>(21) Time-series of RedHat stock price<a class="headerlink" href="#time-series-of-redhat-stock-price" title="Permalink to this headline">¶</a></h1>
+<p>As discussed in the Cookbook Section <a class="reference internal" href="../GMT_Docs.html#cartesian-time-axes"><span class="std std-ref">Cartesian time axes</span></a>, the annotation of time-series is
+generally more complicated due to the extra degrees of freedom afforded
+by the dual annotation system. In this example we will display the trend
+of the stock price of RedHat (RHAT) from their initial public offering
+until late 2006. The data file is a comma-separated table and the
+records look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Date</span><span class="p">,</span><span class="n">Open</span><span class="p">,</span><span class="n">High</span><span class="p">,</span><span class="n">Low</span><span class="p">,</span><span class="n">Close</span><span class="p">,</span><span class="n">Volume</span><span class="p">,</span><span class="n">Adj</span><span class="o">.</span><span class="n">Close</span><span class="o">*</span>
+<span class="mi">12</span><span class="o">-</span><span class="n">Mar</span><span class="o">-</span><span class="mi">04</span><span class="p">,</span><span class="mf">17.74</span><span class="p">,</span><span class="mf">18.49</span><span class="p">,</span><span class="mf">17.67</span><span class="p">,</span><span class="mf">18.02</span><span class="p">,</span><span class="mi">4827500</span><span class="p">,</span><span class="mf">18.02</span>
+<span class="mi">11</span><span class="o">-</span><span class="n">Mar</span><span class="o">-</span><span class="mi">04</span><span class="p">,</span><span class="mf">17.60</span><span class="p">,</span><span class="mf">18.90</span><span class="p">,</span><span class="mf">17.37</span><span class="p">,</span><span class="mf">18.09</span><span class="p">,</span><span class="mi">7700400</span><span class="p">,</span><span class="mf">18.09</span>
+</pre></div>
+</div>
+<p>Hence, we have a single header record and various prices in USD for each
+day of business. We will plot the trend of the opening price as a red
+line superimposed on a yellow envelope representing the low-to-high
+fluctuation during each day. We also indicate when and at what cost Paul
+Wessel bought a few shares, and zoom in on the developments since 2004;
+in the inset we label the time-axis in Finnish in honor of Linus
+Thorvalds. Because the time coordinates are Y2K-challenged and the order
+is backwards (big units of years come <em>after</em> smaller units like days)
+we must change the default input/output formats used by GMT. Finally,
+we want to prefix prices with the $ symbol to indicate the currency.
+Here is how it all comes out:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 21</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Plot a time-series</span>
+<span class="c1"># GMT modules:	gmtset, gmtconvert, gmtinfo, psbasemap, psxy </span>
+<span class="c1"># Unix progs:	echo</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_21.ps
+
+<span class="c1"># File has time stored as dd-Mon-yy so set input format to match it</span>
+
+gmt <span class="nb">set</span> FORMAT_DATE_IN dd-o-yy FORMAT_DATE_MAP o FONT_ANNOT_PRIMARY +10p
+gmt <span class="nb">set</span> FORMAT_TIME_PRIMARY_MAP abbreviated PS_CHAR_ENCODING ISOLatin1+
+
+<span class="c1"># Pull out a suitable region string in yyy-mm-dd format</span>
+
+<span class="nv">wesn</span><span class="o">=(</span><span class="sb">`</span>gmt info -fT -I50 -C RHAT_price.csv --FORMAT_DATE_IN<span class="o">=</span>dd-o-yy<span class="sb">`</span><span class="o">)</span>
+<span class="nv">R</span><span class="o">=</span><span class="s2">&quot;-R</span><span class="si">${</span><span class="nv">wesn</span><span class="p">[0]</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">wesn</span><span class="p">[1]</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">wesn</span><span class="p">[2]</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">wesn</span><span class="p">[3]</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="c1"># Lay down the basemap:</span>
+
+gmt psbasemap <span class="nv">$R</span> -JX9i/6i -K -Bsx1Y -Bpxa3Of1o -Bpy50+p<span class="s2">&quot;</span>$<span class="s2"> &quot;</span> <span class="se">\</span>
+	-BWSen+t<span class="s2">&quot;RedHat (RHT) Stock Price Trend since IPO&quot;</span>+glightgreen &gt; <span class="nv">$ps</span>
+
+<span class="c1"># Plot main window with open price as red line over yellow envelope of low/highs</span>
+
+gmt <span class="nb">set</span> FORMAT_DATE_OUT dd-o-yy
+gmt convert -o0,2 -f0T RHAT_price.csv &gt; RHAT.env
+gmt convert -o0,3 -f0T -I -T RHAT_price.csv &gt;&gt; RHAT.env
+gmt psxy -R -J -Gyellow -O -K RHAT.env &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J RHAT_price.csv -Wthin,red -O -K &gt;&gt; <span class="nv">$ps</span>
+
+<span class="c1"># Draw P Wessel&#39;s purchase price as line and label it.  Note we temporary switch</span>
+<span class="c1"># back to default yyyy-mm-dd format since that is what gmt info gave us.</span>
+
+<span class="nb">echo</span> <span class="s2">&quot;05-May-00	0&quot;</span> &gt; RHAT.pw
+<span class="nb">echo</span> <span class="s2">&quot;05-May-00	300&quot;</span> &gt;&gt; RHAT.pw
+gmt psxy -R -J RHAT.pw -Wthinner,- -O -K &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="s2">&quot;01-Jan-99	25&quot;</span> &gt; RHAT.pw
+<span class="nb">echo</span> <span class="s2">&quot;01-Jan-02	25&quot;</span> &gt;&gt; RHAT.pw
+gmt psxy -R -J RHAT.pw -Wthick,- -O -K &gt;&gt; <span class="nv">$ps</span>
+gmt <span class="nb">set</span> FORMAT_DATE_IN yyyy-mm-dd
+<span class="nb">echo</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">wesn</span><span class="p">[0]</span><span class="si">}</span><span class="s2"> 25 PW buy&quot;</span> <span class="p">|</span> gmt pstext -R -J -O -K -D1.5i/0.05i -N -F+f12p,Bookman-Demi+jLB &gt;&gt; <span class="nv">$ps</span>
+gmt <span class="nb">set</span> FORMAT_DATE_IN dd-o-yy
+
+<span class="c1"># Draw P Wessel&#39;s sales price as line and label it.</span>
+
+<span class="nb">echo</span> <span class="s2">&quot;25-Jun-07	0&quot;</span> &gt; RHAT.pw
+<span class="nb">echo</span> <span class="s2">&quot;25-Jun-07	300&quot;</span> &gt;&gt; RHAT.pw
+gmt psxy -R -J RHAT.pw -Wthinner,- -O -K &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="s2">&quot;01-Aug-06	23.8852&quot;</span> &gt; RHAT.pw
+<span class="nb">echo</span> <span class="s2">&quot;01-Jan-08	23.8852&quot;</span> &gt;&gt; RHAT.pw
+gmt psxy -R -J RHAT.pw -Wthick,- -O -K &gt;&gt; <span class="nv">$ps</span>
+gmt <span class="nb">set</span> FORMAT_DATE_IN yyyy-mm-dd
+<span class="nb">echo</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">wesn</span><span class="p">[1]</span><span class="si">}</span><span class="s2"> 23.8852 PW sell&quot;</span> <span class="p">|</span> gmt pstext -R -J -O -K -Dj0.8i/0.05i -N <span class="se">\</span>
+	-F+f12p,Bookman-Demi+jRB &gt;&gt; <span class="nv">$ps</span>
+gmt <span class="nb">set</span> FORMAT_DATE_IN dd-o-yy
+
+<span class="c1"># Get smaller region for insert for trend since 2004</span>
+
+<span class="nv">R</span><span class="o">=</span><span class="s2">&quot;-R2004T/</span><span class="si">${</span><span class="nv">wesn</span><span class="p">[1]</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">wesn</span><span class="p">[2]</span><span class="si">}</span><span class="s2">/40&quot;</span>
+
+<span class="c1"># Lay down the basemap, using Finnish annotations and place the insert in the upper right</span>
+
+gmt psbasemap --GMT_LANGUAGE<span class="o">=</span><span class="k">fi</span> <span class="nv">$R</span> -JX6i/3i -Bpxa3Of3o -Bpy10+p<span class="s2">&quot;</span>$<span class="s2"> &quot;</span> -BESw+glightblue -Bsx1Y <span class="se">\</span>
+	-O -K -X3i -Y3i &gt;&gt; <span class="nv">$ps</span>
+
+<span class="c1"># Again, plot close price as red line over yellow envelope of low/highs</span>
+
+gmt psxy -R -J -Gyellow -O -K RHAT.env &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J RHAT_price.csv -Wthin,red -O -K &gt;&gt; <span class="nv">$ps</span>
+
+<span class="c1"># Draw P Wessel&#39;s sales price as dashed line</span>
+
+gmt psxy -R -J RHAT.pw -Wthick,- -O -K &gt;&gt; <span class="nv">$ps</span>
+
+<span class="c1"># Mark sales date</span>
+
+<span class="nb">echo</span> <span class="s2">&quot;25-Jun-07	0&quot;</span> &gt; RHAT.pw
+<span class="nb">echo</span> <span class="s2">&quot;25-Jun-07	300&quot;</span> &gt;&gt; RHAT.pw
+gmt psxy -R -J RHAT.pw -Wthinner,- -O &gt;&gt; <span class="nv">$ps</span>
+
+<span class="c1"># Clean up after ourselves:</span>
+
+rm -f RHAT.* gmt.conf
+</pre></div>
+</div>
+<p>which produces the plot in Figure, suggesting
+Wessel has missed a few trains if he had hoped to cash in on the
+Internet bubble…</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_21.png"><img alt="../_images/example_21.png" src="../_images/example_21.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Time-series of RedHat stock price since IPO.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex20.html"
+                        title="previous chapter">(20) Custom plot symbols</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex22.html"
+                        title="next chapter">(22) World-wide seismicity the last 7 days</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex21.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex22.html" title="(22) World-wide seismicity the last 7 days"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex20.html" title="(20) Custom plot symbols"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

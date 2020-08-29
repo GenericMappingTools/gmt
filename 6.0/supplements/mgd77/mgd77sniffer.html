@@ -1,0 +1,815 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mgd77sniffer &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mgd77track" href="mgd77track.html" />
+    <link rel="prev" title="mgd77path" href="mgd77path.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../modules.html">GMT Modules</a> &raquo;</li>
+        
+      <li>mgd77sniffer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/supplements/mgd77/mgd77sniffer.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mgd77sniffer">
+<span id="index-0"></span><h1>mgd77sniffer<a class="headerlink" href="#mgd77sniffer" title="Permalink to this headline">¶</a></h1>
+<p>Along-track quality control of MGD77 cruises</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt mgd77sniffer</strong> <em>GEODAS-ids</em> [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>fieldabbrev</em>,<em>scale</em>,<em>offset</em> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>maxspd</em> ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><strong>d</strong>|<strong>e</strong>|<strong>E</strong>|<strong>f</strong>|<strong>l</strong>|<strong>m</strong>|<strong>s</strong>|<strong>v</strong>[<em>r</em>] ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong> ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>fieldabbrev</em>,<em>imggrid</em>,<em>scale</em>,<em>mode</em> or <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>fieldabbrev</em>,<em>grid</em> ]
+[ <a class="reference internal" href="#h"><span> <strong>-H</strong></span></a></strong> ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>fieldabbrev</em>,<em>rec1</em>,<em>recN</em> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>custom-limits-file</em> ]
+[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong> ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><strong>d</strong>|<strong>s</strong>|<strong>t</strong> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>gap</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong><strong>c</strong>|<strong>g</strong>|<strong>o</strong>|<strong>s</strong>|<strong>t</strong>|<strong>v</strong>|<strong>x</strong> ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong><em>level</em> ]
+[ <strong>-bo</strong><a class="reference internal" href="../../gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-do</strong><a class="reference internal" href="../../gmt.html#do-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-n</strong><a class="reference internal" href="../../gmt.html#n-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>mgd77sniffer</strong> scans old (pre-Y2K) and new format ASCII MGD77 files
+for errors using point-by-point sanity checking, along-track detection
+of excessive slopes, and optional comparison of cruise data with global
+gravity and predicted bathymetry grids. Detected data problems are
+output by default as verbose descriptions of each detected error, often
+resulting in multiple messages per scanned record. Data problems are
+optionally output (<strong>-De</strong> option) using a computer-parseable format
+(see E77 ERROR FORMAT description below). Default error thresholds are
+derived from histograms of all MGD77 geophysical data collected between
+1952 and January, 2006. Thresholds are adjustable with the <strong>-L</strong>
+option. Grids for comparison with cruise data may be downloaded via the web.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>NGDC-ids</em></dt>
+<dd><p class="first">Can be one or more of five kinds of specifiers:</p>
+<ol class="arabic simple">
+<li>8-character GEODAS IDs, e.g., 01010083, JA010010etc., etc.</li>
+<li>2-character <em>agency</em> codes which will return all cruises from each agency.</li>
+<li>4-character &lt;agency&gt;&lt;vessel&gt; codes, which will return all cruises from those vessels.</li>
+<li>=<em>list</em>, where <em>list</em> is a table with GEODAS IDs, one per line.</li>
+<li>If nothing is specified we return all cruises in the data base.</li>
+</ol>
+<p class="last">(See mgd77info <strong>-L</strong> for agency and vessel codes). If no file
+extension is given then we search for files with one of the four
+known extensions.  The search order (and the extensions) tried
+is MGD77+ (“.nc”), MGD77T (“.m77t”), MGD77 (“.mgd77” ) and plain
+text file (“.dat”).  Use <strong>-I</strong> to ignore one or more of these
+file types). Cruise files will be looked
+for first in the current directory and second in all directories
+listed in <strong>$MGD77_HOME</strong>/mgd77_paths.txt [If <strong>$MGD77_HOME</strong> is
+not set it will default to <strong>$GMT_SHAREDIR</strong>/mgd77].</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong><em>fieldabbrev</em>,<em>scale</em>,<em>offset</em></dt>
+<dd>Apply scale factor and DC adjustment to specified data field. Allows
+adjustment of cruise data prior to along-track analysis. CAUTION:
+data must be thoroughly examined before applying these global data
+adjustments. May not be used for multiple cruises.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>maxspd</em></dt>
+<dd>Set maximum ship speed in m/s, or knots with <strong>-N</strong> option. Ship
+speeds exceeding 10 m/s (~20 knots) are flagged as excessive by default.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><strong>d</strong>|<strong>e</strong>|<strong>E</strong>|<strong>f</strong>|<strong>l</strong>|<strong>m</strong>|<strong>s</strong>|<strong>v</strong>[<em>r</em>]</dt>
+<dd><p class="first">Suppress default warning output and only dump cruise data row-by-row
+such as values, gradients, grid-cruise differences, E77 error
+summaries for each record, re-created MGD77 records or sniffer
+limits. Append r to include all records (default omits records where
+navigation errors were detected).</p>
+<p><strong>-Dd</strong> output differences between cruise and grid data. Requires
+<strong>-G</strong> option. Output columns include:</p>
+<p><em>lat lon dist cruiseZ gridZ diff [cruiseZ2 gridZ2 diff2 …]</em></p>
+<p>Note: grid values are subtracted from cruise data so a positive
+difference implies cruise &gt; grid. For multiple grid comparison,
+<em>cruiseZ gridZ diff</em> are repeated for each grid comparison in
+command line order.</p>
+<p><strong>-De</strong> output E77 error classification format. Error output is
+divided into (1) a header containing information
+globally applicable to the cruise and (2) individual
+error records summarizing all errors encountered in each cruise
+record. mgd77sniffer writes E77 directly to &lt;geodas_id.e77&gt; file
+handle. See <strong>E77 ERROR FORMAT</strong> below for additional details.</p>
+<p><strong>-DE</strong> Same as <strong>-De</strong> but no regression tests will be carried out.</p>
+<p><strong>-Df</strong> output delta Z (change in geophysical field) column and
+delta S (change in distance) for each geophysical field. Distance
+between observations often differ for different fields depending on
+instrument sampling rate, so ds is included for each geophysical
+observation. Output columns include:</p>
+<p><em>d[twt] ds d[depth] ds d[mtf1] ds d[mtf2] ds d[mag] ds d[diur] ds
+d[msd] ds d[gobs] ds d[eot] ds d[faa] ds</em></p>
+<p><strong>-Dl</strong> display mgd77sniffer limits. Customize this output to create
+a custom limits file for the <strong>-L</strong> option. No additional arguments
+are required. Output columns include:</p>
+<p><em>fieldabbrev min max maxSlope maxArea</em></p>
+<p><strong>-Dm</strong> output MGD77 format records in Y2K-compliant MGD77 format</p>
+<p><strong>-Dn</strong> output distance to coast for each record. Requires the <strong>-Gnav</strong>
+option. Output columns include:</p>
+<p><em>lat lon dist distToCoast</em></p>
+<p><strong>-Ds</strong> output calculated gradients for speed and geophysical
+fields. Gradients correspond to the gradient type selected in the
+<strong>-S</strong> option (spatial derivatives by default). Output columns include:</p>
+<p><em>speed d[twt] d[depth] d[mtf1] d[mtf2] d[mag] d[diur] d[msd] d[gobs] d[eot] d[faa]</em></p>
+<p>See <strong>MGD77 FIELD INFO</strong> below for field and abbreviations descriptions.</p>
+<p><strong>-Dv</strong> display values for the twelve position and geophysical
+fields for each MGD77 data record (in this order):</p>
+<p><em>lat lon twt depth mtf1 mtf2 mag diur msens gobs eot faa</em></p>
+<p class="last">See below for <strong>MGD77 FIELD INFO</strong>.</p>
+</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong></dt>
+<dd>Reverse navigation quality flags (good to bad and vice versa). May
+be necessary when a majority of navigation fixes are erroneously
+flagged bad, which can happen when a cruise’s first navigation fix
+is extremely erroneous. Caution! This will affect sniffer output and
+should only be attempted after careful manual navigation review.</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>information</em></dt>
+<dd><p class="first">Compare cruise data to GMT or IMG grids. Use one of the formats below.
+<strong>-G</strong><em>fieldabbrev</em>,<em>imggrid</em>,<em>scale</em>,<em>mode</em>
+Compare cruise data to the specified grid in Sandwell/Smith Mercator
+format. Requires a valid MGD77 field abbreviation (see <strong>MGD77 FIELD
+INFO</strong> below) followed by a comma, the path (if not in current
+directory) and grid filename, a scale to multiply the data (1 or
+0.1), and mode which stand for the following: (0) Img files with no
+constraint code, returns data at all points, (1) Img file with
+constraints coded, return data at all points, (2) Img file with
+constraints coded, return data only at constrained points and NaN
+elsewhere, and (3) Img file with constraints coded,
+return 1 at constraints and 0 elsewhere.
+<strong>-G</strong><em>fieldabbrev</em>,<em>grid</em>
+Compare cruise data to the specified grid. Requires a valid MGD77
+field abbreviation (see <strong>MGD77 FIELD INFO</strong> below) followed by a
+comma, then the path (if not in current directory) and grid
+filename. Multiple grid comparison is supported by using separate
+<strong>-G</strong> calls for each grid. See <strong>GRID FILE INFO</strong> below.</p>
+<p class="last">Grid comparison activates several additional error checks. (1)
+Re-weighted Least Squares Regression of ship versus grid data
+determines slope and DC shift, which when differing from expected 1
+and 0, respectively, may indicate incorrectly scaled ship data,
+including incorrect units or instrument drift as well as erroneous
+gravity tie-in. (2) Accumulated ship grid offsets are computed
+along-track and excessive offsets are flagged according to <em>maxArea</em>
+threshold (use <strong>-L</strong> option to adjust <em>maxArea</em>). Warning:
+predicted bathymetry grids are constrained by cruise data so grids
+and cruise data are not always independent. Comparison of cruise
+bathymetry with predicted bathymetry grids also activates a
+“navigation crossing over land” check.</p>
+</dd>
+</dl>
+<dl class="docutils" id="h">
+<dt><strong>-H</strong></dt>
+<dd><p class="first">(with <strong>-G</strong>|<strong>g</strong> only) disable (or force) decimation during
+RLS analysis of ship and gridded data. By default mgd77sniffer
+analyses both the full and decimated data sets then reports RLS
+statistics for the higher correlation regression.</p>
+<p><strong>-Hb</strong> analyze both (default), report better of two.</p>
+<p><strong>-Hd</strong> to disable data decimation (equivalent to -H with no argument).</p>
+<p class="last"><strong>-Hf</strong> to force data decimation.</p>
+</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>fieldabbrev</em>,<em>rec1</em>,<em>recN</em></dt>
+<dd>Append a field abbreviation and the first and last record in a range
+of records that should be flagged as bad (and set to NaN prior to
+the analysis). Repeat as many times as needed. May not be used for
+multiple cruises.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong><em>custom-limits-file</em></dt>
+<dd><p class="first">Override mgd77sniffer default error detection limits. Supply path
+and filename to the custom limits file. Rows not beginning with a
+valid MGD77 field abbreviation are ignored. Field abbreviations are
+listed below in exact form under MGD77 FIELD INFO. Multiple field
+limits may be modified using one default file, one field per line.
+Field min, max, max slope and max area may be changed for each
+field. Max slope pertains to the gradient type selected using the
+<strong>-S</strong> option. Max area is used by the <strong>-G</strong> option as the
+threshold for flagging excessive offsets from the specified grid.
+Dump defaults <strong>-Dl</strong> to view syntax or to quickly create an
+editable custom limits file.</p>
+<p>Example custom default file contents (see below for units):</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="15%" />
+<col width="17%" />
+<col width="22%" />
+<col width="20%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td># abbrev</td>
+<td>min</td>
+<td>max</td>
+<td>maxSlope</td>
+<td>maxArea</td>
+</tr>
+<tr class="row-even"><td>twt</td>
+<td>0</td>
+<td>15</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="row-odd"><td>depth</td>
+<td>0</td>
+<td>11000</td>
+<td>500</td>
+<td>5000</td>
+</tr>
+<tr class="row-even"><td>mag</td>
+<td>-800</td>
+<td>800</td>
+<td>--</td>
+<td>--</td>
+</tr>
+<tr class="row-odd"><td>faa</td>
+<td>-300</td>
+<td>300</td>
+<td>100</td>
+<td>2500</td>
+</tr>
+</tbody>
+</table>
+<p class="last">Use a dash ‘-‘ to retain a default limit. Hint: to test your custom
+limits, try: mgd77sniffer <strong>-Dl</strong> <strong>-L</strong>&lt;yourlimitsfile&gt;</p>
+</dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-M</strong></dt>
+<dd>Adjust navigation on land threshold (meters inland) [100].</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong></dt>
+<dd>Use nautical units.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
+Append <strong>+r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Set geographic regions by specifying ISO country codes from the Digital Chart of the World using
+<strong>-R</strong><em>code1,code2,…</em>[<strong>+r</strong>|<strong>R</strong>[<em>incs</em>]] instead:
+Append one or more comma-separated countries using the 2-character
+ISO 3166-1 alpha-2 convention.  To select a state of a country
+(if available), append .state, e.g, US.TX for Texas.  To specify a
+whole continent, prepend = to any of the continent codes AF (Africa),
+AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
+NA (North America), or SA (South America).  Use <strong>+r</strong> to modify the bounding box coordinates from the polygon(s):
+Append <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> to adjust the
+region to be a multiple of these steps [no adjustment]. Alternatively, use <strong>+R</strong> to extend the region
+outward by adding these increments instead [no extension].
+Alternatively for grid creation, give <strong>R</strong><em>code</em><em>lon</em>/<em>lat</em>/<em>nx</em>/<em>ny</em>, where
+<em>code</em> is a 2-character combination of L, C, R (for left, center, or right)
+and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
+indicates which point on a rectangular region the <em>lon</em>/<em>lat</em> coordinate
+refers to, and the grid dimensions <em>nx</em> and <em>ny</em> with grid spacings via
+<strong>-I</strong> is used to create the corresponding region.
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing and registration, if applicable) are copied from
+the grid. Appending <strong>+u</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.
+For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.
+In case of perspective view (<strong>-p</strong>), a z-range (<em>zmin</em>, <em>zmax</em>)
+can be appended to indicate the third dimension. This needs to be
+done only when using the <strong>-Jz</strong> option, not when using only the
+<strong>-p</strong> option. In the latter case a perspective view of the plane is
+plotted, with no third dimension.  </dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><strong>d</strong>|<strong>s</strong>|<strong>t</strong></dt>
+<dd>Specify gradient type for along-track excessive slope checking.
+<strong>-Sd</strong> Calculate change in z values along track (dz). Output is
+given in geophysical units, e.g., mGal.
+<strong>-Ss</strong> Calculate spatial gradients (dz/ds). Output is given in
+geophysical units per km along the survey track, e.g., mGal/km.
+<strong>-St</strong> Calculate time gradients (dz/dt) [default]. Output is given
+in geophysical units per second along the survey track, e.g., mGal/sec.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong><em>gap</em></dt>
+<dd>Adjusts mgd77sniffer gap handling. By default, data gaps greater
+than 5 km are skipped. Set to zero to de-activate gap skipping.</dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong><strong>c</strong>|<strong>g</strong>|<strong>o</strong>|<strong>s</strong>|<strong>t</strong>|<strong>v</strong>|<strong>x</strong></dt>
+<dd>Print out only certain warning types for verbose error messages.
+Comma delimit any combination of <strong>c|g|o|s|t|v|x</strong>: where
+(<strong>c</strong>) type code warnings, (<strong>g</strong>)radient out of range,
+(<strong>o</strong>)ffsets from grid (requires <strong>-G</strong>|<strong>g</strong>), (<strong>s</strong>)peed
+out of range, (<strong>t</strong>)ime warnings, (<strong>v</strong>)alue out of range, (<strong>x</strong>)
+warning summaries. By default ALL warning messages are printed.Not
+compatible with any <strong>-D</strong> options.</dd>
+</dl>
+<span id="v"></span><dl class="docutils" id="z">
+<dt><strong>-Z</strong></dt>
+<dd>Flag regression statistics that are outside the specified confidence
+level. (i.e., <strong>-Z</strong>5 flags coefficients m, b, rms, and r that fall outside 95%.)</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="../../gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output. Output binary data for <strong>-D</strong>d|f|s|v option.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-do</strong><em>nodata</em> <a class="reference internal" href="../../gmt.html#do-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace output columns that equal NaN with <em>nodata</em>.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+c</strong>][<strong>+t</strong><em>threshold</em>] <a class="reference internal" href="../../gmt.html#n-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select interpolation mode for grids.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt>
+<dd>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</dd>
+</dl>
+</div>
+<div class="section" id="consequences-of-grid-resampling">
+<h2>Consequences of grid resampling<a class="headerlink" href="#consequences-of-grid-resampling" title="Permalink to this headline">¶</a></h2>
+<p>Resample or sampling of grids will use various algorithms (see <strong>-n</strong>) that may lead
+to possible distortions or unexpected results in the resampled values.
+One expected effect of resampling with splines is the tendency for the new
+resampled values to slightly exceed the global min/max limits of the original
+grid.  If this is unacceptable, you can impose clipping of the resampled values
+values so they do not exceed the input min/max values by adding <strong>+c</strong> to
+your <strong>-n</strong> option.</p>
+</div>
+<div class="section" id="mgd77-field-info">
+<h2>Mgd77 Field Info<a class="headerlink" href="#mgd77-field-info" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="41%" />
+<col width="30%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><em>Field</em></td>
+<td><em>Abbreviation</em></td>
+<td><em>Units</em></td>
+</tr>
+<tr class="row-even"><td>Two-way</td>
+<td>Travel</td>
+<td>Time</td>
+</tr>
+<tr class="row-odd"><td>Corrected</td>
+<td>Depth</td>
+<td>depth</td>
+</tr>
+<tr class="row-even"><td>Mag</td>
+<td>Total</td>
+<td>Field1</td>
+</tr>
+<tr class="row-odd"><td>Mag</td>
+<td>Total</td>
+<td>Field2</td>
+</tr>
+<tr class="row-even"><td>Residual</td>
+<td>Magnetic</td>
+<td>mag</td>
+</tr>
+<tr class="row-odd"><td>Diurnal</td>
+<td>Correction</td>
+<td>diur</td>
+</tr>
+<tr class="row-even"><td>Mag</td>
+<td>Sensor</td>
+<td>Depth/Alt</td>
+</tr>
+<tr class="row-odd"><td>Observed</td>
+<td>Gravity</td>
+<td>gobs</td>
+</tr>
+<tr class="row-even"><td>Eotvos</td>
+<td>Correction</td>
+<td>eot</td>
+</tr>
+<tr class="row-odd"><td>Free</td>
+<td>Air</td>
+<td>Anomaly</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="grid-file-info">
+<h2>Grid File Info<a class="headerlink" href="#grid-file-info" title="Permalink to this headline">¶</a></h2>
+<p>For <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong> the grids must either be in the img format used by Sandwell &amp; Smith,
+which is a spherical Mercator 2-byte grid with no header, or any regular grid type
+supported by GMT.</p>
+</div>
+<div class="section" id="e77-error-format">
+<h2>E77 Error Format<a class="headerlink" href="#e77-error-format" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>Header</strong></dt>
+<dd><p class="first">Information pertaining to an entire cruise, such as NCEI and survey
+institution identification codes, cruise examination time, two-way
+travel time corrector information, data precision warnings, as well
+as systematic scales, DC shifts and correlation coefficients from
+global grid comparisons are reported as E77 header information.</p>
+<p><strong>Sample</strong></p>
+<p># Cruise 08010039 ID 74010908 MGD77 FILE VERSION: 19801230 N_RECS: 3066</p>
+<p># Examined: Wed Oct 3 16:30:13 2007 by mtchandl</p>
+<p># Arguments: -De -Gdepth,/data/GRIDS/etopo5_hdr.i2</p>
+<p>N Errata table verification status</p>
+<p># mgd77manage applies corrections if the errata table is verified
+(toggle ‘N’ above to ‘Y’ after review)</p>
+<p># For instructions on E77 format and usage, see
+<a class="reference external" href="http://gmt.soest.hawaii.edu/mgd77/errata.php">http://gmt.soest.hawaii.edu/mgd77/errata.php</a></p>
+<p># Verified by:</p>
+<p># Comments:</p>
+<p># Errata: Header</p>
+<p>Y-E-08010039-H13-02: Invalid Magnetics Sampling Rate: (99) [ ]</p>
+<p>Y-W-08010039-H13-10: Survey year (1975) outside magnetic reference
+field IGRF 1965 time range (1965-1970)</p>
+<p>Y-I-08010039-depth-00: RLS m: 1.00053 b: 0 rms: 127.851 r: 0.973422
+significant: 1 decimation: 0</p>
+<p>Y-W-08010039-twt-09: More recent bathymetry correction table available</p>
+<p>Y-W-08010039-mtf1-10: Integer precision</p>
+<p class="last">Y-W-08010039-mag-10: Integer precision</p>
+</dd>
+<dt><strong>Error Record</strong></dt>
+<dd><p class="first">Individual error records have strict format. Included is a time or
+distance column followed by record number, a formatted error code
+string, and finally a verbose description of errors detected in the
+record. Three error classes are encoded into the error code string
+with different alphabetic characters representing unique error
+types. See below for error code format description.</p>
+<p><strong>Format</strong>
+&lt;time/distance&gt; &lt;record number&gt; &lt;error code string&gt; &lt;description&gt;</p>
+<p><strong>Sample</strong></p>
+<p># Errata: Data</p>
+<p class="last">Y  08010039  1975-05-10T22:16:05.88  74  C-0-0 NAV: excessive speed</p>
+</dd>
+<dt><strong>Error Code Description</strong></dt>
+<dd><p class="first">Each of the three error classes is separated by a dash <strong>-</strong> and
+described by a combination of alphabetic characters or 0 signifying
+no detected problems.</p>
+<p>Error classes: NAV-VAL-GRAD</p>
+<p><strong>Error Class Descriptions</strong></p>
+<p>NAV (navigation):</p>
+<p>0 - fine</p>
+<p>A - time out of range</p>
+<p>B - time decreasing</p>
+<p>C - excessive speed</p>
+<p>D - above sea level</p>
+<p>E - lat undefined</p>
+<p>F - lon undefined</p>
+<p>VAL (value):</p>
+<p>0 - fine</p>
+<p>K - twt invalid</p>
+<p>L - depth invalid</p>
+<p>O - mtf1 invalid</p>
+<p>etc.</p>
+<p>GRAD (gradient):</p>
+<p>0 - fine</p>
+<p>K - d[twt] excessive</p>
+<p>L - d[depth] excessive</p>
+<dl class="docutils">
+<dt>O - d[mtf1] excessive</dt>
+<dd>etc.</dd>
+</dl>
+<p>The NAV error class has unique cases while VAL and GRAD classes are
+described by alphabetic characters for each of the 24 numeric fields
+in MGD77 format order.</p>
+<p>MGD77 bit-pattern w/ E77 alpha characters</p>
+<p>|-------------------------------------------------|----------|</p>
+<p>| X W V U T S R Q P O N M L K J I H G F E D C B A | E77 Code |</p>
+<p>| - - - - - - - - - - - - - - - - - - - - - - - - | - - - - -|</p>
+<p>| n f e g m d m m m m b b d t p l l m h d m y t d | F I |</p>
+<p>| q a o o s i s a t t t c e w t o a i o a o e z r | i D |</p>
+<p>| c a t b d u e g f f c c p t c n t n u y n a t | e |</p>
+<p>| s r n 2 1 t r t r | l |</p>
+<p>| s h h | d |</p>
+<p>| - - - - - - - - - - - - - - - - - - - - - - - - | - - - - -|</p>
+<p>| 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 | Bit place|</p>
+<p>| - G C G C C - G G G - - G G - - - T T T T T - - | Bit type |</p>
+<p>|-------------------------------------------------|----------|</p>
+<p class="last">Bit types: (G)eophysical, (C)orrection, (T)ime</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To scan for excessive values or gradients, try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mgd77sniffer <span class="m">08010001</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To dump cruise gradients, try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mgd77sniffer <span class="m">08010001</span> -Ds
+</pre></div>
+</div>
+</div></blockquote>
+<p>To compare cruise depth with ETOPO5 bathymetry and gravity with
+Sandwell/Smith 2 min gravity version 11, try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mgd77sniffer <span class="m">08010001</span> -Gdepth,/data/GRIDS/etopo5_hdr.i2 <span class="se">\</span>
+             -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="mgd77list.html"><span class="doc">mgd77list</span></a>,
+<a class="reference internal" href="mgd77track.html"><span class="doc">mgd77track</span></a>
+<a class="reference internal" href="../x2sys/x2sys_init.html"><span class="doc">x2sys_init</span></a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>The Marine Geophysical Data Exchange Format - MGD77, see
+<a class="reference external" href="http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.">http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.</a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mgd77track.html" class="btn btn-neutral float-right" title="mgd77track" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mgd77path.html" class="btn btn-neutral float-left" title="mgd77path" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

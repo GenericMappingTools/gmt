@@ -1,0 +1,398 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:18 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GRDEDIT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GRDEDIT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#GRID FILE FORMATS">GRID FILE FORMATS</a><br>
+<a href="#GEOGRAPHICAL AND TIME COORDINATES">GEOGRAPHICAL AND TIME COORDINATES</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">grdedit &minus;
+Modifying the header or content of a 2-D grid file</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdedit</b>
+<i>grdfile</i> [ <b>&minus;A</b> ] [
+<b>&minus;D</b><i>xname</i>/<i>yname</i>/<i>zname</i>/<i>scale</i>/<i>offset</i>/<i>title</i>/<i>remark</i>
+] [ <b>&minus;E</b> ] [ <b>&minus;N</b><i>xyzfile</i> ] [
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;S</b> ] [ <b>&minus;T</b> ] [ <b>&minus;V</b>
+] [ <b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;bi</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdedit</b>
+reads the header information in a binary 2-D grid file and
+replaces the information with values provided on the command
+line [if any]. As an option, global, geographical grids
+(with 360 degrees longitude range) can be rotated in the
+east-west direction, and individual nodal values can be
+replaced from a table of <i>x, y, z</i> values.
+<b>grdedit</b> only operates on files containing a
+grdheader. <i><br>
+grdfile</i></p>
+
+<p style="margin-left:22%;">Name of the 2-D grid file to
+modify. (See GRID FILE FORMATS below).</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">If necessary,
+adjust the file&rsquo;s <i>x_inc, y_inc</i> to be compatible
+with its domain (or a new domain set with <b>&minus;R</b>).
+Older grid files (i.e., created prior to <b><A HREF="GMT.html">GMT</A></b> 3.1)
+often had excessive slop in <i>x_inc, y_inc</i> and an
+adjustment is necessary. Newer files are created
+correctly.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Give new values for
+<i>xname, yname, zname, scale, offset, title,</i> and
+<i>remark</i>. To leave some of the values untouched,
+specify = as the new value. Alternatively, to allow
+&quot;/&quot; to be part of one of the values, use any
+non-alphanumeric character (and not the equal sign) as
+separator by both starting and ending with it. For example:
+<b>&minus;D</b>:<i>xname</i>:<i>yname</i>:<i>zname</i>:<i>scale</i>:<i>offset</i>:<i>title</i>:<i>remark</i>:</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Transpose the grid
+and exchange the <i>x</i> and <i>y</i> information.
+Incompatible with the other options.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Read the ASCII (or
+binary; see <b>&minus;bi</b>) file <i>xyzfile</i> and
+replace the corresponding nodal values in the grid with
+these <i>z</i> values.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xmin</i>,
+<i>xmax</i>, <i>ymin</i>, and <i>ymax</i> specify the Region
+of interest. For geographic regions, these limits correspond
+to <i>west, east, south,</i> and <i>north</i> and you may
+specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+calendar time coordinates you may either give (a) relative
+time (relative to the selected <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and in the
+selected <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>; append <b>t</b> to
+<b>&minus;JX</b>|<b>x</b>), or (b) absolute time of the form
+[<i>date</i>]<b>T</b>[<i>clock</i>] (append <b>T</b> to
+<b>&minus;JX</b>|<b>x</b>). At least one of <i>date</i> and
+<i>clock</i> must be present; the <b>T</b> is always
+required. The <i>date</i> string must be of the form
+[-]yyyy[-mm[-dd]] (Gregorian calendar) or yyyy[-Www[-d]]
+(ISO week calendar), while the <i>clock</i> string must be
+of the form hh:mm:ss[.xxx]. The use of delimiters and their
+type and positions must be exactly as indicated (however,
+input, output and plot formats are customizable; see
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b>). The new w/e/s/n values will replace
+those in the grid, and the <i>x_inc, y_inc</i> values are
+adjusted, if necessary.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">For global,
+geographical grids only. Grid values will be shifted
+longitudinally according to the new borders given in
+<b>&minus;R</b>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Make necessary
+changes in the header to convert a gridline-registered grid
+to a pixel-registered grid, or vice-versa. Basically,
+gridline-registered grids will have their domain extended by
+half the x- and y-increments whereas pixel-registered grids
+will have their domain shrunk by the same amount.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 3 input columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+</table>
+
+<a name="GRID FILE FORMATS"></a>
+<h2>GRID FILE FORMATS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">By default
+<b><A HREF="GMT.html">GMT</A></b> writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, <b><A HREF="GMT.html">GMT</A></b> is
+able to produce grid files in many other commonly used grid
+file formats and also facilitates so called
+&quot;packing&quot; of grids, writing out floating point
+data as 2- or 4-byte integers. To specify the precision,
+scale and offset, the user should add the suffix
+<b>=</b><i>id</i>[<b>/</b><i>scale</i><b>/</b><i>offset</i>[<b>/</b><i>nan</i>]],
+where <i>id</i> is a two-letter identifier of the grid type
+and precision, and <i>scale</i> and <i>offset</i> are
+optional scale factor and offset to be applied to all grid
+values, and <i>nan</i> is the value used to indicate missing
+data. When reading grids, the format is generally
+automatically recognized. If not, the same suffix can be
+added to input grid file names. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1)
+and Section 4.17 of the GMT Technical Reference and Cookbook
+for more information.</p>
+
+<p style="margin-left:11%; margin-top: 1em">When reading a
+netCDF file that contains multiple grids, <b><A HREF="GMT.html">GMT</A></b> will
+read, by default, the first 2-dimensional grid that can find
+in that file. To coax <b><A HREF="GMT.html">GMT</A></b> into reading another
+multi-dimensional variable in the grid file, append
+<b>?</b><i>varname</i> to the file name, where
+<i>varname</i> is the name of the variable. Note that you
+may need to escape the special meaning of <b>?</b> in your
+shell program by putting a backslash in front of it, or by
+placing the filename and suffix between quotes or double
+quotes. The <b>?</b><i>varname</i> suffix can also be used
+for output grids to specify a variable name different from
+the default: &quot;z&quot;. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and
+Section 4.18 of the GMT Technical Reference and Cookbook for
+more information, particularly on how to read splices of 3-,
+4-, or 5-dimensional grids.</p>
+
+<a name="GEOGRAPHICAL AND TIME COORDINATES"></a>
+<h2>GEOGRAPHICAL AND TIME COORDINATES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">When the output
+grid type is netCDF, the coordinates will be labeled
+&quot;longitude&quot;, &quot;latitude&quot;, or
+&quot;time&quot; based on the attributes of the input data
+or grid (if any) or on the <b>&minus;f</b> or
+<b>&minus;R</b> options. For example, both <b>&minus;f0x
+&minus;f1t</b> and <b>&minus;R</b> 90w/90e/0t/3t will result
+in a longitude/time grid. When the x, y, or z coordinate is
+time, it will be stored in the grid as relative time since
+epoch as specified by <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> and <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>
+in the .gmtdefaults file or on the command line. In
+addition, the <b>unit</b> attribute of the time variable
+will indicate both this unit and epoch.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Let us assume
+the file data.grd covers the area 300/310/10/30. We want to
+change the boundaries from geodetic longitudes to geographic
+and put a new title in the header. We accomplish this by</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdedit</b>
+data.grd <b>&minus;R</b>-60/-50/10/30
+<b>&minus;D</b>=/=/=/=/=/&quot;Gravity Anomalies&quot;/=</p>
+
+<p style="margin-left:11%; margin-top: 1em">The grid
+world.grd has the limits 0/360/-72/72. To shift the data so
+that the limits would be -180/180/-72/72, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdedit</b>
+world.grd <b>&minus;R</b>-180/180/-72/72 <b>&minus;S</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">The file
+junk.grd was created prior to <b><A HREF="GMT.html">GMT</A></b> 3.1 with
+incompatible <b>&minus;R</b> and <b>&minus;I</b> arguments.
+To reset the x- and y-increments we run</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdedit</b>
+junk.grd <b>&minus;A</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">The file
+junk.grd was created prior to <b><A HREF="GMT.html">GMT</A></b> 4.1.3 and does not
+contain the required information to indicate that the grid
+is geographic. To add this information, run</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdedit</b>
+junk.grd <b>&minus;fg</b></p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grd2xyz.html">grd2xyz</A></i>(1), <i><A HREF="xyz2grd.html">xyz2grd</A></i>(1)</p>
+<hr>
+</body>
+</html>

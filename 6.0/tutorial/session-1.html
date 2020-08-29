@@ -1,0 +1,688 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Session One &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Session Two" href="session-2.html" />
+    <link rel="prev" title="Introduction" href="intro.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../tutorial.html">GMT Tutorial</a> &raquo;</li>
+        
+      <li>Session One</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/tutorial/session-1.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="session-one">
+<h1>Session One<a class="headerlink" href="#session-one" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="tutorial-setup">
+<h2>Tutorial setup<a class="headerlink" href="#tutorial-setup" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>We assume that GMT has been properly and fully
+installed and that the GMT executables are in your executable path.
+You should be able to type <code class="docutils literal notranslate"><span class="pre">gmt</span></code> in your terminal and it will display
+the GMT splash screen with version number
+and the top-level options.  If not then you need to work on your user
+environment, adding the path to the gmt executable to your search path.</li>
+<li>All GMT man pages, documentation, and gallery example scripts
+are available from the GMT documentation web page.  It is
+assumed these pages have been installed locally at your site;
+if not they are always available from <a class="reference external" href="https://docs.generic-mapping-tools.org">https://docs.generic-mapping-tools.org</a>.</li>
+<li>We recommend you create a sub-directory called <em>tutorial</em>,
+cd into that directory, and run the commands there to keep things tidy.</li>
+<li>As we discuss GMT principles it may be a good idea to
+consult <a class="reference internal" href="../cookbook.html"><span class="doc">the GMT Cookbook</span></a> for more
+detailed explanations.</li>
+<li>The tutorial data sets are distributed via the GMT cache server.
+You will therefore find that all the data files have a “&#64;” prepended to
+their names.  This will ensure the file is copied from the server
+before being used, hence you do not need to download any of the
+data manually.  The only downside is that you will need an Internet
+connection to run the examples by cut and paste.</li>
+<li>For all but the simplest GMT jobs it is recommended that
+you place all the GMT (and UNIX) commands in a shell script
+file and make it executable.  To ensure that UNIX recognizes
+your script as a shell script it is a good habit always to start
+the script with the line <code class="docutils literal notranslate"><span class="pre">#!/usr/bin/env</span> <span class="pre">bash</span></code> or <code class="docutils literal notranslate"><span class="pre">#!/usr/bin/env</span> <span class="pre">csh</span></code>,
+depending on the shell you prefer to use.
+All the examples in this tutorial assumes you are running the Bourne Again shell, bash,
+and you will need to modify some of the constructs, such as i/o redirection, to run
+these examples under csh.
+We strongly recommend bash over csh due the ability to define <em>functions</em>.</li>
+<li>Making a script executable is accomplished using the chmod
+command, e.g., the script figure_1.sh is made executable
+with “chmod +x figure_1.sh”.</li>
+<li>Please cd into the directory <em>tutorial</em>.  We are
+now ready to start.</li>
+</ol>
+</div>
+<div class="section" id="the-gmt-environment-what-happens-when-you-run-gmt">
+<h2>The GMT environment: What happens when you run GMT ?<a class="headerlink" href="#the-gmt-environment-what-happens-when-you-run-gmt" title="Permalink to this headline">¶</a></h2>
+<p>To get a good grasp on GMT one must understand what is going on “under
+the hood”.  The <a class="reference internal" href="#gmt-environ"><span class="std std-ref">GMT Run-Time Environment</span></a> illustrates the relationships
+you need to be aware of at run-time.</p>
+<div class="figure align-center" id="id1">
+<span id="gmt-environ"></span><a class="reference internal image-reference" href="../_images/GMT_Environment.png"><img alt="../_images/GMT_Environment.png" src="../_images/GMT_Environment.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">The GMT run-time environment.  The will initiate with a set of system defaults that
+you can override with having your own gmt.conf file in the current directory, specifying
+GMT parameters via the <em>--PAR=value</em> technique, and supply module options.  Some GMT modules
+will read hidden data (like coastlines) but most will explicitly need to be given user data.</span></p>
+</div>
+<div class="section" id="input-data">
+<h3>Input data<a class="headerlink" href="#input-data" title="Permalink to this headline">¶</a></h3>
+<p>A GMT module may or may not take input files.  Three different
+types of input are recognized (more details can be found in <a class="reference internal" href="../cookbook/file_formats.html"><span class="doc">GMT File Formats</span></a>):</p>
+<ol class="arabic">
+<li><p class="first">Data tables.
+These are rectangular tables with a fixed number of columns and
+unlimited number of rows.  We distinguish between two groups:</p>
+<blockquote>
+<div><ul class="simple">
+<li>ASCII (Preferred unless files are huge)</li>
+<li>Binary (to speed up input/output)</li>
+</ul>
+</div></blockquote>
+<p>Such tables may have segment headers and can therefore hold any number of
+subsets such as individual line segments or polygons.</p>
+</li>
+<li><p class="first">Gridded dated sets.
+These are data matrices (evenly spaced in two coordinates) that come
+in two flavors:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Grid-line registration</li>
+<li>Pixel registration</li>
+</ul>
+</div></blockquote>
+<p>You may choose among several file formats (even define your own format),
+but the GMT default is the architecture-independent netCDF format.</p>
+</li>
+<li><p class="first">Color palette table (For imaging, color plots, and contour maps).
+We will discuss these later.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="job-control">
+<h3>Job Control<a class="headerlink" href="#job-control" title="Permalink to this headline">¶</a></h3>
+<p>GMT modules may get operational parameters from several places:</p>
+<ol class="arabic simple">
+<li>Supplied command line options/switches or module defaults.</li>
+<li>Short-hand notation to select previously used option arguments
+(stored in gmt.history).</li>
+<li>Implicitly using GMT defaults for a variety of parameters
+(stored in <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a>).</li>
+<li>May use hidden support data like coastlines or PostScript patterns.</li>
+</ol>
+</div>
+<div class="section" id="output-data">
+<h3>Output data<a class="headerlink" href="#output-data" title="Permalink to this headline">¶</a></h3>
+<p>There are 6 general categories of output produced by GMT:</p>
+<ol class="arabic simple">
+<li>PostScript plot commands.</li>
+<li>Data Table(s).</li>
+<li>Gridded data set(s).</li>
+<li>Statistics &amp; Summaries.</li>
+<li>Warnings and Errors, written to <em>stderr</em>.</li>
+<li>Exit status (0 means success, otherwise failure).</li>
+</ol>
+<p>Note: GMT automatically creates and updates a history of past
+GMT command options for the common switches.  This history
+file is called gmt.history and one will be created in
+every directory from which GMT modules are executed.  Many
+initial problems with GMT usage result from not fully appreciating
+the relationships shown in Figure <a class="reference internal" href="#gmt-environ"><span class="std std-ref">GMT Environment</span></a> .</p>
+</div>
+</div>
+<div class="section" id="the-unix-environment-entry-level-knowledge">
+<h2>The UNIX Environment: Entry Level Knowledge<a class="headerlink" href="#the-unix-environment-entry-level-knowledge" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="redirection">
+<h3>Redirection<a class="headerlink" href="#redirection" title="Permalink to this headline">¶</a></h3>
+<p>Most GMT modules read their input from the terminal (called
+<em>stdin</em>) or from files, and write their output to the
+terminal (called <em>stdout</em>).  To use files instead one can
+use redirection:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt module input-file &gt; output-file         <span class="c1"># Read a file and redirect output</span>
+gmt module &lt; input-file &gt; output-file       <span class="c1"># Redirect input and output</span>
+gmt module input-file &gt;&gt; output-file        <span class="c1"># Append output to existing file</span>
+</pre></div>
+</div>
+<p>In this example, and in all those to follow, it is assumed that you do not have the shell
+variable <strong>noclobber</strong> set. If you do, it prevents accidental overwriting of existing files.
+That may be a noble cause, but it is extremely annoying. So please, <strong>unset noclobber</strong>.</p>
+</div>
+<div class="section" id="piping">
+<h3>Piping (|)<a class="headerlink" href="#piping" title="Permalink to this headline">¶</a></h3>
+<p>Sometimes we want to use the output from one module as input
+to another module.  This is achieved with <em>pipes</em>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Someprogram <span class="p">|</span> gmt module1 <span class="p">|</span> gmt module1 &gt; OutputFile
+</pre></div>
+</div>
+</div>
+<div class="section" id="standard-error-stderr">
+<h3>Standard error (<em>stderr</em>)<a class="headerlink" href="#standard-error-stderr" title="Permalink to this headline">¶</a></h3>
+<p>Most programs and GMT modules will on occasion write error messages.
+These are typically written to a separate data stream called
+<em>stderr</em> and can be redirected separately from the standard
+output (which goes to <em>stdout</em>).  To send the error messages to the same location
+as standard output we use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>program &gt; errors.log <span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</pre></div>
+</div>
+<p>When we want to save both program output and error messages to
+separate files we use the following syntax:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt module &gt; output.txt <span class="m">2</span>&gt; errors.log
+</pre></div>
+</div>
+</div>
+<div class="section" id="file-name-expansion-or-wild-cards">
+<h3>File name expansion or “wild cards”<a class="headerlink" href="#file-name-expansion-or-wild-cards" title="Permalink to this headline">¶</a></h3>
+<p>UNIX provides several ways to select groups of files based
+on name patterns:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Code</th>
+<th class="head">Meaning</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>*</td>
+<td>Matches anything</td>
+</tr>
+<tr class="row-odd"><td>?</td>
+<td>Matches any single character</td>
+</tr>
+<tr class="row-even"><td><em>list</em></td>
+<td>Matches characters in the list</td>
+</tr>
+<tr class="row-odd"><td><em>range</em></td>
+<td>Matches characters in the given range</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>You can save much time by getting into the habit of selecting
+“good” filenames that make it easy to select subsets of all
+files using the UNIX wild card notation.</p>
+<p>Examples:</p>
+<ol class="arabic simple">
+<li>gmt module data_*.txt operates on all files starting with
+“data_” and ending in “.txt”.</li>
+<li>gmt module line_?.txt works on all files starting with
+“line_” followed by any single character and ending in “.txt”.</li>
+<li>gmt module section_1[0-9]0.part_[12] only processes data
+from sections 100 through 190, only using every 10th profile, and
+gets both part 1 and 2.</li>
+</ol>
+</div>
+</div>
+<div class="section" id="laboratory-exercises">
+<h2>Laboratory Exercises<a class="headerlink" href="#laboratory-exercises" title="Permalink to this headline">¶</a></h2>
+<p>We will begin our adventure by making some simple plot axes and
+coastline basemaps.  We will do this in order to introduce the
+all-important common options <strong>-B</strong>, <strong>-J</strong>, and <strong>-R</strong> and to familiarize
+ourselves with a few selected GMT projections.  The GMT modules
+we will utilize are <a class="reference internal" href="../basemap.html"><span class="doc">basemap</span></a> and <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a>.  Please
+consult their manual pages for reference.</p>
+<div class="section" id="linear-projection">
+<h3>Linear projection<a class="headerlink" href="#linear-projection" title="Permalink to this headline">¶</a></h3>
+<p>We start by making the basemap frame for a linear <em>x-y</em> plot.
+We want it to go from 10 to 70 in <em>x</em> and
+from -3 to 8 in <em>y</em>, with automatic annotation intervals.  Finally,
+we let the canvas be painted light red and have dimensions of
+4 by 3 inches.  Here’s how we do it:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_1
+	gmt basemap -R10/70/-3/8 -JX4i/3i -B -B+glightred+t<span class="s2">&quot;My first plot&quot;</span>
+gmt end show
+</pre></div>
+</div>
+<p>This script will open the result GMT_tut_1.pdf in a PDF viewer and it should look like <a class="reference internal" href="#gmt-tut-1"><span class="std std-ref">our example 1 below</span></a>.
+Examine the <a class="reference internal" href="../basemap.html"><span class="doc">basemap</span></a> documentation so you understand what each option means.</p>
+<div class="figure align-center" id="id2">
+<span id="gmt-tut-1"></span><a class="reference internal image-reference" href="../_images/GMT_tut_1.png"><img alt="../_images/GMT_tut_1.png" src="../_images/GMT_tut_1.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 1.</span></p>
+</div>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li>Try change the <strong>-JX</strong> values.</li>
+<li>Try change the <strong>-B</strong> values.</li>
+<li>Change title and canvas color.</li>
+</ol>
+</div>
+<div class="section" id="logarithmic-projection">
+<h3>Logarithmic projection<a class="headerlink" href="#logarithmic-projection" title="Permalink to this headline">¶</a></h3>
+<p>We next will show how to do a basemap for a log–log plot.  We have
+no data set yet but we will
+imagine that the raw <em>x</em> data range from 3 to 9613 and that <em>y</em>
+ranges from 10^20 to 10^24.  One possibility is</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_2
+	gmt basemap -R1/10000/1e20/1e25 -JX9il/6il -Bxa2+l<span class="s2">&quot;Wavelength (m)&quot;</span> -Bya1pf3+l<span class="s2">&quot;Power (W)&quot;</span> -BWS
+gmt end show
+</pre></div>
+</div>
+<p>Make sure your plot looks like <a class="reference internal" href="#gmt-tut-2"><span class="std std-ref">our example 2 below</span></a></p>
+<div class="figure align-center" id="id3">
+<span id="gmt-tut-2"></span><a class="reference internal image-reference" href="../_images/GMT_tut_2.png"><img alt="../_images/GMT_tut_2.png" src="../_images/GMT_tut_2.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 2.</span></p>
+</div>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li>Do not append <strong>l</strong> to the axes lengths.</li>
+<li>Leave the <strong>p</strong> modifier out of the <strong>-B</strong> string.</li>
+<li>Add <strong>g</strong>3 to <strong>-Bx</strong> and <strong>-By</strong>.</li>
+</ol>
+</div>
+<div class="section" id="mercator-projection">
+<h3>Mercator projection<a class="headerlink" href="#mercator-projection" title="Permalink to this headline">¶</a></h3>
+<p>Despite the problems of extreme horizontal exaggeration at high
+latitudes, the conformal Mercator projection (<strong>-JM</strong>) remains
+the stalwart of location maps used by scientists.  It is one
+of several cylindrical projections offered by GMT; here we
+will only have time to focus on one such projection.  The
+complete syntax is simply</p>
+<p><strong>-JM</strong><em>width</em></p>
+<p>To make coastline maps we use <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> which automatically will
+access the GMT coastline, river and border data base derived from the GSHHG
+database [See <em>Wessel and Smith</em>, 1996].  In addition
+to the common switches we may need to use some of several coast-specific options:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="92%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Purpose</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>-A</strong></td>
+<td>Exclude small features or those of high hierarchical levels (see <a class="reference internal" href="../datasets/gshhg.html"><span class="doc">The Global Self-consistent, Hierarchical, High-resolution Geography Database (GSHHG)</span></a></td>
+</tr>
+<tr class="row-odd"><td><strong>-D</strong></td>
+<td>Select data resolution (<strong>f</strong>ull, <strong>h</strong>igh, <strong>i</strong>ntermediate, <strong>l</strong>ow, or <strong>c</strong>rude)</td>
+</tr>
+<tr class="row-even"><td><strong>-G</strong></td>
+<td>Set color of dry areas (default does not paint)</td>
+</tr>
+<tr class="row-odd"><td><strong>-I</strong></td>
+<td>Draw rivers (chose features from one or more hierarchical categories)</td>
+</tr>
+<tr class="row-even"><td><strong>-L</strong></td>
+<td>Plot map scale (length scale can be km, miles, or nautical miles)</td>
+</tr>
+<tr class="row-odd"><td><strong>-N</strong></td>
+<td>Draw political borders (including US state borders)</td>
+</tr>
+<tr class="row-even"><td><strong>-S</strong></td>
+<td>Set color for wet areas (default does not paint)</td>
+</tr>
+<tr class="row-odd"><td><strong>-W</strong></td>
+<td>Draw coastlines and set pen thickness</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>One of <strong>-W</strong>, <strong>-G</strong>, <strong>-S</strong> must be selected.  Our first coastline
+example is from Latin America:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_3
+	gmt coast -R-90/-70/0/20 -JM6i -B -Gchocolate
+gmt end show
+</pre></div>
+</div>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-3"><span class="std std-ref">our example 3 below</span></a></p>
+<div class="figure align-center" id="id4">
+<span id="gmt-tut-3"></span><a class="reference internal image-reference" href="../_images/GMT_tut_3.png"><img alt="../_images/GMT_tut_3.png" src="../_images/GMT_tut_3.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 3.</span></p>
+</div>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li>Add the <strong>-V</strong> option.</li>
+<li>Try <strong>-R</strong>270/290/0/20 instead.  What happens to the annotations?</li>
+<li>Edit your gmt.conf file, change <a class="reference internal" href="../gmt.conf.html#format-geo-map"><span class="std std-ref">FORMAT_GEO_MAP</span></a>
+to another setting (see the <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a> documentation), and plot again.</li>
+<li>Pick another region and change land color.</li>
+<li>Pick a region that includes the north or south poles.</li>
+<li>Try <strong>-W</strong>0.25<strong>p</strong> instead of (or in addition to) <strong>-G</strong>.</li>
+</ol>
+</div>
+<div class="section" id="albers-projection">
+<h3>Albers projection<a class="headerlink" href="#albers-projection" title="Permalink to this headline">¶</a></h3>
+<p>The Albers projection (<strong>-JB</strong>) is an equal-area conical projection;
+its conformal cousin is the Lambert conic projection (<strong>-JL</strong>).
+Their usages are almost identical so we will only use the Albers here.
+The general syntax is</p>
+<blockquote>
+<div><strong>-JB</strong><em>lon_0/lat_0/lat_1/lat_2/width</em></div></blockquote>
+<p>where (<em>lon_0, lat_0</em>) is the map (projection) center and <em>lat_1, lat_2</em>
+are the two standard parallels where the cone intersects the Earth’s surface.
+We try the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_4
+	gmt coast -R-130/-70/24/52 -JB-100/35/33/45/6i -B -B+t<span class="s2">&quot;Conic Projection&quot;</span> -N1/thickest -N2/thinnest -A500 -Ggray -Wthinnest
+gmt end show
+</pre></div>
+</div>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-4"><span class="std std-ref">our example 4 below</span></a></p>
+<div class="figure align-center" id="id5">
+<span id="gmt-tut-4"></span><a class="reference internal image-reference" href="../_images/GMT_tut_4.png"><img alt="../_images/GMT_tut_4.png" src="../_images/GMT_tut_4.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 4.</span></p>
+</div>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li>Change the parameter <a class="reference internal" href="../gmt.conf.html#map-grid-cross-size-primary"><span class="std std-ref">MAP_GRID_CROSS_SIZE_PRIMARY</span></a> to make grid crosses instead of gridlines.</li>
+<li>Change <strong>-R</strong> to a rectangular box specification instead of
+minimum and maximum values.</li>
+</ol>
+</div>
+<div class="section" id="orthographic-projection">
+<h3>Orthographic projection<a class="headerlink" href="#orthographic-projection" title="Permalink to this headline">¶</a></h3>
+<p>The azimuthal orthographic projection (<strong>-JG</strong>) is one of several
+projections with similar syntax and behavior; the one we have
+chosen mimics viewing the Earth from space at an infinite distance;
+it is neither conformal nor equal-area.
+The syntax for this projection is</p>
+<p><strong>-JG</strong><em>lon_0/lat_0/width</em></p>
+<p>where (<em>lon_0, lat_0</em>) is the center of the map (projection).
+As an example we will try</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_5
+	gmt coast -Rg -JG280/30/6i -Bag -Dc -A5000 -Gwhite -SDarkTurquoise
+gmt end show
+</pre></div>
+</div>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-5"><span class="std std-ref">our example 5 below</span></a></p>
+<div class="figure align-center" id="id6">
+<span id="gmt-tut-5"></span><a class="reference internal image-reference" href="../_images/GMT_tut_5.png"><img alt="../_images/GMT_tut_5.png" src="../_images/GMT_tut_5.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 5</span></p>
+</div>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li>Use the rectangular option in <strong>-R</strong> to make a rectangular map
+showing the US only.</li>
+</ol>
+</div>
+<div class="section" id="eckert-iv-and-vi-projection">
+<h3>Eckert IV and VI projection<a class="headerlink" href="#eckert-iv-and-vi-projection" title="Permalink to this headline">¶</a></h3>
+<p>We conclude the survey of map projections with the Eckert IV and VI projections
+(<strong>-JK</strong>), two of several projections used for global thematic maps; They
+are both equal-area projections whose syntax is</p>
+<p><strong>-JK</strong>[<strong>f</strong>|<strong>s</strong>]<em>lon_0/width</em></p>
+<p>where <strong>b</strong> gives Eckert IV (4) and <strong>s</strong> (Default) gives Eckert VI (6).
+The <em>lon_0</em> is the central meridian (which takes precedence over
+the mid-value implied by the <strong>-R</strong> setting).  A simple Eckert VI world map
+is thus generated by</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_6
+	gmt coast -Rg -JKs180/9i -Bag -Dc -A5000 -Gchocolate -SDarkTurquoise -Wthinnest
+gmt end show
+</pre></div>
+</div>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-6"><span class="std std-ref">our example 6 below</span></a></p>
+<div class="figure align-center" id="id7">
+<span id="gmt-tut-6"></span><a class="reference internal image-reference" href="../_images/GMT_tut_6.png"><img alt="../_images/GMT_tut_6.png" src="../_images/GMT_tut_6.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 6</span></p>
+</div>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li>Center the map on Greenwich.</li>
+<li>Add a map scale with <strong>-L</strong>.</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="session-2.html" class="btn btn-neutral float-right" title="Session Two" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="intro.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

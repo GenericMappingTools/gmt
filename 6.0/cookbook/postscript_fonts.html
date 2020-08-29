@@ -1,0 +1,405 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>12. PostScript Fonts Used by GMT &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="13. Color Space: The Final Frontier" href="colorspace.html" />
+    <link rel="prev" title="11. Chart of Octal Codes for Characters" href="octal_codes.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preface.html">1. Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html">2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">3. General Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="options.html">4. Standardized command line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinate_transformations.html">5. GMT Coordinate Transformations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="map_projections.html">6. GMT Map Projections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplemental_packages.html">7. GMT Supplemental Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html">8. GMT File Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="include_figures.html">9. Including GMT Graphics into your Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predefined_patterns.html">10. Predefined Bit and Hachure Patterns in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="octal_codes.html">11. Chart of Octal Codes for Characters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">12. PostScript Fonts Used by GMT</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#using-non-default-fonts-with-gmt">12.1. Using non-default fonts with GMT</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#embedding-fonts-in-postscript-and-pdf">12.1.1. Embedding fonts in PostScript and PDF</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#character-encoding">12.1.2. Character encoding</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">13. Color Space: The Final Frontier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_filtering.html">14. Filtering of Data in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_unix_platforms.html">15. GMT on non-UNIX Platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpts.html">16. Of Colors and Color Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_symbols.html">17. Custom Plot Symbols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contour_annotations.html">18. Annotation of Contours and “Quoted Lines”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ogrgmt_format.html">19. The GMT Vector Data Format for OGR Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="one-liner.html">20. GMT Modern Mode One-line Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../cookbook.html">GMT Cookbook</a> &raquo;</li>
+        
+      <li>12. PostScript Fonts Used by GMT</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/cookbook/postscript_fonts.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="postscript-fonts-used-by-gmt">
+<h1>12. PostScript Fonts Used by GMT<a class="headerlink" href="#postscript-fonts-used-by-gmt" title="Permalink to this headline">¶</a></h1>
+<p>GMT uses the standard 35 fonts that come with most
+PostScript laserwriters. If your printer does not support some of
+these fonts, it will automatically substitute the default font (which is
+usually Courier). The following is a list of the GMT fonts:</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/GMT_App_G.png"><img alt="../_images/GMT_App_G.png" src="../_images/GMT_App_G.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">The standard 35 PostScript fonts recognized by GMT.</span></p>
+</div>
+<p>For the special fonts Symbol (12) and ZapfDingbats (34), see the octal
+charts in Chapter <a class="reference internal" href="octal_codes.html"><span class="doc">Chart of Octal Codes for Characters</span></a>. When specifying fonts in GMT, you can
+either give the entire font name <em>or</em> just the font number listed in
+this table. To change the fonts used in plotting basemap frames, see the
+man page for <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a>. For direct
+plotting of text-strings, see the man page for <a class="reference internal" href="../text.html"><span class="doc">text</span></a>.</p>
+<div class="section" id="using-non-default-fonts-with-gmt">
+<span id="non-default-fonts"></span><h2>12.1. Using non-default fonts with GMT<a class="headerlink" href="#using-non-default-fonts-with-gmt" title="Permalink to this headline">¶</a></h2>
+<p>To add additional fonts that you may have purchased or that are
+available freely in the internet or at your institution, you will need
+to tell GMT some basic information about such fonts. GMT does
+not actually read or process any font files and thus does not know anything about
+installed fonts and their metrics. In order to use extra fonts in
+GMT you need to specify the PostScript name of the relevant fonts in
+the file <code class="docutils literal notranslate"><span class="pre">PSL_custom_fonts.txt</span></code>. We recommend you place this file in
+your GMT user directory (~/.gmt) as GMT will look there as well as in your
+home directory.  Below is an example of a typical entry for two separate fonts:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>LinBiolinumO      <span class="m">0</span>.700    <span class="m">0</span>
+LinLibertineOB    <span class="m">0</span>.700    <span class="m">0</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The format is a space delimited list of the PostScript font name, the
+font’s height-point size-ratio, and a boolean variable that tells GMT to
+re-encode the font (if set to zero). The latter has to be set to zero as
+additional fonts will most likely not come in standard
+PostScript encoding. GMT determines how tall typical annotations
+might be from the font size ratio so that the vertical position of
+labels and titles can be adjusted to a more uniform typesetting. This
+ratio can be estimated from the height of the letter A for a unit font size.
+Now, you can set the GMT font parameters to your non-standard fonts:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt <span class="nb">set</span> FONT              LinBiolinumO <span class="se">\</span>
+        FONT_TITLE        28p,LinLibertineOB <span class="se">\</span>
+        PS_CHAR_ENCODING  ISO-8859-1 <span class="se">\</span>
+        MAP_DEGREE_SYMBOL degree
+</pre></div>
+</div>
+</div></blockquote>
+<p>After setting the encoding and the degree symbol, the configuration part
+for GMT is finished and you can proceed to create GMT-maps as usual.
+An example script is discussed in Example <a class="reference internal" href="../gallery/ex31.html#example-31"><span class="std std-ref">(31) Using non-default fonts in PostScript</span></a>.</p>
+<div class="section" id="embedding-fonts-in-postscript-and-pdf">
+<h3>12.1.1. Embedding fonts in PostScript and PDF<a class="headerlink" href="#embedding-fonts-in-postscript-and-pdf" title="Permalink to this headline">¶</a></h3>
+<p>If you have Type 1 fonts in PFA (Printer Font ASCII) format you can
+embed them directly by copying them at the very top of your
+PostScript file, before even the %!PS header comment. PFB (Printer
+Font Binary), TrueType or OpenType fonts cannot be embedded in
+PostScript directly and therefore have to be converted to PFA first.</p>
+<p>However, you most likely will have to tell Ghostscript where to
+find your custom fonts in order to convert your GMT PostScript plot
+to PDF or an image with <a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a>.
+When you have used the correct PostScript names of the fonts in <code class="docutils literal notranslate"><span class="pre">PSL_custom_fonts.txt</span></code> you
+only need to point the <code class="docutils literal notranslate"><span class="pre">GS_FONTPATH</span></code> environment variable to the
+directory where the font files can be found and invoke
+<a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a> in the usual way. Likewise
+you can specify Ghostscript’s <code class="docutils literal notranslate"><span class="pre">-sFONTPATH</span></code> option on the
+command line with <code class="docutils literal notranslate"><span class="pre">C</span> <span class="pre">-sFONTPATH=/path/to/fontdir</span></code>. Ghostscript,
+which is invoked by <a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a>, does
+not depend on file names. It will automatically find the relevant font
+files by their PostScript names and embed and subset them in
+PDF-files. This is quite convenient as the document can be displayed and
+printed even on other computers when the font is not available locally.
+There is no need to convert your fonts as Ghostscript can handle
+all Type 1, TrueType and OpenType fonts. Note also, that you do not need
+to edit Ghostscript’s Fontmap.</p>
+<p>If you do not want or cannot embed the fonts you can convert them to
+outlines (shapes with fills) with Ghostscript in the following
+way:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gs -q -dNOCACHE -dSAFER -dNOPAUSE -dBATCH -dNOPLATFONTS <span class="se">\</span>
+   -sDEVICE<span class="o">=</span>ps2write -sFONTPATH<span class="o">=</span><span class="s2">&quot;/path/to/fontdir&quot;</span> <span class="se">\</span>
+   -sOutputFile<span class="o">=</span>mapWithOutlinedFonts.ps map.ps
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note, that this only works with the <em>ps2write</em> device. If you need
+outlined fonts in PDF, create the PDF from the converted
+PostScript file. Also, <a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a>
+cannot correctly crop Ghostscript converted PostScript files
+anymore. Use Heiko Oberdiek’s instead or crop with
+<a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a> <strong>-A</strong> <strong>-Te</strong> before (See Example <a class="reference internal" href="../gallery/ex31.html#example-31"><span class="std std-ref">(31) Using non-default fonts in PostScript</span></a>).</p>
+</div>
+<div class="section" id="character-encoding">
+<h3>12.1.2. Character encoding<a class="headerlink" href="#character-encoding" title="Permalink to this headline">¶</a></h3>
+<p>Since PostScript itself does not support Unicode fonts,
+Ghostscript will re-encode the fonts on the fly. You have to make
+sure to set the correct <a class="reference internal" href="../gmt.conf.html#ps-char-encoding"><span class="std std-ref">PS_CHAR_ENCODING</span></a>
+with <a class="reference internal" href="../gmtset.html"><span class="doc">gmtset</span></a> and save your
+script file with the same character encoding. Alternatively, you can
+substitute all non ASCII characters with their corresponding octal
+codes, e.g., \265 instead of μ. Note, that PostScript fonts support
+only a small range of glyphs and you may have to switch the
+<a class="reference internal" href="../gmt.conf.html#ps-char-encoding"><span class="std std-ref">PS_CHAR_ENCODING</span></a> within your script.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="colorspace.html" class="btn btn-neutral float-right" title="13. Color Space: The Final Frontier" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="octal_codes.html" class="btn btn-neutral float-left" title="11. Chart of Octal Codes for Characters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

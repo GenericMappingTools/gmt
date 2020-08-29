@@ -1,0 +1,311 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>rotconverter &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="rotsmoother" href="rotsmoother.html" />
+    <link rel="prev" title="originator" href="originator.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="rotsmoother.html" title="rotsmoother"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="originator.html" title="originator"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="rotconverter">
+<span id="index-0"></span><h1>rotconverter<a class="headerlink" href="#rotconverter" title="Permalink to this headline">¶</a></h1>
+<p>rotconverter - Manipulate total reconstruction and stage rotations</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>rotconverter</strong> [ <strong>+</strong>|<strong>-</strong> ] <em>rotA</em> [ <strong>+</strong>|<strong>-</strong> <em>rotB</em> ]
+[ <strong>+</strong>|<strong>-</strong> <em>rotC</em> ] … [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong> ] [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong> ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<em>fact</em>] ] [ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>out</em> ] [ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong> ] [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ] [ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong> ] [ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>rotconverter</strong> reads one or more plate motion models (stage or total
+reconstruction rotations) stored in the given files. If more than one
+plate motion model is given we will add or subtract them in the order
+they were listed. The minus sign means we should first transpose the
+rotation and then add it to the previous rotation. If a file cannot be
+opened we will attempt to decode the file name as a single rotation
+whose parameters are separated by slashes.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>rotX</em></dt>
+<dd>Name of a file with a plate motion model. Separate several files
+with desired operator (+ or -). The very first file may also have a
+leading minus operator to imply a transpose. We also recognize
+filenames of the form A-B, where both A and B are uppercase plate
+abbreviations as used by GPlates, to indicate we should look up the
+rotation between the two plates in the GPlates rotation file (e.g.,
+PAC-MBL). If any of the specified rotation models cannot be opened
+as a file, we will try to decode the file name as
+<em>lon/lat/tstart</em>[<em>/tstop</em>]/<em>angle</em> for a single rotation given
+on the command line. The <em>tstop</em> argument is required for stage
+poles only. For a single total reconstruction rotation without any
+time information, give <em>lon/lat/angle</em> only.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong></dt>
+<dd>Indicate that times are actually just opening angles [times in Myr].</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong></dt>
+<dd>Report longitudes use the -180/+180 range [Default is 0/360].</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong>[<em>fact</em>]</dt>
+<dd>Scale opening angles by <em>fact</em> on output [0.5].
+Typically used to get half-rates needed for flowlines.
+Requires stage pole output (see <strong>-F</strong>).</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><em>out</em></dt>
+<dd>Specify the output format for rotations. The <em>out</em> flag must be
+either <strong>t</strong> or <strong>s</strong> for total reconstruction or stage rotations,
+respectively. [Default is <strong>-Ft</strong> (output contains total
+reconstruction rotations)].</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong></dt>
+<dd>Output final rotations in the Plates4 format used by GPlates [Default is spotter format].</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong></dt>
+<dd>Place all output poles in the northern hemisphere [Default reports positive rotation angles].</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong></dt>
+<dd>Place all output poles in the southern hemisphere [Default reports positive rotation angles].</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong></dt>
+<dd>Transpose the final result, i.e., change the sign of the rotation angles.</dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong></dt>
+<dd>Ensure all output rotations have negative opening angles [Default reports positive rotation angles].</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c]. Report statistics of extracted rotations.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h2>
+<p>Note that only one of <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong>, <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong>, and <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong> can be used at the same time.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To convert the total reconstruction rotations in the file
+model_total_reconstruction.APM to stage poles, run</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">rotconverter</span> <span class="n">model_total_reconstruction</span><span class="o">.</span><span class="n">APM</span> <span class="o">-</span><span class="n">Fs</span> <span class="o">&gt;</span> <span class="n">model_stages</span><span class="o">.</span><span class="n">APM</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To obtain Nazca motion relative to Pacific hotspots by adding the motion
+of Nazca relative to a fixed Pacific to the Pacific-Hotspot reference
+model DC85_stages.d, and report the result as total reconstruction
+reconstruction poles in the northern hemisphere, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">rotconverter</span> <span class="n">DC85_stages</span><span class="o">.</span><span class="n">APM</span> <span class="o">+</span> <span class="n">Pac_Naz_stages</span><span class="o">.</span><span class="n">RPM</span> <span class="o">-</span><span class="n">N</span> <span class="o">-</span><span class="n">Ft</span> <span class="o">&gt;</span> \
+                 <span class="n">Naz_HS_total</span> <span class="n">reconstruction</span><span class="o">.</span><span class="n">APM</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To add the final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0, 40.0, 11.4), try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">rotconverter</span> <span class="mf">150.1</span><span class="o">/</span><span class="mf">70.5</span><span class="o">/-</span><span class="mf">20.3</span> <span class="o">+</span> <span class="mi">145</span><span class="o">/</span><span class="mi">40</span><span class="o">/</span><span class="mf">11.4</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>which prints out 157.32, -80.44, 11.97.</p>
+<p>To make stage rotations suitable for generating flowlines (fracture
+zones) from a model of relative plate motions PL1-PL2.RPM, assuming
+symmetric spreading, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">rotconverter</span> <span class="n">PL1</span><span class="o">-</span><span class="n">PL2</span><span class="o">.</span><span class="n">RPM</span> <span class="o">-</span><span class="n">E</span> <span class="o">-</span><span class="n">Fs</span> <span class="o">&gt;</span> <span class="n">PL1</span><span class="o">-</span><span class="n">PL2_half</span><span class="o">.</span><span class="n">RPM</span>
+<span class="n">gmt</span> <span class="n">rotconverter</span> <span class="o">-</span> <span class="n">PL1</span><span class="o">-</span><span class="n">PL2</span><span class="o">.</span><span class="n">RPM</span> <span class="o">-</span><span class="n">E</span> <span class="o">-</span><span class="n">Fs</span> <span class="o">&gt;</span> <span class="n">PL2</span><span class="o">-</span><span class="n">PL1_half</span><span class="o">.</span><span class="n">RPM</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To compute rotations for India relative to a fixed Africa using the
+plate circuit India-Central Indian Basin-Antarctica-Africa, based on the
+GPlates rotations database, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">rotconverter</span> <span class="n">IND</span><span class="o">-</span><span class="n">CIB</span> <span class="n">CIB</span><span class="o">-</span><span class="n">ANT</span> <span class="n">ANT</span><span class="o">-</span><span class="n">AFR</span> <span class="o">&gt;</span> <span class="n">India_Africa</span><span class="o">.</span><span class="n">RPM</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>GMT distributes the EarthByte rotation model Global_EarthByte_230-0Ma_GK07_AREPS.rot.
+To use an alternate rotation file, create an environmental parameters named
+<strong>GPLATES_ROTATIONS</strong> that points to an alternate rotation file.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="backtracker.html"><span class="doc">backtracker</span></a>,
+<a class="reference internal" href="grdrotater.html"><span class="doc">grdrotater</span></a>,
+<a class="reference internal" href="grdspotter.html"><span class="doc">grdspotter</span></a>,
+<a class="reference internal" href="gmtpmodeler.html"><span class="doc">gmtpmodeler</span></a>,
+<a class="reference internal" href="grdpmodeler.html"><span class="doc">grdpmodeler</span></a>,
+<a class="reference internal" href="grdrotater.html"><span class="doc">grdrotater</span></a>,
+<a class="reference internal" href="hotspotter.html"><span class="doc">hotspotter</span></a>,
+<a class="reference internal" href="originator.html"><span class="doc">originator</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">rotconverter</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="originator.html"
+                        title="previous chapter">originator</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="rotsmoother.html"
+                        title="next chapter">rotsmoother</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/spotter/rotconverter.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="rotsmoother.html" title="rotsmoother"
+             >next</a> </li>
+        <li class="right" >
+          <a href="originator.html" title="originator"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

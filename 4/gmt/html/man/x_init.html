@@ -1,0 +1,238 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:45 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>X_INIT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>X_INIT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#BEWARE">BEWARE</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x_init</b>
+&minus; Initialization of Cross-Over Data Bases.</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x_init
+&minus;I</b></p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The purpose of
+<b>x_init</b> is to create two key files that will be
+holding all the cross-over information for all the cruises
+tested. These files are called <i>xx_base.b</i> and
+<i>xx_legs.b</i>, and they will contain data for each
+cross-over and totals for each leg, respectively.
+<b>x_init</b> will create these two files in the current
+directory, and write out the fileheader with a 1 as the next
+record number in the case of xx_base.b. NB! Any previous
+files with the same names in the current directory will be
+erased, so use with caution.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Must be present
+form initialization to take effect.</p></td>
+<td width="0%">
+</td>
+</table>
+
+<a name="BEWARE"></a>
+<h2>BEWARE</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Both files are
+binary and have fixed record lengths. The formats of the
+files are as follows: <b><br>
+xx_base.b:</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">Record length = 40 bytes.</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="54%">
+</td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%">
+</td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">Rec # 1:</p></td>
+<td width="7%"></td>
+<td width="8%">
+</td>
+<td width="54%">
+
+
+<p valign="top">fileheader</p></td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%">
+</td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">Rec # 2:</p></td>
+<td width="7%"></td>
+<td width="8%">
+</td>
+<td width="54%">
+
+
+<p valign="top">pairheader</p></td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%">
+</td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">Next n recs:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="54%">
+</td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="54%">
+
+
+<p valign="top">crossover-structure</p></td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%">
+</td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">Rec # n+3:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="54%">
+</td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="54%">
+
+
+<p valign="top">pairheader etc.</p></td>
+</table>
+
+<p style="margin-left:22%;">The fileheader is a 40 byte
+character string where the last 10 bytes contains the record
+number of the last record in the file. The pairheader is a
+40 byte character string which contains the names of the two
+legs in question and the number of COEs generated between
+them. The crossover-structure contains all the information
+for one COE, that is lat, lon, time along leg values of
+gravity, magnetics, and bathymetry at the cross-over point,
+the heading of track #1, and the heading of track #2. See
+program listing for more details on formats. The file is
+sequential in that new data are appended at the end of the
+file.</p>
+
+<p style="margin-left:11%;"><b>xx_legs.b:</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Record length = 204 bytes.</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Each record
+contains the complete information for each leg that has been
+checked. The leg-structure contains fields like year of
+cruise, number of internal/external COEs for gravity,
+magnetics, and bathymetry, their means and standard
+deviations, and the best fitting regression lines, i.e., the
+dc-shifts and drift-rates computed from the time/error data
+points. See program listing for complete description of
+record format.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="x_system.html">x_system</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P.
+XOVER: A Cross-over Error Detector for Track Data,
+<i>Computers &amp; Geosciences, 15</i>, 333-346.</p>
+<hr>
+</body>
+</html>

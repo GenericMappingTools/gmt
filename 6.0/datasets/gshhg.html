@@ -1,0 +1,621 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>The Global Self-consistent, Hierarchical, High-resolution Geography Database (GSHHG) &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The Digital Chart of the World Data (DCW)" href="dcw.html" />
+    <link rel="prev" title="Datasets" href="../datasets.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../datasets.html">Datasets</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">The Global Self-consistent, Hierarchical, High-resolution Geography Database (GSHHG)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#selecting-the-right-data">Selecting the right data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#format-required-by-gmt">Format required by GMT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-long-and-winding-road">The long and winding road</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-five-resolutions">The Five Resolutions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#the-crude-resolution-dc">The crude resolution (<strong>-Dc</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-low-resolution-dl">The low resolution (<strong>-Dl</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-intermediate-resolution-di">The intermediate resolution (<strong>-Di</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-high-resolution-dh">The high resolution (<strong>-Dh</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-full-resolution-df">The full resolution (<strong>-Df</strong>)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dcw.html">The Digital Chart of the World Data (DCW)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="earth_relief.html">Global Earth Relief Grids</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../datasets.html">Datasets</a> &raquo;</li>
+        
+      <li>The Global Self-consistent, Hierarchical, High-resolution Geography Database (GSHHG)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/datasets/gshhg.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="the-global-self-consistent-hierarchical-high-resolution-geography-database-gshhg">
+<h1>The Global Self-consistent, Hierarchical, High-resolution Geography Database (GSHHG)<a class="headerlink" href="#the-global-self-consistent-hierarchical-high-resolution-geography-database-gshhg" title="Permalink to this headline">¶</a></h1>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/gshhg.jpg"><img alt="../_images/gshhg.jpg" src="../_images/gshhg.jpg" style="width: 631.05px; height: 320.59999999999997px;" /></a>
+</div>
+<p>GMT uses the <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> utility to access a version of the GSHHG data
+specially formatted for GMT.  The GSHHG data have strengths and weaknesses.
+It is global and open source, but is based on relatively old datasets and
+hence may not be accurate enough for very large-scale mapping projects.
+The current GSHHG version used by GMT is 2.3.7.  Below is a mostly technical
+description of how the GSHHG data set was assembled, processed, and formatted
+to meet the requirements of GMT.</p>
+<div class="section" id="selecting-the-right-data">
+<h2>Selecting the right data<a class="headerlink" href="#selecting-the-right-data" title="Permalink to this headline">¶</a></h2>
+<p>There are two well-known public-domain data sets that could be used for
+this purpose. Once is known as the World Data Bank II or CIA Data Bank
+(WDB) and contains coastlines, lakes, political boundaries, and rivers.
+The other, the World Vector Shoreline (WVS) only contains shorelines
+between saltwater and land (i.e., no lakes). It turns out that the WVS
+data is far superior to the WDB data as far as data quality goes, but as
+noted it lacks lakes, not to mention rivers and borders. We decided to
+use the WVS whenever possible and supplement it with WDB data. We got
+these data over the Internet; they are also available on CD-ROM from the
+National Centers for Environmental Information in Boulder, Colorado <a class="footnote-reference" href="#id5" id="id1">[1]</a>.</p>
+</div>
+<div class="section" id="format-required-by-gmt">
+<h2>Format required by GMT<a class="headerlink" href="#format-required-by-gmt" title="Permalink to this headline">¶</a></h2>
+<p>In order to paint continents or oceans it is necessary that the
+coastline data be organized in polygons that may be filled. Simple line
+segments can be used to draw the coastline, but for painting polygons
+are required. Both the WVS and WDB data consists of unsorted line
+segments: there is no information included that tells you which segments
+belong to the same polygon (e.g., Australia should be one large
+polygon). In addition, polygons enclosing land must be differentiated
+from polygons enclosing lakes since they will need different paint.
+Finally, we want <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> to be
+flexible enough that it can paint the land <em>or</em> the oceans <em>or</em> both. If
+just land (or oceans) is selected we do not want to paint those areas
+that are not land (or oceans) since previous plot programs may have
+drawn in those areas. Thus, we will need to combine polygons into new
+polygons that lend themselves to fill land (or oceans) only (Note that
+older versions of <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> always
+painted lakes and wiped out whatever was plotted beneath).</p>
+</div>
+<div class="section" id="the-long-and-winding-road">
+<h2>The long and winding road<a class="headerlink" href="#the-long-and-winding-road" title="Permalink to this headline">¶</a></h2>
+<p>The WVS and WDB together represent more than 100 Mb of binary data and
+something like 20 million data points. Hence, it becomes obvious that
+any manipulation of these data must be automated. For instance, the
+reasonable requirement that no coastline should cross another coastline
+becomes a complicated processing step.</p>
+<ul>
+<li><p class="first">To begin, we first made sure that all data were “clean”, i.e., that
+there were no outliers and bad points. We had to write several
+programs to ensure data consistency and remove “spikes” and bad
+points from the raw data. Also, crossing segments were automatically
+“trimmed” provided only a few points had to be deleted. A few hundred
+more complicated cases had to be examined semi-manually.</p>
+</li>
+<li><p class="first">Programs were written to examine all the loose segments and determine
+which segments should be joined to produce polygons. Because not all
+segments joined exactly (there were non-zero gaps between some
+segments) we had to find all possible combinations and choose the
+simplest combinations. The WVS segments joined to produce more than
+200,000 polygons, the largest being the Africa-Eurasia polygon which
+has 1.4 million points. The WDB data resulted in a smaller data base
+(~25% of WVS).</p>
+</li>
+<li><p class="first">We now needed to combine the WVS and WDB data bases. The main problem
+here is that we have duplicates of polygons: most of the features in
+WVS are also in WDB. However, because the resolution of the data
+differ it is nontrivial to figure out which polygons in WDB to
+include and which ones to ignore. We used two techniques to address
+this problem. First, we looked for crossovers between all possible
+pairs of polygons. Because of the crossover processing in step 1
+above we know that there are no remaining crossovers within WVS and
+WDB; thus any crossovers would be between WVS and WDB polygons.
+Crossovers could mean two things: (1) A slightly misplaced WDB
+polygon crosses a more accurate WVS polygon, both representing the
+same geographic feature, or (2) a misplaced WDB polygon (e.g., a
+small coastal lake) crosses the accurate WVS shoreline. We
+distinguished between these cases by comparing the area and centroid
+of the two polygons. In almost all cases it was obvious when we had
+duplicates; a few cases had to be checked manually. Second, on many
+occasions the WDB duplicate polygon did not cross its WVS counterpart
+but was either entirely inside or outside the WVS polygon. In those
+cases we relied on the area-centroid tests.</p>
+</li>
+<li><p class="first">While the largest polygons were easy to identify by visual
+inspection, the majority remain unidentified. Since it is important
+to know whether a polygon is a continent or a small pond inside an
+island inside a lake we wrote programs that would determine the
+hierarchical level of each polygon. Here, level = 1 represents
+ocean/land boundaries, 2 is land/lakes borders, 3 is
+lakes/islands-in-lakes, and 4 is
+islands-in-lakes/ponds-in-islands-in-lakes. Level 4 was the highest
+level encountered in the data. To automatically determine the
+hierarchical levels we wrote programs that would compare all possible
+pairs of polygons and find how many polygons a given polygon was
+inside. Because of the size and number of the polygons such programs
+would typically run for 3 days on a Sparc-2 workstation.</p>
+</li>
+<li><p class="first">Once we know what type a polygon is we can enforce a common
+“orientation” for all polygons. We arranged them so that when you
+move along a polygon from beginning to end, your left hand is
+pointing toward “land”. At this step we also computed the area of all
+polygons since we would like the option to plot only features that
+are bigger than a minimum area to be specified by the user.</p>
+</li>
+<li><p class="first">Obviously, if you need to make a map of Denmark then you do not want
+to read the entire 1.4 million points making up the Africa-Eurasia
+polygon. Furthermore, most plotting devices will not let you paint
+and fill a polygon of that size due to memory restrictions. Hence, we
+need to partition the polygons so that smaller subsets can be
+accessed rapidly. Likewise, if you want to plot a world map on a
+letter-size paper there is no need to plot 10 million data points as
+most of them will plot several times on the same pixel and the
+operation would take a very long time to complete. We chose to make 5
+versions on the database, corresponding to different resolutions. The
+decimation was carried out using the Douglas-Peucker (DP)
+line-reduction algorithm <a class="footnote-reference" href="#id6" id="id2">[2]</a>. We chose the cutoffs so that each
+subset was approximately 20% the size of the next higher resolution.
+The five resolutions are called <strong>f</strong>ull, <strong>h</strong>igh,
+<strong>i</strong>ntermediate, <strong>l</strong>ow, and <strong>c</strong>rude; they are accessed in
+<a class="reference internal" href="../coast.html"><span class="doc">coast</span></a>, <a class="reference internal" href="../gmtselect.html"><span class="doc">gmtselect</span></a>, and
+<a class="reference internal" href="../grdlandmask.html"><span class="doc">grdlandmask</span></a> with the <strong>-D</strong>
+option <a class="footnote-reference" href="#id7" id="id3">[3]</a>. For each of these 5 data sets (<strong>f</strong>, <strong>h</strong>, <strong>i</strong>,
+<strong>l</strong>, <strong>c</strong>) we specified an equidistant grid (1, 2, 5, 10, 20) and
+split all polygons into line-segments that each fit inside one of the
+many boxes defined by these grid lines. Thus, to paint the entire
+continent of Australia we instead paint many smaller polygons made up
+of these line segments and gridlines. Some book-keeping has to be
+done since we need to know which parent polygon these smaller pieces
+came from in order to prescribe the correct paint or ignore if the
+feature is smaller than the cutoff specified by the user. The
+resulting segment coordinates were then scaled to fit in short
+integer format to preserve precision and written in netCDF format for
+ultimate portability across hardware platforms <a class="footnote-reference" href="#id8" id="id4">[4]</a>.</p>
+</li>
+<li><p class="first">While we are now back to a file of line-segments we are in a much
+better position to create smaller polygons for painting. Two problems
+must be overcome to correctly paint an area:</p>
+<ul class="simple">
+<li>We must be able to join line segments and grid cell borders into
+meaningful polygons; how we do this will depend on whether we want
+to paint the land or the oceans.</li>
+<li>We want to nest the polygons so that no paint falls on areas that
+are “wet” (or “dry”); e.g., if a grid cell completely on land
+contains a lake with a small island, we do not want to paint the
+lake and then draw the island, but paint the annulus or “donut”
+that is represented by the land and lake, and then plot the
+island.</li>
+</ul>
+<p>GMT uses a polygon-assembly routine that carries out these tasks on the fly.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="the-five-resolutions">
+<h2>The Five Resolutions<a class="headerlink" href="#the-five-resolutions" title="Permalink to this headline">¶</a></h2>
+<p>We will demonstrate the power of the new database by starting with a
+regional hemisphere map centered near Papua New Guinea and zoom in on a
+specified point. The map regions will be specified in projected km from
+the projection center, e.g., we may want the map to go from km to km in
+the longitudinal and the latitudinal direction.
+Also, as we zoom in on the projection center we want to draw the outline
+of the next map region on the plot. To do that we use the <strong>-D</strong> option
+in <a class="reference internal" href="../basemap.html"><span class="doc">basemap</span></a>.</p>
+<div class="section" id="the-crude-resolution-dc">
+<h3>The crude resolution (<strong>-Dc</strong>)<a class="headerlink" href="#the-crude-resolution-dc" title="Permalink to this headline">¶</a></h3>
+<p>We begin with an azimuthal equidistant map of the hemisphere centered on
+130°21’E, 0°12’S, which is slightly west of New Guinea, near the Strait of
+Dampier. The edges of the map are all 9000 km true distance from the
+projection center. At this scale (and for global maps) the crude
+resolution data will usually be adequate to capture the main geographic
+features. To avoid cluttering the map with insignificant detail we only
+plot features (i.e., polygons) that exceed 500 km<sup>2</sup> in area.
+Smaller features would only occupy a few pixels on the plot and make the
+map look “dirty”. We also add national borders to the plot. The crude
+database is heavily decimated and simplified by the DP-routine: The
+total file size of the coastlines, rivers, and borders database is only
+283 kbytes. The plot is produced by the script:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_K_1
+  gmt <span class="nb">set</span> MAP_GRID_CROSS_SIZE_PRIMARY <span class="m">0</span> MAP_ANNOT_OBLIQUE <span class="m">22</span> MAP_ANNOT_MIN_SPACING <span class="m">0</span>.3i
+  gmt coast -Rk-9000/9000/-9000/9000 -JE130.35/-0.2/3.5i -Dc <span class="se">\</span>
+    -A500 -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B20g20 -BWSne
+  <span class="nb">echo</span> <span class="m">130</span>.35 -0.2 <span class="p">|</span> gmt plot -SJ-4000 -Wthicker
+gmt end show
+</pre></div>
+</div>
+</div></blockquote>
+<div class="figure align-center" id="id9">
+<a class="reference internal image-reference" href="../_images/GMT_App_K_1.png"><img alt="../_images/GMT_App_K_1.png" src="../_images/GMT_App_K_1.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Map using the crude resolution coastline data.</span></p>
+</div>
+<p>Here, we use the <a class="reference internal" href="../gmt.conf.html#map-annot-oblique"><span class="std std-ref">MAP_ANNOT_OBLIQUE</span></a> bit flags to achieve horizontal
+annotations and set <a class="reference internal" href="../gmt.conf.html#map-annot-min-spacing"><span class="std std-ref">MAP_ANNOT_MIN_SPACING</span></a> to suppress some
+longitudinal annotations near the S pole that otherwise would overprint.
+The square box indicates the outline of the next map.</p>
+</div>
+<div class="section" id="the-low-resolution-dl">
+<h3>The low resolution (<strong>-Dl</strong>)<a class="headerlink" href="#the-low-resolution-dl" title="Permalink to this headline">¶</a></h3>
+<p>We have now reduced the map area by zooming in on the map center. Now,
+the edges of the map are all 2000 km true distance from the projection
+center. At this scale we choose the low resolution data that faithfully
+reproduce the dominant geographic features in the region. We cut back on
+minor features less than 100 km<sup>2</sup> in area. We still add
+national borders to the plot. The low database is less decimated and
+simplified by the DP-routine: The total file size of the coastlines,
+rivers, and borders combined grows to 907 kbytes; it is the default
+resolution in GMT. The plot is generated by the script:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_K_2
+  gmt coast -Rk-2000/2000/-2000/2000 -JE130.35/-0.2/3.5i -Dl -A100 -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B10g5 -BWSne
+  <span class="nb">echo</span> <span class="m">130</span>.35 -0.2 <span class="p">|</span> gmt plot -SJ-1000 -Wthicker
+gmt end show
+</pre></div>
+</div>
+</div></blockquote>
+<div class="figure align-center" id="id10">
+<a class="reference internal image-reference" href="../_images/GMT_App_K_2.png"><img alt="../_images/GMT_App_K_2.png" src="../_images/GMT_App_K_2.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Map using the low resolution coastline data.</span></p>
+</div>
+</div>
+<div class="section" id="the-intermediate-resolution-di">
+<h3>The intermediate resolution (<strong>-Di</strong>)<a class="headerlink" href="#the-intermediate-resolution-di" title="Permalink to this headline">¶</a></h3>
+<p>We continue to zoom in on the map center. In this map, the edges of the
+map are all 500 km true distance from the projection center. We abandon
+the low resolution data set as it would look too jagged at this scale
+and instead employ the intermediate resolution data that faithfully
+reproduce the dominant geographic features in the region. This time, we
+ignore features less than 20 km<sup>2</sup> in area. Although the script
+still asks for national borders none exist within our region. The
+intermediate database is moderately decimated and simplified by the
+DP-routine: The combined file size of the coastlines, rivers, and
+borders now exceeds 3.35 Mbytes. The plot is generated by the script:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_K_3
+  gmt coast -Rk-500/500/-500/500 -JE130.35/-0.2/3.5i -Di -A20 <span class="se">\</span>
+    -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B2g1 -BWSne
+  <span class="nb">echo</span> <span class="m">133</span> <span class="m">2</span> <span class="p">|</span> gmt plot -Sc1.4i -Gwhite
+  gmt basemap -Tm133/2+w1i+t45/10/5+jCM --FONT_TITLE<span class="o">=</span>12p --MAP_TICK_LENGTH_PRIMARY<span class="o">=</span><span class="m">0</span>.05i <span class="se">\</span>
+    --FONT_ANNOT_SECONDARY<span class="o">=</span>8p
+  <span class="nb">echo</span> <span class="m">130</span>.35 -0.2 <span class="p">|</span> gmt plot -SJ-200 -Wthicker
+gmt end show
+</pre></div>
+</div>
+</div></blockquote>
+<div class="figure align-center" id="id11">
+<a class="reference internal image-reference" href="../_images/GMT_App_K_3.png"><img alt="../_images/GMT_App_K_3.png" src="../_images/GMT_App_K_3.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Map using the intermediate resolution coastline data. We have added a compass
+rose just because we have the power to do so.</span></p>
+</div>
+</div>
+<div class="section" id="the-high-resolution-dh">
+<h3>The high resolution (<strong>-Dh</strong>)<a class="headerlink" href="#the-high-resolution-dh" title="Permalink to this headline">¶</a></h3>
+<p>The relentless zooming continues! Now, the edges of the map are all 100
+km true distance from the projection center. We step up to the high
+resolution data set as it is needed to accurately portray the detailed
+geographic features within the region. Because of the small scale we
+only ignore features less than 1 km<sup>2</sup> in area. The high
+resolution database has undergone minor decimation and simplification by
+the DP-routine: The combined file size of the coastlines, rivers, and
+borders now swells to 12.3 Mbytes. The map and the final outline box are
+generated by these commands:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_K_4
+  gmt coast -Rk-100/100/-100/100 -JE130.35/-0.2/3.5i -Dh -A1 <span class="se">\</span>
+    -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B30mg10m -BWSne
+  <span class="nb">echo</span> <span class="m">130</span>.35 -0.2 <span class="p">|</span> gmt plot -SJ-40 -Wthicker
+gmt end show
+</pre></div>
+</div>
+</div></blockquote>
+<div class="figure align-center" id="id12">
+<a class="reference internal image-reference" href="../_images/GMT_App_K_4.png"><img alt="../_images/GMT_App_K_4.png" src="../_images/GMT_App_K_4.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Map using the high resolution coastline data.</span></p>
+</div>
+</div>
+<div class="section" id="the-full-resolution-df">
+<h3>The full resolution (<strong>-Df</strong>)<a class="headerlink" href="#the-full-resolution-df" title="Permalink to this headline">¶</a></h3>
+<p>We now arrive at our final plot, which shows a detailed view of the
+western side of the small island of Waigeo. The map area is
+approximately 40 by 40 km. We call upon the full resolution data set to
+portray the richness of geographic detail within this region; no
+features are ignored. The full resolution has undergone no decimation
+and it shows: The combined file size of the coastlines, rivers, and
+borders totals a (once considered hefty) 55.9 Mbytes. Our final map is
+reproduced by the single command:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rk-20/20/-20/20 -JE130.35/-0.2/3.5i -Df -Gburlywood <span class="se">\</span>
+            -Sazure -Wthinnest -N1/thinnest,- -B10mg2m -BWSne -pdf GMT_App_K_5
+</pre></div>
+</div>
+</div></blockquote>
+<div class="figure align-center" id="id13">
+<a class="reference internal image-reference" href="../_images/GMT_App_K_5.png"><img alt="../_images/GMT_App_K_5.png" src="../_images/GMT_App_K_5.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Map using the full resolution coastline data.</span></p>
+</div>
+<p>We hope you will study these examples to enable you to make efficient
+and wise use of this vast data set.</p>
+<table class="docutils footnote" frame="void" id="id5" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><a class="reference external" href="http://www.ncei.noaa.gov/">National Centers for Environmental Information, Boulder, Colorado</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>Douglas, D.H., and T. K. Peucker, 1973, Algorithms for the reduction
+of the number of points required to represent a digitized line or its
+caricature, <em>Canadian Cartographer</em>, 10, 112–122.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id7" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td>The full and high resolution files are in separate archives because
+of their size. Not all users may need these files as the intermediate
+data set is better than the data provided with version 2.2.4.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id8" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[4]</a></td><td>If you need complete polygons in a simpler format, see the article on
+GSHHG (Wessel, P., and W. H. F. Smith, 1996, A Global,
+self-consistent, hierarchical, high-resolution shoreline database,
+<em>J. Geophys. Res. 101</em>, 8741–8743).</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dcw.html" class="btn btn-neutral float-right" title="The Digital Chart of the World Data (DCW)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../datasets.html" class="btn btn-neutral float-left" title="Datasets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

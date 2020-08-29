@@ -1,0 +1,173 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(38) Histogram equalization of bathymetry grids &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(39) Evaluation of spherical harmonics coefficients" href="ex39.html" />
+    <link rel="prev" title="(37) Spectral coherence between gravity and bathymetry grids" href="ex37.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex39.html" title="(39) Evaluation of spherical harmonics coefficients"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex37.html" title="(37) Spectral coherence between gravity and bathymetry grids"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="histogram-equalization-of-bathymetry-grids">
+<span id="example-38"></span><h1>(38) Histogram equalization of bathymetry grids<a class="headerlink" href="#histogram-equalization-of-bathymetry-grids" title="Permalink to this headline">¶</a></h1>
+<p>This example shows how to use histogram equalization to enhance various
+ranges of a grid depending on its frequency distribution. The key tool
+used here is <a class="reference internal" href="../grdhisteq.html"><span class="doc">grdhisteq</span></a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT EXAMPLE 38</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate histogram equalization on topography grids</span>
+<span class="c1"># GMT modules:  psscale, pstext, makecpt, grdhisteq, grdimage</span>
+<span class="c1"># Unix progs:   rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_38.ps
+
+gmt makecpt -Crainbow -T0/1700 &gt; t.cpt
+gmt makecpt -Crainbow -T0/15/1 &gt; c.cpt
+gmt grdhisteq topo.nc -Gout.nc -C16
+gmt grdimage topo.nc -I+a45+nt1 -Ct.cpt -JM3i -Y6i -K -P -B5 -BWSne &gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="s2">&quot;315 -10 Original&quot;</span> <span class="p">|</span> gmt pstext -Rtopo.nc -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i &gt;&gt; <span class="nv">$ps</span>
+gmt grdimage out.nc -Cc.cpt -J -X3.5i -K -O -B5 -BWSne &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="s2">&quot;315 -10 Equalized&quot;</span> <span class="p">|</span> gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i &gt;&gt; <span class="nv">$ps</span>
+gmt psscale -Dx0i/-0.4i+jTC+w5i/0.15i+h+e+n -O -K -Ct.cpt -Ba500 -By+lm &gt;&gt; <span class="nv">$ps</span>
+gmt grdhisteq topo.nc -Gout.nc -N
+gmt makecpt -Crainbow -T-3/3 &gt; c.cpt
+gmt grdimage out.nc -Cc.cpt -J -X-3.5i -Y-3.3i -K -O -B5 -BWSne &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="s2">&quot;315 -10 Normalized&quot;</span> <span class="p">|</span> gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i &gt;&gt; <span class="nv">$ps</span>
+gmt grdhisteq topo.nc -Gout.nc -Q
+gmt makecpt -Crainbow -T0/15 &gt; q.cpt
+gmt grdimage out.nc -Cq.cpt -J -X3.5i -K -O -B5 -BWSne &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="s2">&quot;315 -10 Quadratic&quot;</span> <span class="p">|</span> gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i &gt;&gt; <span class="nv">$ps</span>
+gmt psscale -Dx0i/-0.4i+w5i/0.15i+h+jTC+e+n -O -K -Cc.cpt -Bx1 -By+l<span class="s2">&quot;z@-n@-&quot;</span> &gt;&gt; <span class="nv">$ps</span>
+gmt psscale -Dx0i/-1.0i+w5i/0.15i+h+jTC+e+n -O -Cq.cpt -Bx1 -By+l<span class="s2">&quot;z@-q@-&quot;</span> &gt;&gt; <span class="nv">$ps</span>
+rm -f out.nc ?.cpt
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_38.png"><img alt="../_images/example_38.png" src="../_images/example_38.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Histogram equalization of bathymetry grids.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex37.html"
+                        title="previous chapter">(37) Spectral coherence between gravity and bathymetry grids</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex39.html"
+                        title="next chapter">(39) Evaluation of spherical harmonics coefficients</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex38.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex39.html" title="(39) Evaluation of spherical harmonics coefficients"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex37.html" title="(37) Spectral coherence between gravity and bathymetry grids"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

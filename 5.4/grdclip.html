@@ -1,0 +1,247 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>grdclip &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="grdcontour" href="grdcontour.html" />
+    <link rel="prev" title="grdblend" href="grdblend.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="grdcontour.html" title="grdcontour"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="grdblend.html" title="grdblend"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="grdclip">
+<span id="index-0"></span><h1>grdclip<a class="headerlink" href="#grdclip" title="Permalink to this headline">¶</a></h1>
+<p>grdclip - Clip the range of grid values</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdclip</strong> <em>ingrid</em> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outgrid</em>
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><strong>a</strong><em>high/above</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><strong>b</strong><em>low/below</em> ] [ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><strong>i</strong><em>low/high/between</em> ] [ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><strong>r</strong><em>old/new</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdclip</strong> will set values &lt; <em>low</em> to <em>below</em> and/or values &gt; <em>high</em> to
+<em>above</em>. You can also specify one or more intervals where all values should be
+set to IT(between), or replace individual values.  Such operations are useful
+when you want all of a continent or an ocean to fall
+into one color or gray shade in image processing, when clipping of the
+range of data values is required, or for reclassification of data values.
+<em>above</em>, <em>below</em>, <em>between</em>, <em>old</em> and <em>new</em> can be any number or even NaN
+(Not a Number). You must choose at least one of the <strong>-S</strong> options. Use
+<strong>-R</strong> to only extract a subset of the <em>ingrid</em> file.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>ingrid</em></dt>
+<dd>The input 2-D binary grid file.</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>outgrid</em></dt>
+<dd><em>outgrid</em> is the modified output grid file.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest. Using the <strong>-R</strong> option
+will select a subsection of <em>ingrid</em> grid. If this subsection
+exceeds the boundaries of the grid, only the common region will be extracted.</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-Sa</strong><em>high/above</em></dt>
+<dd>Set all data[i] &gt; <em>high</em> to <em>above</em>.</dd>
+<dt><strong>-Sb</strong><em>low/below</em></dt>
+<dd>Set all data[i] &lt; <em>low</em> to <em>below</em>.</dd>
+<dt><strong>-Si</strong><em>low/high/between</em></dt>
+<dd>Set all data[i] &gt;= <em>low</em> and &lt;= <em>high</em> to <em>between</em>.
+Repeat the option for as many intervals as are needed.</dd>
+<dt><strong>-Sr</strong><em>old/new</em></dt>
+<dd>Set all data[i] == <em>old</em> to <em>new</em>.  This is mostly useful when
+your data are known to be integer values.  Repeat the option
+for as many replacements as are needed.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="grid-file-formats">
+<h2>Grid File Formats<a class="headerlink" href="#grid-file-formats" title="Permalink to this headline">¶</a></h2>
+<p>By default GMT writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, GMT is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called “packing” of grids, writing out floating point
+data as 1- or 2-byte integers. <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">(more …)</span></a></p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To set all values &gt; 70 to NaN and all values &lt; 0 to 0 in file data.nc:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdclip</span> <span class="n">data</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Gnew_data</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Sa70</span><span class="o">/</span><span class="n">NaN</span> <span class="o">-</span><span class="n">Sb0</span><span class="o">/</span><span class="mi">0</span> <span class="o">-</span><span class="n">V</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To reclassify all values in the 25-30 range to 99, those in 35-39 to 55,
+exchange 17 for 11 and all values &lt; 10 to 0 in file classes.nc, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdclip</span> <span class="n">classes</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Gnew_classes</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Si25</span><span class="o">/</span><span class="mi">30</span><span class="o">/</span><span class="mi">99</span> <span class="o">-</span><span class="n">Si35</span><span class="o">/</span><span class="mi">39</span><span class="o">/</span><span class="mi">55</span> <span class="o">-</span><span class="n">Sr17</span><span class="o">/</span><span class="mi">11</span> <span class="o">-</span><span class="n">Sb10</span><span class="o">/</span><span class="mi">0</span> <span class="o">-</span><span class="n">V</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="grdlandmask.html"><span class="doc">grdlandmask</span></a>,
+<a class="reference internal" href="grdmask.html"><span class="doc">grdmask</span></a>, <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>,
+<a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a>, <a class="reference internal" href="xyz2grd.html"><span class="doc">xyz2grd</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">grdclip</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#grid-file-formats">Grid File Formats</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grdblend.html"
+                        title="previous chapter">grdblend</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grdcontour.html"
+                        title="next chapter">grdcontour</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/grdclip.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="grdcontour.html" title="grdcontour"
+             >next</a> </li>
+        <li class="right" >
+          <a href="grdblend.html" title="grdblend"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

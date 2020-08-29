@@ -1,0 +1,228 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>gmtdefaults &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gmtget" href="gmtget.html" />
+    <link rel="prev" title="gmtconvert" href="gmtconvert.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="gmtget.html" title="gmtget"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="gmtconvert.html" title="gmtconvert"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gmtdefaults">
+<span id="index-0"></span><h1>gmtdefaults<a class="headerlink" href="#gmtdefaults" title="Permalink to this headline">¶</a></h1>
+<p>gmtdefaults - List current GMT default parameters</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmtdefaults</strong> [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<strong>u</strong>|<strong>s</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmtdefaults</strong> lists all the GMT parameter defaults if the option
+<strong>-D</strong> is used. There are three ways to change some of the settings: (1)
+Use the command <a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a>, (2) use any text editor to edit the file
+<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> in your home, ~/.gmt or current directory (if you do not
+have this file, run <a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a> <strong>-D</strong> to get one with the system default
+settings), or (3) override any parameter by specifying one
+or more <strong>-</strong><strong>-PARAMETER</strong>=<em>VALUE</em> statements on the command line of any
+GMT command (<strong>PARAMETER</strong> and <em>VALUE</em> are any combination listed
+below). The first two options are permanent changes until explicitly
+changed back, while the last option is ephemeral and only applies to the
+single GMT command that received the override. GMT can provide
+default values in US or SI units. This choice is determined at compile time.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<p>None.</p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong></dt>
+<dd>Print the system GMT defaults to standard output. Append <strong>u</strong>
+for US defaults or <strong>s</strong> for SI defaults. [<strong>-D</strong> alone gives the
+version selected at compile time; If <strong>-D</strong> is omitted, the user’s
+currently active defaults are printed.]</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+<p>Your currently active defaults come from the <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file in
+the current working directory, if present; else from the
+<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file in your home directory, if present; else from the
+file <strong>~/.gmt/gmt.conf</strong> if present; else from the system defaults
+set at the time GMT was compiled.</p>
+</div>
+<div class="section" id="gmt-parameters">
+<h2>GMT PARAMETERS<a class="headerlink" href="#gmt-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Read the <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> man page for a full list of the parameters that
+are user-definable in GMT.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To get a copy of the GMT parameter defaults in your home directory, run</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">defaults</span> <span class="o">-</span><span class="n">D</span> <span class="o">&gt;</span> <span class="o">~/</span><span class="n">gmt</span><span class="o">.</span><span class="n">conf</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>You may now change the settings by editing this file using a text editor
+of your choice, or use <a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a> to change specified parameters on the
+command line.</p>
+</div>
+<div class="section" id="bugs">
+<h2>Bugs<a class="headerlink" href="#bugs" title="Permalink to this headline">¶</a></h2>
+<p>If you have typographical errors in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file(s), a warning
+message will be issued, and the GMT defaults for the affected
+parameters will be used.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
+<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>, <a class="reference internal" href="gmtget.html"><span class="doc">gmtget</span></a>,
+<a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gmtdefaults</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#gmt-parameters">GMT PARAMETERS</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#bugs">Bugs</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gmtconvert.html"
+                        title="previous chapter">gmtconvert</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gmtget.html"
+                        title="next chapter">gmtget</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/gmtdefaults.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="gmtget.html" title="gmtget"
+             >next</a> </li>
+        <li class="right" >
+          <a href="gmtconvert.html" title="gmtconvert"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

@@ -1,0 +1,326 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>(48) Line networks, map embellishments, and curved titles &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(49) Analysis of the Atlantic seafloor depth/age relationship" href="ex49.html" />
+    <link rel="prev" title="(47) Linear regression using different norms and types" href="ex47.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+        
+      <li>(48) Line networks, map embellishments, and curved titles</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/gallery/ex48.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="line-networks-map-embellishments-and-curved-titles">
+<span id="example-48"></span><h1>(48) Line networks, map embellishments, and curved titles<a class="headerlink" href="#line-networks-map-embellishments-and-curved-titles" title="Permalink to this headline">¶</a></h1>
+<p>In this example we show how the module <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a>
+can be used to create a network of lines based on a file with
+just the nodes (the siz airports).  We also demonstrate how the
+lines can be shortened by (a) a given measure (here 250 km)
+and then (b) the length of the added vector heads.  The airspace
+closest to each airport is identified as spherical Voronoi
+cells by <a class="reference internal" href="../sphtriangulate.html"><span class="doc">sphtriangulate</span></a> and filled
+with transparent coloring, allowing us to see the seafloor
+texture beneath.  Finally,
+we add six local spiderweb azimuth/distance gridlines and
+set a curved plot title.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#               GMT EXAMPLE 48</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate use of trimmed lines with vectors, networks, and local spiderwebs</span>
+<span class="c1"># GMT modules:  makecpt, coast, plot, sphtriangulate, grdimate, gmtmath, text</span>
+<span class="c1">#</span>
+
+gmt begin ex48
+	cat <span class="s">&lt;&lt;- EOF &gt; airports.txt</span>
+<span class="s">	157.8583W	21.3069N	61	300	HNL	BC	0.6i</span>
+<span class="s">	149.5585W	17.5516S	-120	120	PPT	TC	0.6i</span>
+<span class="s">	139.6917E	35.6895N	56	170	HND	RB	0.3i</span>
+<span class="s">	70.6693W	33.4489S	215	322	SCL	TL	0.25i</span>
+<span class="s">	151.2070E	33.8675S	-10	145	SYD	TR	0.85i</span>
+<span class="s">	118.2437W	34.0522N	142	306	LAX	BL	0.80i</span>
+<span class="s">	EOF</span>
+	gmt makecpt -Clightgray -T-12000,12000 -N
+	gmt grdimage @etopo10m_48.nc -I+a45+nt2 -Rg -JG205/-10/7i -Xc
+	gmt sphtriangulate airports.txt -Qv &gt; near_area.txt
+	gmt makecpt -Ccategorical -T0/6/1 -N
+	gmt plot near_area.txt -L -C -t65
+	<span class="c1"># Make a 15 degrees by 250 km spiderweb grid around each airport</span>
+	gmt plot -SW2000k/250k+a250k+r15 -W0.5p -Gwhite@40 airports.txt
+	gmt coast -Gblack -A500 -Bafg
+	<span class="c1"># Then place custom labels.</span>
+	<span class="k">while</span> <span class="nb">read</span> lon lat az1 az2 label just off<span class="p">;</span> <span class="k">do</span>
+		<span class="nb">echo</span> <span class="nv">$lon</span> <span class="nv">$lat</span> <span class="nv">$label</span> <span class="p">|</span> gmt text -DJ<span class="si">${</span><span class="nv">off</span><span class="si">}</span>+v0.5p,white -F+f16p+j<span class="si">${</span><span class="nv">just</span><span class="si">}</span> -N
+		<span class="nb">echo</span> <span class="nv">$lon</span> <span class="nv">$lat</span> <span class="nv">$label</span> <span class="p">|</span> gmt text -DJ<span class="si">${</span><span class="nv">off</span><span class="si">}</span>+v0.25p -F+f16p+j<span class="si">${</span><span class="nv">just</span><span class="si">}</span> -N -Gwhite -W0.25p -C+tO
+	<span class="k">done</span> &lt; airports.txt
+	<span class="c1"># Plot trimmed lines and overlay airport locations</span>
+	gmt plot airports.txt -Fn -W1.5p+o250k+v0.2i+gred+h0.5
+	gmt plot airports.txt -SE-500 -Gorange -W0.25p
+	<span class="c1"># Make an arc of radius 4.5 inches from 45 to 135 degrees around map center and use it to place text</span>
+	gmt math -T45/135/1 T -C0 COSD -C1 SIND -Ca <span class="m">4</span>.5 <span class="nv">MUL</span> <span class="o">=</span> path.txt
+	<span class="c1"># Move up 3.5 inches so origin is at the map center</span>
+	gmt plot -R-3.5/3.5/0/6 -Jx1i -Y3.5i path.txt -Sqn1:+l<span class="s2">&quot;IMPORTANT PACIFIC AIRPORTS&quot;</span>+v+f32p -Wfaint,white -N
+	rm -f airports.txt near_area.txt path.txt
+gmt end show
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/ex48.png"><img alt="../_images/ex48.png" src="../_images/ex48.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Line networks, map embellishments, and curved titles.</span></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ex49.html" class="btn btn-neutral float-right" title="(49) Analysis of the Atlantic seafloor depth/age relationship" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ex47.html" class="btn btn-neutral float-left" title="(47) Linear regression using different norms and types" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,561 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>grdcontour &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="grdconvert" href="grdconvert.html" />
+    <link rel="prev" title="grdclip" href="grdclip.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="grdconvert.html" title="grdconvert"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="grdclip.html" title="grdclip"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="grdcontour">
+<span id="index-0"></span><h1>grdcontour<a class="headerlink" href="#grdcontour" title="Permalink to this headline">¶</a></h1>
+<p>grdcontour - Make contour map using a grid</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdcontour</strong> <em>grid</em> <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong>[+]<em>cont_int</em>|<em>cpt</em>
+<a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em> [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong>[<strong>-</strong>|[+]<em>annot_int</em>][<em>labelinfo</em>] ]
+[ <a class="reference internal" href="#b"><span> <strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>template</em> ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>l</strong>|<strong>r</strong>] ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong>[<strong>d</strong>|<strong>f</strong>|<strong>n</strong>|<strong>l</strong>|<strong>L</strong>|<strong>x</strong>|<strong>X</strong>]<em>params</em> ]
+[ <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><strong>z</strong>|<strong>Z</strong><em>parameters</em> ] [ <a class="reference internal" href="#k"><span> <strong>-K</strong></span></a></strong> ] [ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>low/high</em> ]
+[ <a class="reference internal" href="#o"><span> <strong>-O</strong></span></a></strong> ] [ <a class="reference internal" href="#p"><span> <strong>-P</strong></span></a></strong> ] [ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><em>cut</em> ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>] ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>smoothfactor</em> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong>[<strong>+|-</strong>][<strong>+d</strong><em>gap</em>[/<em>length</em>]][<strong>+l</strong>[<em>labels</em>]] ]
+[ <a class="reference internal" href="#u"><span> <strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<em>type</em>]<em>pen</em> ][<strong>+c</strong>[<strong>l</strong>|<strong>f</strong>]]
+[ <a class="reference internal" href="#x"><span> <strong>-X</strong></span></a></strong><em>x_offset</em> ]
+[ <a class="reference internal" href="#y"><span> <strong>-Y</strong></span></a></strong><em>y_offset</em> ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong>[<strong>+s</strong><em>factor</em>][<strong>+o</strong><em>shift</em>][<strong>+p</strong>] ]
+[ <strong>-bo</strong><a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-do</strong><a class="reference internal" href="gmt.html#do-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-ho</strong>[<em>n</em>] ]
+[ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">transp</span></a> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdcontour</strong> reads a 2-D grid file and produces a contour map by
+tracing each contour through the grid. PostScript code is generated
+and sent to standard output. Various options that affect the plotting
+are available. Alternatively, the x/y/z positions of the contour lines
+may be saved to one or more output files (or stdout) and no plot is produced.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>grid</em></dt>
+<dd>2-D gridded data set to be contoured. (See GRID FILE FORMATS below).</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong>[+]<em>cont_int</em></dt>
+<dd><p class="first">The contours to be drawn may be specified in one of three possible ways:</p>
+<ol class="arabic simple">
+<li>If <em>cont_int</em> has the suffix “.cpt” and can be opened as a
+file, it is assumed to be a CPT. The color
+boundaries are then used as contour levels. If the CPT has
+annotation flags in the last column then those contours will be
+annotated. By default all contours are labeled; use <strong>-A-</strong> to
+disable all annotations.</li>
+<li>If <em>cont_int</em> is a file but not a CPT, it is expected to
+contain contour levels in column 1 and a
+C(ontour) OR A(nnotate) in
+col 2. The levels marked C (or c) are contoured, the levels marked A
+(or a) are contoured and annotated. Optionally, a third column may
+be present and contain the fixed annotation angle for this contour
+level.</li>
+<li>If no file is found, then <em>cont_int</em> is interpreted as a
+constant contour interval. However, if prepended with the + sign the
+<em>cont_int</em> is taken as meaning draw that single contour. The <strong>-A</strong>
+option offers the same possibility so they may be used together to
+plot a single annotated contour and another single non-annotated contour,
+as in ‘… -A+10 -C+5’ that plots an annotated 10 contour and an non-annotated 5 contour.
+If <strong>-A</strong> is set and <strong>-C</strong> is not, then the contour interval is set
+equal to the specified annotation interval.</li>
+</ol>
+<p class="last">If a file is given and <strong>-T</strong> is set, then only contours marked with
+upper case C or A will have tick-marks. In all cases the contour
+values have the same units as the grid.</p>
+</dd>
+</dl>
+<dl class="docutils" id="j">
+<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select map projection.  </dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong>[<strong>-</strong>|[+]<em>annot_int</em>][<em>labelinfo</em>]</dt>
+<dd><em>annot_int</em> is annotation interval in data units; it is ignored if
+contour levels are given in a file. [Default is no annotations]. Append
+<strong>-</strong> to disable all annotations implied by <strong>-C</strong>. Alternatively prepend
++ to the annotation interval to plot that as a single contour. The optional
+<em>labelinfo</em> controls the specifics of the label formatting and consists
+of a concatenated string made up of any of the following control arguments:</dd>
+</dl>
+<blockquote>
+<div><dl class="docutils">
+<dt><strong>+a</strong><em>angle</em></dt>
+<dd>For annotations at a fixed angle, <strong>+an</strong> for contour-normal, or
+<strong>+ap</strong> for contour-parallel [Default].  For <strong>+ap</strong>, you may optionally
+append <strong>u</strong> for up-hill and <strong>d</strong> for down-hill cartographic annotations.</dd>
+<dt><strong>+c</strong><em>dx</em>[/<em>dy</em>]</dt>
+<dd>Sets the clearance between label and optional text box. Append
+<strong>c</strong>|<strong>i</strong>|<strong>p</strong> to specify the unit or % to indicate a
+percentage of the label font size [15%].</dd>
+<dt><strong>+d</strong></dt>
+<dd>Turns on debug which will draw helper points and lines to illustrate
+the workings of the contour line setup.</dd>
+<dt><strong>+e</strong></dt>
+<dd>Delay the plotting of the text. This is used to build a clip path
+based on the text, then lay down other overlays while that clip path
+is in effect, then turning of clipping with psclip <strong>-Cs</strong> which
+finally plots the original text.</dd>
+<dt><strong>+f</strong><em>font</em></dt>
+<dd>Sets the desired font [Default <strong>FONT_ANNOT_PRIMARY</strong> with its
+size changed to 9p].</dd>
+<dt><strong>+g</strong>[<em>color</em>]</dt>
+<dd>Selects opaque text boxes [Default is transparent]; optionally
+specify the color [Default is <strong>PS_PAGE_COLOR</strong>].</dd>
+<dt><strong>+j</strong><em>just</em></dt>
+<dd>Sets label justification [Default is MC].</dd>
+<dt><strong>+n</strong><em>dx</em>[/<em>dy</em>]</dt>
+<dd>Nudges the placement of labels by the specified amount (append
+<strong>c</strong>|<strong>i</strong>|<strong>p</strong> to specify the units). Increments
+are considered in the coordinate system defined by the
+orientation of the contour; use <strong>+N</strong> to force increments in the
+plot x/y coordinates system [no nudging]. Not allowed with <strong>+v</strong>.</dd>
+<dt><strong>+o</strong></dt>
+<dd>Selects rounded rectangular text box [Default is rectangular].
+Not applicable for curved text (<strong>+v</strong>) and only makes sense for
+opaque text boxes.</dd>
+<dt><strong>+p</strong>[<em>pen</em>]</dt>
+<dd>Draws the outline of text boxes [Default is no outline];
+optionally specify pen for outline [Default is width = 0.25p,
+color = black, style = solid].</dd>
+<dt><strong>+r</strong><em>min_rad</em></dt>
+<dd>Will not place labels where the contours’s radius of curvature is
+less than <em>min_rad</em> [Default is 0].</dd>
+<dt><strong>+t</strong>[<em>file</em>]</dt>
+<dd>Saves contour label x, y, angle, and text to <em>file</em> [Contour_labels.txt].</dd>
+<dt><strong>+u</strong><em>unit</em></dt>
+<dd>Appends <em>unit</em> to all contour labels. [Default is no unit].
+If <strong>z</strong> is appended we use the z-unit from the grdfile.</dd>
+<dt><strong>+v</strong></dt>
+<dd>Specifies curved labels following the contour [Default is straight
+labels].</dd>
+<dt><strong>+w</strong></dt>
+<dd>Specifies how many (<em>x</em>,<em>y</em>) points will be used to estimate
+label angles [automatic].</dd>
+<dt><strong>+=</strong><em>prefix</em></dt>
+<dd>Prepends <em>prefix</em> to all contour labels. [Default is no prefix].</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set map boundary frame and axes attributes.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>template</em></dt>
+<dd>Dump contours as data line segments; no plotting takes place.
+Append filename template which may contain C-format specifiers.
+If no filename template is given we write all lines to stdout.
+If filename has no specifiers then we write all lines to a single file.
+If a float format (e.g., %6.2f) is found we substitute the contour z-value.
+If an integer format (e.g., %06d) is found we substitute a running segment count.
+If an char format (%c) is found we substitute C or O for closed and open contours.
+The 1-3 specifiers may be combined and appear in any order to produce the
+the desired number of output files (e.g., just %c gives two files, just %f would.
+separate segments into one file per contour level, and %d would write all segments.
+to individual files; see manual page for more examples.</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong>[<strong>l</strong>|<strong>r</strong>]</dt>
+<dd>Force dumped contours to be oriented so that higher z-values are to the
+left (<strong>-Fl</strong> [Default]) or right (<strong>-Fr</strong>) as we move along the contour
+[Default is arbitrary orientation]. Requires <strong>-D</strong>.</dd>
+</dl>
+<p id="g"><strong>-G</strong>[<strong>d</strong>|<strong>f</strong>|<strong>n</strong>|<strong>l</strong>|<strong>L</strong>|<strong>x</strong>|<strong>X</strong>]<em>params</em></p>
+<blockquote>
+<div><p>The required argument controls the placement of labels along the quoted
+lines. Choose among five controlling algorithms:</p>
+<dl class="docutils">
+<dt><strong>d</strong><em>dist</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>] or <strong>D</strong><em>dist</em>[<strong>d</strong>|<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>m</strong>|<strong>M</strong>|<strong>n</strong>|<strong>s</strong>]</dt>
+<dd>For lower case <strong>d</strong>, give distances between labels on the plot
+in your preferred measurement unit <strong>c</strong> (cm), <strong>i</strong> (inch), or
+<strong>p</strong> (points), while for upper case <strong>D</strong>, specify distances in
+map units and append the unit; choose among <strong>e</strong> (m), <strong>f</strong>
+(foot), <strong>k</strong> (km), <strong>M</strong> (mile), <strong>n</strong> (nautical mile) or <strong>u</strong>
+(US survey foot), and <strong>d</strong> (arc degree), <strong>m</strong> (arc minute), or
+<strong>s</strong> (arc second). [Default is 10<strong>c</strong> or 4<strong>i</strong>]. As an
+option, you can append /<em>fraction</em> which is used to place the
+very first label for each contour when the cumulative
+along-contour distance equals <em>fraction * dist</em> [0.25].</dd>
+<dt><strong>f</strong><em>ffile.d</em></dt>
+<dd>Reads the ASCII file <em>ffile.d</em> and places labels at locations in
+the file that matches locations along the quoted lines. Inexact
+matches and points outside the region are skipped.</dd>
+<dt><strong>l|L</strong><em>line1</em>[,<em>line2</em>,…]</dt>
+<dd>Give <em>start</em> and <em>stop</em> coordinates for one or more
+comma-separated straight line segments. Labels will be placed
+where these lines intersect the quoted lines. The format of each
+<em>line</em> specification is <em>start/stop</em>, where <em>start</em> and <em>stop</em>
+are either a specified point <em>lon/lat</em> or a 2-character <strong>XY</strong>
+key that uses the justification format employed in <a class="reference internal" href="pstext.html"><span class="doc">pstext</span></a> to
+indicate a point on the map, given as [LCR][BMT].
+In addition, you can use Z-, Z+ to mean the global minimum and
+maximum locations in the grid. <strong>L</strong> will interpret the point pairs
+as defining great circles [Default is straight line].</dd>
+<dt><strong>n</strong><em>n_label</em></dt>
+<dd>Specifies the number of equidistant labels for quoted lines line
+[1]. Upper case <strong>N</strong> starts labeling exactly at the start of
+the line [Default centers them along the line]. <strong>N</strong>-1 places
+one justified label at start, while <strong>N</strong>+1 places one
+justified label at the end of quoted lines. Optionally, append
+/<em>min_dist</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>] to enforce that a
+minimum distance separation between successive labels is
+enforced.</dd>
+<dt><strong>x|X</strong><em>xfile.d</em></dt>
+<dd>Reads the multisegment file <em>xfile.d</em> and places labels at the
+intersections between the quoted lines and the lines in
+<em>xfile.d</em>. <strong>X</strong> will resample the lines first along
+great-circle arcs.</dd>
+</dl>
+<p>In addition, you may optionally append
+<strong>+r</strong><em>radius</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>] to set a minimum
+label separation in the x-y plane [no limitation].</p>
+</div></blockquote>
+<dl class="docutils">
+<dt><strong>-Jz</strong>|<strong>Z</strong><em>parameters</em> <a class="reference internal" href="gmt.html#jz-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set z-axis scaling; same syntax as <strong>-Jx</strong>.</dd>
+</dl>
+<dl class="docutils" id="k">
+<dt><strong>-K</strong> <a class="reference internal" href="gmt.html#k-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Do not finalize the PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong><em>low/high</em></dt>
+<dd>Limit range: Do not draw contours for data values below <em>low</em> or
+above <em>high</em>.</dd>
+</dl>
+<dl class="docutils" id="o">
+<dt><strong>-O</strong> <a class="reference internal" href="gmt.html#o-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Append to existing PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="p">
+<dt><strong>-P</strong> <a class="reference internal" href="gmt.html#p-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select “Portrait” plot orientation.</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong><em>cut</em></dt>
+<dd>Do not draw contours with less than <em>cut</em> number of points [Draw all contours].</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest.  </dd>
+</dl>
+<p>For perspective view <strong>p</strong>, optionally append /<em>zmin</em>/<em>zmax</em>. <a class="reference internal" href="gmt.html#rz-full"><span class="std std-ref">(more …)</span></a> [Default is region defined in the grid file].</p>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><em>smoothfactor</em></dt>
+<dd>Used to resample the contour lines at roughly every
+(gridbox_size/<em>smoothfactor</em>) interval.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong>[<strong>+|-</strong>][<strong>+d</strong><em>gap</em>[/<em>length</em>]][<strong>+l</strong>[<em>labels</em>]]</dt>
+<dd>Will draw tick marks pointing in the downward direction every <em>gap</em>
+along the innermost closed contours. Append <strong>+d</strong><em>gap</em> and optionally tick
+mark <em>length</em> (append units as <strong>c</strong>, <strong>i</strong>, or <strong>p</strong>) or use defaults
+[15<strong>p</strong>/3<strong>p</strong>]. User may choose to tick only local highs or local
+lows by specifying <strong>-T+</strong> or <strong>-T-</strong>, respectively. Append
+<strong>+l</strong><em>labels</em> to annotate the centers of closed innermost contours
+(i.e., the local lows and highs). If no <em>labels</em> is appended we use -
+and + as the labels. Appending exactly two characters, e.g., <strong>+l</strong><em>LH</em>,
+will plot the two characters (here, L and H) as labels. For more elaborate
+labels, separate the low and hight label strings with a comma (e.g.,
+<strong>+l</strong><em>lo</em>,<em>hi</em>). If a file is given by <strong>-C</strong> and <strong>-T</strong> is set,
+then only contours marked with upper case C or A will have tick marks
+[and annotations].</dd>
+</dl>
+<dl class="docutils" id="u">
+<dt><strong>-U</strong>[[<em>just</em>]/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Draw GMT time stamp logo on plot.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong>[<em>type</em>]<em>pen</em>[<strong>+c</strong>[<strong>l</strong>|<strong>f</strong>]] <a class="reference internal" href="gmt.html#set-pens"><span class="std std-ref">(more …)</span></a></dt>
+<dd><em>type</em>, if present, can be <strong>a</strong> for annotated contours or <strong>c</strong> for
+regular contours [Default]. The <em>pen</em> sets the attributes for the
+particular line. Default pen for annotated contours: 0.75p,black.
+Regular contours use pen 0.25p,black. If the modifier <strong>+cl</strong> is appended
+then the color of the contour lines are taken from the CPT (see
+<strong>-C</strong>). If instead modifier <strong>+cf</strong> is appended then the color from the cpt
+file is applied to the contour annotations.  Use just <strong>+c</strong> for both effects.</dd>
+</dl>
+<p id="x"><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]</p>
+<dl class="docutils">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]] <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Shift plot origin.</dd>
+</dl>
+<dl class="docutils" id="z">
+<dt><strong>-Z</strong>[<strong>+s</strong><em>factor</em>][<strong>+o</strong><em>shift</em>][<strong>+p</strong>]</dt>
+<dd>Use to subtract <em>shift</em> from the data and multiply the results by
+<em>factor</em> before contouring starts [1/0]. (Numbers in <strong>-A</strong>, <strong>-C</strong>,
+<strong>-L</strong> refer to values after this scaling has occurred.) Append
+<strong>+p</strong> to indicate that this grid file contains z-values that are
+periodic in 360 degrees (e.g., phase data, angular distributions)
+and that special precautions must be taken when determining
+0-contours.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-do</strong><em>nodata</em> <a class="reference internal" href="gmt.html#do-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace output columns that equal NaN with <em>nodata</em>.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select perspective view.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set PDF transparency level in percent.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="ascii-format-precision">
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-geo-out"><span class="std std-ref">FORMAT_GEO_OUT</span></a>, absolute time is
+under the control of <a class="reference internal" href="gmt.conf.html#format-date-out"><span class="std std-ref">FORMAT_DATE_OUT</span></a> and
+<a class="reference internal" href="gmt.conf.html#format-clock-out"><span class="std std-ref">FORMAT_CLOCK_OUT</span></a>, whereas general floating point values are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a>. Be aware that the format in effect
+can lead to loss of precision in ASCII output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a> setting.</p>
+</div>
+<div class="section" id="grid-file-formats">
+<h2>Grid File Formats<a class="headerlink" href="#grid-file-formats" title="Permalink to this headline">¶</a></h2>
+<p>By default GMT writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, GMT is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called “packing” of grids, writing out floating point
+data as 1- or 2-byte integers. <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">(more …)</span></a></p>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>The angle of a contour is computed as an average over <em>n</em> points along the contour.
+If you obtain poor angles you can play with two variables: Change <em>n</em> via the <strong>+w</strong>
+modifier to <strong>-A</strong>, and/or resample the contour via <strong>-S</strong>.  For a fixed <em>n</em> the
+<strong>-S</strong> will localize the calculation, while the opposite is true if you increase <em>n</em>
+for a constant <strong>-S</strong>.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To contour the file hawaii_grav.nc every 25 mGal on a Mercator map at
+0.5 inch/degree, annotate every 50 mGal (using fontsize = 10p), using 1
+degree tickmarks, and draw 30 minute gridlines:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdcontour</span> <span class="n">hawaii_grav</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Jm0</span><span class="o">.</span><span class="mi">5</span><span class="n">i</span> <span class="o">-</span><span class="n">C25</span> <span class="o">-</span><span class="n">A50</span><span class="o">+</span><span class="n">f10p</span> <span class="o">-</span><span class="n">B1g30m</span> <span class="o">&gt;</span> <span class="n">hawaii_grav</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To contour the file image.nc using the levels in the file cont.d on a
+linear projection at 0.1 cm/x-unit and 50 cm/y-unit, using 20 (x) and
+0.1 (y) tickmarks, smooth the contours a bit, use “RMS Misfit” as
+plot-title, use a thick red pen for annotated contours, and a thin,
+dashed, blue pen for the rest, and send the output to the default printer:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdcontour</span> <span class="n">image</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Jx0</span><span class="o">.</span><span class="mi">1</span><span class="n">c</span><span class="o">/</span><span class="mf">50.0</span><span class="n">c</span> <span class="o">-</span><span class="n">Ccont</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span><span class="n">S4</span> <span class="o">-</span><span class="n">Bx20</span> <span class="o">-</span><span class="n">By0</span><span class="o">.</span><span class="mi">1</span> \
+           <span class="o">-</span><span class="n">B</span><span class="o">+</span><span class="n">t</span><span class="s2">&quot;RMS Misfit&quot;</span> <span class="o">-</span><span class="n">Wathick</span><span class="p">,</span><span class="n">red</span> <span class="o">-</span><span class="n">Wcthinnest</span><span class="p">,</span><span class="n">blue</span><span class="p">,</span><span class="o">-</span> <span class="o">|</span> <span class="n">lp</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The labeling of local highs and lows may plot outside the innermost
+contour since only the mean value of the contour coordinates is used to
+position the label.</p>
+<p>To save the smoothed 100-m contour lines in topo.nc and separate them
+into two multisegment files: contours_C.txt for closed and
+contours_O.txt for open contours, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdcontour</span> <span class="n">topo</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">C100</span> <span class="o">-</span><span class="n">S4</span> <span class="o">-</span><span class="n">Dcontours_</span><span class="o">%</span><span class="n">c</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
+<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
+<a class="reference internal" href="psbasemap.html"><span class="doc">psbasemap</span></a>,
+<a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a>, <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>,
+<a class="reference internal" href="pscontour.html"><span class="doc">pscontour</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">grdcontour</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#ascii-format-precision">ASCII Format Precision</a></li>
+<li><a class="reference internal" href="#grid-file-formats">Grid File Formats</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grdclip.html"
+                        title="previous chapter">grdclip</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grdconvert.html"
+                        title="next chapter">grdconvert</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/grdcontour.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="grdconvert.html" title="grdconvert"
+             >next</a> </li>
+        <li class="right" >
+          <a href="grdclip.html" title="grdclip"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

@@ -1,0 +1,214 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:37 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>MGD77PATH</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>MGD77PATH</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">mgd77path
+&minus; Get full pathname for MGD77 files</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77path</b>
+<i>NGDC-ids</i> [ <b>&minus;D</b> ] [
+<b>&minus;I</b><i>ignore</i> ] [ <b>&minus;P</b>[<b>-</b>] ]
+[ <b>&minus;V</b> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77path</b>
+returns the full pathname to one or more MGD77 files. The
+pathname returned for a given cruise may change with time
+due to reshuffling of disks/subdirectories. <i><br>
+NGDC-ids</i></p>
+
+<p style="margin-left:22%;">Can be one or more of five
+kinds of specifiers: <br>
+1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.
+<br>
+2) 2-character &lt;agency&gt; codes which will return all
+cruises from each agency. <br>
+3) 4-character &lt;agency&gt;&lt;vessel&gt; codes, which
+will return all cruises from those vessels. <br>
+4) =&lt;list&gt;, where &lt;list&gt; is a table with NGDC
+IDs, one per line. <br>
+5) If nothing is specified we return all cruises in the data
+base. <br>
+(See mgd77info <b>&minus;L</b> for agency and vessel codes).
+File extensions, if missing, will automatically be appended
+by searching for files in the following order: MGD77+
+(&quot;.nc&quot;), MGD77T (&quot;.m77t&quot;), MGD77
+(&quot;.mgd77&quot;), plain table (&quot;.dat&quot;). Use
+<b>&minus;I</b> to ignore one or more of these file types).
+Cruise files will be looked for first in the current
+directory and second in all directories listed in
+<b>$MGD77_HOME</b>/mgd77_paths.txt [If <b>$MGD77_HOME</b> is
+not set it will default to <b>$GMT_SHAREDIR</b>/mgd77].</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Instead of cruise
+listings, just show the directory paths currently used in
+the search.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Ignore certain data
+file formats from consideration. Append <b>a|c|m|t</b> to
+ignore MGD77 ASCII, MGD77+ netCDF, MGD77T ASCII or plain
+tab-separated ASCII table files, respectively. The option
+may be repeated to ignore more than one format. [Default
+ignores none].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;P</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Display the full
+path to each cruise [Default]. Optionally, append <b>-</b>
+which will list just the cruise IDs instead.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;]. Reports the total number of
+cruises found.</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To obtain
+pathnames for cruises 01010008 and 01010007, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77path</b>
+01010008 01010007</p>
+
+<p style="margin-left:11%; margin-top: 1em">To obtain
+pathnames for cruises 01010008 and 01010007, but only if
+there are MGD77+ version in netCDF, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77path</b>
+01010008 01010007 <b>&minus;Ia &minus;It</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">To see the list
+of active directories where MGD77 files might be stored,
+run</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77path
+&minus;D</b></p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1)
+<i><A HREF="mgd77info.html">mgd77info</A></i>(1) <i><A HREF="mgd77list.html">mgd77list</A></i>(1)
+<i><A HREF="mgd77manage.html">mgd77manage</A></i>(1) <i><A HREF="mgd77track.html">mgd77track</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P., and
+W. H. F. Smith, 2018, The Generic Mapping Tools (GMT)
+version 4.5.18 Technical Reference &amp; Cookbook,
+SOEST/NOAA. <br>
+Wessel, P., and W. H. F. Smith, 1998, New, Improved Version
+of Generic Mapping Tools Released, EOS Trans., AGU, 79 (47),
+p. 579. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released, EOS Trans., AGU, 76 (33), p.
+329. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released,
+http://www.agu.org/eos_elec/95154e.html, Copyright 1995 by
+the American Geophysical Union. <br>
+Wessel, P., and W. H. F. Smith, 1991, Free Software Helps
+Map and Display Data, EOS Trans., AGU, 72 (41), p. 441. <br>
+The Marine Geophysical Data Exchange Format -
+&quot;MGD77&quot;, see
+<i>http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt</i></p>
+<hr>
+</body>
+</html>

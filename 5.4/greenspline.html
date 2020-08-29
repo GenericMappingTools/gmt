@@ -1,0 +1,594 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>greenspline &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="isogmt" href="isogmt.html" />
+    <link rel="prev" title="grdvolume" href="grdvolume.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="isogmt.html" title="isogmt"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="grdvolume.html" title="grdvolume"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="greenspline">
+<span id="index-0"></span><h1>greenspline<a class="headerlink" href="#greenspline" title="Permalink to this headline">¶</a></h1>
+<p>greenspline - Interpolate using Green’s functions for splines in 1-3 dimensions</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>greenspline</strong> [ <em>table</em> ]
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>gradfile</em><strong>+f</strong><strong>1</strong>|<strong>2</strong>|<strong>3</strong>|<strong>4</strong>|<strong>5</strong> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong>[<strong>n</strong>|<strong>r</strong>|<strong>v</strong>]<em>value</em>[<strong>+f</strong><em>file</em>] ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>mode</em> ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<em>misfitfile</em>] ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>grdfile</em> ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>xinc</em>[/<em>yinc</em>[/<em>zinc</em>]] ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong> ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>nodefile</em> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><em>az</em>|<em>x/y/z</em> ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>] ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><strong>c|t|l|r|p|q</strong>[<em>pars</em>] ] [ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>maskgrid</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<strong>w</strong>]]
+[ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-x</strong>[[-]<em>n</em>] ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>greenspline</strong> uses the Green’s function G(<strong>x</strong>; <strong>x’</strong>) for the
+chosen spline and geometry to interpolate data at regular [or arbitrary]
+output locations. Mathematically, the solution is composed as
+<em>w</em>(<strong>x</strong>) = sum {<em>c</em>(<em>i</em>) G(<strong>x’</strong>; <strong>x</strong>(<em>i</em>))}, for <em>i</em> = 1,
+<em>n</em>, the number of data points {<strong>x</strong>(<em>i</em>), <em>w</em>(<em>i</em>)}. Once the <em>n</em>
+coefficients <em>c</em>(<em>i</em>) have been found the sum can be evaluated at any
+output point <strong>x</strong>. Choose between minimum curvature, regularized, or
+continuous curvature splines in tension for either 1-D, 2-D, or 3-D
+Cartesian coordinates or spherical surface coordinates. After first
+removing a linear or planar trend (Cartesian geometries) or mean value
+(spherical surface) and normalizing these residuals, the least-squares
+matrix solution for the spline coefficients <em>c</em>(<em>i</em>) is found by
+solving the <em>n</em> by <em>n</em> linear system <em>w</em>(<em>j</em>) = sum-over-<em>i</em>
+{<em>c</em>(<em>i</em>) G(<strong>x</strong>(<em>j</em>); <strong>x</strong>(<em>i</em>))}, for <em>j</em> = 1, <em>n</em>; this
+solution yields an exact interpolation of the supplied data points.
+Alternatively, you may choose to perform a singular value decomposition
+(SVD) and eliminate the contribution from the smallest eigenvalues; this
+approach yields an approximate solution. Trends and scales are restored
+when evaluating the output.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<p>None.</p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>The name of one or more ASCII [or binary, see
+<strong>-bi</strong>] files holding the <strong>x</strong>, <em>w</em> data
+points. If no file is given then we read standard input instead.</dd>
+</dl>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong><em>gradfile</em><strong>+f</strong><strong>1</strong>|<strong>2</strong>|<strong>3</strong>|<strong>4</strong>|<strong>5</strong></dt>
+<dd>The solution will partly be constrained by surface gradients <strong>v</strong> =
+<em>v</em>*<strong>n</strong>, where <em>v</em> is the gradient magnitude and <strong>n</strong> its
+unit vector direction. The gradient direction may be specified
+either by Cartesian components (either unit vector <strong>n</strong> and
+magnitude <em>v</em> separately or gradient components <strong>v</strong> directly) or
+angles w.r.t. the coordinate axes. Append name of ASCII file with
+the surface gradients.  Use <strong>+f</strong> to select one of five input
+formats: <strong>0</strong>: For 1-D data there is no direction, just gradient
+magnitude (slope) so the input format is <em>x</em>, <em>gradient</em>. Options
+1-2 are for 2-D data sets: <strong>1</strong>: records contain <em>x</em>, <em>y</em>,
+<em>azimuth</em>, <em>gradient</em> (<em>azimuth</em> in degrees is measured clockwise
+from the vertical (north) [Default]). <strong>2</strong>: records contain <em>x</em>,
+<em>y</em>, <em>gradient</em>, <em>azimuth</em> (<em>azimuth</em> in degrees is measured
+clockwise from the vertical (north)). Options 3-5 are for either 2-D
+or 3-D data: <strong>3</strong>: records contain <strong>x</strong>, <em>direction(s)</em>, <em>v</em>
+(<em>direction(s)</em> in degrees are measured counter-clockwise from the
+horizontal (and for 3-D the vertical axis). <strong>4</strong>: records contain
+<strong>x</strong>, <strong>v</strong>. <strong>5</strong>: records contain <strong>x</strong>, <strong>n</strong>, <em>v</em>.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong>[<strong>n</strong>|<strong>r</strong>|<strong>v</strong>]<em>value</em>[<strong>+f</strong><em>file</em>]</dt>
+<dd>Find an approximate surface fit: Solve the linear system for the
+spline coefficients by SVD and eliminate the contribution from all
+eigenvalues whose ratio to the largest eigenvalue is less than <em>value</em>
+[Default uses Gauss-Jordan elimination to solve the linear system
+and fit the data exactly]. Optionally, append <strong>+f</strong><em>file</em> to save the
+eigenvalue ratios to the specified file for further analysis.
+Finally, if a negative <em>value</em> is given then <strong>+f</strong><em>file</em> is required and
+execution will stop after saving the eigenvalues, i.e., no surface
+output is produced.  Specify <strong>-Cv</strong> to use the
+largest eigenvalues needed to explain approximately <em>value</em> % of the data variance.
+Specify <strong>-Cr</strong> to use the largest eigenvalues needed to leave approximately <em>value</em>
+as the model misfit.  If <em>value</em> is not given then <strong>-W</strong> is required and we
+compute <em>value</em> as the rms of the data uncertainties.
+Alternatively, use <strong>-Cn</strong> to select the <em>value</em> largest eigenvalues.
+If a <em>file</em> is given with <strong>-Cv</strong> then we save the eigenvalues instead
+of the ratios.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>mode</em></dt>
+<dd>Sets the distance flag that determines how we calculate distances
+between data points. Select <em>mode</em> 0 for Cartesian 1-D spline
+interpolation: <strong>-D</strong>0 means (<em>x</em>) in user units, Cartesian
+distances, Select <em>mode</em> 1-3 for Cartesian 2-D surface spline
+interpolation: <strong>-D</strong>1 means (<em>x</em>,<em>y</em>) in user units, Cartesian
+distances, <strong>-D</strong>2 for (<em>x</em>,<em>y</em>) in degrees, Flat Earth
+distances, and <strong>-D</strong>3 for (<em>x</em>,<em>y</em>) in degrees, Spherical
+distances in km. Then, if <a class="reference internal" href="gmt.conf.html#proj-ellipsoid"><span class="std std-ref">PROJ_ELLIPSOID</span></a> is spherical, we
+compute great circle arcs, otherwise geodesics. Option <em>mode</em> = 4
+applies to spherical surface spline interpolation only: <strong>-D</strong>4
+for (<em>x</em>,<em>y</em>) in degrees, use cosine of great circle (or geodesic)
+arcs. Select <em>mode</em> 5 for Cartesian 3-D surface spline
+interpolation: <strong>-D</strong>5 means (<em>x</em>,<em>y</em>,<em>z</em>) in user units,
+Cartesian distances.</dd>
+</dl>
+<p id="e"><strong>E</strong>[<em>misfitfile</em>]</p>
+<blockquote>
+<div>Evaluate the spline exactly at the input data locations and report
+statistics of the misfit (mean, standard deviation, and rms).  Optionally,
+append a filename and we will write the data table, augmented by
+two extra columns holding the spline estimate and the misfit.</div></blockquote>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>grdfile</em></dt>
+<dd>Name of resulting output file. (1) If options <strong>-R</strong>, <strong>-I</strong>, and
+possibly <strong>-r</strong> are set we produce an equidistant output table. This
+will be written to stdout unless <strong>-G</strong> is specified. Note: for 2-D
+grids the <strong>-G</strong> option is required. (2) If option <strong>-T</strong> is
+selected then <strong>-G</strong> is required and the output file is a 2-D binary
+grid file. Applies to 2-D interpolation only. (3) If <strong>-N</strong> is
+selected then the output is an ASCII (or binary; see
+<strong>-bo</strong>) table; if <strong>-G</strong> is not given then
+this table is written to standard output. Ignored if <strong>-C</strong> or
+<strong>-C</strong>0 is given.</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>xinc</em>[/<em>yinc</em>[/<em>zinc</em>]]</dt>
+<dd>Specify equidistant sampling intervals, on for each dimension, separated by slashes.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong></dt>
+<dd>Do <em>not</em> remove a linear (1-D) or planer (2-D) trend when <strong>-D</strong>
+selects mode 0-3 [For those Cartesian cases a least-squares line or
+plane is modeled and removed, then restored after fitting a spline
+to the residuals]. However, in mixed cases with both data values and
+gradients, or for spherical surface data, only the mean data value
+is removed (and later and restored).</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong><em>nodefile</em></dt>
+<dd>ASCII file with coordinates of desired output locations <strong>x</strong> in the
+first column(s). The resulting <em>w</em> values are appended to each
+record and written to the file given in <strong>-G</strong> [or stdout if not
+specified]; see <strong>-bo</strong> for binary output
+instead. This option eliminates the need to specify options <strong>-R</strong>,
+<strong>-I</strong>, and <strong>-r</strong>.</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong><em>az</em>|<em>x/y/z</em></dt>
+<dd>Rather than evaluate the surface, take the directional derivative in
+the <em>az</em> azimuth and return the magnitude of this derivative
+instead. For 3-D interpolation, specify the three components of the
+desired vector direction (the vector will be normalized before use).</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>[/<em>ymin</em>/<em>ymax</em>[/<em>zmin</em>/<em>zmax</em>]]</dt>
+<dd><p class="first">Specify the domain for an equidistant lattice where output
+predictions are required. Requires <strong>-I</strong> and optionally <strong>-r</strong>.</p>
+<p><em>1-D:</em> Give <em>xmin/xmax</em>, the minimum and maximum <em>x</em> coordinates.</p>
+<p><em>2-D:</em> Give <em>xmin/xmax/ymin/ymax</em>, the minimum and maximum <em>x</em> and
+<em>y</em> coordinates. These may be Cartesian or geographical. If
+geographical, then <em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the
+Region of interest, and you may specify them in decimal degrees or
+in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>]
+format. The two shorthands <strong>-Rg</strong>
+and <strong>-Rd</strong> stand for global domain (0/360 and -180/+180 in
+longitude respectively, with -90/+90 in latitude).</p>
+<p class="last"><em>3-D:</em> Give <em>xmin/xmax/ymin/ymax/zmin/zmax</em>, the minimum and maximum
+<em>x</em>, <em>y</em> and <em>z</em> coordinates. See the 2-D section if your horizontal
+coordinates are geographical; note the shorthands <strong>-Rg</strong> and
+<strong>-Rd</strong> cannot be used if a 3-D domain is specified.</p>
+</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><strong>c|t|l|r|p|q</strong>[<em>pars</em>]</dt>
+<dd>Select one of six different splines. The first two are used for
+1-D, 2-D, or 3-D Cartesian splines (see <strong>-D</strong> for discussion). Note
+that all tension values are expected to be normalized tension in the
+range 0 &lt; <em>t</em> &lt; 1: (<strong>c</strong>) Minimum curvature spline [<em>Sandwell</em>,
+1987], (<strong>t</strong>) Continuous curvature spline in tension [<em>Wessel and
+Bercovici</em>, 1998]; append <em>tension</em>[/<em>scale</em>] with <em>tension</em> in
+the 0-1 range and optionally supply a length scale [Default is the
+average grid spacing]. The next is a 1-D or 2-D spline: (<strong>l</strong>)
+Linear (1-D) or Bilinear (2-D) spline; these produce output that do
+not exceed the range of the given data.  The next is a 2-D or 3-D spline: (<strong>r</strong>)
+Regularized spline in tension [<em>Mitasova and Mitas</em>, 1993]; again,
+append <em>tension</em> and optional <em>scale</em>. The last two are spherical
+surface splines and both imply <strong>-D</strong>4: (<strong>p</strong>) Minimum
+curvature spline [<em>Parker</em>, 1994], (<strong>q</strong>) Continuous curvature
+spline in tension [<em>Wessel and Becker</em>, 2008]; append <em>tension</em>. The
+G(<strong>x’</strong>; <strong>x’</strong>) for the last method is slower to compute (a series solution) so we
+pre-calculate values and use cubic spline interpolation lookup instead.
+Optionally append <strong>+n</strong><em>N</em> (an odd integer) to change how many
+points to use in the spline setup [10001].  The finite Legendre sum has
+a truncation error [1e-6]; you can lower that by appending <strong>+e</strong><em>limit</em>
+at the expense of longer run-time.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong><em>maskgrid</em></dt>
+<dd>For 2-D interpolation only. Only evaluate the solution at the nodes
+in the <em>maskgrid</em> that are not equal to NaN. This option eliminates
+the need to specify options <strong>-R</strong>, <strong>-I</strong>, and <strong>-r</strong>.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong>[<strong>w</strong>]</dt>
+<dd>Data one-sigma uncertainties are provided in the last column.
+We then compute weights that are inversely proportional to the uncertainties.
+Append <strong>w</strong> if weights are given instead of uncertainties.  This results in
+a weighted least squares fit.  Note that this only has an effect if <strong>-C</strong> is used.
+[Default uses no weights or uncertainties].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input. [Default is 2-4 input
+columns (<strong>x</strong>,<em>w</em>); the number depends on the chosen dimension].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em> <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-o</strong><em>cols</em>[,…] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select output columns (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-r</strong> <a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set pixel node registration [gridline].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-x</strong>[[-]<em>n</em>] <a class="reference internal" href="gmt.html#core-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Limit number of cores used in multi-threaded algorithms (OpenMP required).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="d-examples">
+<h2>1-d Examples<a class="headerlink" href="#d-examples" title="Permalink to this headline">¶</a></h2>
+<p>To resample the <em>x</em>,<em>y</em> Gaussian random data created by <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>
+and stored in 1D.txt, requesting output every 0.1 step from 0 to 10, and
+using a minimum cubic spline, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">math</span> <span class="o">-</span><span class="n">T0</span><span class="o">/</span><span class="mi">10</span><span class="o">/</span><span class="mi">1</span> <span class="mi">0</span> <span class="mi">1</span> <span class="n">NRAND</span> <span class="o">=</span> <span class="mi">1</span><span class="n">D</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">gmt</span> <span class="n">psxy</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mi">10</span><span class="o">/-</span><span class="mi">5</span><span class="o">/</span><span class="mi">5</span> <span class="o">-</span><span class="n">JX6i</span><span class="o">/</span><span class="mi">3</span><span class="n">i</span> <span class="o">-</span><span class="n">B2f1</span><span class="o">/</span><span class="mi">1</span> <span class="o">-</span><span class="n">Sc0</span><span class="o">.</span><span class="mi">1</span> <span class="o">-</span><span class="n">Gblack</span> <span class="mi">1</span><span class="n">D</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">K</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="n">D</span><span class="o">.</span><span class="n">ps</span>
+<span class="n">gmt</span> <span class="n">greenspline</span> <span class="mi">1</span><span class="n">D</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mi">10</span> <span class="o">-</span><span class="n">I0</span><span class="o">.</span><span class="mi">1</span> <span class="o">-</span><span class="n">Sc</span> <span class="o">-</span><span class="n">V</span> <span class="o">|</span> <span class="n">psxy</span> <span class="o">-</span><span class="n">R</span> <span class="o">-</span><span class="n">J</span> <span class="o">-</span><span class="n">O</span> <span class="o">-</span><span class="n">Wthin</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="n">D</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To apply a spline in tension instead, using a tension of 0.7, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">psxy</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mi">10</span><span class="o">/-</span><span class="mi">5</span><span class="o">/</span><span class="mi">5</span> <span class="o">-</span><span class="n">JX6i</span><span class="o">/</span><span class="mi">3</span><span class="n">i</span> <span class="o">-</span><span class="n">B2f1</span><span class="o">/</span><span class="mi">1</span> <span class="o">-</span><span class="n">Sc0</span><span class="o">.</span><span class="mi">1</span> <span class="o">-</span><span class="n">Gblack</span> <span class="mi">1</span><span class="n">D</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">K</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="n">Dt</span><span class="o">.</span><span class="n">ps</span>
+<span class="n">gmt</span> <span class="n">greenspline</span> <span class="mi">1</span><span class="n">D</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mi">10</span> <span class="o">-</span><span class="n">I0</span><span class="o">.</span><span class="mi">1</span> <span class="o">-</span><span class="n">St0</span><span class="o">.</span><span class="mi">7</span> <span class="o">-</span><span class="n">V</span> <span class="o">|</span> <span class="n">psxy</span> <span class="o">-</span><span class="n">R</span> <span class="o">-</span><span class="n">J</span> <span class="o">-</span><span class="n">O</span> <span class="o">-</span><span class="n">Wthin</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="n">Dt</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="id1">
+<h2>2-d Examples<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>To make a uniform grid using the minimum curvature spline for the same
+Cartesian data set from Davis (1986) that is used in the GMT Technical
+Reference and Cookbook example 16, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">greenspline</span> <span class="n">table_5</span><span class="o">.</span><span class="mi">11</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mf">6.5</span><span class="o">/-</span><span class="mf">0.2</span><span class="o">/</span><span class="mf">6.5</span> <span class="o">-</span><span class="n">I0</span><span class="o">.</span><span class="mi">1</span> <span class="o">-</span><span class="n">Sc</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">D1</span> <span class="o">-</span><span class="n">GS1987</span><span class="o">.</span><span class="n">nc</span>
+<span class="n">gmt</span> <span class="n">psxy</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mf">6.5</span><span class="o">/-</span><span class="mf">0.2</span><span class="o">/</span><span class="mf">6.5</span> <span class="o">-</span><span class="n">JX6i</span> <span class="o">-</span><span class="n">B2f1</span> <span class="o">-</span><span class="n">Sc0</span><span class="o">.</span><span class="mi">1</span> <span class="o">-</span><span class="n">Gblack</span> <span class="n">table_5</span><span class="o">.</span><span class="mi">11</span> <span class="o">-</span><span class="n">K</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="n">D</span><span class="o">.</span><span class="n">ps</span>
+<span class="n">gmt</span> <span class="n">grdcontour</span> <span class="o">-</span><span class="n">JX6i</span> <span class="o">-</span><span class="n">B2f1</span> <span class="o">-</span><span class="n">O</span> <span class="o">-</span><span class="n">C25</span> <span class="o">-</span><span class="n">A50</span> <span class="n">S1987</span><span class="o">.</span><span class="n">nc</span> <span class="o">&gt;&gt;</span> <span class="mi">2</span><span class="n">D</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To use Cartesian splines in tension but only evaluate the solution where
+the input mask grid is not NaN, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">greenspline</span> <span class="n">table_5</span><span class="o">.</span><span class="mi">11</span> <span class="o">-</span><span class="n">Tmask</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">St0</span><span class="o">.</span><span class="mi">5</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">D1</span> <span class="o">-</span><span class="n">GWB1998</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To use Cartesian generalized splines in tension and return the magnitude
+of the surface slope in the NW direction, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">greenspline</span> <span class="n">table_5</span><span class="o">.</span><span class="mi">11</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mf">6.5</span><span class="o">/-</span><span class="mf">0.2</span><span class="o">/</span><span class="mf">6.5</span> <span class="o">-</span><span class="n">I0</span><span class="o">.</span><span class="mi">1</span> <span class="o">-</span><span class="n">Sr0</span><span class="o">.</span><span class="mi">95</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">D1</span> <span class="o">-</span><span class="n">Q</span><span class="o">-</span><span class="mi">45</span> <span class="o">-</span><span class="n">Gslopes</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Finally, to use Cartesian minimum curvature splines in recovering a
+surface where the input data is a single surface value (pt.txt) and the
+remaining constraints specify only the surface slope and direction
+(slopes.txt), use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">greenspline</span> <span class="n">pt</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">R</span><span class="o">-</span><span class="mf">3.2</span><span class="o">/</span><span class="mf">3.2</span><span class="o">/-</span><span class="mf">3.2</span><span class="o">/</span><span class="mf">3.2</span> <span class="o">-</span><span class="n">I0</span><span class="o">.</span><span class="mi">1</span> <span class="o">-</span><span class="n">Sc</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">D1</span> <span class="o">-</span><span class="n">Aslopes</span><span class="o">.</span><span class="n">txt</span><span class="o">+</span><span class="n">f1</span> <span class="o">-</span><span class="n">Gslopes</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="id2">
+<h2>3-d Examples<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>To create a uniform 3-D Cartesian grid table based on the data in
+table_5.23 in Davis (1986) that contains <em>x</em>,<em>y</em>,<em>z</em> locations and
+a measure of uranium oxide concentrations (in percent), try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">greenspline</span> <span class="n">table_5</span><span class="o">.</span><span class="mi">23</span> <span class="o">-</span><span class="n">R5</span><span class="o">/</span><span class="mi">40</span><span class="o">/-</span><span class="mi">5</span><span class="o">/</span><span class="mi">10</span><span class="o">/</span><span class="mi">5</span><span class="o">/</span><span class="mi">16</span> <span class="o">-</span><span class="n">I0</span><span class="o">.</span><span class="mi">25</span> <span class="o">-</span><span class="n">Sr0</span><span class="o">.</span><span class="mi">85</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">D5</span> <span class="o">-</span><span class="n">G3D_UO2</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="d-spherical-surface-examples">
+<h2>2-d Spherical Surface Examples<a class="headerlink" href="#d-spherical-surface-examples" title="Permalink to this headline">¶</a></h2>
+<p>To recreate Parker’s [1994] example on a global 1x1 degree grid,
+assuming the data are in file mag_obs_1990.txt, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">greenspline</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">Rg</span> <span class="o">-</span><span class="n">Sp</span> <span class="o">-</span><span class="n">D3</span> <span class="o">-</span><span class="n">I1</span> <span class="o">-</span><span class="n">GP1994</span><span class="o">.</span><span class="n">nc</span> <span class="n">mag_obs_1990</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To do the same problem but applying tension of 0.85, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">greenspline</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">Rg</span> <span class="o">-</span><span class="n">Sq0</span><span class="o">.</span><span class="mi">85</span> <span class="o">-</span><span class="n">D3</span> <span class="o">-</span><span class="n">I1</span> <span class="o">-</span><span class="n">GWB2008</span><span class="o">.</span><span class="n">nc</span> <span class="n">mag_obs_1990</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="considerations">
+<h2>Considerations<a class="headerlink" href="#considerations" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>For the Cartesian cases we use the free-space Green functions, hence
+no boundary conditions are applied at the edges of the specified domain.
+For most applications this is fine as the region typically is
+arbitrarily set to reflect the extent of your data. However, if your
+application requires particular boundary conditions then you may
+consider using <a class="reference internal" href="surface.html"><span class="doc">surface</span></a> instead.</li>
+<li>In all cases, the solution is obtained by inverting a <em>n</em> x <em>n</em>
+double precision matrix for the Green function coefficients, where <em>n</em>
+is the number of data constraints. Hence, your computer’s memory may
+place restrictions on how large data sets you can process with
+<strong>greenspline</strong>. Pre-processing your data with doc:<cite>blockmean</cite>,
+doc:<cite>blockmedian</cite>, or doc:<cite>blockmode</cite> is recommended to avoid aliasing and
+may also control the size of <em>n</em>. For information, if <em>n</em> = 1024 then
+only 8 Mb memory is needed, but for <em>n</em> = 10240 we need 800 Mb. Note
+that <strong>greenspline</strong> is fully 64-bit compliant if compiled as such.
+For spherical data you may consider decimating using doc:<cite>gmtspatial</cite>
+nearest neighbor reduction.</li>
+<li>The inversion for coefficients can become numerically unstable when
+data neighbors are very close compared to the overall span of the data.
+You can remedy this by pre-processing the data, e.g., by averaging
+closely spaced neighbors. Alternatively, you can improve stability by
+using the SVD solution and discard information associated with the
+smallest eigenvalues (see <strong>-C</strong>).</li>
+<li>The series solution implemented for <strong>-Sq</strong> was developed by
+Robert L. Parker, Scripps Institution of Oceanography, which we
+gratefully acknowledge.</li>
+<li>If you need to fit a certain 1-D spline through your data
+points you may wish to consider <a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a> instead.
+It will offer traditional splines with standard boundary conditions
+(such as the natural cubic spline, which sets the curvatures at the ends
+to zero).  In contrast, <strong>greenspline</strong>’s 1-D spline, as is explained in
+note 1, does <em>not</em> specify boundary conditions at the end of the data domain.</li>
+</ol>
+</div>
+<div class="section" id="tension">
+<h2>Tension<a class="headerlink" href="#tension" title="Permalink to this headline">¶</a></h2>
+<p>Tension is generally used to suppress spurious oscillations caused by
+the minimum curvature requirement, in particular when rapid gradient
+changes are present in the data. The proper amount of tension can only
+be determined by experimentation. Generally, very smooth data (such as
+potential fields) do not require much, if any tension, while rougher
+data (such as topography) will typically interpolate better with
+moderate tension. Make sure you try a range of values before choosing
+your final result. Note: the regularized spline in tension is only
+stable for a finite range of <em>scale</em> values; you must experiment to find
+the valid range and a useful setting. For more information on tension
+see the references below.</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Davis, J. C., 1986, <em>Statistics and Data Analysis in Geology</em>, 2nd
+Edition, 646 pp., Wiley, New York,</p>
+<p>Mitasova, H., and L. Mitas, 1993, Interpolation by regularized spline
+with tension: I. Theory and implementation, <em>Math. Geol.</em>, <strong>25</strong>,
+641-655.</p>
+<p>Parker, R. L., 1994, <em>Geophysical Inverse Theory</em>, 386 pp., Princeton
+Univ. Press, Princeton, N.J.</p>
+<p>Sandwell, D. T., 1987, Biharmonic spline interpolation of Geos-3 and
+Seasat altimeter data, <em>Geophys. Res. Lett.</em>, <strong>14</strong>, 139-142.</p>
+<p>Wessel, P., and D. Bercovici, 1998, Interpolation with splines in
+tension: a Green’s function approach, <em>Math. Geol.</em>, <strong>30</strong>, 77-93.</p>
+<p>Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized
+Green’s function for a spherical surface spline in tension, <em>Geophys. J.
+Int</em>, <strong>174</strong>, 21-28.</p>
+<p>Wessel, P., 2009, A general-purpose Green’s function interpolator,
+<em>Computers &amp; Geosciences</em>, <strong>35</strong>, 1247-1254, doi:10.1016/j.cageo.2008.08.012.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>,
+<a class="reference internal" href="nearneighbor.html"><span class="doc">nearneighbor</span></a>, <a class="reference internal" href="psxy.html"><span class="doc">psxy</span></a>,
+<a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a>,
+<a class="reference internal" href="sphtriangulate.html"><span class="doc">sphtriangulate</span></a>,
+<a class="reference internal" href="surface.html"><span class="doc">surface</span></a>,
+<a class="reference internal" href="triangulate.html"><span class="doc">triangulate</span></a>, <a class="reference internal" href="xyz2grd.html"><span class="doc">xyz2grd</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">greenspline</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#d-examples">1-d Examples</a></li>
+<li><a class="reference internal" href="#id1">2-d Examples</a></li>
+<li><a class="reference internal" href="#id2">3-d Examples</a></li>
+<li><a class="reference internal" href="#d-spherical-surface-examples">2-d Spherical Surface Examples</a></li>
+<li><a class="reference internal" href="#considerations">Considerations</a></li>
+<li><a class="reference internal" href="#tension">Tension</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grdvolume.html"
+                        title="previous chapter">grdvolume</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="isogmt.html"
+                        title="next chapter">isogmt</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/greenspline.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="isogmt.html" title="isogmt"
+             >next</a> </li>
+        <li class="right" >
+          <a href="grdvolume.html" title="grdvolume"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

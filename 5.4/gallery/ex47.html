@@ -1,0 +1,192 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(47) Linear regression using different norms and types &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(48) Line networks, map embellishments, and curved titles" href="ex48.html" />
+    <link rel="prev" title="(46) Day-light terminators and other sunlight parameters" href="ex46.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex48.html" title="(48) Line networks, map embellishments, and curved titles"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex46.html" title="(46) Day-light terminators and other sunlight parameters"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="linear-regression-using-different-norms-and-types">
+<span id="example-47"></span><h1>(47) Linear regression using different norms and types<a class="headerlink" href="#linear-regression-using-different-norms-and-types" title="Permalink to this headline">¶</a></h1>
+<p>In this example we show how the module <a class="reference internal" href="../gmtregress.html"><span class="doc">gmtregress</span></a>
+is used to fit a multitude of different linear regression models to
+a data set with extreme outliers that can also act as leverage points.
+This data set forms the basis for the main sequence
+in a Hertzsprung-Russell diagram of the star cluster CYG OB1, which includes
+four red giants that are outlying with respect to the main trend.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT EXAMPLE 47</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate use of gmtregress with different norms and types</span>
+<span class="c1"># GMT modules:  gmtregress, psxy</span>
+<span class="c1">#</span>
+
+<span class="nv">ps</span><span class="o">=</span>example_47.ps
+
+<span class="k">function</span> plot_one <span class="o">{</span>	<span class="c1"># 5 args are: -E -N axes -X -Y</span>
+	gmt regress data -Fxm <span class="nv">$1</span> <span class="nv">$2</span> -T2.85/5.25/0.1 &gt; tmp
+	gmt psxy -R -J -Bxafg+l<span class="s2">&quot;Log temperature&quot;</span> -Byafg+l<span class="s2">&quot;Log light intensity&quot;</span> -B<span class="nv">$3</span>+ghoneydew -O -K <span class="nv">$4</span> <span class="nv">$5</span> data -Sc0.05i -Gblue
+	gmt psxy -R -J -O -K <span class="nv">$4</span> <span class="nv">$5</span> giants -Sc0.05i -Gred -N
+	gmt psxy -R -J -O -K <span class="nv">$4</span> <span class="nv">$5</span> giants -Sc0.1i -W0.25p -N
+	gmt psxy -R -W2p -J -O -K <span class="nv">$4</span> <span class="nv">$5</span> tmp	
+<span class="o">}</span>
+<span class="c1"># Allow outliers (commented out by #) to be included in the analysis:</span>
+sed -e s/#//g hertzsprung-russell.txt &gt; data
+<span class="c1"># Identify the red giants (outliers)</span>
+grep <span class="s1">&#39;#&#39;</span> hertzsprung-russell.txt <span class="p">|</span> sed -e s/#//g &gt; giants
+
+gmt psxy -R2.85/5.25/3.9/6.3 -JX-2i/2i -T -P -K -Xa1i -Ya1i &gt; <span class="nv">$ps</span>
+<span class="c1"># L1</span>
+plot_one -Er -N1 WSne -Xa1.2i -Ya01i &gt;&gt; <span class="nv">$ps</span>
+plot_one -Eo -N1 Wsne -Xa1.2i -Ya3.2i &gt;&gt; <span class="nv">$ps</span>
+plot_one -Ex -N1 Wsne -Xa1.2i -Ya5.4i &gt;&gt; <span class="nv">$ps</span>
+plot_one -Ey -N1 Wsne+tL@-1@- -Xa1.2i -Ya7.6i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1">#L2</span>
+plot_one -Er -N2 wSne -Xa3.3i -Ya1i &gt;&gt; <span class="nv">$ps</span>
+plot_one -Eo -N2 wsne -Xa3.3i -Ya3.2i &gt;&gt; <span class="nv">$ps</span>
+plot_one -Ex -N2 wsne -Xa3.3i -Ya5.4i &gt;&gt; <span class="nv">$ps</span>
+plot_one -Ey -N2 wsne+tL@-2@- -Xa3.3i -Ya7.6i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1">#LMS</span>
+plot_one -Er -Nr weSn -Xa5.4i -Ya1i &gt;&gt;<span class="nv">$ps</span>
+plot_one -Eo -Nr wesn -Xa5.4i -Ya3.2i &gt;&gt; <span class="nv">$ps</span>
+plot_one -Ex -Nr wesn -Xa5.4i -Ya5.4i &gt;&gt; <span class="nv">$ps</span>
+plot_one -Ey -Nr wesn+tLMS -Xa5.4i -Ya7.6i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Labels</span>
+<span class="nb">echo</span> REDUCED MAJOR AXIS <span class="p">|</span> gmt pstext -R -J -O -K -F+cRM+jTC+a90 -N -Dj0.2i -Xa5.4i -Ya1i &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> ORTHOGONAL <span class="p">|</span> gmt pstext -R -J -O -K -F+cRM+jTC+a90 -N -Dj0.2i -Xa5.4i -Ya3.2i &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> X ON Y <span class="p">|</span> gmt pstext -R -J -O -K -F+cRM+jTC+a90 -N -Dj0.2i -Xa5.4i -Ya5.4i &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> Y ON X <span class="p">|</span> gmt pstext -R -J -O -K -F+cRM+jTC+a90 -N -Dj0.2i -Xa5.4i -Ya7.6i &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -T &gt;&gt; <span class="nv">$ps</span>
+rm -f tmp data giants
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_47.png"><img alt="../_images/example_47.png" src="../_images/example_47.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Robust and not-so-robust regressions.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex46.html"
+                        title="previous chapter">(46) Day-light terminators and other sunlight parameters</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex48.html"
+                        title="next chapter">(48) Line networks, map embellishments, and curved titles</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex47.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex48.html" title="(48) Line networks, map embellishments, and curved titles"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex46.html" title="(46) Day-light terminators and other sunlight parameters"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

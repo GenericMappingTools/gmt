@@ -1,0 +1,28 @@
+.. _example_49:
+
+(49) Analysis of the Atlantic seafloor depth/age relationship
+-------------------------------------------------------------
+
+In this example we show an example of data analysis using grids
+of seafloor depth and age for a region in the south Atlantic.
+We use module :doc:`grdsample </grdsample>` to convert the age
+grid to the same pixel registration used by the depth grid.
+Dumping separate x,y,z triplets with :doc:`grd2xyz </grd2xyz>`
+lets us paste the output back via :doc:`gmtconvert </gmtconvert>`
+to make binary tables of age,depth,depth.  Here, depth is repeated in
+order to use :doc:`blockmode </blockmode>` for modal depth estimation
+and :doc:`xyz2grd </xyz2grd>` for mapping the data density.
+We image the density of (age,depth) points, overlay the modal depths
+and their robust uncertainty bars, and compute and plot two models
+for the expected depths as a function of age (see legend).  Note we
+place most of the legend twice to achieve the thin-on-thick pen
+effect in the legend.
+
+.. literalinclude:: /_verbatim/example_49.txt
+   :language: bash
+
+.. figure:: /_images/example_49.*
+   :width: 500 px
+   :align: center
+
+   Seafloor depth vs. age in the south Atlantic.

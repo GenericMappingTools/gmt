@@ -1,0 +1,888 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Session Two &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Session Three" href="session-3.html" />
+    <link rel="prev" title="Session One" href="session-1.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../tutorial.html">GMT Tutorial</a> &raquo;</li>
+        
+      <li>Session Two</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/tutorial/session-2.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="session-two">
+<h1>Session Two<a class="headerlink" href="#session-two" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="general-information">
+<h2>General Information<a class="headerlink" href="#general-information" title="Permalink to this headline">¶</a></h2>
+<p>There are 18 GMT modules that directly create (or add overlays to)
+plots; the remaining 45 are mostly concerned with data
+processing.  This session will focus on the task of plotting
+lines, symbols, and text on maps.  We will build on the skills
+we acquired while familiarizing ourselves with the various
+GMT map projections as well as how to select a data domain
+and boundary annotations.</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="84%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Program</th>
+<th class="head">Purpose</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>&#160;</td>
+<td><strong>BASEMAPS</strong></td>
+</tr>
+<tr class="row-odd"><td>basemap</td>
+<td>Create an empty basemap frame with optional scale</td>
+</tr>
+<tr class="row-even"><td>coast</td>
+<td>Plot coastlines, filled continents, rivers, and political borders</td>
+</tr>
+<tr class="row-odd"><td>legend</td>
+<td>Create legend overlay</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><strong>POINTS AND LINES</strong></td>
+</tr>
+<tr class="row-odd"><td>wiggle</td>
+<td>Draw spatial time-series along their (<em>x,y</em>)-tracks</td>
+</tr>
+<tr class="row-even"><td>plot</td>
+<td>Plot symbols, polygons, and lines in 2-D</td>
+</tr>
+<tr class="row-odd"><td>plot3d</td>
+<td>Plot symbols, polygons, and lines in 3-D</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><strong>HISTOGRAMS</strong></td>
+</tr>
+<tr class="row-odd"><td>histogram</td>
+<td>Plot a rectangular histogram</td>
+</tr>
+<tr class="row-even"><td>rose</td>
+<td>Plot a polar histogram(sector/rose diagram)</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><strong>CONTOURS</strong></td>
+</tr>
+<tr class="row-even"><td>grdcontour</td>
+<td>Contouring of grids</td>
+</tr>
+<tr class="row-odd"><td>contour</td>
+<td>Direct contouring/imaging of (<em>x,y,z</em>) data by optimal triangulation</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><strong>SURFACES</strong></td>
+</tr>
+<tr class="row-odd"><td>grdimage</td>
+<td>Project and plot grids or images</td>
+</tr>
+<tr class="row-even"><td>grdvector</td>
+<td>Plot vector fields from grids</td>
+</tr>
+<tr class="row-odd"><td>grdview</td>
+<td>3-D perspective imaging of grids</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td><strong>UTILITIES</strong></td>
+</tr>
+<tr class="row-odd"><td>clip</td>
+<td>Use polygon files to initiate custom clipping paths</td>
+</tr>
+<tr class="row-even"><td>image</td>
+<td>Plot Sun raster files</td>
+</tr>
+<tr class="row-odd"><td>mask</td>
+<td>Create clipping paths or generate overlay to mask</td>
+</tr>
+<tr class="row-even"><td>colorbar</td>
+<td>Plot gray scale or color scale bar</td>
+</tr>
+<tr class="row-odd"><td>text</td>
+<td>Plot text strings</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>Plotting lines and symbols, <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> is one of the most frequently
+used modules in GMT.  In addition to the common command line switches
+it has numerous specific options, and expects different file formats
+depending on what action has been selected.  These circumstances make
+<a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> harder to master than most GMT tools.  The table below
+shows a abbreviated list of the options:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="53%" />
+<col width="47%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Purpose</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>-A</strong></td>
+<td>Suppress line interpolation along great circles</td>
+</tr>
+<tr class="row-odd"><td><strong>-C</strong><em>cpt</em></td>
+<td>Let symbol color be determined from <em>z</em>-values and the <em>cpt</em> file</td>
+</tr>
+<tr class="row-even"><td><strong>-E</strong>[<strong>x</strong>|<strong>X</strong>][<strong>y</strong>|<strong>Y</strong>][<strong>+w</strong><em>cap</em>][<strong>+p</strong><em>pen</em>]</td>
+<td>Draw selected error bars with specified attributes</td>
+</tr>
+<tr class="row-odd"><td><strong>-G</strong><em>fill</em></td>
+<td>Set color for symbol or fill for polygons</td>
+</tr>
+<tr class="row-even"><td><strong>-L</strong>[<em>options</em>]</td>
+<td>Explicitly close polygons or create polygon (see <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a>)</td>
+</tr>
+<tr class="row-odd"><td><strong>-N</strong>[<strong>c</strong>|<strong>r</strong>]</td>
+<td>Do Not clip symbols at map borders</td>
+</tr>
+<tr class="row-even"><td><strong>-S</strong>[<em>symbol</em>][<em>size</em>]</td>
+<td>Select one of several symbols</td>
+</tr>
+<tr class="row-odd"><td><strong>-W</strong><em>pen</em></td>
+<td>Set <em>pen</em> for line or symbol outline</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>The symbols can either be transparent (using <strong>-W</strong> only, not <strong>-G</strong>)
+or solid (<strong>-G</strong>, with optional outline using <strong>-W</strong>).  The <strong>-S</strong>
+option takes the code for the desired symbol and optional size information.
+If no symbol is given it is expected to be given in the last column of each record in the input
+file.  The <em>size</em> is optional since individual sizes for
+symbols may also be provided by the input data.  The main symbols available to
+us are shown in the table below:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Symbol</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>-S-</strong><em>size</em></td>
+<td>horizontal dash; <em>size</em> is length of dash</td>
+</tr>
+<tr class="row-odd"><td><strong>-Sa</strong><em>size</em></td>
+<td>st<strong>a</strong>r; <em>size</em> is radius of circumscribing circle</td>
+</tr>
+<tr class="row-even"><td><strong>-Sb</strong><em>size</em>[/<em>base</em>][<strong>u</strong>]</td>
+<td><strong>b</strong>ar; <em>size</em> is bar width, append <strong>u</strong> if <em>size</em> is in <em>x</em>-units</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>Bar extends from <em>base</em> [0] to the <em>y</em>-value</td>
+</tr>
+<tr class="row-even"><td><strong>-Sc</strong><em>size</em></td>
+<td><strong>c</strong>ircle; <em>size</em> is the diameter</td>
+</tr>
+<tr class="row-odd"><td><strong>-Sd</strong><em>size</em></td>
+<td><strong>d</strong>iamond; <em>size</em> is its side</td>
+</tr>
+<tr class="row-even"><td><strong>-Se</strong></td>
+<td><strong>e</strong>llipse; <em>direction</em> (CCW from horizontal), <em>major</em>, and <em>minor</em> axes</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>are read from the input file</td>
+</tr>
+<tr class="row-even"><td><strong>-SE</strong></td>
+<td><strong>e</strong>llipse; <em>azimuth</em> (CW from vertical), <em>major</em>, and <em>minor</em> axes in kilometers</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>are read from the input file</td>
+</tr>
+<tr class="row-even"><td><strong>-Sg</strong><em>size</em></td>
+<td>octa<strong>g</strong>on; <em>size</em> is its side</td>
+</tr>
+<tr class="row-odd"><td><strong>-Sh</strong><em>size</em></td>
+<td><strong>h</strong>exagon; <em>size</em> is its side</td>
+</tr>
+<tr class="row-even"><td><strong>-Si</strong><em>size</em></td>
+<td><strong>i</strong>nverted triangle; <em>size</em> is its side</td>
+</tr>
+<tr class="row-odd"><td><strong>-Sk</strong><em>symbol</em>/<em>size</em></td>
+<td><strong>k</strong>ustom symbol; <em>size</em> is its side</td>
+</tr>
+<tr class="row-even"><td><strong>-Sl</strong><em>size</em><strong>+t</strong><em>string</em></td>
+<td><strong>l</strong>etter; <em>size</em> is fontsize. The <em>string</em> can be a letter or a text string</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>Append <strong>+f</strong><em>font</em> to set font and <strong>+j</strong><em>just</em> for justification</td>
+</tr>
+<tr class="row-even"><td><strong>-Sn</strong><em>size</em></td>
+<td>pe<strong>n</strong>tagon; <em>size</em> is its side</td>
+</tr>
+<tr class="row-odd"><td><strong>-Sp</strong></td>
+<td><strong>p</strong>oint; no size needed (1 pixel at current resolution is used)</td>
+</tr>
+<tr class="row-even"><td><strong>-Sr</strong><em>size</em></td>
+<td><strong>r</strong>ect, <em>width</em> and <em>height</em> are read from input file</td>
+</tr>
+<tr class="row-odd"><td><strong>-Ss</strong><em>size</em></td>
+<td><strong>s</strong>quare, <em>size</em> is its side</td>
+</tr>
+<tr class="row-even"><td><strong>-St</strong><em>size</em></td>
+<td><strong>t</strong>riangle; <em>size</em> is its side</td>
+</tr>
+<tr class="row-odd"><td><strong>-Sv</strong><em>params</em></td>
+<td><strong>v</strong>ector; <em>direction</em> (CCW from horizontal) and <em>length</em> are read from input data</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>Append parameters of the vector; see <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> for syntax.</td>
+</tr>
+<tr class="row-odd"><td><strong>-SV</strong><em>params</em></td>
+<td><strong>v</strong>ector, except <em>azimuth</em> (degrees east of north) is expected instead of <em>direction</em></td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>The angle on the map is calculated based on the chosen map projection</td>
+</tr>
+<tr class="row-odd"><td><strong>-Sw</strong>[<em>size</em>]</td>
+<td>pie <strong>w</strong>edge; <em>start</em> and <em>stop</em> directions (CCW from horizontal) are read from</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>input data</td>
+</tr>
+<tr class="row-odd"><td><strong>-Sx</strong><em>size</em></td>
+<td>cross; <em>size</em> is length of crossing lines</td>
+</tr>
+<tr class="row-even"><td><strong>-Sy</strong><em>size</em></td>
+<td>vertical dash; <em>size</em> is length of dash</td>
+</tr>
+</tbody>
+</table>
+<p>The symbol option in <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a>.  Lower case symbols (<strong>a, c, d, g, h, i, n, s, t, x</strong>)
+will fit inside a circle of given diameter.  Upper case symbols (<strong>A, C, D, G, H, I, N, S, T, X</strong>)
+will have area equal to that of a circle of given diameter.</p>
+<p>Because some symbols require more input data than others, and because the
+size of symbols as well as their color can be determined from the input data,
+the format of data can be confusing.  The general format for the input data
+is (optional items are in brackets []):</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>x y <span class="o">[</span> z <span class="o">]</span> <span class="o">[</span> size <span class="o">]</span> <span class="o">[</span> sigma_x <span class="o">]</span> <span class="o">[</span> sigma_y <span class="o">]</span> <span class="o">[</span> symbol <span class="o">]</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Thus, the only required input columns are the first two which must contain the
+longitude and latitude (or <em>x</em> and <em>y</em>.  The remaining items
+apply when one (or more) of the following conditions are met:</p>
+<ol class="arabic simple">
+<li>If you want the color of each symbol to be determined individually,
+supply a CPT with the <strong>-C</strong> option and let the 3rd data column
+contain the <em>z</em>-values to be used with the CPT.</li>
+<li>If you want the size of each symbol to be determined individually,
+append the size in a separate column.</li>
+<li>To draw error bars, use the <strong>-E</strong> option and give one or two
+additional data columns with the <em>dx</em> and <em>dy</em> values; the form of
+<strong>-E</strong> determines if one (<strong>-Ex</strong> or <strong>-Ey</strong>) or two (<strong>-Exy</strong>)
+columns are needed.  If upper case flags <strong>X</strong> or <strong>Y</strong> are given then
+we will instead draw a “box-and-whisker” symbol and the <em>sigma_x</em> (or
+<em>sigma_y</em>) must represent 4 columns containing the minimum, the 25 and 75%
+quartiles, and the maximum value.  The given <em>x</em> (or <em>y</em>) coordinate is taken as the 50%
+quantile (median).</li>
+<li>If you draw vectors with <strong>-Sv</strong> (or <strong>-SV</strong>) then <em>size</em> is
+actually two columns containing the <em>direction</em> (or <em>azimuth</em>)
+and <em>length</em> of each vector.</li>
+<li>If you draw ellipses (<strong>-Se</strong>) then <em>size</em> is actually three
+columns containing the <em>direction</em> and the <em>major</em> and <em>minor</em>
+axes in plot units (with <strong>-SE</strong> we expect <em>azimuth</em> instead and axes
+lengths in km).</li>
+</ol>
+<p>Before we try some examples we need to review two key switches; they
+specify pen attributes and symbol or polygon fill.  Please consult
+the <a class="reference internal" href="../cookbook/features.html#gmt-general-features"><span class="std std-ref">General Features</span></a> section the
+GMT Technical Reference and Cookbook before experimenting
+with the examples below.</p>
+<p>Examples:</p>
+<p>We will start off using the file tut_data.txt in your directory.
+Using the GMT utility <a class="reference internal" href="../gmtinfo.html"><span class="doc">gmtinfo</span></a> we find the extent of the
+data region:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt info @tut_data.txt
+</pre></div>
+</div>
+</div></blockquote>
+<p>which returns</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tut_data.txt: <span class="nv">N</span> <span class="o">=</span> <span class="m">7</span>   &lt;<span class="m">1</span>/5&gt;   &lt;<span class="m">1</span>/5&gt;
+</pre></div>
+</div>
+</div></blockquote>
+<p>telling us that the file tut_data.txt has 7 records and gives the
+minimum and maximum values for the first two columns.  Given our
+knowledge of how to set up linear projections with <strong>-R</strong> and <strong>-JX</strong>,
+try the following:</p>
+<ol class="arabic simple">
+<li>Plot the data as transparent circles of size 0.3 inches.</li>
+<li>Plot the data as solid white circles instead.</li>
+<li>Plot the data using 0.5” stars, making them red with a thick (width = 1.5p),
+dashed pen.</li>
+</ol>
+<p>To simply plot the data as a line we choose no symbol and specify a pen thickness instead:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_7
+	gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -B -Wthinner
+gmt end show
+</pre></div>
+</div>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-7"><span class="std std-ref">our example 7 below</span></a></p>
+<div class="figure align-center" id="id1">
+<span id="gmt-tut-7"></span><a class="reference internal image-reference" href="../_images/GMT_tut_7.png"><img alt="../_images/GMT_tut_7.png" src="../_images/GMT_tut_7.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 7</span></p>
+</div>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li>Plot the data as a green-blue polygon instead.</li>
+<li>Try using a predefined pattern.</li>
+</ol>
+<p>A common question is : “How can I plot symbols connected by a line
+with plot?”.  The surprising answer is that we must call <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> twice.
+While this sounds cumbersome there is a reason for this:  Basically,
+polygons need to be kept in memory since they may need to be clipped,
+hence computer memory places a limit on how large polygons we may plot.
+Symbols, on the other hand, can be plotted one at the time so there
+is no limit to how many symbols one may plot.  Therefore, to connect
+symbols with a line we must use the overlay approach:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_8
+	gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -B -Wthinner 
+	gmt plot tut_data.txt -W -Si0.2i 
+gmt end show
+</pre></div>
+</div>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-8"><span class="std std-ref">our example 8 below</span></a>. The
+two-step procedure also makes it easy to plot the line over the symbols
+instead of symbols over the line, as here.</p>
+<div class="figure align-center" id="id2">
+<span id="gmt-tut-8"></span><a class="reference internal image-reference" href="../_images/GMT_tut_8.png"><img alt="../_images/GMT_tut_8.png" src="../_images/GMT_tut_8.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 8</span></p>
+</div>
+<p>Our final <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> example involves a more complicated scenario
+in which we want to plot the epicenters of several earthquakes over
+the background of a coastline basemap.  We want the symbols to have a
+size that reflects the magnitude of the earthquakes, and that their
+color should reflect the depth of the hypocenter.  The first few
+lines in the remote tut_quakes.ngdc looks like this:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Historical Tsunami Earthquakes from the NCEI Database
+Year  Mo  Da  Lat+N  Long+E  Dep  Mag
+<span class="m">1987</span>  <span class="m">01</span>  <span class="m">04</span>  <span class="m">49</span>.77  <span class="m">149</span>.29  <span class="m">489</span>  <span class="m">4</span>.1
+<span class="m">1987</span>  <span class="m">01</span>  <span class="m">09</span>  <span class="m">39</span>.90  <span class="m">141</span>.68  <span class="m">067</span>  <span class="m">6</span>.8
+</pre></div>
+</div>
+</div></blockquote>
+<p>Thus the file has three header records (including the blank line),
+but we are only interested in columns 5, 4, 6, and 7.  In addition to
+extract those columns we must also scale the magnitudes into symbols
+sizes in inches.  Given their range it looks like multiplying the
+magnitude by 0.1 will work well for symbol sizes in cm.  Reformatting this file to comply
+with the <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> input format can be done in a number of ways,
+including manual editing, using MATLAB, a spreadsheet program, or UNIX
+tools.  Here, we simply use the common column selection option <strong>-i</strong>
+and its <a class="reference internal" href="../gmt.html#icols-full"><span class="std std-ref">scaling/offset capabilities</span></a>.
+To skip the first 3 header records
+and then select the 4th, 3rd, 5th, and
+6th column and scale the last column by 0.1, we would use</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-i4,3,5,6s0.1 -h3
+</pre></div>
+</div>
+</div></blockquote>
+<p>(Remember that 0 is the first column).  We will follow conventional color schemes for seismicity and assign red
+to shallow quakes (depth 0-100 km), green to intermediate quakes
+(100-300 km), and blue to deep earthquakes (depth &gt; 300 km).  The
+quakes.cpt file establishes the relationship between depth
+and color:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># color palette for seismicity</span>
+<span class="c1">#z0  color   z1 color</span>
+<span class="m">0</span>    red    <span class="m">100</span> red
+<span class="m">100</span>  green  <span class="m">300</span> green
+<span class="m">300</span>  blue  <span class="m">1000</span> blue
+</pre></div>
+</div>
+</div></blockquote>
+<p>Apart from comment lines (starting with #), each record in the CPT
+governs the color of a symbol whose <em>z</em> value falls in the range between
+<em>z_0</em> and <em>z_1</em>.  If the colors for the lower and upper levels differ
+then an intermediate color will be linearly interpolated given the <em>z</em>
+value.  Here, we have chosen constant color intervals.  You may wish
+to consult the <a class="reference internal" href="../cookbook/features.html#cpt-section"><span class="std std-ref">Color palette tables</span></a> section in the Cookbook.
+This color table was generated as part of the script (below).</p>
+<p>We may now complete our example using the Mercator projection:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_9
+	gmt makecpt -Cred,green,blue -T0,100,300,10000
+	gmt coast -R130/150/35/50 -JM6i -B -Ggray 
+	gmt plot @tut_quakes.ngdc -Wfaint -i4,3,5,6+s0.1 -h3 -Scc -C -Vl
+gmt end show
+</pre></div>
+</div>
+<p>where the <strong>c</strong> appended to the <strong>-Sc</strong> option ensures that symbols
+sizes are interpreted to be in cm.  Your plot should look like <a class="reference internal" href="#gmt-tut-9"><span class="std std-ref">our example 9 below</span></a></p>
+<div class="figure align-center" id="id3">
+<span id="gmt-tut-9"></span><a class="reference internal image-reference" href="../_images/GMT_tut_9.png"><img alt="../_images/GMT_tut_9.png" src="../_images/GMT_tut_9.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 9</span></p>
+</div>
+<div class="section" id="more-exercises">
+<h3>More exercises<a class="headerlink" href="#more-exercises" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li>Select another symbol.</li>
+<li>Let the deep earthquakes be cyan instead of blue.</li>
+</ol>
+</div>
+</div>
+<div class="section" id="plotting-text-strings">
+<h2>Plotting text strings<a class="headerlink" href="#plotting-text-strings" title="Permalink to this headline">¶</a></h2>
+<p>In many situations we need to annotate plots or maps with text strings;
+in GMT this is done using <a class="reference internal" href="../text.html"><span class="doc">text</span></a>.  Apart from the common
+switches, there are 9 options that are particularly useful.</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="73%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Purpose</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>-C</strong><em>dx</em>/<em>dy</em></td>
+<td>Spacing between text and the text box (see <strong>-W</strong>)</td>
+</tr>
+<tr class="row-odd"><td><strong>-D</strong><em>dx</em>/<em>dy</em></td>
+<td>Offsets the projected location of the strings</td>
+</tr>
+<tr class="row-even"><td><strong>-F</strong><em>params</em></td>
+<td>Set font, justify, angle values or source</td>
+</tr>
+<tr class="row-odd"><td><strong>-G</strong><em>fill</em></td>
+<td>Fills the text bos using specified fill</td>
+</tr>
+<tr class="row-even"><td><strong>-L</strong></td>
+<td>Lists the font ids and exits</td>
+</tr>
+<tr class="row-odd"><td><strong>-N</strong></td>
+<td>Deactivates clipping at the borders</td>
+</tr>
+<tr class="row-even"><td><strong>-S</strong><em>pen</em></td>
+<td>Selects outline font and sets pen attributes</td>
+</tr>
+<tr class="row-odd"><td><strong>-T</strong><em>form</em></td>
+<td>Select text box shape</td>
+</tr>
+<tr class="row-even"><td><strong>-W</strong><em>pen</em></td>
+<td>Draw the outline of text box</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>The input data to <a class="reference internal" href="../text.html"><span class="doc">text</span></a> is expected to contain the following
+information:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span> x   y <span class="o">]</span>  <span class="o">[</span> font<span class="o">]</span>  <span class="o">[</span> angle <span class="o">]</span> <span class="o">[</span> justify <span class="o">]</span>   my text
+</pre></div>
+</div>
+</div></blockquote>
+<p>The <em>font</em> is the optional font to use, the <em>angle</em> is the
+angle (measured counterclockwise) between the text’s baseline and the
+horizontal, <em>justify</em> indicates which anchor point on the text-string should
+correspond to the given <em>x, y</em> location, and <em>my text</em> is the text
+string or sentence to plot.  See the Technical reference for
+the relevant two-character codes used for justification.</p>
+<p>The text string can be one or several words and may include octal codes for
+special characters and escape-sequences used to select subscripts or symbol
+fonts. The escape sequences that are recognized by GMT are given below:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="79%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Code</th>
+<th class="head">Effect</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>&#64;~</td>
+<td>Turns symbol font on or off</td>
+</tr>
+<tr class="row-odd"><td>&#64;+</td>
+<td>Turns superscript on or off</td>
+</tr>
+<tr class="row-even"><td>&#64;-</td>
+<td>Turns subscript on or off</td>
+</tr>
+<tr class="row-odd"><td>&#64;#</td>
+<td>Turns small caps on or off</td>
+</tr>
+<tr class="row-even"><td>&#64;_</td>
+<td>Turns underline on or off</td>
+</tr>
+<tr class="row-odd"><td>&#64;%<em>font</em>%</td>
+<td>Switches to another font; &#64;%% resets to previous font</td>
+</tr>
+<tr class="row-even"><td>&#64;:<em>size</em>:</td>
+<td>Switches to another font size; &#64;:: resets to previous size</td>
+</tr>
+<tr class="row-odd"><td>&#64;;<em>color</em>;</td>
+<td>Switches to another font color; &#64;;; resets to previous color</td>
+</tr>
+<tr class="row-even"><td>&#64;!</td>
+<td>Creates one composite character of the next two characters</td>
+</tr>
+<tr class="row-odd"><td>&#64;&#64;</td>
+<td>Prints the &#64; sign itself</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>Note that these escape sequences (as well as octal codes) can be
+used anywhere in GMT, including in arguments to the <strong>-B</strong> option.
+A chart of octal codes can be found in Appendix F in the GMT
+Technical Reference.  For accented European characters you must
+set <a class="reference internal" href="../gmt.conf.html#ps-char-encoding"><span class="std std-ref">PS_CHAR_ENCODING</span></a> to ISOLatin1 in your <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a> file.</p>
+<p>We will demonstrate <a class="reference internal" href="../text.html"><span class="doc">text</span></a> with the following script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_10
+	gmt text -R0/7/0/5 -Jx1i -B -F+f30p,Times-Roman,DarkOrange+jBL <span class="s">&lt;&lt; EOF</span>
+<span class="s">1  1  It&#39;s P@al, not Pal!</span>
+<span class="s">1  2  Try @%33%ZapfChancery@%% today</span>
+<span class="s">1  3  @~D@~g@-b@- = 2@~pr@~G@~D@~h.</span>
+<span class="s">1  4  University of Hawaii at M@!a\225noa</span>
+<span class="s">EOF</span>
+gmt end show
+</pre></div>
+</div>
+<p>Here we have used the “here document” notation in UNIX: The &lt;&lt; EOF
+will treat the following lines as the input file until it detects the
+word EOF.   There is nothing magical about the word EOF; you can use any other
+string like STOP, hellobaby, or IamDone.
+Your plot should look like <a class="reference internal" href="#gmt-tut-10"><span class="std std-ref">our example 10 below</span></a></p>
+<div class="figure align-center" id="id4">
+<span id="gmt-tut-10"></span><a class="reference internal image-reference" href="../_images/GMT_tut_10.png"><img alt="../_images/GMT_tut_10.png" src="../_images/GMT_tut_10.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Result of GMT Tutorial example 10</span></p>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="29%" />
+<col width="21%" />
+<col width="29%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Code</th>
+<th class="head">Effect</th>
+<th class="head">Code</th>
+<th class="head">Effect</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>&#64;E</td>
+<td>Æ</td>
+<td>&#64;e</td>
+<td>æ</td>
+</tr>
+<tr class="row-odd"><td>&#64;O</td>
+<td>Ø</td>
+<td>&#64;o</td>
+<td>ø</td>
+</tr>
+<tr class="row-even"><td>&#64;A</td>
+<td>Å</td>
+<td>&#64;a</td>
+<td>å</td>
+</tr>
+<tr class="row-odd"><td>&#64;C</td>
+<td>Ç</td>
+<td>&#64;c</td>
+<td>ç</td>
+</tr>
+<tr class="row-even"><td>&#64;N</td>
+<td>Ñ</td>
+<td>&#64;n</td>
+<td>ñ</td>
+</tr>
+<tr class="row-odd"><td>&#64;U</td>
+<td>Ü</td>
+<td>&#64;u</td>
+<td>ü</td>
+</tr>
+<tr class="row-even"><td>&#64;s</td>
+<td>ß</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+</tbody>
+</table>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li>At <em>y = 5</em>, add the sentence <span class="math notranslate nohighlight">\(z^2 = x^2 + y^2\)</span>.</li>
+<li>At <em>y = 6</em>, add the sentence “It is 32º today”.</li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="session-3.html" class="btn btn-neutral float-right" title="Session Three" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="session-1.html" class="btn btn-neutral float-left" title="Session One" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

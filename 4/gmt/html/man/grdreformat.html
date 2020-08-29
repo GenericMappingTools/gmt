@@ -1,0 +1,656 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:21 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GRDREFORMAT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GRDREFORMAT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#FORMAT IDENTIFIER">FORMAT IDENTIFIER</a><br>
+<a href="#GMT STANDARD NETCDF FILES">GMT STANDARD NETCDF FILES</a><br>
+<a href="#NATIVE BINARY FILES">NATIVE BINARY FILES</a><br>
+<a href="#GRID VALUES PRECISION">GRID VALUES PRECISION</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">grdreformat
+&minus; Converting between different grid file formats.</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdreformat</b>
+<i>ingrdfile</i>[<i>=id</i>[<i>/scale/offset</i>[<i>/NaNvalue</i>]]]
+<i>outgrdfile</i>[<i>=id</i>[<i>/scale/offset</i>[<i>/NaNvalue</i>]]]
+[ <b>&minus;N</b> ] [
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ] [
+<b>&minus;V</b> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdreformat</b>
+reads a grid file in one format and writes it out using
+another format. As an option the user may select a subset of
+the data to be written and to specify scaling, translation,
+and NaN-value. <i><br>
+ingrdfile</i></p>
+
+<p style="margin-left:22%;">The grid file to be read.
+Append format =<i>id</i> code if not a standard
+COARDS-compliant netCDF grid file. If =<i>id</i> is set (see
+below), you may optionally append <i>scale</i> and
+<i>offset</i>. These options will scale the data and then
+offset them with the specified amounts after reading. <br>
+If <i>scale</i> and <i>offset</i> are supplied you may also
+append a value that represents &rsquo;Not-a-Number&rsquo;
+(for floating-point grids this is unnecessary since the IEEE
+NaN is used; however integers need a value which means no
+data available.)</p>
+
+<p style="margin-left:11%;"><i>outgrdfile</i></p>
+
+<p style="margin-left:22%;">The grid file to be written.
+Append format =<i>id</i> code if not a standard
+COARDS-compliant netCDF grid file. If =<i>id</i> is set (see
+below), you may optionally append <i>scale</i> and
+<i>offset</i>. These options are particularly practical when
+storing the data as integers, first removing an offset and
+then scaling down the values. Since the scale and offset are
+applied in reverse order when reading, this does not affect
+the data values (except for round-offs). <br>
+If <i>scale</i> and <i>offset</i> are supplied you may also
+append a value that represents &rsquo;Not-a-Number&rsquo;
+(for floating-point grids this is unnecessary since the IEEE
+NaN is used; however integers need a value which means no
+data available.)</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Suppress the
+writing of the <b><A HREF="GMT.html">GMT</A></b> header structure. This is useful
+when you want to write a native grid to be used by
+<b><A HREF="grdraster.html">grdraster</A></b>. It only applies to native grids and is
+ignored for netCDF output.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xmin</i>,
+<i>xmax</i>, <i>ymin</i>, and <i>ymax</i> specify the Region
+of interest. For geographic regions, these limits correspond
+to <i>west, east, south,</i> and <i>north</i> and you may
+specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+calendar time coordinates you may either give (a) relative
+time (relative to the selected <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and in the
+selected <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>; append <b>t</b> to
+<b>&minus;JX</b>|<b>x</b>), or (b) absolute time of the form
+[<i>date</i>]<b>T</b>[<i>clock</i>] (append <b>T</b> to
+<b>&minus;JX</b>|<b>x</b>). At least one of <i>date</i> and
+<i>clock</i> must be present; the <b>T</b> is always
+required. The <i>date</i> string must be of the form
+[-]yyyy[-mm[-dd]] (Gregorian calendar) or yyyy[-Www[-d]]
+(ISO week calendar), while the <i>clock</i> string must be
+of the form hh:mm:ss[.xxx]. The use of delimiters and their
+type and positions must be exactly as indicated (however,
+input, output and plot formats are customizable; see
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b>).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+</table>
+
+<a name="FORMAT IDENTIFIER"></a>
+<h2>FORMAT IDENTIFIER</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">By default,
+grids will be written as floating point data stored in
+binary files using the netCDF format and meta-data
+structure. This format is conform the COARDS conventions.
+<b><A HREF="GMT.html">GMT</A></b> versions prior to 4.1 produced netCDF files that
+did not conform to these conventions. Although these files
+are still supported, their use is deprecated. To write other
+than floating point COARDS-compliant netCDF files, append
+the =<i>id</i> suffix to the filename <i>outgrdfile</i>.
+<br>
+When reading files, <b>grdreformat</b> and other <b><A HREF="GMT.html">GMT</A></b>
+programs will automatically recognize any type of netCDF
+grid file. These can be in either COARDS-compliant or
+pre-4.1 format, and contain floating-point or integer data.
+To read other types of grid files, append the =<i>id</i>
+suffix to the filename <i>ingrdfile</i>.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>id</i></p></td>
+<td width="85%">
+
+
+<p valign="top"><i>GMT 3 netCDF legacy formats</i></p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>cb</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT netCDF format (byte) (deprecated)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>cs</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT netCDF format (short) (deprecated)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>ci</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT netCDF format (int) (deprecated)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>cf</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT netCDF format (float) (deprecated)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>cd</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT netCDF format (double) (deprecated)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>id</i></p></td>
+<td width="85%">
+
+
+<p valign="top"><i>GMT native binary formats</i></p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>bm</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT native, C-binary format (bit-mask)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>bb</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT native, C-binary format (byte)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>bs</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT native, C-binary format (short)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>bi</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT native, C-binary format (int)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>bf</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT native, C-binary format (float)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>bd</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT native, C-binary format (double)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>id</i></p></td>
+<td width="85%">
+
+
+<p valign="top"><i>GMT 4 netCDF standard</i></p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>nb</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT netCDF format (byte)
+(COARDS-compliant)</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>ns</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT netCDF format (short)
+(COARDS-compliant)</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>ni</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT netCDF format (int)
+(COARDS-compliant)</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>nf</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT netCDF format (float)
+(COARDS-compliant) [DEFAULT]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>nd</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GMT netCDF format (double)
+(COARDS-compliant)</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>id</i></p></td>
+<td width="85%">
+
+
+<p valign="top"><i>Misc formats</i></p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>rb</b></p></td>
+<td width="85%">
+
+
+<p valign="top">SUN rasterfile format (8-bit standard)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>rf</b></p></td>
+<td width="85%">
+
+
+<p valign="top">GEODAS grid format GRD98 (NGDC)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>sf</b></p></td>
+<td width="85%">
+
+
+<p valign="top">Golden Software Surfer format 6 (float)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>sd</b></p></td>
+<td width="85%">
+
+
+<p valign="top">Golden Software Surfer format 7 (double,
+read-only)</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>af</b></p></td>
+<td width="85%">
+
+
+<p valign="top">Atlantic Geoscience Center format AGC
+(float)</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>gd</b></p></td>
+<td width="85%">
+
+
+<p valign="top">Import through GDAL (convert to float) --
+NON-STANDARD</p> </td>
+</table>
+
+<a name="GMT STANDARD NETCDF FILES"></a>
+<h2>GMT STANDARD NETCDF FILES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The standard
+format used for grdfiles is based on netCDF and conforms to
+the COARDS conventions. Files written in this format can be
+read by numerous third-party programs and are
+platform-independent. Some disk-space can be saved by
+storing the data as bytes or shorts in stead of integers.
+Use the <i>scale</i> and <i>offset</i> parameters to make
+this work without loss of data range or significance. For
+more details, see Appendix B.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Multi-variable
+grid files</b> <br>
+By default, <b><A HREF="GMT.html">GMT</A></b> programs will read the first
+2-dimensional grid contained in a COARDS-compliant netCDF
+file. Alternatively, use
+<i>ingrdfile</i><b>?</b><i>varname</i> (ahead of any
+optional suffix <b>=</b><i>id</i>) to specify the requested
+variable <i>varname</i>. Since <b>?</b> has special meaning
+as a wildcard, escape this meaning by placing the full
+filename and suffix between quotes.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Multi-dimensional
+grids</b> <br>
+To extract one <i>layer</i> or <i>level</i> from a
+3-dimensional grid stored in a COARDS-compliant netCDF file,
+append both the name of the variable and the index
+associated with the layer (starting at zero) in the form:
+<i>ingrdfile</i><b>?</b><i>varname</i><b>[</b><i>layer</i><b>]</b>.
+Alternatively, specify the value associated with that layer
+using parentheses in stead of brackets:
+<i>ingridfile</i><b>?</b><i>varname</i><b>(</b><i>level</i><b>)</b>.
+<br>
+In a similar way layers can be extracted from 4- or even
+5-dimensional grids. For example, if a grid has the
+dimensions (parameter, time, depth, latitude, longitude), a
+map can be selected by using:
+<i>ingridfile</i><b>?</b><i>varname</i><b>(</b><i>parameter,time,depth</i><b>)</b>.
+<br>
+Since question marks, brackets and parentheses have special
+meanings on the command line, escape these meanings by
+placing the full filename and suffix between quotes.</p>
+
+<a name="NATIVE BINARY FILES"></a>
+<h2>NATIVE BINARY FILES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">For binary
+native <b><A HREF="GMT.html">GMT</A></b> files the size of the <b><A HREF="GMT.html">GMT</A></b> grdheader
+block is <i>hsize</i> = 892 bytes, and the total size of the
+file is <i>hsize</i> + <i>nx</i> * <i>ny</i> *
+<i>item_size</i>, where <i>item_size</i> is the size in
+bytes of each element (1, 2, 4). Bit grids are stored using
+4-byte integers, each holding 32 bits, so for these files
+the size equation is modified by using ceil (<i>nx</i> / 32)
+* 4 instead of <i>nx</i>. Note that these files are
+platform-dependent. Files written on Little Endian machines
+(e.g., PCs) can not be read on Big Endian machines (e.g.,
+most workstations). Also note that it is not possible for
+<b><A HREF="GMT.html">GMT</A></b> to determine uniquely if a 4-byte grid is float
+or int; in such cases it is best to use the <i>=ID</i>
+mechanism to specify the file format. In all cases a native
+grid is considered to be signed (i.e., there are no
+provision for unsigned short ints or unsigned bytes). For
+header and grid details, see Appendix B.</p>
+
+<a name="GRID VALUES PRECISION"></a>
+<h2>GRID VALUES PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Regardless of
+the precision of the input data, GMT programs that create
+grid files will internally hold the grids in 4-byte floating
+point arrays. This is done to conserve memory and
+furthermore most if not all real data can be stored using
+4-byte floating point values. Data with higher precision
+(i.e., double precision values) will lose that precision
+once GMT operates on the grid or writes out new grids. To
+limit loss of precision when processing data you should
+always consider normalizing the data prior to
+processing.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To extract the
+second layer from a 3-dimensional grid named temp from a
+COARDS-compliant netCDF file climate.grd:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdreformat</b>
+climate.grd?temp[1] temp.grd <b>-V</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">To create a
+4-byte native floating point grid from the COARDS-compliant
+netCDF file data.grd:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdreformat</b>
+data.grd ras_data.b4=bf <b>&minus;V</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">To make a
+2-byte short integer file, scale it by 10, subtract 32000,
+setting NaNs to -9999, do</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdreformat</b>
+values.grd shorts.i2=bs/10/-32000/-9999 <b>&minus;V</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">To create a Sun
+standard 8-bit rasterfile for a subset of the data file
+image.grd, assuming the range in image.grd is 0-1 and we
+need 0-255, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdreformat</b>
+image.grd <b>&minus;R</b>-60/-40/-40/-30 image.ras8=rb/255/0
+<b>&minus;V</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">To convert
+etopo2.grd to etopo2.i2 that can be used by
+<b><A HREF="grdraster.html">grdraster</A></b>, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdreformat</b>
+etopo2.grd etopo2.i2=bs <b>&minus;N &minus;V</b></p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grdmath.html">grdmath</A></i>(1)</p>
+<hr>
+</body>
+</html>

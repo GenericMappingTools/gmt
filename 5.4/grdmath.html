@@ -1,0 +1,1472 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>grdmath &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="grdpaste" href="grdpaste.html" />
+    <link rel="prev" title="grdmask" href="grdmask.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="grdpaste.html" title="grdpaste"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="grdmask.html" title="grdmask"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="grdmath">
+<span id="index-0"></span><h1>grdmath<a class="headerlink" href="#grdmath" title="Permalink to this headline">¶</a></h1>
+<p>grdmath - Reverse Polish Notation (RPN) calculator for grids (element by element)</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdmath</strong>
+[ <strong>-A</strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+a</strong>[<strong>g</strong>|<strong>i</strong>][<strong>s</strong>|<strong>S</strong>]][<strong>+r</strong>|<strong>l</strong>][<strong>+p</strong><em>percent</em>] ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>resolution</em>[<strong>+</strong>] ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>increment</em> ]
+[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong> ] [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ] [ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-bi</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-n</strong><a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-r</strong> ]
+[ <strong>-x</strong>[[-]<em>n</em>] ]
+<em>operand</em> [ <em>operand</em> ] <strong>OPERATOR</strong> [ <em>operand</em> ]
+<strong>OPERATOR</strong> … <strong>=</strong> <em>outgrdfile</em></p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdmath</strong> will perform operations like add, subtract, multiply, and
+divide on one or more grid files or constants using Reverse Polish
+Notation (RPN) syntax (e.g., Hewlett-Packard calculator-style).
+Arbitrarily complicated expressions may therefore be evaluated; the
+final result is written to an output grid file. Grid operations are
+element-by-element, not matrix manipulations. Some operators only
+require one operand (see below). If no grid files are used in the
+expression then options <strong>-R</strong>, <strong>-I</strong> must be set (and optionally
+<strong>-r</strong>). The expression <strong>=</strong> <em>outgrdfile</em> can occur as many times as
+the depth of the stack allows in order to save intermediate results.
+Complicated or frequently occurring expressions may be coded as a macro
+for future use or stored and recalled via named memory locations.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>operand</em></dt>
+<dd>If <em>operand</em> can be opened as a file it will be read as a grid file.
+If not a file, it is interpreted as a numerical constant or a
+special symbol (see below).</dd>
+<dt><em>outgrdfile</em></dt>
+<dd>The name of a 2-D grid file that will hold the final result. (See
+GRID FILE FORMATS below).</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+a</strong>[<strong>g</strong>|<strong>i</strong>][<strong>s</strong>|<strong>S</strong>]][<strong>+r</strong>|<strong>l</strong>][<strong>+p</strong><em>percent</em>]</dt>
+<dd>Features with an area smaller than <em>min_area</em> in km^2 or of
+hierarchical level that is lower than <em>min_level</em> or higher than
+<em>max_level</em> will not be plotted [Default is 0/0/4 (all features)].
+Level 2 (lakes) contains regular lakes and wide river bodies which
+we normally include as lakes; append <strong>+r</strong> to just get river-lakes
+or <strong>+l</strong> to just get regular lakes.  Append <strong>+p</strong><em>percent</em> to
+exclude polygons whose percentage area of the corresponding full-resolution
+feature is less than <em>percent</em>.  Use <strong>+a</strong> to control special
+aspects of the Antarctica coastline: By default (or add <strong>i</strong>) we
+select the ice shelf boundary as the coastline for Antarctica; alternatively,
+add <strong>g</strong> to select the ice grounding line instead.  For expert
+users who wish to utilize their own Antarctica (with islands) coastline
+you can add <strong>s</strong> to skip all GSHHG features below 60S. In contrast, you
+can add <strong>S</strong> to instead skip all features <em>north</em> of 60S.  See
+GSHHG INFORMATION below for more details. (<strong>-A</strong> is only relevant to the <strong>LDISTG</strong> operator)</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>resolution</em>[<strong>+</strong>]</dt>
+<dd>Selects the resolution of the data set to use with the operator LDISTG
+((<strong>f</strong>)ull, (<strong>h</strong>)igh, (<strong>i</strong>)ntermediate, (<strong>l</strong>)ow, and (<strong>c</strong>)rude). The
+resolution drops off by 80% between data sets [Default is <strong>l</strong>].
+Append <strong>+</strong> to automatically select a lower resolution should the one
+requested not be available [abort if not found].</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>]]</dt>
+<dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
+append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>: Append
+<strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc seconds. If one
+of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or <strong>u</strong> is appended
+instead, the increment is assumed to be given in meter, foot, km, Mile,
+nautical mile or US survey foot, respectively, and will be converted to
+the equivalent degrees longitude at the middle latitude of the region
+(the conversion depends on <a class="reference internal" href="gmt.conf.html#projection-parameters"><span class="std std-ref">PROJ_ELLIPSOID</span></a>). If <em>y_inc</em> is given
+but set to 0 it will be reset equal to <em>x_inc</em>; otherwise it will be
+converted to degrees latitude. <strong>All coordinates</strong>: If <strong>+e</strong> is appended
+then the corresponding max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly
+adjusted to fit exactly the given increment [by default the increment
+may be adjusted slightly to fit the given domain]. Finally, instead of
+giving an increment you may specify the <em>number of nodes</em> desired by
+appending <strong>+n</strong> to the supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The resulting
+increment value depends on whether you have selected a
+gridline-registered or pixel-registered grid; see <a class="reference internal" href="GMT_Docs.html#app-file-formats"><span class="std std-ref">GMT File Formats</span></a> for
+details. Note: if <strong>-R</strong><em>grdfile</em> is used then the grid spacing has
+already been initialized; use <strong>-I</strong> to override the values.</dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-M</strong></dt>
+<dd>By default any derivatives calculated are in z_units/ x(or
+y)_units. However, the user may choose this option to convert dx,dy
+in degrees of longitude,latitude into meters using a flat Earth
+approximation, so that gradients are in z_units/meter.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong></dt>
+<dd>Turn off strict domain match checking when multiple grids are
+manipulated [Default will insist that each grid domain is within
+1e-4 * grid_spacing of the domain of the first grid listed].</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest.  </dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input. The binary input option
+only applies to the data files needed by operators <strong>LDIST</strong>,
+<strong>PDIST</strong>, and <strong>INSIDE</strong>.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-di</strong><em>nodata</em> <a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] <a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine data gaps and line breaks.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+c</strong>][<strong>+t</strong><em>threshold</em>] <a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select interpolation mode for grids.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-r</strong> <a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set pixel node registration [gridline]. Only used with <strong>-R</strong> <strong>-I</strong>.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-x</strong>[[-]<em>n</em>] <a class="reference internal" href="gmt.html#core-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Limit number of cores used in multi-threaded algorithms (OpenMP required).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="operators">
+<h2>Operators<a class="headerlink" href="#operators" title="Permalink to this headline">¶</a></h2>
+<p>Choose among the following 209 operators. “args” are the number of input
+and output arguments.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="6%" />
+<col width="83%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Operator</td>
+<td>args</td>
+<td>Returns</td>
+</tr>
+<tr class="row-even"><td><strong>ABS</strong></td>
+<td>1 1</td>
+<td>abs (A)</td>
+</tr>
+<tr class="row-odd"><td><strong>ACOS</strong></td>
+<td>1 1</td>
+<td>acos (A)</td>
+</tr>
+<tr class="row-even"><td><strong>ACOSH</strong></td>
+<td>1 1</td>
+<td>acosh (A)</td>
+</tr>
+<tr class="row-odd"><td><strong>ACOT</strong></td>
+<td>1 1</td>
+<td>acot (A)</td>
+</tr>
+<tr class="row-even"><td><strong>ACSC</strong></td>
+<td>1 1</td>
+<td>acsc (A)</td>
+</tr>
+<tr class="row-odd"><td><strong>ADD</strong></td>
+<td>2 1</td>
+<td>A + B</td>
+</tr>
+<tr class="row-even"><td><strong>AND</strong></td>
+<td>2 1</td>
+<td>B if A == NaN, else A</td>
+</tr>
+<tr class="row-odd"><td><strong>ARC</strong></td>
+<td>2 1</td>
+<td>Return arc(A,B) on [0 pi]</td>
+</tr>
+<tr class="row-even"><td><strong>AREA</strong></td>
+<td>0 1</td>
+<td>Area of each gridnode cell (in km^2 if geographic)</td>
+</tr>
+<tr class="row-odd"><td><strong>ASEC</strong></td>
+<td>1 1</td>
+<td>asec (A)</td>
+</tr>
+<tr class="row-even"><td><strong>ASIN</strong></td>
+<td>1 1</td>
+<td>asin (A)</td>
+</tr>
+<tr class="row-odd"><td><strong>ASINH</strong></td>
+<td>1 1</td>
+<td>asinh (A)</td>
+</tr>
+<tr class="row-even"><td><strong>ATAN</strong></td>
+<td>1 1</td>
+<td>atan (A)</td>
+</tr>
+<tr class="row-odd"><td><strong>ATAN2</strong></td>
+<td>2 1</td>
+<td>atan2 (A, B)</td>
+</tr>
+<tr class="row-even"><td><strong>ATANH</strong></td>
+<td>1 1</td>
+<td>atanh (A)</td>
+</tr>
+<tr class="row-odd"><td><strong>BCDF</strong></td>
+<td>3 1</td>
+<td>Binomial cumulative distribution function for p = A, n = B, and x = C</td>
+</tr>
+<tr class="row-even"><td><strong>BPDF</strong></td>
+<td>3 1</td>
+<td>Binomial probability density function for p = A, n = B, and x = C</td>
+</tr>
+<tr class="row-odd"><td><strong>BEI</strong></td>
+<td>1 1</td>
+<td>bei (A)</td>
+</tr>
+<tr class="row-even"><td><strong>BER</strong></td>
+<td>1 1</td>
+<td>ber (A)</td>
+</tr>
+<tr class="row-odd"><td><strong>BITAND</strong></td>
+<td>2 1</td>
+<td>A &amp; B (bitwise AND operator)</td>
+</tr>
+<tr class="row-even"><td><strong>BITLEFT</strong></td>
+<td>2 1</td>
+<td>A &lt;&lt; B (bitwise left-shift operator)</td>
+</tr>
+<tr class="row-odd"><td><strong>BITNOT</strong></td>
+<td>1 1</td>
+<td>~A (bitwise NOT operator, i.e., return two’s complement)</td>
+</tr>
+<tr class="row-even"><td><strong>BITOR</strong></td>
+<td>2 1</td>
+<td>A | B (bitwise OR operator)</td>
+</tr>
+<tr class="row-odd"><td><strong>BITRIGHT</strong></td>
+<td>2 1</td>
+<td>A &gt;&gt; B (bitwise right-shift operator)</td>
+</tr>
+<tr class="row-even"><td><strong>BITTEST</strong></td>
+<td>2 1</td>
+<td>1 if bit B of A is set, else 0 (bitwise TEST operator)</td>
+</tr>
+<tr class="row-odd"><td><strong>BITXOR</strong></td>
+<td>2 1</td>
+<td>A ^ B (bitwise XOR operator)</td>
+</tr>
+<tr class="row-even"><td><strong>CAZ</strong></td>
+<td>2 1</td>
+<td>Cartesian azimuth from grid nodes to stack x,y (i.e., A, B)</td>
+</tr>
+<tr class="row-odd"><td><strong>CBAZ</strong></td>
+<td>2 1</td>
+<td>Cartesian back-azimuth from grid nodes to stack x,y (i.e., A, B)</td>
+</tr>
+<tr class="row-even"><td><strong>CDIST</strong></td>
+<td>2 1</td>
+<td>Cartesian distance between grid nodes and stack x,y (i.e., A, B)</td>
+</tr>
+<tr class="row-odd"><td><strong>CDIST2</strong></td>
+<td>2 1</td>
+<td>As CDIST but only to nodes that are != 0</td>
+</tr>
+<tr class="row-even"><td><strong>CEIL</strong></td>
+<td>1 1</td>
+<td>ceil (A) (smallest integer &gt;= A)</td>
+</tr>
+<tr class="row-odd"><td><strong>CHICRIT</strong></td>
+<td>2 1</td>
+<td>Chi-squared critical value for alpha = A and nu = B</td>
+</tr>
+<tr class="row-even"><td><strong>CHICDF</strong></td>
+<td>2 1</td>
+<td>Chi-squared cumulative distribution function for chi2 = A and nu = B</td>
+</tr>
+<tr class="row-odd"><td><strong>CHIPDF</strong></td>
+<td>2 1</td>
+<td>Chi-squared probability density function for chi2 = A and nu = B</td>
+</tr>
+<tr class="row-even"><td><strong>COMB</strong></td>
+<td>2 1</td>
+<td>Combinations n_C_r, with n = A and r = B</td>
+</tr>
+<tr class="row-odd"><td><strong>CORRCOEFF</strong></td>
+<td>2 1</td>
+<td>Correlation coefficient r(A, B)</td>
+</tr>
+<tr class="row-even"><td><strong>COS</strong></td>
+<td>1 1</td>
+<td>cos (A) (A in radians)</td>
+</tr>
+<tr class="row-odd"><td><strong>COSD</strong></td>
+<td>1 1</td>
+<td>cos (A) (A in degrees)</td>
+</tr>
+<tr class="row-even"><td><strong>COSH</strong></td>
+<td>1 1</td>
+<td>cosh (A)</td>
+</tr>
+<tr class="row-odd"><td><strong>COT</strong></td>
+<td>1 1</td>
+<td>cot (A) (A in radians)</td>
+</tr>
+<tr class="row-even"><td><strong>COTD</strong></td>
+<td>1 1</td>
+<td>cot (A) (A in degrees)</td>
+</tr>
+<tr class="row-odd"><td><strong>CSC</strong></td>
+<td>1 1</td>
+<td>csc (A) (A in radians)</td>
+</tr>
+<tr class="row-even"><td><strong>CSCD</strong></td>
+<td>1 1</td>
+<td>csc (A) (A in degrees)</td>
+</tr>
+<tr class="row-odd"><td><strong>CURV</strong></td>
+<td>1 1</td>
+<td>Curvature of A (Laplacian)</td>
+</tr>
+<tr class="row-even"><td><strong>D2DX2</strong></td>
+<td>1 1</td>
+<td>d^2(A)/dx^2 2nd derivative</td>
+</tr>
+<tr class="row-odd"><td><strong>D2DY2</strong></td>
+<td>1 1</td>
+<td>d^2(A)/dy^2 2nd derivative</td>
+</tr>
+<tr class="row-even"><td><strong>D2DXY</strong></td>
+<td>1 1</td>
+<td>d^2(A)/dxdy 2nd derivative</td>
+</tr>
+<tr class="row-odd"><td><strong>D2R</strong></td>
+<td>1 1</td>
+<td>Converts Degrees to Radians</td>
+</tr>
+<tr class="row-even"><td><strong>DDX</strong></td>
+<td>1 1</td>
+<td>d(A)/dx Central 1st derivative</td>
+</tr>
+<tr class="row-odd"><td><strong>DDY</strong></td>
+<td>1 1</td>
+<td>d(A)/dy Central 1st derivative</td>
+</tr>
+<tr class="row-even"><td><strong>DEG2KM</strong></td>
+<td>1 1</td>
+<td>Converts Spherical Degrees to Kilometers</td>
+</tr>
+<tr class="row-odd"><td><strong>DENAN</strong></td>
+<td>2 1</td>
+<td>Replace NaNs in A with values from B</td>
+</tr>
+<tr class="row-even"><td><strong>DILOG</strong></td>
+<td>1 1</td>
+<td>dilog (A)</td>
+</tr>
+<tr class="row-odd"><td><strong>DIV</strong></td>
+<td>2 1</td>
+<td>A / B</td>
+</tr>
+<tr class="row-even"><td><strong>DUP</strong></td>
+<td>1 2</td>
+<td>Places duplicate of A on the stack</td>
+</tr>
+<tr class="row-odd"><td><strong>ECDF</strong></td>
+<td>2 1</td>
+<td>Exponential cumulative distribution function for x = A and lambda = B</td>
+</tr>
+<tr class="row-even"><td><strong>ECRIT</strong></td>
+<td>2 1</td>
+<td>Exponential distribution critical value for alpha = A and lambda = B</td>
+</tr>
+<tr class="row-odd"><td><strong>EPDF</strong></td>
+<td>2 1</td>
+<td>Exponential probability density function for x = A and lambda = B</td>
+</tr>
+<tr class="row-even"><td><strong>ERF</strong></td>
+<td>1 1</td>
+<td>Error function erf (A)</td>
+</tr>
+<tr class="row-odd"><td><strong>ERFC</strong></td>
+<td>1 1</td>
+<td>Complementary Error function erfc (A)</td>
+</tr>
+<tr class="row-even"><td><strong>EQ</strong></td>
+<td>2 1</td>
+<td>1 if A == B, else 0</td>
+</tr>
+<tr class="row-odd"><td><strong>ERFINV</strong></td>
+<td>1 1</td>
+<td>Inverse error function of A</td>
+</tr>
+<tr class="row-even"><td><strong>EXCH</strong></td>
+<td>2 2</td>
+<td>Exchanges A and B on the stack</td>
+</tr>
+<tr class="row-odd"><td><strong>EXP</strong></td>
+<td>1 1</td>
+<td>exp (A)</td>
+</tr>
+<tr class="row-even"><td><strong>FACT</strong></td>
+<td>1 1</td>
+<td>A! (A factorial)</td>
+</tr>
+<tr class="row-odd"><td><strong>EXTREMA</strong></td>
+<td>1 1</td>
+<td>Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere</td>
+</tr>
+<tr class="row-even"><td><strong>FCDF</strong></td>
+<td>3 1</td>
+<td>F cumulative distribution function for F = A, nu1 = B, and nu2 = C</td>
+</tr>
+<tr class="row-odd"><td><strong>FCRIT</strong></td>
+<td>3 1</td>
+<td>F distribution critical value for alpha = A, nu1 = B, and nu2 = C</td>
+</tr>
+<tr class="row-even"><td><strong>FLIPLR</strong></td>
+<td>1 1</td>
+<td>Reverse order of values in each row</td>
+</tr>
+<tr class="row-odd"><td><strong>FLIPUD</strong></td>
+<td>1 1</td>
+<td>Reverse order of values in each column</td>
+</tr>
+<tr class="row-even"><td><strong>FLOOR</strong></td>
+<td>1 1</td>
+<td>floor (A) (greatest integer &lt;= A)</td>
+</tr>
+<tr class="row-odd"><td><strong>FMOD</strong></td>
+<td>2 1</td>
+<td>A % B (remainder after truncated division)</td>
+</tr>
+<tr class="row-even"><td><strong>FPDF</strong></td>
+<td>3 1</td>
+<td>F probability density function for F = A, nu1 = B, and nu2 = C</td>
+</tr>
+<tr class="row-odd"><td><strong>GE</strong></td>
+<td>2 1</td>
+<td>1 if A &gt;= B, else 0</td>
+</tr>
+<tr class="row-even"><td><strong>GT</strong></td>
+<td>2 1</td>
+<td>1 if A &gt; B, else 0</td>
+</tr>
+<tr class="row-odd"><td><strong>HYPOT</strong></td>
+<td>2 1</td>
+<td>hypot (A, B) = sqrt (A*A + B*B)</td>
+</tr>
+<tr class="row-even"><td><strong>I0</strong></td>
+<td>1 1</td>
+<td>Modified Bessel function of A (1st kind, order 0)</td>
+</tr>
+<tr class="row-odd"><td><strong>I1</strong></td>
+<td>1 1</td>
+<td>Modified Bessel function of A (1st kind, order 1)</td>
+</tr>
+<tr class="row-even"><td><strong>IFELSE</strong></td>
+<td>3 1</td>
+<td>B if A != 0, else C</td>
+</tr>
+<tr class="row-odd"><td><strong>IN</strong></td>
+<td>2 1</td>
+<td>Modified Bessel function of A (1st kind, order B)</td>
+</tr>
+<tr class="row-even"><td><strong>INRANGE</strong></td>
+<td>3 1</td>
+<td>1 if B &lt;= A &lt;= C, else 0</td>
+</tr>
+<tr class="row-odd"><td><strong>INSIDE</strong></td>
+<td>1 1</td>
+<td>1 when inside or on polygon(s) in A, else 0</td>
+</tr>
+<tr class="row-even"><td><strong>INV</strong></td>
+<td>1 1</td>
+<td>1 / A</td>
+</tr>
+<tr class="row-odd"><td><strong>ISFINITE</strong></td>
+<td>1 1</td>
+<td>1 if A is finite, else 0</td>
+</tr>
+<tr class="row-even"><td><strong>ISNAN</strong></td>
+<td>1 1</td>
+<td>1 if A == NaN, else 0</td>
+</tr>
+<tr class="row-odd"><td><strong>J0</strong></td>
+<td>1 1</td>
+<td>Bessel function of A (1st kind, order 0)</td>
+</tr>
+<tr class="row-even"><td><strong>J1</strong></td>
+<td>1 1</td>
+<td>Bessel function of A (1st kind, order 1)</td>
+</tr>
+<tr class="row-odd"><td><strong>JN</strong></td>
+<td>2 1</td>
+<td>Bessel function of A (1st kind, order B)</td>
+</tr>
+<tr class="row-even"><td><strong>K0</strong></td>
+<td>1 1</td>
+<td>Modified Kelvin function of A (2nd kind, order 0)</td>
+</tr>
+<tr class="row-odd"><td><strong>K1</strong></td>
+<td>1 1</td>
+<td>Modified Bessel function of A (2nd kind, order 1)</td>
+</tr>
+<tr class="row-even"><td><strong>KEI</strong></td>
+<td>1 1</td>
+<td>kei (A)</td>
+</tr>
+<tr class="row-odd"><td><strong>KER</strong></td>
+<td>1 1</td>
+<td>ker (A)</td>
+</tr>
+<tr class="row-even"><td><strong>KM2DEG</strong></td>
+<td>1 1</td>
+<td>Converts Kilometers to Spherical Degrees</td>
+</tr>
+<tr class="row-odd"><td><strong>KN</strong></td>
+<td>2 1</td>
+<td>Modified Bessel function of A (2nd kind, order B)</td>
+</tr>
+<tr class="row-even"><td><strong>KURT</strong></td>
+<td>1 1</td>
+<td>Kurtosis of A</td>
+</tr>
+<tr class="row-odd"><td><strong>LCDF</strong></td>
+<td>1 1</td>
+<td>Laplace cumulative distribution function for z = A</td>
+</tr>
+<tr class="row-even"><td><strong>LCRIT</strong></td>
+<td>1 1</td>
+<td>Laplace distribution critical value for alpha = A</td>
+</tr>
+<tr class="row-odd"><td><strong>LDIST</strong></td>
+<td>1 1</td>
+<td>Compute minimum distance (in km if -fg) from lines in multi-segment ASCII file A</td>
+</tr>
+<tr class="row-even"><td><strong>LDIST2</strong></td>
+<td>2 1</td>
+<td>As LDIST, from lines in ASCII file B but only to nodes where A != 0</td>
+</tr>
+<tr class="row-odd"><td><strong>LDISTG</strong></td>
+<td>0 1</td>
+<td>As LDIST, but operates on the GSHHG dataset (see -A, -D for options).</td>
+</tr>
+<tr class="row-even"><td><strong>LE</strong></td>
+<td>2 1</td>
+<td>1 if A &lt;= B, else 0</td>
+</tr>
+<tr class="row-odd"><td><strong>LOG</strong></td>
+<td>1 1</td>
+<td>log (A) (natural log)</td>
+</tr>
+<tr class="row-even"><td><strong>LOG10</strong></td>
+<td>1 1</td>
+<td>log10 (A) (base 10)</td>
+</tr>
+<tr class="row-odd"><td><strong>LOG1P</strong></td>
+<td>1 1</td>
+<td>log (1+A) (accurate for small A)</td>
+</tr>
+<tr class="row-even"><td><strong>LOG2</strong></td>
+<td>1 1</td>
+<td>log2 (A) (base 2)</td>
+</tr>
+<tr class="row-odd"><td><strong>LMSSCL</strong></td>
+<td>1 1</td>
+<td>LMS scale estimate (LMS STD) of A</td>
+</tr>
+<tr class="row-even"><td><strong>LMSSCLW</strong></td>
+<td>2 1</td>
+<td>Weighted LMS scale estimate (LMS STD) of A for weights in B</td>
+</tr>
+<tr class="row-odd"><td><strong>LOWER</strong></td>
+<td>1 1</td>
+<td>The lowest (minimum) value of A</td>
+</tr>
+<tr class="row-even"><td><strong>LPDF</strong></td>
+<td>1 1</td>
+<td>Laplace probability density function for z = A</td>
+</tr>
+<tr class="row-odd"><td><strong>LRAND</strong></td>
+<td>2 1</td>
+<td>Laplace random noise with mean A and std. deviation B</td>
+</tr>
+<tr class="row-even"><td><strong>LT</strong></td>
+<td>2 1</td>
+<td>1 if A &lt; B, else 0</td>
+</tr>
+<tr class="row-odd"><td><strong>MAD</strong></td>
+<td>1 1</td>
+<td>Median Absolute Deviation (L1 STD) of A</td>
+</tr>
+<tr class="row-even"><td><strong>MAX</strong></td>
+<td>2 1</td>
+<td>Maximum of A and B</td>
+</tr>
+<tr class="row-odd"><td><strong>MEAN</strong></td>
+<td>1 1</td>
+<td>Mean value of A</td>
+</tr>
+<tr class="row-even"><td><strong>MEANW</strong></td>
+<td>2 1</td>
+<td>Weighted mean value of A for weights in B</td>
+</tr>
+<tr class="row-odd"><td><strong>MEDIAN</strong></td>
+<td>1 1</td>
+<td>Median value of A</td>
+</tr>
+<tr class="row-even"><td><strong>MEDIANW</strong></td>
+<td>2 1</td>
+<td>Weighted median value of A for weights in B</td>
+</tr>
+<tr class="row-odd"><td><strong>MIN</strong></td>
+<td>2 1</td>
+<td>Minimum of A and B</td>
+</tr>
+<tr class="row-even"><td><strong>MOD</strong></td>
+<td>2 1</td>
+<td>A mod B (remainder after floored division)</td>
+</tr>
+<tr class="row-odd"><td><strong>MODE</strong></td>
+<td>1 1</td>
+<td>Mode value (Least Median of Squares) of A</td>
+</tr>
+<tr class="row-even"><td><strong>MODEW</strong></td>
+<td>2 1</td>
+<td>Weighted mode value (Least Median of Squares) of A for weights in B</td>
+</tr>
+<tr class="row-odd"><td><strong>MUL</strong></td>
+<td>2 1</td>
+<td>A * B</td>
+</tr>
+<tr class="row-even"><td><strong>NAN</strong></td>
+<td>2 1</td>
+<td>NaN if A == B, else A</td>
+</tr>
+<tr class="row-odd"><td><strong>NEG</strong></td>
+<td>1 1</td>
+<td>-A</td>
+</tr>
+<tr class="row-even"><td><strong>NEQ</strong></td>
+<td>2 1</td>
+<td>1 if A != B, else 0</td>
+</tr>
+<tr class="row-odd"><td><strong>NORM</strong></td>
+<td>1 1</td>
+<td>Normalize (A) so max(A)-min(A) = 1</td>
+</tr>
+<tr class="row-even"><td><strong>NOT</strong></td>
+<td>1 1</td>
+<td>NaN if A == NaN, 1 if A == 0, else 0</td>
+</tr>
+<tr class="row-odd"><td><strong>NRAND</strong></td>
+<td>2 1</td>
+<td>Normal, random values with mean A and std. deviation B</td>
+</tr>
+<tr class="row-even"><td><strong>OR</strong></td>
+<td>2 1</td>
+<td>NaN if B == NaN, else A</td>
+</tr>
+<tr class="row-odd"><td><strong>PCDF</strong></td>
+<td>2 1</td>
+<td>Poisson cumulative distribution function for x = A and lambda = B</td>
+</tr>
+<tr class="row-even"><td><strong>PDIST</strong></td>
+<td>1 1</td>
+<td>Compute minimum distance (in km if -fg) from points in ASCII file A</td>
+</tr>
+<tr class="row-odd"><td><strong>PDIST2</strong></td>
+<td>2 1</td>
+<td>As PDIST, from points in ASCII file B but only to nodes where A != 0</td>
+</tr>
+<tr class="row-even"><td><strong>PERM</strong></td>
+<td>2 1</td>
+<td>Permutations n_P_r, with n = A and r = B</td>
+</tr>
+<tr class="row-odd"><td><strong>PLM</strong></td>
+<td>3 1</td>
+<td>Associated Legendre polynomial P(A) degree B order C</td>
+</tr>
+<tr class="row-even"><td><strong>PLMg</strong></td>
+<td>3 1</td>
+<td>Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention)</td>
+</tr>
+<tr class="row-odd"><td><strong>POINT</strong></td>
+<td>1 2</td>
+<td>Compute mean x and y from ASCII file A and place them on the stack</td>
+</tr>
+<tr class="row-even"><td><strong>POP</strong></td>
+<td>1 0</td>
+<td>Delete top element from the stack</td>
+</tr>
+<tr class="row-odd"><td><strong>POW</strong></td>
+<td>2 1</td>
+<td>A ^ B</td>
+</tr>
+<tr class="row-even"><td><strong>PPDF</strong></td>
+<td>2 1</td>
+<td>Poisson distribution P(x,lambda), with x = A and lambda = B</td>
+</tr>
+<tr class="row-odd"><td><strong>PQUANT</strong></td>
+<td>2 1</td>
+<td>The B’th Quantile (0-100%) of A</td>
+</tr>
+<tr class="row-even"><td><strong>PQUANTW</strong></td>
+<td>3 1</td>
+<td>The C’th weighted quantile (0-100%) of A for weights in B</td>
+</tr>
+<tr class="row-odd"><td><strong>PSI</strong></td>
+<td>1 1</td>
+<td>Psi (or Digamma) of A</td>
+</tr>
+<tr class="row-even"><td><strong>PV</strong></td>
+<td>3 1</td>
+<td>Legendre function Pv(A) of degree v = real(B) + imag(C)</td>
+</tr>
+<tr class="row-odd"><td><strong>QV</strong></td>
+<td>3 1</td>
+<td>Legendre function Qv(A) of degree v = real(B) + imag(C)</td>
+</tr>
+<tr class="row-even"><td><strong>R2</strong></td>
+<td>2 1</td>
+<td>R2 = A^2 + B^2</td>
+</tr>
+<tr class="row-odd"><td><strong>R2D</strong></td>
+<td>1 1</td>
+<td>Convert Radians to Degrees</td>
+</tr>
+<tr class="row-even"><td><strong>RAND</strong></td>
+<td>2 1</td>
+<td>Uniform random values between A and B</td>
+</tr>
+<tr class="row-odd"><td><strong>RCDF</strong></td>
+<td>1 1</td>
+<td>Rayleigh cumulative distribution function for z = A</td>
+</tr>
+<tr class="row-even"><td><strong>RCRIT</strong></td>
+<td>1 1</td>
+<td>Rayleigh distribution critical value for alpha = A</td>
+</tr>
+<tr class="row-odd"><td><strong>RINT</strong></td>
+<td>1 1</td>
+<td>rint (A) (round to integral value nearest to A)</td>
+</tr>
+<tr class="row-even"><td><strong>RMS</strong></td>
+<td>1 1</td>
+<td>Root-mean-square of A</td>
+</tr>
+<tr class="row-odd"><td><strong>RMSW</strong></td>
+<td>1 1</td>
+<td>Root-mean-square of A for weights in B</td>
+</tr>
+<tr class="row-even"><td><strong>RPDF</strong></td>
+<td>1 1</td>
+<td>Rayleigh probability density function for z = A</td>
+</tr>
+<tr class="row-odd"><td><strong>ROLL</strong></td>
+<td>2 0</td>
+<td>Cyclicly shifts the top A stack items by an amount B</td>
+</tr>
+<tr class="row-even"><td><strong>ROTX</strong></td>
+<td>2 1</td>
+<td>Rotate A by the (constant) shift B in x-direction</td>
+</tr>
+<tr class="row-odd"><td><strong>ROTY</strong></td>
+<td>2 1</td>
+<td>Rotate A by the (constant) shift B in y-direction</td>
+</tr>
+<tr class="row-even"><td><strong>SDIST</strong></td>
+<td>2 1</td>
+<td>Spherical (Great circle|geodesic) distance (in km) between nodes and stack (A, B) <a href="#openModal">Example</a>
+<div id="openModal" class="modalDialog">
+ <div>
+     <a href="#close" title="Close" class="close">X</a>
+     <h2>To compute all distances to north pole:</h2>
+     <p>gmt grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc</br></p>
+ </div>
+</div></td>
+</tr>
+<tr class="row-odd"><td><strong>SDIST2</strong></td>
+<td>2 1</td>
+<td>As SDIST but only to nodes that are != 0</td>
+</tr>
+<tr class="row-even"><td><strong>SAZ</strong></td>
+<td>2 1</td>
+<td>Spherical azimuth from grid nodes to stack lon, lat (i.e., A, B)</td>
+</tr>
+<tr class="row-odd"><td><strong>SBAZ</strong></td>
+<td>2 1</td>
+<td>Spherical back-azimuth from grid nodes to stack lon, lat (i.e., A, B)</td>
+</tr>
+<tr class="row-even"><td><strong>SEC</strong></td>
+<td>1 1</td>
+<td>sec (A) (A in radians)</td>
+</tr>
+<tr class="row-odd"><td><strong>SECD</strong></td>
+<td>1 1</td>
+<td>sec (A) (A in degrees)</td>
+</tr>
+<tr class="row-even"><td><strong>SIGN</strong></td>
+<td>1 1</td>
+<td>sign (+1 or -1) of A</td>
+</tr>
+<tr class="row-odd"><td><strong>SIN</strong></td>
+<td>1 1</td>
+<td>sin (A) (A in radians)</td>
+</tr>
+<tr class="row-even"><td><strong>SINC</strong></td>
+<td>1 1</td>
+<td>sinc (A) (sin (pi*A)/(pi*A))</td>
+</tr>
+<tr class="row-odd"><td><strong>SIND</strong></td>
+<td>1 1</td>
+<td>sin (A) (A in degrees)</td>
+</tr>
+<tr class="row-even"><td><strong>SINH</strong></td>
+<td>1 1</td>
+<td>sinh (A)</td>
+</tr>
+<tr class="row-odd"><td><strong>SKEW</strong></td>
+<td>1 1</td>
+<td>Skewness of A</td>
+</tr>
+<tr class="row-even"><td><strong>SQR</strong></td>
+<td>1 1</td>
+<td>A^2</td>
+</tr>
+<tr class="row-odd"><td><strong>SQRT</strong></td>
+<td>1 1</td>
+<td>sqrt (A)</td>
+</tr>
+<tr class="row-even"><td><strong>STD</strong></td>
+<td>1 1</td>
+<td>Standard deviation of A</td>
+</tr>
+<tr class="row-odd"><td><strong>STDW</strong></td>
+<td>2 1</td>
+<td>Weighted standard deviation of A for weights in B</td>
+</tr>
+<tr class="row-even"><td><strong>STEP</strong></td>
+<td>1 1</td>
+<td>Heaviside step function: H(A)</td>
+</tr>
+<tr class="row-odd"><td><strong>STEPX</strong></td>
+<td>1 1</td>
+<td>Heaviside step function in x: H(x-A)</td>
+</tr>
+<tr class="row-even"><td><strong>STEPY</strong></td>
+<td>1 1</td>
+<td>Heaviside step function in y: H(y-A)</td>
+</tr>
+<tr class="row-odd"><td><strong>SUB</strong></td>
+<td>2 1</td>
+<td>A - B</td>
+</tr>
+<tr class="row-even"><td><strong>SUM</strong></td>
+<td>1 1</td>
+<td>Sum of all values in A</td>
+</tr>
+<tr class="row-odd"><td><strong>TAN</strong></td>
+<td>1 1</td>
+<td>tan (A) (A in radians)</td>
+</tr>
+<tr class="row-even"><td><strong>TAND</strong></td>
+<td>1 1</td>
+<td>tan (A) (A in degrees)</td>
+</tr>
+<tr class="row-odd"><td><strong>TANH</strong></td>
+<td>1 1</td>
+<td>tanh (A)</td>
+</tr>
+<tr class="row-even"><td><strong>TAPER</strong></td>
+<td>2 1</td>
+<td>Unit weights cosine-tapered to zero within A and B of x and y grid margins</td>
+</tr>
+<tr class="row-odd"><td><strong>TCDF</strong></td>
+<td>2 1</td>
+<td>Student’s t cumulative distribution function for t = A, and nu = B</td>
+</tr>
+<tr class="row-even"><td><strong>TCRIT</strong></td>
+<td>2 1</td>
+<td>Student’s t distribution critical value for alpha = A and nu = B</td>
+</tr>
+<tr class="row-odd"><td><strong>TN</strong></td>
+<td>2 1</td>
+<td>Chebyshev polynomial Tn(-1&lt;t&lt;+1,n), with t = A, and n = B</td>
+</tr>
+<tr class="row-even"><td><strong>TPDF</strong></td>
+<td>2 1</td>
+<td>Student’s t probability density function for t = A, and nu = B</td>
+</tr>
+<tr class="row-odd"><td><strong>TRIM</strong></td>
+<td>3 1</td>
+<td>Alpha-trim C to NaN if values fall in tails A and B (in percentage)</td>
+</tr>
+<tr class="row-even"><td><strong>UPPER</strong></td>
+<td>1 1</td>
+<td>The highest (maximum) value of A</td>
+</tr>
+<tr class="row-odd"><td><strong>VAR</strong></td>
+<td>1 1</td>
+<td>Variance of A</td>
+</tr>
+<tr class="row-even"><td><strong>VARW</strong></td>
+<td>2 1</td>
+<td>Weighted variance of A for weights in B</td>
+</tr>
+<tr class="row-odd"><td><strong>WCDF</strong></td>
+<td>3 1</td>
+<td>Weibull cumulative distribution function for x = A, scale = B, and shape = C</td>
+</tr>
+<tr class="row-even"><td><strong>WCRIT</strong></td>
+<td>3 1</td>
+<td>Weibull distribution critical value for alpha = A, scale = B, and shape = C</td>
+</tr>
+<tr class="row-odd"><td><strong>WPDF</strong></td>
+<td>3 1</td>
+<td>Weibull density distribution P(x,scale,shape), with x = A, scale = B, and shape = C</td>
+</tr>
+<tr class="row-even"><td><strong>WRAP</strong></td>
+<td>1 1</td>
+<td>wrap A in radians onto [-pi,pi]</td>
+</tr>
+<tr class="row-odd"><td><strong>XOR</strong></td>
+<td>2 1</td>
+<td>0 if A == NaN and B == NaN, NaN if B == NaN, else A</td>
+</tr>
+<tr class="row-even"><td><strong>Y0</strong></td>
+<td>1 1</td>
+<td>Bessel function of A (2nd kind, order 0)</td>
+</tr>
+<tr class="row-odd"><td><strong>Y1</strong></td>
+<td>1 1</td>
+<td>Bessel function of A (2nd kind, order 1)</td>
+</tr>
+<tr class="row-even"><td><strong>YLM</strong></td>
+<td>2 2</td>
+<td>Re and Im orthonormalized spherical harmonics degree A order B</td>
+</tr>
+<tr class="row-odd"><td><strong>YLMg</strong></td>
+<td>2 2</td>
+<td>Cos and Sin normalized spherical harmonics degree A order B (geophysical convention)</td>
+</tr>
+<tr class="row-even"><td><strong>YN</strong></td>
+<td>2 1</td>
+<td>Bessel function of A (2nd kind, order B)</td>
+</tr>
+<tr class="row-odd"><td><strong>ZCDF</strong></td>
+<td>1 1</td>
+<td>Normal cumulative distribution function for z = A</td>
+</tr>
+<tr class="row-even"><td><strong>ZPDF</strong></td>
+<td>1 1</td>
+<td>Normal probability density function for z = A</td>
+</tr>
+<tr class="row-odd"><td><strong>ZCRIT</strong></td>
+<td>1 1</td>
+<td>Normal distribution critical value for alpha = A</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="symbols">
+<h2>Symbols<a class="headerlink" href="#symbols" title="Permalink to this headline">¶</a></h2>
+<p>The following symbols have special meaning:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="79%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>PI</strong></td>
+<td>3.1415926…</td>
+</tr>
+<tr class="row-even"><td><strong>E</strong></td>
+<td>2.7182818…</td>
+</tr>
+<tr class="row-odd"><td><strong>EULER</strong></td>
+<td>0.5772156…</td>
+</tr>
+<tr class="row-even"><td><strong>EPS_F</strong></td>
+<td>1.192092896e-07 (single precision epsilon</td>
+</tr>
+<tr class="row-odd"><td><strong>XMIN</strong></td>
+<td>Minimum x value</td>
+</tr>
+<tr class="row-even"><td><strong>XMAX</strong></td>
+<td>Maximum x value</td>
+</tr>
+<tr class="row-odd"><td><strong>XRANGE</strong></td>
+<td>Range of x values</td>
+</tr>
+<tr class="row-even"><td><strong>XINC</strong></td>
+<td>x increment</td>
+</tr>
+<tr class="row-odd"><td><strong>NX</strong></td>
+<td>The number of x nodes</td>
+</tr>
+<tr class="row-even"><td><strong>YMIN</strong></td>
+<td>Minimum y value</td>
+</tr>
+<tr class="row-odd"><td><strong>YMAX</strong></td>
+<td>Maximum y value</td>
+</tr>
+<tr class="row-even"><td><strong>YRANGE</strong></td>
+<td>Range of y values</td>
+</tr>
+<tr class="row-odd"><td><strong>YINC</strong></td>
+<td>y increment</td>
+</tr>
+<tr class="row-even"><td><strong>NY</strong></td>
+<td>The number of y nodes</td>
+</tr>
+<tr class="row-odd"><td><strong>X</strong></td>
+<td>Grid with x-coordinates</td>
+</tr>
+<tr class="row-even"><td><strong>Y</strong></td>
+<td>Grid with y-coordinates</td>
+</tr>
+<tr class="row-odd"><td><strong>XNORM</strong></td>
+<td>Grid with normalized [-1 to +1] x-coordinates</td>
+</tr>
+<tr class="row-even"><td><strong>YNORM</strong></td>
+<td>Grid with normalized [-1 to +1] y-coordinates</td>
+</tr>
+<tr class="row-odd"><td><strong>XCOL</strong></td>
+<td>Grid with column numbers 0, 1, …, NX-1</td>
+</tr>
+<tr class="row-even"><td><strong>YROW</strong></td>
+<td>Grid with row numbers 0, 1, …, NY-1</td>
+</tr>
+<tr class="row-odd"><td><strong>NODE</strong></td>
+<td>Grid with node numbers 0, 1, …, (NX*NY)-1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="notes-on-operators">
+<h2>Notes On Operators<a class="headerlink" href="#notes-on-operators" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first">For Cartesian grids the operators <strong>MEAN</strong>, <strong>MEDIAN</strong>, <strong>MODE</strong>,
+<strong>LMSSCL</strong>, <strong>MAD</strong>, <strong>PQUANT</strong>, <strong>RMS</strong>, <strong>STD</strong>, and <strong>VAR</strong> return the
+expected value from the given matrix.  However, for geographic grids
+we perform a spherically weighted calculation where each node value
+is weighted by the geographic area represented by that node.</p>
+</li>
+<li><p class="first">The operator <strong>SDIST</strong> calculates spherical distances in km between the
+(lon, lat) point on the stack and all node positions in the grid. The
+grid domain and the (lon, lat) point are expected to be in degrees.
+Similarly, the <strong>SAZ</strong> and <strong>SBAZ</strong> operators calculate spherical
+azimuth and back-azimuths in degrees, respectively. The operators
+<strong>LDIST</strong> and <strong>PDIST</strong> compute spherical distances in km if <strong>-fg</strong> is
+set or implied, else they return Cartesian distances. Note: If the current
+<a class="reference internal" href="gmt.conf.html#projection-parameters"><span class="std std-ref">PROJ_ELLIPSOID</span></a> is ellipsoidal then
+geodesics are used in calculations of distances, which can be slow.
+You can trade speed with accuracy by changing the algorithm used to
+compute the geodesic (see <a class="reference internal" href="gmt.conf.html#projection-parameters"><span class="std std-ref">PROJ_GEODESIC</span></a>).</p>
+<p>The operator <strong>LDISTG</strong> is a version of <strong>LDIST</strong> that operates on the
+GSHHG data. Instead of reading an ASCII file, it directly accesses one of
+the GSHHG data sets as determined by the <strong>-D</strong> and <strong>-A</strong> options.</p>
+</li>
+<li><p class="first">The operator <strong>POINT</strong> reads a ASCII table, computes the mean x and mean
+y values and places these on the stack.  If geographic data then we use
+the mean 3-D vector to determine the mean location.</p>
+</li>
+<li><p class="first">The operator <strong>PLM</strong> calculates the associated Legendre polynomial
+of degree L and order M (0 &lt;= M &lt;= L), and its argument is the sine of
+the latitude. <strong>PLM</strong> is not normalized and includes the Condon-Shortley
+phase (-1)^M. <strong>PLMg</strong> is normalized in the way that is most commonly
+used in geophysics. The C-S phase can be added by using -M as argument.
+<strong>PLM</strong> will overflow at higher degrees, whereas <strong>PLMg</strong> is stable
+until ultra high degrees (at least 3000).</p>
+</li>
+<li><p class="first">The operators <strong>YLM</strong> and <strong>YLMg</strong> calculate normalized spherical
+harmonics for degree L and order M (0 &lt;= M &lt;= L) for all positions in
+the grid, which is assumed to be in degrees. <strong>YLM</strong> and <strong>YLMg</strong> return
+two grids, the real (cosine) and imaginary (sine) component of the
+complex spherical harmonic. Use the <strong>POP</strong> operator (and <strong>EXCH</strong>) to
+get rid of one of them, or save both by giving two consecutive = file.nc calls.</p>
+<p>The orthonormalized complex harmonics <strong>YLM</strong> are most commonly used in
+physics and seismology. The square of <strong>YLM</strong> integrates to 1 over a
+sphere. In geophysics, <strong>YLMg</strong> is normalized to produce unit power when
+averaging the cosine and sine terms (separately!) over a sphere (i.e.,
+their squares each integrate to 4 pi). The Condon-Shortley phase (-1)^M
+is not included in <strong>YLM</strong> or <strong>YLMg</strong>, but it can be added by using -M
+as argument.</p>
+</li>
+<li><p class="first">All the derivatives are based on central finite differences, with
+natural boundary conditions, and are Cartesian derivatives.</p>
+</li>
+<li><p class="first">Files that have the same names as some operators, e.g., <strong>ADD</strong>,
+<strong>SIGN</strong>, <strong>=</strong>, etc. should be identified by prepending the current
+directory (i.e., ./LOG).</p>
+</li>
+<li><p class="first">Piping of files is not allowed.</p>
+</li>
+<li><p class="first">The stack depth limit is hard-wired to 100.</p>
+</li>
+<li><p class="first">All functions expecting a positive radius (e.g., <strong>LOG</strong>, <strong>KEI</strong>,
+etc.) are passed the absolute value of their argument. (9) The bitwise
+operators (<strong>BITAND</strong>, <strong>BITLEFT</strong>, <strong>BITNOT</strong>, <strong>BITOR</strong>, <strong>BITRIGHT</strong>,
+<strong>BITTEST</strong>, and <strong>BITXOR</strong>) convert a grid’s single precision values to
+unsigned 32-bit ints to perform the bitwise operations. Consequently,
+the largest whole integer value that can be stored in a float grid is
+2^24 or 16,777,216. Any higher result will be masked to fit in the lower
+24 bits.  Thus, bit operations are effectively limited to 24 bit.  All
+bitwise operators return NaN if given NaN arguments or bit-settings &lt;= 0.</p>
+</li>
+<li><p class="first">When OpenMP support is compiled in, a few operators will take advantage
+of the ability to spread the load onto several cores.  At present, the
+list of such operators is: <strong>LDIST</strong>, <strong>LDIST2</strong>, <strong>PDIST</strong>, <strong>PDIST2</strong>,
+<strong>SAZ</strong>, <strong>SBAZ</strong>, <strong>SDIST</strong>, <strong>YLM</strong>, and <strong>grd_YLMg</strong>.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="grid-values-precision">
+<h2>Grid Values Precision<a class="headerlink" href="#grid-values-precision" title="Permalink to this headline">¶</a></h2>
+<p>Regardless of the precision of the input data, GMT programs that create
+grid files will internally hold the grids in 4-byte floating point
+arrays. This is done to conserve memory and furthermore most if not all
+real data can be stored using 4-byte floating point values. Data with
+higher precision (i.e., double precision values) will lose that
+precision once GMT operates on the grid or writes out new grids. To
+limit loss of precision when processing data you should always consider
+normalizing the data prior to processing.</p>
+</div>
+<div class="section" id="grid-file-formats">
+<h2>Grid File Formats<a class="headerlink" href="#grid-file-formats" title="Permalink to this headline">¶</a></h2>
+<p>By default GMT writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, GMT is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called “packing” of grids, writing out floating point
+data as 1- or 2-byte integers. <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">(more …)</span></a></p>
+</div>
+<div class="section" id="geographical-and-time-coordinates">
+<h2>Geographical And Time Coordinates<a class="headerlink" href="#geographical-and-time-coordinates" title="Permalink to this headline">¶</a></h2>
+<p>When the output grid type is netCDF, the coordinates will be labeled
+“longitude”, “latitude”, or “time” based on the attributes of the input
+data or grid (if any) or on the <strong>-f</strong> or <strong>-R</strong> options. For example,
+both <strong>-f0x</strong> <strong>-f1t</strong> and <strong>-R</strong>90w/90e/0t/3t will result in a
+longitude/time grid. When the x, y, or z coordinate is time, it will be
+stored in the grid as relative time since epoch as specified by
+<a class="reference internal" href="gmt.conf.html#time-unit"><span class="std std-ref">TIME_UNIT</span></a> and <a class="reference internal" href="gmt.conf.html#time-epoch"><span class="std std-ref">TIME_EPOCH</span></a> in the
+<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file or on the
+command line. In addition, the <strong>unit</strong> attribute of the time variable
+will indicate both this unit and epoch.</p>
+</div>
+<div class="section" id="store-recall-and-clear">
+<h2>STORE, RECALL and CLEAR<a class="headerlink" href="#store-recall-and-clear" title="Permalink to this headline">¶</a></h2>
+<p>You may store intermediate calculations to a named variable that you may
+recall and place on the stack at a later time. This is useful if you
+need access to a computed quantity many times in your expression as it
+will shorten the overall expression and improve readability. To save a
+result you use the special operator <strong>STO</strong>&#64;<em>label</em>, where <em>label</em>
+is the name you choose to give the quantity. To recall the stored result
+to the stack at a later time, use [<strong>RCL</strong>]&#64;<em>label</em>, i.e., <strong>RCL</strong>
+is optional. To clear memory you may use <strong>CLR</strong>&#64;<em>label</em>. Note that
+<strong>STO</strong> and <strong>CLR</strong> leave the stack unchanged.</p>
+</div>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc11">Gshhs Information</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>The coastline database is GSHHG (formerly GSHHS) which is compiled from
+three sources:  World Vector Shorelines (WVS), CIA World Data Bank II
+(WDBII), and Atlas of the Cryosphere (AC, for Antarctica only).
+Apart from Antarctica, all level-1 polygons (ocean-land boundary) are derived from
+the more accurate WVS while all higher level polygons (level 2-4,
+representing land/lake, lake/island-in-lake, and
+island-in-lake/lake-in-island-in-lake boundaries) are taken from WDBII.
+The Antarctica coastlines come in two flavors: ice-front or grounding line,
+selectable via the <strong>-A</strong> option.
+Much processing has taken place to convert WVS, WDBII, and AC data into
+usable form for GMT: assembling closed polygons from line segments,
+checking for duplicates, and correcting for crossings between polygons.
+The area of each polygon has been determined so that the user may choose
+not to draw features smaller than a minimum area (see <strong>-A</strong>); one may
+also limit the highest hierarchical level of polygons to be included (4
+is the maximum). The 4 lower-resolution databases were derived from the
+full resolution database using the Douglas-Peucker line-simplification
+algorithm. The classification of rivers and borders follow that of the
+WDBII. See the GMT Cookbook and Technical Reference Appendix K for
+further details.</p>
+</div>
+<div class="section" id="macros">
+<h2>Macros<a class="headerlink" href="#macros" title="Permalink to this headline">¶</a></h2>
+<p>Users may save their favorite operator combinations as macros via the
+file <em>grdmath.macros</em> in their current or user directory. The file may contain
+any number of macros (one per record); comment lines starting with # are
+skipped. The format for the macros is <strong>name</strong> = <strong>arg1 arg2 … arg2</strong>
+: <em>comment</em> where <strong>name</strong> is how the macro will be used. When this
+operator appears on the command line we simply replace it with the
+listed argument list. No macro may call another macro. As an example,
+the following macro expects three arguments (radius x0 y0) and sets the
+modes that are inside the given circle to 1 and those outside to 0:</p>
+<p>INCIRCLE = CDIST EXCH DIV 1 LE : usage: r x y INCIRCLE to return 1
+inside circle</p>
+<p>Note: Because geographic or time constants may be present in a macro, it
+is required that the optional comment flag (:) must be followed by a space.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To compute all distances to north pole:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdmath</span> <span class="o">-</span><span class="n">Rg</span> <span class="o">-</span><span class="n">I1</span> <span class="mi">0</span> <span class="mi">90</span> <span class="n">SDIST</span> <span class="o">=</span> <span class="n">dist_to_NP</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To take log10 of the average of 2 files, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdmath</span> <span class="n">file1</span><span class="o">.</span><span class="n">nc</span> <span class="n">file2</span><span class="o">.</span><span class="n">nc</span> <span class="n">ADD</span> <span class="mf">0.5</span> <span class="n">MUL</span> <span class="n">LOG10</span> <span class="o">=</span> <span class="n">file3</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Given the file ages.nc, which holds seafloor ages in m.y., use the
+relation depth(in m) = 2500 + 350 * sqrt (age) to estimate normal seafloor depths:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdmath</span> <span class="n">ages</span><span class="o">.</span><span class="n">nc</span> <span class="n">SQRT</span> <span class="mi">350</span> <span class="n">MUL</span> <span class="mi">2500</span> <span class="n">ADD</span> <span class="o">=</span> <span class="n">depths</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To find the angle a (in degrees) of the largest principal stress from
+the stress tensor given by the three files s_xx.nc s_yy.nc, and
+s_xy.nc from the relation tan (2*a) = 2 * s_xy / (s_xx - s_yy), use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdmath</span> <span class="mi">2</span> <span class="n">s_xy</span><span class="o">.</span><span class="n">nc</span> <span class="n">MUL</span> <span class="n">s_xx</span><span class="o">.</span><span class="n">nc</span> <span class="n">s_yy</span><span class="o">.</span><span class="n">nc</span> <span class="n">SUB</span> <span class="n">DIV</span> <span class="n">ATAN</span> <span class="mi">2</span> <span class="n">DIV</span> <span class="o">=</span> <span class="n">direction</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To calculate the fully normalized spherical harmonic of degree 8 and
+order 4 on a 1 by 1 degree world map, using the real amplitude 0.4 and
+the imaginary amplitude 1.1:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdmath</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mi">360</span><span class="o">/-</span><span class="mi">90</span><span class="o">/</span><span class="mi">90</span> <span class="o">-</span><span class="n">I1</span> <span class="mi">8</span> <span class="mi">4</span> <span class="n">YLM</span> <span class="mf">1.1</span> <span class="n">MUL</span> <span class="n">EXCH</span> <span class="mf">0.4</span> <span class="n">MUL</span> <span class="n">ADD</span> <span class="o">=</span> <span class="n">harm</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To extract the locations of local maxima that exceed 100 mGal in the file faa.nc:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdmath</span> <span class="n">faa</span><span class="o">.</span><span class="n">nc</span> <span class="n">DUP</span> <span class="n">EXTREMA</span> <span class="mi">2</span> <span class="n">EQ</span> <span class="n">MUL</span> <span class="n">DUP</span> <span class="mi">100</span> <span class="n">GT</span> <span class="n">MUL</span> <span class="mi">0</span> <span class="n">NAN</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">nc</span>
+<span class="n">gmt</span> <span class="n">grd2xyz</span> <span class="n">z</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">s</span> <span class="o">&gt;</span> <span class="nb">max</span><span class="o">.</span><span class="n">xyz</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To demonstrate the use of named variables, consider this radial wave
+where we store and recall the normalized radial arguments in radians:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdmath</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mi">10</span><span class="o">/</span><span class="mi">0</span><span class="o">/</span><span class="mi">10</span> <span class="o">-</span><span class="n">I0</span><span class="o">.</span><span class="mi">25</span> <span class="mi">5</span> <span class="mi">5</span> <span class="n">CDIST</span> <span class="mi">2</span> <span class="n">MUL</span> <span class="n">PI</span> <span class="n">MUL</span> <span class="mi">5</span> <span class="n">DIV</span> <span class="n">STO</span><span class="nd">@r</span> <span class="n">COS</span> <span class="nd">@r</span> <span class="n">SIN</span> <span class="n">MUL</span> <span class="o">=</span> <span class="n">wave</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To creat a dumb file saved as a 32 bits float GeoTiff using GDAL, run</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdmath</span> <span class="o">-</span><span class="n">Rd</span> <span class="o">-</span><span class="n">I10</span> <span class="n">X</span> <span class="n">Y</span> <span class="n">MUL</span> <span class="o">=</span> <span class="n">lixo</span><span class="o">.</span><span class="n">tiff</span><span class="o">=</span><span class="n">gd</span><span class="p">:</span><span class="n">GTiff</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Abramowitz, M., and I. A. Stegun, 1964, <em>Handbook of Mathematical
+Functions</em>, Applied Mathematics Series, vol. 55, Dover, New York.</p>
+<p>Holmes, S. A., and W. E. Featherstone, 2002, A unified approach to the
+Clenshaw summation and the recursive computation of very high degree and
+order normalised associated Legendre functions. <em>Journal of Geodesy</em>,
+76, 279-299.</p>
+<p>Press, W. H., S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery,
+1992, <em>Numerical Recipes</em>, 2nd edition, Cambridge Univ., New York.</p>
+<p>Spanier, J., and K. B. Oldman, 1987, <em>An Atlas of Functions</em>, Hemisphere
+Publishing Corp.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>,
+<a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a>, <a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a>,
+<a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a>, <a class="reference internal" href="xyz2grd.html"><span class="doc">xyz2grd</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">grdmath</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#operators">Operators</a></li>
+<li><a class="reference internal" href="#symbols">Symbols</a></li>
+<li><a class="reference internal" href="#notes-on-operators">Notes On Operators</a></li>
+<li><a class="reference internal" href="#grid-values-precision">Grid Values Precision</a></li>
+<li><a class="reference internal" href="#grid-file-formats">Grid File Formats</a></li>
+<li><a class="reference internal" href="#geographical-and-time-coordinates">Geographical And Time Coordinates</a></li>
+<li><a class="reference internal" href="#store-recall-and-clear">STORE, RECALL and CLEAR</a></li>
+<li><a class="reference internal" href="#id1">Gshhs Information</a></li>
+<li><a class="reference internal" href="#macros">Macros</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grdmask.html"
+                        title="previous chapter">grdmask</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grdpaste.html"
+                        title="next chapter">grdpaste</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/grdmath.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="grdpaste.html" title="grdpaste"
+             >next</a> </li>
+        <li class="right" >
+          <a href="grdmask.html" title="grdmask"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

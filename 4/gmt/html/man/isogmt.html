@@ -1,0 +1,78 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:23 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>ISOGMT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>ISOGMT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">isogmt &minus;
+Run GMT command or script in isolation mode</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>isogmt</b>
+<i>command</i></p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>isogmt</b>
+runs a single <b><A HREF="GMT.html">GMT</A></b> command or shell script in
+<b>isolation mode</b>. This means that the files
+<i>.gmtcommands4</i> and <i>.gmtdefaults4</i> will be read
+from the usual locations (current directory, <i>~/.gmt</i>,
+or home directory), but changes will only be written in a
+temporary directory, which will be removed after execution.
+The name of the temporary directory will be available to the
+command or script as the environment variable
+<b>GMT_TMPDIR</b>.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Run the shell
+script <i>script.gmt</i> in isolation mode</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>isogmt</b>
+sh script.gmt</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1)</p>
+<hr>
+</body>
+</html>

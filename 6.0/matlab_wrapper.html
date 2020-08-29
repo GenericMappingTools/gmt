@@ -1,0 +1,451 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Introduction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/matlab_wrapper.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <p><strong>The Generic Mapping Tools</strong></p>
+<p><strong>The MATLAB Interface</strong></p>
+<p><strong>Pål (Paul) Wessel</strong></p>
+<p><strong>SOEST, University of Hawai’i at Manoa</strong></p>
+<p><strong>Joaquim F. Luis</strong></p>
+<p><strong>Universidade do Algarve, Faro, Portugal</strong></p>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>The GMT MATLAB interface makes it possible to access all GMT modules from MATLAB.
+Users of MATLAB can write MATLAB scripts that call upon GMT modules to do any of the
+things GMT normally can do, and return the results (grids, data-tables, CPTs, text-files,
+and even final images via <a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a>) to MATLAB variables.  MATLAB matrices can be given
+as input to GMT modules.  Examples below will give you the general idea.</p>
+</div>
+<div class="section" id="installing">
+<h1>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="windows">
+<h2>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h2>
+<p>The Windows installers come already with the gmtmex.mexw64|32 and gmt.m files necessary run the MEX.
+Only make sure that the GMT binary dir is either in the Windows path (the installer does that for you)
+and in the MATLAB path (you have to do it yourself).
+If you want to (re)build the MEX file yourself, see the <em>compile_mex.bat</em> in the source GitHub repository.</p>
+</div>
+<div class="section" id="os-x">
+<h2>OS X<a class="headerlink" href="#os-x" title="Permalink to this headline">¶</a></h2>
+<p>We have successfully built the MATLAB interface under OS X. However, due to the way MATLAB handles shared libraries
+it is a delicate process, with several caveats.  This may change over time as we work with MathWorks to straighten out the
+kinks.  The following works:</p>
+<ol class="arabic simple">
+<li>Install the GMT OS X Bundle</li>
+<li>Run the gmt_prepmex.sh script in the bundle’s share/tools directory.  This will duplicate
+the GMT 5.3 installation into /opt/gmt and re-baptize all the shared libraries.</li>
+<li>Use gmtswitch to make /opt/gmt the current active GMT version</li>
+<li>Checkout the gmt-mex project via subversion into some directory, i.e.,
+git clone <a class="reference external" href="https://github.com/GenericMappingTools/gmtmex.git">https://github.com/GenericMappingTools/gmtmex.git</a></li>
+<li>In gmt-mex/trunk, run autoconf then configure --enable-matlab (and maybe --enable-debug) is you
+can help debug things.</li>
+<li>Run make which builds the gmtmex.mexmaci64.  This executable is accessed by the gmt.m script.</li>
+<li>Set your MATLAB path so these two can be found (or copy them to a suitable directory).</li>
+<li>Make sure your gmt.conf file has the entry GMT_CUSTOM_LIBS=/opt/gmt/lib/gmt/plugins/supplements.so.</li>
+</ol>
+<p>You can also build your own bundle (see CMakeLists.txt in main GMT directory).  The above works
+with UNIX installations from fink or HomeBrew but fails for us if under MacPorts (then, MATLAB
+will complain about wrong shared HDF5 library and we crash).
+If you wish to help debug in XCode then see the gmt-mex wiki for more details.  While the latest
+2016a MATLAB version works with XCode 7, earlier versions may require 6.4 and you will have
+to install the older Xcode version.
+We used the 2016b MATLAB version to build the interface but 2015a,b should also work.  Older
+versions may also work but we have not attempted this since we only have access to these three.</p>
+</div>
+<div class="section" id="unix-linux">
+<h2>Unix/Linux)<a class="headerlink" href="#unix-linux" title="Permalink to this headline">¶</a></h2>
+<p>Preliminary experiments indicate we will have to fight the shared library dilemma here as well.
+Volunteers on Linux wishing to run the GMT MATLAB interface are needed to make progress.</p>
+</div>
+</div>
+<div class="section" id="using">
+<h1>Using<a class="headerlink" href="#using" title="Permalink to this headline">¶</a></h1>
+<p>The MATLAB wrapper was designed to work in a way the closest as possible to the command line version
+and yet to provide all the facilities of the MATLAB IDE (the ML command line desktop). In this sense,
+all <strong>GMT</strong> options are put in a single text string that is passed, plus the data itself when it applies,
+to the <code class="docutils literal notranslate"><span class="pre">gmt()</span></code> command. For example to reproduce the CookBook example of an Hemisphere map using a
+Azimuthal projection</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>gmt(&#39;coast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy -P &gt; GMT_lambert_az_hemi.ps&#39;)
+</pre></div>
+</div>
+<p>but that is not particularly interesting as after all we could do the exact same thing on the a shell
+command line. Things start to get interesting when we can send data <em>in</em> and <em>out</em> from MATLAB to
+<strong>GMT</strong>. So, consider the following example</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>t = rand(100,3) * 150;
+G = gmt(&#39;surface -R0/150/0/150 -I1&#39;, t);
+</pre></div>
+</div>
+<p>Here we just created a random data <em>100x3</em> matrix and told <strong>GMT</strong> to grid it using it’s program
+<em>surface</em>. Note how the syntax follows closely the standard usage but we sent the data to be
+interpolated (the <em>t</em> matrix) as the second argument to the <code class="docutils literal notranslate"><span class="pre">gmt()</span></code> function. And on return we
+got the <em>G</em> variable that is a structure holding the grid and it’s metadata. See the
+<a class="reference internal" href="#grid-struct"><span class="std std-ref">grid struct</span></a> for the details of its members.</p>
+<p>Imagining that we want to plot that random data art, we can do it with a call to <em>grdimage</em>, like</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>gmt(&#39;grdimage -JX8c -Ba -P -Cblue,red &gt; crap_img.ps&#39;, G)
+</pre></div>
+</div>
+<p>Note that we now sent the <em>G grid</em> as argument instead of the <strong>-G</strong><em>gridname</em> that we would have
+used in the command line. But for readability we could well had left the <strong>-G</strong> option in command string. E.g:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>gmt(&#39;grdimage -JX8c -Ba -P -Cblue,red -G &gt; crap_img.ps&#39;, G)
+</pre></div>
+</div>
+<p>While for this particular case it makes no difference to use or not the <strong>-G</strong>, because there is <strong>only</strong>
+one input, the same does not hold true when we have more than one. For example, we can run the same example
+but compute the CPT separately.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cpt = gmt(&#39;grd2cpt -Cblue,red&#39;, G);
+gmt(&#39;grdimage -JX8c -Ba -P -C -G &gt; crap_img.ps&#39;, G, cpt)
+</pre></div>
+</div>
+<p>Now we had to explicitly write the <strong>-C</strong> &amp; <strong>-G</strong> (well, actually we could have omitted the <strong>-G</strong> because
+it’s a mandatory input but that would make the things more confusing). Note also the order of the input data variables.
+It is crucial that any <em>required</em> (primary) input data objects (for grdimage that is the grid) are given before
+any <em>optional</em> (secondary) input data objects (here, that is the CPT object).  The same is true for modules that
+return more than one item: List the required output object first followed by optional ones.</p>
+<p>To illustrate another aspect on the importance of the order of input data let us see how to plot a sine curve
+made of colored filled circles.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>x = linspace(-pi, pi)&#39;;            % The *xx* var
+seno = sin(x);                     % *yy*
+xyz  = [x seno seno];              % Duplicate *yy* so that it can be colored
+cpt  = gmt(&#39;makecpt -T-1/1/0.1&#39;);  % Create a CPT
+gmt(&#39;plot -R-3.2/3.2/-1.1/1.1 -JX12c -Sc0.1c -C -P -Ba &gt; seno.ps&#39;, xyz, cpt)
+</pre></div>
+</div>
+<p>The point here is that we had to give <em>xyz, cpt</em> and not <em>cpt, xyz</em> (which would error) because optional input data
+associated with an option letter <strong>always comes after the required input</strong>.</p>
+<p>To plot text strings we send in the input data wrapped in a cell array. Example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>lines = {&#39;5 6 Some label&#39;, &#39;6 7 Another label&#39;};
+gmt(&#39;text -R0/10/0/10 -JM6i -Bafg -F+f18p -P &gt; text.ps&#39;, lines)
+</pre></div>
+</div>
+<p>and we get back text info in cell arrays as well. Using the <em>G</em> grid computed above we can run <em>gmtinfo</em> on it</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>info = gmt(&#39;info&#39;, G)
+</pre></div>
+</div>
+<p>At the end of an <strong>GMT</strong> session work we call the internal functions that will do the house keeping of
+freeing no longer needed memory. We do that with this command:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>gmt(&#39;destroy&#39;)
+</pre></div>
+</div>
+<p>So that’s basically how it works. When numeric data have to be sent <em>in</em> to <strong>GMT</strong> we use
+MATLAB variables holding the data in matrices or structures or cell arrays, depending on data type. On
+return we get the computed result stored in variables that we gave as output arguments.
+Things only complicate a little more for the cases where we can have more than one <em>input</em> or
+<em>output</em> arguments, since the order or the arguments matter (Remember the rule: primary first, secondary second).
+The file <em>gallery.m</em>, that reproduces the examples in the Gallery section of the GMT
+documentation, has many (not so trivial) examples on usage of the MEX GMT API.</p>
+<div class="highlight-none notranslate" id="grid-struct"><div class="highlight"><pre><span></span>proj4           % Projection string in PROJ4 syntax (Optional)
+wkt             % Projection string in WKT syntax (Optional)
+range           % 1x6 vector with [x_min x_max y_min y_max z_min z_max]
+inc             % 1x2 vector with [x_inc y_inc]
+registration    % Registration type: 0 -&gt; Grid registration; 1 -&gt; Pixel registration
+nodata          % The value of nodata
+pad             % A scalar pad. Optional and only when direction is to GMT. (new in 1.1)
+title           % Title (Optional)
+comment         % Remark (Optional)
+command         % Command used to create the grid (Optional)
+datatype        % &#39;float&#39; or &#39;double&#39;
+x               % [1 x n_columns] vector with XX coordinates
+y               % [1 x n_rows]    vector with YY coordinates
+z               % [n_rows x n_columns] grid array
+x_unit          % Units of XX axis (Optional)
+y_unit          % Units of YY axis (Optional)
+z_unit          % Units of ZZ axis (Optional)
+layout          % A three character string describing the image memory layout
+</pre></div>
+</div>
+<p>Definition of the <em>grid structure</em> that holds a grid and its metadata.</p>
+<div class="highlight-none notranslate" id="img-struct"><div class="highlight"><pre><span></span>proj4           % Projection string in PROJ4 syntax (Optional)
+wkt             % Projection string in WKT syntax (Optional)
+range           % 1x6 vector with [x_min x_max y_min y_max z_min z_max]
+inc             % 1x2 vector with [x_inc y_inc]
+registration    % Registration type: 0 -&gt; Grid registration; 1 -&gt; Pixel registration [Default]
+nodata          % The value of nodata
+pad             % A scalar pad (optional). Use only when direction is to GMT and Image will be projected ([2]) (new in 1.1)
+title           % Title (Optional)
+comment         % Remark (Optional)
+command         % Command used to create the image (Optional)
+datatype        % &#39;uint8&#39; or &#39;int8&#39; (needs checking)
+x               % [1 x n_columns] vector with XX coordinates
+y               % [1 x n_rows]    vector with YY coordinates
+image           % [n_rows x n_columns] image array
+x_unit          % Units of XX axis (Optional)
+y_unit          % Units of YY axis (Optional)
+z_unit          % Units of ZZ axis (Optional)
+colormap        % A color palette structure
+alpha           % A [n_rows x n_columns] alpha array
+layout          % A four character string describing the image memory layout
+</pre></div>
+</div>
+<p>Definition of the <em>image structure</em> that holds a image and its metadata.</p>
+<div class="highlight-none notranslate" id="cpt-struct"><div class="highlight"><pre><span></span>colormap        % A [ncolors x 3] matrix with colorvalues in [0-1] range
+alpha           % A [ncolors x 1] vector with transparency (alpha) values in [0-1] range (optional)
+range           % A [ncolors x 2] matrix with z_low z_high for each &#39;color&#39; interval
+minmax          % A 2 elements vector with [z_min z_max]
+bnf             % A [3 x 3] matrix with color values in [0-1] range for background, foreground, and NaN-nodes
+depth           % Depth of the CPT (1, 8, 24)
+hinge           % The z-value for split colormaps [NaN means no hinge]
+cpt             %
+model           % Either RGB oy CMYK
+comment         % Remark (Optional)
+</pre></div>
+</div>
+<p>Definition of the <em>CPT structure</em> that holds the color palette.</p>
+<div class="highlight-c notranslate" id="ps-struct"><div class="highlight"><pre><span></span><span class="n">postscript</span>      <span class="o">%</span> <span class="n">A</span> <span class="n">string</span> <span class="n">with</span> <span class="n">all</span> <span class="n">the</span> <span class="n">PostScript</span> <span class="n">code</span> <span class="n">as</span> <span class="n">text</span>
+<span class="n">length</span>          <span class="o">%</span> <span class="n">Number</span> <span class="n">of</span> <span class="n">bytes</span> <span class="n">in</span> <span class="n">the</span> <span class="n">string</span>
+<span class="n">mode</span>            <span class="o">%</span> <span class="mi">1</span> <span class="n">means</span> <span class="n">has</span> <span class="n">header</span> <span class="n">only</span><span class="p">,</span> <span class="mi">2</span> <span class="n">means</span> <span class="n">has</span> <span class="n">trailer</span> <span class="n">only</span><span class="p">,</span> <span class="mi">3</span> <span class="n">means</span> <span class="n">complete</span>
+<span class="n">comment</span>         <span class="o">%</span> <span class="n">Remark</span> <span class="p">(</span><span class="n">Optional</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Definition of the <em>PS structure</em> that holds the PostScript plot.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

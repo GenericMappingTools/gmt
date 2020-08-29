@@ -1,0 +1,349 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>(25) Global distribution of antipodes &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(26) General vertical perspective projection" href="ex26.html" />
+    <link rel="prev" title="(24) Data selection based on geospatial criteria" href="ex24.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+        
+      <li>(25) Global distribution of antipodes</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/gallery/ex25.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="global-distribution-of-antipodes">
+<span id="example-25"></span><h1>(25) Global distribution of antipodes<a class="headerlink" href="#global-distribution-of-antipodes" title="Permalink to this headline">¶</a></h1>
+<p>As promised in Example <a class="reference internal" href="ex23.html#example-23"><span class="std std-ref">(23) All great-circle paths lead to Rome</span></a>, we will study
+antipodes. The antipode of a point at <span class="math notranslate nohighlight">\((\phi, \lambda)\)</span> is the
+point at <span class="math notranslate nohighlight">\((-\phi, \lambda + 180)\)</span>. We seek an answer to the
+question that has plagued so many for so long: Given the distribution of
+land and ocean, how often is the antipode of a point on land also on
+land? And what about marine antipodes? We use <a class="reference internal" href="../grdlandmask.html"><span class="doc">grdlandmask</span></a> and
+<a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a> to map these distributions and
+calculate the area of the Earth (in percent) that goes with each of the
+three possibilities. To make sense of our
+<a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a> equations below, note that we
+first calculate a grid that is +1 when a point and its antipode is on
+land, -1 if both are in the ocean, and 0 elsewhere. We then seek to
+calculate the area distribution of dry antipodes by only pulling out the
+nodes that equal +1. As each point represent an area approximated by
+<span class="math notranslate nohighlight">\(\Delta \phi \times \Delta \lambda\)</span> where the
+<span class="math notranslate nohighlight">\(\Delta \lambda\)</span> term’s actual dimension depends on
+<span class="math notranslate nohighlight">\(\cos (\phi)\)</span>, we need to allow for that shrinkage, normalize our
+sum to that of the whole area of the Earth, and finally convert that
+ratio to percent. Since the <span class="math notranslate nohighlight">\(\Delta \lambda\)</span>, <span class="math notranslate nohighlight">\(\Delta \phi\)</span>
+terms appear twice in these expressions they cancel out, leaving the
+somewhat intractable expressions below where the sum of
+<span class="math notranslate nohighlight">\(\cos (\phi)\)</span> for all <span class="math notranslate nohighlight">\(\phi\)</span> is known to equal <span class="math notranslate nohighlight">\(2N_y / \pi\)</span>:</p>
+<p>In the end we obtain a funny-looking map depicting the antipodal
+distribution as well as displaying in legend form the requested
+percentages. Note that the script is
+set to evaluate a global 30 minute grid for expediency (<em>D = 30</em>),
+hence several smaller land masses that do have terrestrial antipodes do
+not show up. If you want a more accurate map you can set the parameter
+<em>D</em> to a smaller increment (try 5 and wait a few minutes).</p>
+<p>The call to <a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a> includes the
+<code class="docutils literal notranslate"><span class="pre">-Sn</span></code> to suspend interpolation and only return the value of the
+nearest neighbor. This option is particularly practical for plotting
+categorical data, like these, that should not be interpolated.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#		GMT EXAMPLE 25</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Display distribution of antipode types</span>
+<span class="c1"># GMT modules:	set, grdlandmask, grdmath, grd2xyz, math, grdimage, coast, legend</span>
+<span class="c1"># Unix progs:	cat</span>
+<span class="c1">#</span>
+<span class="c1"># Create D minutes global grid with -1 over oceans and +1 over land</span>
+gmt begin ex25
+	<span class="nv">D</span><span class="o">=</span><span class="m">30</span>
+	gmt grdlandmask -Rg -I<span class="si">${</span><span class="nv">D</span><span class="si">}</span>m -Dc -A500 -N-1/1/1/1/1 -r -Gwetdry.nc
+	<span class="c1"># Manipulate so -1 means ocean/ocean antipode, +1 = land/land, and 0 elsewhere</span>
+	gmt grdmath -fg wetdry.nc DUP <span class="m">180</span> ROTX FLIPUD ADD <span class="m">2</span> <span class="nv">DIV</span> <span class="o">=</span> key.nc
+	<span class="c1"># Calculate percentage area of each type of antipode match.</span>
+	gmt grdmath -Rg -I<span class="si">${</span><span class="nv">D</span><span class="si">}</span>m -r Y COSD <span class="m">60</span> <span class="nv">$D</span> DIV <span class="m">360</span> MUL DUP MUL PI DIV DIV <span class="m">100</span> <span class="nv">MUL</span> <span class="o">=</span> scale.nc
+	gmt grdmath key.nc -1 EQ <span class="m">0</span> NAN scale.nc <span class="nv">MUL</span> <span class="o">=</span> tmp.nc
+	gmt grd2xyz tmp.nc -s -ZTLf &gt; key.b
+	<span class="nv">ocean</span><span class="o">=</span><span class="sb">`</span>gmt math -bi1f -Ca -S key.b SUM UPPER <span class="nv">RINT</span> <span class="o">=</span><span class="sb">`</span>
+	gmt grdmath key.nc <span class="m">1</span> EQ <span class="m">0</span> NAN scale.nc <span class="nv">MUL</span> <span class="o">=</span> tmp.nc
+	gmt grd2xyz tmp.nc -s -ZTLf &gt; key.b
+	<span class="nv">land</span><span class="o">=</span><span class="sb">`</span>gmt math -bi1f -Ca -S key.b SUM UPPER <span class="nv">RINT</span> <span class="o">=</span><span class="sb">`</span>
+	gmt grdmath key.nc <span class="m">0</span> EQ <span class="m">0</span> NAN scale.nc <span class="nv">MUL</span> <span class="o">=</span> tmp.nc
+	gmt grd2xyz tmp.nc -s -ZTLf &gt; key.b
+	<span class="nv">mixed</span><span class="o">=</span><span class="sb">`</span>gmt math -bi1f -Ca -S key.b SUM UPPER <span class="nv">RINT</span> <span class="o">=</span><span class="sb">`</span>
+	<span class="c1"># Generate corresponding color table</span>
+	gmt makecpt -Cblue,gray,red -T-1.5/1.5/1 -N
+	<span class="c1"># Create the final plot and overlay coastlines</span>
+	gmt <span class="nb">set</span> FONT_ANNOT_PRIMARY +10p FORMAT_GEO_MAP dddF
+	gmt grdimage key.nc -JKs180/9i -Bx60 -By30 -BWsNE+t<span class="s2">&quot;Antipodal comparisons&quot;</span> -Y1.2i -nn
+	gmt coast -Wthinnest -Dc -A500
+	<span class="c1"># Place an explanatory legend below</span>
+	gmt legend -DJBC+w6i -Y-0.2i -F+pthick <span class="s">&lt;&lt;- END</span>
+<span class="s">	N 3</span>
+<span class="s">	S 0.15i s 0.2i red  0.25p 0.3i Terrestrial Antipodes [$land %]</span>
+<span class="s">	S 0.15i s 0.2i blue 0.25p 0.3i Oceanic Antipodes [$ocean %]</span>
+<span class="s">	S 0.15i s 0.2i gray 0.25p 0.3i Mixed Antipodes [$mixed %]</span>
+<span class="s">	END</span>
+	rm -f *.nc key.*
+gmt end show
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/ex25.png"><img alt="../_images/ex25.png" src="../_images/ex25.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Global distribution of antipodes.</span></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ex26.html" class="btn btn-neutral float-right" title="(26) General vertical perspective projection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ex24.html" class="btn btn-neutral float-left" title="(24) Data selection based on geospatial criteria" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

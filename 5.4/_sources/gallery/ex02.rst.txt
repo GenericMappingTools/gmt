@@ -1,0 +1,53 @@
+.. _example_02:
+
+(2) Image presentations
+-----------------------
+
+As our second example we will demonstrate how to make color images from
+gridded data sets (again, we will defer the actual making of grid files
+to later examples). We will use :doc:`grdraster </grdraster>` to extract 2-D grid files
+of bathymetry and Geosat geoid heights and put the two images on the
+same page. The region of interest is the Hawaiian islands, and due to
+the oblique trend of the island chain we prefer to rotate our
+geographical data sets using an oblique Mercator projection defined by
+the hotspot pole at (68W, 69N). We choose the point (190, 25.5) to be
+the center of our projection (e.g., the local origin), and we want to
+image a rectangular region defined by the longitudes and latitudes of
+the lower left and upper right corner of region. In our case we choose
+(160, 20) and (220, 30) as the corners. We use
+:doc:`grdimage </grdimage>` to make the illustration:
+
+.. literalinclude:: /_verbatim/example_02.txt
+   :language: bash
+
+The first step extracts the 2-D data sets from the local data base using
+:doc:`grdraster </grdraster>` that may be adapted to reflect
+the nature of your data base format. It automatically figures out the
+required extent of the region given the two corners points and the
+projection. The extreme meridians and parallels enclosing the oblique
+region is **-R**\ 159:50/220:10/3:10/47:35. This is the area extracted
+by :doc:`grdraster </grdraster>`. For your convenience
+we have commented out those lines and provided the two extracted files
+so you do not need :doc:`grdraster </grdraster>` to try
+this example. By using the embedded grid file format mechanism we saved
+the topography using kilometers as the data unit. We now have two grid
+files with bathymetry and geoid heights, respectively. We use
+:doc:`makecpt </makecpt>` to generate a linear color
+palette file ``geoid.cpt`` for the geoid and use
+:doc:`grd2cpt </grd2cpt>` to get a histogram-equalized
+CPT ``topo.cpt`` for the topography data. To emphasize the structures in the
+data we calculate the slopes in the north-south direction using
+:doc:`grdgradient </grdgradient>`; these will be used to
+modulate the color image. Next we run
+:doc:`grdimage </grdimage>` to create a color-code image
+of the Geosat geoid heights, and draw a color legend to the right of the
+image with :doc:`psscale </psscale>`. Similarly, we run
+:doc:`grdimage </grdimage>` but specify **-Y**\ 4.5i to
+plot above the previous image. Adding scale and label the two plots a)
+and b) completes the illustration.
+
+.. figure:: /_images/example_02.*
+   :width: 500 px
+   :align: center
+
+   Color images from gridded data.

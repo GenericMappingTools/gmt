@@ -1,0 +1,312 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:35 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>MGD77CONVERT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>MGD77CONVERT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#FILE FORMATS">FILE FORMATS</a><br>
+<a href="#OTHER TOOLS">OTHER TOOLS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">mgd77convert
+&minus; Translate between different formats of MGD77
+files</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77convert</b>
+<i>NGDC-ids</i> <b>&minus;Fa</b>|<b>c</b>|<b>m</b>|<b>t
+&minus;T</b>[<b>+</b>]<b>a</b>|<b>b</b>|<b>m</b>|<b>t</b> [
+<b>&minus;L</b>[<b>w</b>][<b>e</b>][<b>+</b>] ] [
+<b>&minus;V</b> ] [ <b>&minus;4</b> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77convert</b>
+reads versions of MGD77 files and writes the same data in
+(probably) another format to a new file in the current
+directory. Both pre- and post-Y2K MGD77 formats can be
+processed. <i><br>
+NGDC-ids</i></p>
+
+<p style="margin-left:22%;">Can be one or more of five
+kinds of specifiers: <br>
+1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.
+<br>
+2) 2-character &lt;agency&gt; codes which will return all
+cruises from each agency. <br>
+3) 4-character &lt;agency&gt;&lt;vessel&gt; codes, which
+will return all cruises from those vessels. <br>
+4) =&lt;list&gt;, where &lt;list&gt; is a table with NGDC
+IDs, one per line. <br>
+5) If nothing is specified we return all cruises in the data
+base. <br>
+(See mgd77info <b>&minus;L</b> for agency and vessel codes).
+File extensions, if missing, will automatically be appended
+by searching for files in the following order: MGD77+
+(&quot;.nc&quot;), MGD77T (&quot;.m77t&quot;), MGD77
+(&quot;.mgd77&quot;), plain table (&quot;.dat&quot;). Use
+<b>&minus;I</b> to ignore one or more of these file types).
+Cruise files will be looked for first in the current
+directory and second in all directories listed in
+<b>$MGD77_HOME</b>/mgd77_paths.txt [If <b>$MGD77_HOME</b> is
+not set it will default to <b>$GMT_SHAREDIR</b>/mgd77].</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies the
+format of the input (From) files. Choose from <b>a</b> for
+standard MGD77 ASCII table (with extension .mgd77), <b>c</b>
+for the new MGD77+ netCDF format (with extension .nc),
+revised MGD77T (tab-delimited; with extension .m77t) and
+<b>t</b> for a plain ASCII tab-separated table dump (with
+extension .dat). Use <b>&minus;FC</b> to recover the
+original MGD77 setting from the MGD77+ file [Default will
+apply any E77 corrections encoded in the file].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies the
+format of the output (To) files. Choose from <b>a</b> for
+standard MGD77 ASCII table (with extension .mgd77), <b>c</b>
+for the new MGD77+ netCDF format (with extension .nc),
+revised MGD77T (tab-delimited; with extension .m77t) and
+<b>t</b> for a plain ASCII tab-separated table dump (with
+extension .dat). We will refuse to create the file(s) if
+they already exist in the current directory. Prepend
+<b>+</b> to override this policy.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set the level of
+verification reporting [none] and where to send such reports
+[stderr]. Append a combination of <b>w</b> for warnings,
+<b>e</b> for errors, and <b>+</b> to send such log
+information to stdout.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;4</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">By default, the
+storage types used in a MGD77+ netCDF file greatly exceed
+the precision imposed by the ASCII MGD77 format. However,
+for the five items <b>faa</b>, <b>eot</b>, <b>mag</b>,
+<b>diur</b> and <b>msd</b> we use 2-byte integers with
+implied precisions of 0.1 mGal, 0.1 nTesla, and 1 m as in
+the MGD77 format. It is possible that at some point these
+items will need to be stored as 4-byte ints which would
+allow precisions of 1 fTesla, 1 nGal, and 0.01 mm,
+respectively. This option activates such storage [Default
+uses 2-byte integers].</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To convert
+01010047.mgd77 and 01010008.mgd77 to new netCDF .nc files,
+and capture all verification messages, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77convert</b>
+01010047 01010008 <b>&minus;Fa &minus;Tc &minus;V
+&minus;Lew+</b> &gt; log.lis</p>
+
+<p style="margin-left:11%; margin-top: 1em">To convert
+01010047.nc back to MGD77 ASCII and make sure it is
+identical to the original file, try (Bourne shell
+syntax)</p>
+
+
+<p style="margin-left:11%; margin-top: 1em">orig=&lsquo;<b><A HREF="mgd77path.html">mgd77path</A></b>
+01010047 <b>&minus;Ic</b>&lsquo; <b><br>
+mgd77convert</b> 01010047 <b>&minus;Fc &minus;Ta
+&minus;V</b> <br>
+diff $orig 01010047.mgd77</p>
+
+<p style="margin-left:11%; margin-top: 1em">To convert
+01010047.nc to a plain ASCII table for manual editing,
+overwriting any existing table, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77convert</b>
+01010047 <b>&minus;Fc &minus;T+t &minus;V</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">To recover the
+original NGDC MGD77 version of 01020051.nc and ignore any
+E77 corrections, use <b><br>
+mgd77convert</b> 01020051 <b>&minus;FC &minus;Ta
+&minus;V</b></p>
+
+<a name="FILE FORMATS"></a>
+<h2>FILE FORMATS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77convert</b>
+handles four different formats: (1) NGDC has now started to
+use a new tab-delimited version of the MGD77 data format,
+called MGD77T. In addition to all the info in old MGD77
+files it contains a few more quality flags for grav, mag,
+and bathymetry. (2) The MGD77+ netCDF format was developed
+to facilitate the use of MGD77 data by scientists. It
+contains all the information of the original MGD77 file and
+if you convert back and forth you end up with the original.
+However, file sizes are typically ~30% of the original ASCII
+format and is much faster to operate on. (3) The MGD77 ASCII
+tables are the traditional standard for distribution of
+underway geophysical data to and from the NGDC data center,
+but now superceeded by MGD77T. Normally, only the
+ship-operations people and the cruise PI might be involved
+in <i>making</i> an MGD77 ASCII file for transmission to
+NGDC; users are more interested in <i>reading</i> such
+files. (4) The plain ASCII tab-separated dump is available
+for users who need to manually edit the content of a MGD77
+file. This is usually easier to do when the columns are
+tab-separated than when they are all crunched together in
+the MGD77 punch-card format. It differs from format MGD77T
+in that missing items are written as NaNs.</p>
+
+<a name="OTHER TOOLS"></a>
+<h2>OTHER TOOLS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The MGD77+
+netCDF files are CF-1.0 and COARDS compliant and can be
+examined with general-purpose tools such as ncBrowse and
+ncView.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="mgd77manage.html">mgd77manage</A></i>(1),
+<i><A HREF="mgd77list.html">mgd77list</A></i>(1), <i>mgd77sample</i>(1),
+<i><A HREF="mgd77track.html">mgd77track</A></i>(1) <i><A HREF="x2sys_init.html">x2sys_init</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P., and
+W. H. F. Smith, 2018, The Generic Mapping Tools (GMT)
+version 4.5.18 Technical Reference &amp; Cookbook,
+SOEST/NOAA. <br>
+Wessel, P., and W. H. F. Smith, 1998, New, Improved Version
+of Generic Mapping Tools Released, EOS Trans., AGU, 79 (47),
+p. 579. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released, EOS Trans., AGU, 76 (33), p.
+329. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released,
+http://www.agu.org/eos_elec/95154e.html, Copyright 1995 by
+the American Geophysical Union. <br>
+Wessel, P., and W. H. F. Smith, 1991, Free Software Helps
+Map and Display Data, EOS Trans., AGU, 72 (41), p. 441. <br>
+ncBrowse, see <i>http://www.epic.noaa.gov/java/ncBrowse/</i>
+<br>
+ncView, see
+<i>http://meteora.ucsd.edu/~pierce/ncview_home_page.html</i>
+<br>
+The Marine Geophysical Data Exchange Format -
+&quot;MGD77&quot;, see
+<i>http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt</i></p>
+<hr>
+</body>
+</html>

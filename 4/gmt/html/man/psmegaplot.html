@@ -1,0 +1,139 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:40 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>PSMEGAPLOT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>PSMEGAPLOT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">psmegaplot
+&minus; To create poster-size <i>PostScript</i> plots from
+page-size plot</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>psmegaplot</b>
+<i>plotfile</i> <b>&minus;S</b><i>scale</i> [
+<b>&minus;C</b> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>psmegaplot</b>
+reads a <b><A HREF="GMT.html">GMT</A></b>-produced <i>PostScript</i> file and
+&rsquo;blows it up&rsquo; by an arbitrary scale. The result
+is several plots that make up the pieces in a jigsaw puzzle.
+Cut and paste these pieces to make a &rsquo;megaplot&rsquo;.
+<i><br>
+plotfile</i></p>
+
+<p style="margin-left:22%;"><i>PostScript</i> file as
+created by the <b><A HREF="GMT.html">GMT</A></b> programs.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiply the x- and
+y-dimension by <i>scale</i>. <i>scale</i> must be larger
+than 1.0.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Plot crop marks in
+each corner of every output page. [Default is no marks]</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To magnify a
+contour-map PostScript file 3 times, giving a total of 9
+output pages to be pasted together, use</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>psmegaplot</b>
+hawaii_contour.ps <b>&minus;S</b> 3 <b>&minus;C</b> &gt;
+hawaii_contour_megaplot.ps</p>
+
+<a name="BUGS"></a>
+<h2>BUGS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">This program is
+unlikely to work on non-<b><A HREF="GMT.html">GMT</A></b>-produced
+<i>PostScript</i> files since it anticipates the structure
+of the file. It also assumes that the output media is Letter
+size.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1)</p>
+<hr>
+</body>
+</html>

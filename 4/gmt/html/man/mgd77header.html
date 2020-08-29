@@ -1,0 +1,258 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:35 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>MGD77HEADER</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>MGD77HEADER</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#Header Item Sample File:">Header Item Sample File:</a><br>
+<a href="#Names of All MGD77 Header Fields">Names of All MGD77 Header Fields</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">mgd77header
+&minus; Generate MGD77 header from data records</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77header</b>
+<i>NGDC-id.a77</i> [ <b>&minus;Hheadervalues.txt</b> ] [
+<b>&minus;Mf</b>|<b>r</b>|<b>t</b> ] [ <b>&minus;V</b> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77header</b>
+generates an MGD77 header by reading A77 data (i.e., the
+data record portion of MGD77 files), determines temporal and
+spatial extents, ten degree boxes crossed, and data columns
+present. Optionally, it can also read an input file
+consisting of header field values (<b>&minus;H</b>) to be
+included in program output. Header field values determined
+from data and read from input are output in either MGD77
+format (f) or as a list (r) (<b>&minus;M</b>).</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Obtain header field
+values from an input text file. Each row of the input file
+should consist of a header field name and its desired value,
+separated by a space. See below for a sample header file and
+for the full list of header field names.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Choose between
+MGD77 formatted header output <b>f</b>, M77T formatted
+header output <b>t</b> or list <b>r</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+</table>
+
+<a name="Header Item Sample File:"></a>
+<h2>Header Item Sample File:</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Format_Acronym
+MGD77 <br>
+Source_Institution SOEST - UNIV. OF HAWAII <br>
+Country USA <br>
+Platform_Name KILO MOANA <br>
+Platform_Type_Code 1 <br>
+Platform_Type SHIP</p>
+
+<a name="Names of All MGD77 Header Fields"></a>
+<h2>Names of All MGD77 Header Fields</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em">Survey_Identifier
+<br>
+Format_Acronym <br>
+Data_Center_File_Number <br>
+Parameters_Surveyed_Code <br>
+File_Creation_Year <br>
+File_Creation_Month <br>
+File_Creation_Day <br>
+Source_Institution <br>
+Country <br>
+Platform_Name <br>
+Platform_Type_Code <br>
+Platform_Type <br>
+Chief_Scientist <br>
+Project_Cruise_Leg <br>
+Funding <br>
+Survey_Departure_Year <br>
+Survey_Departure_Month <br>
+Survey_Departure_Day <br>
+Port_of_Departure <br>
+Survey_Arrival_Year <br>
+Survey_Arrival_Month <br>
+Survey_Arrival_Day <br>
+Port_of_Arrival <br>
+Navigation_Instrumentation <br>
+Geodetic_Datum_Position_Determination_Method <br>
+Bathymetry_Instrumentation <br>
+Bathymetry_Add_Forms_of_Data <br>
+Magnetics_Instrumentation <br>
+Magnetics_Add_Forms_of_Data <br>
+Gravity_Instrumentation <br>
+Gravity_Add_Forms_of_Data <br>
+Seismic_Instrumentation <br>
+Seismic_Data_Formats <br>
+Format_Type <br>
+Format_Description <br>
+Topmost_Latitude <br>
+Bottommost_Latitude <br>
+Leftmost_Longitude <br>
+Rightmost_Longitude <br>
+Bathymetry_Digitizing_Rate <br>
+Bathymetry_Sampling_Rate <br>
+Bathymetry_Assumed_Sound_Velocity <br>
+Bathymetry_Datum_Code <br>
+Bathymetry_Interpolation_Scheme <br>
+Magnetics_Digitizing_Rate <br>
+Magnetics_Sampling_Rate <br>
+Magnetics_Sensor_Tow_Distance <br>
+Magnetics_Sensor_Depth <br>
+Magnetics_Sensor_Separation <br>
+Magnetics_Ref_Field_Code <br>
+Magnetics_Ref_Field <br>
+Magnetics_Method_Applying_Res_Field <br>
+Gravity_Digitizing_Rate <br>
+Gravity_Sampling_Rate <br>
+Gravity_Theoretical_Formula_Code <br>
+Gravity_Theoretical_Formula <br>
+Gravity_Reference_System_Code <br>
+Gravity_Reference_System <br>
+Gravity_Corrections_Applied <br>
+Gravity_Departure_Base_Station <br>
+Gravity_Departure_Base_Station_Name <br>
+Gravity_Arrival_Base_Station <br>
+Gravity_Arrival_Base_Station_Name <br>
+Number_of_Ten_Degree_Identifiers <br>
+Ten_Degree_Identifier <br>
+Additional_Documentation_1 <br>
+Additional_Documentation_2 <br>
+Additional_Documentation_3 <br>
+Additional_Documentation_4 <br>
+Additional_Documentation_5 <br>
+Additional_Documentation_6 <br>
+Additional_Documentation_7</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To generate an
+MGD77 header from A77 input, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>mgd77header</b>
+km0201 <b>&minus;H</b> kmheaderitems.txt -Mf &gt;
+km0201.h77</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="mgd77list.html">mgd77list</A></i>(1),
+<i><A HREF="mgd77manage.html">mgd77manage</A></i>(1), <i><A HREF="mgd77path.html">mgd77path</A></i>(1),
+<i><A HREF="mgd77track.html">mgd77track</A></i>(1) <i><A HREF="x2sys_init.html">x2sys_init</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P., and
+W. H. F. Smith, 2018, The Generic Mapping Tools (GMT)
+version 4.5.18 Technical Reference &amp; Cookbook,
+SOEST/NOAA. <br>
+Wessel, P., and W. H. F. Smith, 1998, New, Improved Version
+of Generic Mapping Tools Released, EOS Trans., AGU, 79 (47),
+p. 579. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released, EOS Trans., AGU, 76 (33), p.
+329. <br>
+Wessel, P., and W. H. F. Smith, 1995, New Version of the
+Generic Mapping Tools Released,
+http://www.agu.org/eos_elec/95154e.html, Copyright 1995 by
+the American Geophysical Union. <br>
+Wessel, P., and W. H. F. Smith, 1991, Free Software Helps
+Map and Display Data, EOS Trans., AGU, 72 (41), p. 441. <br>
+The Marine Geophysical Data Exchange Format -
+&quot;MGD77&quot;, see
+<i>http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt</i></p>
+<hr>
+</body>
+</html>

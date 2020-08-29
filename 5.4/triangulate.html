@@ -1,0 +1,447 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>triangulate &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="xyz2grd" href="xyz2grd.html" />
+    <link rel="prev" title="trend2d" href="trend2d.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="xyz2grd.html" title="xyz2grd"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="trend2d.html" title="trend2d"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="triangulate">
+<span id="index-0"></span><h1>triangulate<a class="headerlink" href="#triangulate" title="Permalink to this headline">¶</a></h1>
+<p>triangulate - Optimal (Delaunay) triangulation and gridding of Cartesian table data</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>triangulate</strong> [ <em>table</em> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>slpfile</em> ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><strong>x</strong>|<strong>y</strong> ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>empty</em> ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>grdfile</em> ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>increment</em> ]
+[ <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em> ]
+[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong> ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong>[<strong>n</strong>] ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong> ]
+[ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-r</strong> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>triangulate</strong> reads one or more ASCII [or binary] files (or standard
+input) containing x,y[,z] and performs Delaunay triangulation, i.e., it
+find how the points should be connected to give the most equilateral
+triangulation possible. If a map projection (give <strong>-R</strong> and <strong>-J</strong>) is
+chosen then it is applied before the triangulation is calculated. By
+default, the output is triplets of point id numbers that make up each
+triangle and is written to standard output. The id numbers refer to the
+points position (line number, starting at 0 for the first line) in the
+input file. As an option, you may choose to create a multiple segment
+file that can be piped through <a class="reference internal" href="psxy.html"><span class="doc">psxy</span></a> to draw the triangulation
+network. If <strong>-G</strong> <strong>-I</strong> are set a grid will be calculated based on the
+surface defined by the planar triangles. The actual algorithm used in
+the triangulations is either that of Watson [1982] [Default] or Shewchuk
+[1996] (if installed; type <strong>triangulate -</strong> to see which method is
+selected). This choice is made during the GMT installation.  Furthermore,
+if the Shewchuk algorithm is installed then you can also perform the
+calculation of Voronoi polygons and optionally grid your data via the
+natural nearest neighbor algorithm.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<p>None.</p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>slpfile</em></dt>
+<dd><dl class="first last docutils">
+<dt>Read a slope grid (in radians) and compute the propagated uncertainty in the</dt>
+<dd>bathymetry using the CURVE algorithm [Zambo et al, 20xx].  Requires the <strong>-G</strong>
+option to specify the output grid.  Note that the <em>slpgrid</em> sets the domain
+for the output grid so <strong>-R</strong>, <strong>-I</strong>, [<strong>-r</strong>] are not required.
+Cannot be used in conjunction with <strong>-D</strong>, <strong>-F</strong>, <strong>-M</strong>, <strong>-N</strong>, <strong>-Q</strong>,
+<strong>-S</strong> and <strong>-T</strong>.</dd>
+</dl>
+</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-Dx</strong>|<strong>y</strong></dt>
+<dd>Take either the <em>x</em>- or <em>y</em>-derivatives of surface represented by
+the planar facets (only used when <strong>-G</strong> is set).</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong><em>empty</em></dt>
+<dd>Set the value assigned to empty nodes when <strong>-G</strong> is set [NaN].</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>grdfile</em></dt>
+<dd>Use triangulation to grid the data onto an even grid (specified with
+<strong>-R</strong> <strong>-I</strong>). Append the name of the output grid file. The
+interpolation is performed in the original coordinates, so if your
+triangles are close to the poles you are better off projecting all
+data to a local coordinate system before using <strong>triangulate</strong> (this
+is true of all gridding routines) or instead select <strong>sphtriangulate</strong>.
+For natural nearest neighbor gridding you must add <strong>-Qn</strong>.</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<em>unit</em>][<strong>+e</strong>|<strong>n</strong>]]</dt>
+<dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
+append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>: Append
+<strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc seconds. If one
+of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or <strong>u</strong> is appended
+instead, the increment is assumed to be given in meter, foot, km, Mile,
+nautical mile or US survey foot, respectively, and will be converted to
+the equivalent degrees longitude at the middle latitude of the region
+(the conversion depends on <a class="reference internal" href="gmt.conf.html#projection-parameters"><span class="std std-ref">PROJ_ELLIPSOID</span></a>). If <em>y_inc</em> is given
+but set to 0 it will be reset equal to <em>x_inc</em>; otherwise it will be
+converted to degrees latitude. <strong>All coordinates</strong>: If <strong>+e</strong> is appended
+then the corresponding max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly
+adjusted to fit exactly the given increment [by default the increment
+may be adjusted slightly to fit the given domain]. Finally, instead of
+giving an increment you may specify the <em>number of nodes</em> desired by
+appending <strong>+n</strong> to the supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The resulting
+increment value depends on whether you have selected a
+gridline-registered or pixel-registered grid; see <a class="reference internal" href="GMT_Docs.html#app-file-formats"><span class="std std-ref">GMT File Formats</span></a> for
+details. Note: if <strong>-R</strong><em>grdfile</em> is used then the grid spacing has
+already been initialized; use <strong>-I</strong> to override the values.</dd>
+</dl>
+<dl class="docutils" id="j">
+<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select map projection.  </dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-M</strong></dt>
+<dd>Output triangulation network as multiple line segments separated by
+a segment header record.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong></dt>
+<dd>Used in conjunction with <strong>-G</strong> to also write the triplets of the
+ids of all the Delaunay vertices [Default only writes the grid].</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong>[<strong>n</strong>]</dt>
+<dd>Output the edges of the Voronoi cells instead [Default is Delaunay
+triangle edges]. Requires <strong>-R</strong> and is only available if linked
+with the Shewchuk [1996] library. Note that <strong>-Z</strong> is ignored on
+output. Optionally, append <strong>n</strong> for combining the edges into
+closed Voronoi polygons.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest.  </dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong></dt>
+<dd>Output triangles as polygon segments separated by a segment header
+record. Requires Delaunay triangulation.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong></dt>
+<dd>Output edges or polygons even if gridding has been selected with
+the <strong>-G</strong> option [Default will not output the triangulation or
+Voronoi polygons is gridding is selected].</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="z">
+<dt><strong>-Z</strong></dt>
+<dd>Controls whether we read (x,y) or (x,y,z) data and if z should be
+output when <strong>-M</strong> or <strong>-S</strong> are used [Read (x,y) only].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input. [Default is 2 input columns].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output. [Default is same as input].  Node ids are stored as double triplets.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em> <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-r</strong> <a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set pixel node registration [gridline]. (Only valid with <strong>-G</strong>).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="ascii-format-precision">
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-geo-out"><span class="std std-ref">FORMAT_GEO_OUT</span></a>, absolute time is
+under the control of <a class="reference internal" href="gmt.conf.html#format-date-out"><span class="std std-ref">FORMAT_DATE_OUT</span></a> and
+<a class="reference internal" href="gmt.conf.html#format-clock-out"><span class="std std-ref">FORMAT_CLOCK_OUT</span></a>, whereas general floating point values are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a>. Be aware that the format in effect
+can lead to loss of precision in ASCII output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a> setting.</p>
+</div>
+<div class="section" id="grid-values-precision">
+<h2>Grid Values Precision<a class="headerlink" href="#grid-values-precision" title="Permalink to this headline">¶</a></h2>
+<p>Regardless of the precision of the input data, GMT programs that create
+grid files will internally hold the grids in 4-byte floating point
+arrays. This is done to conserve memory and furthermore most if not all
+real data can be stored using 4-byte floating point values. Data with
+higher precision (i.e., double precision values) will lose that
+precision once GMT operates on the grid or writes out new grids. To
+limit loss of precision when processing data you should always consider
+normalizing the data prior to processing.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To triangulate the points in the file samples.xyz, store the triangle
+information in a binary file, and make a grid for the given area and spacing, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">triangulate</span> <span class="n">samples</span><span class="o">.</span><span class="n">xyz</span> <span class="o">-</span><span class="n">bo</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mi">30</span><span class="o">/</span><span class="mi">0</span><span class="o">/</span><span class="mi">30</span> <span class="o">-</span><span class="n">I2</span> <span class="o">-</span><span class="n">Gsurf</span><span class="o">.</span><span class="n">nc</span> <span class="o">&gt;</span> <span class="n">samples</span><span class="o">.</span><span class="n">ijk</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To draw the optimal Delaunay triangulation network based on the same
+file using a 15-cm-wide Mercator map, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">triangulate</span> <span class="n">samples</span><span class="o">.</span><span class="n">xyz</span> <span class="o">-</span><span class="n">M</span> <span class="o">-</span><span class="n">R</span><span class="o">-</span><span class="mi">100</span><span class="o">/-</span><span class="mi">90</span><span class="o">/</span><span class="mi">30</span><span class="o">/</span><span class="mi">34</span> <span class="o">-</span><span class="n">JM15c</span> <span class="o">|</span> <span class="n">gmt</span> <span class="n">psxy</span> \
+    <span class="o">-</span><span class="n">R</span><span class="o">-</span><span class="mi">100</span><span class="o">/-</span><span class="mi">90</span><span class="o">/</span><span class="mi">30</span><span class="o">/</span><span class="mi">34</span> <span class="o">-</span><span class="n">JM15c</span> <span class="o">-</span><span class="n">W0</span><span class="o">.</span><span class="mi">5</span><span class="n">p</span> <span class="o">-</span><span class="n">B1</span> <span class="o">&gt;</span> <span class="n">network</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To instead plot the Voronoi cell outlines, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">triangulate</span> <span class="n">samples</span><span class="o">.</span><span class="n">xyz</span> <span class="o">-</span><span class="n">M</span> <span class="o">-</span><span class="n">Q</span> <span class="o">-</span><span class="n">R</span><span class="o">-</span><span class="mi">100</span><span class="o">/-</span><span class="mi">90</span><span class="o">/</span><span class="mi">30</span><span class="o">/</span><span class="mi">34</span> <span class="o">-</span><span class="n">JM15c</span> <span class="o">|</span> \
+    <span class="n">gmt</span> <span class="n">psxy</span> <span class="o">-</span><span class="n">R</span><span class="o">-</span><span class="mi">100</span><span class="o">/-</span><span class="mi">90</span><span class="o">/</span><span class="mi">30</span><span class="o">/</span><span class="mi">34</span> <span class="o">-</span><span class="n">JM15c</span> <span class="o">-</span><span class="n">W0</span><span class="o">.</span><span class="mi">5</span><span class="n">p</span> <span class="o">-</span><span class="n">B1</span> <span class="o">&gt;</span> <span class="n">cells</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To combine the Voronoi outlines into polygons and paint them
+according to their ID, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">triangulate</span> <span class="n">samples</span><span class="o">.</span><span class="n">xyz</span> <span class="o">-</span><span class="n">M</span> <span class="o">-</span><span class="n">Qn</span> <span class="o">-</span><span class="n">R</span><span class="o">-</span><span class="mi">100</span><span class="o">/-</span><span class="mi">90</span><span class="o">/</span><span class="mi">30</span><span class="o">/</span><span class="mi">34</span> <span class="o">-</span><span class="n">JM15c</span> <span class="o">|</span> \
+    <span class="n">gmt</span> <span class="n">psxy</span> <span class="o">-</span><span class="n">R</span><span class="o">-</span><span class="mi">100</span><span class="o">/-</span><span class="mi">90</span><span class="o">/</span><span class="mi">30</span><span class="o">/</span><span class="mi">34</span> <span class="o">-</span><span class="n">JM15c</span> <span class="o">-</span><span class="n">W0</span><span class="o">.</span><span class="mi">5</span><span class="n">p</span><span class="o">+</span><span class="n">cf</span> <span class="o">-</span><span class="n">L</span> <span class="o">-</span><span class="n">B1</span> <span class="o">-</span><span class="n">Ccolors</span><span class="o">.</span><span class="n">cpt</span> <span class="o">-</span><span class="n">L</span> <span class="o">&gt;</span> <span class="n">polygons</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To grid the data using the natural nearest neighbor algorithm, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">triangulate</span> <span class="n">samples</span><span class="o">.</span><span class="n">xyz</span> <span class="o">-</span><span class="n">Gnnn</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Qn</span> <span class="o">-</span><span class="n">R</span><span class="o">-</span><span class="mi">100</span><span class="o">/-</span><span class="mi">90</span><span class="o">/</span><span class="mi">30</span><span class="o">/</span><span class="mi">34</span> <span class="o">-</span><span class="n">I0</span><span class="o">.</span><span class="mi">5</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>The uncertainty propagation for bathymetric grids requires both horizontal
+and vertical uncertainties and these are weighted given the local slope.
+See the references for more details.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a>,
+<a class="reference internal" href="nearneighbor.html"><span class="doc">nearneighbor</span></a>,
+<a class="reference internal" href="pscontour.html"><span class="doc">pscontour</span></a>,
+<a class="reference internal" href="sphdistance.html"><span class="doc">sphdistance</span></a>,
+<a class="reference internal" href="sphinterpolate.html"><span class="doc">sphinterpolate</span></a>,
+<a class="reference internal" href="sphtriangulate.html"><span class="doc">sphtriangulate</span></a>,
+<a class="reference internal" href="surface.html"><span class="doc">surface</span></a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Watson, D. F., 1982, Acord: Automatic contouring of raw data, <em>Comp. &amp;
+Geosci.</em>, <strong>8</strong>, 97-101.</p>
+<p>Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
+and Delaunay Triangulator, First Workshop on Applied Computational
+Geometry (Philadelphia, PA), 124-133, ACM, May 1996.</p>
+<p><a class="reference external" href="http://www.cs.cmu.edu/~quake/triangle.html">Shewchuk’s Homepage</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">triangulate</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#ascii-format-precision">ASCII Format Precision</a></li>
+<li><a class="reference internal" href="#grid-values-precision">Grid Values Precision</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="trend2d.html"
+                        title="previous chapter">trend2d</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="xyz2grd.html"
+                        title="next chapter">xyz2grd</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/triangulate.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="xyz2grd.html" title="xyz2grd"
+             >next</a> </li>
+        <li class="right" >
+          <a href="trend2d.html" title="trend2d"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

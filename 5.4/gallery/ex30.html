@@ -1,0 +1,213 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(30) Trigonometric functions plotted in graph mode &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(31) Using non-default fonts in PostScript" href="ex31.html" />
+    <link rel="prev" title="(29) Gridding spherical surface data using splines" href="ex29.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex31.html" title="(31) Using non-default fonts in PostScript"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex29.html" title="(29) Gridding spherical surface data using splines"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="trigonometric-functions-plotted-in-graph-mode">
+<span id="example-30"></span><h1>(30) Trigonometric functions plotted in graph mode<a class="headerlink" href="#trigonometric-functions-plotted-in-graph-mode" title="Permalink to this headline">¶</a></h1>
+<p>Finally, we end with a simple mathematical illustration of sine and
+cosine, highlighting the <em>graph</em> mode for linear projections and the new
+curved vectors for angles.</p>
+<p>The script simply draws a graph basemap, computes sine and cosine and
+plots them as lines, then indicates on a circle that these quantities
+are simply the projections of an unit vector on the x- and y-axis, at
+the given angle.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 30</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Show graph mode and math angles</span>
+<span class="c1"># GMT modules:	gmtmath, psbasemap, pstext and psxy</span>
+<span class="c1"># Unix progs:	echo, rm</span>
+<span class="c1">#</span>
+<span class="c1"># Draw generic x-y axes with arrows</span>
+<span class="nv">ps</span><span class="o">=</span>example_30.ps
+
+gmt psbasemap -R0/360/-1.25/1.75 -JX8i/6i -Bx90f30+u<span class="s2">&quot;\\312&quot;</span> -By1g10 -BWS+t<span class="s2">&quot;Two Trigonometric Functions&quot;</span> <span class="se">\</span>
+	-K --MAP_FRAME_TYPE<span class="o">=</span>graph --MAP_VECTOR_SHAPE<span class="o">=</span><span class="m">0</span>.5 &gt; <span class="nv">$ps</span>
+
+<span class="c1"># Draw sine an cosine curves</span>
+
+gmt math -T0/360/0.1 T <span class="nv">COSD</span> <span class="o">=</span> <span class="p">|</span> gmt psxy -R -J -O -K -W3p &gt;&gt; <span class="nv">$ps</span>
+gmt math -T0/360/0.1 T <span class="nv">SIND</span> <span class="o">=</span> <span class="p">|</span> gmt psxy -R -J -O -K -W3p,0_6:0 --PS_LINE_CAP<span class="o">=</span>round &gt;&gt; <span class="nv">$ps</span>
+
+<span class="c1"># Indicate the x-angle = 120 degrees</span>
+gmt psxy -R -J -O -K -W0.5p,- <span class="s">&lt;&lt; EOF &gt;&gt; $ps</span>
+<span class="s">120	-1.25</span>
+<span class="s">120	1.25</span>
+<span class="s">EOF</span>
+
+gmt pstext -R -J -O -K -Dj0.2c -N -F+f+j <span class="s">&lt;&lt; EOF &gt;&gt; $ps</span>
+<span class="s">360 1 18p,Times-Roman RB x = cos(@%12%a@%%)</span>
+<span class="s">360 0 18p,Times-Roman RB y = sin(@%12%a@%%)</span>
+<span class="s">120 -1.25 14p,Times-Roman LB 120\\312</span>
+<span class="s">370 -1.35 24p,Symbol LT a</span>
+<span class="s">-5 1.85 24p,Times-Roman RT x,y</span>
+<span class="s">EOF</span>
+
+<span class="c1"># Draw a circle and indicate the 0-70 degree angle</span>
+
+<span class="nb">echo</span> <span class="m">0</span> <span class="m">0</span> <span class="p">|</span> gmt psxy -R-1/1/-1/1 -Jx1.5i -O -K -X3.625i -Y2.75i -Sc2i -W1p -N &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K -W1p <span class="s">&lt;&lt; EOF &gt;&gt; $ps</span>
+<span class="s">&gt; x-gridline  -Wdefault</span>
+<span class="s">-1	0</span>
+<span class="s">1	0</span>
+<span class="s">&gt; y-gridline  -Wdefault</span>
+<span class="s">0	-1</span>
+<span class="s">0	1</span>
+<span class="s">&gt; angle = 0</span>
+<span class="s">0	0</span>
+<span class="s">1	0</span>
+<span class="s">&gt; angle = 120</span>
+<span class="s">0	0</span>
+<span class="s">-0.5	0.866025</span>
+<span class="s">&gt; x-gmt projection -W2p</span>
+<span class="s">-0.3333	0</span>
+<span class="s">0	0</span>
+<span class="s">&gt; y-gmt projection -W2p</span>
+<span class="s">-0.3333	0.57735</span>
+<span class="s">-0.3333	0</span>
+<span class="s">EOF</span>
+
+gmt pstext -R -J -O -K -Dj0.05i -F+f+a+j <span class="s">&lt;&lt; EOF &gt;&gt; $ps</span>
+<span class="s">-0.16666 0 12p,Times-Roman 0 CT x</span>
+<span class="s">-0.3333 0.2888675 12p,Times-Roman 0 RM y</span>
+<span class="s">0.22 0.27 12p,Symbol -30 CB a</span>
+<span class="s">-0.33333 0.6 12p,Times-Roman 30 LB 120\\312</span>
+<span class="s">EOF</span>
+
+<span class="nb">echo</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span>.5i <span class="m">0</span> <span class="m">120</span> <span class="p">|</span> gmt psxy -R -J -O -Sm0.15i+e -W1p -Gblack &gt;&gt; <span class="nv">$ps</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_30.png"><img alt="../_images/example_30.png" src="../_images/example_30.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Trigonometric functions plotted in graph mode.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex29.html"
+                        title="previous chapter">(29) Gridding spherical surface data using splines</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex31.html"
+                        title="next chapter">(31) Using non-default fonts in PostScript</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex30.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex31.html" title="(31) Using non-default fonts in PostScript"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex29.html" title="(29) Gridding spherical surface data using splines"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

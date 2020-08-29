@@ -1,0 +1,272 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>grdtrend &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="grdvector" href="grdvector.html" />
+    <link rel="prev" title="grdtrack" href="grdtrack.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="grdvector.html" title="grdvector"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="grdtrack.html" title="grdtrack"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="grdtrend">
+<span id="index-0"></span><h1>grdtrend<a class="headerlink" href="#grdtrend" title="Permalink to this headline">¶</a></h1>
+<p>grdtrend - Fit trend surface to grids and compute residuals</p>
+<div class="section" id="synopsis">
+<h2><cite>Synopsis</cite><a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdtrend</strong> <em>grdfile</em> <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>n_model</em>[<strong>+r</strong>]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>diff.nc</em> ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>trend.nc</em> ] [ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong><em>weight.nc</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>grdtrend</strong> reads a 2-D grid file and fits a low-order polynomial trend
+to these data by [optionally weighted] least-squares. The trend surface
+is defined by:</p>
+<blockquote>
+<div>m1 + m2*x + m3*y + m4*x*y + m5*x*x + m6*y*y + m7*x*x*x +
+m8*x*x*y + m9*x*y*y + m10*y*y*y.</div></blockquote>
+<p>The user must specify <strong>-N</strong><em>n_model</em>, the number of model parameters
+to use; thus, <strong>-N</strong><em>3</em> fits a bilinear trend, <strong>-N</strong><em>6</em> a quadratic
+surface, and so on. Optionally, append <strong>+r</strong> to the <strong>-N</strong> option to
+perform a robust fit. In this case, the program will iteratively
+reweight the data based on a robust scale estimate, in order to converge
+to a solution insensitive to outliers. This may be handy when separating
+a “regional” field from a “residual” which should have non-zero mean,
+such as a local mountain on a regional surface.</p>
+<p>If data file has values set to NaN, these will be ignored during
+fitting; if output files are written, these will also have NaN in the
+same locations.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>grdfile</em></dt>
+<dd>The name of a 2-D binary grid file.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong><em>n_model</em>[<strong>+r</strong>]</dt>
+<dd><em>n_model</em> sets the number of model parameters to fit.
+Append <strong>+r</strong> for robust fit.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>-D</strong><em>diff.nc</em></dt>
+<dd>Write the difference (input data - trend) to the file <em>diff.nc</em>.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest. Using the <strong>-R</strong> option
+will select a subsection of the input grid. If this subsection
+exceeds the boundaries of the grid, only the common region will be extracted.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong><em>trend.nc</em></dt>
+<dd>Write the fitted trend to the file <em>trend.nc</em>.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong><em>weight.nc</em></dt>
+<dd>If <em>weight.nc</em> exists, it will be read and used to solve a weighted
+least-squares problem. [Default: Ordinary least-squares fit.] If the
+robust option has been selected, the weights used in the robust fit
+will be written to <em>weight.nc</em>.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="remarks">
+<h2>Remarks<a class="headerlink" href="#remarks" title="Permalink to this headline">¶</a></h2>
+<p>The domain of x and y will be shifted and scaled to [-1, 1] and the
+basis functions are built from Legendre polynomials. These have a
+numerical advantage in the form of the matrix which must be inverted and
+allow more accurate solutions. NOTE: The model parameters listed with
+<strong>-V</strong> are Legendre polynomial coefficients; they are not numerically
+equivalent to the m#s in the equation described above. The description
+above is to allow the user to match <strong>-N</strong> with the order of the
+polynomial surface. See <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> if you need to evaluate the trend
+using the reported coefficients.</p>
+</div>
+<div class="section" id="grid-file-formats">
+<h2>Grid File Formats<a class="headerlink" href="#grid-file-formats" title="Permalink to this headline">¶</a></h2>
+<p>By default GMT writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, GMT is able to produce
+grid files in many other commonly used grid file formats and also
+facilitates so called “packing” of grids, writing out floating point
+data as 1- or 2-byte integers. <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">(more …)</span></a></p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To remove a planar trend from hawaii_topo.nc and write result in hawaii_residual.nc:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdtrend</span> <span class="n">hawaii_topo</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">N3</span> <span class="o">-</span><span class="n">Dhawaii_residual</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To do a robust fit of a bicubic surface to hawaii_topo.nc, writing the
+result in hawaii_trend.nc and the weights used in hawaii_weight.nc,
+and reporting the progress:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdtrend</span> <span class="n">hawaii_topo</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">N10</span><span class="o">+</span><span class="n">r</span> <span class="o">-</span><span class="n">Thawaii_trend</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Whawaii_weight</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">V</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="grdfft.html"><span class="doc">grdfft</span></a>,
+<a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a>,
+<a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">grdtrend</a><ul>
+<li><a class="reference internal" href="#synopsis"><cite>Synopsis</cite></a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#remarks">Remarks</a></li>
+<li><a class="reference internal" href="#grid-file-formats">Grid File Formats</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="grdtrack.html"
+                        title="previous chapter">grdtrack</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grdvector.html"
+                        title="next chapter">grdvector</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/grdtrend.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="grdvector.html" title="grdvector"
+             >next</a> </li>
+        <li class="right" >
+          <a href="grdtrack.html" title="grdtrack"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

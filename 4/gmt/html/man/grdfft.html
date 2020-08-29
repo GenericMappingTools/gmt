@@ -1,0 +1,438 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:18 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GRDFFT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GRDFFT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#GRID FILE FORMATS">GRID FILE FORMATS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">grdfft &minus;
+Perform mathematical operations on grid files in the
+wavenumber (or frequency) domain</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdfft</b>
+<i>in_grdfile</i> <b>&minus;G</b><i>out_grdfile</i> [
+<b>&minus;A</b><i>azimuth</i> ] [
+<b>&minus;C</b><i>zlevel</i> ] [
+<b>&minus;D</b>[<i>scale</i><b>|g</b>] ] [
+<b>&minus;E</b>[<b>x|y</b>][<b>w</b>] ] [
+<b>&minus;F</b>[<b>x</b>|<b>y</b>]<i>params</i> ] [
+<b>&minus;I</b>[<i>scale</i><b>|g</b>] ] [ <b>&minus;L</b> ]
+[ <b>&minus;M</b> ] [ <b>&minus;N</b><i>stuff</i> ] [
+<b>&minus;S</b><i>scale</i> ] [
+<b>&minus;T</b><i>te/rl/rm/rw/ri</i> ] [ <b>&minus;V</b>
+]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdfft</b>
+will take the 2-D forward Fast Fourier Transform and perform
+one or more mathematical operations in the frequency domain
+before transforming back to the space domain. An option is
+provided to scale the data before writing the new values to
+an output file. The horizontal dimensions of the grid are
+assumed to be in meters. Geographical grids may be used by
+specifying the <b>&minus;M</b> option that scales degrees to
+meters. If you have grids with dimensions in km, you could
+change this to meters using <b><A HREF="grdedit.html">grdedit</A></b> or scale the
+output with <b><A HREF="grdmath.html">grdmath</A></b>. <i><br>
+in_grdfile</i></p>
+
+<p style="margin-left:22%;">2-D binary grid file to be
+operated on. (See GRID FILE FORMATS below).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify the name of
+the output grid file. (See GRID FILE FORMATS below).</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Take the
+directional derivative in the <i>azimuth</i> direction
+measured in degrees CW from north.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Upward (for
+<i>zlevel</i> &gt; 0) or downward (for <i>zlevel</i> &lt; 0)
+continue the field <i>zlevel</i> meters.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Differentiate the
+field, i.e., take d(field)/dz. This is equivalent to
+multiplying by kr in the frequency domain (kr is radial wave
+number). Append a scale to multiply by (kr * <i>scale</i>)
+instead. Alternatively, append <b>g</b> to indicate that
+your data are geoid heights in meters and output should be
+gravity anomalies in mGal. [Default is no scale].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Estimate power
+spectrum in the radial direction. Place <b>x</b> or <b>y</b>
+immediately after <b>&minus;E</b> to compute the spectrum in
+the x or y direction instead. No grid file is created; f
+(i.e., frequency or wave number), power[f], and 1 standard
+deviation in power[f] are written to stdout. Append <b>w</b>
+to write wavelength instead of frequency.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Filter the data.
+Place <b>x</b> or <b>y</b> immediately after <b>&minus;F</b>
+to filter <i>x</i> or <i>y</i> direction only; default is
+isotropic. Choose between a cosine-tapered band-pass, a
+Gaussian band-pass filter, or a Butterworth band-pass
+filter. Cosine-taper: Specify four wavelengths
+<i>lc</i>/<i>lp</i>/<i>hp</i>/<i>hc</i> in correct units
+(see <b>&minus;M</b>) to design a bandpass filter:
+wavelengths greater than <i>lc</i> or less than <i>hc</i>
+will be cut, wavelengths greater than <i>lp</i> and less
+than <i>hp</i> will be passed, and wavelengths in between
+will be cosine-tapered. E.g., <b>&minus;F</b>
+1000000/250000/50000/10000 <b>&minus;M</b> will bandpass,
+cutting wavelengths &gt; 1000 km and &lt; 10 km, passing
+wavelengths between 250 km and 50 km. To make a highpass or
+lowpass filter, give hyphens (-) for <i>hp</i>/<i>hc</i> or
+<i>lc</i>/<i>lp</i>. E.g., <b>&minus;Fx</b>-/-/50/10 will
+lowpass <i>x</i>, passing wavelengths &gt; 50 and rejecting
+wavelengths &lt; 10. <b>&minus;Fy</b> 1000/250/-/- will
+highpass <i>y</i>, passing wavelengths &lt; 250 and
+rejecting wavelengths &gt; 1000. Gaussian band-pass: Append
+<i>lo</i>/<i>hi</i>, the two wavelengths in correct units
+(see <b>&minus;M</b>) to design a bandpass filter. At the
+given wavelengths the Gaussian filter weights will be 0.5.
+To make a highpass or lowpass filter, give a hyphen (-) for
+the <i>hi</i> or <i>lo</i> wavelength, respectively. E.g.,
+<b>&minus;F</b>-/30 will lowpass the data using a Gaussian
+filter with half-weight at 30, while <b>&minus;F</b> 400/-
+will highpass the data. Butterworth band-pass: Append
+<i>lo</i>/<i>hi</i>/<i>order</i>, the two wavelengths in
+correct units (see <b>&minus;M</b>) and the filter order (an
+integer) to design a bandpass filter. At the given
+wavelengths the Butterworth filter weights will be 0.5. To
+make a highpass or lowpass filter, give a hyphen (-) for the
+<i>hi</i> or <i>lo</i> wavelength, respectively. E.g.,
+<b>&minus;F</b>-/30/2 will lowpass the data using a
+2nd-order Butterworth filter, with half-weight at 30, while
+<b>&minus;F</b> 400/-/2 will highpass the data.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Integrate the
+field, i.e., compute integral_over_z (field * dz). This is
+equivalent to divide by kr in the frequency domain (kr is
+radial wave number). Append a scale to divide by (kr *
+<i>scale</i>) instead. Alternatively, append <b>g</b> to
+indicate that your data set is gravity anomalies in mGal and
+output should be geoid heights in meters. [Default is no
+scale].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Leave trend alone.
+By default, a linear trend will be removed prior to the
+transform.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Map units. Choose
+this option if your grid file is a geographical grid and you
+want to convert degrees into meters. If the data are close
+to either pole, you should consider projecting the grid file
+onto a rectangular coordinate system using
+<b><A HREF="grdproject.html">grdproject</A></b>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Choose or inquire
+about suitable grid dimensions for FFT. <b>&minus;Nf</b>
+will force the FFT to use the dimensions of the data.
+<b>&minus;Nq</b> will inQuire about more suitable
+dimensions. <b>&minus;N</b><i>nx/ny</i> will do FFT on array
+size <i>nx/ny</i> (Must be &gt;= grid file size). Default
+chooses dimensions &gt;= data which optimize speed, accuracy
+of FFT. If FFT dimensions &gt; grid file dimensions, data
+are extended and tapered to zero.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiply each
+element by <i>scale</i> in the space domain (after the
+frequency domain operations). [Default is 1.0].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Compute the
+isostatic compensation from the topography load (input grid
+file) on an elastic plate of thickness <i>te</i>. Also
+append densities for load, mantle, water, and infill in SI
+units. If <i>te</i> == 0 then the Airy response is returned.
+<b>&minus;T</b> implicitly sets <b>&minus;L</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+</table>
+
+<a name="GRID FILE FORMATS"></a>
+<h2>GRID FILE FORMATS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">By default
+<b><A HREF="GMT.html">GMT</A></b> writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, <b><A HREF="GMT.html">GMT</A></b> is
+able to produce grid files in many other commonly used grid
+file formats and also facilitates so called
+&quot;packing&quot; of grids, writing out floating point
+data as 2- or 4-byte integers. To specify the precision,
+scale and offset, the user should add the suffix
+<b>=</b><i>id</i>[<b>/</b><i>scale</i><b>/</b><i>offset</i>[<b>/</b><i>nan</i>]],
+where <i>id</i> is a two-letter identifier of the grid type
+and precision, and <i>scale</i> and <i>offset</i> are
+optional scale factor and offset to be applied to all grid
+values, and <i>nan</i> is the value used to indicate missing
+data. When reading grids, the format is generally
+automatically recognized. If not, the same suffix can be
+added to input grid file names. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1)
+and Section 4.17 of the GMT Technical Reference and Cookbook
+for more information.</p>
+
+<p style="margin-left:11%; margin-top: 1em">When reading a
+netCDF file that contains multiple grids, <b><A HREF="GMT.html">GMT</A></b> will
+read, by default, the first 2-dimensional grid that can find
+in that file. To coax <b><A HREF="GMT.html">GMT</A></b> into reading another
+multi-dimensional variable in the grid file, append
+<b>?</b><i>varname</i> to the file name, where
+<i>varname</i> is the name of the variable. Note that you
+may need to escape the special meaning of <b>?</b> in your
+shell program by putting a backslash in front of it, or by
+placing the filename and suffix between quotes or double
+quotes. The <b>?</b><i>varname</i> suffix can also be used
+for output grids to specify a variable name different from
+the default: &quot;z&quot;. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and
+Section 4.18 of the GMT Technical Reference and Cookbook for
+more information, particularly on how to read splices of 3-,
+4-, or 5-dimensional grids.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To upward
+continue the sea-level magnetic anomalies in the file
+mag_0.grd to a level 800 m above sealevel:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdfft</b>
+mag_0.grd <b>&minus;C</b> 800 <b>&minus;V &minus;G</b>
+mag_800.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">To transform
+geoid heights in m (geoid.grd) on a geographical grid to
+free-air gravity anomalies in mGal:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdfft</b>
+geoid.grd <b>&minus;Dg &minus;V &minus;G</b> grav.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">To transform
+gravity anomalies in mGal (faa.grd) to deflections of the
+vertical (in micro-radians) in the 038 direction, we must
+first integrate gravity to get geoid, then take the
+directional derivative, and finally scale radians to
+micro-radians:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdfft</b>
+faa.grd <b>&minus;Ig</b> 38 <b>&minus;S</b> 1e6 <b>&minus;V
+&minus;G</b> defl_38.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">Second vertical
+derivatives of gravity anomalies are related to the
+curvature of the field. We can compute these as mGal/m^2 by
+differentiating twice:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdfft</b>
+gravity.grd <b>&minus;D &minus;D &minus;V &minus;G</b>
+grav_2nd_derivative.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">The first order
+gravity anomaly (in mGal) due to the compensating surface
+caused by the topography load topo.grd (in m) on a 20 km
+thick elastic plate, assumed to be 4 km beneath the
+observation level can be computed as</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdfft</b>
+topo.grd <b>&minus;T</b> 20000/2800/3330/1030/2300
+<b>&minus;S</b> 0.022 <b>&minus;C</b> 4000 <b>&minus;G</b>
+comp_faa.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">where 0.022 is
+the scale needed for the first term in Parker&rsquo;s
+expansion for computing gravity from topography (= 2 * PI *
+G * (rhom - rhol)).</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grdedit.html">grdedit</A></i>(1), <i><A HREF="grdmath.html">grdmath</A></i>(1),
+<i><A HREF="grdproject.html">grdproject</A></i>(1)</p>
+<hr>
+</body>
+</html>

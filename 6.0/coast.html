@@ -1,0 +1,762 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>coast &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="colorbar" href="colorbar.html" />
+    <link rel="prev" title="clip" href="clip.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">GMT Modules</a> &raquo;</li>
+        
+      <li>coast</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/coast.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="coast">
+<span id="index-0"></span><h1>coast<a class="headerlink" href="#coast" title="Permalink to this headline">¶</a></h1>
+<p>Plot continents, countries, shorelines, rivers, and borders</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt coast</strong> <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em>
+<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
+[ <strong>-A</strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+a</strong>[<strong>g</strong>|<strong>i</strong>][<strong>s</strong>|<strong>S</strong>]][<strong>+r</strong>|<strong>l</strong>][<strong>+p</strong><em>percent</em>] ]
+[ <a class="reference internal" href="#b"><span> <strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>fill</em>[<strong>+l</strong>|<strong>+r</strong>] ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>resolution</em>[<strong>+f</strong>] ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>dcw</em> ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>box</em> ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong>[<em>fill</em>] ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>river</em>[/<em>pen</em>] ]
+[ <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><strong>z</strong>|<strong>Z</strong><em>parameters</em> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>scalebar</em> ]
+[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong> ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>border</em>[/<em>pen</em>] ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong>[<em>fill</em>] ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>rose</em> ]
+[ <a class="reference internal" href="#u"><span> <strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<em>level</em>/]<em>pen</em> ]
+[ <a class="reference internal" href="#x"><span> <strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>[<strong>u</strong>]] ]
+[ <a class="reference internal" href="#y"><span> <strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>[<strong>u</strong>]] ]
+[ <strong>-bo</strong><a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">transp</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Plots grayshaded, colored, or textured land-masses [or
+water-masses] on maps and [optionally] draws coastlines, rivers, and
+political boundaries. Alternatively, it can (1) issue clip
+paths that will contain all land or all water areas, or
+(2) dump the data to an ASCII table. The data files come
+in 5 different resolutions: (<strong>f</strong>)ull, (<strong>h</strong>)igh, (<strong>i</strong>)ntermediate,
+(<strong>l</strong>)ow, and (<strong>c</strong>)rude. The full resolution files amount to more
+than 55 Mb of data and provide great detail; for maps of larger
+geographical extent it is more economical to use one of the other
+resolutions. If the user selects to paint the land-areas and does not
+specify fill of water-areas then the latter will be transparent (i.e.,
+earlier graphics drawn in those areas will not be overwritten).
+Likewise, if the water-areas are painted and no land fill is set then
+the land-areas will be transparent. A map projection must be supplied.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="j">
+<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select map projection.  </dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
+Append <strong>+r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Set geographic regions by specifying ISO country codes from the Digital Chart of the World using
+<strong>-R</strong><em>code1,code2,…</em>[<strong>+r</strong>|<strong>R</strong>[<em>incs</em>]] instead:
+Append one or more comma-separated countries using the 2-character
+ISO 3166-1 alpha-2 convention.  To select a state of a country
+(if available), append .state, e.g, US.TX for Texas.  To specify a
+whole continent, prepend = to any of the continent codes AF (Africa),
+AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
+NA (North America), or SA (South America).  Use <strong>+r</strong> to modify the bounding box coordinates from the polygon(s):
+Append <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> to adjust the
+region to be a multiple of these steps [no adjustment]. Alternatively, use <strong>+R</strong> to extend the region
+outward by adding these increments instead [no extension].
+Alternatively for grid creation, give <strong>R</strong><em>code</em><em>lon</em>/<em>lat</em>/<em>nx</em>/<em>ny</em>, where
+<em>code</em> is a 2-character combination of L, C, R (for left, center, or right)
+and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
+indicates which point on a rectangular region the <em>lon</em>/<em>lat</em> coordinate
+refers to, and the grid dimensions <em>nx</em> and <em>ny</em> with grid spacings via
+<strong>-I</strong> is used to create the corresponding region.
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing and registration, if applicable) are copied from
+the grid. Appending <strong>+u</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.
+For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.
+In case of perspective view (<strong>-p</strong>), a z-range (<em>zmin</em>, <em>zmax</em>)
+can be appended to indicate the third dimension. This needs to be
+done only when using the <strong>-Jz</strong> option, not when using only the
+<strong>-p</strong> option. In the latter case a perspective view of the plane is
+plotted, with no third dimension.  </dd>
+</dl>
+<p>For perspective view <strong>-p</strong>, optionally append /<em>zmin</em>/<em>zmax</em>. <a class="reference internal" href="gmt.html#rz-full"><span class="std std-ref">(more …)</span></a>  </p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+a</strong>[<strong>g</strong>|<strong>i</strong>][<strong>s</strong>|<strong>S</strong>]][<strong>+r</strong>|<strong>l</strong>][<strong>+p</strong><em>percent</em>]</dt>
+<dd>Features with an area smaller than <em>min_area</em> in km^2 or of
+hierarchical level that is lower than <em>min_level</em> or higher than
+<em>max_level</em> will not be plotted [Default is 0/0/4 (all features)].
+Level 2 (lakes) contains regular lakes and wide river bodies which
+we normally include as lakes; append <strong>+r</strong> to just get river-lakes
+or <strong>+l</strong> to just get regular lakes.  Append <strong>+p</strong><em>percent</em> to
+exclude polygons whose percentage area of the corresponding full-resolution
+feature is less than <em>percent</em>.  Use <strong>+a</strong> to control special
+aspects of the Antarctica coastline: By default (or add <strong>i</strong>) we
+select the ice shelf boundary as the coastline for Antarctica; alternatively,
+add <strong>g</strong> to select the ice grounding line instead.  For expert
+users who wish to utilize their own Antarctica (with islands) coastline
+you can add <strong>s</strong> to skip all GSHHG features below 60S. In contrast, you
+can add <strong>S</strong> to instead skip all features <em>north</em> of 60S.  See
+GSHHG INFORMATION below for more details.  </dd>
+</dl>
+<dl class="docutils" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set map boundary frame and axes attributes.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>fill</em>[<strong>+l</strong>|<strong>+r</strong>] <a class="reference internal" href="cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set the shade, color, or pattern for lakes and river-lakes [Default
+is the fill chosen for “wet” areas (<strong>-S</strong>)]. Optionally, specify
+separate fills by appending <strong>+l</strong> for lakes or <strong>+r</strong> for
+river-lakes, repeating the <strong>-C</strong> option as needed.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>resolution</em>[<strong>+f</strong>]</dt>
+<dd>Select the resolution of the data set to use ((<strong>f</strong>)ull,
+(<strong>h</strong>)igh, (<strong>i</strong>)ntermediate, (<strong>l</strong>)ow, and (<strong>c</strong>)rude). The
+resolution drops off by 80% between data sets.
+Append <strong>+f</strong> to automatically select a lower resolution should the one
+requested not be available [abort if not found].
+Alternatively, choose (<strong>a</strong>)uto to automatically select the best
+resolution given the chosen map scale. [Default is <strong>l</strong> in classic mode
+and <strong>a</strong> in modern mode].</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong><em>code1,code2,…</em>[<strong>+l</strong>|<strong>L</strong>][<strong>+g</strong><em>fill</em>][<strong>+p</strong><em>pen</em>]</dt>
+<dd>Select painting or dumping country polygons from the Digital Chart of the World.
+This is another dataset independent of GSHHG and hence the <strong>-A</strong> and <strong>-D</strong> options do not apply.
+Append one or more comma-separated countries using the 2-character
+ISO 3166-1 alpha-2 convention.  To select a state of a country
+(if available), append .state, e.g, US.TX for Texas.  To specify a
+whole continent, prepend = to any of the continent codes AF (Africa),
+AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
+NA (North America), or SA (South America).  Append <strong>+l</strong> to
+just list the countries and their codes [no data extraction or plotting takes place].
+Use <strong>+L</strong> to see states/territories for Argentina, Australia, Brazil, Canada, and the US.
+Append <strong>+p</strong><em>pen</em> to draw polygon outlines [no outline] and
+<strong>+g</strong><em>fill</em> to fill them [no fill].  One of <strong>+p</strong>|<strong>g</strong> must be
+specified unless <strong>-M</strong> is in effect, in which case only one <strong>-E</strong> option can be given.
+Otherwise, you may repeat <strong>-E</strong> to give different groups of items their own pen/fill settings.
+If neither <strong>-J</strong> nor <strong>-M</strong> are set then we just print the <strong>-R</strong><em>wesn</em> string.</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong>[<strong>l</strong>|<strong>t</strong>][<strong>+c</strong><em>clearances</em>][<strong>+g</strong><em>fill</em>][<strong>+i</strong>[[<em>gap</em>/]<em>pen</em>]][<strong>+p</strong>[<em>pen</em>]][<strong>+r</strong>[<em>radius</em>]][<strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]]]</dt>
+<dd>Without further options, draws a rectangular border around the map scale or rose using
+<a class="reference internal" href="gmt.conf.html#map-frame-pen"><span class="std std-ref">MAP_FRAME_PEN</span></a>; specify a different pen with <strong>+p</strong><em>pen</em>.
+Add <strong>+g</strong><em>fill</em> to fill the logo box [no fill].
+Append <strong>+c</strong><em>clearance</em> where <em>clearance</em> is either <em>gap</em>, <em>xgap</em>/<em>ygap</em>,
+or <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> where these items are uniform, separate in
+x- and y-direction, or individual side spacings between logo and border.
+Append <strong>+i</strong> to draw a secondary, inner border as well. We use a uniform
+<em>gap</em> between borders of 2<strong>p</strong> and the <a class="reference internal" href="gmt.conf.html#map-default-pen"><span class="std std-ref">MAP_DEFAULT_PEN</span></a>
+unless other values are specified. Append <strong>+r</strong> to draw rounded
+rectangular borders instead, with a 6<strong>p</strong> corner radius. You can
+override this radius by appending another value. Finally, append
+<strong>+s</strong> to draw an offset background shaded region. Here, <em>dx</em>/<em>dy</em>
+indicates the shift relative to the foreground frame
+[4<strong>p</strong>/-4<strong>p</strong>] and <em>shade</em> sets the fill style to use for shading [gray50].
+Requires <strong>-L</strong> or <strong>-T</strong>.  To specify separate parameters if both <strong>-L</strong> are <strong>-T</strong>
+are selected, append  <strong>l</strong>|<strong>t</strong> to <strong>-F</strong>
+to specify panel parameters for just that panel [Default uses the same panel
+parameters for all selected map features].</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong>[<em>fill</em>] <a class="reference internal" href="cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select filling or clipping of “dry” areas. Append the shade, color,
+or pattern; or give no argument for clipping [Default is no fill].</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>river</em>[/<em>pen</em>]</dt>
+<dd><p class="first">Draw rivers. Specify the type of rivers and [optionally] append pen
+attributes [Default pen: width = default, color = black, style =
+solid].</p>
+<p>Choose from the list of river types below; repeat option <strong>-I</strong> as
+often as necessary.</p>
+<p>0 = Double-lined rivers (river-lakes)</p>
+<p>1 = Permanent major rivers</p>
+<p>2 = Additional major rivers</p>
+<p>3 = Additional rivers</p>
+<p>4 = Minor rivers</p>
+<p>5 = Intermittent rivers - major</p>
+<p>6 = Intermittent rivers - additional</p>
+<p>7 = Intermittent rivers - minor</p>
+<p>8 = Major canals</p>
+<p>9 = Minor canals</p>
+<p>10 = Irrigation canals</p>
+<p>You can also choose from several preconfigured river groups:</p>
+<p>a = All rivers and canals (0-10)</p>
+<p>A = All rivers and canals except river-lakes (1-10)</p>
+<p>r = All permanent rivers (0-4)</p>
+<p>R = All permanent rivers except river-lakes (1-4)</p>
+<p>i = All intermittent rivers (5-7)</p>
+<p class="last">c = All canals (8-10)</p>
+</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+c</strong>[<em>slon</em>/]<em>slat</em><strong>+w</strong><em>length</em>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>][<strong>+a</strong><em>align</em>][<strong>+f</strong>][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>label</em>]][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+u</strong>][<strong>+v</strong>]</dt>
+<dd>Draws a simple map scale centered on the reference point specified
+using one of four coordinate systems:
+(1) Use <strong>-Lg</strong> for map (user) coordinates, (2) use <strong>-Lj</strong> or <strong>-LJ</strong> for setting <em>refpoint</em> via
+a 2-char justification code that refers to the (invisible) map domain rectangle,
+(3) use <strong>-Ln</strong> for normalized (0-1) coordinates, or (4) use <strong>-Lx</strong> for plot coordinates
+(inches, cm, etc.).  Scale is calculated for latitude <em>slat</em>
+(optionally supply longitude <em>slon</em> for oblique projections [Default
+is central meridian]), <em>length</em> is in km, or append unit from
+<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>.
+Change the label alignment with <strong>+a</strong><em>align</em> (choose among
+<strong>l</strong>(eft), <strong>r</strong>(ight), <strong>t</strong>(op), and <strong>b</strong>(ottom)).
+Append <strong>+f</strong> to get a “fancy” scale [Default is plain].
+By default, the anchor point on the map scale is assumed to be the center of the scale (MC), but this
+can be changed by appending <strong>+j</strong> followed by a 2-char justification code <em>justify</em>
+(see <a class="reference internal" href="text.html"><span class="doc">text</span></a> for list and explanation of codes).
+Append <strong>+l</strong> to select the default label, which equals the distance
+unit (meter, foot, km, mile, nautical mile, US survey foot) and is
+justified on top of the scale [t]. Change this by giving your own
+label (append <strong>+l</strong><em>label</em>).
+Add <strong>+o</strong> to offset the map scale by <em>dx</em>/<em>dy</em> away from the <em>refpoint</em> in
+the direction implied by <em>justify</em> (or the direction implied by <strong>-Dj</strong> or <strong>-DJ</strong>).
+Select <strong>+u</strong> to append the unit to all distance annotations along the
+scale (for the plain scale, <strong>+u</strong> will instead select the unit to be
+appended to the distance length). Cartesian projections: Origin <strong>+c</strong> is
+not required, <strong>+f</strong> is not allowed, and no units should be specified in <strong>+w</strong>.
+You must set any Cartesian data units via <strong>+l</strong>.
+For a vertical rather than horizontal Cartesian scale, append <strong>+v</strong>.
+Note: Use <a class="reference internal" href="gmt.conf.html#font-label"><span class="std std-ref">FONT_LABEL</span></a> to change the label font and
+<a class="reference internal" href="gmt.conf.html#font-annot-primary"><span class="std std-ref">FONT_ANNOT_PRIMARY</span></a>
+to change the annotation font.  The height of the map scale is controlled
+by <a class="reference internal" href="gmt.conf.html#map-scale-height"><span class="std std-ref">MAP_SCALE_HEIGHT</span></a>, and the pen thickness is
+set by <a class="reference internal" href="gmt.conf.html#map-tick-pen-primary"><span class="std std-ref">MAP_TICK_PEN_PRIMARY</span></a>.
+See <strong>-F</strong> on how to place a panel behind the scale.</dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-M</strong></dt>
+<dd>Dump a single multisegment ASCII (or binary, see
+<strong>-bo</strong>) file to standard output. No plotting
+occurs. Specify one of <strong>-E</strong>, <strong>-I</strong>, <strong>-N</strong> or <strong>-W</strong>.
+Note: if <strong>-M</strong> is used with <strong>-E</strong> then <strong>-R</strong> or the <strong>+r</strong> modifier
+to <strong>-E</strong> are not required as we automatically determine the region
+given the selected geographic entities.  If using <strong>-W</strong> and you want
+just certain levels (1-4) then use the full syntax <strong>-W</strong><em>level</em>/<em>pen</em>
+and repeat for each level (pen is not used but required to parse the level correctly).</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong><em>border</em>[/<em>pen</em>]</dt>
+<dd><p class="first">Draw political boundaries. Specify the type of boundary and
+[optionally] append pen attributes [Default pen: width = default,
+color = black, style = solid].</p>
+<p>Choose from the list of boundaries below. Repeat option <strong>-N</strong> as
+often as necessary.</p>
+<p>1 = National boundaries</p>
+<p>2 = State boundaries within the Americas</p>
+<p>3 = Marine boundaries</p>
+<p class="last">a = All boundaries (1-3)</p>
+</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong></dt>
+<dd>Mark end of existing clip path. No projection information is needed.
+Also supply <strong>-X</strong> and <strong>-Y</strong> settings if you have moved since the clip started.</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong>[<em>fill</em>] <a class="reference internal" href="cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select filling or clipping of “wet” areas. Append the shade, color,
+or pattern; or give no argument for clipping [Default is no fill].</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-Td</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>width</em>[<strong>+f</strong>[<em>level</em>]][<strong>+j</strong><em>justify</em>][<strong>+l</strong><em>w,e,s,n</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt>
+<dd>Draw a map directional rose on the map at the location defined by
+the reference and anchor points:
+Give the reference point on the map for the rose using one of four coordinate systems:
+(1) Use <strong>g</strong> for map (user) coordinates, (2) use <strong>j</strong> for setting <em>refpoint</em> via
+a 2-char justification code that refers to the (invisible) map domain rectangle,
+(3) use <strong>n</strong> for normalized (0-1) coordinates, or (4) use <strong>x</strong> for plot coordinates
+(inches, cm, etc.) [Default].  You can offset the reference point by <em>dx</em>/<em>dy</em> in
+the direction implied by <em>justify</em>.
+By default, the anchor point on the directional rose is assumed to be the center of the rose (MC), but this
+can be changed by appending <strong>+j</strong> followed by a 2-char justification code <em>justify</em>
+(see <a class="reference internal" href="text.html"><span class="doc">text</span></a> for list and explanation of codes).
+Note: If <strong>-Dj</strong> is used then <em>justify</em> defaults to the same as <em>refpoint</em>,
+if <strong>-DJ</strong> is used then <em>justify</em> defaults to the mirror opposite of <em>refpoint</em>.
+Add <strong>+o</strong> to offset the directional rose by <em>dx</em>/<em>dy</em> away from the <em>refpoint</em> in
+the direction implied by <em>justify</em> (or the direction implied by <strong>-Dj</strong> or <strong>-DJ</strong>).
+Append <strong>+w</strong><em>width</em> to set the width of the rose in plot coordinates (in inches, cm, or points).
+Add <strong>+f</strong> to get a “fancy” rose, and specify in <em>level</em> what
+you want drawn. The default [1] draws the two principal E-W,
+N-S orientations, 2 adds the two intermediate NW-SE and NE-SW
+orientations, while 3 adds the eight minor orientations WNW-ESE,
+NNW-SSE, NNE-SSW, and ENE-WSW.
+Label the cardinal points W,E,S,N by adding <strong>+l</strong> and append your own four
+comma-separated strings to override the default.  Skip a specific label by leaving it blank.
+See <a class="reference internal" href="cookbook/features.html#placing-dir-map-roses"><span class="std std-ref">Placing directional map roses</span></a> and <strong>-F</strong> on how to place a panel behind the directional rose.</dd>
+<dt><strong>-Tm</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>width</em>[<strong>+d</strong><em>dec</em>[/<em>dlabel</em>]]][<strong>+i</strong><em>pen</em>][<strong>+j</strong><em>justify</em>][<strong>+l</strong><em>w,e,s,n</em>][<strong>+p</strong><em>pen</em>][<strong>+t</strong><em>ints</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt>
+<dd>Draw a map magnetic rose on the map at the location defined by
+the reference and anchor points:
+Give the reference point on the map for the rose using one of four coordinate systems:
+(1) Use <strong>g</strong> for map (user) coordinates, (2) use <strong>j</strong> for setting <em>refpoint</em> via
+a 2-char justification code that refers to the (invisible) map domain rectangle,
+(3) use <strong>n</strong> for normalized (0-1) coordinates, or (4) use <strong>x</strong> for plot coordinates
+(inches, cm, etc.) [Default]. You can offset the reference point by <em>dx</em>/<em>dy</em> in
+the direction implied by <em>justify</em>.
+By default, the anchor point on the magnetic rose is assumed to be the center of the rose (MC), but this
+can be changed by appending <strong>+j</strong> followed by a 2-char justification code <em>justify</em>
+(see <a class="reference internal" href="text.html"><span class="doc">text</span></a> for list and explanation of codes).
+Note: If <strong>-Dj</strong> is used then <em>justify</em> defaults to the same as <em>refpoint</em>,
+if <strong>-DJ</strong> is used then <em>justify</em> defaults to the mirror opposite of <em>refpoint</em>.
+Add <strong>+o</strong> to offset the color magnetic rose by <em>dx</em>/<em>dy</em> away from the <em>refpoint</em> in
+the direction implied by <em>justify</em> (or the direction implied by <strong>-Dj</strong> or <strong>-DJ</strong>).
+Append <strong>+w</strong><em>width</em> to set the width of the rose in plot coordinates (in inches, cm, or points).
+Use <strong>+d</strong> to assign the magnetic declination and set <em>dlabel</em>, which is a label for
+the magnetic compass needle (Leave empty to format a label from
+<em>dec</em>, or give - to bypass labeling). With <strong>+d</strong>, both directions to geographic and magnetic north are
+plotted [Default is geographic only]. If the north label is <strong>*</strong>
+then a north star is plotted instead of the north label. Annotation
+and two levels of tick intervals for both geographic and magnetic
+directions default to 30/5/1 degrees; override these settings by appending
+<strong>+t</strong><em>ints</em>, and append six slash-separated intervals to set both the
+geographic (first three) and magnetic (last three) intervals.
+Label the cardinal points W,E,S,N by adding <strong>+l</strong> and append your own four comma-separated
+strings to override the default.  Skip a specific label by leaving it blank.
+Number GMT default parameters control pens, fonts, and color.
+See <a class="reference internal" href="cookbook/features.html#placing-mag-map-roses"><span class="std std-ref">Placing magnetic map roses</span></a> and <strong>-F</strong> on how to place a panel behind the magnetic rose.</dd>
+</dl>
+<dl class="docutils" id="u">
+<dt><strong>-U</strong>[<em>label</em>][<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>] <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Draw GMT time stamp logo on plot.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong>[<em>level</em>/]<em>pen</em> <a class="reference internal" href="gmt.html#set-pens"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Draw shorelines [Default is no shorelines]. Append pen attributes
+[Defaults: width = default, color = black, style = solid] which
+apply to all four levels. To set the pen for each level differently,
+prepend <em>level</em>/, where <em>level</em> is 1-4 and represent coastline,
+lakeshore, island-in-lake shore, and lake-in-island-in-lake shore.
+Repeat <strong>-W</strong> as needed. When specific level pens are set, those not
+listed will not be drawn [Default draws all levels; but see <strong>-A</strong>].</dd>
+</dl>
+<p id="x"><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>[<strong>u</strong>]]</p>
+<dl class="docutils">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>[<strong>u</strong>]] <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Shift plot origin.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select perspective view.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set transparency level in percent.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt>
+<dd>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Note: Since many GMT plot examples are very short (i.e., one module call between the
+<strong>gmt begin</strong> and <strong>gmt end</strong> commands), we will often present them using the quick
+modern mode <a class="reference internal" href="cookbook/one-liner.html"><span class="doc">GMT Modern Mode One-line Commands</span></a> syntax, which simplifies such short scripts.</p>
+<p>To plot a green Africa with white outline on blue background, with
+permanent major rivers in thick blue pen, additional major rivers in
+thin blue pen, and national borders as dashed lines on a Mercator map at
+scale 0.1 inch/degree, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -R-30/30/-40/40 -Jm0.1i -B5 -I1/1p,blue -N1/0.25p,- <span class="se">\</span>
+            -I2/0.25p,blue -W0.25p,white -Ggreen -Sblue -pdf africa
+</pre></div>
+</div>
+<p>To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a
+Mercator map at scale 1 cm/degree, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -RIS+r1 -Jm1c -B -Wthin -Gp28+r100 -pdf iceland
+</pre></div>
+</div>
+<p>To initiate a clip path for Africa so that the subsequent colorimage of
+gridded topography is only seen over land, using a Mercator map at scale
+0.1 inch/degree, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin
+  gmt coast -R-30/30/-40/40 -Jm0.1i -B -G
+  gmt grdimage @earth_relief_05m
+  gmt coast -Q
+gmt end show
+</pre></div>
+</div>
+<p>To plot Great Britain, Italy, and France in blue with a red outline and
+Spain, Portugal and Greece in yellow (no outline), and pick up the plot
+domain from the extents of these countries, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -JM6i -Baf -EGB,IT,FR+gblue+p0.25p,red -EES,PT,GR+gyellow -pdf map
+</pre></div>
+</div>
+<p>To extract a high-resolution coastline data table for Iceland to be used
+in your analysis, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -RIS -Dh -W -M &gt; iceland.txt
+</pre></div>
+</div>
+<p><strong>coast</strong> will first look for coastline files in directory
+<strong>$GMT_SHAREDIR</strong>/coast If the desired file is not found, it will look
+for the file <strong>$GMT_SHAREDIR</strong>/coastline.conf. This file may contain
+any number of records that each holds the full pathname of an
+alternative directory. Comment lines (#) and blank lines are allowed.
+The desired file is then sought for in the alternate directories.</p>
+</div>
+<div class="section" id="gshhg-information">
+<h2>GSHHG Information<a class="headerlink" href="#gshhg-information" title="Permalink to this headline">¶</a></h2>
+<p>The coastline database is GSHHG (formerly GSHHS) which is compiled from
+three sources:  World Vector Shorelines (WVS, not including Antarctica),
+CIA World Data Bank II (WDBII), and Atlas of the Cryosphere (AC, for Antarctica only).
+Apart from Antarctica, all level-1 polygons (ocean-land boundary) are derived from
+the more accurate WVS while all higher level polygons (level 2-4,
+representing land/lake, lake/island-in-lake, and
+island-in-lake/lake-in-island-in-lake boundaries) are taken from WDBII.
+The Antarctica coastlines come in two flavors: ice-front or grounding line,
+selectable via the <strong>-A</strong> option.
+Much processing has taken place to convert WVS, WDBII, and AC data into
+usable form for GMT: assembling closed polygons from line segments,
+checking for duplicates, and correcting for crossings between polygons.
+The area of each polygon has been determined so that the user may choose
+not to draw features smaller than a minimum area (see <strong>-A</strong>); one may
+also limit the highest hierarchical level of polygons to be included (4
+is the maximum). The 4 lower-resolution databases were derived from the
+full resolution database using the Douglas-Peucker line-simplification
+algorithm. The classification of rivers and borders follow that of the
+WDBII. See <a class="reference internal" href="datasets/gshhg.html"><span class="doc">The Global Self-consistent, Hierarchical, High-resolution Geography Database (GSHHG)</span></a> for further details.</p>
+</div>
+<div class="section" id="bugs">
+<h2>Bugs<a class="headerlink" href="#bugs" title="Permalink to this headline">¶</a></h2>
+<p>The options to fill (<strong>-C</strong> <strong>-G</strong> <strong>-S</strong>) may not always work if the
+Azimuthal equidistant projection is chosen (<strong>-Je</strong>|<strong>E</strong>). If the
+antipole of the projection is in the oceans it will most likely work. If
+not, try to avoid using projection center coordinates that are even
+multiples of the coastline bin size (1, 2, 5, 10, and 20 degrees for
+<strong>f</strong>, <strong>h</strong>, <strong>i</strong>, <strong>l</strong>, <strong>c</strong>, respectively). This projection is not
+supported for clipping.</p>
+<p>The political borders are for the most part 1970s-style but have been
+updated to reflect more recent border rearrangements in Europe and
+elsewhere. Let us know if you find something out of date.</p>
+<p>The full-resolution coastlines are also from a digitizing effort in the
+1970-80s and it is difficult to assess the accuracy. Users who zoom in
+close enough may find that the GSHHG coastline is not matching other
+data, e.g., satellite images, more recent coastline data, etc. We are
+aware of such mismatches but cannot undertake band-aid solutions each
+time this occurs.</p>
+<p>Some users will not be satisfied with what they find for
+the Antarctic shoreline. In Antarctica, the boundary between ice and
+ocean varies seasonally and inter-annually. There are some areas of
+permanent shelf ice. In addition to these time-varying ice-ocean
+boundaries, there are also shelf ice grounding lines where ice goes from
+floating on the sea to sitting on land, and lines delimiting areas of
+rock outcrop. For consistency’s sake, we have used the World Vector
+Shoreline throughout the world, as described in <a class="reference internal" href="datasets/gshhg.html"><span class="doc">The Global Self-consistent, Hierarchical, High-resolution Geography Database (GSHHG)</span></a>.
+Users who need specific boundaries in Antarctica
+should get the Antarctic Digital Database, prepared by the British
+Antarctic Survey, Scott Polar Research Institute, World Conservation
+Monitoring Centre, under the auspices of the Scientific Committee on
+Antarctic Research. This data base contains various kinds of limiting
+lines for Antarctica and is available on CD-ROM. It is published by the
+Scientific Committee on Antarctic Research, Scott Polar Research
+Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
+<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
+<a class="reference internal" href="grdlandmask.html"><span class="doc">grdlandmask</span></a>,
+<a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="colorbar.html" class="btn btn-neutral float-right" title="colorbar" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="clip.html" class="btn btn-neutral float-left" title="clip" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

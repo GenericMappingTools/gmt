@@ -1,0 +1,482 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:27 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>PSIMAGE</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>PSIMAGE</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">psimage &minus;
+To plot images (EPS files or Sun raster files) on maps</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>psimage</b>
+<i>imagefile</i> [
+<b>&minus;W</b>[<b>-</b>]<i>width</i>[/<i>height</i>] |
+<b>&minus;E</b><i>dpi</i> ] [
+<b>&minus;C</b><i>xpos</i>/<i>ypos</i>[/<i>justify</i>] ] [
+<b>&minus;F</b><i>pen</i> ] [
+<b>&minus;G</b>[<b>b</b>|<b>f</b>|<b>t</b>]<i>color</i> ] [
+<b>&minus;I</b> ] [ <b>&minus;K</b> ] [ <b>&minus;M</b> ] [
+<b>&minus;N</b><i>nx</i>[/<i>ny</i>] ] [ <b>&minus;O</b> ] [
+<b>&minus;P</b> ] [
+<b>&minus;U</b>[<i>just</i>/<i>dx</i>/<i>dy</i>/][<b>c</b>|<i>label</i>]
+] [ <b>&minus;V</b> ] [
+<b>&minus;X</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>x-shift</i>[<b>u</b>]]
+] [
+<b>&minus;Y</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>y-shift</i>[<b>u</b>]]
+] [ <b>&minus;c</b><i>copies</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>psimage</b>
+reads an Encapsulated <i>PostScript</i> file or a 1, 8, 24,
+or 32-bit Sun raster file and plots it on a map. The image
+can be scaled arbitrarily, and 1-bit raster images can be
+(1) inverted, i.e., black pixels (on) becomes white (off)
+and vice versa, or (2) colorized, by assigning different
+foreground and background colors, and (3) made transparent
+where one of back- or foreground is painted only. As an
+option, the user may choose to convert colored raster images
+to grayscale using TV&rsquo;s YIQ-transformation. In case of
+8-, 24- or 32-bit Sun raster files, the user can select
+which color to be made transparent. The user may also choose
+to replicate the image which, when preceded by appropriate
+clip paths, may allow larger custom-designed fill patterns
+to be implemented (the <b>&minus;Gp</b> mechanism offered in
+most <b><A HREF="GMT.html">GMT</A></b> programs is limited to rasters smaller than
+146 by 146). <i><br>
+imagefile</i></p>
+
+<p style="margin-left:22%;">This must be an Encapsulated
+<i>PostScript</i> (EPS) file or a Sun raster file. An EPS
+file must contain an appropriate BoundingBox. A raster file
+can have a depth of 1, 8, 24, or 32 bits. Old-style,
+Standard, Run-length-encoded, and RGB Sun raster files are
+supported. Other raster formats can be converted to Sun
+format via a variety of public-domain software (e.g.,
+convert, xv).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the dpi of the
+image in dots per inch, or use <b>&minus;W</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the width (and
+height) of the image in plot coordinates (inches, cm, etc.).
+If <i>height</i> is not given, the original aspect ratio of
+the image is maintained. If <i>width</i> is negative we use
+the absolute value and interpolate image to the device
+resolution using the <i>PostScript</i> image operator.
+Alternatively, use <b>&minus;E</b>.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets position of
+the image in plot coordinates (inches, cm, etc.) from the
+current origin of the plot. By default, this defines the
+position of the lower left corner of the image, but this can
+be changed by specifying justification [0/0/BL].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draws a rectangular
+frame around the image with the given pen [no frame]. (See
+SPECIFYING PENS below).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;K</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">More
+<i>PostScript</i> code will be appended later [Default
+terminates the plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Convert color image
+to monochrome grayshades using the (television)
+YIQ-transformation.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Replicate the image
+<i>nx</i> times horizontally and <i>ny</i> times vertically.
+If <i>ny</i> is omitted, it will be identical to <i>nx</i>
+[Default is 1/1].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;O</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Overlay
+plot mode [Default initializes a new plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;P</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Portrait
+plotting mode [Default is Landscape, see <b><A HREF="gmtdefaults.html">gmtdefaults</A></b>
+to change this].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;U</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw Unix System
+time stamp on plot. By adding <i>just/dx/dy/</i>, the user
+may specify the justification of the stamp and where the
+stamp should fall on the page relative to lower left corner
+of the plot. For example, BL/0/0 will align the lower left
+corner of the time stamp with the lower left corner of the
+plot. Optionally, append a <i>label</i>, or <b>c</b> (which
+will plot the command string.). The <b><A HREF="GMT.html">GMT</A></b> parameters
+<b><A HREF="gmtdefaults.html#UNIX_TIME">UNIX_TIME</A></b>, <b><A HREF="gmtdefaults.html#UNIX_TIME_POS">UNIX_TIME_POS</A></b>, and
+<b><A HREF="gmtdefaults.html#UNIX_TIME_FORMAT">UNIX_TIME_FORMAT</A></b> can affect the appearance; see the
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b> man page for details. The time string
+will be in the locale set by the environment variable
+<b>TZ</b> (generally local time).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;X
+&minus;Y</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Shift plot origin
+relative to the current origin by (<i>x-shift,y-shift</i>)
+and optionally append the length unit (<b>c</b>, <b>i</b>,
+<b>m</b>, <b>p</b>). You can prepend <b>a</b> to shift the
+origin back to the original position after plotting, or
+prepend <b>r</b> [Default] to reset the current origin to
+the new location. If <b>&minus;O</b> is used then the
+default (<i>x-shift,y-shift</i>) is (0,0), otherwise it is
+(r1i, r1i) or (r2.5c, r2.5c). Alternatively, give <b>c</b>
+to align the center coordinate (x or y) of the plot with the
+center of the page based on current page size.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;c</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies the
+number of plot copies. [Default is 1].</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">These options
+are for 1-bit Sun raster images only. They have no effect
+when plotting other images or PostScript files.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Gb</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets background
+color (replace white pixel) of 1-bit images. Use - for
+transparency (and set <b>&minus;Gf</b> to the desired
+color). (See SPECIFYING COLOR below).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Gf</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets foreground
+color (replace black pixel) of 1-bit images. Use - for
+transparency (and set <b>&minus;Gb</b> to the desired
+color). (See SPECIFYING COLOR below).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Invert 1-bit image
+before plotting. This is what is done when you use
+<b>&minus;GP</b> in other GMT programs.</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">These options
+are for 8-, 24-, and 32-bit Sun raster images only. They
+have no effect when plotting 1-bit images or PostScript
+files.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Gt</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Assigns the color
+that is to be made transparent. Sun Raster files do not
+support transparency, so indicate here which color to be
+made transparent. (See SPECIFYING COLOR below).</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+PENS</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p valign="top"><i>pen</i></p></td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p valign="top">The attributes of lines and symbol outlines
+as defined by <i>pen</i> is a comma delimetered list of
+<i>width</i>, <i>color</i> and <i>texture</i>, each of which
+is optional. <i>width</i> can be indicated as a measure
+(points, centimeters, inches) or as <b>faint</b>,
+<b>thin</b>[<b>ner</b>|<b>nest</b>],
+<b>thick</b>[<b>er</b>|<b>est</b>],
+<b>fat</b>[<b>ter</b>|<b>test</b>], or <b>obese</b>.
+<i>color</i> specifies a gray shade or color (see SPECIFYING
+COLOR below). <i>texture</i> is a combination of dashes
+&lsquo;-&rsquo; and dots &lsquo;.&rsquo;.</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+COLOR</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>color</i></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p valign="top">The <i>color</i> of lines, areas and
+patterns can be specified by a valid color name; by a gray
+shade (in the range 0&minus;255); by a decimal color code
+(r/g/b, each in range 0&minus;255; h-s-v, ranges
+0&minus;360, 0&minus;1, 0&minus;1; or c/m/y/k, each in range
+0&minus;1); or by a hexadecimal color code (#rrggbb, as used
+in HTML). See the <b><A HREF="gmtcolors.html">gmtcolors</A></b> manpage for more
+information and a full list of color names.</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To plot the
+image contained in the 8-bit raster file scanned_face.ras,
+scaling it to 8 by 10 cm (thereby possibly changing the
+aspect ratio), and making the white color transparent,
+use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psimage</b>
+scanned_face.ras <b>&minus;W</b> 8<b>c</b>/10<b>c</b>
+-Gtwhite &gt; image.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">To include an
+Encapsulated <i>PostScript</i> file tiger.eps with its upper
+right corner 2 inch to the right and 1 inch up from the
+current location, and have its width scaled to 3 inches,
+while keeping the aspect ratio, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psimage</b>
+tiger.eps <b>&minus;C</b> 2<b>i</b>/1<b>i</b>/TR
+<b>&minus;W</b> 3<b>i</b> &gt; image.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">To replicate
+the 1-bit raster image template 1_bit.ras, colorize it
+(brown background and red foreground), and setting each of 5
+by 5 tiles to be 1 cm wide, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psimage</b>
+1_bit.ras <b>&minus;Gb</b> brown <b>&minus;Gf</b> red
+<b>&minus;N</b> 5 <b>&minus;W</b> 1<b>c</b> &gt;
+image.ps</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="gmtcolors.html">gmtcolors</A></i>(5), <i><A HREF="psxy.html">psxy</A></i>(1)</p>
+<hr>
+</body>
+</html>

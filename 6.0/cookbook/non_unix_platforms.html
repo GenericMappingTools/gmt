@@ -1,0 +1,367 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>15. GMT on non-UNIX Platforms &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="16. Of Colors and Color Legends" href="cpts.html" />
+    <link rel="prev" title="14. Filtering of Data in GMT" href="data_filtering.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preface.html">1. Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html">2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">3. General Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="options.html">4. Standardized command line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinate_transformations.html">5. GMT Coordinate Transformations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="map_projections.html">6. GMT Map Projections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplemental_packages.html">7. GMT Supplemental Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html">8. GMT File Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="include_figures.html">9. Including GMT Graphics into your Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predefined_patterns.html">10. Predefined Bit and Hachure Patterns in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="octal_codes.html">11. Chart of Octal Codes for Characters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postscript_fonts.html">12. PostScript Fonts Used by GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">13. Color Space: The Final Frontier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_filtering.html">14. Filtering of Data in GMT</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">15. GMT on non-UNIX Platforms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#introduction">15.1. Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cygwin-and-gmt">15.2. Cygwin and GMT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mingw-msys-and-gmt">15.3. MINGW|MSYS and GMT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cpts.html">16. Of Colors and Color Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_symbols.html">17. Custom Plot Symbols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contour_annotations.html">18. Annotation of Contours and “Quoted Lines”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ogrgmt_format.html">19. The GMT Vector Data Format for OGR Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="one-liner.html">20. GMT Modern Mode One-line Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../cookbook.html">GMT Cookbook</a> &raquo;</li>
+        
+      <li>15. GMT on non-UNIX Platforms</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/cookbook/non_unix_platforms.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="gmt-on-non-unix-platforms">
+<h1>15. GMT on non-UNIX Platforms<a class="headerlink" href="#gmt-on-non-unix-platforms" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>15.1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>While GMT was ported to non-UNIX systems such as Windows, it is
+also true that one of the strengths of GMT lies its symbiotic
+relationship with UNIX. We therefore recommend that GMT be installed
+in a POSIX-compliant UNIX environment such as traditional
+UNIX-systems, Linux, or Mac OS X. If abandoning your
+non-UNIX operating system is not an option, consider one of these
+solutions:</p>
+<dl class="docutils">
+<dt>WINDOWS:</dt>
+<dd><p class="first">Choose among these three possibilities:</p>
+<ol class="last arabic simple">
+<li>Install GMT under MinGW/MSYS (A collection of GNU utilities).</li>
+<li>Install GMT under Cygwin (A GNU port to Windows).</li>
+<li>Install GMT in Windows using Microsoft C/C++ or other
+compilers. Unlike the first two, this option will not provide you
+with any UNIX tools so you will be limited to what you can do
+with DOS batch files.</li>
+</ol>
+</dd>
+</dl>
+</div>
+<div class="section" id="cygwin-and-gmt">
+<h2>15.2. Cygwin and GMT<a class="headerlink" href="#cygwin-and-gmt" title="Permalink to this headline">¶</a></h2>
+<p>Because GMT works best in conjugation with UNIX tools we suggest you
+install GMT using the Cygwin product from Cygnus (now assimilated by
+Redhat, Inc.). This free version works on any Windows version and it
+comes with both the Bourne Again shell <strong>bash</strong> and the <strong>tcsh</strong>.
+You also have access to most standard GNU development tools such as
+compilers and text processing tools (<strong>awk</strong>, <strong>grep</strong>, <strong>sed</strong>,
+etc.). Note that executables prepared for Windows will also run under Cygwin.</p>
+<p>Follow the instructions on the Cygwin page on how to install the
+package; note you must explicitly add all the development tool packages
+(e.g., <strong>gcc</strong> etc) as the basic installation does not include them by
+default. Once you are up and running under Cygwin, you may install
+GMT  the same way you do under any other UNIX platform; our wiki
+has instructions for packages you need to install first.</p>
+<p>Finally, from Cygwin’s User Guide: By default, no Cygwin program can
+allocate more than 384 MB of memory (program and data). You should not
+need to change this default in most circumstances. However, if you need
+to use more real or virtual memory in your machine you may add an entry
+in either the <strong>HKEY_LOCAL_MACHINE</strong> (to change the limit for all
+users) or <strong>HKEY_CURRENT_USER</strong> (for just the current user) section of
+the registry. Add the DWORD value <strong>heap_chunk_in_mb</strong> and set it to
+the desired memory limit in decimal Mb. It is preferred to do this in
+Cygwin using the <strong>regtool</strong> program included in the Cygwin package.
+(For more information about <strong>regtool</strong> or the other Cygwin utilities,
+see the Section called Cygwin Utilities in Chapter 3 of the Cygwin’s
+User Guide or use the help option of each utility.) You should always be
+careful when using <strong>regtool</strong> since damaging your system registry can
+result in an unusable system. This example sets the local machine memory
+limit to 1024 Mb:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>regtool -i <span class="nb">set</span> /HKLM/Software/Cygnus<span class="se">\ </span>Solutions/Cygwin/heap_chunk_in_mb <span class="m">1024</span>
+regtool -v list /HKLM/Software/Cygnus<span class="se">\ </span>Solutions/Cygwin
+</pre></div>
+</div>
+</div></blockquote>
+<p>For more installation details see the general README file.</p>
+</div>
+<div class="section" id="mingw-msys-and-gmt">
+<h2>15.3. MINGW|MSYS and GMT<a class="headerlink" href="#mingw-msys-and-gmt" title="Permalink to this headline">¶</a></h2>
+<p>Though one can install GMT natively using CMake, the simplest way of installing
+under MINGW|MSYS is to just install the Windows binaries and use them from
+the msys bash shell. As simple as that. Furthermore, GMT programs launch
+faster here than on Cygwin so this is the recommended way of running
+GMT on Windows.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cpts.html" class="btn btn-neutral float-right" title="16. Of Colors and Color Legends" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="data_filtering.html" class="btn btn-neutral float-left" title="14. Filtering of Data in GMT" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

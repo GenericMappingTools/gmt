@@ -1,0 +1,2408 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:29 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>PSXY</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>PSXY</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#CUSTOM SYMBOLS">CUSTOM SYMBOLS</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">psxy &minus;
+Plot lines, polygons, and symbols on maps</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>psxy</b>
+<i>files</i> <b>&minus;J</b><i>parameters</i>
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+[ <b>&minus;A</b>[<b>m</b>|<b>p</b>] ] [
+<b>&minus;B</b>[<b>p</b>|<b>s</b>]<i>parameters</i> ] [
+<b>&minus;C</b><i>cptfile</i> ] [
+<b>&minus;D</b><i>dx</i>/<i>dy</i> ] [
+<b>&minus;E</b>[<b>x</b>|<b>y</b>|<b>X</b>|<b>Y</b>][<b>n</b>][<i>cap</i>][/[<b>-</b>|<b>+</b>]<i>pen</i>]
+] [ <b>&minus;G</b><i>fill</i> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;I</b><i>intens</i> ] [ <b>&minus;K</b> ] [
+<b>&minus;L</b> ] [ <b>&minus;N</b> ] [ <b>&minus;O</b> ] [
+<b>&minus;P</b> ] [
+<b>&minus;S</b>[<i>symbol</i>][<i>size</i>] ] [
+<b>&minus;U</b>[<i>just</i>/<i>dx</i>/<i>dy</i>/][<b>c</b>|<i>label</i>]
+] [ <b>&minus;V</b> ] [
+<b>&minus;W</b>[<b>-</b>|<b>+</b>][<i>pen</i>] ] [
+<b>&minus;X</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>x-shift</i>[<b>u</b>]]
+] [
+<b>&minus;Y</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>y-shift</i>[<b>u</b>]]
+] [ <b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;bi</b>[<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;c</b><i>copies</i> ] [
+<b>&minus;f</b><i>colinfo</i> ] [
+<b>&minus;g</b>[<b>a</b>]<b>x</b>|<b>y</b>|<b>d</b>|<b>X</b>|<b>Y</b>|<b>D</b>|[<i>col</i>]<b>z</b>[+|-]<i>gap</i>[<b>u</b>]
+] [ <b>&minus;m</b>[<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>psxy</b>
+reads (<i>x</i>,<i>y</i>) pairs from <i>files</i> [or
+standard input] and generates <i>PostScript</i> code that
+will plot lines, polygons, or symbols at those locations on
+a map. If a symbol is selected and no symbol size given,
+then <b>psxy</b> will interpret the third column of the
+input data as symbol size. Symbols whose <i>size</i> is
+&lt;= 0 are skipped. If no symbols are specified then the
+symbol code (see <b>&minus;S</b> below) must be present as
+last column in the input. Multiple segment files may be
+plotted using the <b>&minus;m</b> option. If <b>&minus;S</b>
+is not used, a line connecting the data points will be drawn
+instead. To explicitly close polygons, use <b>&minus;L</b>.
+Select a fill with <b>&minus;G</b>. If <b>&minus;G</b> is
+set, <b>&minus;W</b> will control whether the polygon
+outline is drawn or not. If a symbol is selected,
+<b>&minus;G</b> and <b>&minus;W</b> determines the fill and
+outline/no outline, respectively. The <i>PostScript</i> code
+is written to standard output.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em" valign="top"><i>files</i></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">List one or more
+file-names. If no files are given, <b>psxy</b> will read
+standard input. Use <b>&minus;T</b> to ignore all input
+files, including standard input (see below).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;J</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects the map
+projection. Scale is UNIT/degree, 1:xxxxx, or width in UNIT
+(upper case modifier). UNIT is cm, inch, or m, depending on
+the <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> setting in .gmtdefaults4, but this
+can be overridden on the command line by appending <b>c</b>,
+<b>i</b>, or <b>m</b> to the scale/width value. When central
+meridian is optional, default is center of longitude range
+on <b>&minus;R</b> option. Default standard parallel is the
+equator. For map height, max dimension, or min dimension,
+append <b>h</b>, <b>+</b>, or <b>-</b> to the width,
+respectively.</p> </td>
+</table>
+
+<p style="margin-left:22%;">More details can be found in
+the <b><A HREF="psbasemap.html">psbasemap</A></b> man pages.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CYLINDRICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jc</b><i>lon0/lat0/scale</i>
+(Cassini) <b><br>
+
+&minus;Jcyl_stere</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Stereographic) <b><br>
+&minus;Jj</b>[<i>lon0/</i>]<i>scale</i> (Miller) <b><br>
+&minus;Jm</b>[<i>lon0</i>/[<i>lat0/</i>]]<i>scale</i>
+(Mercator) <b><br>
+&minus;Jm</b><i>lon0/lat0/scale</i> (Mercator - Give
+meridian and standard parallel) <b><br>
+&minus;Jo</b>[<b>a</b>]<i>lon0/lat0/azimuth/scale</i>
+(Oblique Mercator - point and azimuth) <b><br>
+&minus;Jo</b>[<b>b</b>]<i>lon0/lat0/lon1/lat1/scale</i>
+(Oblique Mercator - two points) <b><br>
+&minus;Joc</b><i>lon0/lat0/lonp/latp/scale</i> (Oblique
+Mercator - point and pole) <b><br>
+&minus;Jq</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equidistant) <b><br>
+&minus;Jt</b><i>lon0/</i>[<i>lat0/</i>]<i>scale</i> (TM -
+Transverse Mercator) <b><br>
+&minus;Ju</b><i>zone/scale</i> (UTM - Universal Transverse
+Mercator) <b><br>
+&minus;Jy</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equal-Area)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CONIC
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jb</b><i>lon0/lat0/lat1/lat2/scale</i>
+(Albers) <b><br>
+&minus;Jd</b><i>lon0/lat0/lat1/lat2/scale</i> (Conic
+Equidistant) <b><br>
+&minus;Jl</b><i>lon0/lat0/lat1/lat2/scale</i> (Lambert Conic
+Conformal) <b><br>
+&minus;Jpoly</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+((American) Polyconic)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>AZIMUTHAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Ja</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Lambert Azimuthal Equal-Area) <b><br>
+&minus;Je</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Azimuthal Equidistant) <b><br>
+&minus;Jf</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Gnomonic) <b><br>
+&minus;Jg</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Orthographic) <b><br>
+
+&minus;Jg</b><i>lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale</i>
+(General Perspective). <b><br>
+&minus;Js</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(General Stereographic)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>MISCELLANEOUS
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jh</b>[<i>lon0/</i>]<i>scale</i>
+(Hammer) <b><br>
+&minus;Ji</b>[<i>lon0/</i>]<i>scale</i> (Sinusoidal) <b><br>
+&minus;Jkf</b>[<i>lon0/</i>]<i>scale</i> (Eckert IV) <b><br>
+&minus;Jk</b>[<b>s</b>][<i>lon0/</i>]<i>scale</i> (Eckert
+VI) <b><br>
+&minus;Jn</b>[<i>lon0/</i>]<i>scale</i> (Robinson) <b><br>
+&minus;Jr</b>[<i>lon0/</i>]<i>scale</i> (Winkel Tripel)
+<b><br>
+&minus;Jv</b>[<i>lon0/</i>]<i>scale</i> (Van der Grinten)
+<b><br>
+&minus;Jw</b>[<i>lon0/</i>]<i>scale</i> (Mollweide)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>NON-GEOGRAPHICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jp</b>[<b>a</b>]<i>scale</i>[<i>/origin</i>][<b>r</b>|<b>z</b>]
+(Polar coordinates (theta,r)) <b><br>
+
+&minus;Jx</b><i>x-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>][<i>/y-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>]]
+(Linear, log, and power scaling)</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xmin</i>,
+<i>xmax</i>, <i>ymin</i>, and <i>ymax</i> specify the Region
+of interest. For geographic regions, these limits correspond
+to <i>west, east, south,</i> and <i>north</i> and you may
+specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+calendar time coordinates you may either give (a) relative
+time (relative to the selected <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and in the
+selected <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>; append <b>t</b> to
+<b>&minus;JX</b>|<b>x</b>), or (b) absolute time of the form
+[<i>date</i>]<b>T</b>[<i>clock</i>] (append <b>T</b> to
+<b>&minus;JX</b>|<b>x</b>). At least one of <i>date</i> and
+<i>clock</i> must be present; the <b>T</b> is always
+required. The <i>date</i> string must be of the form
+[-]yyyy[-mm[-dd]] (Gregorian calendar) or yyyy[-Www[-d]]
+(ISO week calendar), while the <i>clock</i> string must be
+of the form hh:mm:ss[.xxx]. The use of delimiters and their
+type and positions must be exactly as indicated (however,
+input, output and plot formats are customizable; see
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b>).</p> </td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">By default line
+segments are drawn as great circle arcs. To draw them as
+straight lines, use the <b>&minus;A</b> flag. Alternatively,
+add <b>m</b> to draw the line by first following a meridian,
+then a parallel. Or append <b>p</b> to start following a
+parallel, then a meridian. (This can be practical to draw a
+lines along parallels, for example).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;B</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets map boundary
+annotation and tickmark intervals; see the <b><A HREF="psbasemap.html">psbasemap</A></b>
+man page for all the details.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Give a color
+palette file. If <b>&minus;S</b> is set, let symbol fill
+color be determined by the z-value in the third column.
+Additional fields are shifted over by one column (optional
+size would be 4th rather than 3rd field, etc.). If
+<b>&minus;S</b> is not set, then <b>psxy</b> expects the
+user to supply a multisegment line or polygon file (requires
+<b>&minus;m</b>) where each segment header contains a
+<b>&minus;Z</b><i>val</i> string. The <i>val</i> will
+control the color of the line or polygon (if <b>&minus;L</b>
+is set) via the cpt file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Offset the plot
+symbol or line locations by the given amounts <i>dx/dy</i>
+[Default is no offset]. If <i>dy</i> is not given it is set
+equal to <i>dx</i>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw error bars.
+Append <b>x</b> and/or <b>y</b> to indicate which bars you
+want to draw (Default is both x and y). The x and/or y
+errors must be stored in the columns after the (x,y) pair
+[or (x,y,size) triplet]. The <i>cap</i> parameter indicates
+the length of the end-cap on the error bars [0.25c (or
+0.1i)]. Pen attributes for error bars may also be set (see
+SPECIFYING PENS below) [Defaults: width = 0.25p, color =
+black, texture = solid]. A leading <b>+</b> will use the
+lookup color (via <b>&minus;C</b>) for both symbol fill and
+error pen color, while a leading <b>-</b> will set error pen
+color and turn off symbol fill. If upper case <b>X</b>
+and/or <b>Y</b> is used we will instead draw
+&quot;box-and-whisker&quot; (or &quot;stem-and-leaf&quot;)
+symbols. The x (or y) coordinate is then taken as the median
+value, and 4 more columns are expected to contain the
+minimum (0% quantile), the 25% quantile, the 75% quantile,
+and the maximum (100% quantile) values. The 25-75% box may
+be filled by using <b>&minus;G</b>. If <b>n</b> is appended
+to <b>X</b> (or <b>Y</b>) we draw a notched
+&quot;box-and-whisker&quot; symbol where the notch width
+reflects the uncertainty in the median. Then a 5th extra
+data column is expected to contain the number of points in
+the distribution.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Select color or
+pattern for filling of symbols or polygons [Default is no
+fill]. (See SPECIFYING FILL below).</p></td>
+</table>
+
+<p style="margin-left:22%;">Note when <b>&minus;m</b> is
+chosen, <b>psxy</b> will search for <b>&minus;G</b> and
+<b>&minus;W</b> strings in all the subheaders and let any
+values thus found over-ride the command line settings (see
+<b>&minus;m</b> below).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Use the supplied
+<i>intens</i> value (nominally in the -1 to + 1 range) to
+modulate the fill color by simulating illumination
+[none].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;K</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">More
+<i>PostScript</i> code will be appended later [Default
+terminates the plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force closed
+polygons: connect the endpoints of the line-segment(s) and
+draw polygons. Also, in concert with <b>&minus;C</b>,
+<b>&minus;m</b>, and <b>&minus;Z</b> settings in the headers
+will use the implied color for polygon fill [Default is
+polygon pen color].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do NOT skip symbols
+that fall outside map border [Default plots points inside
+border only]. The option does not apply to lines and
+polygons which are always clipped to the map region.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;O</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Overlay
+plot mode [Default initializes a new plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;P</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Portrait
+plotting mode [Default is Landscape, see <b><A HREF="gmtdefaults.html">gmtdefaults</A></b>
+to change this].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Plot symbols. If
+present, <i>size</i> is symbol size in the unit set in
+.gmtdefaults4 (unless <b>c</b>, <b>i</b>, <b>m</b>, or
+<b>p</b> is appended). If <i>size</i> is not given it is
+expected in the third (or 4th if <b>&minus;C</b> is used)
+column. Any additional fields are shifted over by one
+column. If the symbol code (see below) is not given it will
+be read from the last column in the input data; this cannot
+be used in conjunction with <b>&minus;b</b>. Optionally,
+append <b>c</b>, <b>i</b>, <b>m</b>, <b>p</b> to indicate
+that the size information in the input data is in units of
+cm, inch, meter, or point, respectively [Default is
+<b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b>]. Note: if you give both size and symbol
+via the input file you must use <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> to
+indicate the units used for the symbol size.</p></td>
+</table>
+
+<p style="margin-left:22%;">The uppercase symbols <b>A</b>,
+<b>C</b>, <b>D</b>, <b>G</b>, <b>H</b>, <b>I</b>, <b>N</b>,
+<b>S</b>, <b>T</b> are normalized to have the same area as a
+circle with diameter <i>size</i>, while the size of the
+corresponding lowercase symbols refers to the diameter of a
+circumscribed circle. Choose between these symbol codes:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S-</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">x-dash (-).
+<i>size</i> is the length of a short horizontal line
+segment.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S+</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">plus (+).
+<i>size</i> is diameter of circumscribing circle.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sa</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">st<b>a</b>r.
+<i>size</i> is diameter of circumscribing circle.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sb</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Vertical <b>b</b>ar
+extending from <i>base</i> to y. <i>size</i> is bar width.
+Append <b>u</b> if <i>size</i> is in x-units [Default is
+plot-distance units]. By default, <i>base</i> = ymin. Append
+<b>b</b><i>base</i> to change this value.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;SB</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Horizontal
+<b>b</b>ar extending from <i>base</i> to x. <i>size</i> is
+bar width. Append <b>u</b> if <i>size</i> is in y-units
+[Default is plot-distance units]. By default, <i>base</i> =
+xmin. Append <b>b</b><i>base</i> to change this value.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sc</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><b>c</b>ircle.
+<i>size</i> is diameter of circle.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sd</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><b>d</b>iamond.
+<i>size</i> is diameter of circumscribing circle.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Se</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><b>e</b>llipse.
+Direction (in degrees counter-clockwise from horizontal),
+major_axis, and minor_axis must be found in columns 3, 4,
+and 5.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;SE</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Same as
+<b>&minus;Se</b>, except azimuth (in degrees east of north)
+should be given instead of direction. The azimuth will be
+mapped into an angle based on the chosen map projection
+(<b>&minus;Se</b> leaves the directions unchanged.)
+Furthermore, the axes lengths must be given in km instead of
+plot-distance units. An exception occurs for a linear
+projection in which we assume the ellipse axes are given in
+the same units as <b>&minus;R</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sf</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><b>f</b>ront.
+<b>&minus;Sf</b><i>gap/size</i>[<i>dir</i>][<i>type</i>][:<i>offset</i>].
+Supply distance gap between symbols and symbol size. If
+<i>gap</i> is negative, it is interpreted to mean the number
+of symbols along the front instead. Append <i>dir</i> to
+plot symbols on the <b>l</b>eft or <b>r</b>ight side of the
+front [Default is centered]. Append <i>type</i> to specify
+which symbol to plot: <b>b</b>ox, <b>c</b>ircle,
+<b>f</b>ault, <b>s</b>lip, or <b>t</b>riangle. [Default is
+fault]. Slip means left-lateral or right-lateral strike-slip
+arrows (centered is not an option). Append :<i>offset</i> to
+offset the first symbol from the beginning of the front by
+that amount [Default is 0].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sg</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">octa<b>g</b>on.
+<i>size</i> is diameter of circumscribing circle.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sh</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><b>h</b>exagon.
+<i>size</i> is diameter of circumscribing circle.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Si</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><b>i</b>nverted
+triangle. <i>size</i> is diameter of circumscribing
+circle.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sj</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Rotated rectangle.
+Direction (in degrees counter-clockwise from horizontal),
+x-dimension, and y-dimension must be found in columns 3, 4,
+and 5.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;SJ</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Same as
+<b>&minus;Sj</b>, except azimuth (in degrees east of north)
+should be given instead of direction. The azimuth will be
+mapped into an angle based on the chosen map projection
+(<b>&minus;Sj</b> leaves the directions unchanged.)
+Furthermore, the dimensions must be given in km instead of
+plot-distance units. An exception occurs for a linear
+projection in which we assume the dimensions are given in
+the same units as <b>&minus;R</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sk</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><b>k</b>ustom
+symbol. Append &lt;name&gt;/<i>size</i>, and we will look
+for a definition file called &lt;name&gt;.def in (1) the
+current directory or (2) in ~/.gmt or (3) in
+<b>$GMT_SHAREDIR</b>/custom. The symbol as defined in that
+file is of size 1.0 by default; the appended <i>size</i>
+will scale symbol accordingly. Users may add their own
+custom *.def files; see CUSTOM SYMBOLS below.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sl</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><b>l</b>etter or
+text string (less than 64 characters). Give size, and append
+/<i>string</i> after the size. Note that the size is only
+approximate; no individual scaling is done for different
+characters. Remember to escape special characters like *.
+Optionally, you may append %<i>font</i> to select a
+particular font [Default is <b><A HREF="gmtdefaults.html#ANNOT_FONT_PRIMARY">ANNOT_FONT_PRIMARY</A></b>].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sm</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><b>m</b>ath angle
+arc, optionally with one or two arrow heads. The <i>size</i>
+is the radius of the arc. Start and stop directions (in
+degrees counter-clockwise from horizontal) for arc must be
+found in columns 3 and 4. Use <b>&minus;Smf</b> to add arrow
+head at first angle, <b>&minus;Sml</b> for arrow head at
+last angle, and <b>&minus;Smb</b> for both [Default is no
+arrow heads].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sn</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">pe<b>n</b>tagon.
+<i>size</i> is diameter of circumscribing circle.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sp</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><b>p</b>oint. No
+size needs to be specified (1 pixel is used).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sq</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><b>q</b>uoted line,
+i.e., lines with annotations such as contours. Append
+[<b>d</b>|<b>D</b>|<b>f</b>|<b>l</b>|<b>L</b>|<b>n</b>|<b>x</b>|<b>X</b>]<i>info</i>[:<i>labelinfo</i>].
+The required argument controls the placement of labels along
+the quoted lines. Choose among five controlling
+algorithms:</p> </td>
+</table>
+
+
+<p style="margin-left:22%;"><b>d</b><i>dist</i>[<b>c</b>|<b>i</b>|<b>m</b>|<b>p</b>]
+or
+<b>D</b><i>dist</i>[<b>d</b>|<b>e</b>|<b>k</b>|<b>m</b>|<b>n</b>]</p>
+
+<p style="margin-left:32%;">For lower case <b>d</b>, give
+distances between labels on the plot in your preferred
+measurement unit <b>c</b> (cm), <b>i</b> (inch), <b>m</b>
+(meter), or <b>p</b> (points), while for upper case
+<b>D</b>, specify distances in map units and append the
+unit; choose among <b>e</b> (m), <b>k</b> (km), <b>m</b>
+(mile), <b>n</b> (nautical mile), or <b>d</b> (spherical
+degree). [Default is 10<b>c</b> or 4<b>i</b>].</p>
+
+<p style="margin-left:22%;"><b>f</b><i>ffile.d</i></p>
+
+<p style="margin-left:32%;">Reads the ascii file
+<i>ffile.d</i> and places labels at locations in the file
+that matches locations along the quoted lines. Inexact
+matches and points outside the region are skipped.</p>
+
+
+<p style="margin-left:22%;"><b>l|L</b><i>line1</i>[,<i>line2</i>,...]</p>
+
+<p style="margin-left:32%;">Give the coordinates of the end
+points for one or more comma-separated straight line
+segments. Labels will be placed where these lines intersect
+the quoted lines. The format of each <i>line</i>
+specification is
+<i>start_lon</i>/<i>start_lat</i>/<i>stop_lon</i>/<i>stop_lat</i>.
+Both <i>start_lon</i>/<i>start_lat</i> and
+<i>stop_lon</i>/<i>stop_lat</i> can be replaced by a
+2-character key that uses the justification format employed
+in <b><A HREF="pstext.html">pstext</A></b> to indicate a point on the map, given as
+[LCR][BMT]. <b><br>
+L</b> will interpret the point pairs as defining great
+circles [Default is straight line].</p>
+
+<p style="margin-left:22%;"><b>n|N</b><i>n_label</i></p>
+
+<p style="margin-left:32%;">Specifies the number of
+equidistant labels for quoted lines line [1]. Upper case
+<b>N</b> starts labeling exactly at the start of the line
+[Default centers them along the line]. <b>N</b>-1 places one
+justified label at start, while <b>N</b>+1 places one
+justified label at the end of quoted lines. Optionally,
+append /<i>min_dist</i>[c|i|m|p] to enforce that a minimum
+distance separation between successive labels is
+enforced.</p>
+
+<p style="margin-left:22%;"><b>x|X</b><i>xfile.d</i></p>
+
+<p style="margin-left:32%;">Reads the multi-segment file
+<i>xfile.d</i> and places labels at the intersections
+between the quoted lines and the lines in<i>xfile.d</i>.
+<b>X</b> will resample the lines first along great-circle
+arcs.</p>
+
+<p style="margin-left:22%; margin-top: 1em">In addition,
+you may optionally append
+<b>+r</b><i>radius</i>[<b>c</b>|<b>i</b>|<b>m</b>|<b>p</b>]
+to set a minimum label separation in the x-y plane [no
+limitation].</p>
+
+<p style="margin-left:22%; margin-top: 1em">The optional
+<i>labelinfo</i> controls the specifics of the label
+formatting and consists of a concatenated string made up of
+any of the following control arguments: <b><br>
++a</b><i>angle</i></p>
+
+<p style="margin-left:32%;">For annotations at a fixed
+angle, <b>+an</b> for line-normal, or <b>+ap</b> for
+line-parallel [Default].</p>
+
+
+<p style="margin-left:22%;"><b>+c</b><i>dx</i>[/<i>dy</i>]</p>
+
+<p style="margin-left:32%;">Sets the clearance between
+label and optional text box. Append <b>c|i|m|p</b> to
+specify the unit or % to indicate a percentage of the label
+font size [15%].</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em" valign="top"><b>+d</b></p></td>
+<td width="1%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Turns on debug
+which will draw helper points and lines to illustrate the
+workings of the quoted line setup.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>+f</b><i>font</i></p> </td>
+<td width="1%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the desired
+font [Default <b><A HREF="gmtdefaults.html#ANNOT_FONT_PRIMARY">ANNOT_FONT_PRIMARY</A></b>].</p></td>
+</table>
+
+<p style="margin-left:22%;"><b>+g</b>[<i>color</i>]</p>
+
+<p style="margin-left:32%;">Selects opaque text boxes
+[Default is transparent]; optionally specify the color
+[Default is <b><A HREF="gmtdefaults.html#PAGE_COLOR">PAGE_COLOR</A></b>]. (See SPECIFYING COLOR
+below).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>+j</b><i>just</i></p> </td>
+<td width="1%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Sets label
+justification [Default is MC]. Ignored when -SqN|n+|-1 is
+used.</p> </td>
+</table>
+
+<p style="margin-left:22%;"><b>+k</b><i>color</i></p>
+
+<p style="margin-left:32%;">Sets color of text labels
+[Default is <b><A HREF="gmtdefaults.html#COLOR_BACKGROUND">COLOR_BACKGROUND</A></b>]. (See SPECIFYING COLOR
+below).</p>
+
+<p style="margin-left:22%;"><b>+l</b><i>label</i></p>
+
+<p style="margin-left:32%;">Sets the constant label
+text.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>+L</b><i>flag</i></p> </td>
+<td width="1%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the label text
+according to the specified flag:</p></td>
+</table>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="5%">
+
+
+<p style="margin-top: 1em" valign="top"><b>+Lh</b></p></td>
+<td width="6%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em" valign="top">Take the label from
+the current multisegment header (first scan for an embedded
+<b>&minus;L</b><i>label</i> option, if not use the first
+word following the segment flag). For multiple-word labels,
+enclose entire label in double quotes.</p></td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="5%">
+
+
+<p style="margin-top: 1em" valign="top"><b>+Ld</b></p></td>
+<td width="6%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em" valign="top">Take the Cartesian
+plot distances along the line as the label; append
+<b>c|i|m|p</b> as the unit [Default is
+<b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b>].</p> </td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="5%">
+
+
+<p style="margin-top: 1em" valign="top"><b>+LD</b></p></td>
+<td width="6%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em" valign="top">Calculate actual
+map distances; append <b>d|e|k|m|n</b> as the unit [Default
+is <b>d</b>(egrees), unless label placement was based on map
+distances along the lines in which case we use the same unit
+specified for that algorithm]. Requires a map projection to
+be used.</p></td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="5%">
+
+
+<p style="margin-top: 1em" valign="top"><b>+Lf</b></p></td>
+<td width="6%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em" valign="top">Use text after the
+2nd column in the fixed label location file as the label.
+Requires the fixed label location setting.</p></td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="5%">
+
+
+<p style="margin-top: 1em" valign="top"><b>+Lx</b></p></td>
+<td width="6%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em" valign="top">As <b>+Lh</b> but
+use the headers in the <i>xfile.d</i> instead. Requires the
+crossing file option.</p></td>
+</table>
+
+
+<p style="margin-left:22%;"><b>+n</b><i>dx</i>[/<i>dy</i>]</p>
+
+<p style="margin-left:32%;">Nudges the placement of labels
+by the specified amount (append <b>c|i|m|p</b> to specify
+the units). Increments are considered in the coordinate
+system defined by the orientation of the line; use <b>+N</b>
+to force increments in the plot x/y coordinates system [no
+nudging].</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="3%">
+
+
+<p style="margin-top: 1em" valign="top"><b>+o</b></p></td>
+<td width="7%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Selects rounded
+rectangular text box [Default is rectangular]. Not
+applicable for curved text (<b>+v</b>) and only makes sense
+for opaque text boxes.</p></td>
+</table>
+
+<p style="margin-left:22%;"><b>+p</b>[<i>pen</i>]</p>
+
+<p style="margin-left:32%;">Draws the outline of text
+boxsets [Default is no outline]; optionally specify pen for
+outline [Default is width = 0.25p, color = black, texture =
+solid]. (See SPECIFYING PENS below).</p>
+
+<p style="margin-left:22%;"><b>+r</b><i>min_rad</i></p>
+
+<p style="margin-left:32%;">Will not place labels where the
+line&rsquo;s radius of curvature is less than <i>min_rad</i>
+[Default is 0].</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>+s</b><i>size</i></p> </td>
+<td width="1%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the desired
+font size in points [Default is 9].</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>+u</b><i>unit</i></p> </td>
+<td width="1%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Appends <i>unit</i>
+to all line labels. If <i>unit</i> starts with a leading
+hyphen (-) then there will be no space between label value
+and the unit. [Default is no unit].</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em" valign="top"><b>+v</b></p></td>
+<td width="1%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies curved
+labels following the path [Default is straight labels].</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em" valign="top"><b>+w</b></p></td>
+<td width="1%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies how many
+(<i>x, y</i>) points will be used to estimate label angles
+[Default is 10].</p></td>
+</table>
+
+<p style="margin-left:22%;"><b>+=</b><i>prefix</i></p>
+
+<p style="margin-left:32%;">Prepends <i>prefix</i> to all
+line labels. If <i>prefix</i> starts with a leading hyphen
+(-) then there will be no space between label value and the
+prefix. [Default is no prefix].</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sr</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><b>r</b>ectangle.
+No size needs to be specified, but the x- and y-dimensions
+must be found in columns 3 and 4.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Ss</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><b>s</b>quare.
+<i>size</i> is diameter of circumscribing circle.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;St</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><b>t</b>riangle.
+<i>size</i> is diameter of circumscribing circle.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sv</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><b>v</b>ector.
+Direction (in degrees counter-clockwise from horizontal) and
+length must be found in columns 3 and 4. <i>size</i>, if
+present, will be interpreted as
+<i>arrowwidth/headlength/headwidth</i> [Default unit is
+0.075<b>c</b>/0.3<b>c</b>/0.25<b>c</b> (or
+0.03<b>i</b>/0.12<b>i</b>/0.1<b>i</b>)]. By default arrow
+attributes remains invariant to the length of the arrow. To
+have the size of the vector scale down with decreasing size,
+append <b>n</b><i>norm</i>, where vectors shorter than
+<i>norm</i> will have their attributes scaled by
+length/<i>norm</i>. To center vector on balance point, use
+<b>&minus;Svb</b>; to align point with the vector head, use
+<b>&minus;Svh</b>; to align point with the vector tail, use
+<b>&minus;Svt</b> [Default]. To give the head point&rsquo;s
+coordinates instead of direction and length, use
+<b>&minus;Svs</b>. Upper case <b>B, H, T, S</b> will draw a
+double-headed vector [Default is single head].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;SV</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Same as
+<b>&minus;Sv</b>, except azimuth (in degrees east of north)
+should be given instead of direction. The azimuth will be
+mapped into an angle based on the chosen map projection
+(<b>&minus;Sv</b> leaves the directions unchanged.)</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sw</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">pie <b>w</b>edge.
+Start and stop directions (in degrees counter-clockwise from
+horizontal) for pie slice must be found in columns 3 and
+4.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;SW</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Same as
+<b>&minus;Sw</b>, except azimuths (in degrees east of north)
+should be given instead of the two directions. The azimuths
+will be mapped into angles based on the chosen map
+projection (<b>&minus;Sw</b> leaves the directions
+unchanged.)</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sx</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">cross (x).
+<i>size</i> is diameter of circumscribing circle.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Sy</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">y-dash (|).
+<i>size</i> is the length of a short vertical line
+segment.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Ignore all input
+files, including standard input. This is the same as
+specifying /dev/null (or NUL for Windows users) as input
+file. Use this to activate only the options that are not
+related to plotting of lines or symbols, such as <b>psxy
+&minus;R &minus;J &minus;O &minus;T</b> to terminate a
+sequence of <b><A HREF="GMT.html">GMT</A></b> plotting commands without producing
+any plotting output.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;U</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw Unix System
+time stamp on plot. By adding <i>just/dx/dy/</i>, the user
+may specify the justification of the stamp and where the
+stamp should fall on the page relative to lower left corner
+of the plot. For example, BL/0/0 will align the lower left
+corner of the time stamp with the lower left corner of the
+plot. Optionally, append a <i>label</i>, or <b>c</b> (which
+will plot the command string.). The <b><A HREF="GMT.html">GMT</A></b> parameters
+<b><A HREF="gmtdefaults.html#UNIX_TIME">UNIX_TIME</A></b>, <b><A HREF="gmtdefaults.html#UNIX_TIME_POS">UNIX_TIME_POS</A></b>, and
+<b><A HREF="gmtdefaults.html#UNIX_TIME_FORMAT">UNIX_TIME_FORMAT</A></b> can affect the appearance; see the
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b> man page for details. The time string
+will be in the locale set by the environment variable
+<b>TZ</b> (generally local time).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set pen attributes
+for lines or the outline of symbols [Defaults: width =
+0.25p, color = black, texture = solid]. A leading <b>+</b>
+will use the lookup color (via <b>&minus;C</b>) for both
+symbol fill and outline pen color, while a leading <b>-</b>
+will set outline pen color and turn off symbol fill. (See
+SPECIFYING PENS below).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;X
+&minus;Y</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Shift plot origin
+relative to the current origin by (<i>x-shift,y-shift</i>)
+and optionally append the length unit (<b>c</b>, <b>i</b>,
+<b>m</b>, <b>p</b>). You can prepend <b>a</b> to shift the
+origin back to the original position after plotting, or
+prepend <b>r</b> [Default] to reset the current origin to
+the new location. If <b>&minus;O</b> is used then the
+default (<i>x-shift,y-shift</i>) is (0,0), otherwise it is
+(r1i, r1i) or (r2.5c, r2.5c). Alternatively, give <b>c</b>
+to align the center coordinate (x or y) of the plot with the
+center of the page based on current page size.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is the required number of
+columns given the chosen settings].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;c</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies the
+number of plot copies. [Default is 1].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;g</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Examine the spacing
+between consecutive data points in order to impose breaks in
+the line. Append <b>x</b>|<b>X</b> or <b>y</b>|<b>Y</b> to
+define a gap when there is a large enough change in the x or
+y coordinates, respectively, or <b>d</b>|<b>D</b> for
+distance gaps; use upper case to calculate gaps from
+projected coordinates. For gap-testing on other columns use
+[<i>col</i>]<b>z</b>; if <i>col</i> is not prepended the it
+defaults to 2 (i.e., 3rd column). Append [+|-]<i>gap</i> and
+optionally a unit <b>u</b>. Regarding optional signs: -ve
+means previous minus current column value must exceed
+|<i>gap</i> to be a gap, +ve means current minus previous
+column value must exceed <i>gap</i>, and no sign means the
+absolute value of the difference must exceed <i>gap</i>. For
+geographic data (<b>x</b>|<b>y</b>|<b>d</b>), the unit
+<b>u</b> may be m<b>e</b>ter [Default], <b>k</b>ilometer,
+<b>m</b>iles, or <b>n</b>autical miles. For projected data
+(<b>X</b>|<b>Y</b>|<b>D</b>), choose from <b>i</b>nch,
+<b>c</b>entimeter, <b>m</b>eter, or <b>p</b>oints [Default
+unit set by MEASURE_UNIT]. Note: For
+<b>x</b>|<b>y</b>|<b>z</b> with time data the unit is
+instead controlled by TIME_UNIT. Repeat the option to
+specify multiple criteria, of which any can be met to
+produce a line break. Issue an additional <b>&minus;ga</b>
+to indicate that all criteria must be met instead. The
+<b>&minus;g</b> option is ignored if <b>&minus;S</b> is
+set.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file. Segments are separated by a record whose first
+character is <i>flag</i> [Default is &rsquo;&gt;&rsquo;]. On
+these segment header records one or more of the following
+options can be added:</p></td>
+</table>
+
+<p style="margin-left:22%;"><b>&minus;G</b><i>fill</i> Use
+the new <i>fill</i> and turn filling on <b><br>
+&minus;G-</b> Turn filling off <b><br>
+&minus;G+</b> Revert to default fill (none if not set on
+command line) <b><br>
+&minus;W</b><i>pen</i> Use the new <i>pen</i> and turn
+outline on <b><br>
+&minus;W-</b> Turn outline off <b><br>
+&minus;W+</b> Revert to default pen (none if not set on
+command line) <b><br>
+&minus;Z</b><i>zval</i> Obtain fill via cpt lookup using
+z-value <i>zval</i> <b><br>
+&minus;ZNaN</b> Get the NaN color from the cpt file</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+PENS</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p valign="top"><i>pen</i></p></td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p valign="top">The attributes of lines and symbol outlines
+as defined by <i>pen</i> is a comma delimetered list of
+<i>width</i>, <i>color</i> and <i>texture</i>, each of which
+is optional. <i>width</i> can be indicated as a measure
+(points, centimeters, inches) or as <b>faint</b>,
+<b>thin</b>[<b>ner</b>|<b>nest</b>],
+<b>thick</b>[<b>er</b>|<b>est</b>],
+<b>fat</b>[<b>ter</b>|<b>test</b>], or <b>obese</b>.
+<i>color</i> specifies a gray shade or color (see SPECIFYING
+COLOR below). <i>texture</i> is a combination of dashes
+&lsquo;-&rsquo; and dots &lsquo;.&rsquo;.</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+FILL</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p valign="top"><i>fill</i></p></td>
+<td width="5%"></td>
+<td width="78%">
+
+
+<p valign="top">The attribute <i>fill</i> specifies the
+solid shade or solid <i>color</i> (see SPECIFYING COLOR
+below) or the pattern used for filling polygons. Patterns
+are specified as <b>p</b><i>dpi/pattern</i>, where
+<i>pattern</i> gives the number of the built-in pattern
+(1-90) <i>or</i> the name of a Sun 1-, 8-, or 24-bit raster
+file. The <i>dpi</i> sets the resolution of the image. For
+1-bit rasters: use <b>P</b><i>dpi/pattern</i> for inverse
+video, or append
+<b>:F</b><i>color</i>[<b>B</b>[<i>color</i>]] to specify
+fore- and background colors (use <i>color</i> = - for
+transparency). See <b><A HREF="GMT.html">GMT</A></b> Cookbook &amp; Technical
+Reference Appendix E for information on individual
+patterns.</p> </td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+COLOR</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>color</i></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p valign="top">The <i>color</i> of lines, areas and
+patterns can be specified by a valid color name; by a gray
+shade (in the range 0&minus;255); by a decimal color code
+(r/g/b, each in range 0&minus;255; h-s-v, ranges
+0&minus;360, 0&minus;1, 0&minus;1; or c/m/y/k, each in range
+0&minus;1); or by a hexadecimal color code (#rrggbb, as used
+in HTML). See the <b><A HREF="gmtcolors.html">gmtcolors</A></b> manpage for more
+information and a full list of color names.</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To plot solid
+red circles (diameter = 0.25 cm) at the positions listed in
+the file DSDP.xy on a Mercator map at 5 cm/degree of the
+area 150E to 154E, 18N to 23N, with tickmarks every 1 degree
+and gridlines every 15 minutes, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psxy</b>
+DSDP.xy <b>&minus;R</b> 150/154/18/23 <b>&minus;Jm</b> 5<b>c
+&minus;Sc</b>0.25<b>c &minus;G</b> red <b>&minus;B</b>
+1<b>g</b>15<b>m</b> | lpr</p>
+
+<p style="margin-left:11%; margin-top: 1em">To plot the xyz
+values in the file quakes.xyzm as circles with size given by
+the magnitude in the 4th column and color based on the depth
+in the third using the color palette cpt on a linear map,
+use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psxy</b>
+quakes.xyzm <b>&minus;R</b> 0/1000/0/1000 <b>&minus;JX</b>
+6<b>i &minus;Sc &minus;C</b> cpt <b>&minus;B</b> 200 &gt;
+map.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">To plot the
+file trench.xy on a Mercator map, with white triangles with
+sides 0.25 inch on the left side of the line, spaced every
+0.8 inch, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psxy</b>
+trench.xy <b>&minus;R</b> 150/200/20/50 <b>&minus;Jm</b>
+0.15<b>i &minus;Sf</b>0.8<b>i</b>/0.1<b>ilt &minus;G</b>
+white <b>&minus;W &minus;B</b> 10 | lpr br</p>
+
+<p style="margin-left:11%; margin-top: 1em">To plot the
+data in the file misc.d as symbols determined by the code in
+the last column, and with size given by the magnitude in the
+4th column, and color based on the third column via the
+color palette cpt on a linear map, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psxy</b>
+misc.d <b>&minus;R</b> 0/100/-50/100 <b>&minus;JX</b> 6<b>i
+&minus;S &minus;C</b> cpt <b>&minus;B</b> 20 &gt; t.ps</p>
+
+<a name="CUSTOM SYMBOLS"></a>
+<h2>CUSTOM SYMBOLS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>psxy</b> and
+<b><A HREF="psxyz.html">psxyz</A></b> allows users to define and plot their own
+custom symbols. This is done by encoding the symbol using a
+simple plotting code described below. Put all the plotting
+codes for your new symbol in a file whose extension must be
+.def; you may then address the symbol without giving the
+extension (e.g., the symbol file tsunami.def is used by
+specifying <b>&minus;Sk</b><i>tsunami/size</i>. The
+definition file can contain any number of plot code records,
+as well as blank lines and comment lines (starting with #).
+<b>psxy</b> and <b><A HREF="psxyz.html">psxyz</A></b> will look for the definition
+files in (1) the current directory, (2) the ~/.gmt
+directory, and (3) the <b>$GMT_SHAREDIR</b>/custom
+directory, in that order. Freeform polygons (made up of
+straight line segments and arcs of circles) can be designed
+- these polygons can be painted and filled with a pattern.
+Other standard geometric symbols can also be used. Generate
+freeform polygons by starting with an anchor point (append [
+<b>&minus;W</b><i>pen</i> ] and [ <b>&minus;G</b><i>fill</i>
+] to indicate pen and fill attributes):</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%">
+</td>
+<td width="8%">
+
+
+<p valign="top"><i>x0</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>y0</i></p></td>
+<td width="69%">
+
+
+<p valign="top"><b>M</b></p></td>
+</table>
+
+<p style="margin-left:11%;">and draw a straight line from
+the current point to the next point with</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%">
+</td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="69%">
+
+
+<p valign="top"><b>D</b></p></td>
+</table>
+
+<p style="margin-left:11%;">or add an arc by using</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%">
+</td>
+<td width="8%">
+
+
+<p valign="top"><i>xc</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>yc</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>r</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>dir1</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>dir2</i></p></td>
+<td width="46%">
+
+
+<p valign="top"><b>A</b></p></td>
+</table>
+
+<p style="margin-left:11%;">When a record other than the
+<b>D</b> or <b>A</b> is encountered, the polygon is closed
+and considered complete. The optional pen and fill setting
+hardwires particular values for this feature. If not present
+the polygon&rsquo;s characteristics are determined by the
+command line settings for pen and fill. To deactivate fill
+or outline for any given polygon, give
+<b>&minus;G&minus;</b> or <b>&minus;W&minus;</b>. To add
+other geometric shapes to your custom symbol, add any number
+of the following plot code records (each accepts the
+optional [ <b>&minus;W</b><i>pen</i> ] and [
+<b>&minus;G</b><i>fill</i> ] at the end):</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">circle:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>size</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><b>c</b></p></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">cross:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>size</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><b>x</b></p></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">diamond:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>size</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><b>d</b></p></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">ellipse:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>dir</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>major</i></p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>minor</i></p></td>
+<td width="8%"></td>
+<td width="23%">
+
+
+<p valign="top"><b>e</b></p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">hexagon:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>size</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><b>h</b></p></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">invtriangle:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>size</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><b>i</b></p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">letter:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>size</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>string</i></p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top"><b>l</b></p></td>
+<td width="8%"></td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">octagon:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>size</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><b>g</b></p></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">pentagon:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>size</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><b>n</b></p></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">plus:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>size</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><b>+</b></p></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">rect:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>xwidth</i></p></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>ywidth</i></p></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>r</b></p></td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">square:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>size</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><b>s</b></p></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">star:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>size</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><b>a</b></p></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">triangle:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>size</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><b>t</b></p></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">wedge:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>radius</i></p></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>dir1</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>dir2</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><b>w</b></p></td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">x-dash:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>size</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><b>-</b></p></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="23%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="-3%">
+
+
+<p valign="top">y-dash:</p></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top"><i>x</i></p></td>
+<td width="7%">
+
+
+<p valign="top"><i>y</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><i>size</i></p></td>
+<td width="8%">
+
+
+<p valign="top"><b>y</b></p></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="23%">
+</td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">When designing
+your symbol, the <i>x, y</i> and other dimensions are
+relative to a symbol of size 1, and all the dimensions will
+be scaled by the actual symbol size chosen at run-time. To
+design a symbol, make a grid paper with <b>psbasemap
+&minus;R</b>-0.5/0.5/-0.5/0.5 <b>&minus;JX</b> 4<b>i
+&minus;Ba</b> 0.1g0.05 <b>&minus;P</b> &gt; grid.ps and draw
+your symbol, centering it on (0,0). For examples of symbols,
+see the set supplied with <b><A HREF="GMT.html">GMT</A></b> in
+<b>$GMT_SHAREDIR</b>/custom.</p>
+
+<a name="BUGS"></a>
+<h2>BUGS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The
+<b>&minus;N</b> option does not adjust the BoundingBox
+information so you may have to post-process the
+<i>PostScript</i> output with <b>ps2raster -A</b> to obtain
+the correct BoundingBox. <b><br>
+psxy</b> cannot handle filling of polygons that contain the
+south or north pole. For such a polygon, make a copy and
+split it into two and make each explicitly contain the polar
+point. The two polygons will combine to give the desired
+effect when filled; to draw outline use the original
+polygon.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="gmtcolors.html">gmtcolors</A></i>(5), <i><A HREF="psbasemap.html">psbasemap</A></i>(1),
+<i><A HREF="psxyz.html">psxyz</A></i>(1)</p>
+<hr>
+</body>
+</html>

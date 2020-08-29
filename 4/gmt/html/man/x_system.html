@@ -1,0 +1,303 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:46 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>X_SYSTEM</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>X_SYSTEM</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#INTRODUCTION">INTRODUCTION</a><br>
+<a href="#x_system PHILOSOPHY">x_system PHILOSOPHY</a><br>
+<a href="#HOW TO DO IT">HOW TO DO IT</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#AUTHOR">AUTHOR</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>x_system</b>
+&minus; A Cross-Over Error Analysis Tool</p>
+
+<a name="INTRODUCTION"></a>
+<h2>INTRODUCTION</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">The <b>x_system</b> was developed to aid in
+the task of gridding geophysical track data, e.g., gravity,
+magnetics, or bathymetry. It has long been recognized that
+although the data quality along track may be quite good, one
+usually finds discrepancies at the points where two tracks
+intersect. These cross-over errors (COE) can be large enough
+to cause artificial features in the final gridded dataset,
+which would render geological interpretations of such a map
+questionable. Also, notoriously bad cruises will generate
+high COEs along their tracks, and should ideally be removed
+from the data base before gridding is attempted. The reasons
+why COEs arise are many and will not be dealt with here.
+Although originally intended to be used for marine gravity
+data only, <b>x_system</b> has been designed to handle
+magnetics and bathymetry as well. (For an overview of
+gravity COEs, see Wessel and Watts [1988]). In most cases,
+marine gravity COEs can be explained by a simple model
+having only 2 parameters. These are a d.c.-shift and a
+drift-rate that apply for the duration of the cruise. The
+goal of the COE analysis is thus to determine the dc-shifts
+and drift-rates for each leg that will minimize the COEs in
+a least squares sense, and at the same time flag cruises
+that exhibit unreasonably high COEs (even after correction
+for d.c.-shift/drift). Furthermore, we can also assign a
+&rsquo;quality index&rsquo; for each cruise by looking at
+the standard deviation of the COEs. The d.c.-shift/drift
+rate model may not be as meaningful for magnetics and
+bathymetry as it is for gravity. However, looking for high
+COEs is still one of the best ways of identifying systematic
+errors in the magnetic/bathymetric data sets.</p></td>
+</table>
+
+<a name="x_system PHILOSOPHY"></a>
+<h2>x_system PHILOSOPHY</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p valign="top">Since the d.c.-shift/drift corrections for
+a given cruise depend entirely on the values of the COEs
+generated at intersections with other cruises, there is no
+such thing as a &rsquo;final correction&rsquo; as long as we
+keep on adding data to the data base. This means that the
+system must be able to incorporate new data and compute a
+new set of d.c.-shifts/drift-rates that takes the new COEs
+into account. <b>x_system</b> is made modular so that one
+program computes the actual COEs, one program archives the
+COE information, and the remaining programs do various tasks
+like reporting statistics (to flag bad cruises), extracting
+a subset of the COE database, and solving for the best
+fitting d.c.-shift/drift corrections. This way only the new
+COEs generated need to be computed and added to the database
+before a new correction solution is sought.</p></td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p valign="top">All the 8 programs that make up the
+<b>x_system</b> package have been written in the C
+programming language and are intended to be run on a UNIX
+machine. Thus, it is assumed that the user has access to
+UNIX tools like <i>awk, grep</i>, and <i>sort</i>, and that
+the operating system provides a means for redirecting
+input/output. Likewise, it is assumed that all the
+geophysical data are stored in the GMT-format as outlined in
+the <b><A HREF="GMT.html">GMT</A></b> MGG supplements man pages, and that the 1 by
+1 degree bin information files (gmtindex.b and gmtlegs.b)
+have been created and are being maintained by the database
+librarian.</p> </td>
+</table>
+
+<a name="HOW TO DO IT"></a>
+<h2>HOW TO DO IT</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">To illustrate how one would set things up,
+we will go through the necessary steps and point out usage,
+useful tricks, and pitfalls. (A more complete description of
+what exactly each program does can be found in the man pages
+for each program). We will assume that we initially have N
+cruises in our GMT data bank, and that we just have received
+the <b>x_system</b> package. The first thing to do is to run
+<b><A HREF="x_init.html">x_init</A></b> which will create an empty data base system.
+This will normally be done only once. With N cruises on our
+hands we will in the worst case have to compare the
+N*(N+1)/2 possible pairs. This is where <b><A HREF="x_setup.html">x_setup</A></b> comes
+in handy. It will read the 1 by 1 degree bin information
+files and print out a list of pairs that need to be checked.
+The two cruises that make up a pair will at least once
+occupy the same 1 by 1 degree bin, and may thus intersect.
+Those combinations which do not have any bins in common
+obviously don&rsquo;t have to be checked. Let&rsquo;s call
+this list of pairs xpairs.lis.</p></td>
+<td width="31%"></td>
+<td width="8%"></td>
+<td width="46%">
+</td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top"><b><A HREF="x_over.html">x_over</A></b> is the main program in the
+package as it is responsible for locating and computing the
+COEs For details on algorithm, see Wessel [1989]. It takes
+two cruise names as arguments and writes out all the COEs
+generated between them (if any). Since xpairs.lis may
+contain quite a few pairs, the most efficient way of running
+<b><A HREF="x_over.html">x_over</A></b> is to create an executable command (batch)
+file that starts <b><A HREF="x_over.html">x_over</A></b> for each pair. Using awk to
+do this, we would say:</p></td>
+<td width="31%"></td>
+<td width="8%"></td>
+<td width="46%">
+</td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">pratt% awk &rsquo;{ printf &quot;x_over
+-&lt;options&gt; %s %s\n&quot;, $1, $2}&rsquo; xpairs.lis
+&gt; xjob</p></td>
+<td width="31%"></td>
+<td width="8%"></td>
+<td width="46%">
+</td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%">
+</td>
+<td width="31%"></td>
+<td width="8%"></td>
+<td width="46%">
+</td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">pratt% chmod +x xjob</p></td>
+<td width="31%"></td>
+<td width="8%"></td>
+<td width="46%">
+
+
+<p valign="top">(make it executable)</p></td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">pratt% xjob &gt; xjob.d &amp;</p></td>
+<td width="31%"></td>
+<td width="8%"></td>
+<td width="46%">
+</td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">and relax while
+xjob is crunching the numbers. This is the time-consuming
+part of the COE analysis, and on a SUN-3 computer with
+Floating Point Accelerator installed we average about 10,000
+pairs of cruises/day. It may pay off to split a huge xjob
+file into smaller parts, and call the output files xjob.d1,
+xjob.d2 etc. Most of the run-time is taken up by reading the
+GMT files; when in memory the actual computations are
+remarkably fast. The output file xjob.d will now have all
+the COE information in ASCII form. For each pair of legs
+there will be a header record stating the names of the
+cruises and their starting years. The following records up
+to the next header record (or End-Of-File) will contain lat,
+lon, time, value, etc. for each COE found. This is a
+temporary file, but it is wise to back it up to tape just in
+case.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p valign="top">When the <b><A HREF="x_over.html">x_over</A></b> part is done, time
+has come to archive the data more efficiently than ASCII
+files. This is done by <b><A HREF="x_update.html">x_update</A></b> which rearranges the
+data and updates the binary data base system. After this
+step the xjob.d files can be deleted (presuming they have
+been backed up to tape). At this stage we have several
+options available. We can list some of the COEs by running
+<b><A HREF="x_list.html">x_list</A></b>, which will extract COEs that match the
+options we pass, e.g., we might ask for all the internal
+COEs for cruise c2104, and only print out time and gravity
+COE. See the man pages for more details. <b><A HREF="x_report.html">x_report</A></b> can
+be run, and will output statistics for separate cruises,
+i.e., mean and standard deviation of the COEs for different
+data sets (gravity/magnetics/bathymetry). To solve for the
+best fitting corrections we would run
+<b><A HREF="x_solve_dc_drift.html">x_solve_dc_drift</A></b>. This program will solve for the
+d.c.-shift/drift-rates for all cruises, update that
+information in the data base system, and create correction
+tables (ASCII and/or binary). We have now completed the COE
+analysis for our initial GMT data bank.</p></td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="92%">
+
+
+<p valign="top">At some later time, however, we will get a
+new batch of cruises. We will then follow the the same
+recipe and go back and run <b><A HREF="x_setup.html">x_setup</A></b>, but this time we
+will use the <b>&minus;L</b> option so that only the pairs
+involving new cruises are returned. Then we would run the
+remaining programs exactly as described above.</p></td>
+</table>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),</p>
+
+<a name="AUTHOR"></a>
+<h2>AUTHOR</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Paul Wessel,
+Dept. of Geology and Geophysics, SOEST, University of Hawaii
+at Manoa. Wessel, P. XOVER: A Cross-over Error Detector for
+Track Data, <i>Computers &amp; Geosciences, 15</i>,
+333-346.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P. and
+A. B. Watts, On the Accuracy of Marine Gravity Measurements,
+<i>J. Geophys. Res., 93</i>, 393-413, 1988.</p>
+<hr>
+</body>
+</html>

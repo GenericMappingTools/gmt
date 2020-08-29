@@ -1,0 +1,307 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:33 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GSHHG</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GSHHG</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#TECHNICAL INFORMATION">TECHNICAL INFORMATION</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">gshhg &minus;
+Extract ASCII listings from binary GSHHG data files</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gshhg</b>
+<i>binaryfile.b</i> [ <b>&minus;A</b><i>area</i> ] [
+<b>&minus;G</b> ] [ <b>&minus;I</b><i>id</i> ] [
+<b>&minus;L</b> ] [ <b>&minus;M</b> ] [
+<b>&minus;N</b><i>level</i> ] [ <b>&minus;Qe</b>|<b>i</b> ]
+&gt; <i>asciifile.txt</i></p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gshhg</b>
+reads the binary coastline (GSHHS) or political boundary or
+river (WDBII) files and extracts an ASCII listing. It
+automatically handles byte-swabbing between different
+architectures. Optionally, only segment header info can be
+displayed. The output header information has the format
+<i>ID npoints hierarchical-level source area f_area west
+east south north container ancestor</i>, where hierarchical
+levels for coastline polygons go from 1 (shoreline) to 4
+(lake inside island inside lake inside land). Source is
+either W (World Vector Shoreline) or C (CIA World Data Bank
+II); lower case is used if a lake is a river-lake (a portion
+of a river that is so wide it is better represented by a
+closed polygon). The <i>west east south north</i> is the
+enclosing rectangle, <i>area</i> is the polygon area in km^2
+while f_area is the actual area of the ancestor polygon (at
+full resolution), <i>container</i> is the ID of the polygon
+that contains this polygon (-1 if none), and <i>ancestor</i>
+is the ID of the polygon in the full resolution set that was
+reduced to yield this polygon (-1 if full resolution since
+there is no ancestor). For river and border data the header
+is simply <i>ID npoints hierarchical-level source west east
+south north</i>. For more information about the file
+formats, see TECHNICAL INFORMATION below. <i><br>
+binaryfile.b</i></p>
+
+<p style="margin-left:22%;">GSHHS or WDBII binary data file
+as distributed with the GSHHS data supplement. Any of the 5
+standard resolutions (full, high, intermediate, low, crude)
+can be used.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Only output
+polygons whose area equals or exceeds the <i>area</i> value
+in km^2 [Default outputs all polygons].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Write output that
+can be imported into GNU Octave or Matlab by ending each
+segment with a NaN-record.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Only output
+information for the polygon that matches <i>id</i>. Use
+<b>&minus;Ic</b> to get all the continents only [Default
+outputs all polygons].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Only output a
+listing of polygon or line segment headers [Default outputs
+headers and data records].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Start all header
+records with the GMT multiple segment indicator
+&rsquo;&gt;&rsquo; [Default uses P for polygons and L for
+lines].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Only output
+features whose level matches the given <i>level</i> [Default
+will output all levels].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Control what to do
+with river-lakes (river sections large enough to be stored
+as closed polygons). Use <b>&minus;Qe</b> to exclude them
+and <b>&minus;Qi</b> to exclude everything else instead
+[Default outputs all polygons].</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To convert the
+entire intermediate GSHHS binary data to ASCII files for
+Octave/Mathlab, run</p>
+
+<p style="margin-left:11%; margin-top: 1em">gshhg gshhs_i.b
+-G &gt; gshhs_i.txt</p>
+
+<p style="margin-left:11%; margin-top: 1em">To only get a
+listing of the headers for the river data set at full
+resolution, try</p>
+
+<p style="margin-left:11%; margin-top: 1em">gshhg
+wdb_rivers_f.b -L &gt; riverlisting.txt</p>
+
+<p style="margin-left:11%; margin-top: 1em">To only extract
+lakes, excluding river-lakes, from the high resolution file,
+try</p>
+
+<p style="margin-left:11%; margin-top: 1em">gshhg gshhs_h.b
+-Ee -N2 &gt; all_lakes.txt</p>
+
+<a name="TECHNICAL INFORMATION"></a>
+<h2>TECHNICAL INFORMATION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Users who wish
+to access the GSHHG (GSHHS and WDBII) data directly from
+their custom programs should consult the gshhg.c and gshhg.h
+source code and familiarize themselves with the data format
+and how various information flags are packed into a single
+4-byte integer. While we do not maintain any Octave/Matlab
+code to read these files we are aware that both Mathworks
+and IDL have made such tools available to their users.
+However, they tend not to update their code and our file
+structure has evolved considerably over time, breaking their
+code. Here, some general technical comments on the binary
+data files are given. <b><br>
+GSHHS</b>: These files contain completely closed polygons of
+continents and islands (level 1), lakes (level 2),
+islands-in-lakes (level 3) and ponds-in-islands-in-lakes
+(level 4); a particular level can be extracted using the
+<b>&minus;N</b> option. Continents are identified as the
+first 6 polygons and can be extracted via the
+<b>&minus;Ic</b> option. The IDs for the continents are
+Eurasia (0), Africa (1), North America (2), South America
+(3), Antarctica (4), and Australia (5). Files are sorted on
+area from large to small. There are two sub-groups for level
+2: Regular lakes and the so-called &quot;river-lakes&quot;,
+the latter being sections of a river that are so wide to
+warrant a polygon representation. These river-lakes are
+flagged in the header (also see <b>&minus;Q</b>). All five
+resolutions are free of self-intersections. Areas of all
+features have been computed using a Lambert azimuthal
+equal-area projection centered on the polygon centroids,
+using WGS-84 as the ellipsoid. GMT use the GSHHS as a
+starting point but then partition the polygons into pieces
+using a resolution-dependent binning system; parts of the
+world are then rebuilt into closed polygons on the fly as
+needed. For more information on GSHHS processing, see Wessel
+and Smith (1996). <b><br>
+WDBII</b>. These files contain sets of line segments not
+necessarily in any particular order. Thus, it is not
+possible to extract information pertaining to just one river
+or one country. Furthermore, the 4 lower resolutions derive
+directly from the full resolution by application of the
+Douglas-Peucker algorithm (see gshhg_dp), hence
+self-intersections are increasingly likely as the resolution
+is degraded. Note that the river-lakes included in GSHHS are
+also duplicated in the WDBII river files so that each data
+set can be a stand-alone representation. Users who wish to
+access both data sets can recognize the river-lakes features
+by examining the header structure (see the source code for
+details); they are also the only closed polygons in the
+WDBII river file. There are many levels (classes) in the
+river file: River-lakes (0), Permanent major rivers (1),
+Additional major rivers (2), Additional rivers (3), Minor
+rivers (4), Intermittent rivers -- major (6), Intermittent
+rivers -- additional (7), Intermittent rivers -- minor (8),
+Major canals (10), Canals of lesser importance (11), and
+Canals -- irrigation type (12). For the border file there
+are three levels: National boundaries (1), Internal domestic
+boundaries (2), and international maritime boundaries (3).
+Individual levels or classes may be extracted via
+<b>&minus;N</b>.</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Douglas, D. H.,
+and T. K. Peucker, 1973, Algorithms for the reduction of the
+number of points required to represent a digitized line of
+its caricature, <i>Can. Cartogr., 10</i>, 112-122. <br>
+Gorny, A. J., 1977, <i>World Data Bank II General User
+GuideRep. PB 271869</i>, 10pp, Central Intelligence Agency,
+Washington, DC. <br>
+Soluri, E. A., and V. A. Woodson, 1990, World Vector
+Shoreline, <i>Int. Hydrograph. Rev., LXVII(1)</i>, 27-35.
+<br>
+Wessel, P., and W. H. F. Smith, 1996, A global,
+self-consistent, hierarchical, high-resolution shoreline
+database, <i>J. Geophys. Res., 101(B4)</i>, 8741-8743.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="gshhg_dp.html">gshhg_dp</A></i>(1) <i><A HREF="gshhgtograss.html">gshhgtograss</A></i>(1)</p>
+<hr>
+</body>
+</html>

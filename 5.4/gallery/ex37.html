@@ -1,0 +1,192 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(37) Spectral coherence between gravity and bathymetry grids &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(38) Histogram equalization of bathymetry grids" href="ex38.html" />
+    <link rel="prev" title="(36) Spherical gridding using Renka’s algorithms" href="ex36.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex38.html" title="(38) Histogram equalization of bathymetry grids"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex36.html" title="(36) Spherical gridding using Renka’s algorithms"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="spectral-coherence-between-gravity-and-bathymetry-grids">
+<span id="example-37"></span><h1>(37) Spectral coherence between gravity and bathymetry grids<a class="headerlink" href="#spectral-coherence-between-gravity-and-bathymetry-grids" title="Permalink to this headline">¶</a></h1>
+<p>The next script produces the plot in Figure.
+We demonstrate how <a class="reference internal" href="../grdfft.html"><span class="doc">grdfft</span></a> is used to compute the
+spectral coherence between two data sets, here multibeam bathymetry
+and satellite-derived gravity.  The grids are detrended and tapered
+before the Fourier transform is computed; the intermediate plots show
+the grids being extended and padded to a suitable dimension.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT EXAMPLE 37</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate 2-D FFT and coherence between gravity and bathymetry grids</span>
+<span class="c1"># GMT modules:  psbasemap, psxy, makecpt, grdfft, grdimage, grdinfo</span>
+<span class="c1"># Unix progs:   rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_37.ps
+
+<span class="c1"># Testing gmt grdfft coherence calculation with Karen Marks example data</span>
+<span class="c1"># Prefix of two .nc files</span>
+
+<span class="nv">G</span><span class="o">=</span>grav.V18.par.surf.1km.sq
+<span class="nv">T</span><span class="o">=</span>mb.par.surf.1km.sq
+gmt <span class="nb">set</span> FONT_TITLE 14p GMT_FFT kiss
+
+gmt makecpt -Crainbow -T-5000/-3000 &gt; z.cpt
+gmt makecpt -Crainbow -T-50/25 &gt; g.cpt
+gmt grdinfo <span class="nv">$T</span>.nc -Ib &gt; bbox
+<span class="nv">scl</span><span class="o">=</span><span class="m">1</span>.4e-5
+<span class="nv">sclkm</span><span class="o">=</span><span class="m">1</span>.4e-2
+gmt grdimage <span class="nv">$T</span>.nc -I+a0+nt1 -Jx<span class="si">${</span><span class="nv">scl</span><span class="si">}</span>i -Cz.cpt -P -K -X1.474i -Y1i &gt; <span class="nv">$ps</span>
+gmt psbasemap -R-84/75/-78/81 -Jx<span class="si">${</span><span class="nv">sclkm</span><span class="si">}</span>i -O -K -Ba -BWSne+t<span class="s2">&quot;Multibeam bathymetry&quot;</span> &gt;&gt; <span class="nv">$ps</span>
+gmt grdimage <span class="nv">$G</span>.nc -I+a0+nt1 -Jx<span class="si">${</span><span class="nv">scl</span><span class="si">}</span>i -Cg.cpt -O -K -X3.25i &gt;&gt; <span class="nv">$ps</span>
+gmt psbasemap -R-84/75/-78/81 -Jx<span class="si">${</span><span class="nv">sclkm</span><span class="si">}</span>i -O -K -Ba -BWSne+t<span class="s2">&quot;Satellite gravity&quot;</span> &gt;&gt; <span class="nv">$ps</span>
+
+gmt grdfft <span class="nv">$T</span>.nc <span class="nv">$G</span>.nc -E+wk -N192/192+d+wtmp &gt; cross.txt
+
+gmt makecpt -Crainbow -T-1500/1500 &gt; z.cpt
+gmt makecpt -Crainbow -T-40/40 &gt; g.cpt
+
+gmt grdimage <span class="si">${</span><span class="nv">T</span><span class="si">}</span>_tmp.nc -I+a0+nt1 -Jx<span class="si">${</span><span class="nv">scl</span><span class="si">}</span>i -Cz.cpt -O -K -X-3.474i -Y3i &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R<span class="si">${</span><span class="nv">T</span><span class="si">}</span>_tmp.nc -J bbox -O -K -L -W0.5p,- &gt;&gt; <span class="nv">$ps</span>
+gmt psbasemap -R-100/91/-94/97 -Jx<span class="si">${</span><span class="nv">sclkm</span><span class="si">}</span>i -O -K -Ba -BWSne+t<span class="s2">&quot;Detrended and extended&quot;</span> &gt;&gt; <span class="nv">$ps</span>
+
+gmt grdimage <span class="si">${</span><span class="nv">G</span><span class="si">}</span>_tmp.nc -I+a0+nt1 -Jx<span class="si">${</span><span class="nv">scl</span><span class="si">}</span>i -Cg.cpt -O -K -X3.25i &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R<span class="si">${</span><span class="nv">G</span><span class="si">}</span>_tmp.nc -J bbox -O -K -L -W0.5p,- &gt;&gt; <span class="nv">$ps</span>
+gmt psbasemap -R-100/91/-94/97 -Jx<span class="si">${</span><span class="nv">sclkm</span><span class="si">}</span>i -O -K -Ba -BWSne+t<span class="s2">&quot;Detrended and extended&quot;</span> &gt;&gt; <span class="nv">$ps</span>
+
+gmt <span class="nb">set</span> FONT_TITLE 24p
+gmt psxy -R2/160/0/1 -JX-6il/2.5i -Bxa2f3g3+u<span class="s2">&quot; km&quot;</span> -Byafg0.5+l<span class="s2">&quot;Coherency@+2@+&quot;</span> -BWsNe+t<span class="s2">&quot;Coherency between gravity and bathymetry&quot;</span> -O -K -X-3.25i -Y3.3i cross.txt -i0,15 -W0.5p &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J cross.txt -O -K -i0,15,16 -Sc0.075i -Gred -W0.25p -Ey &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -T &gt;&gt; <span class="nv">$ps</span>
+rm -f cross.txt *_tmp.nc ?.cpt bbox
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_37.png"><img alt="../_images/example_37.png" src="../_images/example_37.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Spectral coherence between gravity and bathymetry grids.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex36.html"
+                        title="previous chapter">(36) Spherical gridding using Renka’s algorithms</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex38.html"
+                        title="next chapter">(38) Histogram equalization of bathymetry grids</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex37.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex38.html" title="(38) Histogram equalization of bathymetry grids"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex36.html" title="(36) Spherical gridding using Renka’s algorithms"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

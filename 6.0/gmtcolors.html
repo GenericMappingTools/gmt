@@ -1,0 +1,1902 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>gmtcolors &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Example Gallery" href="gallery.html" />
+    <link rel="prev" title="gmt.conf" href="gmt.conf.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>gmtcolors</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/gmtcolors.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="gmtcolors">
+<span id="index-0"></span><h1>gmtcolors<a class="headerlink" href="#gmtcolors" title="Permalink to this headline">¶</a></h1>
+<p>Explanation of color codes in GMT</p>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Colors can be specified in GMT as arguments to commands, generally
+as part of the <strong>-G</strong> or <strong>-W</strong> options to select polygon fill or
+outline pen. Colors are also used in color palette tables (CPTs)
+that help convert numerical values to colors.</p>
+<p>GMT allows several ways to represent a color:</p>
+<dl class="docutils">
+<dt><strong>Colorname</strong></dt>
+<dd>Specify one of the named colors below. All names are case-insensitive.</dd>
+<dt><strong>R/G/B</strong></dt>
+<dd>Specify <strong>R</strong>ed, <strong>G</strong>reen, and <strong>B</strong>lue levels. Each value is
+separated by a slash and is in the range from 0 (dark) to 255
+(light). This representation is used to color monitors.</dd>
+<dt><strong>#RRGGBB</strong></dt>
+<dd>Specify <strong>R</strong>ed, <strong>G</strong>reen, and <strong>B</strong>lue levels in the way
+that it is done in HTML. Use two characters for each color channel,
+ranging from 00 (dark) to FF (light). Upper and lower case are allowed.</dd>
+<dt><strong>Graylevel</strong></dt>
+<dd>For shades of gray, <strong>R</strong> = <strong>G</strong> = <strong>B</strong>, and only one number needs to be used.
+This representation is popular with black and white printers.</dd>
+<dt><strong>H-S-V</strong></dt>
+<dd>Specify <strong>H</strong>ue in the range 0 to 360 (degrees), <strong>S</strong> saturation
+between 0 (not saturated) and 1 (fully saturated), and value <strong>V</strong>
+between 0 (dark) and 1 (light). Number are separated by hyphens.
+This representation can be helpful when hue varies a lot.</dd>
+<dt><strong>C/M/Y/K</strong></dt>
+<dd>Specify <strong>C</strong>yan, <strong>M</strong>agenta, <strong>Y</strong>ellow, and blac<strong>K</strong>. Each
+number is in the range from 0 (no paint) to 1 (maximum paint). This
+representation is used by most color printers.</dd>
+</dl>
+</div>
+<div class="section" id="list-of-colors">
+<h2>List Of Colors<a class="headerlink" href="#list-of-colors" title="Permalink to this headline">¶</a></h2>
+<p>The chart below lists the 663 unique color names that can be used in GMT.</p>
+<p><strong>Download PDF versions:</strong>
+<a class="reference download internal" download="" href="_downloads/2b122d72ad9e2b8a8d57a8d33bded759/GMT_RGBchart_a4.pdf"><code class="xref download docutils literal notranslate"><span class="pre">A4</span> <span class="pre">size</span></code></a>,
+<a class="reference download internal" download="" href="_downloads/9a4d54cd37dd7987f4e1e04f9a4b8711/GMT_RGBchart_letter.pdf"><code class="xref download docutils literal notranslate"><span class="pre">US</span> <span class="pre">letter</span> <span class="pre">size</span></code></a>,
+<a class="reference download internal" download="" href="_downloads/ee56590ac449728e7f9532eb7f19d09a/GMT_RGBchart_tabloid.pdf"><code class="xref download docutils literal notranslate"><span class="pre">Tabloid</span> <span class="pre">size</span></code></a></p>
+<div class="figure align-center" id="id1">
+<span id="rgbchart"></span><a class="reference internal image-reference" href="_images/GMT_RGBchart.png"><img alt="_images/GMT_RGBchart.png" src="_images/GMT_RGBchart.png" style="width: 100%;" /></a>
+<p class="caption"><span class="caption-text">The 663 unique color names that can be used in GMT.
+Lower, upper, or mixed cases, as well as the british spelling of grey are allowed</span></p>
+</div>
+<p>The following list contains the named colors that can be used in GMT
+and their equivalent color codes.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="22%" />
+<col width="13%" />
+<col width="22%" />
+<col width="13%" />
+<col width="19%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">R/G/B</th>
+<th class="head">Color Name</th>
+<th class="head">R/G/B</th>
+<th class="head">Color Name</th>
+<th class="head">R/G/B</th>
+<th class="head">Color Name</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>255/250/250</td>
+<td>snow</td>
+<td>248/248/255</td>
+<td>ghostwhite</td>
+<td>255/250/240</td>
+<td>floralwhite</td>
+</tr>
+<tr class="row-odd"><td>255/245/238</td>
+<td>seashell</td>
+<td>253/245/230</td>
+<td>oldlace</td>
+<td>250/240/230</td>
+<td>linen</td>
+</tr>
+<tr class="row-even"><td>250/235/215</td>
+<td>antiquewhite</td>
+<td>255/239/213</td>
+<td>papayawhip</td>
+<td>255/235/205</td>
+<td>blanchedalmond</td>
+</tr>
+<tr class="row-odd"><td>255/228/196</td>
+<td>bisque</td>
+<td>255/218/185</td>
+<td>peachpuff</td>
+<td>255/222/173</td>
+<td>navajowhite</td>
+</tr>
+<tr class="row-even"><td>255/228/181</td>
+<td>moccasin</td>
+<td>255/250/205</td>
+<td>lemonchiffon</td>
+<td>255/248/220</td>
+<td>cornsilk</td>
+</tr>
+<tr class="row-odd"><td>255/255/240</td>
+<td>ivory</td>
+<td>240/255/240</td>
+<td>honeydew</td>
+<td>245/255/250</td>
+<td>mintcream</td>
+</tr>
+<tr class="row-even"><td>240/255/255</td>
+<td>azure</td>
+<td>240/248/255</td>
+<td>aliceblue</td>
+<td>230/230/250</td>
+<td>lavender</td>
+</tr>
+<tr class="row-odd"><td>255/240/245</td>
+<td>lavenderblush</td>
+<td>255/228/225</td>
+<td>mistyrose</td>
+<td>25/25/112</td>
+<td>midnightblue</td>
+</tr>
+<tr class="row-even"><td>0/0/128</td>
+<td>navy</td>
+<td>0/0/128</td>
+<td>navyblue</td>
+<td>100/149/237</td>
+<td>cornflowerblue</td>
+</tr>
+<tr class="row-odd"><td>72/61/139</td>
+<td>darkslateblue</td>
+<td>106/90/205</td>
+<td>slateblue</td>
+<td>123/104/238</td>
+<td>mediumslateblue</td>
+</tr>
+<tr class="row-even"><td>132/112/255</td>
+<td>lightslateblue</td>
+<td>0/0/205</td>
+<td>mediumblue</td>
+<td>65/105/225</td>
+<td>royalblue</td>
+</tr>
+<tr class="row-odd"><td>0/0/255</td>
+<td>blue</td>
+<td>0/0/139</td>
+<td>darkblue</td>
+<td>30/144/255</td>
+<td>dodgerblue</td>
+</tr>
+<tr class="row-even"><td>70/130/180</td>
+<td>steelblue</td>
+<td>0/191/255</td>
+<td>deepskyblue</td>
+<td>135/206/235</td>
+<td>skyblue</td>
+</tr>
+<tr class="row-odd"><td>135/206/250</td>
+<td>lightskyblue</td>
+<td>119/136/153</td>
+<td>lightslategray</td>
+<td>119/136/153</td>
+<td>lightslategrey</td>
+</tr>
+<tr class="row-even"><td>112/128/144</td>
+<td>slategray</td>
+<td>112/128/144</td>
+<td>slategrey</td>
+<td>176/196/222</td>
+<td>lightsteelblue</td>
+</tr>
+<tr class="row-odd"><td>173/216/230</td>
+<td>lightblue</td>
+<td>224/255/255</td>
+<td>lightcyan</td>
+<td>176/224/230</td>
+<td>powderblue</td>
+</tr>
+<tr class="row-even"><td>175/238/238</td>
+<td>paleturquoise</td>
+<td>95/158/160</td>
+<td>cadetblue</td>
+<td>0/206/209</td>
+<td>darkturquoise</td>
+</tr>
+<tr class="row-odd"><td>72/209/204</td>
+<td>mediumturquoise</td>
+<td>64/224/208</td>
+<td>turquoise</td>
+<td>0/255/255</td>
+<td>cyan</td>
+</tr>
+<tr class="row-even"><td>0/139/139</td>
+<td>darkcyan</td>
+<td>47/79/79</td>
+<td>darkslategray</td>
+<td>47/79/79</td>
+<td>darkslategrey</td>
+</tr>
+<tr class="row-odd"><td>102/205/170</td>
+<td>mediumaquamarine</td>
+<td>127/255/212</td>
+<td>aquamarine</td>
+<td>0/100/0</td>
+<td>darkgreen</td>
+</tr>
+<tr class="row-even"><td>144/238/144</td>
+<td>lightgreen</td>
+<td>143/188/143</td>
+<td>darkseagreen</td>
+<td>46/139/87</td>
+<td>seagreen</td>
+</tr>
+<tr class="row-odd"><td>60/179/113</td>
+<td>mediumseagreen</td>
+<td>32/178/170</td>
+<td>lightseagreen</td>
+<td>152/251/152</td>
+<td>palegreen</td>
+</tr>
+<tr class="row-even"><td>0/255/127</td>
+<td>springgreen</td>
+<td>124/252/0</td>
+<td>lawngreen</td>
+<td>0/255/0</td>
+<td>green</td>
+</tr>
+<tr class="row-odd"><td>127/255/0</td>
+<td>chartreuse</td>
+<td>0/250/154</td>
+<td>mediumspringgreen</td>
+<td>173/255/47</td>
+<td>greenyellow</td>
+</tr>
+<tr class="row-even"><td>50/205/50</td>
+<td>limegreen</td>
+<td>154/205/50</td>
+<td>yellowgreen</td>
+<td>34/139/34</td>
+<td>forestgreen</td>
+</tr>
+<tr class="row-odd"><td>107/142/35</td>
+<td>olivedrab</td>
+<td>85/107/47</td>
+<td>darkolivegreen</td>
+<td>189/183/107</td>
+<td>darkkhaki</td>
+</tr>
+<tr class="row-even"><td>240/230/140</td>
+<td>khaki</td>
+<td>238/232/170</td>
+<td>palegoldenrod</td>
+<td>238/221/130</td>
+<td>lightgoldenrod</td>
+</tr>
+<tr class="row-odd"><td>255/255/224</td>
+<td>lightyellow</td>
+<td>250/250/210</td>
+<td>lightgoldenrodyellow</td>
+<td>255/255/0</td>
+<td>yellow</td>
+</tr>
+<tr class="row-even"><td>128/128/0</td>
+<td>darkyellow</td>
+<td>255/215/0</td>
+<td>gold</td>
+<td>218/165/32</td>
+<td>goldenrod</td>
+</tr>
+<tr class="row-odd"><td>184/134/11</td>
+<td>darkgoldenrod</td>
+<td>188/143/143</td>
+<td>rosybrown</td>
+<td>205/92/92</td>
+<td>indianred</td>
+</tr>
+<tr class="row-even"><td>139/69/19</td>
+<td>saddlebrown</td>
+<td>160/82/45</td>
+<td>sienna</td>
+<td>205/133/63</td>
+<td>peru</td>
+</tr>
+<tr class="row-odd"><td>222/184/135</td>
+<td>burlywood</td>
+<td>245/245/220</td>
+<td>beige</td>
+<td>245/222/179</td>
+<td>wheat</td>
+</tr>
+<tr class="row-even"><td>244/164/96</td>
+<td>sandybrown</td>
+<td>210/180/140</td>
+<td>tan</td>
+<td>210/105/30</td>
+<td>chocolate</td>
+</tr>
+<tr class="row-odd"><td>178/34/34</td>
+<td>firebrick</td>
+<td>235/190/85</td>
+<td>lightbrown</td>
+<td>165/42/42</td>
+<td>brown</td>
+</tr>
+<tr class="row-even"><td>120/60/30</td>
+<td>darkbrown</td>
+<td>233/150/122</td>
+<td>darksalmon</td>
+<td>250/128/114</td>
+<td>salmon</td>
+</tr>
+<tr class="row-odd"><td>255/160/122</td>
+<td>lightsalmon</td>
+<td>255/192/128</td>
+<td>lightorange</td>
+<td>255/165/0</td>
+<td>orange</td>
+</tr>
+<tr class="row-even"><td>255/140/0</td>
+<td>darkorange</td>
+<td>255/127/80</td>
+<td>coral</td>
+<td>240/128/128</td>
+<td>lightcoral</td>
+</tr>
+<tr class="row-odd"><td>255/99/71</td>
+<td>tomato</td>
+<td>255/69/0</td>
+<td>orangered</td>
+<td>255/0/0</td>
+<td>red</td>
+</tr>
+<tr class="row-even"><td>255/128/128</td>
+<td>lightred</td>
+<td>139/0/0</td>
+<td>darkred</td>
+<td>255/20/147</td>
+<td>deeppink</td>
+</tr>
+<tr class="row-odd"><td>255/105/180</td>
+<td>hotpink</td>
+<td>255/192/203</td>
+<td>pink</td>
+<td>255/182/193</td>
+<td>lightpink</td>
+</tr>
+<tr class="row-even"><td>219/112/147</td>
+<td>palevioletred</td>
+<td>176/48/96</td>
+<td>maroon</td>
+<td>199/21/133</td>
+<td>mediumvioletred</td>
+</tr>
+<tr class="row-odd"><td>208/32/144</td>
+<td>violetred</td>
+<td>139/0/139</td>
+<td>darkmagenta</td>
+<td>255/0/255</td>
+<td>magenta</td>
+</tr>
+<tr class="row-even"><td>255/128/255</td>
+<td>lightmagenta</td>
+<td>238/130/238</td>
+<td>violet</td>
+<td>218/112/214</td>
+<td>orchid</td>
+</tr>
+<tr class="row-odd"><td>221/160/221</td>
+<td>plum</td>
+<td>186/85/211</td>
+<td>mediumorchid</td>
+<td>153/50/204</td>
+<td>darkorchid</td>
+</tr>
+<tr class="row-even"><td>148/0/211</td>
+<td>darkviolet</td>
+<td>138/43/226</td>
+<td>blueviolet</td>
+<td>160/32/240</td>
+<td>purple</td>
+</tr>
+<tr class="row-odd"><td>147/112/219</td>
+<td>mediumpurple</td>
+<td>216/191/216</td>
+<td>thistle</td>
+<td>0/0/0</td>
+<td>black</td>
+</tr>
+<tr class="row-even"><td>105/105/105</td>
+<td>dimgray</td>
+<td>105/105/105</td>
+<td>dimgrey</td>
+<td>169/169/169</td>
+<td>darkgray</td>
+</tr>
+<tr class="row-odd"><td>169/169/169</td>
+<td>darkgrey</td>
+<td>190/190/190</td>
+<td>gray</td>
+<td>190/190/190</td>
+<td>grey</td>
+</tr>
+<tr class="row-even"><td>211/211/211</td>
+<td>lightgrey</td>
+<td>211/211/211</td>
+<td>lightgray</td>
+<td>220/220/220</td>
+<td>gainsboro</td>
+</tr>
+<tr class="row-odd"><td>245/245/245</td>
+<td>whitesmoke</td>
+<td>255/255/255</td>
+<td>white</td>
+<td>255/250/250</td>
+<td>snow1</td>
+</tr>
+<tr class="row-even"><td>238/233/233</td>
+<td>snow2</td>
+<td>205/201/201</td>
+<td>snow3</td>
+<td>139/137/137</td>
+<td>snow4</td>
+</tr>
+<tr class="row-odd"><td>255/245/238</td>
+<td>seashell1</td>
+<td>238/229/222</td>
+<td>seashell2</td>
+<td>205/197/191</td>
+<td>seashell3</td>
+</tr>
+<tr class="row-even"><td>139/134/130</td>
+<td>seashell4</td>
+<td>255/239/219</td>
+<td>antiquewhite1</td>
+<td>238/223/204</td>
+<td>antiquewhite2</td>
+</tr>
+<tr class="row-odd"><td>205/192/176</td>
+<td>antiquewhite3</td>
+<td>139/131/120</td>
+<td>antiquewhite4</td>
+<td>255/228/196</td>
+<td>bisque1</td>
+</tr>
+<tr class="row-even"><td>238/213/183</td>
+<td>bisque2</td>
+<td>205/183/158</td>
+<td>bisque3</td>
+<td>139/125/107</td>
+<td>bisque4</td>
+</tr>
+<tr class="row-odd"><td>255/218/185</td>
+<td>peachpuff1</td>
+<td>238/203/173</td>
+<td>peachpuff2</td>
+<td>205/175/149</td>
+<td>peachpuff3</td>
+</tr>
+<tr class="row-even"><td>139/119/101</td>
+<td>peachpuff4</td>
+<td>255/222/173</td>
+<td>navajowhite1</td>
+<td>238/207/161</td>
+<td>navajowhite2</td>
+</tr>
+<tr class="row-odd"><td>205/179/139</td>
+<td>navajowhite3</td>
+<td>139/121/94</td>
+<td>navajowhite4</td>
+<td>255/250/205</td>
+<td>lemonchiffon1</td>
+</tr>
+<tr class="row-even"><td>238/233/191</td>
+<td>lemonchiffon2</td>
+<td>205/201/165</td>
+<td>lemonchiffon3</td>
+<td>139/137/112</td>
+<td>lemonchiffon4</td>
+</tr>
+<tr class="row-odd"><td>255/248/220</td>
+<td>cornsilk1</td>
+<td>238/232/205</td>
+<td>cornsilk2</td>
+<td>205/200/177</td>
+<td>cornsilk3</td>
+</tr>
+<tr class="row-even"><td>139/136/120</td>
+<td>cornsilk4</td>
+<td>255/255/240</td>
+<td>ivory1</td>
+<td>238/238/224</td>
+<td>ivory2</td>
+</tr>
+<tr class="row-odd"><td>205/205/193</td>
+<td>ivory3</td>
+<td>139/139/131</td>
+<td>ivory4</td>
+<td>240/255/240</td>
+<td>honeydew1</td>
+</tr>
+<tr class="row-even"><td>224/238/224</td>
+<td>honeydew2</td>
+<td>193/205/193</td>
+<td>honeydew3</td>
+<td>131/139/131</td>
+<td>honeydew4</td>
+</tr>
+<tr class="row-odd"><td>255/240/245</td>
+<td>lavenderblush1</td>
+<td>238/224/229</td>
+<td>lavenderblush2</td>
+<td>205/193/197</td>
+<td>lavenderblush3</td>
+</tr>
+<tr class="row-even"><td>139/131/134</td>
+<td>lavenderblush4</td>
+<td>255/228/225</td>
+<td>mistyrose1</td>
+<td>238/213/210</td>
+<td>mistyrose2</td>
+</tr>
+<tr class="row-odd"><td>205/183/181</td>
+<td>mistyrose3</td>
+<td>139/125/123</td>
+<td>mistyrose4</td>
+<td>240/255/255</td>
+<td>azure1</td>
+</tr>
+<tr class="row-even"><td>224/238/238</td>
+<td>azure2</td>
+<td>193/205/205</td>
+<td>azure3</td>
+<td>131/139/139</td>
+<td>azure4</td>
+</tr>
+<tr class="row-odd"><td>131/111/255</td>
+<td>slateblue1</td>
+<td>122/103/238</td>
+<td>slateblue2</td>
+<td>105/89/205</td>
+<td>slateblue3</td>
+</tr>
+<tr class="row-even"><td>71/60/139</td>
+<td>slateblue4</td>
+<td>72/118/255</td>
+<td>royalblue1</td>
+<td>67/110/238</td>
+<td>royalblue2</td>
+</tr>
+<tr class="row-odd"><td>58/95/205</td>
+<td>royalblue3</td>
+<td>39/64/139</td>
+<td>royalblue4</td>
+<td>0/0/255</td>
+<td>blue1</td>
+</tr>
+<tr class="row-even"><td>0/0/238</td>
+<td>blue2</td>
+<td>0/0/205</td>
+<td>blue3</td>
+<td>0/0/139</td>
+<td>blue4</td>
+</tr>
+<tr class="row-odd"><td>30/144/255</td>
+<td>dodgerblue1</td>
+<td>28/134/238</td>
+<td>dodgerblue2</td>
+<td>24/116/205</td>
+<td>dodgerblue3</td>
+</tr>
+<tr class="row-even"><td>16/78/139</td>
+<td>dodgerblue4</td>
+<td>99/184/255</td>
+<td>steelblue1</td>
+<td>92/172/238</td>
+<td>steelblue2</td>
+</tr>
+<tr class="row-odd"><td>79/148/205</td>
+<td>steelblue3</td>
+<td>54/100/139</td>
+<td>steelblue4</td>
+<td>0/191/255</td>
+<td>deepskyblue1</td>
+</tr>
+<tr class="row-even"><td>0/178/238</td>
+<td>deepskyblue2</td>
+<td>0/154/205</td>
+<td>deepskyblue3</td>
+<td>0/104/139</td>
+<td>deepskyblue4</td>
+</tr>
+<tr class="row-odd"><td>135/206/255</td>
+<td>skyblue1</td>
+<td>126/192/238</td>
+<td>skyblue2</td>
+<td>108/166/205</td>
+<td>skyblue3</td>
+</tr>
+<tr class="row-even"><td>74/112/139</td>
+<td>skyblue4</td>
+<td>176/226/255</td>
+<td>lightskyblue1</td>
+<td>164/211/238</td>
+<td>lightskyblue2</td>
+</tr>
+<tr class="row-odd"><td>141/182/205</td>
+<td>lightskyblue3</td>
+<td>96/123/139</td>
+<td>lightskyblue4</td>
+<td>198/226/255</td>
+<td>slategray1</td>
+</tr>
+<tr class="row-even"><td>185/211/238</td>
+<td>slategray2</td>
+<td>159/182/205</td>
+<td>slategray3</td>
+<td>108/123/139</td>
+<td>slategray4</td>
+</tr>
+<tr class="row-odd"><td>202/225/255</td>
+<td>lightsteelblue1</td>
+<td>188/210/238</td>
+<td>lightsteelblue2</td>
+<td>162/181/205</td>
+<td>lightsteelblue3</td>
+</tr>
+<tr class="row-even"><td>110/123/139</td>
+<td>lightsteelblue4</td>
+<td>191/239/255</td>
+<td>lightblue1</td>
+<td>178/223/238</td>
+<td>lightblue2</td>
+</tr>
+<tr class="row-odd"><td>154/192/205</td>
+<td>lightblue3</td>
+<td>104/131/139</td>
+<td>lightblue4</td>
+<td>224/255/255</td>
+<td>lightcyan1</td>
+</tr>
+<tr class="row-even"><td>209/238/238</td>
+<td>lightcyan2</td>
+<td>180/205/205</td>
+<td>lightcyan3</td>
+<td>122/139/139</td>
+<td>lightcyan4</td>
+</tr>
+<tr class="row-odd"><td>187/255/255</td>
+<td>paleturquoise1</td>
+<td>174/238/238</td>
+<td>paleturquoise2</td>
+<td>150/205/205</td>
+<td>paleturquoise3</td>
+</tr>
+<tr class="row-even"><td>102/139/139</td>
+<td>paleturquoise4</td>
+<td>152/245/255</td>
+<td>cadetblue1</td>
+<td>142/229/238</td>
+<td>cadetblue2</td>
+</tr>
+<tr class="row-odd"><td>122/197/205</td>
+<td>cadetblue3</td>
+<td>83/134/139</td>
+<td>cadetblue4</td>
+<td>0/245/255</td>
+<td>turquoise1</td>
+</tr>
+<tr class="row-even"><td>0/229/238</td>
+<td>turquoise2</td>
+<td>0/197/205</td>
+<td>turquoise3</td>
+<td>0/134/139</td>
+<td>turquoise4</td>
+</tr>
+<tr class="row-odd"><td>0/255/255</td>
+<td>cyan1</td>
+<td>0/238/238</td>
+<td>cyan2</td>
+<td>0/205/205</td>
+<td>cyan3</td>
+</tr>
+<tr class="row-even"><td>0/139/139</td>
+<td>cyan4</td>
+<td>151/255/255</td>
+<td>darkslategray1</td>
+<td>141/238/238</td>
+<td>darkslategray2</td>
+</tr>
+<tr class="row-odd"><td>121/205/205</td>
+<td>darkslategray3</td>
+<td>82/139/139</td>
+<td>darkslategray4</td>
+<td>127/255/212</td>
+<td>aquamarine1</td>
+</tr>
+<tr class="row-even"><td>118/238/198</td>
+<td>aquamarine2</td>
+<td>102/205/170</td>
+<td>aquamarine3</td>
+<td>69/139/116</td>
+<td>aquamarine4</td>
+</tr>
+<tr class="row-odd"><td>193/255/193</td>
+<td>darkseagreen1</td>
+<td>180/238/180</td>
+<td>darkseagreen2</td>
+<td>155/205/155</td>
+<td>darkseagreen3</td>
+</tr>
+<tr class="row-even"><td>105/139/105</td>
+<td>darkseagreen4</td>
+<td>84/255/159</td>
+<td>seagreen1</td>
+<td>78/238/148</td>
+<td>seagreen2</td>
+</tr>
+<tr class="row-odd"><td>67/205/128</td>
+<td>seagreen3</td>
+<td>46/139/87</td>
+<td>seagreen4</td>
+<td>154/255/154</td>
+<td>palegreen1</td>
+</tr>
+<tr class="row-even"><td>144/238/144</td>
+<td>palegreen2</td>
+<td>124/205/124</td>
+<td>palegreen3</td>
+<td>84/139/84</td>
+<td>palegreen4</td>
+</tr>
+<tr class="row-odd"><td>0/255/127</td>
+<td>springgreen1</td>
+<td>0/238/118</td>
+<td>springgreen2</td>
+<td>0/205/102</td>
+<td>springgreen3</td>
+</tr>
+<tr class="row-even"><td>0/139/69</td>
+<td>springgreen4</td>
+<td>0/255/0</td>
+<td>green1</td>
+<td>0/238/0</td>
+<td>green2</td>
+</tr>
+<tr class="row-odd"><td>0/205/0</td>
+<td>green3</td>
+<td>0/139/0</td>
+<td>green4</td>
+<td>127/255/0</td>
+<td>chartreuse1</td>
+</tr>
+<tr class="row-even"><td>118/238/0</td>
+<td>chartreuse2</td>
+<td>102/205/0</td>
+<td>chartreuse3</td>
+<td>69/139/0</td>
+<td>chartreuse4</td>
+</tr>
+<tr class="row-odd"><td>192/255/62</td>
+<td>olivedrab1</td>
+<td>179/238/58</td>
+<td>olivedrab2</td>
+<td>154/205/50</td>
+<td>olivedrab3</td>
+</tr>
+<tr class="row-even"><td>105/139/34</td>
+<td>olivedrab4</td>
+<td>202/255/112</td>
+<td>darkolivegreen1</td>
+<td>188/238/104</td>
+<td>darkolivegreen2</td>
+</tr>
+<tr class="row-odd"><td>162/205/90</td>
+<td>darkolivegreen3</td>
+<td>110/139/61</td>
+<td>darkolivegreen4</td>
+<td>255/246/143</td>
+<td>khaki1</td>
+</tr>
+<tr class="row-even"><td>238/230/133</td>
+<td>khaki2</td>
+<td>205/198/115</td>
+<td>khaki3</td>
+<td>139/134/78</td>
+<td>khaki4</td>
+</tr>
+<tr class="row-odd"><td>255/236/139</td>
+<td>lightgoldenrod1</td>
+<td>238/220/130</td>
+<td>lightgoldenrod2</td>
+<td>205/190/112</td>
+<td>lightgoldenrod3</td>
+</tr>
+<tr class="row-even"><td>139/129/76</td>
+<td>lightgoldenrod4</td>
+<td>255/255/224</td>
+<td>lightyellow1</td>
+<td>238/238/209</td>
+<td>lightyellow2</td>
+</tr>
+<tr class="row-odd"><td>205/205/180</td>
+<td>lightyellow3</td>
+<td>139/139/122</td>
+<td>lightyellow4</td>
+<td>255/255/0</td>
+<td>yellow1</td>
+</tr>
+<tr class="row-even"><td>238/238/0</td>
+<td>yellow2</td>
+<td>205/205/0</td>
+<td>yellow3</td>
+<td>139/139/0</td>
+<td>yellow4</td>
+</tr>
+<tr class="row-odd"><td>255/215/0</td>
+<td>gold1</td>
+<td>238/201/0</td>
+<td>gold2</td>
+<td>205/173/0</td>
+<td>gold3</td>
+</tr>
+<tr class="row-even"><td>139/117/0</td>
+<td>gold4</td>
+<td>255/193/37</td>
+<td>goldenrod1</td>
+<td>238/180/34</td>
+<td>goldenrod2</td>
+</tr>
+<tr class="row-odd"><td>205/155/29</td>
+<td>goldenrod3</td>
+<td>139/105/20</td>
+<td>goldenrod4</td>
+<td>255/185/15</td>
+<td>darkgoldenrod1</td>
+</tr>
+<tr class="row-even"><td>238/173/14</td>
+<td>darkgoldenrod2</td>
+<td>205/149/12</td>
+<td>darkgoldenrod3</td>
+<td>139/101/8</td>
+<td>darkgoldenrod4</td>
+</tr>
+<tr class="row-odd"><td>255/193/193</td>
+<td>rosybrown1</td>
+<td>238/180/180</td>
+<td>rosybrown2</td>
+<td>205/155/155</td>
+<td>rosybrown3</td>
+</tr>
+<tr class="row-even"><td>139/105/105</td>
+<td>rosybrown4</td>
+<td>255/106/106</td>
+<td>indianred1</td>
+<td>238/99/99</td>
+<td>indianred2</td>
+</tr>
+<tr class="row-odd"><td>205/85/85</td>
+<td>indianred3</td>
+<td>139/58/58</td>
+<td>indianred4</td>
+<td>255/130/71</td>
+<td>sienna1</td>
+</tr>
+<tr class="row-even"><td>238/121/66</td>
+<td>sienna2</td>
+<td>205/104/57</td>
+<td>sienna3</td>
+<td>139/71/38</td>
+<td>sienna4</td>
+</tr>
+<tr class="row-odd"><td>255/211/155</td>
+<td>burlywood1</td>
+<td>238/197/145</td>
+<td>burlywood2</td>
+<td>205/170/125</td>
+<td>burlywood3</td>
+</tr>
+<tr class="row-even"><td>139/115/85</td>
+<td>burlywood4</td>
+<td>255/231/186</td>
+<td>wheat1</td>
+<td>238/216/174</td>
+<td>wheat2</td>
+</tr>
+<tr class="row-odd"><td>205/186/150</td>
+<td>wheat3</td>
+<td>139/126/102</td>
+<td>wheat4</td>
+<td>255/165/79</td>
+<td>tan1</td>
+</tr>
+<tr class="row-even"><td>238/154/73</td>
+<td>tan2</td>
+<td>205/133/63</td>
+<td>tan3</td>
+<td>139/90/43</td>
+<td>tan4</td>
+</tr>
+<tr class="row-odd"><td>255/127/36</td>
+<td>chocolate1</td>
+<td>238/118/33</td>
+<td>chocolate2</td>
+<td>205/102/29</td>
+<td>chocolate3</td>
+</tr>
+<tr class="row-even"><td>139/69/19</td>
+<td>chocolate4</td>
+<td>255/48/48</td>
+<td>firebrick1</td>
+<td>238/44/44</td>
+<td>firebrick2</td>
+</tr>
+<tr class="row-odd"><td>205/38/38</td>
+<td>firebrick3</td>
+<td>139/26/26</td>
+<td>firebrick4</td>
+<td>255/64/64</td>
+<td>brown1</td>
+</tr>
+<tr class="row-even"><td>238/59/59</td>
+<td>brown2</td>
+<td>205/51/51</td>
+<td>brown3</td>
+<td>139/35/35</td>
+<td>brown4</td>
+</tr>
+<tr class="row-odd"><td>255/140/105</td>
+<td>salmon1</td>
+<td>238/130/98</td>
+<td>salmon2</td>
+<td>205/112/84</td>
+<td>salmon3</td>
+</tr>
+<tr class="row-even"><td>139/76/57</td>
+<td>salmon4</td>
+<td>255/160/122</td>
+<td>lightsalmon1</td>
+<td>238/149/114</td>
+<td>lightsalmon2</td>
+</tr>
+<tr class="row-odd"><td>205/129/98</td>
+<td>lightsalmon3</td>
+<td>139/87/66</td>
+<td>lightsalmon4</td>
+<td>255/165/0</td>
+<td>orange1</td>
+</tr>
+<tr class="row-even"><td>238/154/0</td>
+<td>orange2</td>
+<td>205/133/0</td>
+<td>orange3</td>
+<td>139/90/0</td>
+<td>orange4</td>
+</tr>
+<tr class="row-odd"><td>255/127/0</td>
+<td>darkorange1</td>
+<td>238/118/0</td>
+<td>darkorange2</td>
+<td>205/102/0</td>
+<td>darkorange3</td>
+</tr>
+<tr class="row-even"><td>139/69/0</td>
+<td>darkorange4</td>
+<td>255/114/86</td>
+<td>coral1</td>
+<td>238/106/80</td>
+<td>coral2</td>
+</tr>
+<tr class="row-odd"><td>205/91/69</td>
+<td>coral3</td>
+<td>139/62/47</td>
+<td>coral4</td>
+<td>255/99/71</td>
+<td>tomato1</td>
+</tr>
+<tr class="row-even"><td>238/92/66</td>
+<td>tomato2</td>
+<td>205/79/57</td>
+<td>tomato3</td>
+<td>139/54/38</td>
+<td>tomato4</td>
+</tr>
+<tr class="row-odd"><td>255/69/0</td>
+<td>orangered1</td>
+<td>238/64/0</td>
+<td>orangered2</td>
+<td>205/55/0</td>
+<td>orangered3</td>
+</tr>
+<tr class="row-even"><td>139/37/0</td>
+<td>orangered4</td>
+<td>255/0/0</td>
+<td>red1</td>
+<td>238/0/0</td>
+<td>red2</td>
+</tr>
+<tr class="row-odd"><td>205/0/0</td>
+<td>red3</td>
+<td>139/0/0</td>
+<td>red4</td>
+<td>255/20/147</td>
+<td>deeppink1</td>
+</tr>
+<tr class="row-even"><td>238/18/137</td>
+<td>deeppink2</td>
+<td>205/16/118</td>
+<td>deeppink3</td>
+<td>139/10/80</td>
+<td>deeppink4</td>
+</tr>
+<tr class="row-odd"><td>255/110/180</td>
+<td>hotpink1</td>
+<td>238/106/167</td>
+<td>hotpink2</td>
+<td>205/96/144</td>
+<td>hotpink3</td>
+</tr>
+<tr class="row-even"><td>139/58/98</td>
+<td>hotpink4</td>
+<td>255/181/197</td>
+<td>pink1</td>
+<td>238/169/184</td>
+<td>pink2</td>
+</tr>
+<tr class="row-odd"><td>205/145/158</td>
+<td>pink3</td>
+<td>139/99/108</td>
+<td>pink4</td>
+<td>255/174/185</td>
+<td>lightpink1</td>
+</tr>
+<tr class="row-even"><td>238/162/173</td>
+<td>lightpink2</td>
+<td>205/140/149</td>
+<td>lightpink3</td>
+<td>139/95/101</td>
+<td>lightpink4</td>
+</tr>
+<tr class="row-odd"><td>255/130/171</td>
+<td>palevioletred1</td>
+<td>238/121/159</td>
+<td>palevioletred2</td>
+<td>205/104/137</td>
+<td>palevioletred3</td>
+</tr>
+<tr class="row-even"><td>139/71/93</td>
+<td>palevioletred4</td>
+<td>255/52/179</td>
+<td>maroon1</td>
+<td>238/48/167</td>
+<td>maroon2</td>
+</tr>
+<tr class="row-odd"><td>205/41/144</td>
+<td>maroon3</td>
+<td>139/28/98</td>
+<td>maroon4</td>
+<td>255/62/150</td>
+<td>violetred1</td>
+</tr>
+<tr class="row-even"><td>238/58/140</td>
+<td>violetred2</td>
+<td>205/50/120</td>
+<td>violetred3</td>
+<td>139/34/82</td>
+<td>violetred4</td>
+</tr>
+<tr class="row-odd"><td>255/0/255</td>
+<td>magenta1</td>
+<td>238/0/238</td>
+<td>magenta2</td>
+<td>205/0/205</td>
+<td>magenta3</td>
+</tr>
+<tr class="row-even"><td>139/0/139</td>
+<td>magenta4</td>
+<td>255/131/250</td>
+<td>orchid1</td>
+<td>238/122/233</td>
+<td>orchid2</td>
+</tr>
+<tr class="row-odd"><td>205/105/201</td>
+<td>orchid3</td>
+<td>139/71/137</td>
+<td>orchid4</td>
+<td>255/187/255</td>
+<td>plum1</td>
+</tr>
+<tr class="row-even"><td>238/174/238</td>
+<td>plum2</td>
+<td>205/150/205</td>
+<td>plum3</td>
+<td>139/102/139</td>
+<td>plum4</td>
+</tr>
+<tr class="row-odd"><td>224/102/255</td>
+<td>mediumorchid1</td>
+<td>209/95/238</td>
+<td>mediumorchid2</td>
+<td>180/82/205</td>
+<td>mediumorchid3</td>
+</tr>
+<tr class="row-even"><td>122/55/139</td>
+<td>mediumorchid4</td>
+<td>191/62/255</td>
+<td>darkorchid1</td>
+<td>178/58/238</td>
+<td>darkorchid2</td>
+</tr>
+<tr class="row-odd"><td>154/50/205</td>
+<td>darkorchid3</td>
+<td>104/34/139</td>
+<td>darkorchid4</td>
+<td>155/48/255</td>
+<td>purple1</td>
+</tr>
+<tr class="row-even"><td>145/44/238</td>
+<td>purple2</td>
+<td>125/38/205</td>
+<td>purple3</td>
+<td>85/26/139</td>
+<td>purple4</td>
+</tr>
+<tr class="row-odd"><td>171/130/255</td>
+<td>mediumpurple1</td>
+<td>159/121/238</td>
+<td>mediumpurple2</td>
+<td>137/104/205</td>
+<td>mediumpurple3</td>
+</tr>
+<tr class="row-even"><td>93/71/139</td>
+<td>mediumpurple4</td>
+<td>255/225/255</td>
+<td>thistle1</td>
+<td>238/210/238</td>
+<td>thistle2</td>
+</tr>
+<tr class="row-odd"><td>205/181/205</td>
+<td>thistle3</td>
+<td>139/123/139</td>
+<td>thistle4</td>
+<td>0/0/0</td>
+<td>gray0</td>
+</tr>
+<tr class="row-even"><td>0/0/0</td>
+<td>grey0</td>
+<td>3/3/3</td>
+<td>gray1</td>
+<td>3/3/3</td>
+<td>grey1</td>
+</tr>
+<tr class="row-odd"><td>5/5/5</td>
+<td>gray2</td>
+<td>5/5/5</td>
+<td>grey2</td>
+<td>8/8/8</td>
+<td>gray3</td>
+</tr>
+<tr class="row-even"><td>8/8/8</td>
+<td>grey3</td>
+<td>10/10/10</td>
+<td>gray4</td>
+<td>10/10/10</td>
+<td>grey4</td>
+</tr>
+<tr class="row-odd"><td>13/13/13</td>
+<td>gray5</td>
+<td>13/13/13</td>
+<td>grey5</td>
+<td>15/15/15</td>
+<td>gray6</td>
+</tr>
+<tr class="row-even"><td>15/15/15</td>
+<td>grey6</td>
+<td>18/18/18</td>
+<td>gray7</td>
+<td>18/18/18</td>
+<td>grey7</td>
+</tr>
+<tr class="row-odd"><td>20/20/20</td>
+<td>gray8</td>
+<td>20/20/20</td>
+<td>grey8</td>
+<td>23/23/23</td>
+<td>gray9</td>
+</tr>
+<tr class="row-even"><td>23/23/23</td>
+<td>grey9</td>
+<td>26/26/26</td>
+<td>gray10</td>
+<td>26/26/26</td>
+<td>grey10</td>
+</tr>
+<tr class="row-odd"><td>28/28/28</td>
+<td>gray11</td>
+<td>28/28/28</td>
+<td>grey11</td>
+<td>31/31/31</td>
+<td>gray12</td>
+</tr>
+<tr class="row-even"><td>31/31/31</td>
+<td>grey12</td>
+<td>33/33/33</td>
+<td>gray13</td>
+<td>33/33/33</td>
+<td>grey13</td>
+</tr>
+<tr class="row-odd"><td>36/36/36</td>
+<td>gray14</td>
+<td>36/36/36</td>
+<td>grey14</td>
+<td>38/38/38</td>
+<td>gray15</td>
+</tr>
+<tr class="row-even"><td>38/38/38</td>
+<td>grey15</td>
+<td>41/41/41</td>
+<td>gray16</td>
+<td>41/41/41</td>
+<td>grey16</td>
+</tr>
+<tr class="row-odd"><td>43/43/43</td>
+<td>gray17</td>
+<td>43/43/43</td>
+<td>grey17</td>
+<td>46/46/46</td>
+<td>gray18</td>
+</tr>
+<tr class="row-even"><td>46/46/46</td>
+<td>grey18</td>
+<td>48/48/48</td>
+<td>gray19</td>
+<td>48/48/48</td>
+<td>grey19</td>
+</tr>
+<tr class="row-odd"><td>51/51/51</td>
+<td>gray20</td>
+<td>51/51/51</td>
+<td>grey20</td>
+<td>54/54/54</td>
+<td>gray21</td>
+</tr>
+<tr class="row-even"><td>54/54/54</td>
+<td>grey21</td>
+<td>56/56/56</td>
+<td>gray22</td>
+<td>56/56/56</td>
+<td>grey22</td>
+</tr>
+<tr class="row-odd"><td>59/59/59</td>
+<td>gray23</td>
+<td>59/59/59</td>
+<td>grey23</td>
+<td>61/61/61</td>
+<td>gray24</td>
+</tr>
+<tr class="row-even"><td>61/61/61</td>
+<td>grey24</td>
+<td>64/64/64</td>
+<td>gray25</td>
+<td>64/64/64</td>
+<td>grey25</td>
+</tr>
+<tr class="row-odd"><td>66/66/66</td>
+<td>gray26</td>
+<td>66/66/66</td>
+<td>grey26</td>
+<td>69/69/69</td>
+<td>gray27</td>
+</tr>
+<tr class="row-even"><td>69/69/69</td>
+<td>grey27</td>
+<td>71/71/71</td>
+<td>gray28</td>
+<td>71/71/71</td>
+<td>grey28</td>
+</tr>
+<tr class="row-odd"><td>74/74/74</td>
+<td>gray29</td>
+<td>74/74/74</td>
+<td>grey29</td>
+<td>77/77/77</td>
+<td>gray30</td>
+</tr>
+<tr class="row-even"><td>77/77/77</td>
+<td>grey30</td>
+<td>79/79/79</td>
+<td>gray31</td>
+<td>79/79/79</td>
+<td>grey31</td>
+</tr>
+<tr class="row-odd"><td>82/82/82</td>
+<td>gray32</td>
+<td>82/82/82</td>
+<td>grey32</td>
+<td>84/84/84</td>
+<td>gray33</td>
+</tr>
+<tr class="row-even"><td>84/84/84</td>
+<td>grey33</td>
+<td>87/87/87</td>
+<td>gray34</td>
+<td>87/87/87</td>
+<td>grey34</td>
+</tr>
+<tr class="row-odd"><td>89/89/89</td>
+<td>gray35</td>
+<td>89/89/89</td>
+<td>grey35</td>
+<td>92/92/92</td>
+<td>gray36</td>
+</tr>
+<tr class="row-even"><td>92/92/92</td>
+<td>grey36</td>
+<td>94/94/94</td>
+<td>gray37</td>
+<td>94/94/94</td>
+<td>grey37</td>
+</tr>
+<tr class="row-odd"><td>97/97/97</td>
+<td>gray38</td>
+<td>97/97/97</td>
+<td>grey38</td>
+<td>99/99/99</td>
+<td>gray39</td>
+</tr>
+<tr class="row-even"><td>99/99/99</td>
+<td>grey39</td>
+<td>102/102/102</td>
+<td>gray40</td>
+<td>102/102/102</td>
+<td>grey40</td>
+</tr>
+<tr class="row-odd"><td>105/105/105</td>
+<td>gray41</td>
+<td>105/105/105</td>
+<td>grey41</td>
+<td>107/107/107</td>
+<td>gray42</td>
+</tr>
+<tr class="row-even"><td>107/107/107</td>
+<td>grey42</td>
+<td>110/110/110</td>
+<td>gray43</td>
+<td>110/110/110</td>
+<td>grey43</td>
+</tr>
+<tr class="row-odd"><td>112/112/112</td>
+<td>gray44</td>
+<td>112/112/112</td>
+<td>grey44</td>
+<td>115/115/115</td>
+<td>gray45</td>
+</tr>
+<tr class="row-even"><td>115/115/115</td>
+<td>grey45</td>
+<td>117/117/117</td>
+<td>gray46</td>
+<td>117/117/117</td>
+<td>grey46</td>
+</tr>
+<tr class="row-odd"><td>120/120/120</td>
+<td>gray47</td>
+<td>120/120/120</td>
+<td>grey47</td>
+<td>122/122/122</td>
+<td>gray48</td>
+</tr>
+<tr class="row-even"><td>122/122/122</td>
+<td>grey48</td>
+<td>125/125/125</td>
+<td>gray49</td>
+<td>125/125/125</td>
+<td>grey49</td>
+</tr>
+<tr class="row-odd"><td>127/127/127</td>
+<td>gray50</td>
+<td>127/127/127</td>
+<td>grey50</td>
+<td>130/130/130</td>
+<td>gray51</td>
+</tr>
+<tr class="row-even"><td>130/130/130</td>
+<td>grey51</td>
+<td>133/133/133</td>
+<td>gray52</td>
+<td>133/133/133</td>
+<td>grey52</td>
+</tr>
+<tr class="row-odd"><td>135/135/135</td>
+<td>gray53</td>
+<td>135/135/135</td>
+<td>grey53</td>
+<td>138/138/138</td>
+<td>gray54</td>
+</tr>
+<tr class="row-even"><td>138/138/138</td>
+<td>grey54</td>
+<td>140/140/140</td>
+<td>gray55</td>
+<td>140/140/140</td>
+<td>grey55</td>
+</tr>
+<tr class="row-odd"><td>143/143/143</td>
+<td>gray56</td>
+<td>143/143/143</td>
+<td>grey56</td>
+<td>145/145/145</td>
+<td>gray57</td>
+</tr>
+<tr class="row-even"><td>145/145/145</td>
+<td>grey57</td>
+<td>148/148/148</td>
+<td>gray58</td>
+<td>148/148/148</td>
+<td>grey58</td>
+</tr>
+<tr class="row-odd"><td>150/150/150</td>
+<td>gray59</td>
+<td>150/150/150</td>
+<td>grey59</td>
+<td>153/153/153</td>
+<td>gray60</td>
+</tr>
+<tr class="row-even"><td>153/153/153</td>
+<td>grey60</td>
+<td>156/156/156</td>
+<td>gray61</td>
+<td>156/156/156</td>
+<td>grey61</td>
+</tr>
+<tr class="row-odd"><td>158/158/158</td>
+<td>gray62</td>
+<td>158/158/158</td>
+<td>grey62</td>
+<td>161/161/161</td>
+<td>gray63</td>
+</tr>
+<tr class="row-even"><td>161/161/161</td>
+<td>grey63</td>
+<td>163/163/163</td>
+<td>gray64</td>
+<td>163/163/163</td>
+<td>grey64</td>
+</tr>
+<tr class="row-odd"><td>166/166/166</td>
+<td>gray65</td>
+<td>166/166/166</td>
+<td>grey65</td>
+<td>168/168/168</td>
+<td>gray66</td>
+</tr>
+<tr class="row-even"><td>168/168/168</td>
+<td>grey66</td>
+<td>171/171/171</td>
+<td>gray67</td>
+<td>171/171/171</td>
+<td>grey67</td>
+</tr>
+<tr class="row-odd"><td>173/173/173</td>
+<td>gray68</td>
+<td>173/173/173</td>
+<td>grey68</td>
+<td>176/176/176</td>
+<td>gray69</td>
+</tr>
+<tr class="row-even"><td>176/176/176</td>
+<td>grey69</td>
+<td>179/179/179</td>
+<td>gray70</td>
+<td>179/179/179</td>
+<td>grey70</td>
+</tr>
+<tr class="row-odd"><td>181/181/181</td>
+<td>gray71</td>
+<td>181/181/181</td>
+<td>grey71</td>
+<td>184/184/184</td>
+<td>gray72</td>
+</tr>
+<tr class="row-even"><td>184/184/184</td>
+<td>grey72</td>
+<td>186/186/186</td>
+<td>gray73</td>
+<td>186/186/186</td>
+<td>grey73</td>
+</tr>
+<tr class="row-odd"><td>189/189/189</td>
+<td>gray74</td>
+<td>189/189/189</td>
+<td>grey74</td>
+<td>191/191/191</td>
+<td>gray75</td>
+</tr>
+<tr class="row-even"><td>191/191/191</td>
+<td>grey75</td>
+<td>194/194/194</td>
+<td>gray76</td>
+<td>194/194/194</td>
+<td>grey76</td>
+</tr>
+<tr class="row-odd"><td>196/196/196</td>
+<td>gray77</td>
+<td>196/196/196</td>
+<td>grey77</td>
+<td>199/199/199</td>
+<td>gray78</td>
+</tr>
+<tr class="row-even"><td>199/199/199</td>
+<td>grey78</td>
+<td>201/201/201</td>
+<td>gray79</td>
+<td>201/201/201</td>
+<td>grey79</td>
+</tr>
+<tr class="row-odd"><td>204/204/204</td>
+<td>gray80</td>
+<td>204/204/204</td>
+<td>grey80</td>
+<td>207/207/207</td>
+<td>gray81</td>
+</tr>
+<tr class="row-even"><td>207/207/207</td>
+<td>grey81</td>
+<td>209/209/209</td>
+<td>gray82</td>
+<td>209/209/209</td>
+<td>grey82</td>
+</tr>
+<tr class="row-odd"><td>212/212/212</td>
+<td>gray83</td>
+<td>212/212/212</td>
+<td>grey83</td>
+<td>214/214/214</td>
+<td>gray84</td>
+</tr>
+<tr class="row-even"><td>214/214/214</td>
+<td>grey84</td>
+<td>217/217/217</td>
+<td>gray85</td>
+<td>217/217/217</td>
+<td>grey85</td>
+</tr>
+<tr class="row-odd"><td>219/219/219</td>
+<td>gray86</td>
+<td>219/219/219</td>
+<td>grey86</td>
+<td>222/222/222</td>
+<td>gray87</td>
+</tr>
+<tr class="row-even"><td>222/222/222</td>
+<td>grey87</td>
+<td>224/224/224</td>
+<td>gray88</td>
+<td>224/224/224</td>
+<td>grey88</td>
+</tr>
+<tr class="row-odd"><td>227/227/227</td>
+<td>gray89</td>
+<td>227/227/227</td>
+<td>grey89</td>
+<td>229/229/229</td>
+<td>gray90</td>
+</tr>
+<tr class="row-even"><td>229/229/229</td>
+<td>grey90</td>
+<td>232/232/232</td>
+<td>gray91</td>
+<td>232/232/232</td>
+<td>grey91</td>
+</tr>
+<tr class="row-odd"><td>235/235/235</td>
+<td>gray92</td>
+<td>235/235/235</td>
+<td>grey92</td>
+<td>237/237/237</td>
+<td>gray93</td>
+</tr>
+<tr class="row-even"><td>237/237/237</td>
+<td>grey93</td>
+<td>240/240/240</td>
+<td>gray94</td>
+<td>240/240/240</td>
+<td>grey94</td>
+</tr>
+<tr class="row-odd"><td>242/242/242</td>
+<td>gray95</td>
+<td>242/242/242</td>
+<td>grey95</td>
+<td>245/245/245</td>
+<td>gray96</td>
+</tr>
+<tr class="row-even"><td>245/245/245</td>
+<td>grey96</td>
+<td>247/247/247</td>
+<td>gray97</td>
+<td>247/247/247</td>
+<td>grey97</td>
+</tr>
+<tr class="row-odd"><td>250/250/250</td>
+<td>gray98</td>
+<td>250/250/250</td>
+<td>grey98</td>
+<td>252/252/252</td>
+<td>gray99</td>
+</tr>
+<tr class="row-even"><td>252/252/252</td>
+<td>grey99</td>
+<td>255/255/255</td>
+<td>gray100</td>
+<td>255/255/255</td>
+<td>grey100</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="further-information">
+<h2>Further Information<a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h2>
+<p>For more information on the use of color, read Chapter <a class="reference internal" href="cookbook/colorspace.html#color-space"><span class="std std-ref">Color Space: The Final Frontier</span></a> of the <strong>CookBook</strong>.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>, <a class="reference internal" href="gmtlogo.html"><span class="doc">gmtlogo</span></a>,
+<a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a>,
+<a class="reference internal" href="grdvector.html"><span class="doc">grdvector</span></a>, <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>,
+<a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a>,
+<a class="reference internal" href="coast.html"><span class="doc">coast</span></a>, <a class="reference internal" href="contour.html"><span class="doc">contour</span></a>,
+<a class="reference internal" href="histogram.html"><span class="doc">histogram</span></a>,
+<a class="reference internal" href="image.html"><span class="doc">image</span></a>, <a class="reference internal" href="legend.html"><span class="doc">legend</span></a>,
+<a class="reference internal" href="mask.html"><span class="doc">mask</span></a>, <a class="reference internal" href="rose.html"><span class="doc">rose</span></a>,
+<a class="reference internal" href="text.html"><span class="doc">text</span></a>, <a class="reference internal" href="wiggle.html"><span class="doc">wiggle</span></a>,
+<a class="reference internal" href="plot.html"><span class="doc">plot</span></a>, <a class="reference internal" href="plot3d.html"><span class="doc">plot3d</span></a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="gallery.html" class="btn btn-neutral float-right" title="Example Gallery" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="gmt.conf.html" class="btn btn-neutral float-left" title="gmt.conf" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

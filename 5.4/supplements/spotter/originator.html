@@ -1,0 +1,393 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>originator &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="rotconverter" href="rotconverter.html" />
+    <link rel="prev" title="hotspotter" href="hotspotter.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="rotconverter.html" title="rotconverter"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="hotspotter.html" title="hotspotter"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="originator">
+<span id="index-0"></span><h1>originator<a class="headerlink" href="#originator" title="Permalink to this headline">¶</a></h1>
+<p>originator - Associate seamounts with nearest hotspot point sources</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>originator</strong> [ <em>tables</em> ] <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<strong>+</strong>]<em>rotfile</em>
+<a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>+</strong>]<em>hs_file</em>
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>d_km</em> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong>[<em>flag</em>] ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>upper_age</em> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><em>r/t</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong>[<em>n_hs</em>] ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong><em>maxdist</em> ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong> ]
+[ <strong>-bi</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>originator</strong> reads (longitude, latitude, height, radius, crustal_age)
+records from <em>tables</em> [or standard input] and uses the given Absolute
+Plate Motion (APM) stage or total reconstruction rotation file and the
+list of hotspot locations to determine the most likely origin (hotspot)
+for each seamount. It does so by calculating flowlines back in time and
+determining the closest approach to all hotspots. The output consists of
+the input records with four additional fields added for each of the
+<em>n_hs</em> closest hotspots. The four fields are the hotspot id (e.g.,
+HWI), the stage id of the flowline segment that came closest, the
+pseudo-age of the seamount, and the closest distance to the hotspot (in
+km). See option <strong>-:</strong> on how to read (latitude, longitude,height,
+radius, crustal_age) files.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong><em>rotfile</em></dt>
+<dd><p class="first">Give file with rotation parameters. This file must contain one
+record for each rotation; each record must be of the following
+format:</p>
+<p><em>lon lat tstart [tstop] angle</em> [ <em>khat a b c d e f g df</em> ]</p>
+<p class="last">where <em>tstart</em> and <em>tstop</em> are in Myr and <em>lon lat angle</em> are in
+degrees. <em>tstart</em> and <em>tstop</em> are the ages of the old and young ends
+of a stage. If <em>tstop</em> is not present in the record then a total
+reconstruction rotation is expected and <em>tstop</em> is implicitly set to
+0 and should not be specified for any of the records in the file. If
+a covariance matrix <strong>C</strong> for the rotation is available it must be
+specified in a format using the nine optional terms listed in
+brackets. Here, <strong>C</strong> = (<em>g</em>/<em>khat</em>)*[ <em>a b d; b c e; d e f</em> ]
+which shows <strong>C</strong> made up of three row vectors. If the degrees of
+freedom (<em>df</em>) in fitting the rotation is 0 or not given it is set
+to 10000. Blank lines and records whose first column contains # will
+be ignored. You may prepend a leading + to the filename to indicate
+you wish to invert the rotations.
+Alternatively, give the filename composed of two plate IDs
+separated by a hyphen (e.g., PAC-MBL) and we will instead extract
+that rotation from the GPlates rotation database. We return an error
+if the rotation cannot be found. Prepend <strong>+</strong> if you want to invert
+the rotations prior to use.</p>
+</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><em>file</em></dt>
+<dd><p class="first">Give file with hotspot locations. This file must contain one record
+for each hotspot to be considered; each record must be of the
+following format:</p>
+<p>lon lat hs_abbrev hs_id r t_off t_on create fit plot name</p>
+<p>E.g., for Hawaii this may look like</p>
+<p>205 20 HWI 1 25 0 90 Y Y Y Hawaii</p>
+<p class="last">Most applications only need the first 4 columns which thus
+represents the minimal hotspot information record type. The
+abbreviation may be maximum 3 characters long. The id must be an
+integer from 1-32. The positional uncertainty of the hotspot is
+given by r (in km). The t_off and t_on variables are used to
+indicate the active time-span of the hotspot. The create, fit, and
+plot indicators are either Y or N and are used by some programs to
+indicate if the hotspot is included in the ID-grids used to
+determine rotations, if the hotspot chain will be used to determine
+rotations, and if the hotspot should be included in various plots.
+The name is a 32-character maximum text string with the full hotspot
+name. Blank lines and records whose first column contains # will be
+ignored. Prepend <strong>+</strong> if we should look for hotspot drift tables
+whose name must be <em>hs_abbrev</em>_drift.txt. Such files may be
+located in the current directory, the same directory as <em>hs_file</em>,
+or in the directories pointed to by GMT_DATADIR. If found then we
+interpolate to get hotspot location as a function of time [fixed].</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>d_km</em></dt>
+<dd>Sets the flowline sampling interval in km. [Default is 5].</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong>[<em>flag</em>]</dt>
+<dd>Output closest approach for nearest hotspot only (ignores <strong>-S</strong>).
+Choose <strong>-Lt</strong> for (<em>time</em>, <em>dist</em>, <em>z</em>) [Default], <strong>-Lw</strong> for
+(<em>omega</em>, <em>dist</em>, <em>z</em>), and <strong>-Ll</strong> for (lon, lat, time, dist, z).
+Normally, <em>dist</em> is in km; use upper case modifiers <strong>TWL</strong> to get
+<em>dist</em> in spherical degrees.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong><em>upper_age</em></dt>
+<dd>Set the maximum age to extend the oldest stage back in time [no extension].</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong><em>r/t</em></dt>
+<dd>Input files only has (<em>x</em>,<em>y</em>,<em>z</em>); specify constant values for <em>r</em>,<em>t</em> that
+will be implied for each record.</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong>[<em>n_hs</em>]</dt>
+<dd>Set the number of closest hotspots to report [Default is 1].</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong></dt>
+<dd>Truncate seamount ages exceeding the upper age set with <strong>-N</strong> [no truncation].</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong><em>maxdist</em></dt>
+<dd>Only report those seamounts whose flowlines came within <em>maxdist</em> to
+any hotspot [Default reports all seamounts].</dd>
+</dl>
+<dl class="docutils" id="z">
+<dt><strong>-Z</strong></dt>
+<dd>Use the hotspot ID number rather than the name tag in output records.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input. [Default is 5 input columns].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-di</strong><em>nodata</em> <a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="../../gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="geodetic-versus-geocentric-coordiinates">
+<h2>Geodetic versus Geocentric Coordiinates<a class="headerlink" href="#geodetic-versus-geocentric-coordiinates" title="Permalink to this headline">¶</a></h2>
+<p>All spherical rotations are applied to geocentric coordinates.
+This means that incoming data points and grids are considered
+to represent geodetic coordinates and must first
+be converted to geocentric coordinates. Rotations are then applied, and the
+final reconstructed points are converted back to geodetic
+coordinates.  This default behavior can be bypassed if the
+ellipsoid setting <a class="reference internal" href="../../gmt.conf.html#projection-parameters"><span class="std std-ref">PROJ_ELLIPSOID</span></a>
+is changed to Sphere.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To find the likely (hotspot) origins of the seamounts represented by the
+(x,y,z,r,tc) points in the file seamounts.d, using the DC85.d Euler
+poles and the pac_hs.d list of possible hotspots, and report the 2 most
+likely hotspot candidates for each seamount, run</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">originator</span> <span class="n">seamounts</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span><span class="n">S2</span> <span class="o">-</span><span class="n">EDC85</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span><span class="n">Fpac_hs</span><span class="o">.</span><span class="n">d</span> <span class="o">&gt;</span> <span class="n">origins</span><span class="o">.</span><span class="n">d</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To determine the predicted age of a seamount, distances to the closest
+hotspot, and echo the observed age given its location, observed age, and
+a rotation model, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="s2">&quot;1.55 -8.43 52.3&quot;</span> <span class="o">|</span> <span class="n">gmt</span> <span class="n">originator</span> <span class="o">-</span><span class="n">FONeill_2005_hotspots</span><span class="o">.</span><span class="n">txt</span> \
+<span class="o">-</span><span class="n">EOMS2005_APM_fixed</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">Q1</span><span class="o">/</span><span class="mi">120</span> <span class="o">-</span><span class="n">Lt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>where 52.3 Ma is observed age. The output is 70 -95.486 52.3. To repeat
+the same exercise with a moving hotspot model, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="s2">&quot;1.55 -8.43 52.3&quot;</span> <span class="o">|</span> <span class="n">gmt</span> <span class="n">originator</span> <span class="o">-</span><span class="n">F</span><span class="o">+</span><span class="n">ONeill_2005_hotspots</span><span class="o">.</span><span class="n">txt</span> \
+<span class="o">-</span><span class="n">EOMS2005_APM_smooth</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">Q1</span><span class="o">/</span><span class="mi">120</span> <span class="o">-</span><span class="n">Lt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Now the output is 80 -213.135 52.3. Negative distances means the closest
+approach was east of the hotspot.</p>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>GMT distributes the EarthByte rotation model Global_EarthByte_230-0Ma_GK07_AREPS.rot.
+To use an alternate rotation file, create an environmental parameters named
+<strong>GPLATES_ROTATIONS</strong> that points to an alternate rotation file.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="grdrotater.html"><span class="doc">grdrotater</span></a>,
+<a class="reference internal" href="grdspotter.html"><span class="doc">grdspotter</span></a>,
+<a class="reference internal" href="../../project.html"><span class="doc">project</span></a>,
+<a class="reference internal" href="../../mapproject.html"><span class="doc">mapproject</span></a>,
+<a class="reference internal" href="backtracker.html"><span class="doc">backtracker</span></a>,
+<a class="reference internal" href="gmtpmodeler.html"><span class="doc">gmtpmodeler</span></a>,
+<a class="reference internal" href="grdpmodeler.html"><span class="doc">grdpmodeler</span></a>,
+<a class="reference internal" href="grdrotater.html"><span class="doc">grdrotater</span></a>,
+<a class="reference internal" href="hotspotter.html"><span class="doc">hotspotter</span></a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Wessel, P., 1999, “Hotspotting” tools released, EOS Trans. AGU, 80 (29), p. 319.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">originator</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#geodetic-versus-geocentric-coordiinates">Geodetic versus Geocentric Coordiinates</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="hotspotter.html"
+                        title="previous chapter">hotspotter</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="rotconverter.html"
+                        title="next chapter">rotconverter</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/spotter/originator.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="rotconverter.html" title="rotconverter"
+             >next</a> </li>
+        <li class="right" >
+          <a href="hotspotter.html" title="hotspotter"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

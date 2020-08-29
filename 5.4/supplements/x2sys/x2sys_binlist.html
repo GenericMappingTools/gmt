@@ -1,0 +1,257 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>x2sys_binlist &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="x2sys_cross" href="x2sys_cross.html" />
+    <link rel="prev" title="rotsmoother" href="../spotter/rotsmoother.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="x2sys_cross.html" title="x2sys_cross"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="../spotter/rotsmoother.html" title="rotsmoother"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="x2sys-binlist">
+<span id="index-0"></span><h1>x2sys_binlist<a class="headerlink" href="#x2sys-binlist" title="Permalink to this headline">¶</a></h1>
+<p>x2sys_binlist - Create bin index listing from track data files</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>x2sys_binlist</strong> <em>track(s)</em> <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>TAG</em>
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong> ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>x2sys_binlist</strong> reads one or more track data files and produces a
+multisegment ASCII track bin-index file (tbf) with the track name in the
+header and one data record per bin crossed; these records contain <em>lon</em>,
+<em>lat</em>, <em>index</em>, <em>flags</em>[, <em>dist</em>], where <em>lon</em>, <em>lat</em> are the
+coordinates of the center of the bin, the <em>index</em> is the 1-D number of
+the bin, and <em>flags</em> is a bitflag that describes which data fields were
+available in this bin. The optional <em>dist</em> requires <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>. The input
+files can be of any format, which must be described and passed with the
+<a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong> option. The bin-index listing is a crude representation of where
+the track goes and is used by the data archivist to build an x2sys track
+data base for miscellaneous track queries, such as when needing to
+determine which tracks should be compared in a crossover analysis. You
+must run <a class="reference internal" href="x2sys_init.html"><span class="doc">x2sys_init</span></a> to initialize the tag before you can run the
+indexing.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>tracks</em></dt>
+<dd>Can be one or more ASCII, native binary, or COARDS netCDF 1-D data
+files. To supply the data files via a text file with a list of
+tracks (one per record), specify the name of the track list after a
+leading equal-sign (e.g., =tracks.lis). If the names are missing
+their file extension we will append the suffix specified for this
+<em>TAG</em>. Track files will be searched for first in the current
+directory and second in all directories listed in
+<strong>$X2SYS_HOME</strong>/<em>TAG</em>/<em>TAG</em>_paths.txt (if it exists). [If
+<strong>$X2SYS_HOME</strong> is not set it will default to
+<strong>$GMT_SHAREDIR</strong>/x2sys]. (Note: MGD77 files will also be looked
+for via <strong>MGD77_HOME</strong>/mgd77_paths.txt and *.gmt files will be
+searched for via <strong>$GMT_SHAREDIR</strong>/mgg/gmtfile_paths).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-T</strong><em>TAG</em></dt>
+<dd>Specify the x2sys <em>TAG</em> which tracks the attributes of this data type.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong></dt>
+<dd>Calculate the length of track-line segments per bin [Default skips
+this step]. The length fragments are given as the 5th output column
+(after the <em>flags</em>). The length units are obtained via the TAB
+setting (see <a class="reference internal" href="x2sys_init.html"><span class="doc">x2sys_init</span></a>).</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong></dt>
+<dd>Convert geographic data to a cylindrical equal-area projection prior
+to binning. Basically, we apply the projection
+<strong>-JY</strong><em>lon0</em>/37:04:17.166076/360, where <em>lon0</em> is the
+mid-longitude of the region. Requires <strong>-D</strong>, geographical data, and
+a global region (e.g., <strong>-Rg</strong> or <strong>-Rd</strong>). This option is useful
+for statistics related to track-line density but should not be used
+when preparing bin-index files for the x2sys track data bases.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To create a bin index file from the MGD77 file 01030061.mgd77 using the
+settings associated with the tag MGD77, do</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">x2sys_binlist</span> <span class="mf">01030061.</span><span class="n">mgd77</span> <span class="o">-</span><span class="n">TMGD77</span> <span class="o">&gt;</span> <span class="mf">01030061.</span><span class="n">tbf</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To create a track bin index file of all MGD77+ files residing in the
+current directory using the settings associated with the tag MGD77+ and
+calculate track distances, run</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">x2sys_binlist</span> <span class="o">*.</span><span class="n">nc</span> <span class="o">-</span><span class="n">TMGD77</span><span class="o">+</span> <span class="o">-</span><span class="n">D</span> <span class="o">&gt;</span> <span class="nb">all</span><span class="o">.</span><span class="n">tbf</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="x2sys_cross.html"><span class="doc">x2sys_cross</span></a>,
+<a class="reference internal" href="x2sys_datalist.html"><span class="doc">x2sys_datalist</span></a>,
+<a class="reference internal" href="x2sys_get.html"><span class="doc">x2sys_get</span></a>,
+<a class="reference internal" href="x2sys_init.html"><span class="doc">x2sys_init</span></a>,
+<a class="reference internal" href="x2sys_put.html"><span class="doc">x2sys_put</span></a>,
+<a class="reference internal" href="x2sys_report.html"><span class="doc">x2sys_report</span></a>,
+<a class="reference internal" href="x2sys_solve.html"><span class="doc">x2sys_solve</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">x2sys_binlist</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../spotter/rotsmoother.html"
+                        title="previous chapter">rotsmoother</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="x2sys_cross.html"
+                        title="next chapter">x2sys_cross</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/x2sys/x2sys_binlist.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="x2sys_cross.html" title="x2sys_cross"
+             >next</a> </li>
+        <li class="right" >
+          <a href="../spotter/rotsmoother.html" title="rotsmoother"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

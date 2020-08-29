@@ -1,0 +1,585 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:24 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>PROJECT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>PROJECT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#ASCII FORMAT PRECISION">ASCII FORMAT PRECISION</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">project &minus;
+project data along a line or great circle, generate a
+profile track, or translate coordinates.</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>project</b>
+[ <i>infile</i> ] <b>&minus;C</b><i>cx</i>/<i>cy</i> [
+<b>&minus;A</b><i>azimuth</i> ] [ <b>&minus;Dd</b>|<b>g</b>
+] [ <b>&minus;E</b><i>bx</i>/<i>by</i> ] [
+<b>&minus;F</b><i>flags</i> ] [ <b>&minus;G</b><i>dist</i> ]
+[ <b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;L</b>[<b>w</b>][<i>l_min</i>/<i>l_max</i>] ] [
+<b>&minus;N</b> ] [ <b>&minus;Q</b> ] [ <b>&minus;S</b> ] [
+<b>&minus;T</b><i>px</i>/<i>py</i> ] [ <b>&minus;V</b> ] [
+<b>&minus;W</b><i>w_min</i>/<i>w_max</i> ] [
+<b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;b</b>[<b>i</b>|<b>o</b>][<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ] [
+<b>&minus;m</b>[<b>i</b>|<b>o</b>][<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>project</b>
+reads arbitrary (<i>x, y</i>[, <i>z</i>]) data from standard
+input [or <i>infile</i> ] and writes to standard output any
+combination of (<i>x, y, z, p, q, r, s</i>), where (<i>p,
+q</i>) are the coordinates in the projection, (<i>r, s</i>)
+is the position in the (<i>x, y</i>) coordinate system of
+the point on the profile (<i>q</i> = 0 path) closest to
+(<i>x, y</i>), and <i>z</i> is all remaining columns in the
+input (beyond the required <i>x</i> and <i>y</i> columns).
+Alternatively, <b>project</b> may be used to generate (<i>r,
+s, p</i>) triples at equal increments <i>dist</i> along a
+profile. In this case ( <b>&minus;G</b> option), no input is
+read. Projections are defined in any (but only) one of three
+ways: (Definition 1) By a Center <b>&minus;C</b> and an
+Azimuth <b>&minus;A</b> in degrees clockwise from North.
+(Definition 2) By a Center <b>&minus;C</b> and end point E
+of the projection path <b>&minus;E</b>. (Definition 3) By a
+Center <b>&minus;C</b> and a roTation pole position
+<b>&minus;T</b>. To spherically project data along a great
+circle path, an oblique coordinate system is created which
+has its equator along that path, and the zero meridian
+through the Center. Then the oblique longitude (<i>p</i>)
+corresponds to the distance from the Center along the great
+circle, and the oblique latitude (<i>q</i>) corresponds to
+the distance perpendicular to the great circle path. When
+moving in the increasing (<i>p</i>) direction, (toward
+<i>B</i> or in the <i>azimuth</i> direction), the positive
+(<i>q</i>) direction is to your left. If a Pole has been
+specified, then the positive (<i>q</i>) direction is toward
+the pole. <br>
+To specify an oblique projection, use the <b>&minus;T</b>
+option to set the Pole. Then the equator of the projection
+is already determined and the <b>&minus;C</b> option is used
+to locate the <i>p</i> = 0 meridian. The Center <i>cx/cy</i>
+will be taken as a point through which the <i>p</i> = 0
+meridian passes. If you do not care to choose a particular
+point, use the South pole (<i>ox</i> = 0, <i>oy</i> = -90).
+<br>
+Data can be selectively windowed by using the
+<b>&minus;L</b> and <b>&minus;W</b> options. If
+<b>&minus;W</b> is used, the projection Width is set to use
+only points with <i>w_min</i> &lt; q &lt; <i>w_max</i>. If
+<b>&minus;L</b> is set, then the Length is set to use only
+those points with <i>l_min</i> &lt; p &lt; <i>l_max</i>. If
+the <b>&minus;E</b> option has been used to define the
+projection, then <b>&minus;Lw</b> may be selected to window
+the length of the projection to exactly the span from
+<b>O</b> to <b>B</b>. <br>
+Flat Earth (Cartesian) coordinate transformations can also
+be made. Set <b>&minus;N</b> and remember that
+<i>azimuth</i> is clockwise from North (the <i>y</i> axis),
+NOT the usual cartesian theta, which is counterclockwise
+from the <i>x</i> axis. <i>azimuth</i> = 90 - theta. <br>
+No assumptions are made regarding the units for <i>x, y, r,
+s, p, q, dist, l_min, l_max, w_min, w_max</i>. If
+<b>&minus;Q</b> is selected, map units are assumed and <i>x,
+y, r, s</i> must be in degrees and <i>p, q, dist, l_min,
+l_max, w_min, w_max</i> will be in km. <br>
+Calculations of specific great-circle and geodesic distances
+or for back-azimuths or azimuths are better done using
+<b>mapproject</b>. <b><br>
+project</b> is CASE SENSITIVE. Use UPPER CASE for all
+one-letter designators which begin optional arguments. Use
+lower case for the xyzpqrs letters in
+<b>&minus;flags</b>.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>cx/cy</i> sets
+the origin of the projection, in Definition 1 or 2. If
+Definition 3 is used (<b>&minus;T</b>), then <i>cx/cy</i>
+are the coordinates of a point through which the oblique
+zero meridian (<i>p</i> = 0) should pass.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em" valign="top"><i>infile</i></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">name of ASCII (or
+binary, see <b>&minus;bi</b>) file(s) with 2 or more columns
+holding (x,y,[z]) data values. If no filenames are given,
+<b>project</b> will read from standard input. If the
+<b>&minus;G</b> option is selected, no input data are
+read.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify your
+desired output using any combination of <i>xyzpqrs</i>, in
+any order. Do not space between the letters. Use lower case.
+The output will be ASCII (or binary, see <b>&minus;bo</b>)
+columns of values corresponding to <i>xyzpqrs</i> [Default].
+If both input and output are using ASCII format then the
+<i>z</i> data are treated as textstring(s). If the
+<b>&minus;G</b> option is selected, the output will be
+<i>rsp</i>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>azimuth</i>
+defines the azimuth of the projection (Definition 1).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set the location of
+the Discontinuity in longitude (<i>r</i> coordinate).
+<b>&minus;Dd</b> will place the discontinuity at the
+Dateline, (-180 &lt; <i>r</i> &lt; 180); <b>&minus;Dg</b>
+will place it at Greenwich, (0 &lt; <i>r</i> &lt; 360).
+Default usually falls at dateline due to <i>atan2</i>
+calls.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>bx/by</i>
+defines the end point of the projection path (Definition
+2).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>dist</i>
+Generate mode. No input is read. Create (<i>r, s, p</i>)
+output points every <i>dist</i> units of <i>p</i>. See
+<b>&minus;Q</b> option.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Length controls.
+Project only those points whose <i>p</i> coordinate is
+within <i>l_min</i> &lt; <i>p</i> &lt; <i>l_max</i>. If
+<b>&minus;E</b> has been set, then you may use
+<b>&minus;Lw</b> to stay within the distance from <b>C</b>
+to <b>E</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Flat Earth. Make a
+Cartesian coordinate transformation in the plane. [Default
+uses spherical trigonometry.]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Map type units,
+i.e., project assumes <i>x, y, r, s</i> are in degrees while
+<i>p, q, dist, l_min, l_max, w_min, w_max</i> are in km. If
+<b>&minus;Q</b> is not set, then all these are assumed to be
+in the same units.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sort the output
+into increasing <i>p</i> order. Useful when projecting
+random data into a sequential profile.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>px/py</i> sets
+the position of the roTation pole of the projection.
+(Definition 3).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Width controls.
+Project only those points whose <i>q</i> coordinate is
+within <i>w_min</i> &lt; <i>q</i> &lt; <i>w_max</i>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 2 input columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.
+[Default is given by <b>&minus;F</b> or
+<b>&minus;G</b>].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file(s). Segments are separated by a special record. For
+ASCII files the first character must be <i>flag</i> [Default
+is &rsquo;&gt;&rsquo;]. For binary files all fields must be
+NaN and <b>&minus;b</b> must set the number of output
+columns explicitly. By default the <b>&minus;m</b> setting
+applies to both input and output. Use <b>&minus;mi</b> and
+<b>&minus;mo</b> to give separate settings to input and
+output.</p> </td>
+</table>
+
+<a name="ASCII FORMAT PRECISION"></a>
+<h2>ASCII FORMAT PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ASCII
+output formats of numerical data are controlled by
+parameters in your .gmtdefaults4 file. Longitude and
+latitude are formatted according to
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>, whereas other values are
+formatted according to <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>. Be aware that the
+format in effect can lead to loss of precision in the
+output, which can lead to various problems downstream. If
+you find the output is not written with enough precision,
+consider switching to binary output (<b>&minus;bo</b> if
+available) or specify more decimals using the
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> setting.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To generate
+points every 10km along a great circle from 10N,50W to
+30N,10W:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>project
+&minus;C</b>-50/10 <b>&minus;E</b>-10/30 <b>&minus;G</b> 10
+<b>&minus;Q</b> &gt; great_circle_points.xyp</p>
+
+<p style="margin-left:11%; margin-top: 1em">(Note that
+great_circle_points.xyp could now be used as input for
+<b><A HREF="grdtrack.html">grdtrack</A></b>, etc. ).</p>
+
+<p style="margin-left:11%; margin-top: 1em">To project the
+shiptrack gravity, magnetics, and bathymetry in c2610.xygmb
+along a great circle through an origin at 30S, 30W, the
+great circle having an azimuth of N20W at the origin,
+keeping only the data from NE of the profile and within +/-
+500 km of the origin, run:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>project</b>
+c2610.xygmb <b>&minus;C</b>-30/-30 <b>&minus;A</b>-20
+<b>&minus;W</b>-10000/0 <b>&minus;L</b>-500/500
+<b>&minus;F</b> pz <b>&minus;Q</b> &gt;
+c2610_projected.pgmb</p>
+
+<p style="margin-left:11%; margin-top: 1em">(Note in this
+example that <b>&minus;W</b>-10000/0 is used to admit any
+value with a large negative <i>q</i> coordinate. This will
+take those points which are on our right as we walk along
+the great circle path, or to the NE in this example.)</p>
+
+<p style="margin-left:11%; margin-top: 1em">To make a
+Cartesian coordinate transformation of mydata.xy so that the
+new origin is at 5,3 and the new <i>x</i> axis (<i>p</i>)
+makes an angle of 20 degrees with the old <i>x</i> axis,
+use:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>project</b>
+mydata.xy <b>&minus;C</b> 5/3 <b>&minus;A</b> 70
+<b>&minus;F</b> pq &gt; mydata.pq</p>
+
+<p style="margin-left:11%; margin-top: 1em">To take data in
+the file pacific.lonlat and transform it into oblique
+coordinates using a pole from the hotspot reference frame
+and placing the oblique zero meridian (<i>p</i> = 0 line)
+through Tahiti, run:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>project</b>
+pacific.lonlat <b>&minus;T</b>-75/68
+<b>&minus;C</b>-149:26/-17:37 <b>&minus;F</b> pq &gt;
+pacific.pq</p>
+
+<p style="margin-left:11%; margin-top: 1em">Suppose that
+pacific_topo.grd is a grid file of bathymetry, and you want
+to make a file of flowlines in the hotspot reference frame.
+If you run:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="grd2xyz.html">grd2xyz</A></b>
+pacific_topo.grd | <b>project &minus;T</b>-75/68
+<b>&minus;C</b> 0/-90 <b>&minus;F</b> xyq | <b>xyz2grd
+&minus;R</b><i>etc</i> <b>&minus;I</b><i>etc</i>
+<b>&minus;C</b> flow.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">then flow.grd
+is a file in the same area as pacific_topo.grd, but flow
+contains the latitudes about the pole of the projection. You
+now can use grdcontour on flow.grd to draw lines of constant
+oblique latitude, which are flow lines in the hotspot
+frame.</p>
+
+<p style="margin-left:11%; margin-top: 1em">If you have an
+arbitrarily rotation pole <i>px/py</i> and you would like to
+draw an oblique small circle on a map, you will first need
+to make a file with the oblique coordinates for the small
+circle (i.e., lon = 0&minus;360, lat is constant), then
+create a file with two records: the north pole (0/90) and
+the origin (0/0), and find what their oblique coordinates
+are using your rotation pole. Now, use the projected North
+pole and origin coordinates as the rotation pole and center,
+respectively, and project your file as in the pacific
+example above. This gives coordinates for an oblique small
+circle.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="fitcircle.html">fitcircle</A></i>(1),
+<i><A HREF="GMT.html">GMT</A></i>(1), <i>mapproject</i>(1),
+<i>grdproject</i>(1)</p>
+<hr>
+</body>
+</html>

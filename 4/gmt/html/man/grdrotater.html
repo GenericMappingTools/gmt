@@ -1,0 +1,400 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:42 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GRDROTATER</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GRDROTATER</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#COORDINATES">COORDINATES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">grdrotater
+&minus; Rotate a grid using a finite rotation</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdrotate</b>
+<i>ingrdfile</i> <b>&minus;G</b><i>outgrdfile</i>
+<b>&minus;T</b><i>plon</i>/<i>plat</i>/<i>omega</i> [
+<b>&minus;F</b><i>polygonfile</i> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [ <b>&minus;N</b> ]
+[
+<b>&minus;Q</b>[<b>b</b>|<b>c</b>|<b>l</b>|<b>n</b>][[<b>/</b>]<i>threshold</i>]
+] [
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;S</b> ] [ <b>&minus;V</b> ] [
+<b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;b</b>[<b>i</b>|<b>o</b>][<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;m</b>[<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdrotater</b>
+reads a geographical grid and reconstructs it given a total
+reconstruction rotation. Optionally, the user may supply a
+clipping polygon in multiple-segment format; then, only the
+part of the grid inside the polygon is used to determine the
+return grid region. The outline of the projected region is
+returned on stdout provided the rotated region is not the
+entire globe.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">No space between the option flag and the
+associated arguments. Use upper case for the option flags
+and lower case for modifiers.</p></td>
+</table>
+
+<p style="margin-left:11%;"><i>ingrdfile</i></p>
+
+<p style="margin-left:22%;">Name of a grid file in
+geographical (lon, lat) coordinates.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Name of output
+grid. This is the grid with the data reconstructed according
+to the specified rotation.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Finite rotation.
+Specify the longitude and latitude of the rotation pole and
+the opening angle, all in degrees.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify a
+multi-segment closed polygon file that describes the inside
+area of the grid that should be projected [Default projects
+entire grid].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do Not output the
+rotated polygon outline [Default will write it to
+stdout].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Quick mode, use
+bilinear rather than bicubic interpolation [Default].
+Alternatively, select the interpolation mode by adding
+<b>b</b> for B-spline smoothing, <b>c</b> for bicubic
+interpolation, <b>l</b> for bilinear interpolation or
+<b>n</b> for nearest-neighbor value. Optionally, append
+<i>threshold</i> in the range [0,1]. This parameter controls
+how close to nodes with NaN values the interpolation will
+go. E.g., a <i>threshold</i> of 0.5 will interpolate about
+half way from a non-NaN to a NaN node, whereas 0.1 will go
+about 90% of the way, etc. [Default is 1, which means none
+of the (4 or 16) nearby nodes may be NaN]. <b>&minus;Q0</b>
+will just return the value of the nearest node instead of
+interpolating. This is the same as using
+<b>&minus;Qn</b>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> specify the Region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Skip the rotation
+of the grid, just rotate the polygon outline (requires
+<b>&minus;F</b>).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input/output.
+[Default is (longitude,latitude)].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 2 input columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.
+[Default is same as input].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file(s). Segments are separated by a special record. For
+ASCII files the first character must be <i>flag</i> [Default
+is &rsquo;&gt;&rsquo;]. For binary files all fields must be
+NaN and <b>&minus;b</b> must set the number of output
+columns explicitly. By default the <b>&minus;m</b> setting
+applies to both input and output. Use <b>&minus;mi</b> and
+<b>&minus;mo</b> to give separate settings to input and
+output.</p> </td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To rotate the
+data defined by grid topo.grd and the polygon outline
+clip_path.d, using a finite rotation with pole at (135.5,
+-33.0) and a rotation angle of 37.3 degrees and bicubic
+interpolation, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdrotater</b>
+topo.grd <b>&minus;T</b> 135.5/-33/37.3 <b>&minus;V
+&minus;F</b> clip_path.d <b>&minus;G</b> rot_topo.grd &gt;
+rot_clip_path.d</p>
+
+<p style="margin-left:11%; margin-top: 1em">To rotate the
+entire grid faa.grd using a finite rotation pole at (67:45W,
+22:35S) and a rotation angle of 19.6 degrees using a
+bilinear interpolation, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdrotater</b>
+faa.grd <b>&minus;T</b> 67:45W/22:35S/19.6 <b>&minus;V
+&minus;Q &minus;G</b> rot_faa.grd &gt; rot_faa_path.d</p>
+
+<p style="margin-left:11%; margin-top: 1em">To just see how
+the outline of the grid large.grd will plot after the same
+rotation, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdrotater</b>
+large.grd <b>&minus;T</b> 67:45W/22:35S/19.6 <b>&minus;V
+&minus;S</b> | psxy <b>&minus;Rg &minus;JH</b> 180/6i
+<b>&minus;B</b> 30 <b>&minus;m &minus;W</b> 0.5<b>p</b> | gv
+-</p>
+
+<p style="margin-left:11%; margin-top: 1em">Let say you
+have rotated gridA.grd and gridB.grd, restricting each
+rotation to nodes inside polygons polyA.d and polyB.d,
+respectively, using rotation A = (123W,22S,16,4) and
+rotation B = (108W, 16S, -14.5), yielding rotated grids
+rot_gridA.grd and rot_gridB.grd. To determine the region of
+overlap between the rotated grids, we use grdmath:</p>
+
+<p style="margin-left:11%; margin-top: 1em">grdmath 1
+rot_gridA.grd ISNAN SUB 1 rot_gridB.grd ISNAN SUB 2 EQ =
+overlap.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">The grid
+overlap.grd now has 1s in the regions of overlap and 0
+elsewhere. You can use it as a mask or use grdcontour to
+extract a polygon (contour).</p>
+
+<a name="COORDINATES"></a>
+<h2>COORDINATES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Data
+coordinates are assumed to be geodetic and will
+automatically be converted to geocentric before spherical
+rotations are performed. We convert back to geodetic
+coordinates for output. Note: If your data already are
+geocentric, you can avoid the conversion by using
+--ELLIPSOID=sphere.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="backtracker.html">backtracker</A></i>(1),
+<i><A HREF="grdspotter.html">grdspotter</A></i>(1), <i><A HREF="hotspotter.html">hotspotter</A></i>(1),
+<i><A HREF="originator.html">originator</A></i>(1) <i><A HREF="rotconverter.html">rotconverter</A></i>(1)</p>
+<hr>
+</body>
+</html>

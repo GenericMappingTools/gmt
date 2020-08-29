@@ -1,0 +1,17 @@
+.. _example_45:
+
+(45) Trend modeling
+-------------------
+
+In this example show how the module :doc:`trend1d </trend1d>`
+is used to fit the CO2 data set collected from the top of
+Mauna Loa.  This yields the famous Keeling curve.
+
+.. literalinclude:: /_verbatim/example_45.txt
+   :language: bash
+
+.. figure:: /_images/example_45.*
+   :width: 500 px
+   :align: center
+
+   Trend Modeling.

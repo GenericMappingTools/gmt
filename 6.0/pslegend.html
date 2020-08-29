@@ -1,0 +1,649 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pslegend &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="psmask" href="psmask.html" />
+    <link rel="prev" title="psimage" href="psimage.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules_classic.html">GMT Modules (Classic Mode)</a> &raquo;</li>
+        
+      <li>pslegend</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/pslegend.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pslegend">
+<span id="index-0"></span><h1>pslegend<a class="headerlink" href="#pslegend" title="Permalink to this headline">¶</a></h1>
+<p>Plot a legend</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt pslegend</strong> [ <em>specfile</em> ]
+<a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>refpoint</em>
+[ <a class="reference internal" href="#b"><span> <strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>dx</em>/<em>dy</em> ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>box</em> ]
+[ <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em> ]
+[ <a class="reference internal" href="#k"><span> <strong>-K</strong></span></a></strong> ] [ <a class="reference internal" href="#o"><span> <strong>-O</strong></span></a></strong> ]
+[ <a class="reference internal" href="#p"><span> <strong>-P</strong></span></a></strong> ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#u"><span> <strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#x"><span> <strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>[<strong>u</strong>]] ]
+[ <a class="reference internal" href="#y"><span> <strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>[<strong>u</strong>]] ]
+[ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">transp</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Makes legends that can be overlaid on maps. It reads
+specific legend-related information from an input file [or stdin].
+Unless otherwise noted, annotations will be made using the primary
+annotation font and size in effect (i.e., FONT_ANNOT_PRIMARY)</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>width</em>[/<em>height</em>][<strong>+j</strong><em>justify</em>][<strong>+l</strong><em>spacing</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt>
+<dd>Defines the reference point on the map for the legend using one of four coordinate systems:
+(1) Use <strong>-Dg</strong> for map (user) coordinates, (2) use <strong>-Dj</strong> or <strong>-DJ</strong> for setting <em>refpoint</em> via
+a 2-char justification code that refers to the (invisible) map domain rectangle,
+(3) use <strong>-Dn</strong> for normalized (0-1) coordinates, or (4) use <strong>-Dx</strong> for plot coordinates
+(inches, cm, etc.).  All but <strong>-Dx</strong> requires both <strong>-R</strong> and <strong>-J</strong> to be specified.
+Append <strong>+w</strong><em>width</em>[/<em>height</em>] to set
+the width (and height) of the legend box in plot coordinates (inches, cm, etc.).
+If <em>height</em> is zero or not given then we estimate <em>height</em> based the expected
+vertical extent of the items to be placed.
+By default, the anchor point on the legend is assumed to be the bottom left corner (BL), but this
+can be changed by appending <strong>+j</strong> followed by a 2-char justification code <em>justify</em> (see <a class="reference internal" href="text.html"><span class="doc">text</span></a>).
+Note: If <strong>-Dj</strong> is used then <em>justify</em> defaults to the same as <em>refpoint</em>,
+if <strong>-DJ</strong> is used then <em>justify</em> defaults to the mirror opposite of <em>refpoint</em>.
+Use <strong>+l</strong><em>spacing</em> to change the line-spacing factor in units of the current
+font size [1.1].
+Finally, add <strong>+o</strong> to offset the legend by <em>dx</em>/<em>dy</em> away from the <em>refpoint</em> point in
+the direction implied by <em>justify</em> (or the direction implied by <strong>-Dj</strong> or <strong>-DJ</strong>).</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set map boundary frame and axes attributes.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>dx</em>/<em>dy</em></dt>
+<dd>Sets the clearance between the legend frame and the internal items [4<strong>p</strong>/4<strong>p</strong>].</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong>[<strong>+c</strong><em>clearances</em>][<strong>+g</strong><em>fill</em>][<strong>+i</strong>[[<em>gap</em>/]<em>pen</em>]][<strong>+p</strong>[<em>pen</em>]][<strong>+r</strong>[<em>radius</em>]][<strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]]]</dt>
+<dd>Without further options, draws a rectangular border around the legend using
+<strong>MAP_FRAME_PEN</strong>; specify a different pen with <strong>+p</strong><em>pen</em>.
+Add <strong>+g</strong><em>fill</em> to fill the legend box [no fill].
+Append <strong>+c</strong><em>clearance</em> where <em>clearance</em> is either <em>gap</em>, <em>xgap</em>/<em>ygap</em>,
+or <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> where these items are uniform, separate in
+x- and y-direction, or individual side spacings between scale and border.
+Append <strong>+i</strong> to draw a secondary, inner border as well. We use a uniform
+<em>gap</em> between borders of 2<strong>p</strong> and the <strong>MAP_DEFAULTS_PEN</strong>
+unless other values are specified. Append <strong>+r</strong> to draw rounded
+rectangular borders instead, with a 6<strong>p</strong> corner radius. You can
+override this radius by appending another value. Finally, append
+<strong>+s</strong> to draw an offset background shaded region. Here, <em>dx</em>/<em>dy</em>
+indicates the shift relative to the foreground frame
+[4<strong>p</strong>/-4<strong>p</strong>] and <em>shade</em> sets the fill style to use for shading [gray50].</dd>
+</dl>
+<dl class="docutils" id="j">
+<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select map projection.  </dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest.  </dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><em>scale</em></dt>
+<dd>Scale all symbol sizes by a common <em>scale</em> [1].</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong><em>file</em></dt>
+<dd>Modern mode only: Write hidden legend specification file to <em>file</em>.</dd>
+</dl>
+<dl class="docutils" id="u">
+<dt><strong>-U</strong>[<em>label</em>][<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>] <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Draw GMT time stamp logo on plot.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<p id="x"><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>[<strong>u</strong>]]</p>
+<dl class="docutils">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>[<strong>u</strong>]] <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Shift plot origin.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select perspective view.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set transparency level in percent.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt>
+<dd>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</dd>
+</dl>
+</div>
+<div class="section" id="legend-codes">
+<h2>Legend Codes<a class="headerlink" href="#legend-codes" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>specfile</em></dt>
+<dd>This ASCII file contains instructions for the layout of items in the
+legend. Each legend item is described by a unique record. All
+records begin with a unique character that is common to all records
+of the same kind. The order of the legend items is implied by the
+order of the records. Fourteen different record types are recognized, and
+the syntax for each of these records are presented below:</dd>
+<dt><strong>#</strong> <em>comment</em></dt>
+<dd>Records starting with # and blank lines are skipped.</dd>
+<dt><strong>A</strong> <em>cptname</em></dt>
+<dd>Symbol or cell color fills may be given indirectly via a <em>z</em>-value
+which can be used for the color look-up via the given CPT <em>cptname</em>.
+You may switch to other <em>cptname</em> by repeating this command.</dd>
+<dt><strong>B</strong> <em>cptname offset height</em> [ <em>optional arguments</em> ]</dt>
+<dd>The <strong>B</strong> record will plot a horizontal color bar, <a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a>-style
+in the middle, starting at <em>offset</em> from the left edge, and of the
+given <em>height</em>. You may add any additional <a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a> options as well.
+Any of the modifiers
+[<strong>+e</strong>[<strong>b</strong>|<strong>f</strong>][<em>length</em>]][<strong>+h</strong>][<strong>+m</strong>[<strong>a</strong>|<strong>c</strong>|<strong>l</strong>|<strong>u</strong>]][<strong>+n</strong>[<em>txt</em>]] may be
+appended to the <em>height</em> argument, while other module options
+<strong>-B</strong> <strong>-I</strong> <strong>-L</strong> <strong>-M</strong> <strong>-N</strong> <strong>-S</strong> <strong>-Z</strong> and <strong>-p</strong> may be appended as
+<em>optional arguments</em> at the end of the record.
+See <a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a> for details on all modifiers and options.</dd>
+<dt><strong>C</strong> <em>textcolor</em></dt>
+<dd>The <strong>C</strong> record specifies the color with which the remaining text
+is to be printed via z=<em>value</em> (requires a prior <strong>A</strong> code as well).
+When <strong>C</strong> is used in a legend then your font specifications cannot also
+contain a color specification since we will append ,<em>textcolor</em> to the font.
+Use <strong>-</strong> to reset to default color.</dd>
+<dt><strong>D</strong> [<em>offset</em>] <em>pen</em> [<strong>-</strong>|<strong>+</strong>|<strong>=</strong>]</dt>
+<dd>The <strong>D</strong> record results in a horizontal line with specified <em>pen</em>
+across the legend with one quarter of the line-spacing left blank
+above and below the line. Two gaps of <em>offset</em> units are left blank
+between the horizontal line and the left and right frame sides [0]. If
+no pen is given we use MAP_GRID_PEN_PRIMARY, and if <em>pen</em> is
+set to <strong>-</strong> then no visible line is drawn (we just remember the location
+as a possible start/stop point for a vertical line; see <strong>V</strong>).  To <em>not</em> add the
+quarter line-spacing before the line, add <strong>-</strong>.  To <em>not</em> add the spacing
+after the line, add <strong>+</strong>.  For no spacing at all, add <strong>=</strong>
+[Default places a quarter line-spacing both before and after the line].</dd>
+<dt><strong>F</strong> <em>fill1 fill2 … filln</em></dt>
+<dd>Specify fill (color of pattern) for cells.  Alternatively, you can
+specify an indirect color via z=<em>value</em> (requires a prior <strong>A</strong> code).
+If only <em>fill1</em> is given
+then it is used to fill the entire row, otherwise give one fill value
+for each active column (see <strong>N</strong>).  If any fill is - then no fill
+takes place [Default].</dd>
+<dt><strong>G</strong> <em>gap</em></dt>
+<dd>The <strong>G</strong> record specifies a vertical gap of the given length. In
+addition to the standard units (<strong>i</strong>, <strong>c</strong>, <strong>p</strong>) you may use
+<strong>l</strong> for lines. A negative <em>gap</em> will move the current line upwards (thus closing a gap).</dd>
+<dt><strong>H</strong> <em>font</em>|<strong>-</strong> <em>header</em></dt>
+<dd>The <strong>H</strong> record plots a centered text string using the specified
+font parameters. Use <strong>-</strong> to default to size and fonttype of <strong>FONT_TITLE</strong>.</dd>
+<dt><strong>I</strong> <em>imagefile width justification</em></dt>
+<dd>Place an EPS or raster image in the legend justified relative to
+the current point. The image <em>width</em> determines the size of the image on the page.</dd>
+<dt><strong>L</strong> <em>font</em>|<strong>-</strong> <em>justification label</em></dt>
+<dd>The <strong>L</strong> record plots a (L)eft, (C)entered, or (R)ight-justified
+text string within a column using the specified font parameters. Use
+<strong>-</strong> to default to the size and font type of <strong>FONT_LABEL</strong>.</dd>
+<dt><strong>M</strong> <em>slon</em>|<strong>-</strong> <em>slat</em> <em>length</em>[<strong>+a</strong><em>align</em>][<strong>+f</strong>][<strong>+l</strong>[<em>label</em>]][<strong>+u</strong>] [<strong>-F</strong><em>param</em>] [ <strong>-R</strong><em>w/e/s/n</em> <strong>-J</strong><em>param</em> ]</dt>
+<dd>Place a map scale in the legend. Specify <em>slon slat</em>, the point on
+the map where the scale applies (<em>slon</em> is only meaningful for
+certain oblique projections. If not needed, you must specify <strong>-</strong>
+instead). Give <em>length</em>, the length of the scale in km (for other units
+append <strong>e</strong> (meter), <strong>f</strong> (foot), <strong>M</strong> (mile), <strong>n</strong> (nautical
+mile), or <strong>u</strong> (survey foot)). Append <strong>+f</strong> for a fancy map scale
+[Default is plain].
+Append <strong>+l</strong> to the <em>length</em> to select the default label
+which equals the distance unit (meter, feet, km, miles, nautical
+miles, survey feet) and is justified on top of the scale [t]. Change
+this by giving your own label (append <strong>+l</strong><em>label</em>). Change label
+alignment with <strong>+a</strong><em>align</em> (choose among <strong>l</strong>(eft),
+<strong>r</strong>(ight), <strong>t</strong>(op) , and <strong>b</strong>(ottom)).
+Apply <strong>+u</strong> to append the unit to all distance annotations along
+the scale. If you want to place a map panel behind the scale,
+add a suitable <strong>-F</strong> panel option (see <a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a> for details
+on panels as well as map scale modifiers).
+All <strong>+</strong><em>modifiers</em> must be appended to <em>length</em> to make a single
+string argument.  If the <strong>-R</strong> <strong>-J</strong> supplied to the module is
+different than the projection needed for the scale (or not given at
+all, e.g., with <strong>-Dx</strong>), supply the two optional <strong>-R</strong> <strong>-J</strong> settings
+as well.</dd>
+<dt><strong>N</strong> [<em>ncolumns</em> or <em>relwidth1 relwidth2 … relwidthn</em>]</dt>
+<dd>Change the number of columns in the legend [1]. This only affects
+the printing of symbols (<strong>S</strong>) and labels (<strong>L</strong>). The number of
+columns stay in effect until <strong>N</strong> is used again.  To get columns
+of unequal width, instead provide the relative width of each column
+separated by whitespace.  The sum of these widths are equated to the
+legend width set via <strong>-D</strong>.  If no argument is given the we set
+<em>n_columns</em> to 1.</dd>
+<dt><strong>P</strong> <em>paragraph-mode-header-for-pstext</em></dt>
+<dd>Start a new text paragraph by specifying all the parameters needed
+(see <a class="reference internal" href="text.html"><span class="doc">text</span></a> <strong>-M</strong> record description). Note that the module knows
+what all those values should be, so normally you can leave the
+entire record (after P) blank or leave it out all together. If you
+need to set at least one of the parameters directly, you must
+specify all and set the ones you want to leave at their default
+value to <strong>-</strong>.</dd>
+<dt><strong>S</strong> [<em>dx1 symbol size fill pen</em> [ <em>dx2 text</em> ]]</dt>
+<dd>Plots the selected symbol with specified diameter, fill, and outline
+(see <a class="reference internal" href="plot.html"><span class="doc">plot</span></a>). The symbol is centered at <em>dx1</em> from the left margin
+of the column, with the optional explanatory <em>text</em> starting <em>dx2</em>
+from the margin, printed with <strong>FONT_ANNOT_PRIMARY</strong>. If <em>dx1</em> is given
+as <strong>-</strong> then it is automatically computed from half the largest symbol size.
+If <em>dx2</em> is given as <strong>-</strong> then it is automatically computed as 1.5
+times the largest symbol size.  Use <strong>-</strong> if
+no <em>fill</em> or outline (<em>pen</em>) is required. Alternatively, the <em>fill</em>
+may be specified indirectly via z=<em>value</em> and the color is assigned
+via the CPT look-up (requires a prior <strong>A</strong> code).  When plotting just a
+symbol, without text, <em>dx2</em> and <em>text</em> can be omitted.  The <em>dx1</em> value
+can also be given as a justification code <strong>L</strong>, <strong>C</strong>, or <strong>R</strong> which justifies the
+symbol with respect to the current column.  If no arguments are given
+to <strong>S</strong> then we simply skip to the next column.  Three <a class="reference internal" href="plot.html"><span class="doc">plot</span></a>
+symbols may take special modifiers: front (<strong>f</strong>), quoted line (<strong>q</strong>)  and vector (<strong>v</strong>).
+You can append modifiers to the symbol and affect how the fronts, quoted lines and
+vectors are presented (see <a class="reference internal" href="plot.html"><span class="doc">plot</span></a> man page for modifiers).
+The module will determine default settings for all modifiers and
+secondary arguments if not provided.  A few other symbols (the rectangles,
+ellipse, wedge, mathangle) may take more than a single argument size.
+Note that for a line segment you should use the horizontal dash symbol (<strong>-</strong>).
+If just a single size if given then we will provide reasonable
+arguments to plot the symbol  (See <a class="reference internal" href="#defaults">Defaults</a>).
+Alternatively, combine the required
+arguments into a single, comma-separated string and use that as the
+symbol size (again, see <a class="reference internal" href="plot.html"><span class="doc">plot</span></a> for details on the arguments needed).</dd>
+<dt><strong>T</strong> <em>paragraph-text</em></dt>
+<dd>One or more of these <strong>T</strong> records with <em>paragraph-text</em> printed
+with <strong>FONT_ANNOT_PRIMARY</strong>. To specify special positioning and
+typesetting arrangements, or to enter a paragraph break, use the
+optional <strong>P</strong> record.</dd>
+<dt><strong>V</strong> [<em>offset</em>] <em>pen</em></dt>
+<dd>The <strong>V</strong> record draws a vertical line between columns (if more than
+one) using the selected <em>pen</em>.  Here, <em>offset</em> is analogous to the offset
+for the <strong>D</strong> records but in the vertical direction [0].  The first time
+<strong>V</strong> is used we remember the vertical position of the last <strong>D</strong> line,
+and the second time <strong>V</strong> is set we draw from that past location to the
+most recent location of the <strong>D</strong> line.  Thus, <strong>D</strong> must be used to
+mark the start and stop of a vertical line (so <strong>V</strong> must follow <strong>D</strong>).
+If no horizontal line is desired simply give - as <em>pen</em> to <strong>D</strong>.</dd>
+</dl>
+</div>
+<div class="section" id="defaults">
+<h2>Defaults<a class="headerlink" href="#defaults" title="Permalink to this headline">¶</a></h2>
+<p>When attributes are not provided, or extended symbol information (for symbols taking more than just an overall size) are
+not given as comma-separated quantities, we will provide the following defaults:</p>
+<p>Front: Front symbol is left-side (here, that means upper side) box, with dimensions 30% of the given symbol size.</p>
+<p>Vector: Head size is 30% of given symbol size.</p>
+<p>Ellipse: Minor axis is 65% of major axis (the symbol size), with an azimuth of 0 degrees.</p>
+<p>Rectangle: Height is 65% of width (the symbol size).</p>
+<p>Rotated rectangle: Same, with a rotation of 30 degrees.</p>
+<p>Rounded rectangle: Same as rectangle, but with corner radius of 10% of width.</p>
+<p>Mathangle: Angles are -10 and 45 degrees, with arrow head size 30% of symbol size.</p>
+<p>Wedge: Angles are -30 and 30 degrees.</p>
+</div>
+<div class="section" id="note-on-legend-height">
+<h2>Note On Legend Height<a class="headerlink" href="#note-on-legend-height" title="Permalink to this headline">¶</a></h2>
+<p>As <strong>-D</strong> suggests, leaving the <em>height</em> off forces a calculation of the
+expected height. This is an exact calculation except in the case of
+legends that place paragraph text. Here we simply do a first-order
+estimate of how many typeset lines might appear. Without access to font
+metrics this estimate will occasionally be off by 1 line. If so, note
+the reported height (with <strong>-V</strong>) and specify a slightly larger or
+smaller height in <strong>-D</strong>.</p>
+</div>
+<div class="section" id="windows-remarks">
+<h2>Windows Remarks<a class="headerlink" href="#windows-remarks" title="Permalink to this headline">¶</a></h2>
+<p>Note that under Windows, the percent sign (%) is a variable indicator
+(like $ under Unix). To indicate a plain percentage sign in a batch
+script you need to repeat it (%%); hence the font switching mechanism
+(&#64;%<em>font</em>% and &#64;%%) may require twice the number of percent signs.
+This only applies to text inside a script or that otherwise is processed
+by DOS. Data files that are opened and read by the module do not need
+such duplication.</p>
+</div>
+<div class="section" id="classic-mode-arguments">
+<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this headline">¶</a></h2>
+<p>These options are used to manipulate the building of layered GMT PostScript plots in classic mode.
+They are not available when using GMT modern mode.</p>
+<dl class="docutils" id="k">
+<dt><strong>-K</strong> <a class="reference internal" href="gmt.html#k-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Do not finalize the PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="o">
+<dt><strong>-O</strong> <a class="reference internal" href="gmt.html#o-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Append to existing PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="p">
+<dt><strong>-P</strong> <a class="reference internal" href="gmt.html#p-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select “Portrait” plot orientation.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p><strong>Note</strong>: Below are some examples of valid syntax for this module.
+The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
+can be cut and pasted into your terminal for testing.
+Other commands requiring input files are just dummy examples of the types
+of uses that are common but cannot be run verbatim as written.</p>
+<p>To add an example of a legend to a Mercator plot (map.ps) with the given
+specifications, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt makecpt -Cpanoply -T-8/8/1 &gt; tt.cpt
+gmt <span class="nb">set</span> FONT_ANNOT_PRIMARY 12p
+
+gmt pslegend -R0/10/0/10 -JM6i -Dx0.5i/0.5i+w5i+jBL+l1.2 -C0.1i/0.1i -F+p+gazure1+r -B5f1 -P &gt; legend.ps <span class="s">&lt;&lt;EOF</span>
+<span class="s"># Legend test for gmt pslegend</span>
+<span class="s"># G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line,</span>
+<span class="s"># H is ps=legend.ps</span>
+<span class="s">#</span>
+<span class="s">G -0.1i</span>
+<span class="s">H 24p,Times-Roman My Map Legend</span>
+<span class="s">D 0.2i 1p</span>
+<span class="s">N 2</span>
+<span class="s">V 0 1p</span>
+<span class="s">S 0.1i c 0.15i p300/12 0.25p 0.3i This circle is hachured</span>
+<span class="s">S 0.1i e 0.15i yellow 0.25p 0.3i This ellipse is yellow</span>
+<span class="s">S 0.1i w 0.15i green 0.25p 0.3i This wedge is green</span>
+<span class="s">S 0.1i f 0.25i blue 0.25p 0.3i This is a fault</span>
+<span class="s">S 0.1i - 0.15i - 0.25p,- 0.3i A contour</span>
+<span class="s">S 0.1i v 0.25i magenta 0.5p 0.3i This is a vector</span>
+<span class="s">S 0.1i i 0.15i cyan 0.25p 0.3i This triangle is boring</span>
+<span class="s">D 0.2i 1p</span>
+<span class="s">V 0 1p</span>
+<span class="s">N 1</span>
+<span class="s">M 5 5 600+u+f</span>
+<span class="s">G 0.05i</span>
+<span class="s">I @SOEST_block4.png 3i CT</span>
+<span class="s">G 0.05i</span>
+<span class="s">B tt.cpt 0.2i 0.2i -B0</span>
+<span class="s">G 0.05i</span>
+<span class="s">L 9p,Times-Roman R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000</span>
+<span class="s">G 0.1i</span>
+<span class="s">T Let us just try some simple text that can go on a few lines.</span>
+<span class="s">T There is no easy way to predetermine how many lines may be required</span>
+<span class="s">T so we may have to adjust the height to get the right size box.</span>
+<span class="s">EOF</span>
+rm -f tt.cpt
+</pre></div>
+</div>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
+<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>, <a class="reference internal" href="gmtlogo.html"><span class="doc">gmtlogo</span></a>
+<a class="reference internal" href="psbasemap.html"><span class="doc">psbasemap</span></a>, <a class="reference internal" href="pstext.html"><span class="doc">pstext</span></a>,
+<a class="reference internal" href="psxy.html"><span class="doc">psxy</span></a></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="psmask.html" class="btn btn-neutral float-right" title="psmask" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="psimage.html" class="btn btn-neutral float-left" title="psimage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

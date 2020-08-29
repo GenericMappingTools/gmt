@@ -1,0 +1,501 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:43 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GRDSPOTTER</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GRDSPOTTER</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#COORDINATES">COORDINATES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">grdspotter
+&minus; Create CVA image directly from gravity or bathymetry
+grids</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdspotter</b>
+[<i>grdfile</i>] <b>&minus;E</b><i>rotations_file</i>
+<b>&minus;G</b><i>CVAgrid</i>
+<b>&minus;I</b><i>xinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>][/<i>yinc</i>[<i>unit</i>][<b>=</b>|<b>+</b>]]
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+[ <b>&minus;A</b><i>agegrid</i> ] [
+<b>&minus;B</b><i>n_try</i> ] [ <b>&minus;C</b> ] [
+<b>&minus;D</b><i>DIgrid</i> ] [ <b>&minus;F</b> ] [
+<b>&minus;L</b> IT(IDgrid) ] [ <b>&minus;M</b> ] [
+<b>&minus;N</b><i>upper_age</i> ] [
+<b>&minus;P</b><i>PAgrid</i> ] [
+<b>&minus;Q</b><i>IDinfo</i> ] [ <b>&minus;S</b> ] [
+<b>&minus;T</b> ] [ <b>&minus;U</b><i>fixed_val</i> ] [
+<b>&minus;V</b> ] [
+<b>&minus;Z</b><i>z_min</i>[/<i>z_max</i>[/<i>z_inc</i>]]
+]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdspotter</b>
+reads a grid file with residual bathymetry or gravity and
+calculates flowlines from each node that exceeds a minimum
+value using the specified rotations file. These flowlines
+are then convolved with the volume of the prism represented
+by each grid node and added up to give a Cumulative Volcano
+Amplitude grid (CVA).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">No space between the option flag and the
+associated arguments. Use upper case for the option flags
+and lower case for modifiers.</p></td>
+</table>
+
+<p style="margin-left:11%;"><i>grdfile</i></p>
+
+<p style="margin-left:22%;">Data grid to be processed,
+typically residual bathymetry or free-air anomalies.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Give file with
+rotation parameters. This file must contain one record for
+each rotation; each record must be of the following
+format:</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><i>lon lat tstart [tstop] angle</i> [
+<i>khat a b c d e f g df</i> ]</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">where
+<i>tstart</i> and <i>tstop</i> are in Myr and <i>lon lat
+angle</i> are in degrees. <i>tstart</i> and <i>tstop</i> are
+the ages of the old and young ends of a stage. If
+<b>&minus;C</b> is set then a total reconstruction rotation
+is expected and <i>tstop</i> is implicitly set to 0 and
+should not be specified in the file. If a covariance matrix
+<b>C</b> for the rotation is available it must be specified
+in a format using the nine optional terms listed in
+brackets. Here, <b>C</b> = (<i>g</i>/<i>khat</i>)*[ <i>a b
+d; b c e; d e f</i> ] which shows <b>C</b> made up of three
+row vectors. If the degrees of freedom (<i>df</i>) in
+fitting the rotation is 0 or not given it is set to 10000.
+Blank lines and records whose first column contains # will
+be ignored.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify name for
+output CVA grid file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>x_inc</i> [and
+optionally <i>y_inc</i>] is the grid spacing. Optionally,
+append a suffix modifier. <b>Geographical (degrees)
+coordinates</b>: Append <b>m</b> to indicate arc minutes or
+<b>c</b> to indicate arc seconds. If one of the units
+<b>e</b>, <b>k</b>, <b>i</b>, or <b>n</b> is appended
+instead, the increment is assumed to be given in meter, km,
+miles, or nautical miles, respectively, and will be
+converted to the equivalent degrees longitude at the middle
+latitude of the region (the conversion depends on
+<b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b>). If /<i>y_inc</i> is given but set to 0 it
+will be reset equal to <i>x_inc</i>; otherwise it will be
+converted to degrees latitude. <b>All coordinates</b>: If
+<b>=</b> is appended then the corresponding max <i>x</i>
+(<i>east</i>) or <i>y</i> (<i>north</i>) may be slightly
+adjusted to fit exactly the given increment [by default the
+increment may be adjusted slightly to fit the given domain].
+Finally, instead of giving an increment you may specify the
+<i>number of nodes</i> desired by appending <b>+</b> to the
+supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The
+resulting increment value depends on whether you have
+selected a gridline-registered or pixel-registered grid; see
+Appendix B for details. Note: if
+<b>&minus;R</b><i>grdfile</i> is used then grid spacing has
+already been initialized; use <b>&minus;I</b> to override
+the values.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>west, east,
+south,</i> and <i>north</i> specify the Region of interest,
+and you may specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Supply a crustal
+age grid that is co-registered with the input data grid.
+These ages become the upper ages to use when constructing
+flowlines [Default extend flowlines back to oldest age found
+in the rotation file; but see <b>&minus;N</b>].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;B</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Get <i>n_try</i>
+bootstrap estimates of the maximum CVA location; the
+longitude and latitude results are written to stdout
+[Default is no bootstrapping]. Cannot be used with
+<b>&minus;M</b>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Expect Total
+Reconstruction Rotations rather than Forward Stage Rotations
+[Default]. File format is similar to the stage pole format
+except that the <i>tstart</i> column is not present (assumed
+to be 0 Ma).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Use flowlines to
+determine the maximum CVA encountered along each flowline
+and create a Data Importance (DI) grid with these values at
+the originating nodes.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force pixel
+registration [Default is grid registration].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Supply a
+co-registered grid with seamount chain IDs for each node.
+This option requires that you also use <b>&minus;Q</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not attempt to
+keep all flowlines in memory when using <b>&minus;D</b>
+and/or <b>&minus;P</b>. Should you run out of memory you can
+use this option to compute flowlines on-the-fly. It will be
+slower as we no longer can reuse the flowlines calculated
+for the CVA step. Cannot be used with <b>&minus;B</b> or the
+multi-slice mode in <b>&minus;Z</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set the upper age
+to assign to nodes whose crustal age is unknown (i.e., NaN)
+[no upper age]. Also see <b>&minus;A</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;P</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Use flowlines to
+determine the flowline age at the CVA maximum for each node
+and create a Predicted Age (PA) grid with these values at
+the originating nodes.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Either give (1) a
+single ID to use or (2) the name of a file with a list of
+IDs to use [Default uses all IDs]. Each line would be TAG ID
+[w e s n]. The <i>w/e/s/n</i> zoom box is optional; if
+specified it means we only trace the flowline if inside this
+region [Default uses region set by <b>&minus;R</b>].
+Requires <b>&minus;L</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Normalize the
+resulting CVA grid to percentages of the CVA maximum. This
+also normalizes the DI grid (if requested).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Truncate crustal
+ages given via the <b>&minus;A</b> option that exceed the
+upper age set with <b>&minus;N</b> [no truncation].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;U</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">After a node passes
+the test implied by <b>&minus;Z</b>, use this
+<i>fixed_val</i> instead in the calculations. [Default uses
+individual node values].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Ignore nodes with
+z-values lower than <i>z_min</i> [0] and optionally larger
+than <i>z_max</i> [Inf]. Give <i>z_min/z_max/z_inc</i> to
+make separate CVA grids for each <i>z</i>-slice [Default
+makes one CVA grid]. Multi-slicing cannot be used with
+<b>&minus;M</b>.</p> </td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To create a CVA
+image from the Pacific topography grid Pac_res_topo.grd,
+using the DC85.d Euler poles, and only output a grid for the
+specified domain, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdspotter</b>
+Pac_res_topo.grd <b>&minus;E</b> DC85.d <b>&minus;G</b>
+CVA.grd <b>&minus;R</b> 190/220/15/25 <b>&minus;I</b> 2<b>m
+&minus;N</b> 145 <b>&minus;T &minus;V</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">This file can
+then be plotted with <b><A HREF="grdimage.html">grdimage</A></b>.</p>
+
+<a name="COORDINATES"></a>
+<h2>COORDINATES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Data
+coordinates are assumed to be geodetic and will
+automatically be converted to geocentric before spherical
+rotations are performed. We convert back to geodetic
+coordinates for output. Note: If your data already are
+geocentric, you can avoid the conversion by using
+--ELLIPSOID=sphere.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grdimage.html">grdimage</A></i>(1), <i><A HREF="grdrotater.html">grdrotater</A></i>(1), <i><A HREF="project.html">project</A></i>(1),
+<i><A HREF="mapproject.html">mapproject</A></i>(1), <i><A HREF="backtracker.html">backtracker</A></i>(1),
+<i><A HREF="hotspotter.html">hotspotter</A></i>(1), <i><A HREF="originator.html">originator</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P.,
+1999, &quot;Hotspotting&quot; tools released, EOS Trans.
+AGU, 80 (29), p. 319.</p>
+<hr>
+</body>
+</html>

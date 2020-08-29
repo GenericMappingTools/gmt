@@ -1,0 +1,1266 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>gmt.conf &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gmt" href="gmt.html" />
+    <link rel="prev" title="gmt_shell_functions.sh" href="gmt_shell_functions.sh.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="gmt.html" title="gmt"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="gmt_shell_functions.sh.html" title="gmt_shell_functions.sh"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gmt-conf">
+<span id="index-0"></span><h1>gmt.conf<a class="headerlink" href="#gmt-conf" title="Permalink to this headline">¶</a></h1>
+<p>gmt.conf - Configuration for GMT</p>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>The following is a list of the parameters that are user-definable in
+GMT. The parameter names are always given in UPPER CASE. The
+parameter values are case-insensitive unless otherwise noted. The system
+defaults are given in brackets [ for SI (and US) ]. Those marked <strong>*</strong>
+can be set on the command line as well (the corresponding option is
+given in parentheses). Note that default distances and lengths below are
+given in both cm or inch; the chosen default depends on your choice of
+default unit (see <a class="reference internal" href="#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a>). You can explicitly specify
+the unit used for distances and lengths by appending <strong>c</strong> (cm), <strong>i</strong>
+(inch), or <strong>p</strong> (points). When no unit is indicated the value will be
+assumed to be in the unit set by <a class="reference internal" href="#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a>. Several
+parameters take only <strong>true</strong> or <strong>false</strong>. Finally, most of these
+parameters can be changed on-the-fly via the <strong>-</strong><strong>-PARAMETER</strong>=<em>VALUE</em>
+option to any GMT program. However, a few are static and are only
+read via the <strong>gmt.conf</strong> file; these are labeled (static).</p>
+</div>
+<div class="section" id="common-specifications">
+<h2>Common Specifications<a class="headerlink" href="#common-specifications" title="Permalink to this headline">¶</a></h2>
+<p>The full explanation for how to specify pens, pattern fills, colors, and
+fonts can be found in the <a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a> man page.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="67%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">THEMATIC SUB-SECTIONS</th>
+<th class="head"><em>prefix</em></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference internal" href="#color-parameters">COLOR Parameters</a></td>
+<td><strong>COLOR_</strong></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#dir-parameters">DIR Parameters</a></td>
+<td><strong>DIR_</strong></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#font-parameters">FONT Parameters</a></td>
+<td><strong>FONT_</strong></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#format-parameters">FORMAT Parameters</a></td>
+<td><strong>FORMAT_</strong></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#gmt-miscellaneous-parameters">GMT Miscellaneous Parameters</a></td>
+<td><strong>GMT_</strong></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#i-o-parameters">I/O Parameters</a></td>
+<td><strong>IO_</strong></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#map-parameters">MAP Parameters</a></td>
+<td><strong>MAP_</strong></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#projection-parameters">Projection Parameters</a></td>
+<td><strong>PROJ_</strong></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#postscript-parameters">PostScript Parameters</a></td>
+<td><strong>PS_</strong></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#calendar-time-parameters">Calendar/Time Parameters</a></td>
+<td><strong>TIME_</strong></td>
+</tr>
+</tbody>
+</table>
+<span id="color-parameters"></span><dl class="docutils" id="color-background">
+<dt><strong>COLOR_BACKGROUND</strong></dt>
+<dd>Color used for the background of images (i.e., when z &lt; lowest color
+table entry) [black].</dd>
+</dl>
+<dl class="docutils" id="color-foreground">
+<dt><strong>COLOR_FOREGROUND</strong></dt>
+<dd>Color used for the foreground of images (i.e., when z &gt; highest
+color table entry) [white].</dd>
+</dl>
+<dl class="docutils" id="color-hsv-max-s">
+<dt><strong>COLOR_HSV_MAX_S</strong></dt>
+<dd>Maximum saturation (0-1) assigned for most positive intensity value [0.1].</dd>
+</dl>
+<dl class="docutils" id="color-hsv-min-s">
+<dt><strong>COLOR_HSV_MIN_S</strong></dt>
+<dd>Minimum saturation (0-1) assigned for most negative intensity value [1.0].</dd>
+</dl>
+<dl class="docutils" id="color-hsv-max-v">
+<dt><strong>COLOR_HSV_MAX_V</strong></dt>
+<dd>Maximum value (0-1) assigned for most positive intensity value [1.0].</dd>
+</dl>
+<dl class="docutils" id="color-hsv-min-v">
+<dt><strong>COLOR_HSV_MIN_V</strong></dt>
+<dd>Minimum value (0-1) assigned for most negative intensity value [0.3].</dd>
+</dl>
+<dl class="docutils" id="color-model">
+<dt><strong>COLOR_MODEL</strong></dt>
+<dd>Selects in which color space a CPT should be interpolated.
+By default, color interpolation takes place directly on the RGB
+values which can produce some unexpected hues, whereas interpolation
+directly on the HSV values better preserves those hues. The choices
+are: <strong>none</strong> (default: use whatever the COLOR_MODEL setting in the
+CPT demands), <strong>rgb</strong> (force interpolation in RGB),
+<strong>hsv</strong> (force interpolation in HSV), <strong>cmyk</strong> (assumes colors are
+in CMYK but interpolates in RGB).</dd>
+</dl>
+<dl class="docutils" id="color-nan">
+<dt><strong>COLOR_NAN</strong></dt>
+<dd>Color used for the non-defined areas of images (i.e., where z == NaN) [127.5].</dd>
+</dl>
+<span id="dir-parameters"></span><dl class="docutils" id="dir-cache">
+<dt><strong>DIR_CACHE</strong></dt>
+<dd>Cache directory where to save files downloaded when using external URL addresses or the
+files called <strong>earth_relief_</strong><em>res</em><strong>.grd</strong> or filenames starting in &#64; (e.g., &#64;hotspots.txt)</dd>
+</dl>
+<dl class="docutils" id="dir-data">
+<dt><strong>DIR_DATA</strong></dt>
+<dd>Session data dir. Overrides the value of the environment variable <strong>$GMT_DATADIR</strong>
+(see <a class="reference internal" href="GMT_Docs.html#directory-parameters"><span class="std std-ref">Directory parameters</span></a> in the CookBook).</dd>
+</dl>
+<dl class="docutils" id="dir-dcw">
+<dt><strong>DIR_DCW</strong></dt>
+<dd>Path to optional Digital Chart of the World polygon files.</dd>
+</dl>
+<dl class="docutils" id="dir-gshhg">
+<dt><strong>DIR_GSHHG</strong></dt>
+<dd>Path to GSHHG files. Defaults to <strong>$GMT_SHAREDIR</strong>/coast if empty.</dd>
+</dl>
+<span id="font-parameters"></span><dl class="docutils" id="font">
+<dt><strong>FONT</strong></dt>
+<dd>Sets the default for all fonts, except <strong>FONT_LOGO</strong>. This setting is
+not included in the <strong>gmt.conf</strong> file.</dd>
+</dl>
+<dl class="docutils" id="font-annot">
+<dt><strong>FONT_ANNOT</strong></dt>
+<dd>Sets both <strong>FONT_ANNOT_PRIMARY</strong> and <strong>FONT_ANNOT_SECONDARY</strong> to the value specified.
+This setting is not included in the <strong>gmt.conf</strong> file.</dd>
+</dl>
+<dl class="docutils" id="font-annot-primary">
+<dt><strong>FONT_ANNOT_PRIMARY</strong></dt>
+<dd>Font used for primary annotations, etc. [12p,Helvetica,black]. When
+<strong>+</strong> is prepended, scale fonts, offsets and tick-lengths relative
+to <strong>FONT_ANNOT_PRIMARY</strong>.</dd>
+</dl>
+<dl class="docutils" id="font-annot-secondary">
+<dt><strong>FONT_ANNOT_SECONDARY</strong></dt>
+<dd>Font to use for time axis secondary annotations
+[14p,Helvetica,black].</dd>
+</dl>
+<dl class="docutils" id="font-label">
+<dt><strong>FONT_LABEL</strong></dt>
+<dd>Font to use when plotting labels below axes [16p,Helvetica,black].</dd>
+</dl>
+<dl class="docutils" id="font-logo">
+<dt><strong>FONT_LOGO</strong></dt>
+<dd>Font to use for text plotted as part of the GMT time logo
+[8p,Helvetica,black].</dd>
+</dl>
+<dl class="docutils" id="font-title">
+<dt><strong>FONT_TITLE</strong></dt>
+<dd>Font to use when plotting titles over graphs [24p,Helvetica,black].</dd>
+</dl>
+<span id="format-parameters"></span><dl class="docutils" id="format-clock-in">
+<dt><strong>FORMAT_CLOCK_IN</strong></dt>
+<dd>Formatting template that indicates how an input clock string is
+formatted. This template is then used to guide the reading of clock
+strings in data fields. To properly decode 12-hour clocks, append am
+or pm (or upper case) to match your data records. As examples, try
+hh:mm, hh:mm:ssAM, etc. [hh:mm:ss].</dd>
+</dl>
+<dl class="docutils" id="format-clock-map">
+<dt><strong>FORMAT_CLOCK_MAP</strong></dt>
+<dd>Formatting template that indicates how an output clock string is to
+be plotted. This template is then used to guide the formatting of
+clock strings in plot annotations. See <strong>FORMAT_CLOCK_OUT</strong> for
+details. [hh:mm:ss].</dd>
+</dl>
+<dl class="docutils" id="format-clock-out">
+<dt><strong>FORMAT_CLOCK_OUT</strong></dt>
+<dd>Formatting template that indicates how an output clock string is to
+be formatted. This template is then used to guide the writing of
+clock strings in data fields. To use a floating point format for the
+smallest unit (e.g., seconds), append .xxx, where the number of x
+indicates the desired precision. If no floating point is indicated
+then the smallest specified unit will be rounded off to nearest
+integer. For 12-hour clocks, append am, AM, a.m., or A.M. (GMT
+will replace a|A with p|P for pm). If your template starts with a
+leading hyphen (-) then each integer item (y,m,d) will be printed
+without leading zeros (default uses fixed width formats). As
+examples, try hh:mm, hh.mm.ss, hh:mm:ss.xxxx, hha.m., etc.
+[hh:mm:ss]. If the format is simply - then no clock is output and
+the ISO T divider between date and clock is omitted.</dd>
+</dl>
+<dl class="docutils" id="format-date-in">
+<dt><strong>FORMAT_DATE_IN</strong></dt>
+<dd>Formatting template that indicates how an input date string is
+formatted. This template is then used to guide the reading of date
+strings in data fields. You may specify either Gregorian calendar
+format or ISO week calendar format. Gregorian calendar: Use any
+combination of yyyy (or yy for 2-digit years; if so see
+<strong>TIME_Y2K_OFFSET_YEAR</strong>), mm (or o for abbreviated month name in
+the current time language), and dd, with or without delimiters. For
+day-of-year data, use jjj instead of mm and/or dd. Examples can be
+ddmmyyyy, yy-mm-dd, dd-o-yyyy, yyyy/dd/mm, yyyy-jjj, etc. ISO
+Calendar: Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO
+week and d is ISO week day. Either template must be consistent,
+e.g., you cannot specify months if you do not specify years.
+Examples are yyyyWwwd, yyyy-Www, etc. [yyyy-mm-dd].</dd>
+</dl>
+<dl class="docutils" id="format-date-map">
+<dt><strong>FORMAT_DATE_MAP</strong></dt>
+<dd>Formatting template that indicates how an output date string is to
+be plotted. This template is then used to guide the plotting of date
+strings in data fields. See <strong>FORMAT_DATE_OUT</strong> for details. In
+addition, you may use a single o instead of mm (to plot month name)
+and u instead of W[-]ww to plot “Week ##”. Both of these text
+strings will be affected by the <strong>GMT_LANGUAGE</strong>,
+<strong>FORMAT_TIME_PRIMARY_MAP</strong> and <strong>FORMAT_TIME_SECONDARY_MAP</strong>
+setting. [yyyy-mm-dd].</dd>
+</dl>
+<dl class="docutils" id="format-date-out">
+<dt><strong>FORMAT_DATE_OUT</strong></dt>
+<dd>Formatting template that indicates how an output date string is to
+be formatted. This template is then used to guide the writing of
+date strings in data fields. You may specify either Gregorian
+calendar format or ISO week calendar format. Gregorian calendar: Use
+any combination of yyyy (or yy for 2-digit years; if so see
+<strong>TIME_Y2K_OFFSET_YEAR</strong>), mm (or o for abbreviated month name in
+the current time language), and dd, with or without delimiters. For
+day-of-year data, use jjj instead of mm and/or dd. As examples, try
+yy/mm/dd, yyyy=jjj, dd-o-yyyy, dd-mm-yy, yy-mm, etc. ISO Calendar:
+Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d
+is ISO week day. Either template must be consistent, e.g., you
+cannot specify months if you do not specify years. As examples, try
+yyyyWww, yy-W-ww-d, etc. If your template starts with a leading
+hyphen (-) then each integer item (y,m,d) will be printed without
+leading zeros (default uses fixed width formats) [yyyy-mm-dd]. If
+the format is simply - then no date is output and the ISO T divider
+between date and clock is omitted.</dd>
+</dl>
+<dl class="docutils" id="format-geo-map">
+<dt><strong>FORMAT_GEO_MAP</strong></dt>
+<dd>Formatting template that indicates how an output geographical
+coordinate is to be plotted. This template is then used to guide the
+plotting of geographical coordinates in data fields. See
+<strong>FORMAT_GEO_OUT</strong> for details. In addition, you can append A
+which plots the absolute value of the coordinate. The default is
+ddd:mm:ss. Not all items may be plotted as this depends on the
+annotation interval.</dd>
+</dl>
+<dl class="docutils" id="format-geo-out">
+<dt><strong>FORMAT_GEO_OUT</strong></dt>
+<dd><p class="first">Formatting template that indicates how an output geographical
+coordinate is to be formatted. This template is then used to guide
+the writing of geographical coordinates in data fields. The template
+is in general of the form [+|-]D or [+|-]ddd[:mm[:ss]][.xxx][F].
+By default, longitudes will be reported in the range [-180,180]. The
+various terms have the following purpose:</p>
+<p>+D Output longitude in the range [0,360]</p>
+<p>-D Output longitude in the range [-360,0]</p>
+<p>D Use <strong>FORMAT_FLOAT_OUT</strong> for floating point degrees.</p>
+<p>ddd Fixed format integer degrees</p>
+<p>: delimiter used</p>
+<p>mm Fixed format integer arc minutes</p>
+<p>ss Fixed format integer arc seconds</p>
+<p>.xxx Floating fraction of previous integer field, fixed width.</p>
+<p>F Encode sign using WESN suffix</p>
+<p>G Same as F but with a leading space before suffix</p>
+<p class="last">The default is D.</p>
+</dd>
+</dl>
+<dl class="docutils" id="format-float-map">
+<dt><strong>FORMAT_FLOAT_MAP</strong></dt>
+<dd>Format (C language printf syntax) to be used when plotting double
+precision floating point numbers along plot frames and contours.
+For geographic coordinates, see <strong>FORMAT_GEO_MAP</strong>. [%.12lg].</dd>
+</dl>
+<dl class="docutils" id="format-float-out">
+<dt><strong>FORMAT_FLOAT_OUT</strong></dt>
+<dd>Format (C language printf syntax) to be used when printing double
+precision floating point numbers to output files. For geographic
+coordinates, see <strong>FORMAT_GEO_OUT</strong>. [%.12lg]. To give some
+columns a separate format, supply one or more comma-separated
+<em>cols</em>:<em>format</em> specifications, where <em>cols</em> can be specific columns
+(e.g., 5 for 6th since 0 is the first) or a range of columns (e.g.,
+3-7). The last specification without column information will
+override the format for all other columns.  Alternatively, you can
+list N space-separated formats and these apply to the first N
+columns.</dd>
+</dl>
+<dl class="docutils" id="format-time-map">
+<dt><strong>FORMAT_TIME_MAP</strong></dt>
+<dd>Sets both <strong>FORMAT_TIME_PRIMARY_MAP</strong> and <strong>FORMAT_TIME_SECONDARY_MAP</strong> to the value specified.
+This setting is not included in the <strong>gmt.conf</strong> file.</dd>
+</dl>
+<dl class="docutils" id="format-time-primary-map">
+<dt><strong>FORMAT_TIME_PRIMARY_MAP</strong></dt>
+<dd>Controls how primary month-, week-, and weekday-names are formatted.
+Choose among <strong>full</strong>, <strong>abbreviated</strong>, and <strong>character</strong>. If the
+leading <strong>f</strong>, <strong>a</strong>, or <strong>c</strong> are replaced with <strong>F</strong>, <strong>A</strong>, and
+<strong>C</strong> the entire annotation will be in upper case [full].</dd>
+</dl>
+<dl class="docutils" id="format-time-secondary-map">
+<dt><strong>FORMAT_TIME_SECONDARY_MAP</strong></dt>
+<dd>Controls how secondary month-, week-, and weekday-names are
+formatted. Choose among <strong>full</strong>, <strong>abbreviated</strong>, and
+<strong>character</strong>. If the leading <strong>f</strong>, <strong>a</strong>, or <strong>c</strong> are replaced
+with <strong>F</strong>, <strong>A</strong>, and <strong>C</strong> the entire annotation will be in upper case [full].</dd>
+</dl>
+<dl class="docutils" id="format-time-stamp">
+<dt><strong>FORMAT_TIME_STAMP</strong></dt>
+<dd>Defines the format of the time information in the UNIX time stamp.
+This format is parsed by the C function <strong>strftime</strong>, so that
+virtually any text can be used (even not containing any time
+information) [%Y %b %d %H:%M:%S].</dd>
+</dl>
+<span id="gmt-miscellaneous-parameters"></span><dl class="docutils" id="gmt-compatibility">
+<dt><strong>GMT_COMPATIBILITY</strong></dt>
+<dd>Determines if this GMT version should be able to parse command-line
+options for a prior major release.  Specify either 4 or 5. If 4 is
+set we will parse obsolete GMT 4 options and issue warnings; if 5
+is set then parsing GMT 4 only syntax will result in errors [4].</dd>
+</dl>
+<dl class="docutils" id="gmt-export-type">
+<dt><strong>GMT_EXPORT_TYPE</strong></dt>
+<dd>This setting is only used by external interfaces and controls the
+data type used for table entries.  Choose from double,
+single, [u]long, [u]int, [u]short, and [u]char [double].</dd>
+</dl>
+<dl class="docutils" id="gmt-extrapolate-val">
+<dt><strong>GMT_EXTRAPOLATE_VAL</strong></dt>
+<dd>Determines what to do if extrapolating beyond the data domain.
+Choose among ‘NaN’, ‘extrap’ or ‘extrapval,val’ (without quotes). In
+the first case return NaN for any element of x that is outside range
+[Default]. Second case lets the selected algorithm compute the
+extrapolation values. Third case sets the extrapolation values to
+the constant value passed in ‘val’ (this value must off course be
+numeric).</dd>
+</dl>
+<dl class="docutils" id="gmt-custom-libs">
+<dt><strong>GMT_CUSTOM_LIBS</strong></dt>
+<dd>Comma-separated list of GMT-compliant shared libraries that extend
+the capability of GMT with additional custom modules [none]. Alternatively,
+provide a directory name, that MUST end with a slash (or back slash),
+to use all shared libraries in that directory. On Windows, if the dir
+name is made up only of a single slash (‘/’) search inside a subdirectory
+called ‘gmt_plugins’ of the directory that contains the ‘gmt’ executable.
+See the API documentation for how to build your own shared modules.</dd>
+</dl>
+<dl class="docutils" id="gmt-fft">
+<dt><strong>GMT_FFT</strong></dt>
+<dd>Determines which Fast Fourier Transform (FFT) should be used among
+those that have been configured during installation. Choose from
+<strong>auto</strong> (pick the most suitable for the task among available
+algorithms), <strong>fftw</strong>[,<em>planner_flag</em>] (The Fastest Fourier
+Transform in the West), <strong>accelerate</strong> (Use the Accelerate Framework
+under OS X; Note, that the number of samples to be processed must be
+a base 2 exponent), <strong>kiss</strong>, (Kiss FFT), <strong>brenner</strong> Brenner Legacy
+FFT [auto].
+FFTW can “learn” how to optimally compute Fourier transforms on the
+current hardware and OS by computing several FFTs and measuring
+their execution time. This so gained “Wisdom” will be stored in and
+reloaded from the file fftw_wisdom_&lt;hostname&gt; in $GMT_USERDIR or, if
+$GMT_USERDIR is not writable, in the current directory. To use this
+feature append <em>planner_flag</em>, which can be one of <em>measure</em>,
+<em>patient</em>, and <em>exhaustive</em>; see FFTW reference for details. The
+default FFTW planner flag is <em>estimate</em>, i.e., pick a (probably
+sub-optimal) plan quickly. Note: if you need a single transform of a
+given size only, the one-time cost of the smart planner becomes
+significant. In that case, stick to the default planner, <em>estimate</em>,
+based on heuristics.</dd>
+</dl>
+<dl class="docutils" id="gmt-history">
+<dt><strong>GMT_HISTORY</strong></dt>
+<dd>Passes the history of past common command options via the
+gmt.history file. The different values for this setting are:
+<strong>true</strong>, <strong>readonly</strong>, <strong>false</strong>, to either read and write to the
+gmt.history file, only read, or not use the file at all [true].</dd>
+</dl>
+<dl class="docutils" id="gmt-interpolant">
+<dt><strong>GMT_INTERPOLANT</strong></dt>
+<dd>Determines if linear (linear), Akima’s spline (akima), natural cubic
+spline (cubic) or no interpolation (none) should be used for 1-D
+interpolations in various programs [akima].</dd>
+</dl>
+<dl class="docutils" id="gmt-language">
+<dt><strong>GMT_LANGUAGE</strong></dt>
+<dd><p class="first">Language to use when plotting calendar and map items such as months and
+days, map annotations and cardinal points. Select from:</p>
+<ul class="simple">
+<li>CN1 Simplified Chinese</li>
+<li>CN2 Traditional Chinese</li>
+<li>DE German</li>
+<li>DK Danish</li>
+<li>EH Basque</li>
+<li>ES Spanish</li>
+<li>FI Finnish</li>
+<li>FR French</li>
+<li>GR Greek</li>
+<li>HI Hawaiian</li>
+<li>HU Hungarian</li>
+<li>IE Irish</li>
+<li>IL Hebrew</li>
+<li>IS Icelandic</li>
+<li>IT Italian</li>
+<li>JP Japanese</li>
+<li>KR Korean</li>
+<li>NL Dutch</li>
+<li>NO Norwegian</li>
+<li>PL Polish</li>
+<li>PT Portuguese</li>
+<li>RU Russian</li>
+<li>SE Swedish</li>
+<li>SG Scottish Gaelic</li>
+<li>TO Tongan</li>
+<li>TR Turkish</li>
+<li>UK British English</li>
+<li>US US English</li>
+</ul>
+<p class="last">If your language is not supported, please examine the
+<strong>$GMT_SHAREDIR</strong>/localization/gmt_us.locale file and make a similar file. Please
+submit it to the GMT Developers for official inclusion. Custom
+language files can be placed in directories <strong>$GMT_SHAREDIR</strong>/localization
+or ~/.gmt. Note: Some of these languages may require you to also
+change the <strong>PS_CHAR_ENCODING</strong> setting.</p>
+</dd>
+</dl>
+<dl class="docutils" id="gmt-triangulate">
+<dt><strong>GMT_TRIANGULATE</strong></dt>
+<dd>Determines if we use the <strong>Watson</strong> [Default] or <strong>Shewchuk</strong>
+algorithm (if configured during installation) for triangulation.
+Note that Shewchuk is required for operations involving Voronoi
+constructions.</dd>
+</dl>
+<dl class="docutils" id="gmt-verbose">
+<dt><strong>GMT_VERBOSE</strong></dt>
+<dd>(<strong>-V</strong>) Determines the level of verbosity used by GMT
+programs. Choose among 6 levels; each level adds to the verbosity of
+the lower levels: <strong>q</strong>uiet, <strong>n</strong>normal (errors and warnings),
+<strong>c</strong>ompatibility warnings, <strong>v</strong>erbose progress reports, <strong>l</strong>ong
+verbose progress reports, <strong>d</strong>ebugging messages [c].</dd>
+</dl>
+<span id="i-o-parameters"></span><dl class="docutils" id="io-col-separator">
+<dt><strong>IO_COL_SEPARATOR</strong></dt>
+<dd>This setting determines what character will separate ASCII output
+data columns written by GMT. Choose from tab, space, comma, and
+none [tab].</dd>
+</dl>
+<dl class="docutils" id="io-gridfile-format">
+<dt><strong>IO_GRIDFILE_FORMAT</strong></dt>
+<dd>Default file format for grids, with optional scale, offset and
+invalid value, written as <em>ff</em>[<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>]. The
+2-letter format indicator can be one of [<strong>abcegnrs</strong>][<strong>bsifd</strong>]. See
+<a class="reference internal" href="grdconvert.html"><span class="doc">grdconvert</span></a> and Section <a class="reference internal" href="GMT_Docs.html#grid-file-format"><span class="std std-ref">Grid file format specifications</span></a> of the
+GMT Technical Reference and Cookbook for more information.
+You may the scale as <em>a</em> for auto-adjusting the scale and/or offset of
+packed integer grids (=<em>ID</em><strong>+s</strong><em>a</em> is a shorthand for
+=<em>ID</em><strong>+s</strong><em>a</em><strong>+o</strong><em>a</em>).  When <em>invalid</em> is omitted
+the appropriate value for the given format is used (NaN or largest negative). [nf].</dd>
+</dl>
+<dl class="docutils" id="io-gridfile-shorthand">
+<dt><strong>IO_GRIDFILE_SHORTHAND</strong></dt>
+<dd>If true, all grid file names are examined to see if they use the
+file extension shorthand discussed in Section <a class="reference internal" href="GMT_Docs.html#grid-file-format"><span class="std std-ref">Grid file format specifications</span></a> of the GMT
+Technical Reference and Cookbook. If false, no filename expansion is done [false].</dd>
+</dl>
+<dl class="docutils" id="io-header">
+<dt><strong>IO_HEADER</strong></dt>
+<dd>(<strong>-h</strong>) Specifies whether input/output ASCII files have header record(s) or not [false].</dd>
+</dl>
+<dl class="docutils" id="io-lonlat-toggle">
+<dt><strong>IO_LONLAT_TOGGLE</strong></dt>
+<dd>(<strong>-:</strong>) Set if the first two columns of input and output files
+contain (latitude,longitude) or (y,x) rather than the expected
+(longitude,latitude) or (x,y). false means we have (x,y) both on
+input and output. true means both input and output should be (y,x).
+IN means only input has (y,x), while OUT means only output should be (y,x). [false].</dd>
+</dl>
+<dl class="docutils" id="io-n-header-recs">
+<dt><strong>IO_N_HEADER_RECS</strong></dt>
+<dd>Specifies how many header records to expect if <strong>-h</strong> is used [0].
+Note: This will skip the specified number of records regardless of
+what they are.  Since any records starting with # is automatically
+considered a header you will only specify a non-zero number in order
+to skip headers that do not conform to that convention.</dd>
+</dl>
+<dl class="docutils" id="io-nan-records">
+<dt><strong>IO_NAN_RECORDS</strong></dt>
+<dd>Determines what happens when input records containing NaNs for <em>x</em>
+or <em>y</em> (and in some cases <em>z</em>) are read. Choose between <strong>skip</strong>,
+which will simply report how many bad records were skipped, and
+<strong>pass</strong> [Default], which will pass these records on to the calling
+programs. For most programs this will result in output records with
+NaNs as well, but some will interpret these NaN records to indicate
+gaps in a series; programs may then use that information to detect
+segmentation (if applicable).</dd>
+</dl>
+<dl class="docutils" id="io-nc4-chunk-size">
+<dt><strong>IO_NC4_CHUNK_SIZE</strong></dt>
+<dd>Sets the default chunk size for the <strong>lat</strong> and <strong>lon</strong> dimension of
+the <strong>z</strong> variable. Very large chunk sizes and sizes smaller than
+128 should be avoided because they can lead to unexpectedly bad
+performance. Note that a chunk of a single precision floating point
+variable of size 2896x2896 completely fills the chunk cache of
+32MiB. Specify the chunk size for each dimension separated by a
+comma, or <strong>a</strong>uto for optimally chosen chunk sizes in the range
+[128,256). Setting IO_NC4_CHUNK_SIZE will produce netCDF version 4
+files, which can only be read with the netCDF 4 library, unless all
+dimensions are less than 128 or <strong>c</strong>lassic is specified for
+classic netCDF. [auto]</dd>
+</dl>
+<dl class="docutils" id="io-nc4-deflation-level">
+<dt><strong>IO_NC4_DEFLATION_LEVEL</strong></dt>
+<dd>Sets the compression level for netCDF4 files upon output. Values
+allowed are integers from 0 (no compression) to 9 (maximum
+compression). Enabling a low compression level can dramatically
+improve performance and reduce the size of certain data. While
+higher compression levels further reduce the data size, they do so
+at the cost of extra processing time. This parameter does not
+apply to classic netCDF files. [3]</dd>
+</dl>
+<dl class="docutils" id="io-segment-binary">
+<dt><strong>IO_SEGMENT_BINARY</strong></dt>
+<dd>Determines how binary data records with all values set to NaN are
+interpreted.  Such records are considered to be encoded segment
+headers in binary files provided the number of columns equals or
+exceeds the current setting of IO_SEGMENT_BINARY [2].  Specify 0
+or “off” to deactivate the segment header determination.</dd>
+</dl>
+<dl class="docutils" id="io-segment-marker">
+<dt><strong>IO_SEGMENT_MARKER</strong></dt>
+<dd>This holds the character we expect to indicate a segment header in
+an incoming ASCII data or text table [&gt;]. If this marker should be
+different for output then append another character for the output
+segment marker. The two characters must be separated by a comma. Two
+marker characters have special meaning: B means “blank line” and
+will treat blank lines as initiating a new segment, whereas N means
+“NaN record” and will treat records with all NaNs as initiating a
+new segment. If you choose B or N for the output marker then the
+normal GMT segment header is replaced by a blank or NaN record,
+respectively, and no segment header information is written. To use B
+or N as regular segment markers you must escape them with a leading
+backslash.</dd>
+</dl>
+<span id="map-parameters"></span><dl class="docutils" id="map-annot-min-angle">
+<dt><strong>MAP_ANNOT_MIN_ANGLE</strong></dt>
+<dd>If the angle between the map boundary and the annotation baseline is
+less than this minimum value (in degrees), the annotation is not
+plotted (this may occur for certain oblique projections.) Give a
+value in the range [0,90]. [20]</dd>
+</dl>
+<dl class="docutils" id="map-annot-min-spacing">
+<dt><strong>MAP_ANNOT_MIN_SPACING</strong></dt>
+<dd>If an annotation would be plotted less than this minimum distance
+from its closest neighbor, the annotation is not plotted (this may
+occur for certain oblique projections.) [0p]</dd>
+</dl>
+<dl class="docutils" id="map-annot-oblique">
+<dt><strong>MAP_ANNOT_OBLIQUE</strong></dt>
+<dd>This integer is a sum of 6 bit flags (most of which only are
+relevant for oblique projections): If bit 1 is set (1),
+annotations will occur wherever a gridline crosses the map
+boundaries, else longitudes will be annotated on the lower and upper
+boundaries only, and latitudes will be annotated on the left and
+right boundaries only. If bit 2 is set (2), then
+longitude annotations will be plotted horizontally. If bit 3 is set
+(4), then latitude annotations will be plotted
+horizontally. If bit 4 is set (8), then oblique
+tick-marks are extended to give a projection equal to the specified
+tick length. If bit 5 is set (16), tick-marks will be drawn normal
+to the border regardless of gridline angle. If bit 6 is set (32),
+then latitude annotations will be plotted parallel to the border. To
+set a combination of these, add up the values in parentheses. [1].</dd>
+</dl>
+<dl class="docutils" id="map-annot-offset">
+<dt><strong>MAP_ANNOT_OFFSET</strong></dt>
+<dd>Sets both <strong>MAP_ANNOT_OFFSET_PRIMARY</strong> and <strong>MAP_ANNOT_OFFSET_SECONDARY</strong> to the value specified.
+This setting is not included in the <strong>gmt.conf</strong> file.</dd>
+</dl>
+<dl class="docutils" id="map-annot-offset-primary">
+<dt><strong>MAP_ANNOT_OFFSET_PRIMARY</strong></dt>
+<dd>Distance from end of tick-mark to start of annotation [5p].</dd>
+</dl>
+<dl class="docutils" id="map-annot-offset-secondary">
+<dt><strong>MAP_ANNOT_OFFSET_SECONDARY</strong></dt>
+<dd>Distance from base of primary annotation to the top of the secondary
+annotation [5p] (Only applies to time axes with both primary and
+secondary annotations).</dd>
+</dl>
+<dl class="docutils" id="map-annot-ortho">
+<dt><strong>MAP_ANNOT_ORTHO</strong></dt>
+<dd>Determines which axes will get their annotations (for linear
+projections) plotted orthogonally to the axes. Combine any <strong>w</strong>,
+<strong>e</strong>, <strong>s</strong>, <strong>n</strong>, <strong>z</strong> (uppercase allowed as well). [we] (if nothing specified).</dd>
+</dl>
+<dl class="docutils" id="map-default-pen">
+<dt><strong>MAP_DEFAULT_PEN</strong></dt>
+<dd>Sets the default of all pens related to <strong>-W</strong> options. Prepend
+<strong>+</strong> to overrule the color of the parameters
+<strong>MAP_GRID_PEN_PRIMARY</strong>, <strong>MAP_GRID_PEN_SECONDARY</strong>,
+<strong>MAP_FRAME_PEN</strong>, <strong>MAP_TICK_PEN_PRIMARY</strong>, and
+<strong>MAP_TICK_PEN_SECONDARY</strong> by the color of <strong>MAP_DEFAULT_PEN</strong>
+[default,black].</dd>
+</dl>
+<dl class="docutils" id="map-degree-symbol">
+<dt><strong>MAP_DEGREE_SYMBOL</strong></dt>
+<dd>Determines what symbol is used to plot the degree symbol on
+geographic map annotations. Choose between ring, degree, colon, or
+none [ring].</dd>
+</dl>
+<dl class="docutils" id="map-frame-axes">
+<dt><strong>MAP_FRAME_AXES</strong></dt>
+<dd>Sets which axes to draw and annotate. Combine any uppercase <strong>W</strong>,
+<strong>E</strong>, <strong>S</strong>, <strong>N</strong>, <strong>Z</strong> to draw and annotate west, east, south,
+north and/or vertical (perspective view only) axis. Use lower case
+to draw the axis only, but not annotate. Add an optional <strong>+</strong> to
+draw a cube of axes in perspective view. [WESN].</dd>
+</dl>
+<dl class="docutils" id="map-frame-pen">
+<dt><strong>MAP_FRAME_PEN</strong></dt>
+<dd>Pen attributes used to draw plain map frame [thicker,black].</dd>
+</dl>
+<dl class="docutils" id="map-frame-type">
+<dt><strong>MAP_FRAME_TYPE</strong></dt>
+<dd>Choose between <strong>inside</strong>, <strong>plain</strong> and <strong>fancy</strong> (thick boundary,
+alternating black/white frame; append <strong>+</strong> for rounded corners)
+[fancy]. For some map projections (e.g., Oblique Mercator), plain is
+the only option even if fancy is set as default. In general, fancy
+only applies to situations where the projected x and y directions
+parallel the longitude and latitude directions (e.g., rectangular
+projections, polar projections). For situations where all boundary
+ticks and annotations must be inside the maps (e.g., for preparing
+geotiffs), chose <strong>inside</strong>.  Finally, for Cartesian plots you can
+also choose <strong>graph</strong>, which adds a vector to the end of each axis.
+This works best when you reduce the number of axes plotted.</dd>
+</dl>
+<dl class="docutils" id="map-frame-width">
+<dt><strong>MAP_FRAME_WIDTH</strong></dt>
+<dd>Width (&gt; 0) of map borders for fancy map frame [5p].</dd>
+</dl>
+<dl class="docutils" id="map-grid-cross-size">
+<dt><strong>MAP_GRID_CROSS_SIZE</strong></dt>
+<dd>Sets both <strong>MAP_GRID_CROSS_SIZE_PRIMARY</strong> and <strong>MAP_GRID_CROSS_SIZE_SECONDARY</strong> to the value specified.
+This setting is not included in the <strong>gmt.conf</strong> file.</dd>
+</dl>
+<dl class="docutils" id="map-grid-cross-size-primary">
+<dt><strong>MAP_GRID_CROSS_SIZE_PRIMARY</strong></dt>
+<dd>Size (&gt;= 0) of grid cross at lon-lat intersections. 0 means draw
+continuous gridlines instead [0p].</dd>
+</dl>
+<dl class="docutils" id="map-grid-cross-size-secondary">
+<dt><strong>MAP_GRID_CROSS_SIZE_SECONDARY</strong></dt>
+<dd>Size (&gt;= 0) of grid cross at secondary lon-lat intersections. 0
+means draw continuous gridlines instead [0p].</dd>
+</dl>
+<dl class="docutils" id="map-grid-cross-pen">
+<dt><strong>MAP_GRID_CROSS_PEN</strong></dt>
+<dd>Sets both <strong>MAP_GRID_CROSS_PEN_PRIMARY</strong> and <strong>MAP_GRID_CROSS_PEN_SECONDARY</strong> to the value specified.
+This setting is not included in the <strong>gmt.conf</strong> file.</dd>
+</dl>
+<dl class="docutils" id="map-grid-pen-primary">
+<dt><strong>MAP_GRID_PEN_PRIMARY</strong></dt>
+<dd>Pen attributes used to draw primary grid lines in dpi units or
+points (append p) [default,black].</dd>
+</dl>
+<dl class="docutils" id="map-grid-pen-secondary">
+<dt><strong>MAP_GRID_PEN_SECONDARY</strong></dt>
+<dd>Pen attributes used to draw secondary grid lines in dpi units or
+points (append p) [thinner,black].</dd>
+</dl>
+<dl class="docutils" id="map-label-offset">
+<dt><strong>MAP_LABEL_OFFSET</strong></dt>
+<dd>Distance from base of axis annotations to the top of the axis label [8p].</dd>
+</dl>
+<dl class="docutils" id="map-line-step">
+<dt><strong>MAP_LINE_STEP</strong></dt>
+<dd>Determines the maximum length (&gt; 0) of individual straight
+line-segments when drawing arcuate lines [0.75p]</dd>
+</dl>
+<dl class="docutils" id="map-logo">
+<dt><strong>MAP_LOGO</strong></dt>
+<dd>(<strong>-U</strong>) Specifies if a GMT logo with system timestamp should be
+plotted at the lower left corner of the plot [false].</dd>
+</dl>
+<dl class="docutils" id="map-logo-pos">
+<dt><strong>MAP_LOGO_POS</strong></dt>
+<dd>(<strong>-U</strong>) Sets the justification and the position of the
+logo/timestamp box relative to the current plots lower left corner
+of the plot [BL/-54p/-54p].</dd>
+</dl>
+<dl class="docutils" id="map-origin-x">
+<dt><strong>MAP_ORIGIN_X</strong></dt>
+<dd>(<strong>-X</strong>) Sets the x-coordinate of the origin on the paper for a
+new plot [1i]. For an overlay, the default offset is 0.</dd>
+</dl>
+<dl class="docutils" id="map-origin-y">
+<dt><strong>MAP_ORIGIN_Y</strong></dt>
+<dd>(<strong>-Y</strong>) Sets the y-coordinate of the origin on the paper for a
+new plot [1i]. For an overlay, the default offset is 0.</dd>
+</dl>
+<dl class="docutils" id="map-polar-cap">
+<dt><strong>MAP_POLAR_CAP</strong></dt>
+<dd>Controls the appearance of gridlines near the poles for all
+azimuthal projections and a few others in which the geographic poles
+are plotted as points (Lambert Conic, Oblique Mercator, Hammer, Mollweide,
+Sinusoidal and van der Grinten). Specify either none (in which case there
+is no special handling) or <em>pc_lat</em>/<em>pc_dlon</em>. In that case, normal
+gridlines are only drawn between the latitudes
+-<em>pc_lat</em>/+*pc_lat*, and above those latitudes the gridlines are
+spaced at the (presumably coarser) <em>pc_dlon</em> interval; the two
+domains are separated by a small circle drawn at the <em>pc_lat</em>
+latitude [85/90]. Note for r-theta (polar) projection where r = 0 is
+at the center of the plot the meaning of the cap is reversed, i.e.,
+the default 85/90 will draw a r = 5 radius circle at the center of
+the map with less frequent radial lines there.</dd>
+</dl>
+<dl class="docutils" id="map-scale-height">
+<dt><strong>MAP_SCALE_HEIGHT</strong></dt>
+<dd>Sets the height (&gt; 0) on the map of the map scale bars drawn by
+various programs [5p].</dd>
+</dl>
+<dl class="docutils" id="map-tick-length">
+<dt><strong>MAP_TICK_LENGTH</strong></dt>
+<dd>Sets both <strong>MAP_TICK_LENGTH_PRIMARY</strong> and <strong>MAP_TICK_LENGTH_SECONDARY</strong> to the value specified.
+This setting is not included in the <strong>gmt.conf</strong> file.</dd>
+</dl>
+<dl class="docutils" id="map-tick-length-primary">
+<dt><strong>MAP_TICK_LENGTH_PRIMARY</strong></dt>
+<dd>The length of a primary major/minor tick-marks [5p/2.5p]. If only
+the first value is set, the second is assumed to be 50% of the first.</dd>
+</dl>
+<dl class="docutils" id="map-tick-length-secondary">
+<dt><strong>MAP_TICK_LENGTH_SECONDARY</strong></dt>
+<dd>The length of a secondary major/minor tick-marks [15p/3.75p]. If
+only the first value is set, the second is assumed to be 25% of the first.</dd>
+</dl>
+<dl class="docutils" id="map-tick-pen">
+<dt><strong>MAP_TICK_PEN</strong></dt>
+<dd>Sets both <strong>MAP_TICK_PEN_PRIMARY</strong> and <strong>MAP_TICK_PEN_SECONDARY</strong> to the value specified.
+This setting is not included in the <strong>gmt.conf</strong> file.</dd>
+</dl>
+<dl class="docutils" id="map-tick-pen-primary">
+<dt><strong>MAP_TICK_PEN_PRIMARY</strong></dt>
+<dd>Pen attributes to be used for primary tick-marks in dpi units or
+points (append p) [thinner,black].</dd>
+</dl>
+<dl class="docutils" id="map-tick-pen-secondary">
+<dt><strong>MAP_TICK_PEN_SECONDARY</strong></dt>
+<dd>Pen attributes to be used for secondary tick-marks in dpi units or
+points (append p) [thinner,black].</dd>
+</dl>
+<dl class="docutils" id="map-title-offset">
+<dt><strong>MAP_TITLE_OFFSET</strong></dt>
+<dd>Distance from top of axis annotations (or axis label, if present) to
+base of plot title [14p].</dd>
+</dl>
+<dl class="docutils" id="map-vector-shape">
+<dt><strong>MAP_VECTOR_SHAPE</strong></dt>
+<dd>Determines the shape of the head of a vector. Normally (i.e., for
+vector_shape = 0), the head will be triangular, but can be changed
+to an arrow (1) or an open V (2).
+Intermediate settings give something in between. Negative values (up
+to -2) are allowed as well [0].</dd>
+</dl>
+<dl class="docutils" id="proj-aux-latitude">
+<dt><strong>PROJ_AUX_LATITUDE</strong></dt>
+<dd>Only applies when geodesics are approximated by great circle
+distances on an equivalent sphere. Select from authalic, geocentric,
+conformal, meridional, parametric, or none [authalic]. When not none
+we convert any latitude used in the great circle calculation to the
+chosen auxiliary latitude before doing the distance calculation. See
+also <strong>PROJ_MEAN_RADIUS</strong>.</dd>
+</dl>
+<span id="projection-parameters"></span><dl class="docutils" id="proj-ellipsoid">
+<dt><strong>PROJ_ELLIPSOID</strong></dt>
+<dd>The (case sensitive) name of the ellipsoid used for the map projections [WGS-84]. Choose among:</dd>
+</dl>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line-block">
+<div class="line"><em>Airy</em>: Applies to Great Britain (1830)</div>
+<div class="line"><em>Airy-Ireland</em>: Applies to Ireland in 1965 (1830)</div>
+<div class="line"><em>Andrae</em>: Applies to Denmark and Iceland (1876)</div>
+<div class="line"><em>APL4.9</em>: Appl. Physics (1965)</div>
+<div class="line"><em>ATS77</em>: Average Terrestrial System, Canada Maritime provinces (1977)</div>
+<div class="line"><em>Australian</em>: Applies to Australia (1965)</div>
+<div class="line"><em>Bessel</em>: Applies to Central Europe, Chile, Indonesia (1841)</div>
+<div class="line"><em>Bessel-Namibia</em>: Same as Bessel-Schwazeck (1841)</div>
+<div class="line"><em>Bessel-NGO1948</em>: Modified Bessel for NGO 1948 (1841)</div>
+<div class="line"><em>Bessel-Schwazeck</em>: Applies to Namibia (1841)</div>
+<div class="line"><em>Clarke-1858</em>: Clarke’s early ellipsoid (1858)</div>
+<div class="line"><em>Clarke-1866</em>: Applies to North America, the Philippines (1866)</div>
+<div class="line"><em>Clarke-1866-Michigan</em>: Modified Clarke-1866 for Michigan (1866)</div>
+<div class="line"><em>Clarke-1880</em>: Applies to most of Africa, France (1880)</div>
+<div class="line"><em>Clarke-1880-Arc1950</em>: Modified Clarke-1880 for Arc 1950 (1880)</div>
+<div class="line"><em>Clarke-1880-IGN</em>: Modified Clarke-1880 for IGN (1880)</div>
+<div class="line"><em>Clarke-1880-Jamaica</em>: Modified Clarke-1880 for Jamaica (1880)</div>
+<div class="line"><em>Clarke-1880-Merchich</em>: Modified Clarke-1880 for Merchich (1880)</div>
+<div class="line"><em>Clarke-1880-Palestine</em>: Modified Clarke-1880 for Palestine (1880)</div>
+<div class="line"><em>CPM</em>: Comm. des Poids et Mesures, France (1799)</div>
+<div class="line"><em>Delambre</em>: Applies to Belgium (1810)</div>
+<div class="line"><em>Engelis</em>: Goddard Earth Models (1985)</div>
+<div class="line"><em>Everest-1830</em>: India, Burma, Pakistan, Afghanistan, Thailand (1830)</div>
+<div class="line"><em>Everest-1830-Kalianpur</em>: Modified Everest for Kalianpur (1956) (1830)</div>
+<div class="line"><em>Everest-1830-Kertau</em>: Modified Everest for Kertau, Malaysia &amp; Singapore (1830)</div>
+<div class="line"><em>Everest-1830-Pakistan</em>: Modified Everest for Pakistan (1830)</div>
+<div class="line"><em>Everest-1830-Timbalai</em>: Modified Everest for Timbalai, Sabah Sarawak (1830)</div>
+<div class="line"><em>Fischer-1960</em>: Used by NASA for Mercury program (1960)</div>
+<div class="line"><em>Fischer-1960-SouthAsia</em>: Same as Modified-Fischer-1960 (1960)</div>
+<div class="line"><em>Fischer-1968</em>: Used by NASA for Mercury program (1968)</div>
+<div class="line"><em>FlatEarth</em>: As Sphere, but implies fast “Flat Earth” distance calculations (1984)</div>
+<div class="line"><em>GRS-67</em>: International Geodetic Reference System (1967)</div>
+<div class="line"><em>GRS-80</em>: International Geodetic Reference System (1980)</div>
+<div class="line"><em>Hayford-1909</em>: Same as the International 1924 (1909)</div>
+<div class="line"><em>Helmert-1906</em>: Applies to Egypt (1906)</div>
+<div class="line"><em>Hough</em>: Applies to the Marshall Islands (1960)</div>
+<div class="line"><em>Hughes-1980</em>: Hughes Aircraft Company for DMSP SSM/I grid products (1980)</div>
+<div class="line"><em>IAG-75</em>: International Association of Geodesy (1975)</div>
+<div class="line"><em>Indonesian</em>: Applies to Indonesia (1974)</div>
+<div class="line"><em>International-1924</em>: Worldwide use (1924)</div>
+<div class="line"><em>International-1967</em>: Worldwide use (1967)</div>
+<div class="line"><em>Kaula</em>: From satellite tracking (1961)</div>
+<div class="line"><em>Krassovsky</em>: Used in the (now former) Soviet Union (1940)</div>
+<div class="line"><em>Lerch</em>: For geoid modeling (1979)</div>
+<div class="line"><em>Maupertius</em>: Really old ellipsoid used in France (1738)</div>
+<div class="line"><em>Mercury-1960</em>: Same as Fischer-1960 (1960)</div>
+<div class="line"><em>MERIT-83</em>: United States Naval Observatory (1983)</div>
+<div class="line"><em>Modified-Airy</em>: Same as Airy-Ireland (1830)</div>
+<div class="line"><em>Modified-Fischer-1960</em>: Applies to Singapore (1960)</div>
+<div class="line"><em>Modified-Mercury-1968</em>: Same as Fischer-1968 (1968)</div>
+<div class="line"><em>NWL-10D</em>: Naval Weapons Lab (Same as WGS-72) (1972)</div>
+<div class="line"><em>NWL-9D</em>: Naval Weapons Lab (Same as WGS-66) (1966)</div>
+<div class="line"><em>OSU86F</em>: Ohio State University (1986)</div>
+<div class="line"><em>OSU91A</em>: Ohio State University (1991)</div>
+<div class="line"><em>Plessis</em>: Old ellipsoid used in France (1817)</div>
+<div class="line"><em>SGS-85</em>: Soviet Geodetic System (1985)</div>
+<div class="line"><em>South-American</em>: Applies to South America (1969)</div>
+<div class="line"><em>Sphere</em>: The mean radius in WGS-84 (for spherical/plate tectonics applications) (1984)</div>
+<div class="line"><em>Struve</em>: Friedrich Georg Wilhelm Struve (1860)</div>
+<div class="line"><em>TOPEX</em>: Used commonly for altimetry (1990)</div>
+<div class="line"><em>Walbeck</em>: First least squares solution by Finnish astronomer (1819)</div>
+<div class="line"><em>War-Office</em>: Developed by G. T. McCaw (1926)</div>
+<div class="line"><em>WGS-60</em>: World Geodetic System (1960)</div>
+<div class="line"><em>WGS-66</em>: World Geodetic System (1966)</div>
+<div class="line"><em>WGS-72</em>: World Geodetic System (1972)</div>
+<div class="line"><em>WGS-84</em>: World Geodetic System [Default] (1984)</div>
+<div class="line"><em>Moon</em>: Moon (IAU2000) (2000)</div>
+<div class="line"><em>Mercury</em>: Mercury (IAU2000) (2000)</div>
+<div class="line"><em>Venus</em>: Venus (IAU2000) (2000)</div>
+<div class="line"><em>Mars</em>: Mars (IAU2000) (2000)</div>
+<div class="line"><em>Jupiter</em>: Jupiter (IAU2000) (2000)</div>
+<div class="line"><em>Saturn</em>: Saturn (IAU2000) (2000)</div>
+<div class="line"><em>Uranus</em>: Uranus (IAU2000) (2000)</div>
+<div class="line"><em>Neptune</em>: Neptune (IAU2000) (2000)</div>
+<div class="line"><em>Pluto</em>: Pluto (IAU2000) (2000)</div>
+</div>
+</div>
+<blockquote>
+<div><p>Note that for some global projections, GMT may use a spherical
+approximation of the ellipsoid chosen, setting the flattening to
+zero, and using a mean radius. A warning will be given when this
+happens. If a different ellipsoid name than those mentioned here is
+given, GMT will attempt to parse the name to extract the
+semi-major axis (<em>a</em> in m) and the flattening. Formats allowed are:</p>
+<p><em>a</em> implies a zero flattening</p>
+<p><em>a</em>,<em>inv_f</em> where <em>inv_f</em> is the inverse flattening</p>
+<p><em>a</em>,<strong>b=</strong><em>b</em> where <em>b</em> is the semi-minor axis (in m)</p>
+<p><em>a</em>,<strong>f=</strong><em>f</em> where <em>f</em> is the flattening</p>
+<p>This way a custom ellipsoid (e.g., those used for other planets) may
+be used. Further note that coordinate transformations in
+<strong>mapproject</strong> can also specify specific datums; see the
+<a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a> man page for further details and how to view
+ellipsoid and datum parameters.</p>
+</div></blockquote>
+<dl class="docutils" id="proj-geodesic">
+<dt><strong>PROJ_GEODESIC</strong></dt>
+<dd>Selects the algorithm to use for geodesic calculations. Choose between
+<strong>Vincenty</strong> [Default], <strong>Rudoe</strong>, or <strong>Andoyer</strong>. The <strong>Andoyer</strong>
+algorithm is only approximate (to within a few tens of meters) but is
+up to 5 times faster.  The <strong>Rudoe</strong> is given for legacy purposes.
+The default <strong>Vincenty</strong> is accurate to about 0.5 mm.</dd>
+</dl>
+<dl class="docutils" id="proj-length-unit">
+<dt><strong>PROJ_LENGTH_UNIT</strong></dt>
+<dd>Sets the unit length. Choose between <strong>c</strong>m, <strong>i</strong>nch, or
+<strong>p</strong>oint [c (or i)]. Note that, in GMT, one point is defined
+as 1/72 inch (the PostScript definition), while it is often
+defined as 1/72.27 inch in the typesetting industry. There is no
+universal definition.</dd>
+</dl>
+<dl class="docutils" id="proj-mean-radius">
+<dt><strong>PROJ_MEAN_RADIUS</strong></dt>
+<dd>Applies when geodesics are approximated by great circle distances on
+an equivalent sphere or when surface areas are computed. Select from
+mean (R_1), authalic (R_2), volumetric (R_3), meridional, or
+quadratic [authalic].</dd>
+</dl>
+<dl class="docutils" id="proj-scale-factor">
+<dt><strong>PROJ_SCALE_FACTOR</strong></dt>
+<dd>Changes the default map scale factor used for the Polar
+Stereographic [0.9996], UTM [0.9996], and Transverse Mercator [1]
+projections in order to minimize areal distortion. Provide a new
+scale-factor or leave as default.</dd>
+</dl>
+<span id="postscript-parameters"></span><dl class="docutils" id="ps-char-encoding">
+<dt><strong>PS_CHAR_ENCODING</strong></dt>
+<dd>(static) Names the eight bit character set being used for text in
+files and in command line parameters. This allows GMT to ensure
+that the PostScript output generates the correct characters on the
+plot.. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
+ISO-8859-x (where x is in the ranges [1,10] or [13,15]). See
+Appendix F for details [ISOLatin1+ (or Standard+)].</dd>
+</dl>
+<dl class="docutils" id="ps-color-model">
+<dt><strong>PS_COLOR_MODEL</strong></dt>
+<dd>Determines whether PostScript output should use RGB, HSV, CMYK, or
+GRAY when specifying color [rgb]. Note if HSV is selected it does
+not apply to images which in that case uses RGB. When selecting
+GRAY, all colors will be converted to gray scale using YIQ
+(television) conversion.</dd>
+</dl>
+<dl class="docutils" id="ps-comments">
+<dt><strong>PS_COMMENTS</strong></dt>
+<dd>(static) If true we will issue comments in the PostScript file
+that explain the logic of operations. These are useful if you need
+to edit the file and make changes; otherwise you can set it to false
+which yields a somewhat slimmer PostScript file [false].</dd>
+</dl>
+<dl class="docutils" id="ps-image-compress">
+<dt><strong>PS_IMAGE_COMPRESS</strong></dt>
+<dd>Determines if PostScript images are compressed using the Run-Length
+Encoding scheme (rle), Lempel-Ziv-Welch compression (lzw), DEFLATE
+compression (deflate[,level]), or not at all (none) [deflate,5]. When
+specifying deflate, the compression level (1--9) may optionally be
+appended.</dd>
+</dl>
+<dl class="docutils" id="ps-line-cap">
+<dt><strong>PS_LINE_CAP</strong></dt>
+<dd>Determines how the ends of a line segment will be drawn. Choose
+among a <em>butt</em> cap (default) where there is no projection beyond the
+end of the path, a <em>round</em> cap where a semicircular arc with
+diameter equal to the line-width is drawn around the end points, and
+<em>square</em> cap where a half square of size equal to the line-width
+extends beyond the end of the path [butt].</dd>
+</dl>
+<dl class="docutils" id="ps-line-join">
+<dt><strong>PS_LINE_JOIN</strong></dt>
+<dd>Determines what happens at kinks in line segments. Choose among a
+<em>miter</em> join where the outer edges of the strokes for the two
+segments are extended until they meet at an angle (as in a picture
+frame; if the angle is too acute, a bevel join is used instead, with
+threshold set by <strong>PS_MITER_LIMIT</strong>), <em>round</em> join where a
+circular arc is used to fill in the cracks at the kinks, and <em>bevel</em>
+join which is a miter join that is cut off so kinks are triangular in shape [miter].</dd>
+</dl>
+<dl class="docutils" id="ps-media">
+<dt><strong>PS_MEDIA</strong></dt>
+<dd><p class="first">Sets the physical format of the current plot paper [a4 (or letter)].
+The following formats (and their widths and heights in points) are
+recognized (Additional site-specific formats may be specified in the
+gmt_custom_media.conf file in <strong>$GMT_SHAREDIR</strong>/conf or ~/.gmt;
+see that file for details):</p>
+<p>Media width height</p>
+<ul class="simple">
+<li>A0 2380 3368</li>
+<li>A1 1684 2380</li>
+<li>A2 1190 1684</li>
+<li>A3 842 1190</li>
+<li>A4 595 842</li>
+<li>A5 421 595</li>
+<li>A6 297 421</li>
+<li>A7 210 297</li>
+<li>A8 148 210</li>
+<li>A9 105 148</li>
+<li>A10 74 105</li>
+<li>B0 2836 4008</li>
+<li>B1 2004 2836</li>
+<li>B2 1418 2004</li>
+<li>B3 1002 1418</li>
+<li>B4 709 1002</li>
+<li>B5 501 709</li>
+<li>archA 648 864</li>
+<li>archB 864 1296</li>
+<li>archC 1296 1728</li>
+<li>archD 1728 2592</li>
+<li>archE 2592 3456</li>
+<li>flsa 612 936</li>
+<li>halfletter 396 612</li>
+<li>statement 396 612</li>
+<li>note 540 720</li>
+<li>letter 612 792</li>
+<li>legal 612 1008</li>
+<li>11x17 792 1224</li>
+<li>tabloid 792 1224</li>
+<li>ledger 1224 792</li>
+</ul>
+<p class="last">For a completely custom format (e.g., for large format plotters) you
+may also specify WxH, where W and H are in points unless you append
+a unit to each dimension (<strong>c</strong>, <strong>i</strong>, <strong>m</strong> or <strong>p</strong> [Default]).</p>
+</dd>
+</dl>
+<dl class="docutils" id="ps-miter-limit">
+<dt><strong>PS_MITER_LIMIT</strong></dt>
+<dd>Sets the threshold angle in degrees (integer in range [0,180]) used
+for mitered joins only. When the angle between joining line segments
+is smaller than the threshold the corner will be bevelled instead of
+mitered. The default threshold is 35 degrees. Setting the threshold
+angle to 0 implies the PostScript default of about 11 degrees.
+Setting the threshold angle to 180 causes all joins to be beveled.</dd>
+</dl>
+<dl class="docutils" id="ps-page-color">
+<dt><strong>PS_PAGE_COLOR</strong></dt>
+<dd>Sets the color of the imaging background, i.e., the paper [white].</dd>
+</dl>
+<dl class="docutils" id="ps-page-orientation">
+<dt><strong>PS_PAGE_ORIENTATION</strong></dt>
+<dd>(<strong>* -P</strong>) Sets the orientation of the page. Choose portrait or
+landscape [landscape].</dd>
+</dl>
+<dl class="docutils" id="ps-scale-x">
+<dt><strong>PS_SCALE_X</strong></dt>
+<dd>Global x-scale (&gt; 0) to apply to plot-coordinates before plotting.
+Normally used to shrink the entire output down to fit a specific
+height/width [1.0].</dd>
+</dl>
+<dl class="docutils" id="ps-scale-y">
+<dt><strong>PS_SCALE_Y</strong></dt>
+<dd>Global y-scale (&gt; 0) to apply to plot-coordinates before plotting.
+Normally used to shrink the entire output down to fit a specific
+height/width [1.0].</dd>
+</dl>
+<dl class="docutils" id="ps-transparency">
+<dt><strong>PS_TRANSPARENCY</strong></dt>
+<dd>Sets the transparency mode to use when preparing PS for rendering to
+PDF. Choose from Color, ColorBurn, ColorDodge, Darken, Difference,
+Exclusion, HardLight, Hue, Lighten, Luminosity, Multiply, Normal,
+Overlay, Saturation, SoftLight, and Screen [Normal].</dd>
+</dl>
+<span id="calendar-time-parameters"></span><dl class="docutils" id="time-epoch">
+<dt><strong>TIME_EPOCH</strong></dt>
+<dd>Specifies the value of the calendar and clock at the origin (zero
+point) of relative time units (see <strong>TIME_UNIT</strong>). It is a string
+of the form yyyy-mm-ddT[hh:mm:ss] (Gregorian) or
+yyyy-Www-ddT[hh:mm:ss] (ISO) Default is 1970-01-01T00:00:00, the
+origin of the UNIX time epoch.</dd>
+</dl>
+<dl class="docutils" id="time-interval-fraction">
+<dt><strong>TIME_INTERVAL_FRACTION</strong></dt>
+<dd>Determines if partial intervals at the start and end of an axis
+should be annotated. If the range of the partial interval exceeds
+the specified fraction of the normal interval stride we will place
+the annotation centered on the partial interval [0.5].</dd>
+</dl>
+<dl class="docutils" id="time-is-interval">
+<dt><strong>TIME_IS_INTERVAL</strong></dt>
+<dd>Used when input calendar data should be truncated and adjusted to
+the middle of the relevant interval. In the following discussion,
+the unit <strong>u</strong> can be one of these time units: (<strong>y</strong> year, <strong>o</strong>
+month, <strong>u</strong> ISO week, <strong>d</strong> day, <strong>h</strong> hour, <strong>m</strong> minute, and
+<strong>s</strong> second). <strong>TIME_IS_INTERVAL</strong> can have any of the following
+three values: (1) OFF [Default]. No adjustment, time is decoded as
+given. (2) +<em>n</em><strong>u</strong>. Activate interval adjustment for input by
+truncate to previous whole number of <em>n</em> units and then center time
+on the following interval. (3) -<em>n</em><strong>u</strong>. Same, but center time on
+the previous interval. For example, with <strong>TIME_IS_INTERVAL</strong> =
++1o, an input data string like 1999-12 will be interpreted to mean
+1999-12-15T12:00:00.0 (exactly middle of December), while if
+<strong>TIME_IS_INTERVAL</strong> = off then that date is interpreted to mean
+1999-12-01T00:00:00.0 (start of December) [off].</dd>
+</dl>
+<dl class="docutils" id="time-report">
+<dt><strong>TIME_REPORT</strong></dt>
+<dd>Controls if a time-stamp should be issued at start of all progress
+reports.  Choose among <strong>TIMER_CLOCK</strong> (absolute time stamp),
+<strong>TIMER_ELAPSED</strong> (time since start of session), or <strong>TIMER_NONE</strong>
+[Default].</dd>
+</dl>
+<dl class="docutils" id="time-system">
+<dt><strong>TIME_SYSTEM</strong></dt>
+<dd><p class="first">Shorthand for a combination of <strong>TIME_EPOCH</strong> and <strong>TIME_UNIT</strong>,
+specifying which time epoch the relative time refers to and what the
+units are. Choose from one of the preset systems below (epoch and
+units are indicated):</p>
+<p>JD -4713-11-25T12:00:00 d (Julian Date)</p>
+<p>MJD 1858-11-17T00:00:00 d (Modified Julian Date)</p>
+<p>J2000 2000-01-01T12:00:00 d (Astronomical time)</p>
+<p>S1985 1985-01-01T00:00:00 s (Altimetric time)</p>
+<p>UNIX 1970-01-01T00:00:00 s (UNIX time)</p>
+<p>RD0001 0001-01-01T00:00:00 s</p>
+<p>RATA 0000-12-31T00:00:00 d</p>
+<p class="last">This parameter is not stored in the <strong>gmt.conf</strong> file but is
+translated to the respective values of <strong>TIME_EPOCH</strong> and
+<strong>TIME_UNIT</strong>.</p>
+</dd>
+</dl>
+<dl class="docutils" id="time-unit">
+<dt><strong>TIME_UNIT</strong></dt>
+<dd>Specifies the units of relative time data since epoch (see
+<strong>TIME_EPOCH</strong>). Choose y (year - assumes all years are 365.2425
+days), o (month - assumes all months are of equal length y/12), d
+(day), h (hour), m (minute), or s (second) [s].</dd>
+</dl>
+<dl class="docutils" id="time-week-start">
+<dt><strong>TIME_WEEK_START</strong></dt>
+<dd>When weeks are indicated on time axes, this parameter determines the
+first day of the week for Gregorian calendars. (The ISO weekly
+calendar always begins weeks with Monday.) [Monday (or Sunday)].</dd>
+</dl>
+<dl class="docutils" id="time-y2k-offset-year">
+<dt><strong>TIME_Y2K_OFFSET_YEAR</strong></dt>
+<dd>When 2-digit years are used to represent 4-digit years (see various
+<strong>FORMAT_DATE</strong>s), <strong>TIME_Y2K_OFFSET_YEAR</strong> gives the first
+year in a 100-year sequence. For example, if
+<strong>TIME_Y2K_OFFSET_YEAR</strong> is 1729, then numbers 29 through 99
+correspond to 1729 through 1799, while numbers 00 through 28
+correspond to 1800 through 1828. [1950].</dd>
+</dl>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a> , <a class="reference internal" href="gmtdefaults.html"><span class="doc">gmtdefaults</span></a> ,
+<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a> , <a class="reference internal" href="gmtget.html"><span class="doc">gmtget</span></a> ,
+<a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gmt.conf</a><ul>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#common-specifications">Common Specifications</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gmt_shell_functions.sh.html"
+                        title="previous chapter">gmt_shell_functions.sh</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gmt.html"
+                        title="next chapter">gmt</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/gmt.conf.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="gmt.html" title="gmt"
+             >next</a> </li>
+        <li class="right" >
+          <a href="gmt_shell_functions.sh.html" title="gmt_shell_functions.sh"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

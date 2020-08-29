@@ -1,0 +1,479 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>pspolar &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="psvelo" href="psvelo.html" />
+    <link rel="prev" title="psmeca" href="psmeca.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="psvelo.html" title="psvelo"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="psmeca.html" title="psmeca"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pspolar">
+<span id="index-0"></span><h1>pspolar<a class="headerlink" href="#pspolar" title="Permalink to this headline">¶</a></h1>
+<p>pspolar - Plot polarities on the inferior focal half-sphere on maps</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p>pspolar [ <em>table</em> ] <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>lon/lat</em> <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em>
+<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
+<a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong><em>size</em> <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>&lt;symbol&gt;&lt;size&gt;</em>
+[ <a class="reference internal" href="#b"><span> <strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>lon</em>/<em>lat</em>[/<em>dash_width</em>/<em>pointsize</em>] ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>color</em> ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>color</em> ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>color</em> ]
+[ <a class="reference internal" href="#k"><span> <strong>-K</strong></span></a></strong> ] [ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong> ] [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#o"><span> <strong>-O</strong></span></a></strong> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><em>mode</em>[<em>args</em>] ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>angle</em>/<em>form</em>/<em>justify</em>/<em>fontsize</em> ]
+[ <a class="reference internal" href="#u"><span> <strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong><em>pen</em> ]
+[ <a class="reference internal" href="#x"><span> <strong>-X</strong></span></a></strong><em>x_offset</em> ]
+[ <a class="reference internal" href="#y"><span> <strong>-Y</strong></span></a></strong><em>y_offset</em> ]
+[ <strong>-di</strong><a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="../../gmt.html#t-full"><span class="std std-ref">transp</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>pspolar</strong> reads data values from <em>files</em> [or standard input] and
+generates PostScript code that will plot stations on focal mechanisms
+on a map. The PostScript code is written to standard output.</p>
+<p>Parameters are expected to be in the following columns:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt><strong>1</strong>,<strong>2</strong>,<strong>3</strong>:</dt>
+<dd>station_code, azimuth, take-off angle</dd>
+<dt><strong>4</strong>:</dt>
+<dd><p class="first">polarity:</p>
+<ul class="last simple">
+<li>compression can be c,C,u,U,+</li>
+<li>rarefaction can be d,D,r,R,-</li>
+<li>not defined is anything else</li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </dd>
+</dl>
+<dl class="docutils" id="j">
+<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="../../gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select map projection.  </dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
+Append <strong>+r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Alternatively for grid creation, give <strong>R</strong><em>code</em><em>lon</em>/<em>lat</em>/<em>nx</em>/<em>ny</em>, where
+<em>code</em> is a 2-character combination of L, C, R (for left, center, or right)
+and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
+indicates which point on a rectangular region the <em>lon</em>/<em>lat</em> coordinate
+refers to, and the grid dimensions <em>nx</em> and <em>ny</em> with grid spacings via
+<strong>-I</strong> is used to create the corresponding region.
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing, if applicable) are copied from
+the grid. Appending <strong>+u</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.
+For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.
+In case of perspective view (<strong>-p</strong>), a z-range (<em>zmin</em>, <em>zmax</em>)
+can be appended to indicate the third dimension. This needs to be
+done only when using the <strong>-Jz</strong> option, not when using only the
+<strong>-p</strong> option. In the latter case a perspective view of the plane is
+plotted, with no third dimension.  </dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>longitude/latitude</em></dt>
+<dd>Maps the bubble at given longitude and latitude point.</dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-M</strong><em>size</em></dt>
+<dd>Sets the size of the beach ball to plot polarities in. <em>Size</em> is in
+default units (unless <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> is appended).</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><em>&lt;symbol_type&gt;&lt;size&gt;</em></dt>
+<dd>Selects <em>symbol_type</em> and symbol <em>size</em>. Size is in default inits (unless
+<strong>c</strong>, <strong>i</strong>, or <strong>p</strong> is appended). Choose symbol type from
+st(<em>a</em>)r, (<em>c</em>)ircle, (<em>d</em>)iamond, (<em>h</em>)exagon, (<em>i</em>)nverted
+triangle, (<em>p</em>)oint, (<em>s</em>)quare, (<em>t</em>)riangle, (<em>x</em>)cross.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> <a class="reference internal" href="../../gmt.html#b-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set map boundary frame and axes attributes.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong></dt>
+<dd>Offsets focal mechanisms to the latitude and longitude specified in
+the last two columns of the input file.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong><em>color</em></dt>
+<dd>Selects filling of symbols for stations in extensive quadrants. Set
+the color [Default is 250]. If <strong>-E</strong><em>color</em> is the same as
+<strong>-F</strong><em>color</em>, use <strong>-e</strong> to outline.</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><em>color</em></dt>
+<dd>Sets background color of the beach ball. Default is no fill.</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>color</em></dt>
+<dd>Selects filling of symbols for stations in compressional quadrants.
+Set the color [Default is black].</dd>
+</dl>
+<dl class="docutils" id="k">
+<dt><strong>-K</strong> <a class="reference internal" href="../../gmt.html#k-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Do not finalize the PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong></dt>
+<dd>Does <strong>not</strong> skip symbols that fall outside map border [Default plots points inside border only].</dd>
+</dl>
+<dl class="docutils" id="o">
+<dt><strong>-O</strong> <a class="reference internal" href="../../gmt.html#o-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Append to existing PostScript plot.</dd>
+</dl>
+<dl class="docutils" id="p">
+<dt><strong>-P</strong> <a class="reference internal" href="../../gmt.html#p-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select “Portrait” plot orientation.</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong><em>mode</em>[<em>args</em>]</dt>
+<dd><p class="first">Sets one or more attributes; repeatable. The various combinations are</p>
+<dl class="last docutils">
+<dt><strong>-Qe</strong>[pen]</dt>
+<dd>Outline symbols in extensive quadrants using <em>pen</em> or the default pen (see <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>).</dd>
+<dt><strong>-Qf</strong>[pen]</dt>
+<dd>Outline the beach ball using <em>pen</em> or the default pen (see <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>).</dd>
+<dt><strong>-Qg</strong>[pen]</dt>
+<dd>Outline symbols in compressional quadrants using <em>pen</em> or the default pen (see <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>).</dd>
+<dt><strong>-Qh</strong></dt>
+<dd>Use special format derived from HYPO71 output</dd>
+<dt><strong>-Qs</strong><em>half-size</em>[<strong>+v</strong><em>v_size</em>[<em>vecspecs</em>]]</dt>
+<dd>Plots S polarity azimuth. S polarity is in last column. Append <strong>+v</strong> to select a vector
+and append head size and any vector specifications.  If <strong>+v</strong> is given without arguments then we
+default to <strong>+v</strong>0.3i+e+gblack [Default is a line segment].
+Give <em>half-size</em> in default units (unless <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> is appended).
+See <a class="reference internal" href="#vector-attributes">Vector Attributes</a> for specifying additional attributes.</dd>
+<dt><strong>-Qt</strong><em>pen</em></dt>
+<dd>Set pen color to write station code. Default uses the default pen (see <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>).</dd>
+</dl>
+</dd>
+</dl>
+<dl class="docutils" id="y">
+<dt><strong>-T</strong><em>angle/form/justify/fontsize in points</em></dt>
+<dd>To write station code. [Default is 0.0/0/5/12].</dd>
+</dl>
+<dl class="docutils" id="u">
+<dt><strong>-U</strong>[[<em>just</em>]/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] <a class="reference internal" href="../../gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Draw GMT time stamp logo on plot.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong>[<strong>-</strong>|<strong>+</strong>][<em>pen</em>][<em>attr</em>] <a class="reference internal" href="../../GMT_Docs.html#wpen-attrib"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set current pen attributes [Defaults: width = default, color = black, style = solid].</dd>
+</dl>
+<p id="x"><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]</p>
+<dl class="docutils">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]] <a class="reference internal" href="../../gmt.html#xy-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Shift plot origin.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-di</strong><em>nodata</em> <a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="../../gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set PDF transparency level in percent.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="../../gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="vector-attributes">
+<h2>Vector Attributes<a class="headerlink" href="#vector-attributes" title="Permalink to this headline">¶</a></h2>
+<p>Several modifiers may be appended to the vector-producing options to
+specify the placement of vector heads, their shapes, and the
+justification of the vector. Below, left and right refers to the
+side of the vector line when viewed from the start point to the
+end point of the segment:</p>
+<blockquote>
+<div><p><strong>+a</strong><em>angle</em> sets the angle of the vector head apex [30].</p>
+<p><strong>+b</strong> places a vector head at the beginning of the vector path [none].
+Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
+<strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain arrow,
+and <strong>I</strong> for plain tail.
+Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
+side of this head [both sides].</p>
+<p><strong>+e</strong> places a vector head at the end of the vector path [none].
+Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
+<strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain arrow,
+and <strong>I</strong> for plain tail.
+Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
+side of this head [both sides].</p>
+<p><strong>+g</strong>-|<em>fill</em> turns off vector head fill (if -) or sets the vector
+head fill [Default fill is used, which may be no fill].</p>
+<p><strong>+h</strong><em>shape</em> sets the shape of the vector head (range -2/2). Default
+is controlled by <a class="reference internal" href="../../gmt.conf.html#map-vector-shape"><span class="std std-ref">MAP_VECTOR_SHAPE</span></a> [0].</p>
+<p><strong>+l</strong> draws half-arrows, using only the left side of specified heads [both sides].</p>
+<p><strong>+m</strong> places a vector head at the mid-point the vector path [none].
+Append <strong>f</strong> or <strong>r</strong> for forward or reverse direction of the vector [forward].
+Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle, or
+<strong>a</strong> for arrow head [Default].
+Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
+side of this head [both sides].  Cannot be combined with <strong>+b</strong> or <strong>+e</strong>.</p>
+<p><strong>+n</strong><em>norm</em> scales down vector attributes (pen thickness, head size)
+with decreasing length, where vectors shorter than <em>norm</em> will have
+their attributes scaled by length/<em>norm</em> [arrow attributes remains
+invariant to length].</p>
+<p><strong>+o</strong><em>plon</em>/<em>plat</em> specifies the oblique pole for the great or
+small circles.  Only needed for great circles if <strong>+q</strong> is given.</p>
+<p><strong>+p</strong>[-][<em>pen</em>] sets the vector pen attributes. If <em>pen</em> has a
+leading - then the head outline is not drawn. [Default pen is used, and
+head outline is drawn]</p>
+<p><strong>+q</strong> means the input <em>angle</em>, <em>length</em> data instead represent the <em>start</em> and <em>stop</em>
+opening angles of the arc segment relative to the given point.</p>
+<p><strong>+r</strong> draws half-arrows, using only the right side of specified heads [both sides].</p>
+<p><strong>+t</strong>[<strong>b</strong>|<strong>e</strong>]<em>trim</em> will shift the beginning or end point (or both)
+along the vector segment by the given <em>trim</em>; append suitable unit. If the modifiers
+<strong>b</strong>|<strong>e</strong> are not used then <em>trim</em> may be two values separated by a slash,
+which is used to specify different trims for the two ends.  Positive trims
+will shorted the vector while negative trims will lengthen it [no trim].</p>
+</div></blockquote>
+<p>In addition, all but circular vectors may take these modifiers:</p>
+<blockquote>
+<div><p><strong>+j</strong><em>just</em> determines how the input <em>x</em>,<em>y</em> point relates to the
+vector. Choose from <strong>b</strong>eginning [default], <strong>e</strong>nd, or <strong>c</strong>enter.</p>
+<p><strong>+s</strong> means the input <em>angle</em>, <em>length</em> are instead the <em>x</em>, <em>y</em>
+coordinates of the vector end point.</p>
+</div></blockquote>
+<p>Finally, Cartesian vectors may take these modifiers:</p>
+<blockquote>
+<div><strong>+z</strong><em>scale</em>[<em>unit</em>] expects input <em>dx</em>,<em>dy</em> vector components and
+uses the <em>scale</em> to convert to polar coordinates with length in given unit.</div></blockquote>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">pspolar</span> <span class="o">-</span><span class="n">R239</span><span class="o">/</span><span class="mi">240</span><span class="o">/</span><span class="mi">34</span><span class="o">/</span><span class="mf">35.2</span> <span class="o">-</span><span class="n">JM8c</span> <span class="o">-</span><span class="n">N</span> <span class="o">-</span><span class="n">Sc0</span><span class="o">.</span><span class="mi">4</span> <span class="o">-</span><span class="n">h1</span> <span class="o">-</span><span class="n">D39</span><span class="o">.</span><span class="mi">5</span><span class="o">/</span><span class="mf">34.5</span> <span class="o">-</span><span class="n">M5</span> <span class="o">&lt;&lt;</span> <span class="n">END</span> <span class="o">&gt;</span> <span class="n">test</span><span class="o">.</span><span class="n">ps</span>
+<span class="c1">#stat azim ih pol</span>
+<span class="mi">0481</span> <span class="mi">11</span> <span class="mi">147</span> <span class="n">c</span>
+<span class="mi">6185</span> <span class="mi">247</span> <span class="mi">120</span> <span class="n">d</span>
+<span class="mi">0485</span> <span class="mi">288</span> <span class="mi">114</span> <span class="o">+</span>
+<span class="mi">0490</span> <span class="mi">223</span> <span class="mi">112</span> <span class="o">-</span>
+<span class="mi">0487</span> <span class="mi">212</span> <span class="mi">109</span> <span class="o">.</span>
+<span class="n">END</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>or</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">pspolar</span> <span class="o">-</span><span class="n">R239</span><span class="o">/</span><span class="mi">240</span><span class="o">/</span><span class="mi">34</span><span class="o">/</span><span class="mf">35.2</span> <span class="o">-</span><span class="n">JM8c</span> <span class="o">-</span><span class="n">N</span> <span class="o">-</span><span class="n">Sc0</span><span class="o">.</span><span class="mi">4</span> <span class="o">-</span><span class="n">h1</span> <span class="o">-</span><span class="n">D239</span><span class="o">.</span><span class="mi">5</span><span class="o">/</span><span class="mf">34.5</span> <span class="o">-</span><span class="n">M5</span> <span class="o">&lt;&lt;</span><span class="n">END</span> <span class="o">&gt;</span> <span class="n">test</span><span class="o">.</span><span class="n">ps</span>
+<span class="c1">#Date Or. time stat azim ih</span>
+<span class="mi">910223</span> <span class="mi">1</span> <span class="mi">22</span> <span class="mi">0481</span> <span class="mi">11</span> <span class="mi">147</span> <span class="n">ipu0</span>
+<span class="mi">910223</span> <span class="mi">1</span> <span class="mi">22</span> <span class="mi">6185</span> <span class="mi">247</span> <span class="mi">120</span> <span class="n">ipd0</span>
+<span class="mi">910223</span> <span class="mi">1</span> <span class="mi">22</span> <span class="mi">0485</span> <span class="mi">288</span> <span class="mi">114</span> <span class="n">epu0</span>
+<span class="mi">910223</span> <span class="mi">1</span> <span class="mi">22</span> <span class="mi">0490</span> <span class="mi">223</span> <span class="mi">112</span> <span class="n">epd0</span>
+<span class="mi">910223</span> <span class="mi">1</span> <span class="mi">22</span> <span class="mi">0487</span> <span class="mi">212</span> <span class="mi">109</span> <span class="n">epu0</span>
+<span class="n">END</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="psmeca.html"><span class="doc">psmeca</span></a>,
+<a class="reference internal" href="psvelo.html"><span class="doc">psvelo</span></a>,
+<a class="reference internal" href="pscoupe.html"><span class="doc">pscoupe</span></a>,
+<a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="../../psbasemap.html"><span class="doc">psbasemap</span></a>, <a class="reference internal" href="../../psxy.html"><span class="doc">psxy</span></a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.</p>
+<p>Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.</p>
+</div>
+<div class="section" id="authors">
+<h2>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h2>
+<p>Genevieve Patau, <cite>Laboratory of Seismogenesis &lt;http://www.ipgp.fr/rech/sismogenese/&gt;</cite>,
+Institut de Physique du Globe de Paris, Departement de Sismologie, Paris, France</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pspolar</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#vector-attributes">Vector Attributes</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#authors">Authors</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="psmeca.html"
+                        title="previous chapter">psmeca</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="psvelo.html"
+                        title="next chapter">psvelo</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/meca/pspolar.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="psvelo.html" title="psvelo"
+             >next</a> </li>
+        <li class="right" >
+          <a href="psmeca.html" title="psmeca"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

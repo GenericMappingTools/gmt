@@ -1,0 +1,172 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(35) Spherical triangulation and distance calculations &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(36) Spherical gridding using Renka’s algorithms" href="ex36.html" />
+    <link rel="prev" title="(34) Using country polygons for plotting and shading" href="ex34.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex36.html" title="(36) Spherical gridding using Renka’s algorithms"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex34.html" title="(34) Using country polygons for plotting and shading"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="spherical-triangulation-and-distance-calculations">
+<span id="example-35"></span><h1>(35) Spherical triangulation and distance calculations<a class="headerlink" href="#spherical-triangulation-and-distance-calculations" title="Permalink to this headline">¶</a></h1>
+<p>The script produces the plot in Figure. Here
+we demonstrate how <a class="reference internal" href="../sphtriangulate.html"><span class="doc">sphtriangulate</span></a> and
+<a class="reference internal" href="../sphdistance.html"><span class="doc">sphdistance</span></a> are used to compute the Delauney and
+Voronoi information on a sphere, using a decimated GSHHG crude coastline.
+We show a color image of the distances, highlighted with 500-km contours,
+and overlay the Voronoi polygons in green. Finally, the continents are
+placed on top.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT EXAMPLE 35</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate sphtriangulate and sphdistance with GSHHG crude data</span>
+<span class="c1"># GMT modules:  pscoast, psxy, makecpt, grdimage, grdcontour, sphtriangulate, sphdistance</span>
+<span class="c1"># Unix progs:   rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_35.ps
+
+<span class="c1"># Get the crude GSHHS data, select GMT format, and decimate to ~20%:</span>
+<span class="c1"># gshhs $GMTHOME/src/coast/gshhs/gshhs_c.b | $AWK &#39;{if ($1 == &quot;&gt;&quot; || NR%5 == 0) print $0}&#39; &gt; gshhs_c.txt</span>
+<span class="c1"># Get Voronoi polygons</span>
+gmt sphtriangulate gshhs_c.txt -Qv -D &gt; tt.pol
+<span class="c1"># Compute distances in km</span>
+gmt sphdistance -Rg -I1 -Qtt.pol -Gtt.nc -Lk
+gmt makecpt -Chot -T0/3500 &gt; t.cpt
+<span class="c1"># Make a basic image plot and overlay contours, Voronoi polygons and coastlines</span>
+gmt grdimage tt.nc -JG-140/30/7i -P -K -Ct.cpt -X0.75i -Y2i &gt; <span class="nv">$ps</span>
+gmt grdcontour tt.nc -J -O -K -C500 -A1000+f10p,Helvetica,white -L500 -GL0/90/203/-10,175/60/170/-30,-50/30/220/-5 -Wa0.75p,white -Wc0.25p,white &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K tt.pol -W0.25p,green,. &gt;&gt; <span class="nv">$ps</span>
+gmt pscoast -R -J -O -W1p -Gsteelblue -A0/1/1 -B30g30 -B+t<span class="s2">&quot;Distances from GSHHG crude coastlines&quot;</span> &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># cleanup</span>
+rm -f gmt.conf tt.pol tt.nc t.cpt
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_35.png"><img alt="../_images/example_35.png" src="../_images/example_35.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Spherical triangulation and distance calculations</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex34.html"
+                        title="previous chapter">(34) Using country polygons for plotting and shading</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex36.html"
+                        title="next chapter">(36) Spherical gridding using Renka’s algorithms</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex35.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex36.html" title="(36) Spherical gridding using Renka’s algorithms"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex34.html" title="(34) Using country polygons for plotting and shading"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

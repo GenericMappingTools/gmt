@@ -1,0 +1,370 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:31 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>SPECTRUM1D</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>SPECTRUM1D</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#REQUIRED ARGUMENTS">REQUIRED ARGUMENTS</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#ASCII FORMAT PRECISION">ASCII FORMAT PRECISION</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">spectrum1d
+&minus; compute auto&minus; [and cross&minus; ] spectra from
+one [or two] timeseries.</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>spectrum1d</b>
+[ <i>x[y]file</i> ] <b>&minus;S</b><i>segment_size</i>] [
+<b>&minus;C</b>[<b>xycnpago</b>] ] [
+<b>&minus;D</b><i>dt</i> ] [ <b>&minus;N</b><i>name_stem</i>
+] [ <b>&minus;V</b> ] [ <b>&minus;W</b> ] [
+<b>&minus;b</b>[<b>i</b>|<b>o</b>][<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>spectrum1d</b>
+reads X [and Y] values from the first [and second] columns
+on standard input [or <i>x[y]file</i>]. These values are
+treated as timeseries X(t) [Y(t)] sampled at equal intervals
+spaced <i>dt</i> units apart. There may be any number of
+lines of input. <b>spectrum1d</b> will create file[s]
+containing auto&minus; [and cross&minus; ] spectral density
+estimates by Welch&rsquo;s method of ensemble averaging of
+multiple overlapped windows, using standard error estimates
+from Bendat and Piersol.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The output
+files have 3 columns: f or w, p, and e. f or w is the
+frequency or wavelength, p is the spectral density estimate,
+and e is the one standard deviation error bar size. These
+files are named based on <i>name_stem</i>. If the
+<b>&minus;C</b> option is used, up to eight files are
+created; otherwise only one (xpower) is written. The files
+(which are ASCII unless <b>&minus;bo</b> is set) are as
+follows: <i><br>
+name_stem</i>.xpower</p>
+
+<p style="margin-left:22%;">Power spectral density of X(t).
+Units of X * X * <i>dt</i>.</p>
+
+<p style="margin-left:11%;"><i>name_stem</i>.ypower</p>
+
+<p style="margin-left:22%;">Power spectral density of Y(t).
+Units of Y * Y * <i>dt</i>.</p>
+
+<p style="margin-left:11%;"><i>name_stem</i>.cpower</p>
+
+<p style="margin-left:22%;">Power spectral density of the
+coherent output. Units same as ypower.</p>
+
+<p style="margin-left:11%;"><i>name_stem</i>.npower</p>
+
+<p style="margin-left:22%;">Power spectral density of the
+noise output. Units same as ypower.</p>
+
+<p style="margin-left:11%;"><i>name_stem</i>.gain</p>
+
+<p style="margin-left:22%;">Gain spectrum, or modulus of
+the transfer function. Units of (Y / X).</p>
+
+<p style="margin-left:11%;"><i>name_stem</i>.phase</p>
+
+<p style="margin-left:22%;">Phase spectrum, or phase of the
+transfer function. Units are radians.</p>
+
+<p style="margin-left:11%;"><i>name_stem</i>.admit</p>
+
+<p style="margin-left:22%;">Admittance spectrum, or real
+part of the transfer function. Units of (Y / X).</p>
+
+<p style="margin-left:11%;"><i>name_stem</i>.coh</p>
+
+<p style="margin-left:22%;">(Squared) coherency spectrum,
+or linear correlation coefficient as a function of
+frequency. Dimensionless number in [0, 1]. The
+Signal-to-Noise-Ratio (SNR) is coh / (1 - coh). SNR = 1 when
+coh = 0.5.</p>
+
+<a name="REQUIRED ARGUMENTS"></a>
+<h2>REQUIRED ARGUMENTS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i>x[y]file</i></p>
+
+<p style="margin-left:22%;">ASCII (or binary, see
+<b>&minus;bi</b>) file holding X(t) [Y(t)] samples in the
+first 1 [or 2] columns. If no file is specified,
+<b>spectrum1d</b> will read from standard input.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+
+<p style="margin-top: 1em" valign="top"><i>segment_size</i>
+is a radix-2 number of samples per window for ensemble
+averaging. The smallest frequency estimated is
+1.0/(<i>segment_size</i> * <i>dt</i>), while the largest is
+1.0/(2 * <i>dt</i>). One standard error in power spectral
+density is approximately 1.0 / sqrt(<i>n_data</i> /
+<i>segment_size</i>), so if <i>segment_size</i> = 256, you
+need 25,600 data to get a one standard error bar of 10%.
+Cross-spectral error bars are larger and more complicated,
+being a function also of the coherency.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Read the first two
+columns of input as samples of two timeseries, X(t) and
+Y(t). Consider Y(t) to be the output and X(t) the input in a
+linear system with noise. Estimate the optimum frequency
+response function by least squares, such that the noise
+output is minimized and the coherent output and the noise
+output are uncorrelated. Optionally specify up to 8 letters
+from the set { <b>x y c n p a g o</b> } in any order to
+create only those output files instead of the default [all].
+<b>x</b> = xpower, <b>y</b> = ypower, <b>c</b> = cpower,
+<b>n</b> = npower, <b>p</b> = phase, <b>a</b> = admit,
+<b>g</b> = gain, <b>o</b> = coh.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>dt</i> Set the
+spacing between samples in the timeseries [Default = 1].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>name_stem</i>
+Supply the name stem to be used for output files [Default =
+&quot;spectrum&quot;].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Write Wavelength
+rather than frequency in column 1 of the output file[s]
+[Default = frequency, (cycles / <i>dt</i>)].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 2 input columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.
+[Default is 2 output columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+</table>
+
+<a name="ASCII FORMAT PRECISION"></a>
+<h2>ASCII FORMAT PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ASCII
+output formats of numerical data are controlled by
+parameters in your .gmtdefaults4 file. Longitude and
+latitude are formatted according to
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>, whereas other values are
+formatted according to <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>. Be aware that the
+format in effect can lead to loss of precision in the
+output, which can lead to various problems downstream. If
+you find the output is not written with enough precision,
+consider switching to binary output (<b>&minus;bo</b> if
+available) or specify more decimals using the
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> setting.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Suppose data.g
+is gravity data in mGal, sampled every 1.5 km. To write its
+power spectrum, in mGal**2-km, to the file data.xpower,
+use</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>spectrum1d</b>
+data.g <b>&minus;S</b> 256 <b>&minus;D</b> 1.5
+<b>&minus;N</b> data</p>
+
+<p style="margin-left:11%; margin-top: 1em">Suppose in
+addition to data.g you have data.t, which is topography in
+meters sampled at the same points as data.g. To estimate
+various features of the transfer function, considering
+data.t as input and data.g as output, use</p>
+
+<p style="margin-left:11%; margin-top: 1em">paste data.t
+data.g | <b>spectrum1d &minus;S</b> 256 <b>&minus;D</b> 1.5
+<b>&minus;N</b> data <b>&minus;C</b></p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grdfft.html">grdfft</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Bendat, J. S.,
+and A. G. Piersol, 1986, Random Data, 2nd revised ed., John
+Wiley &amp; Sons. <br>
+Welch, P. D., 1967, The use of Fast Fourier Transform for
+the estimation of power spectra: a method based on time
+averaging over short, modified periodograms, IEEE
+Transactions on Audio and Electroacoustics, Vol AU-15, No
+2.</p>
+<hr>
+</body>
+</html>

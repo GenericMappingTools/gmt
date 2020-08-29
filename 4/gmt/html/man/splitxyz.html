@@ -1,0 +1,442 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:31 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>SPLITXYZ</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>SPLITXYZ</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#ASCII FORMAT PRECISION">ASCII FORMAT PRECISION</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">splitxyz
+&minus; filter to divide (x,y,z[,distance,heading]) data
+into (x,y,z) track segments.</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>splitxyz</b>
+[ <i>xyz[dh]file</i> ] <b>&minus;C</b><i>course_change</i> [
+<b>&minus;A</b><i>azimuth</i>/<i>tolerance</i> ] [
+<b>&minus;D</b><i>minimum_distance</i> ] [
+<b>&minus;F</b><i>xy_filter</i>/<i>z_filter</i> ] [
+<b>&minus;G</b><i>gap_distance</i> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [ <b>&minus;M</b> ]
+[ <b>&minus;N</b><i>namestem</i> ] [
+<b>&minus;Q</b><i>flags</i> ] [ <b>&minus;S</b> ] [
+<b>&minus;V</b> ] [ <b>&minus;Z</b> ] [
+<b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;b</b>[<b>i</b>|<b>o</b>][<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>splitxyz</b>
+reads a series of (x,y[,z]) records [or optionally
+(x,y,z,d,h); see <b>&minus;S</b> option] from standard input
+[or <i>xyz[dh]file</i>] and splits this into separate lists
+of (x,y[,z]) series, such that each series has a nearly
+constant azimuth through the x,y plane. There are options to
+choose only those series which have a certain orientation,
+to set a minimum length for series, and to high&minus; or
+low&minus;pass filter the z values and/or the x,y values.
+<b>splitxyz</b> is a useful filter between data extraction
+and <b><A HREF="pswiggle.html">pswiggle</A></b> plotting, and can also be used to divide
+a large x,y,z dataset into segments. The output is always in
+the ASCII format; input may be ASCII or binary (see
+<b>&minus;b</b>). <i><br>
+xyz[dh]file(s)</i></p>
+
+<p style="margin-left:22%;">3 (but see <b>&minus;Z</b>) [or
+5] column ASCII file [or binary, see <b>&minus;b</b>]
+holding (x,y,z[,d,h]) data values. To use (x,y,z,d,h) input,
+sorted so that d is non-decreasing, specify the
+<b>&minus;S</b> option; default expects (x,y,z) only. If no
+file is specified, <b>splitxyz</b> will read from standard
+input.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Terminate a segment
+when a course change exceeding <i>course_change</i> degrees
+of heading is detected.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Write out only
+those segments which are within +/- <i>tolerance</i> degrees
+of <i>azimuth</i> in heading, measured clockwise from North,
+[0 - 360]. [Default writes all acceptable segments,
+regardless of orientation].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not write a
+segment out unless it is at least <i>minimum_distance</i>
+units long [0]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Filter the z values
+and/or the x,y values, assuming these are functions of d
+coordinate. <i>xy_filter</i> and <i>z_filter</i> are filter
+widths in distance units. If a filter width is zero, the
+filtering is not performed. The absolute value of the width
+is the full width of a cosine&minus;arch low&minus;pass
+filter. If the width is positive, the data are
+low&minus;pass filtered; if negative, the data are
+high&minus;pass filtered by subtracting the low&minus;pass
+value from the observed value. If <i>z_filter</i> is
+non&minus;zero, the entire series of input z values is
+filtered before any segmentation is performed, so that the
+only edge effects in the filtering will happen at the
+beginning and end of the complete data stream. If
+<i>xy_filter</i> is non&minus;zero, the data is first
+divided into segments and then the x,y values of each
+segment are filtered separately. This may introduce edge
+effects at the ends of each segment, but prevents a
+low&minus;pass x,y filter from rounding off the corners of
+track segments. [Default = no filtering].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Do not let a
+segment have a gap exceeding <i>gap_distance</i>; instead,
+split it into two segments. [Default ignores gaps].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped. Not used
+with binary data.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;M</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Use Map units. Then
+x,y are in degrees of longitude, latitude, distances are in
+kilometers, and angles are azimuths. [Default: distances are
+cartesian in same units as x,y and angles are
+counter-clockwise from horizontal].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Create Named output
+files, writing each segment to a separate file in the
+working directory named <i>namestem</i>.profile<i>#</i>,
+where <i>#</i> increases consecutively from 1. [Default
+writes entire output to stdout, separating segments by
+sub-headings that start with &gt; marks].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify your
+desired output using any combination of <i>xyzdh</i>, in any
+order. Do not space between the letters. Use lower case. The
+output will be ASCII (or binary, see <b>&minus;bo</b>)
+columns of values corresponding to <i>xyzdh</i> [Default is
+<b>&minus;Q</b><i>xyzdh</i> (<b>&minus;Q</b><i>xydh</i> if
+<b>&minus;Z</b> is set)].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">d and h is
+supplied. In this case, input contains x,y,z,d,h. [Default
+expects (x,y,z) input, and d,h are computed from delta x,
+delta y, according to <b>&minus;M</b> option]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Data have x,y only
+(no z-column).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 2, 3, or 5 input
+columns as set by <b>&minus;S</b>, <b>&minus;Z</b>].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.
+[Default is 1-5 output columns as set by
+<b>&minus;Q</b>].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+</table>
+
+<a name="ASCII FORMAT PRECISION"></a>
+<h2>ASCII FORMAT PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ASCII
+output formats of numerical data are controlled by
+parameters in your .gmtdefaults4 file. Longitude and
+latitude are formatted according to
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>, whereas other values are
+formatted according to <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>. Be aware that the
+format in effect can lead to loss of precision in the
+output, which can lead to various problems downstream. If
+you find the output is not written with enough precision,
+consider switching to binary output (<b>&minus;bo</b> if
+available) or specify more decimals using the
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> setting.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Suppose you
+want to make a wiggle plot of magnetic anomalies on segments
+oriented approximately east&minus;west from a cruise called
+cag71 in the region &minus;R300/315/12/20. You want to use a
+100km low&minus;pass filter to smooth the tracks and a 500km
+high&minus;pass filter to detrend the magnetic anomalies.
+Try this:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="gmtlist.html">gmtlist</A></b>
+cag71 <b>&minus;R</b> 300/315/12/20 <b>&minus;F</b> xyzdh |
+<b>splitxyz &minus;A</b> 90/15 <b>&minus;F</b> 100/-500
+<b>&minus;M &minus;D</b> 100 <b>&minus;S &minus;V</b> |
+<b>pswiggle &minus;R</b> 300/315/12/20 <b>&minus;Jm</b> 0.6
+<b>&minus;Ba</b> 5<b>f</b>1:.cag71: <b>&minus;T</b> 1
+<b>&minus;W</b> 0.75p <b>&minus;G</b> gray <b>&minus;Z</b>
+200 &gt; cag71_wiggles.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">MGD-77 users:
+For this application we recommend that you extract d, h from
+<b><A HREF="mgd77list.html">mgd77list</A></b> rather than have <b>splitxyz</b> compute
+them separately.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Suppose you
+have been given a binary, double-precision file containing
+lat, lon, gravity values from a survey, and you want to
+split it into profiles named <i>survey</i>.profile<i>#</i>
+(when gap exceeds 100 km). Try this:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>splitxyz</b>
+survey.bin <b>&minus;N</b> survey <b>&minus;V &minus;G</b>
+100 <b>&minus;D</b> 100 <b>&minus;: &minus;M
+&minus;bi3</b></p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="mgd77list.html">mgd77list</A></i>(1), <i><A HREF="pswiggle.html">pswiggle</A></i>(1)</p>
+<hr>
+</body>
+</html>

@@ -1,0 +1,183 @@
+.. index:: ! pssolar
+
+*******
+pssolar
+*******
+
+.. only:: not man
+
+    pssolar - Calculate and plot the day-night terminator
+
+Synopsis
+--------
+
+.. include:: common_SYN_OPTs.rst_
+
+**pssolar** 
+[ |SYN_OPT-B| ]
+[ |-C| ]
+[ |-G|\ *fill*\ \|\ **c** ]
+[ |-I|\ [*lon/lat*][**+d**\ *date*][**+z**\ *TZ*] ]
+[ |-J|\ *parameters* ]
+[ |-K| ]
+[ |-M| ]
+[ |-N| ]
+[ |-O| ] [|-P| ] [ |-Q| ]
+[ |SYN_OPT-R| ]
+[ |-T|\ **dcna**\ [**+d**\ *date*][**+z**\ *TZ*]]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ |-W|\ *pen* ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ |SYN_OPT-bo| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-p| ]
+[ |SYN_OPT-t| ]
+
+|No-spaces|
+
+Description
+-----------
+
+**pssolar** Calculate and plot the day-night terminator and the civil, nautical and astronomical twilights.
+
+
+Required Arguments
+------------------
+
+There are no required arguments but either **-I** or **-T** must be selected.
+
+Optional Arguments
+------------------
+
+.. _-B:
+
+.. include:: explain_-B.rst_
+
+.. _-C:
+
+**-C**
+    Formats the report selected by **-I** using tab-separated fields on a single line. The
+    output is Sun *Lon Lat Azimuth Elevation* in degrees, *Sunrise Sunset Noon* in decimal days,
+    *day length* in minutes, *SolarElevationCorrected* corrected for the effect of refraction index
+    and *Equation of time* in minutes. Note that if no position is provided in **-I**\ *lon/lat* the
+    data after *Elevation* refers to the point (0,0).
+
+.. _-G:
+
+**-G**\ *fill*\ \|\ **c**
+    Select color or pattern for filling of terminators; or use **-Gc** for clipping [Default is no fill].
+    Deactivate clipping by appending the output of gmt :doc:`psclip` **-C**.
+
+.. _-I:
+
+**-I**\ [*lon/lat*][**+d**\ *date*][**+z**\ *TZ*]
+    Print current sun position as well as Azimuth and Elevation. Append lon/lat to print also the times of
+    Sunrise, Sunset, Noon and length of the day.
+    Add **+d**\ *date* in ISO format, e.g, **+d**\ *2000-04-25*, to compute sun parameters
+    for this date. If necessary, append time zone via **+z**\ *TZ*.
+
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-J.rst_
+
+.. _-K:
+
+.. include:: explain_-K.rst_
+
+.. _-M:
+
+**-M**
+    Write terminator(s) as a multisegment ASCII (or binary, see **-b**\ *o*) file to standard output. No plotting occurs.
+
+.. _-N:
+
+**-N**
+    Invert the sense of what is inside and outside the terminator.  Only
+    used with clipping (**-Gc**) and cannot be used together with **-B**.
+
+.. _-O:
+
+.. include:: explain_-O.rst_
+
+.. _-P:
+
+.. include:: explain_-P.rst_
+
+.. _-R:
+
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-R.rst_
+
+.. _-T:
+
+**-Tdcna**\ [**+d**\ *date*][**+z**\ *TZ*]
+    Plot (or dump; see **-M**\ ) one or more terminators defined via the **dcna** flags. Where:
+    **d** means day/night terminator; **c** means civil twilight; **n** means nautical twilight;
+    **a** means astronomical twilight.  Add **+d**\ *date* in ISO format, e.g, **+d**\ *2000-04-25T12:15:00*
+    to know where the day-night was at that date. If necessary, append time zone via **+z**\ *TZ*.
+
+.. _-U:
+
+.. include:: explain_-U.rst_
+
+.. _-V:
+
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-V.rst_
+
+.. _-W:
+
+**-W**\ [**-**\ \|\ **+**][*pen*] :ref:`(more ...) <-Wpen_attrib>`
+    Set pen attributes for lines or the outline of symbols [Defaults:
+    width = default, color = black, style = solid].
+
+.. _-X:
+
+.. include:: explain_-XY.rst_
+
+.. |Add_-bo| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-bo.rst_
+
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
+
+.. include:: explain_-ocols.rst_
+
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
+.. include:: explain_perspective.rst_
+
+.. include:: explain_-t.rst_
+
+
+Examples
+--------
+
+Print current Sun position and Sunrise, Sunset times at:
+
+   ::
+
+    gmt pssolar -I-7.93/37.079+d2016-02-04T10:01:00
+
+Plot the day-night and civil twilight 
+
+   ::
+
+    gmt pscoast -Rd -W0.1p -JQ0/14c -Ba -BWSen -Dl -A1000 -P -K > terminator.ps
+
+    gmt pssolar -R -J -W1p -Tdc -O >> terminator.ps
+
+Set up a clip path overlay based on the day/night terminator: 
+
+   ::
+
+    gmt pssolar -R -J -Gc -Tc -O -K >> someplot.ps
+
+
+See Also
+--------
+
+:doc:`gmt`, :doc:`psclip`, :doc:`pscoast`, :doc:`psxy`

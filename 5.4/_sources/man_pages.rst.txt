@@ -1,0 +1,156 @@
+#########
+Man Pages
+#########
+
+************
+Core modules
+************
+
+.. toctree::
+   :maxdepth: 1
+
+   blockmean
+   blockmedian
+   blockmode
+   filter1d
+   fitcircle
+   gmt_shell_functions.sh
+   gmt.conf
+   gmt
+   gmt2kml
+   gmt5syntax
+   gmtcolors
+   gmtconnect
+   gmtconvert
+   gmtdefaults
+   gmtget
+   gmtinfo
+   gmtlogo
+   gmtmath
+   gmtregress
+   gmtselect
+   gmtset
+   gmtsimplify
+   gmtspatial
+   gmtswitch
+   gmtvector
+   gmtwhich
+   grd2cpt
+   grd2rgb
+   grd2xyz
+   grdblend
+   grdclip
+   grdcontour
+   grdconvert
+   grdcut
+   grdedit
+   grdfft
+   grdfilter
+   grdgradient
+   grdhisteq
+   grdimage
+   grdinfo
+   grdlandmask
+   grdmask
+   grdmath
+   grdpaste
+   grdproject
+   grdraster
+   grdsample
+   grdtrack
+   grdtrend
+   grdvector
+   grdview
+   grdvolume
+   greenspline
+   isogmt
+   kml2gmt
+   makecpt
+   mapproject
+   nearneighbor
+   project
+   psbasemap
+   psclip
+   pscoast
+   pscontour
+   psconvert
+   pshistogram
+   psimage
+   pslegend
+   postscriptlight
+   psmask
+   psrose
+   psscale
+   psternary
+   pstext
+   pswiggle
+   psxy
+   psxyz
+   sample1d
+   spectrum1d
+   sph2grd
+   sphdistance
+   sphinterpolate
+   sphtriangulate
+   splitxyz
+   surface
+   trend1d
+   trend2d
+   triangulate
+   xyz2grd
+
+*********************
+Supplementary modules
+*********************
+
+.. toctree::
+   :maxdepth: 1
+
+   supplements/gshhg/gshhg
+   supplements/img/img2grd
+   supplements/meca/pscoupe
+   supplements/meca/psmeca
+   supplements/meca/pspolar
+   supplements/meca/psvelo
+   supplements/meca/pssac
+   supplements/mgd77/mgd77convert
+   supplements/mgd77/mgd77header
+   supplements/mgd77/mgd77info
+   supplements/mgd77/mgd77list
+   supplements/mgd77/mgd77magref
+   supplements/mgd77/mgd77manage
+   supplements/mgd77/mgd77path
+   supplements/mgd77/mgd77sniffer
+   supplements/mgd77/mgd77track
+   supplements/misc/dimfilter
+   supplements/potential/gmtflexure
+   supplements/potential/gmtgravmag3d
+   supplements/potential/gpsgridder
+   supplements/potential/gravfft
+   supplements/potential/grdflexure
+   supplements/potential/grdgravmag3d
+   supplements/potential/grdredpol
+   supplements/potential/grdseamount
+   supplements/potential/talwani2d
+   supplements/potential/talwani3d
+   supplements/segy/pssegy
+   supplements/segy/pssegyz
+   supplements/segy/segy2grd
+   supplements/spotter/backtracker
+   supplements/spotter/grdpmodeler
+   supplements/spotter/grdrotater
+   supplements/spotter/grdspotter
+   supplements/spotter/hotspotter
+   supplements/spotter/originator
+   supplements/spotter/rotconverter
+   supplements/spotter/rotsmoother
+   supplements/x2sys/x2sys_binlist
+   supplements/x2sys/x2sys_cross
+   supplements/x2sys/x2sys_datalist
+   supplements/x2sys/x2sys_get
+   supplements/x2sys/x2sys_init
+   supplements/x2sys/x2sys_list
+   supplements/x2sys/x2sys_merge
+   supplements/x2sys/x2sys_put
+   supplements/x2sys/x2sys_report
+   supplements/x2sys/x2sys_solve

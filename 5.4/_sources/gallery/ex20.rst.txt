@@ -1,0 +1,98 @@
+.. _example_20:
+
+(20) Custom plot symbols
+------------------------
+
+One is often required to make special maps that shows the distribution
+of certain features but one would prefer to use a custom symbol instead
+of the built-in circles, squares, triangles, etc. in the GMT plotting
+programs :doc:`psxy </psxy>` and
+:doc:`psxyz </psxyz>`. Here we demonstrate one approach
+that allows for a fair bit of flexibility in designing ones own symbols.
+The following recipe is used when designing a new symbol.
+
+#. Use :doc:`psbasemap </psbasemap>` (or engineering
+   paper!) to set up an empty grid that goes from -0.5 to +0.5 in both
+   *x* and *y*. Use ruler and compass to draw your new symbol using
+   straight lines, arcs of circles, and stand-alone geometrical objects
+   (see :doc:`psxy </psxy>` man page for a full
+   description of symbol design). In this Section we will create two new
+   symbols: a volcano and a bulls eye.
+
+.. figure:: /_images/GMT_volcano.*
+   :width: 500 px
+   :align: center
+
+
+#. After designing the symbol we will encode it using a simple set of
+   rules. In our case we describe our volcano and bulls eye using these
+   three freeform polygon generators:
+
+   :math:`x_0` :math:`y_0` *r* **C** [ **-G**\ *fill* ] [
+   **-W**\ *pen* ] Draw :math:`x_0` :math:`y_0` **M** [ **-G**\ *fill* ]
+   [ **-W**\ *pen* ] Start new element at :math:`x_0`, :math:`y_0`
+
+   :math:`x_1` :math:`y_1` **D** Draw straight line from current point
+   to :math:`x_1`, :math:`y_1` around (:math:`x_0`, :math:`y_0`)
+
+   :math:`x_0` :math:`y_0` *r* :math:`\alpha_1` :math:`\alpha_2`
+   **A** Draw arc segment of radius *r* from angle
+   :math:`\alpha_1` to :math:`\alpha_2`
+
+   We also add a few stand-alone circles (for other symbols, see
+   :doc:`psxy </psxy>` man page):
+
+   :math:`x_0` :math:`y_0` *r* **C** [ **-G**\ *fill* ] [
+   **-W**\ *pen* ] Draw :math:`x_0` :math:`y_0` *r* **c** [
+   **-G**\ *fill* ] [ **-W**\ *pen* ] Draw single circle of radius
+   *r* around :math:`x_0`, :math:`y_0`
+
+   The optional **-G** and **-W** can be used to hardwire the color fill
+   and pen for segments (use **-** to disallow fill or line for any
+   specific feature). By default the segments are painted based on the
+   values of the command line settings.
+
+   Manually applying these rules to our volcano symbol results in a
+   definition file ``volcano.def``:
+
+   Without much further discussion we also make a definition file ``bullseye.def`` for a
+   multi-colored bulls eye symbol. Note that the symbol can be created
+   beyond the -0.5 to +0.5 range, as shown by the red lines. There is no
+   limit in GMT to the size of the symbols. The center, however, will
+   always be at (0,0). This is the point to which the coordinates in
+   :doc:`psxy </psxy>` refers.
+
+   The values refer to positions and dimensions illustrated in the
+   Figure above.
+
+#. Given proper definition files we may now use them with
+   :doc:`psxy </psxy>` or :doc:`psxyz </psxyz>`.
+
+We are now ready to give it a try. Based on the hotspot locations in the
+file ``hotspots.txt`` (with a 3rd column giving the desired symbol sizes in inches) we
+lay down a world map and overlay red volcano symbols using our
+custom-built volcano symbol and :doc:`psxy </psxy>`. We
+do something similar with the bulls eye symbols. Without the **-G**
+option, however, they get the colors defined in ``bullseye.def``.
+
+Here is our final map script that produces the Figure:
+
+.. literalinclude:: /_verbatim/example_20.txt
+   :language: bash
+
+.. figure:: /_images/example_20.*
+   :width: 500 px
+   :align: center
+
+   Using custom symbols in GMT.
+
+
+Given these guidelines you can easily make your own symbols. Symbols
+with more than one color can be obtained by making several symbol
+components. E.g., to have yellow smoke coming out of red volcanoes we
+would make two symbols: one with just the cone and caldera and the other
+with the bubbles. These would be plotted consecutively using the desired
+colors. Alternatively, like in ``bullseye.def``, we may specify colors directly for the
+various segments. Note that the custom symbols (Appendix [app:N]),
+unlike the built-in symbols in GMT, can be used with the built-in
+patterns (Appendix [app:E]). Other approaches are also possible, of course.

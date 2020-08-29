@@ -1,0 +1,384 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>sample1d &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="spectrum1d" href="spectrum1d.html" />
+    <link rel="prev" title="psxyz" href="psxyz.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="spectrum1d.html" title="spectrum1d"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="psxyz.html" title="psxyz"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sample1d">
+<span id="index-0"></span><h1>sample1d<a class="headerlink" href="#sample1d" title="Permalink to this headline">¶</a></h1>
+<p>sample1d - Resample 1-D table data using splines</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>sample1d</strong> [ <em>table</em> ]
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><strong>f</strong>|<strong>p</strong>|<strong>m</strong>|<strong>r</strong>|<strong>R</strong>[<strong>+l</strong>] ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><strong>l</strong>|<strong>a</strong>|<strong>c</strong>|<strong>n</strong>[<strong>+1</strong>|<strong>+2</strong>] ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>inc</em>[<em>unit</em>] ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>knotfile</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>start</em>[/<em>stop</em>] ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>col</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>sample1d</strong> reads a multi-column ASCII [or binary] data set from file
+[or standard input] and interpolates the time-series or spatial profile at locations
+where the user needs the values. The user must provide the column number
+of the independent (monotonically increasing <strong>or</strong> decreasing)
+variable, here called <em>time</em> (it may of course be any type of quantity).
+Equidistant or arbitrary sampling can be selected. All columns
+are resampled based on the new sampling interval. Several interpolation
+schemes are available. Extrapolation outside the range of the input data
+is not supported.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<p>None.</p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>This is one or more ASCII [of binary, see
+<strong>-bi</strong>] files with one column containing the
+independent <em>time</em> variable (which must be monotonically in/de-creasing)
+and the remaining columns holding other data values. If no file is
+provided, <strong>sample1d</strong> reads from standard input.</dd>
+</dl>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong><strong>f</strong>|<strong>p</strong>|<strong>m</strong>|<strong>r</strong>|<strong>R</strong></dt>
+<dd>For track resampling (if <strong>-T</strong>…<em>unit</em> is set) we can select how
+this is to be performed. Append <strong>f</strong> to keep original points, but
+add intermediate points if needed; note this selection does not
+necessarily yield equidistant points [Default], <strong>m</strong> as <strong>f</strong>, but
+first follow meridian (along y) then parallel (along x), <strong>p</strong> as
+<strong>f</strong>, but first follow parallel (along y) then meridian (along x),
+<strong>r</strong> to resample at equidistant locations; input points are not
+necessarily included in the output, and <strong>R</strong> as <strong>r</strong>, but adjust
+given spacing to fit the track length exactly. Finally, append
+<strong>+l</strong> if distances should be measured along rhumb lines (loxodromes).</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-Fl</strong>|<strong>a</strong>|<strong>c</strong>|<strong>n</strong>[<strong>+1</strong>|<strong>+2</strong>]</dt>
+<dd>Choose from <strong>l</strong> (Linear), <strong>a</strong> (Akima spline), <strong>c</strong> (natural
+cubic spline), and <strong>n</strong> (no interpolation: nearest point) [Default
+is <strong>-Fa</strong>]. You may change the default interpolant; see
+<a class="reference internal" href="gmt.conf.html#gmt-interpolant"><span class="std std-ref">GMT_INTERPOLANT</span></a> in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file.
+You may optionally evaluate the first or second derivative of the spline
+by appending <strong>1</strong> or <strong>2</strong>, respectively.</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>inc</em>[<em>unit</em>]</dt>
+<dd><em>inc</em> defines the sampling interval [Default is the separation
+between the first and second abscissa point in the <em>table</em>]. Append
+a distance unit (see UNITS) to indicate that the first two columns
+contain longitude, latitude and you wish to resample this path with
+a spacing of <em>inc</em> in the chosen units. For sampling of (x, y)
+Cartesian tracks, specify the unit as c. Use <strong>-A</strong> to control how
+path resampling is performed.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong><em>knotfile</em></dt>
+<dd><em>knotfile</em> is an optional ASCII file with the <em>time</em> locations where the
+data set will be resampled in the first column. Note: If <strong>-H</strong> is
+selected it applies to both <em>table</em> and <em>knotfile</em>. Also note that
+<strong>-i</strong> never applies to <em>knotfile</em> since we always consider the
+first column only.</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><em>start</em>[<em>stop</em>]</dt>
+<dd>For equidistant sampling, <em>start</em> indicates the <em>time</em> of the
+first output value. [Default is the smallest even multiple of <em>inc</em>
+inside the range of <em>table</em>]. Optionally, append /<em>stop</em> to
+indicate the <em>time</em> of the last output value [Default is the
+largest even multiple of <em>inc</em> inside the range of <em>table</em>].</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong><em>col</em></dt>
+<dd>Sets the column number of the independent <em>time</em> variable [Default is 0
+(first)].</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input. [Default is 2 (or at least the number of columns implied by <strong>-T</strong>)].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output. [Default is same as input].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em> <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] <a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine data gaps and line breaks.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-o</strong><em>cols</em>[,…] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select output columns (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc9">Units</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
+and <strong>u</strong> for US survey foot. By default we compute such distances using
+a spherical approximation with great circles. Prepend <strong>-</strong> to a
+distance (or the unit is no distance is given) to perform “Flat Earth”
+calculations (quicker but less accurate) or prepend <strong>+</strong> to perform
+exact geodesic calculations (slower but more accurate).</p>
+</div>
+<div class="section" id="ascii-format-precision">
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-geo-out"><span class="std std-ref">FORMAT_GEO_OUT</span></a>, absolute time is
+under the control of <a class="reference internal" href="gmt.conf.html#format-date-out"><span class="std std-ref">FORMAT_DATE_OUT</span></a> and
+<a class="reference internal" href="gmt.conf.html#format-clock-out"><span class="std std-ref">FORMAT_CLOCK_OUT</span></a>, whereas general floating point values are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a>. Be aware that the format in effect
+can lead to loss of precision in ASCII output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a> setting.</p>
+</div>
+<div class="section" id="calendar-time-sampling">
+<h2>Calendar Time Sampling<a class="headerlink" href="#calendar-time-sampling" title="Permalink to this headline">¶</a></h2>
+<p>If the abscissa are calendar times then you must use the <strong>-f</strong> option
+to indicate this. Furthermore, <strong>-I</strong> then expects an increment in the
+current <a class="reference internal" href="gmt.conf.html#time-unit"><span class="std std-ref">TIME_UNIT</span></a> units. There is not yet support for variable
+intervals such as months.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To resample the file profiles.tdgmb, which contains
+(time,distance,gravity,magnetics,bathymetry) records, at 1km equidistant
+intervals using Akima’s spline, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">sample1d</span> <span class="n">profiles</span><span class="o">.</span><span class="n">tdgmb</span> <span class="o">-</span><span class="n">I1</span> <span class="o">-</span><span class="n">Fa</span> <span class="o">-</span><span class="n">T1</span> <span class="o">&gt;</span> <span class="n">profiles_equi_d</span><span class="o">.</span><span class="n">tdgmb</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To resample the file depths.dt at positions listed in the file
+grav_pos.dg, using a cubic spline for the interpolation, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">sample1d</span> <span class="n">depths</span><span class="o">.</span><span class="n">dt</span> <span class="o">-</span><span class="n">Ngrav_pos</span><span class="o">.</span><span class="n">dg</span> <span class="o">-</span><span class="n">Fc</span> <span class="o">&gt;</span> <span class="n">new_depths</span><span class="o">.</span><span class="n">dt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To resample the file points.txt every 0.01 from 0-6, using a cubic spline for the
+interpolation, but output the first derivative instead (the slope), try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">sample1d</span> <span class="n">points</span><span class="o">.</span><span class="n">txt</span> <span class="n">S0</span><span class="o">/</span><span class="mi">6</span> <span class="o">-</span><span class="n">I0</span><span class="o">.</span><span class="mi">01</span> <span class="o">-</span><span class="n">Fc</span><span class="o">+</span><span class="mi">1</span> <span class="o">&gt;</span> <span class="n">slopes</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To resample the file track.txt which contains lon, lat, depth every 2
+nautical miles, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">sample1d</span> <span class="n">track</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">I2n</span> <span class="o">-</span><span class="n">AR</span> <span class="o">&gt;</span> <span class="n">new_track</span><span class="o">.</span><span class="n">dt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To do approximately the same, but make sure the original points are
+included, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">sample1d</span> <span class="n">track</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">I2n</span> <span class="o">-</span><span class="n">Af</span> <span class="o">&gt;</span> <span class="n">new_track</span><span class="o">.</span><span class="n">dt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To obtain a rhumb line (loxodrome) sampled every 5 km instead, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">sample1d</span> <span class="n">track</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">I5k</span> <span class="o">-</span><span class="n">AR</span><span class="o">+</span><span class="n">l</span> <span class="o">&gt;</span> <span class="n">new_track</span><span class="o">.</span><span class="n">dt</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
+<a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a>,
+<a class="reference internal" href="filter1d.html"><span class="doc">filter1d</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">sample1d</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id1">Units</a></li>
+<li><a class="reference internal" href="#ascii-format-precision">ASCII Format Precision</a></li>
+<li><a class="reference internal" href="#calendar-time-sampling">Calendar Time Sampling</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="psxyz.html"
+                        title="previous chapter">psxyz</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="spectrum1d.html"
+                        title="next chapter">spectrum1d</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/sample1d.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="spectrum1d.html" title="spectrum1d"
+             >next</a> </li>
+        <li class="right" >
+          <a href="psxyz.html" title="psxyz"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

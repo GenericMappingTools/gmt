@@ -1,0 +1,320 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>mgd77info &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mgd77list" href="mgd77list.html" />
+    <link rel="prev" title="mgd77header" href="mgd77header.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="mgd77list.html" title="mgd77list"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="mgd77header.html" title="mgd77header"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="mgd77info">
+<span id="index-0"></span><h1>mgd77info<a class="headerlink" href="#mgd77info" title="Permalink to this headline">¶</a></h1>
+<p>mgd77info - Extract information about MGD77 files</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>mgd77info</strong> <em>NGDC-ids</em>
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong>[<strong>m</strong>|<strong>e</strong>] ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<strong>m</strong>|<strong>e</strong>] ] [ <strong>-I</strong><em>ignore</em> ]
+[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong><strong>f</strong>[<em>item</em>]|<strong>r</strong>|<strong>e</strong>|<strong>h</strong> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong>[<strong>v</strong>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>mgd77info</strong> reads &lt;legid&gt;.[mgd77|nc] files and produces a single
+record of information about each cruise specified. The information
+includes beginning and end times, total track distances in km, longitude
+and latitude range, and the total number of geophysical observations.
+Optionally, choose instead to see the original MGD77 header meta-data
+section or its individual members.</p>
+<p>If you need to know which tracks are crossing through a given region and
+what kinds of geophysical observations are available, consider using the
+x2sys tools to set up a tracks index data base (see <strong>x2sys_init</strong> for
+more information).</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>NGDC-ids</em></dt>
+<dd><p class="first">Can be one or more of five kinds of specifiers:</p>
+<ol class="arabic simple">
+<li>8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.</li>
+<li>2-character <em>agency</em> codes which will return all cruises from each agency.</li>
+<li>4-character &lt;agency&gt;&lt;vessel&gt; codes, which will return all cruises from those vessels.</li>
+<li>=<em>list</em>, where <em>list</em> is a table with NGDC IDs, one per line.</li>
+<li>If nothing is specified we return all cruises in the data base.</li>
+</ol>
+<p class="last">(See mgd77info <strong>-L</strong> for agency and vessel codes). If no file
+extension is given then we search for files with one of the four
+known extensions.  The search order (and the extensions) tried
+is MGD77+ (“.nc”), MGD77T (“.m77t”), MGD77 (“.mgd77” ) and plain
+text file (“.dat”).  Use <strong>-I</strong> to ignore one or more of these
+file types). Cruise files will be looked
+for first in the current directory and second in all directories
+listed in <strong>$MGD77_HOME</strong>/mgd77_paths.txt [If <strong>$MGD77_HOME</strong> is
+not set it will default to <strong>$GMT_SHAREDIR</strong>/mgd77].</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong>[<strong>m</strong>|<strong>e</strong>]</dt>
+<dd>List abbreviations for all columns present in the MGD77[+] files.
+Append <strong>m</strong> or <strong>e</strong> to limit the display to the MGD77 standard or
+MGD77+ extended set only.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong>[<strong>m</strong>|<strong>e</strong>]</dt>
+<dd>Give a one-line summary for each cruise listed.</dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-Mf</strong>[<em>item</em>]|<strong>r</strong>|<strong>e</strong>|<strong>h</strong></dt>
+<dd>List the meta-data (header) and (if present) the MGD77+ history for
+each cruise. Append <strong>f</strong> for a formatted display. This will list
+individual parameters and their values, one entry per output line,
+in a format that can be searched using standard UNIX text tools.
+Alternatively, append the name of a particular parameter (you only
+need to give enough characters - starting at the beginning - to
+uniquely identify the item). Give - to display the list of all
+parameter names. You may also specify the number of a parameter. For
+the raw, punchcard-formatted MGD77 original header block, append
+<strong>r</strong> instead. For the MGD77+ E77 status, append <strong>e</strong> instead.
+Finally, for the MGD77+ history, append <strong>h</strong> instead.</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>ignore</em></dt>
+<dd>Ignore certain data file formats from consideration. Append
+<strong>a|c|m|t</strong> to ignore MGD77 ASCII, MGD77+ netCDF, MGD77T ASCII or plain
+tab-separated ASCII table files, respectively. The option may be
+repeated to ignore more than one format. [Default ignores none].</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong>[<strong>v</strong>]</dt>
+<dd>No cruise information is listed. Instead, we just display a list of
+the GEODAS institution 2-character codes and their names.
+Optionally, append <strong>v</strong> to also display the vessels and their
+4-character codes for each institution. The following is the list of
+institutions:
+(01) LAMONT (LDEO), (02) WOODS HOLE O.I., (03) NOAA, (04) US ARMY,
+(05) NEW ZEALAND, (06) US GEOL. SURVEY, (07) OREGON ST. UNIV, (08)
+U.HAWAII SOEST, (09) US NAVY, (10) UNIV OF TEXAS, (11) RICE UNIV.,
+(12) CANADA, (13) UNIV OF CONN., (14) U.MIAMI (RSMAS), (15) SCRIPPS
+INST.OC, (16) CHINA, (17) U RHODE ISLAND, (18) DUKE UNIVERSITY, (19)
+UNITED KINGDOM, (20) U.WASHINGTON, (22) WESTERN GEOPHY., (23) TEXAS
+A&amp;M UNIV., (24) AUSTRALIA, (25) MONACO, (29) RUSSIA, (30) SPAIN,
+(35) NIMA, (58) NETHERLANDS, (60) MIN MGMT SVC, (63) ISRAEL, (67)
+FRANCE, (71) SOUTH AFRICA, (75) US COAST GUARD, (76) BRAZIL, (77)
+INT. GRAV. BUR, (83) GERMANY, (84) ORSTOM NEW CAL, (86) CUBA, (87)
+ARGENTINA, (88) US NSF, (89) INDIA, (90) PORTUGAL, (92) FINLAND,
+(93) CHILE, (J1) HYDR DEPT JAPAN, (J2) GEOL SRVY JAPAN, (J4) UNIV
+TOKYO, (J5) KOBE UNIV, (J7) UNIV OF RYUKYUS, (J8) J.O.D.C. JAPAN,
+(J9) CHIBA UNIV, (JA) INST.POLAR RES., (ZZ) INST NOT CODED.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To get one-line summary information about the cruises 01010047.mgd77 and
+01010008.mgd77, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">mgd77info</span> <span class="mi">01010047</span> <span class="mi">01010008</span> <span class="o">-</span><span class="n">E</span> <span class="o">&gt;</span> <span class="n">listing</span><span class="o">.</span><span class="n">lis</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To see the original raw MGD77 header meta-data for cruise 01010047.mgd77, run</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">mgd77info</span> <span class="mi">01010047</span> <span class="o">-</span><span class="n">Mr</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To determine all the parameters related to Gravity during cruise 01010047.mgd77, run</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">mgd77info</span> <span class="mi">01010047</span> <span class="o">-</span><span class="n">Mf</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">Gravity</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To determine the Magnetic sampling rate used during cruise 01010047.mgd77, run</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">mgd77info</span> <span class="mi">01010047</span> <span class="o">-</span><span class="n">MfMagnetics_Sampling_Rate</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To see all the columns that the MGD77+ cruise 01010047.nc contains, run</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">mgd77info</span> <span class="mi">01010047</span> <span class="o">-</span><span class="n">C</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To see the E77 status of all MGD77+ cruises collected by the University
+of Hawaii (institution 08), run</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">mgd77info</span> <span class="mi">08</span> <span class="o">-</span><span class="n">Ia</span> <span class="o">-</span><span class="n">Me</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="mgd77list.html"><span class="doc">mgd77list</span></a>,
+<a class="reference internal" href="mgd77manage.html"><span class="doc">mgd77manage</span></a>,
+<a class="reference internal" href="mgd77path.html"><span class="doc">mgd77path</span></a>,
+<a class="reference internal" href="mgd77track.html"><span class="doc">mgd77track</span></a>,
+<a class="reference internal" href="../x2sys/x2sys_init.html"><span class="doc">x2sys_init</span></a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>The Marine Geophysical Data Exchange Format - MGD77, see
+<a class="reference external" href="http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.">http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mgd77info</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mgd77header.html"
+                        title="previous chapter">mgd77header</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mgd77list.html"
+                        title="next chapter">mgd77list</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/mgd77/mgd77info.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="mgd77list.html" title="mgd77list"
+             >next</a> </li>
+        <li class="right" >
+          <a href="mgd77header.html" title="mgd77header"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

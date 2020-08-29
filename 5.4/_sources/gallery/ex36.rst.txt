@@ -1,0 +1,25 @@
+.. _example_36:
+
+(36) Spherical gridding using Renka's algorithms
+------------------------------------------------
+
+The next script produces the plot in Figure. Here
+we demonstrate how :doc:`sphinterpolate </sphinterpolate>` can be used
+to perform spherical gridding.  Our example uses early measurements of
+the radius of Mars from Mariner 9 and Viking Orbiter spacecrafts.  The
+middle panels shows the data distribution while the top and bottom panel
+are images of the interpolation using a piecewise linear interpolation
+and a smoothed spline interpolation, respectively.  For spherical gridding
+with large volumes of data we recommend :doc:`sphinterpolate </sphinterpolate>`
+while for small data sets (such as this one, actually) you have more flexibility
+with :doc:`greenspline </greenspline>`.
+
+.. literalinclude:: /_verbatim/example_36.txt
+   :language: bash
+
+.. figure:: /_images/example_36.*
+   :width: 500 px
+   :align: center
+
+   Spherical gridding using Renka\'s algorithms.
+

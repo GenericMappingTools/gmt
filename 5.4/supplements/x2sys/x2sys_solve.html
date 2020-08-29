@@ -1,0 +1,308 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>x2sys_solve &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="B" href="../../B.html" />
+    <link rel="prev" title="x2sys_report" href="x2sys_report.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../B.html" title="B"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="x2sys_report.html" title="x2sys_report"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="x2sys-solve">
+<span id="index-0"></span><h1>x2sys_solve<a class="headerlink" href="#x2sys-solve" title="Permalink to this headline">¶</a></h1>
+<p>x2sys_solve - Determine least-squares systematic correction from crossovers</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>x2sys_solve</strong> <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>column</em> <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>TAG</em> <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>mode</em>
+[ <em>COE_list.d</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong><strong>[u]</strong> ]
+[ <strong>-bi</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-x</strong>[[-]<em>n</em>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>x2sys_solve</strong> will use the supplied crossover information to solve
+for systematic corrections that can then be applied per track to improve
+data quality. Several systematic corrections can be solved for using a
+least-squares approach. Note: Only one data column can be processed at
+the time.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>COE_list.d</em></dt>
+<dd>Name of file with the required crossover columns as produced by
+<a class="reference internal" href="x2sys_list.html"><span class="doc">x2sys_list</span></a>. NOTE: If <strong>-bi</strong> is used
+then the first two columns are expected to hold the integer track
+IDs; otherwise we expect those columns to hold the text string names
+of the two tracks. If no file is given we will read from <em>stdin</em>.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-T</strong><em>TAG</em></dt>
+<dd>Specify the x2sys <em>TAG</em> which tracks the attributes of this data type.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>column</em></dt>
+<dd>Specify which data column you want to process. Needed for proper
+formatting of the output correction table and must match the same
+option used in <a class="reference internal" href="x2sys_list.html"><span class="doc">x2sys_list</span></a> when preparing the input data.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong><em>mode</em></dt>
+<dd><p class="first">The correction type you wish to model. Choose among the following
+functions f(<em>p</em>) , where <em>p</em> are the <em>m</em>
+parameters per track that we will fit simultaneously using a least
+squares approach:</p>
+<p><strong>c</strong> will fit f(<em>p</em>) = <em>a</em> (a constant offset);
+records must contain track ID1, ID2, COE.</p>
+<p><strong>d</strong> will fit f(<em>p</em>) = <em>a</em> + <em>b</em> * <em>d</em> (linear
+drift; <em>d</em> is distance; records must contain track ID1, ID2, d1,
+d2, COE.</p>
+<p><strong>g</strong> will fit f(<em>p</em>) = <em>a</em> + <em>b</em> sin(y)^2
+(1980-1930 gravity correction); records must contain track ID1,
+ID2, latitude y, COE.</p>
+<p><strong>h</strong> will fit f(<em>p</em>) = <em>a</em> + <em>b</em> cos(H) + <em>c</em>
+cos(2H) + <em>d</em> sin(H) + <em>e</em> sin(2H)
+(magnetic heading correction); records must contain track ID1, ID2,
+heading H, COE.</p>
+<p><strong>s</strong> will fit f(<em>p</em>) = <em>a</em> * z (a unit scale
+correction); records must contain track ID1, ID2, z1, z2.</p>
+<p class="last"><strong>t</strong> will fit f(<em>p</em>) = <em>a</em> + <em>b</em> * (<em>t - t0</em>)
+(linear drift; <em>t0</em> is the start time of the track); records must
+contain track ID1, ID2, t1-t0, t2-t0, COE.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong></dt>
+<dd>Means that each input records has an extra column with the composite
+weight for each crossover record. These are used to obtain a
+weighted least squares solution [no weights]. Append <strong>u</strong> to report
+unweighted mean/std [Default, report weighted stats].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-di</strong><em>nodata</em> <a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-x</strong>[[-]<em>n</em>] <a class="reference internal" href="../../gmt.html#core-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Limit number of cores used in multi-threaded algorithms (OpenMP required).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>Most of the model corrections in <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong> involve a constant offset.
+Because crossovers are differences between values, any absolute level
+will cancel out and hence the constant offsets we obtain are relative
+to an undetermined absolute level.  To obtain a solvable solution we
+add the constraint that the sum of all constant offsets equal zero.
+If the tracks form clusters in which no tracks from one cluster cross
+any track from another cluster then these are two independent data
+sets and require they own constraint equation for their offsets.  We
+determine the number of clusters and automatically add the required
+constraint equations.  If you need a particular reference track to have
+a particular offset (e.g., 0) then you can subtract the offset you
+found from every track correction and add in the desired offset.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To fit a simple bias offset to faa for all tracks under the MGD77 tag, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">x2sys_list</span> <span class="n">COE_data</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">TMGD77</span> <span class="o">-</span><span class="n">Cfaa</span> <span class="o">-</span><span class="n">Fnc</span> <span class="o">&gt;</span> <span class="n">faa_coe</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">gmt</span> <span class="n">x2sys_solve</span> <span class="n">faa_coe</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">TMGD77</span> <span class="o">-</span><span class="n">Cfaa</span> <span class="o">-</span><span class="n">Ec</span> <span class="o">&gt;</span> <span class="n">coe_table</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To fit a faa linear drift with time instead, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">x2sys_list</span> <span class="n">COE_data</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">TMGD77</span> <span class="o">-</span><span class="n">Cfaa</span> <span class="o">-</span><span class="n">FnTc</span> <span class="o">&gt;</span> <span class="n">faa_coe</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">gmt</span> <span class="n">x2sys_solve</span> <span class="n">faa_coe</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">TMGD77</span> <span class="o">-</span><span class="n">Cfaa</span> <span class="o">-</span><span class="n">Et</span> <span class="o">&gt;</span> <span class="n">coe_table</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To estimate heading corrections based on magnetic crossovers associated
+with the tag MGD77 from the file COE_data.txt, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">x2sys_list</span> <span class="n">COE_data</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">TMGD77</span> <span class="o">-</span><span class="n">Cmag</span> <span class="o">-</span><span class="n">Fnhc</span> <span class="o">&gt;</span> <span class="n">mag_coe</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">gmt</span> <span class="n">x2sys_solve</span> <span class="n">mag_coe</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">TMGD77</span> <span class="o">-</span><span class="n">Cmag</span> <span class="o">-</span><span class="n">Eh</span> <span class="o">&gt;</span> <span class="n">coe_table</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To estimate unit scale corrections based on bathymetry crossovers, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">x2sys_list</span> <span class="n">COE_data</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">TMGD77</span> <span class="o">-</span><span class="n">Cdepth</span> <span class="o">-</span><span class="n">Fnz</span> <span class="o">&gt;</span> <span class="n">depth_coe</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">gmt</span> <span class="n">x2sys_solve</span> <span class="n">depth_coe</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">TMGD77</span> <span class="o">-</span><span class="n">Cdepth</span> <span class="o">-</span><span class="n">Es</span> <span class="o">&gt;</span> <span class="n">coe_table</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="x2sys_binlist.html"><span class="doc">x2sys_binlist</span></a>,
+<a class="reference internal" href="x2sys_cross.html"><span class="doc">x2sys_cross</span></a>,
+<a class="reference internal" href="x2sys_datalist.html"><span class="doc">x2sys_datalist</span></a>,
+<a class="reference internal" href="x2sys_get.html"><span class="doc">x2sys_get</span></a>,
+<a class="reference internal" href="x2sys_init.html"><span class="doc">x2sys_init</span></a>,
+<a class="reference internal" href="x2sys_list.html"><span class="doc">x2sys_list</span></a>,
+<a class="reference internal" href="x2sys_put.html"><span class="doc">x2sys_put</span></a>,
+<a class="reference internal" href="x2sys_report.html"><span class="doc">x2sys_report</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">x2sys_solve</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="x2sys_report.html"
+                        title="previous chapter">x2sys_report</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../B.html"
+                        title="next chapter">B</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/x2sys/x2sys_solve.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../B.html" title="B"
+             >next</a> </li>
+        <li class="right" >
+          <a href="x2sys_report.html" title="x2sys_report"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

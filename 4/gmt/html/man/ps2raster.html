@@ -1,0 +1,544 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:24 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>PS2RASTER</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>PS2RASTER</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#NOTES">NOTES</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#BINARY DATA">BINARY DATA</a><br>
+<a href="#GHOSTSCRIPT OPTIONS">GHOSTSCRIPT OPTIONS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">ps2raster
+&minus; Converts one or several <i>PostScript</i> file(s) to
+other formats using GhostScript</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>ps2raster</b>
+<i>psfile(s)</i> [ <b>&minus;A</b>[<b>u</b>|-] ] [
+<b>&minus;C</b><i>gs_option</i> ] [
+<b>&minus;D</b><i>outdir</i> ] [
+<b>&minus;E</b><i>resolution</i> ] [
+<b>&minus;G</b><i>ghost_path</i> ] [
+<b>&minus;L</b><i>listfile</i> ] [ <b>&minus;P</b> ] [
+<b>&minus;Q</b>[<b>g</b>|<b>t</b>][1|2|4] ] [
+<b>&minus;S</b> ] [
+<b>&minus;Tb</b>|<b>e</b>|<b>f</b>|<b>j</b>|<b>g</b>|<b>G</b>|<b>m</b>|<b>t</b>
+] [ <b>&minus;V</b> ] [
+<b>&minus;W</b>[<b>+g</b>][<b>+t</b><i>docname</i>][<b>+n</b><i>layername</i>][<b>+a</b><i>altmode</i>[<i>alt</i>]][<b>+l</b><i>minLOD/maxLOD</i>][<b>+f</b><i>minfade/maxfade</i>][<b>+u</b><i>URL</i>]
+]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>ps2raster</b>
+converts one or more <i>PostScript</i> files to other
+formats (BMP, EPS, JPEG, PDF, PNG, PPM, TIFF) using
+GhostScript. Input file names are read from the command line
+or from a file that lists them. The size of the resulting
+images is determined by the BoundingBox (or
+HiResBoundingBox, if present). As an option, a tight
+(HiRes)BoundingBox may be computed first. As another option,
+it can compute ESRI type world files used to reference, for
+instance, tif files and make them be recognized as geotiff.
+<i><br>
+psfiles</i></p>
+
+<p style="margin-left:22%;">Names of <i>PostScript</i>
+files to be converted. The output files will have the same
+name (unless <b>&minus;F</b> is used) but with the
+conventional extension name associated to the raster format
+(e.g., .jpg for the jpeg format). Use <b>&minus;D</b> to
+redirect the output to a different directory.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Adjust the
+BoundingBox and HiResBoundingBox to the minimum required by
+the image content. Append <b>u</b> to first remove any
+GMT-produced time-stamps. Use <b>&minus;A-</b> to override
+any automatic setting of <b>&minus;A</b> by
+<b>&minus;W</b>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify a single,
+custom option that will be passed on to GhostScript as is.
+Repeat to add several options [none].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets an alternative
+output directory (which must exist) [Default is the same
+directory as the PS files]. Use <b>&minus;D.</b> to place
+the output in the current directory instead.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set raster
+resolution in dpi [default = 720 for PDF, 300 for
+others].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force the output
+file name. By default output names are constructed using the
+input names as base, which are appended with an appropriate
+extension. Use this option to provide a different name, but
+without extension. Extension is still determined
+automatically.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Full path to your
+GhostScript executable. NOTE: For Unix systems this is
+generally not necessary. Under Windows, ghostscript path is
+now fetch from the registry. If this fails you can still add
+the GS path to system&rsquo;s path or give the full path
+here. (e.g., <b>&minus;G</b>
+c:\programs\gs\gs9.02\bin\gswin32c). WARNING: because of the
+poor decision of embedding the bits on the gs exe name we
+cannot satisfy both the 32 and 64 bits ghostscript
+executable names. So in case of &rsquo;get from
+registry&rsquo; failure the default name (when no
+<b>&minus;G</b> is used) is the one of the 64 bits version,
+or gswin32c</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">The <i>listfile</i>
+is an ASCII file with the names of the <i>PostScript</i>
+files to be converted.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">This option is
+obsolete. Use <b>&minus;S</b> to print the GhostScript
+command, if applicable. Use <b>&minus;Te</b> to save the
+intermediate EPS file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;P</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Force Portrait
+mode. All Landscape mode plots will be rotated back so that
+they show unrotated in Portrait mode. This is practical when
+converting to image formats or preparing EPS or PDF plots
+for inclusion in documents.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set the
+anti-aliasing options for <b>g</b>raphics or <b>t</b>ext.
+Append the size of the subsample box (1, 2, or 4) [4].
+Default is no anti-aliasing (same as <i>bits</i> = 1).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Print to standard
+output the GhostScript command after it has been
+executed.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the output
+format, where <b>b</b> means BMP, <b>e</b> means EPS,
+<b>f</b> means PDF, <b>j</b> means JPEG, <b>g</b> means PNG,
+<b>G</b> means transparent PNG (untouched regions are
+transparent), <b>m</b> means PPM, and <b>t</b> means TIFF
+[default is JPEG]. For <b>bjgt</b> you can append - to get a
+grayscale image only. The EPS format can be combined with
+any of the other formats. For example, <b>&minus;Tef</b>
+creates both an EPS and a PDF file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Write a ESRI type
+world file suitable to make (e.g) .tif files be recognized
+as geotiff by softwares that know how to do it. Be aware,
+however, that different results are obtained depending on
+the image contents and if the <b>&minus;B</b> option has
+been used or not. The trouble with the <b>&minus;B</b>
+option is that it creates a frame and very likely its
+annotations. That introduces pixels outside the map data
+extent, and therefore the map extents estimation will be
+wrong. To avoid this problem use --BASEMAP_TYPE=inside
+option which plots all annotations and ticks inside the
+image and therefore does not compromise the coordinate
+computations. Pay attention also to the cases when the plot
+has any of the sides with whites only because than the
+algorithm will fail miserably as those whites will be eaten
+by the GhostScript. In that case you really must use
+<b>&minus;B</b> or use a slightly off-white color.</p></td>
+</table>
+
+<p style="margin-left:22%;">Together with <b>&minus;V</b>
+it prints on screen the gdal_translate (gdal_translate is a
+command line tool from the GDAL package) command that reads
+the raster + world file and creates a true geotiff file. Use
+<b>&minus;W+g</b> to do a system call to gdal_translate and
+create a geoTIFF image right away. The output file will have
+a .tiff extension. <br>
+The world file naming follows the convention of jamming a
+&rsquo;w&rsquo; in the file extension. So, if output is tif
+<b>&minus;Tt</b> the world file is a .tfw, for jpeg we have
+a .jgw and so on. This option automatically sets <b>&minus;A
+&minus;P</b>. <br>
+Use <b>&minus;W+k</b> to create a minimalist KML file that
+allows loading the image in GoogleEarth. Note that for this
+option the image must be in geographical coordinates. If
+not, a warning is issued but the KML file is created anyway.
+Several modifier options are available to customize the KML
+file in the form of <b>+</b><i>opt</i> strings. Append
+<b>+t</b><i>title</i> to set the document title [GMT KML
+Document], <b>+n</b><i>layername</i> to set the layer name,
+and <b>+a</b><i>/altmode</i>[<i>altitude</i>] to select one
+of 5 altitude modes recognized by Google Earth that
+determines the altitude (in m) of the image: <b>G</b>
+clamped to the ground, <b>g</b> append altitude relative to
+ground, <b>a</b> append absolute altitude, <b>s</b> append
+altitude relative to seafloor, and <b>S</b> clamp it to the
+seafloor. Control visibility of the layer with the
+<b>+l</b><i>minLOD/maxLOD</i> and
+<b>+f</b><i>minfade/maxfade</i> options. FInally, if you
+plan to leave the image itself on a server and only
+distribute the KML, use <b>+u</b><i>URL</i> to prepend the
+URL to the image reference. See the KML documentation for
+further explanation
+(http://code.google.com/apis/kml/documentation/). <br>
+Further notes on the creation of georeferenced rasters.
+<b>ps2raster</b> can create a georeferenced raster image
+with a world file OR uses GDAL to convert the GMT
+<i>PostScript</i> file to geotiff. GDAL uses Proj.4 for
+it&rsquo;s projection library. To provide with the
+information it needs to do the georeferencing, GMT 4.5
+embeds a comment near the start of the <i>PostScript</i>
+file defining the projection using Proj.4 syntax. Users with
+pre-GMT v4.5 <i>PostScript</i> files, or even non-GMT ps
+files, can provide the information <b>ps2raster</b> requires
+by manually editing a line into the <i>PostScript</i> file,
+prefixed with %%PROJ. <br>
+For example the command <b>pscoast &minus;JM0/12c
+&minus;R</b>-10/-4/37/43 <b>&minus;W1 &minus;Di
+&minus;Bg30m</b> --BASEMAP_TYPE=inside &gt; cara.ps <br>
+adds this comment line <br>
+%%PROJ: merc -10.0 -4.0 37.0 43.0 -1113194.908 -445277.963
+4413389.889 5282821.824 +proj=merc +lon_0=0 +k=-1 +x_0=0
++y_0=0 +a=6378137.0 +b=6356752.314245 <br>
+where &rsquo;merc&rsquo; is the keyword for the coordinate
+conversion; the 2 to 5th elements contain the map limits, 6
+to 9th the map limits in projected coordinates and the rest
+of the line has the regular proj4 string for this
+projection.</p>
+
+<a name="NOTES"></a>
+<h2>NOTES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The conversion
+to raster images (BMP, JPEG, PNG, PPM or TIFF) inherently
+results in loss of details that are available in the
+original <i>PostScript</i> file. Choose a resolution that is
+large enough for the application that the image will be used
+for. For web pages, smaller dpi values suffice, for Word
+documents and PowerPoint presentations a higher dpi value is
+recommended. <b>ps2raster</b> uses the loss-less Flate
+compression technique when creating JPEG, PNG and TIFF
+images.</p>
+
+<p style="margin-left:11%; margin-top: 1em">EPS is a
+vector, not a raster format. Therefore, the <b>-E</b> option
+has no effect on the creation of EPS files. Using the option
+<b>&minus;Te</b> will remove PageSize commands from the
+<i>PostScript</i> file and will adjust the BoundingBox when
+the <b>&minus;A</b> option is used. Note the original and
+required BoundingBox is limited to integer points, hence
+Adobe added the optional HiResBoundingBox to add more
+precision in sizing. The <b>&minus;A</b> option calculates
+both and writes both to the EPS file used in the
+rasterization (and output if <b>&minus;Te</b> is set).</p>
+
+<p style="margin-left:11%; margin-top: 1em">Although PDF is
+also a vector format, the <b>&minus;E</b> option has an
+effect on the resolution of pattern fills and fonts that are
+stored as bitmaps in the document. <b>ps2raster</b>
+therefore uses a larger default resolution when creating PDF
+files. <b>&minus;E</b> also determines the resolution of the
+boundingbox values used to indicate the size of the output
+PDF. In order to obtain high-quality PDF files, the
+<i>/prepress</i> options are in effect, allowing only
+loss-less Flate compression of raster images embedded in the
+<i>PostScript</i> file.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Although
+<b>ps2raster</b> was developed as part of the <b><A HREF="GMT.html">GMT</A></b>, it
+can be used to convert <i>PostScript</i> files created by
+nearly any graphics program. However, <b>&minus;Au</b> is
+<b><A HREF="GMT.html">GMT</A></b>-specific.</p>
+
+<p style="margin-left:11%; margin-top: 1em">See Appendix C
+of the <b>GMT Technical Reference and Cookbook</b> for more
+information on how <b>ps2raster</b> is used to produce
+graphics that can be inserted into other documents
+(articles, presentations, posters, etc.).</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To convert the
+file psfile.ps to PNG using a tight BoundingBox and rotating
+it back to normal orientation in case it was in Landscape
+mode:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>ps2raster</b>
+psfile.ps <b>&minus;A &minus;P &minus;Tg</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">To create a
+simple linear map with pscoast and convert it to tif with a
+.tfw the tight BoundingBox computation.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>pscoast
+&minus;JX12cd &minus;R</b>-10/-4/37/43 <b>&minus;W1
+&minus;Di &minus;Bg30m &minus;P &minus;G200</b>
+--BASEMAP_TYPE=inside &gt; cara.ps</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>ps2raster</b>
+cara <b>&minus;Tt &minus;W</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">To create a
+Mercator version of the above example and use GDAL to
+produce a true geotiff file.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>pscoast
+&minus;JM0/12c &minus;R</b>-10/-4/37/43 <b>&minus;W1
+&minus;Di &minus;Bg30m &minus;P &minus;G200</b>
+--BASEMAP_TYPE=inside &gt; cara.ps</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gdalwarp</b>
+-s_srs +proj=merc cara.tif carageo.tiff</p>
+
+<p style="margin-left:11%; margin-top: 1em">To create a
+Polar Stereographic geotiff file of Patagonia</p>
+
+<p style="margin-left:11%; margin-top: 1em">pscoast
+-JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2
+--BASEMAP_TYPE=inside &gt; patagonia.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">ps2raster
+patagonia.ps -Tt -W+g -V</p>
+
+<p style="margin-left:11%; margin-top: 1em">To create a
+simple KMZ file for use in Google Earth, try</p>
+
+<p style="margin-left:11%; margin-top: 1em">grdimage
+lonlatgrid.nc -Jx1 -Ccolors.cpt -P -B0g2
+--BASEMAP_TYPE=inside &gt; tile.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">ps2raster
+tile.ps -Tg -W+k+t&quot;my title&quot;+l256/-1 -V</p>
+
+<p style="margin-left:11%; margin-top: 1em">(These commands
+assume that GhostScript can be found in your system&rsquo;s
+path.)</p>
+
+<a name="BINARY DATA"></a>
+<h2>BINARY DATA</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><A HREF="GMT.html">GMT</A></b>
+programs can produce binary <i>PostScript</i> image data and
+this is determined by the default setting PS_IMAGE_FORMAT.
+Because <b>ps2raster</b> needs to process the input files on
+a line-by-line basis you need to make sure the image format
+is set to <i>ascii</i> and not <i>bin</i>.</p>
+
+<a name="GHOSTSCRIPT OPTIONS"></a>
+<h2>GHOSTSCRIPT OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Most of the
+conversions done in <b>ps2raster</b> are handled by
+GhostScript. On most Unixes this program is available as
+<b>gs</b>; for Windows there is a version called
+<b>gswin32c</b>. GhostScript accepts a rich selection of
+command-line options that modify its behavior. Many of these
+are set indirectly by the options available above. However,
+hard-core usage may require some users to add additional
+options to fine-tune the result. Use <b>&minus;S</b> to
+examine the actual command used, and add custom options via
+one or more instances of the <b>&minus;C</b> option. For
+instance, to turn on image interpolation for all images,
+improving image quality for scaled images at the expense of
+speed, use <b>&minus;C</b>-dDOINTERPOLATE. See
+www.ghostscript.com for complete documentation.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i>gs</i>(1)</p>
+<hr>
+</body>
+</html>

@@ -1,0 +1,364 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>14. Filtering of Data in GMT &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="15. GMT on non-UNIX Platforms" href="non_unix_platforms.html" />
+    <link rel="prev" title="13. Color Space: The Final Frontier" href="colorspace.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preface.html">1. Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html">2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">3. General Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="options.html">4. Standardized command line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinate_transformations.html">5. GMT Coordinate Transformations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="map_projections.html">6. GMT Map Projections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplemental_packages.html">7. GMT Supplemental Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html">8. GMT File Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="include_figures.html">9. Including GMT Graphics into your Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predefined_patterns.html">10. Predefined Bit and Hachure Patterns in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="octal_codes.html">11. Chart of Octal Codes for Characters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postscript_fonts.html">12. PostScript Fonts Used by GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">13. Color Space: The Final Frontier</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">14. Filtering of Data in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_unix_platforms.html">15. GMT on non-UNIX Platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpts.html">16. Of Colors and Color Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_symbols.html">17. Custom Plot Symbols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contour_annotations.html">18. Annotation of Contours and “Quoted Lines”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ogrgmt_format.html">19. The GMT Vector Data Format for OGR Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="one-liner.html">20. GMT Modern Mode One-line Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../cookbook.html">GMT Cookbook</a> &raquo;</li>
+        
+      <li>14. Filtering of Data in GMT</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/cookbook/data_filtering.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="filtering-of-data-in-gmt">
+<h1>14. Filtering of Data in GMT<a class="headerlink" href="#filtering-of-data-in-gmt" title="Permalink to this headline">¶</a></h1>
+<p>The GMT programs <a class="reference internal" href="../filter1d.html"><span class="doc">filter1d</span></a> (for
+tables of data indexed to one independent variable) and
+<a class="reference internal" href="../grdfilter.html"><span class="doc">grdfilter</span></a> (for data given as
+2-dimensional grids) allow filtering of data by a moving-window process.
+(To filter a grid by Fourier transform use
+<a class="reference internal" href="../grdfft.html"><span class="doc">grdfft</span></a>.) Both programs use an argument
+<strong>-F</strong>&lt;<em>type</em>&gt;&lt;<em>width</em>&gt; to specify the
+type of process and the window’s width (in 1-D) or diameter (in 2-D).
+(In <a class="reference internal" href="../filter1d.html"><span class="doc">filter1d</span></a> the width is a length of
+the time or space ordinate axis, while in
+<a class="reference internal" href="../grdfilter.html"><span class="doc">grdfilter</span></a> it is the diameter of a
+circular area whose distance unit is related to the grid mesh via the
+<strong>-D</strong> option). If the process is a median, mode, or extreme value
+estimator then the window output cannot be written as a convolution and
+the filtering operation is not a linear operator. If the process is a
+weighted average, as in the boxcar, cosine, and gaussian filter types,
+then linear operator theory applies to the filtering process. These
+three filters can be described as convolutions with an impulse response
+function, and their transfer functions can be used to describe how they
+alter components in the input as a function of wavelength.</p>
+<p>Impulse responses are shown here for the boxcar, cosine, and gaussian
+filters. Only the relative amplitudes of the filter weights shown; the
+values in the center of the window have been fixed equal to 1 for ease
+of plotting. In this way the same graph can serve to illustrate both the
+1-D and 2-D impulse responses; in the 2-D case this plot is a
+diametrical cross-section through the filter weights
+(Figure <a class="reference internal" href="#impulse-responses"><span class="std std-ref">Impulse responses</span></a>).</p>
+<div class="figure align-center" id="id3">
+<span id="impulse-responses"></span><a class="reference internal image-reference" href="../_images/GMT_App_J_1.png"><img alt="../_images/GMT_App_J_1.png" src="../_images/GMT_App_J_1.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Impulse responses for GMT filters.</span></p>
+</div>
+<p>Although the impulse responses look the same in 1-D and 2-D, this is not
+true of the transfer functions; in 1-D the transfer function is the
+Fourier transform of the impulse response, while in 2-D it is the Hankel
+transform of the impulse response. These are shown in Figures
+<a class="reference internal" href="#gmt-1d-filters"><span class="std std-ref">Transfer functions for 1D</span></a> and
+<a class="reference internal" href="#gmt-2d-filters"><span class="std std-ref">2D</span></a>,
+respectively. Note that in 1-D the
+boxcar transfer function has its first zero crossing at <em>f = 1</em>,
+while in 2-D it is around <span class="math notranslate nohighlight">\(f \sim 1.2\)</span>. The 1-D cosine transfer
+function has its first zero crossing at <em>f = 2</em>; so a cosine
+filter needs to be twice as wide as a boxcar filter in order to zero the
+same lowest frequency. As a general rule, the cosine and gaussian
+filters are “better” in the sense that they do not have the “side lobes”
+(large-amplitude oscillations in the transfer function) that the boxcar
+filter has. However, they are correspondingly “worse” in the sense that
+they require more work (doubling the width to achieve the same cut-off wavelength).</p>
+<div class="figure align-center" id="id4">
+<span id="gmt-1d-filters"></span><a class="reference internal image-reference" href="../_images/GMT_App_J_2.png"><img alt="../_images/GMT_App_J_2.png" src="../_images/GMT_App_J_2.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Transfer functions for 1-D GMT filters.</span></p>
+</div>
+<p>One of the nice things about the gaussian filter is that its transfer
+functions are the same in 1-D and 2-D. Another nice property is that it
+has no negative side lobes. There are many definitions of the gaussian
+filter in the literature (see page 7 of Bracewell <a class="footnote-reference" href="#id2" id="id1">[30]</a>). We define
+<span class="math notranslate nohighlight">\(\sigma\)</span> equal to 1/6 of the filter width, and the impulse
+response proportional to <span class="math notranslate nohighlight">\(\exp[-0.5(t/\sigma)^2)\)</span>. With this
+definition, the transfer function is <span class="math notranslate nohighlight">\(\exp[-2(\pi\sigma f)^2]\)</span> and
+the wavelength at which the transfer function equals 0.5 is about 5.34
+<span class="math notranslate nohighlight">\(\sigma\)</span>, or about 0.89 of the filter width.</p>
+<div class="figure align-center" id="id5">
+<span id="gmt-2d-filters"></span><a class="reference internal image-reference" href="../_images/GMT_App_J_3.png"><img alt="../_images/GMT_App_J_3.png" src="../_images/GMT_App_J_3.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Transfer functions for 2-D (radial) GMT filters.</span></p>
+</div>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[30]</a></td><td>R. Bracewell, <em>The Fourier Transform and its Applications</em>,
+McGraw-Hill, London, 444 p., 1965.</td></tr>
+</tbody>
+</table>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="non_unix_platforms.html" class="btn btn-neutral float-right" title="15. GMT on non-UNIX Platforms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="colorspace.html" class="btn btn-neutral float-left" title="13. Color Space: The Final Frontier" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

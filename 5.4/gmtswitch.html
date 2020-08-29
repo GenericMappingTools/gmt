@@ -1,0 +1,280 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>gmtswitch &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gmtvector" href="gmtvector.html" />
+    <link rel="prev" title="gmtspatial" href="gmtspatial.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="gmtvector.html" title="gmtvector"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="gmtspatial.html" title="gmtspatial"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gmtswitch">
+<span id="index-0"></span><h1>gmtswitch<a class="headerlink" href="#gmtswitch" title="Permalink to this headline">¶</a></h1>
+<p>gmtswitch - Switching between different GMT versions</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmtswitch</strong> [ D | <em>version</em> ]</p>
+</div>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmtswitch</strong> helps you modify your environment to allow for the
+switching back and forth between several installed GMT versions, in
+particular GMT 5 and versions from the GMT 4 series. It works by
+maintaining a list of directories to GMT installations in a file in your
+home directory, then manipulates a symbolic link to point to the GMT
+directory whose executables we wish to use [The Windows version works a
+bit differently; see WINDOWS below].</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<p>None. If no arguments are given you are presented with a menu of
+installed GMT versions from 1 to <em>n</em> and you specify which one you wish
+to switch to.</p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>D</strong></dt>
+<dd>Select the default GMT version. This is the first entry in the
+~/.gmtversions file</dd>
+<dt><em>version</em></dt>
+<dd>Search for a unique match in the ~/.gmtversions file. If one match
+is found we switch to that entry; otherwise an error is generated.
+where module is the name of a GMT program and the options are
+those that pertain to that particular program.</dd>
+</dl>
+</div>
+<div class="section" id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<p>If you have official versions installed then running gmtswitch the very
+first time will examine your hard disk starting at / and look for
+directories with GMT4 or GMT5 in the name. This will fail to find the
+subversion directories and possibly others you have placed elsewhere.
+The fastest way to get up and running is this:</p>
+<ol class="arabic simple">
+<li><dl class="first docutils">
+<dt>Edit/Create ~/.gmtversions and add the paths to all GMT installations</dt>
+<dd>you have or care to consider. Each path goes on separate lines and
+points to the top dir of each distribution, e.g.,
+/Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT4.5.7</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>In your .bashrc or .[t]csrh or wherever you are maintaining your PATH</dt>
+<dd>or path variable, remove any directories you have added that contain
+GMT, and add the new path $HOME/this_gmt/bin (might be $home for csh users).
+Make sure this path appears before any others that might contain a GMT
+installation, such as those used by package managers (e.g., /sw/bin for
+fink, /opt/local/bin for Macports, etc.).</dd>
+</dl>
+</li>
+<li>Make the new path take effect (quit/restart terminal, logout/login, etc).</li>
+<li><dl class="first docutils">
+<dt>cd to the most recent GMT directory where a gmtswitch version lives,</dt>
+<dd>and run gmtswitch with no argument. Select one of the version from the
+menu.</dd>
+</dl>
+</li>
+<li>If in csh you may have to say rehash afterwards.</li>
+<li><dl class="first docutils">
+<dt>Type “psxy -” and the synopsis should tell you that you got the</dt>
+<dd>correct version. You can now run gmtswitch from anywhere; try it out and
+make sure that you can switch between the versions.</dd>
+</dl>
+</li>
+</ol>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To switch to GMT version 4.5.7 (assuming it was installed as such and not
+via a package manager), try</p>
+<blockquote>
+<div>gmtswitch GMT4.5.7</div></blockquote>
+<p>To switch to the default (your top choice), do</p>
+<blockquote>
+<div>gmtswitch D</div></blockquote>
+<p>Finally, to select from the menu, just run</p>
+<blockquote>
+<div>gmtswitch</div></blockquote>
+<p>and pick the one you want.</p>
+</div>
+<div class="section" id="beware">
+<h2>Beware<a class="headerlink" href="#beware" title="Permalink to this headline">¶</a></h2>
+<p>GMT remembers where it was installed the first time and uses that dir to
+find the default GMT share directory. If you move entire GMT
+installation after compilation then you may have to set GMT_SHAREDIR to
+point to the top dir in order for things to work. It is best not to move
+things after installation.</p>
+</div>
+<div class="section" id="windows">
+<h2>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h2>
+<p>Under Windows use gmtswitch.bat which is a batch script that changes the
+Windows PATH variable so that the BIN directory of the preferred version
+always comes first. To do that the batch works in two alternative modes:</p>
+<p>1 - Permanent mode</p>
+<p>2 - Temporary mode</p>
+<p>The permanent mode makes use of the free executable program “EditPath”
+to change the user path in the registry. It’s called permanent because
+the changes remains until … next change. See</p>
+<p><a class="reference external" href="http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml">http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml</a></p>
+<p>Of course the editpath.exe binary must be in your system’s path as well.
+WARNING: The path change will not be visible on the shell cmd where it
+was executed. For the change to be active you will need to open a new
+cmd window.</p>
+<p>The second mode is temporary because the path to the selected GMT binary
+dir is prepended to the previous path via a shell command line. This
+modification disappears when the shell cmd window where it was executes
+is deleted.</p>
+<p>It is the user responsibility to set the contents of the G32_32 to
+G5_64 below to valid paths where the binaries of the different GMT
+versions are installed Note that it is not mandatory to have all four of
+them in you computer. For the ones you do not have just let them
+pointing to nothing e.g.,</p>
+<p>set G4_64=</p>
+<p>The permanent mode is the default one (but this can be changed. See edit
+section) To run in the temporary mode just give a second argument
+(doesn’t matter what)</p>
+<p>Example usage to set a GMT5 64 bits permanent</p>
+<p>gmtswitch g5_64</p>
+<p>To temporary set a GMT4 32 bits do</p>
+<p>gmtswitch g4_32 1</p>
+<p>Run without arguments to get a “Usage” (for permanent mode)</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gmtswitch</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#setup">Setup</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#beware">Beware</a></li>
+<li><a class="reference internal" href="#windows">Windows</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gmtspatial.html"
+                        title="previous chapter">gmtspatial</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gmtvector.html"
+                        title="next chapter">gmtvector</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/gmtswitch.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="gmtvector.html" title="gmtvector"
+             >next</a> </li>
+        <li class="right" >
+          <a href="gmtspatial.html" title="gmtspatial"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

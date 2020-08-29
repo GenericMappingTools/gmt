@@ -1,0 +1,172 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(36) Spherical gridding using Renka’s algorithms &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(37) Spectral coherence between gravity and bathymetry grids" href="ex37.html" />
+    <link rel="prev" title="(35) Spherical triangulation and distance calculations" href="ex35.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex37.html" title="(37) Spectral coherence between gravity and bathymetry grids"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex35.html" title="(35) Spherical triangulation and distance calculations"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="spherical-gridding-using-renka-s-algorithms">
+<span id="example-36"></span><h1>(36) Spherical gridding using Renka’s algorithms<a class="headerlink" href="#spherical-gridding-using-renka-s-algorithms" title="Permalink to this headline">¶</a></h1>
+<p>The next script produces the plot in Figure. Here
+we demonstrate how <a class="reference internal" href="../sphinterpolate.html"><span class="doc">sphinterpolate</span></a> can be used
+to perform spherical gridding.  Our example uses early measurements of
+the radius of Mars from Mariner 9 and Viking Orbiter spacecrafts.  The
+middle panels shows the data distribution while the top and bottom panel
+are images of the interpolation using a piecewise linear interpolation
+and a smoothed spline interpolation, respectively.  For spherical gridding
+with large volumes of data we recommend <a class="reference internal" href="../sphinterpolate.html"><span class="doc">sphinterpolate</span></a>
+while for small data sets (such as this one, actually) you have more flexibility
+with <a class="reference internal" href="../greenspline.html"><span class="doc">greenspline</span></a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT EXAMPLE 36</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate sphinterpolate with Mars radii data</span>
+<span class="c1"># GMT modules:  psxy, makecpt, grdimage, sphinterpolate</span>
+<span class="c1"># Unix progs:   rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_36.ps
+<span class="c1"># Interpolate data of Mars radius from Mariner9 and Viking Orbiter spacecrafts</span>
+gmt makecpt -Crainbow -T-7000/15000 &gt; tt.cpt
+<span class="c1"># Piecewise linear interpolation; no tension</span>
+gmt sphinterpolate mars370.txt -Rg -I1 -Q0 -Gtt.nc
+gmt grdimage tt.nc -JH0/6i -Bag -Ctt.cpt -P -Xc -Y7.25i -K &gt; <span class="nv">$ps</span>
+gmt psxy -Rg -J -O -K mars370.txt -Sc0.05i -G0 -B30g30 -Y-3.25i &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Smoothing</span>
+gmt sphinterpolate mars370.txt -Rg -I1 -Q3 -Gtt.nc
+gmt grdimage tt.nc -J -Bag -Ctt.cpt  -Y-3.25i -O -K &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -Rg -J -O -T &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># cleanup</span>
+rm -f tt.cpt tt.nc
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_36.png"><img alt="../_images/example_36.png" src="../_images/example_36.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Spherical gridding using Renka’s algorithms.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex35.html"
+                        title="previous chapter">(35) Spherical triangulation and distance calculations</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex37.html"
+                        title="next chapter">(37) Spectral coherence between gravity and bathymetry grids</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex36.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex37.html" title="(37) Spectral coherence between gravity and bathymetry grids"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex35.html" title="(35) Spherical triangulation and distance calculations"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

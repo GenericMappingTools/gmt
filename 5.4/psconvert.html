@@ -1,0 +1,542 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>psconvert &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pshistogram" href="pshistogram.html" />
+    <link rel="prev" title="pscontour" href="pscontour.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="pshistogram.html" title="pshistogram"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="pscontour.html" title="pscontour"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="psconvert">
+<span id="index-0"></span><h1>psconvert<a class="headerlink" href="#psconvert" title="Permalink to this headline">¶</a></h1>
+<p>psconvert - Convert [E]PS file(s) to other formats using GhostScript</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>psconvert</strong> <em>psfile(s)</em>
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>params</em> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>gs_option</em> ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>outdir</em> ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>resolution</em> ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>out_name</em> ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>ghost_path</em> ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>listfile</em> ]
+[ <a class="reference internal" href="#p"><span> <strong>-P</strong></span></a></strong> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong>[<strong>g</strong>|<strong>t</strong>][1|2|4] ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><strong>b</strong>|<strong>e</strong>|<strong>E</strong>|<strong>f</strong>|<strong>F</strong>|<strong>j</strong>|<strong>g</strong>|<strong>G</strong>|<strong>m</strong>|<strong>s</strong>|<strong>t</strong> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong><em>params</em> ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>psconvert</strong> converts one or more PostScript files to other formats
+(BMP, EPS, JPEG, PDF, PNG, PPM, SVG, TIFF) using GhostScript. Input file
+names are read from the command line or from a file that lists them. The
+size of the resulting images is determined by the BoundingBox (or
+HiResBoundingBox, if present). As an option, a tight (HiRes)BoundingBox
+may be computed first. As another option, it can compute ESRI type world
+files used to reference, for instance, tif files and make them be
+recognized as geotiff.  Note: If the PostScript file calls on any of
+the Adobe PDF transparency extensions <em>and</em> PDF is not the selected output
+format, then the file will first be converted to a temporary PDF file
+(for the transparency to take effect) before converting the PDF to the
+desired output format.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>psfiles</em></dt>
+<dd>Names of PostScript files to be converted. The output files will
+have the same name (unless <strong>-F</strong> is used) but with the conventional
+extension name associated to the raster format (e.g., .jpg for the
+jpeg format). Use <strong>-D</strong> to redirect the output to a different
+directory.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong>[<strong>u</strong>][<em>margins</em>][<strong>-</strong>][<strong>+g</strong><em>paint</em>][<strong>+p</strong>[<em>pen</em>]][<strong>+r</strong>][<strong>+s</strong>[<strong>m</strong>]|<strong>S</strong><em>width</em>[<strong>u</strong>]/<em>height</em>[<strong>u</strong>]]</dt>
+<dd><p class="first">Adjust the BoundingBox and HiResBoundingBox to the minimum required
+by the image content. Append <strong>u</strong> to first remove any GMT-produced
+time-stamps. Optionally, append extra margins to the bounding box.
+Give either one (uniform), two (x and y) or four (individual sides)
+margins; append unit [Default is set by <a class="reference internal" href="gmt.conf.html#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a>].
+Alternatively, use <strong>-A-</strong> to override any automatic setting of <strong>-A</strong> by <strong>-W</strong>.</p>
+<p>Use the <strong>-A+s</strong><em>new_width</em> to resize the output image to exactly <em>new_width</em> units.
+The default is to use what is set by <a class="reference internal" href="gmt.conf.html#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a>
+but you can append a new unit and/or impose different width and height. What happens
+here is that GhostScript will do the re-interpolation work and the final image will
+retain the DPI resolution set by <strong>-E</strong>.  Use <strong>-A+sm</strong> to set a maximum size and
+the new width are only imposed if the original figure width exceeds it. Append
+/<em>new_height</em> to also also impose a maximum height in addition to the width.
+Alternatively use <strong>-A+S</strong><em>scale</em> to scale the image by a constant factor.</p>
+<p class="last">Use the <strong>-A+r</strong> to round the HighRes BoundingBox instead of using the <cite>ceil</cite> function.
+This is going against Adobe Law but can be useful when creating very small images
+where the difference of one pixel might matter.
+If <strong>-V</strong> is used we also report the dimensions of the illustration.
+Use <strong>-A+g</strong><em>paint</em> to paint the BoundingBox behind the illustration and
+use <strong>-A+p</strong>[<em>pen</em>] to draw the BoundingBox outline (append a pen or accept
+the default pen of 0.25p,black).</p>
+</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>gs_option</em></dt>
+<dd>Specify a single, custom option that will be passed on to
+GhostScript as is. Repeat to add several options [none].</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>outdir</em></dt>
+<dd>Sets an alternative output directory (which must exist) [Default is
+the same directory as the PS files]. Use <strong>-D.</strong> to place the output
+in the current directory instead.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong><em>resolution</em></dt>
+<dd>Set raster resolution in dpi [default = 720 for PDF, 300 for others].</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><em>out_name</em></dt>
+<dd>Force the output file name. By default output names are constructed
+using the input names as base, which are appended with an
+appropriate extension. Use this option to provide a different name,
+but without extension. Extension is still determined automatically.</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>ghost_path</em></dt>
+<dd>Full path to your GhostScript executable. NOTE: For Unix systems
+this is generally not necessary. Under Windows, the GhostScript path
+is now fetched from the registry. If this fails you can still add
+the GS path to system’s path or give the full path here. (e.g.,
+<strong>-G</strong>c:\programs\gs\gs9.02\bin\gswin64c). WARNING: because
+of the poor decision of embedding the bits on the gs exe name we
+cannot satisfy both the 32 and 64 bits GhostScript executable names.
+So in case of ‘get from registry’ failure the default name (when no
+<strong>-G</strong> is used) is the one of the 64 bits version, or gswin64c</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong></dt>
+<dd>Enforce gray-shades by using ICC profiles.  GhostScript versions
+&gt;= 9.00 change gray-shades by using ICC profiles.  GhostScript 9.05
+and above provide the ‘-dUseFastColor=true’ option to prevent that
+and that is what <strong>psconvert</strong> does by default, unless option <strong>-I</strong> is
+set.  Note that for GhostScript &gt;= 9.00 and &lt; 9.05 the gray-shade
+shifting is applied to all but PDF format.  We have no solution to
+offer other than upgrade GhostScript.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong><em>listfile</em></dt>
+<dd>The <em>listfile</em> is an ASCII file with the names of the PostScript
+files to be converted.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong></dt>
+<dd>This option is obsolete. Use <strong>-S</strong> to print the GhostScript
+command, if applicable. Use <strong>-Te</strong> to save the intermediate EPS file.</dd>
+</dl>
+<dl class="docutils" id="p">
+<dt><strong>-P</strong></dt>
+<dd>Force Portrait mode. All Landscape mode plots will be rotated back
+so that they show unrotated in Portrait mode. This is practical when
+converting to image formats or preparing EPS or PDF plots for
+inclusion in documents.</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong>[<strong>g</strong>|<strong>t</strong>][1|2|4]</dt>
+<dd>Set the anti-aliasing options for <strong>g</strong>raphics or <strong>t</strong>ext.
+Append the size of the subsample box (1, 2, or 4) [4]. Default is no
+anti-aliasing (same as <em>bits</em> = 1).</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong></dt>
+<dd>Print to standard error the GhostScript command after it has been executed.
+This option also prevent all intermediate files from being removed.</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-Tb</strong>|<strong>e</strong>|<strong>E</strong>|<strong>f</strong>|<strong>F</strong>|<strong>j</strong>|<strong>g</strong>|<strong>G</strong>|<strong>m</strong>|<strong>s</strong>|<strong>t</strong></dt>
+<dd>Sets the output format, where <strong>b</strong> means BMP, <strong>e</strong> means EPS,
+<strong>E</strong> means EPS with PageSize command, <strong>f</strong> means PDF, <strong>F</strong> means
+multi-page PDF, <strong>j</strong> means JPEG, <strong>g</strong> means PNG, <strong>G</strong> means
+transparent PNG (untouched regions are transparent), <strong>m</strong> means
+PPM, <strong>s</strong> means SVG, and <strong>t</strong> means TIFF [default is JPEG]. To <strong>bjgt</strong> you can
+append <strong>-</strong> in order to get a grayscale image. The EPS format can be
+combined with any of the other formats. For example, <strong>-Tef</strong>
+creates both an EPS and a PDF file. The <strong>-TF</strong> creates a multi-page
+PDF file from the list of input PS or PDF files. It requires the <strong>-F</strong> option.
+See also <strong>NOTES</strong> below.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong>[<strong>+g</strong>][<strong>+k</strong>][<strong>+t</strong><em>docname</em>][<strong>+n</strong><em>layername</em>][<strong>+o</strong><em>foldername</em>][<strong>+a</strong><em>altmode</em>[<em>alt</em>]][<strong>+l</strong><em>minLOD/maxLOD</em>][<strong>+f</strong><em>minfade/maxfade</em>][<strong>+u</strong><em>URL</em>]</dt>
+<dd><blockquote class="first">
+<div><p>Write a ESRI type world file suitable to make (e.g) .tif files be
+recognized as geotiff by software that know how to do it. Be aware,
+however, that different results are obtained depending on the image
+contents and if the <strong>-B</strong> option has been used or not. The trouble
+with the <strong>-B</strong> option is that it creates a frame and very likely
+its annotations. That introduces pixels outside the map data extent,
+and therefore the map extents estimation will be wrong. To avoid
+this problem use <em>-</em><em>-</em>MAP_FRAME_TYPE=inside option which plots all
+annotations and ticks inside the image and therefore does not
+compromise the coordinate computations. Pay attention also to the
+cases when the plot has any of the sides with whites only because
+than the algorithm will fail miserably as those whites will be eaten
+by the GhostScript. In that case you really must use <strong>-B</strong> or use a
+slightly off-white color.</p>
+<p>Together with <strong>-V</strong> it prints on screen the gdal_translate
+(gdal_translate is a command line tool from the GDAL package)
+command that reads the raster + world file and creates a true
+geotiff file. Use <strong>-W+g</strong> to do a system call to gdal_translate
+and create a geoTIFF image right away. The output file will have a
+.tiff extension.</p>
+<p>The world file naming follows the convention of jamming a ‘w’ in the
+file extension. So, if output is tif <strong>-Tt</strong> the world file is a
+.tfw, for jpeg we have a .jgw and so on. This option automatically
+sets <strong>-A</strong> <strong>-P</strong>.</p>
+<p>Use <strong>-W+k</strong> to create a minimalist KML file that allows loading the
+image in GoogleEarth. Note that for this option the image must be in
+geographical coordinates. If not, a warning is issued but the KML
+file is created anyway. Several modifier options are available to
+customize the KML file in the form of <strong>+</strong><em>opt</em> strings. Append
+<strong>+t</strong><em>title</em> to set the document title [GMT KML Document],
+<strong>+n</strong><em>layername</em> to set the layer name, and
+<strong>+a</strong><em>/altmode</em>[<em>altitude</em>] to select one of 5 altitude modes
+recognized by Google Earth that determines the altitude (in m) of
+the image: <strong>G</strong> clamped to the ground, <strong>g</strong> append altitude
+relative to ground, <strong>a</strong> append absolute altitude, <strong>s</strong> append
+altitude relative to seafloor, and <strong>S</strong> clamp it to the seafloor.
+Control visibility of the layer with the <strong>+l</strong><em>minLOD/maxLOD</em> and
+<strong>+f</strong><em>minfade/maxfade</em> options. Finally, if you plan to leave the
+image itself on a server and only distribute the KML, use
+<strong>+u</strong><em>URL</em> to prepend the URL to the image reference. If you are
+building a multi-component KML file then you can issue a KML snipped
+without the KML header and trailer by using the <strong>+o</strong><em>foldername</em>
+modification; it will enclose the image and associated KML code
+within a KML folder of the specified name. See the KML documentation
+for further explanation
+(<a class="reference external" href="http://code.google.com/apis/kml/documentation/">http://code.google.com/apis/kml/documentation/</a>).
+Note: If any of your titles or names contain a plus symbol next to
+a letter it can be confused with an option modifier. Escape such
+plus signs by placing a backslash in front of it.  Alternatively,
+enclose the string in double quotes and then the entire <strong>-W</strong>
+argument in single-quotes (or vice versa).</p>
+<p>Further notes on the creation of georeferenced rasters.
+<strong>psconvert</strong> can create a georeferenced raster image with a world
+file OR uses GDAL to convert the GMT PostScript file to geotiff.
+GDAL uses Proj.4 for its projection library. To provide with the
+information it needs to do the georeferencing, GMT 4.5 embeds a
+comment near the start of the PostScript file defining the
+projection using Proj.4 syntax. Users with pre-GMT v4.5 PostScript
+files, or even non-GMT ps files, can provide the information
+<strong>psconvert</strong> requires by manually editing a line into the
+PostScript file, prefixed with %%PROJ.</p>
+<p>For example the command</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">gmt</span> <span class="n">pscoast</span> <span class="o">-</span><span class="n">JM0</span><span class="o">/</span><span class="mi">12</span><span class="n">c</span> <span class="o">-</span><span class="n">R</span><span class="o">-</span><span class="mi">10</span><span class="o">/-</span><span class="mi">4</span><span class="o">/</span><span class="mi">37</span><span class="o">/</span><span class="mi">43</span> <span class="o">-</span><span class="n">W1</span> <span class="o">-</span><span class="n">Di</span> <span class="o">-</span><span class="n">Bg30m</span> <span class="o">--</span><span class="n">MAP_FRAME_TYPE</span><span class="o">=</span><span class="n">inside</span> <span class="o">&gt;</span> <span class="n">cara</span><span class="o">.</span><span class="n">ps</span>
+
+<span class="n">adds</span> <span class="n">this</span> <span class="n">comment</span> <span class="n">line</span>
+</pre></div>
+</div>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="o">%%</span><span class="n">PROJ</span><span class="p">:</span> <span class="n">merc</span> <span class="o">-</span><span class="mf">10.0</span> <span class="o">-</span><span class="mf">4.0</span> <span class="mf">37.0</span> <span class="mf">43.0</span> <span class="o">-</span><span class="mf">1113194.908</span> <span class="o">-</span><span class="mf">445277.963</span>
+    <span class="mf">4413389.889</span> <span class="mf">5282821.824</span> <span class="o">+</span><span class="n">proj</span><span class="o">=</span><span class="n">merc</span> <span class="o">+</span><span class="n">lon_0</span><span class="o">=</span><span class="mi">0</span> <span class="o">+</span><span class="n">k</span><span class="o">=-</span><span class="mi">1</span> <span class="o">+</span><span class="n">x_0</span><span class="o">=</span><span class="mi">0</span> <span class="o">+</span><span class="n">y_0</span><span class="o">=</span><span class="mi">0</span>
+    <span class="o">+</span><span class="n">a</span><span class="o">=</span><span class="mf">6378137.0</span> <span class="o">+</span><span class="n">b</span><span class="o">=</span><span class="mf">6356752.314245</span> <span class="o">+</span><span class="n">ellps</span><span class="o">=</span><span class="n">WGS84</span> <span class="o">+</span><span class="n">datum</span><span class="o">=</span><span class="n">WGS84</span> <span class="o">+</span><span class="n">units</span><span class="o">=</span><span class="n">m</span> <span class="o">+</span><span class="n">no_defs</span>
+
+<span class="n">where</span> <span class="s1">&#39;merc&#39;</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">keyword</span> <span class="k">for</span> <span class="n">the</span> <span class="n">coordinate</span> <span class="n">conversion</span><span class="p">;</span> <span class="n">the</span> <span class="mi">2</span> <span class="n">to</span>
+<span class="mi">5</span><span class="n">th</span> <span class="n">elements</span> <span class="n">contain</span> <span class="n">the</span> <span class="nb">map</span> <span class="n">limits</span><span class="p">,</span> <span class="mi">6</span> <span class="n">to</span> <span class="mi">9</span><span class="n">th</span> <span class="n">the</span> <span class="nb">map</span> <span class="n">limits</span> <span class="ow">in</span>
+<span class="n">projected</span> <span class="n">coordinates</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">rest</span> <span class="n">of</span> <span class="n">the</span> <span class="n">line</span> <span class="n">has</span> <span class="n">the</span> <span class="n">regular</span> <span class="n">proj4</span>
+<span class="n">string</span> <span class="k">for</span> <span class="n">this</span> <span class="n">projection</span><span class="o">.</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>-Z</strong></dt>
+<dd>Remove the input PostScript file(s) after the conversion.
+The input file(s) will <strong>not</strong> be removed in case of failures.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>The conversion to raster images (BMP, JPEG, PNG, PPM or TIFF) inherently
+results in loss of details that are available in the original
+PostScript file. Choose a resolution that is large enough for the
+application that the image will be used for. For web pages, smaller dpi
+values suffice, for Word documents and PowerPoint presentations a higher
+dpi value is recommended. <strong>psconvert</strong> uses the loss-less DEFLATE
+compression technique when creating PDF and PNG files and LZW compression
+for TIFF images.  For smaller dpi images, such as required for building
+animations, the use of <strong>-Qt</strong>4 and <strong>-Qg</strong>4 may help sharpen text and lines.</p>
+<p>EPS is a vector (not a raster) format. Therefore, the <strong>-E</strong> option has
+no effect on the creation of EPS files. Using the option <strong>-Te</strong> will
+remove setpagedevice commands from the PostScript file and will adjust the
+BoundingBox when the <strong>-A</strong> option is used. Note the original and
+required BoundingBox is limited to integer points, hence Adobe added the
+optional HiResBoundingBox to add more precision in sizing. The <strong>-A</strong>
+option calculates both and writes both to the EPS file and is subsequently
+used in any rasterization, if requested. When the <strong>-TE</strong> option is used, a
+new setpagedevice command is added that will indicate the actual pagesize for
+the plot, similar to the BoundingBox. Note that when the command setpagedevice
+exists in a PostScript file that is included in another document, this can wreak
+havoc on the printing or viewing of the overall document. Hence, <strong>-TE</strong> should only
+be used for “standalone” PostScript files.</p>
+<p>Although PDF and SVG are also vector formats, the <strong>-E</strong> option has an effect on
+the resolution of pattern fills and fonts that are stored as bitmaps in
+the document. <strong>psconvert</strong> therefore uses a larger default resolution
+when creating PDF and SVG files. <strong>-E</strong> also determines the resolution of the
+boundingbox values used to indicate the size of the output PDF.
+In order to obtain high-quality PDF or SVG files, the
+<em>/prepress</em> options are in effect, allowing only loss-less DEFLATE
+compression of raster images embedded in the PostScript file.</p>
+<p>Although <strong>psconvert</strong> was developed as part of the GMT, it can be
+used to convert PostScript files created by nearly any graphics
+program. However, <strong>-Au</strong> is GMT-specific.</p>
+<p>The <strong>ghostscript</strong> program continues to be developed and occasionally its
+developers make decisions that affect <strong>psconvert</strong>.  As of version 9.16 the
+SVG device has been removed.  Fortunately, quality SVG graphics can be obtained
+by first converting to PDF and then install and use the package <strong>pdf2svg</strong>.</p>
+<p>See <a class="reference internal" href="GMT_Docs.html#include-gmt-graphics"><span class="std std-ref">Including GMT Graphics into your Documents</span></a> of the <strong>GMT Technical Reference and Cookbook</strong> for more
+information on how <strong>psconvert</strong> is used to produce graphics that can be
+inserted into other documents (articles, presentations, posters, etc.).</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To convert the file psfile.ps to PNG using a tight BoundingBox and
+rotating it back to normal orientation in case it was in Landscape mode:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">psconvert</span> <span class="n">psfile</span><span class="o">.</span><span class="n">ps</span> <span class="o">-</span><span class="n">A</span> <span class="o">-</span><span class="n">P</span> <span class="o">-</span><span class="n">Tg</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To convert the file map.ps to PDF, extend the BoundingBox by 0.2 cm,
+fill it with lightblue paint and draw outline with a thick pen:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">psconvert</span> <span class="nb">map</span><span class="o">.</span><span class="n">ps</span> <span class="o">-</span><span class="n">A0</span><span class="o">.</span><span class="mi">2</span><span class="n">c</span><span class="o">+</span><span class="n">glightblue</span><span class="o">+</span><span class="n">pthick</span> <span class="o">-</span><span class="n">Tf</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To create a 5 cm PNG version at 300 dpi of our example_01.ps file</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">psconvert</span> <span class="n">example_01</span><span class="o">.</span><span class="n">ps</span> <span class="o">-</span><span class="n">A</span><span class="o">+</span><span class="n">s5c</span> <span class="o">-</span><span class="n">Tg</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To create a 3 pages PDF file from 3 individual PS files</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">psconvert</span> <span class="o">-</span><span class="n">TF</span> <span class="o">-</span><span class="n">Fabc</span> <span class="n">a</span><span class="o">.</span><span class="n">ps</span> <span class="n">b</span><span class="o">.</span><span class="n">ps</span> <span class="n">c</span><span class="o">.</span><span class="n">ps</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To create a simple linear map with <a class="reference internal" href="pscoast.html"><span class="doc">pscoast</span></a> and convert it to tif with a
+.tfw the tight BoundingBox computation.</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">pscoast</span> <span class="o">-</span><span class="n">JX12cd</span> <span class="o">-</span><span class="n">R</span><span class="o">-</span><span class="mi">10</span><span class="o">/-</span><span class="mi">4</span><span class="o">/</span><span class="mi">37</span><span class="o">/</span><span class="mi">43</span> <span class="o">-</span><span class="n">W1</span> <span class="o">-</span><span class="n">Di</span> <span class="o">-</span><span class="n">Bg30m</span> <span class="o">-</span><span class="n">P</span> <span class="o">-</span><span class="n">G200</span> <span class="o">--</span><span class="n">MAP_FRAME_TYPE</span><span class="o">=</span><span class="n">inside</span> <span class="o">&gt;</span> <span class="n">cara</span><span class="o">.</span><span class="n">ps</span>
+<span class="n">gmt</span> <span class="n">psconvert</span> <span class="n">cara</span><span class="o">.</span><span class="n">ps</span> <span class="o">-</span><span class="n">Tt</span> <span class="o">-</span><span class="n">W</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To create a Mercator version of the above example and use GDAL to
+produce a true geotiff file.</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">pscoast</span> <span class="o">-</span><span class="n">JM0</span><span class="o">/</span><span class="mi">12</span><span class="n">c</span> <span class="o">-</span><span class="n">R</span><span class="o">-</span><span class="mi">10</span><span class="o">/-</span><span class="mi">4</span><span class="o">/</span><span class="mi">37</span><span class="o">/</span><span class="mi">43</span> <span class="o">-</span><span class="n">W1</span> <span class="o">-</span><span class="n">Di</span> <span class="o">-</span><span class="n">Bg30m</span> <span class="o">-</span><span class="n">P</span> <span class="o">-</span><span class="n">G200</span> <span class="o">--</span><span class="n">MAP_FRAME_TYPE</span><span class="o">=</span><span class="n">inside</span> <span class="o">&gt;</span> <span class="n">cara</span><span class="o">.</span><span class="n">ps</span>
+<span class="n">gdalwarp</span> <span class="o">-</span><span class="n">s_srs</span> <span class="o">+</span><span class="n">proj</span><span class="o">=</span><span class="n">merc</span> <span class="n">cara</span><span class="o">.</span><span class="n">tif</span> <span class="n">carageo</span><span class="o">.</span><span class="n">tiff</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To create a Polar Stereographic geotiff file of Patagonia</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">pscoast</span> <span class="o">-</span><span class="n">JS</span><span class="o">-</span><span class="mi">55</span><span class="o">/-</span><span class="mi">60</span><span class="o">/</span><span class="mi">15</span><span class="n">c</span> <span class="o">-</span><span class="n">R</span><span class="o">-</span><span class="mi">77</span><span class="o">/-</span><span class="mi">55</span><span class="o">/-</span><span class="mf">57.5</span><span class="o">/-</span><span class="mi">48</span><span class="n">r</span> <span class="o">-</span><span class="n">Di</span> <span class="o">-</span><span class="n">Gred</span> <span class="o">-</span><span class="n">P</span> <span class="o">-</span><span class="n">Bg2</span> <span class="o">--</span><span class="n">MAP_FRAME_TYPE</span><span class="o">=</span><span class="n">inside</span> <span class="o">&gt;</span> <span class="n">patagonia</span><span class="o">.</span><span class="n">ps</span>
+<span class="n">gmt</span> <span class="n">psconvert</span> <span class="n">patagonia</span><span class="o">.</span><span class="n">ps</span> <span class="o">-</span><span class="n">Tt</span> <span class="o">-</span><span class="n">W</span><span class="o">+</span><span class="n">g</span> <span class="o">-</span><span class="n">V</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To create a simple KML file for use in Google Earth, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdimage</span> <span class="n">lonlatgrid</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Jx1</span> <span class="o">-</span><span class="n">Ccolors</span><span class="o">.</span><span class="n">cpt</span> <span class="o">-</span><span class="n">P</span> <span class="o">-</span><span class="n">B0g2</span> <span class="o">--</span><span class="n">MAP_FRAME_TYPE</span><span class="o">=</span><span class="n">inside</span> <span class="o">&gt;</span> <span class="n">tile</span><span class="o">.</span><span class="n">ps</span>
+<span class="n">gmt</span> <span class="n">psconvert</span> <span class="n">tile</span><span class="o">.</span><span class="n">ps</span> <span class="o">-</span><span class="n">Tg</span> <span class="o">-</span><span class="n">W</span><span class="o">+</span><span class="n">k</span><span class="o">+</span><span class="n">t</span><span class="s2">&quot;my title&quot;</span><span class="o">+</span><span class="n">l256</span><span class="o">/-</span><span class="mi">1</span> <span class="o">-</span><span class="n">V</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>(These commands assume that GhostScript can be found in your system’s path.)</p>
+</div>
+<div class="section" id="ghostscript-options">
+<h2>GhostScript Options<a class="headerlink" href="#ghostscript-options" title="Permalink to this headline">¶</a></h2>
+<p>Most of the conversions done in <strong>psconvert</strong> are handled by
+GhostScript. On most Unixes this program is available as <strong>gs</strong>; for
+Windows there is a version called <strong>gswin32c</strong>. GhostScript accepts a
+rich selection of command-line options that modify its behavior. Many of
+these are set indirectly by the options available above. However,
+hard-core usage may require some users to add additional options to
+fine-tune the result. Use <strong>-S</strong> to examine the actual command used, and
+add custom options via one or more instances of the <strong>-C</strong> option. For
+instance, to turn on image interpolation for all images, improving image
+quality for scaled images at the expense of speed, use
+<strong>-C</strong>-dDOINTERPOLATE. See www.ghostscript.com for complete
+documentation.</p>
+</div>
+<div class="section" id="making-kmz-files">
+<h2>Making KMZ files<a class="headerlink" href="#making-kmz-files" title="Permalink to this headline">¶</a></h2>
+<p>If you have made a series of KML files (which may depend on other items
+like local PNG images), you can consolidate these into a single KMZ file
+for saving space and for grouping related files together.  The bash function
+<strong>gmt_build_kmz</strong> in the <a class="reference internal" href="gmt_shell_functions.sh.html"><span class="doc">gmt_shell_functions.sh</span></a> can be used to
+do this.  You need to source gmt_shell_functions.sh first before you can
+use it.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="pscoast.html"><span class="doc">pscoast</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">psconvert</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#ghostscript-options">GhostScript Options</a></li>
+<li><a class="reference internal" href="#making-kmz-files">Making KMZ files</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pscontour.html"
+                        title="previous chapter">pscontour</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pshistogram.html"
+                        title="next chapter">pshistogram</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/psconvert.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="pshistogram.html" title="pshistogram"
+             >next</a> </li>
+        <li class="right" >
+          <a href="pscontour.html" title="pscontour"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

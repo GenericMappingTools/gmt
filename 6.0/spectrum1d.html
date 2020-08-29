@@ -1,0 +1,556 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>spectrum1d &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="sph2grd" href="sph2grd.html" />
+    <link rel="prev" title="solar" href="solar.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">GMT Modules</a> &raquo;</li>
+        
+      <li>spectrum1d</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/spectrum1d.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="spectrum1d">
+<span id="index-0"></span><h1>spectrum1d<a class="headerlink" href="#spectrum1d" title="Permalink to this headline">¶</a></h1>
+<p>Compute auto- [and cross-] spectra from one [or two] time series</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt spectrum1d</strong> [ <em>table</em> ] [ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>segment_size</em> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong>[<strong>xycnpago</strong>] ] [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>dt</em> ] [ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong>[<strong>h</strong>|<strong>m</strong>] ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong>[<em>name_stem</em>] ] [ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong> ] [ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong> ]
+[ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>spectrum1d</strong> reads X [and Y] values from the first [and second]
+columns on standard input [or <em>x[y]file</em>]. These values are treated as
+timeseries X(t) [Y(t)] sampled at equal intervals spaced <em>dt</em> units
+apart. There may be any number of lines of input. <strong>spectrum1d</strong> will
+create file[s] containing auto- [and cross- ] spectral density estimates
+by Welch’s method of ensemble averaging of multiple overlapped windows,
+using standard error estimates from Bendat and Piersol.</p>
+<p>The output files have 3 columns: f or w, p, and e. f or w is the
+frequency or wavelength, p is the spectral density estimate, and e is
+the one standard deviation error bar size. These files are named based
+on <em>name_stem</em>. If the <strong>-C</strong> option is used, up to eight files are
+created; otherwise only one (xpower) is written. The files (which are
+ASCII unless <strong>-bo</strong> is set) are as follows:</p>
+<dl class="docutils">
+<dt><em>name_stem</em>.xpower</dt>
+<dd>Power spectral density of X(t). Units of X * X * <em>dt</em>.</dd>
+<dt><em>name_stem</em>.ypower</dt>
+<dd>Power spectral density of Y(t). Units of Y * Y * <em>dt</em>.</dd>
+<dt><em>name_stem</em>.cpower</dt>
+<dd>Power spectral density of the coherent output. Units same as ypower.</dd>
+<dt><em>name_stem</em>.npower</dt>
+<dd>Power spectral density of the noise output. Units same as ypower.</dd>
+<dt><em>name_stem</em>.gain</dt>
+<dd>Gain spectrum, or modulus of the transfer function. Units of (Y / X).</dd>
+<dt><em>name_stem</em>.phase</dt>
+<dd>Phase spectrum, or phase of the transfer function. Units are
+radians.</dd>
+<dt><em>name_stem</em>.admit</dt>
+<dd>Admittance spectrum, or real part of the transfer function. Units of
+(Y / X).</dd>
+<dt><em>name_stem</em>.coh</dt>
+<dd>(Squared) coherency spectrum, or linear correlation coefficient as a
+function of frequency. Dimensionless number in [0, 1]. The
+Signal-to-Noise-Ratio (SNR) is coh / (1 - coh). SNR = 1 when coh = 0.5.</dd>
+</dl>
+<p>In addition, a single file with all of the above as individual columns will
+be written to <em>stdout</em> (unless disabled via <strong>-T</strong>).</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><em>segment_size</em></dt>
+<dd><em>segment_size</em> is a radix-2 number of samples per window for
+ensemble averaging. The smallest frequency estimated is
+1.0/(<em>segment_size</em> * <em>dt</em>), while the largest is 1.0/(2 *
+<em>dt</em>). One standard error in power spectral density is approximately
+1.0 / sqrt(<em>n_data</em> / <em>segment_size</em>), so if <em>segment_size</em> =
+256, you need 25,600 data to get a one standard error bar of 10%.
+Cross-spectral error bars are larger and more complicated, being a
+function also of the coherency.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>)
+files holding X(t) [Y(t)] samples in the first 1 [or 2] columns. If
+no files are specified, <strong>spectrum1d</strong> will read from standard input.</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong>[<strong>xycnpago</strong>]</dt>
+<dd>Read the first two columns of input as samples of two time-series,
+X(t) and Y(t). Consider Y(t) to be the output and X(t) the input in
+a linear system with noise. Estimate the optimum frequency response
+function by least squares, such that the noise output is minimized
+and the coherent output and the noise output are uncorrelated.
+Optionally specify up to 8 letters from the set { <strong>x y c n p a g
+o</strong> } in any order to create only those output files instead of the
+default [all]. <strong>x</strong> = xpower, <strong>y</strong> = ypower, <strong>c</strong> = cpower, <strong>n</strong>
+= npower, <strong>p</strong> = phase, <strong>a</strong> = admit, <strong>g</strong> = gain, <strong>o</strong> = coh.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>dt</em></dt>
+<dd><em>dt</em> Set the spacing between samples in the time-series [Default = 1].</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong></dt>
+<dd>Leave trend alone. By default, a linear trend will be removed prior
+to the transform. Alternatively, append <strong>m</strong> to just remove the
+mean value or <strong>h</strong> to remove the mid-value.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong>[<em>name_stem</em>]</dt>
+<dd>Supply an alternate name stem to be used for each individual output file [Default = “spectrum”].
+If <strong>-N</strong> is given with no argument then we disable the writing of individual
+output files and instead write a single composite results table to standard output.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong></dt>
+<dd>Disable the writing of a single composite results table to stdout.  Only individual output
+files for each selected component (see <strong>-C</strong>) will be written.</dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong></dt>
+<dd>Write Wavelength rather than frequency in column 1 of the output
+file[s] [Default = frequency, (cycles / <em>dt</em>)].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary format for primary input. [Default is 2 input columns].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary output. [Default is 2 output columns].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em> <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> | <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong><em>gap</em>[<strong>u</strong>][<strong>+n</strong>|<strong>p</strong>] <a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine data gaps and line breaks.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<em>t</em>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column, <em>t</em> is trailing text, append <em>word</em> to read one word only).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt>
+<dd>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</dd>
+</dl>
+</div>
+<div class="section" id="ascii-format-precision">
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-geo-out"><span class="std std-ref">FORMAT_GEO_OUT</span></a>, absolute time is
+under the control of <a class="reference internal" href="gmt.conf.html#format-date-out"><span class="std std-ref">FORMAT_DATE_OUT</span></a> and
+<a class="reference internal" href="gmt.conf.html#format-clock-out"><span class="std std-ref">FORMAT_CLOCK_OUT</span></a>, whereas general floating point values are formatted
+according to <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a>. Be aware that the format in effect
+can lead to loss of precision in ASCII output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <a class="reference internal" href="gmt.conf.html#format-float-out"><span class="std std-ref">FORMAT_FLOAT_OUT</span></a> setting.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p><strong>Note</strong>: Below are some examples of valid syntax for this module.
+The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
+can be cut and pasted into your terminal for testing.
+Other commands requiring input files are just dummy examples of the types
+of uses that are common but cannot be run verbatim as written.</p>
+<p>Suppose data.g is gravity data in mGal, sampled every 1.5 km. To write
+its power spectrum, in mGal**2-km, to the file data.xpower, use</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt spectrum1d data.g -S256 -D1.5 -Ndata
+</pre></div>
+</div>
+</div></blockquote>
+<p>Suppose in addition to data.g you have data.t, which is topography in
+meters sampled at the same points as data.g. To estimate various
+features of the transfer function, considering data.t as input and
+data.g as output, use</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>paste data.t data.g <span class="p">|</span> gmt spectrum1d -S256 -D1.5 -Ndata -C &gt; results.txt
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="tutorial">
+<h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
+<p>The output of spectrum1d is in units of power spectral density, and so to get units
+of data-squared you must divide by delta_t, where delta_t is the sample spacing.
+(There may be a factor of 2 pi somewhere, also. If you want to be sure of the
+normalization, you can determine a scale factor from Parseval’s theorem: the sum of
+the squares of your input data should equal the sum of the squares of the outputs
+from spectrum1d, if you are simply trying to get a periodogram. [See below.])</p>
+<p>Suppose we simply take a data set, x(t), and compute the discrete Fourier transform
+(DFT) of the entire data set in one go. Call this X(f). Then suppose we form X(f)
+times the complex conjugate of X(f).</p>
+<p>P_raw(f) = X(f) * X’(f), where the ‘ indicates complex conjugation.</p>
+<p>P_raw is called the periodogram. The sum of the samples of the periodogram equals the
+sum of the samples of the squares of x(t), by Parseval’s theorem. (If you use a DFT
+subroutine on a computer, usually the sum of P_raw equals the sum of x-squared, times M,
+where M is the number of samples in x(t).)</p>
+<p>Each estimate of X(f) is now formed by a weighted linear combination of all of the
+x(t) values. (The weights are sometimes called “twiddle factors” in the DFT literature.)
+So, no matter what the probability distribution for the x(t) values is, the probability
+distribution for the X(f) values approaches [complex] Gaussian, by the Central Limit
+Theorem. This means that the probability distribution for P_raw(f) approaches chi-squared
+with two degrees of freedom. That reduces to an exponential distribution, and the
+variance of the estimate of P_raw is proportional to the square of the mean, that is,
+the expected value of P_raw.</p>
+<p>In practice if we form P_raw, the estimates are hopelessly noisy. Thus P_raw is not useful,
+and we need to do some kind of smoothing or averaging to get a useful estimate, P_useful(f).</p>
+<p>There are several different ways to do this in the literature. One is to form P_raw and
+then smooth it. Another is to form the auto-covariance function of x(t), smooth, taper and
+shape it, and then take the Fourier transform of the smoothed, tapered and shaped auto-covariance.
+Another is to form a parametric model for the auto-correlation structure in x(t), then compute
+the spectrum of that model. This last approach is what is done in what is called the
+“maximum entropy” or “Berg” or “Box-Jenkins” or “ARMA” or “ARIMA” methods.</p>
+<p>Welch’s method is a tried-and-true method. In his method, you choose a segment length,
+<strong>-S</strong><em>N</em>, so that estimates will be made from segments of length <em>N</em>. The frequency samples
+(in cycles per delta_t unit) of your P_useful will then be at <em>k</em> /(<em>N</em> * <em>delta_t</em>),
+where <em>k</em> is an integer, and you will get <em>N</em> samples (since the spectrum is an even
+function of <em>f</em>, only <em>N</em>/2 of them are really useful). If the length of your entire
+data set, x(t), is <em>M</em> samples long, then the variance in your P_useful will decrease
+in proportion to <em>N/M</em>. Thus you need to choose <em>N</em> &lt;&lt; <em>M</em> to get very low noise and
+high confidence in P_useful. There is a trade-off here; see below.</p>
+<p>There is an additional reduction in variance in that Welch’s method uses a Von Hann
+spectral window on each sample of length <em>N</em>. This reduces side lobe leakage and has
+the effect of smoothing the (<em>N</em> segment) periodogram as if the X(f) had been
+convolved with [1/4, 1/2, 1/4] prior to forming P_useful. But this slightly widens
+the spectral bandwidth of each estimate, because the estimate at frequency sample <em>k</em>
+is now a little correlated with the estimate at frequency sample k+1. (Of course this
+would also happen if you simply formed P_raw and then smoothed it.)</p>
+<p>Finally, Welch’s method also uses overlapped processing. Since the Von Hann window is
+large in the middle and tapers to near zero at the ends, only the middle of the segment
+of length <em>N</em> contributes much to its estimate. Therefore in taking the next segment
+of data, we move ahead in the x(t) sequence only <em>N</em>/2 points. In this way, the next
+segment gets large weight where the segments on either side of it will get little weight,
+and vice versa. This doubles the smoothing effect and ensures that (if <em>N</em> &lt;&lt; <em>M</em>)
+nearly every point in x(t) contributes with nearly equal weight in the final answer.</p>
+<p>Welch’s method of spectral estimation has been widely used and widely studied. It is very
+reliable and its statistical properties are well understood. It is highly recommended in
+such textbooks as “Random Data: Analysis and Measurement Procedures” by Bendat and Piersol.</p>
+<p>In all problems of estimating parameters from data, there is a classic trade-off between
+resolution and variance. If you want to try to squeeze more resolution out of your data
+set, then you have to be willing to accept more noise in the estimates. The same trade-off
+is evident here in Welch’s method. If you want to have very low noise in the spectral
+estimates, then you have to choose <em>N</em> &lt;&lt; <em>M</em>, and this means that you get only <em>N</em>
+samples of the spectrum, and the longest period that you can resolve is only <em>N</em> * <em>delta_t</em>.
+So you see that reducing the noise lowers the number of spectral samples and lowers the
+longest period. Conversely, if you choose <em>N</em> approaching <em>M</em>, then you approach the
+periodogram with its very bad statistical properties, but you get lots of samples and
+a large fundamental period.</p>
+<p>The other spectral estimation methods also can do a good job. Welch’s method was selected
+because the way it works, how one can code it, and its effects on statistical distributions,
+resolution, side-lobe leakage, bias, variance, etc. are all easily understood. Some of the
+other methods (e.g. Maximum Entropy) tend to hide where some of these trade-offs are
+happening inside a “black box”.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="grdfft.html"><span class="doc">grdfft</span></a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Bendat, J. S., and A. G. Piersol, 1986, Random Data, 2nd revised ed., John Wiley &amp; Sons.</p>
+<p>Welch, P. D., 1967, The use of Fast Fourier Transform for the estimation
+of power spectra: a method based on time averaging over short, modified
+periodograms, IEEE Transactions on Audio and Electroacoustics, Vol AU-15, No 2.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sph2grd.html" class="btn btn-neutral float-right" title="sph2grd" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="solar.html" class="btn btn-neutral float-left" title="solar" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

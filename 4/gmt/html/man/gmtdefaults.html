@@ -1,0 +1,3279 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:14 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GMTDEFAULTS</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GMTDEFAULTS</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#GMT PARAMETERS">GMT PARAMETERS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">gmtdefaults
+&minus; To list current <b><A HREF="GMT.html">GMT</A></b> defaults</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtdefaults
+&minus;D</b>[<b>u</b>|<b>s</b>] | <b>&minus;L</b></p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtdefaults</b>
+lists the <b><A HREF="GMT.html">GMT</A></b> parameter defaults if the option
+<b>&minus;D</b> is used. There are three ways to change some
+of the settings: (1) Use the command <b><A HREF="gmtset.html">gmtset</A></b>, (2) use
+any texteditor to edit the file .gmtdefaults4 in your home,
+~/.gmt or current directory (if you do not have this file,
+run <b>gmtdefaults</b> -D &gt; ~/.gmtdefaults4 to get one
+with the system default settings), or (3) override any
+parameter by specifying one or more
+<b>&minus;&minus;PARAMETER</b>=<i>value</i> statements on
+the commandline of any <b><A HREF="GMT.html">GMT</A></b> command (<b>PARAMETER</b>
+and <b>VALUE</b> are any combination listed below). The
+first two options are permanent changes until explicitly
+changed back, while the last option is ephemeral and only
+applies to the single <b><A HREF="GMT.html">GMT</A></b> command that received the
+override. <b><A HREF="GMT.html">GMT</A></b> can provide default values in US or SI
+units. This choice is determined by the contents of the
+gmt_setup.conf file in <b><A HREF="GMT.html">GMT</A></b>&rsquo;s share
+directory.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Print the system
+<b><A HREF="GMT.html">GMT</A></b> defaults to standard output. Append <b>u</b> for
+US defaults or <b>s</b> for SI defaults. [<b>&minus;D</b>
+alone gives current choice in gmt_setup.conf].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Print the
+user&rsquo;s currently active defaults to standard
+output.</p> </td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Your currently
+active defaults come from the .gmtdefaults4 file in the
+current working directory, if present; else from the
+.gmtdefaults4 file in your home directory, if present; else
+from the file ~/.gmt/.gmtdefaults4, if present; else from
+the system defaults set at the time <b><A HREF="GMT.html">GMT</A></b> was
+compiled.</p>
+
+<a name="GMT PARAMETERS"></a>
+<h2>GMT PARAMETERS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The following
+is a list of the parameters that are user-definable in
+<b><A HREF="GMT.html">GMT</A></b>. The parameter names are always given in UPPER
+CASE. The parameter values are case-insensitive unless
+otherwise noted. The system defaults are given in brackets [
+for SI (and US) ]. Those marked <b>*</b> can be set on the
+command line as well (the corresponding option is given in
+parentheses). Note that default distances and lengths below
+are given in both cm or inch; the chosen default depends on
+your choice of default unit (see <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b>). You
+can explicitly specify the unit used for distances and
+lengths by appending <b>c</b> (cm), <b>i</b> (inch),
+<b>m</b> (meter), or <b>p</b> (points). When no unit is
+indicated the value will be assumed to be in the unit set by
+<b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b>. Note that the printer resolution
+<b><A HREF="gmtdefaults.html#DOTS_PR_INCH">DOTS_PR_INCH</A></b> is always the number of dots or pixels
+per inch. Several parameters take only TRUE or FALSE.
+<b><br>
+ANNOT_FONT_PRIMARY</b></p>
+
+<p style="margin-left:22%;">Font used for upper
+annotations, etc. [Helvetica]. Specify either the font
+number or the font name (case sensitive!). The 35 available
+fonts are:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">0</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Helvetica</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Helvetica-Bold</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">2</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Helvetica-Oblique</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">3</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Helvetica-BoldOblique</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">4</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Times-Roman</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">5</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Times-Bold</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">6</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Times-Italic</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">7</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Times-BoldItalic</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">8</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Courier</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">9</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Courier-Bold</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">10</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Courier-Oblique</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">11</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Courier-BoldOblique</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">12</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Symbol</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">13</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">AvantGarde-Book</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">14</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">AvantGarde-BookOblique</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">15</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">AvantGarde-Demi</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">16</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">AvantGarde-DemiOblique</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">17</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Bookman-Demi</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">18</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Bookman-DemiItalic</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">19</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Bookman-Light</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">20</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Bookman-LightItalic</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">21</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Helvetica-Narrow</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">22</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Helvetica-Narrow-Bold</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">23</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Helvetica-Narrow-Oblique</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">24</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Helvetica-Narrow-BoldOblique</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">25</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">NewCenturySchlbk-Roman</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">26</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">NewCenturySchlbk-Italic</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">27</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">NewCenturySchlbk-Bold</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">28</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">NewCenturySchlbk-BoldItalic</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">29</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Palatino-Roman</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">30</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Palatino-Italic</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">31</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Palatino-Bold</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">32</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Palatino-BoldItalic</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">33</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">ZapfChancery-MediumItalic</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">34</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">ZapfDingbats</p></td>
+</table>
+
+
+<p style="margin-left:11%;"><b><A NAME="ANNOT_FONT_SIZE_PRIMARY">ANNOT_FONT_SIZE_PRIMARY</A></b></p>
+
+<p style="margin-left:22%;">Font size (&gt; 0) for map
+annotations [14p].</p>
+
+
+<p style="margin-left:11%;"><b><A NAME="ANNOT_FONT_SECONDARY">ANNOT_FONT_SECONDARY</A></b></p>
+
+<p style="margin-left:22%;">Font to use for time axis
+secondary annotations. See <b><A HREF="gmtdefaults.html#ANNOT_FONT_PRIMARY">ANNOT_FONT_PRIMARY</A></b> for
+available fonts [Helvetica].</p>
+
+
+<p style="margin-left:11%;"><b><A NAME="ANNOT_FONT_SIZE_SECONDARY">ANNOT_FONT_SIZE_SECONDARY</A></b></p>
+
+<p style="margin-left:22%;">Font size (&gt; 0) for time
+axis secondary annotations [16p].</p>
+
+<p style="margin-left:11%;"><b><A NAME="ANNOT_MIN_ANGLE">ANNOT_MIN_ANGLE</A></b></p>
+
+<p style="margin-left:22%;">If the angle between the map
+boundary and the annotation baseline is less than this
+minimum value (in degrees), the annotation is not plotted
+(this may occur for certain oblique projections.) Give a
+value in the range 0&minus;90. [20]</p>
+
+<p style="margin-left:11%;"><b><A NAME="ANNOT_MIN_SPACING">ANNOT_MIN_SPACING</A></b></p>
+
+<p style="margin-left:22%;">If an annotation would be
+plotted less than this minimum distance from its closest
+neighbor, the annotation is not plotted (this may occur for
+certain oblique projections.) [0]</p>
+
+
+<p style="margin-left:11%;"><b><A NAME="ANNOT_OFFSET_PRIMARY">ANNOT_OFFSET_PRIMARY</A></b></p>
+
+<p style="margin-left:22%;">Distance from end of tickmark
+to start of annotation [0.2<b>c</b> (or 0.075<b>i</b>)]. A
+negative offset will place the annotation inside the map
+border.</p>
+
+
+<p style="margin-left:11%;"><b><A NAME="ANNOT_OFFSET_SECONDARY">ANNOT_OFFSET_SECONDARY</A></b></p>
+
+<p style="margin-left:22%;">Distance from base of primary
+annotation to the top of the secondary annotation
+[0.2<b>c</b> (or 0.075<b>i</b>)] (Only applies to time axes
+with both primary and secondary annotations).</p>
+
+<p style="margin-left:11%;"><b><A NAME="BASEMAP_AXES">BASEMAP_AXES</A></b></p>
+
+<p style="margin-left:22%;">Sets which axes to draw and
+annotate. Case sensitive: Upper case means both draw and
+annotate, lower case means draw axis only. [WESN].</p>
+
+<p style="margin-left:11%;"><b><A NAME="BASEMAP_FRAME_RGB">BASEMAP_FRAME_RGB</A></b></p>
+
+<p style="margin-left:22%;">Color used to draw map
+boundaries and annotations. Give a red/green/blue triplet,
+with each element in the 0&minus;255 range. Prepend
+&rsquo;+&rsquo; to replicate this color to the tick-, grid-,
+and frame-pens. [0/0/0] (black).</p>
+
+<p style="margin-left:11%;"><b><A NAME="BASEMAP_TYPE">BASEMAP_TYPE</A></b></p>
+
+<p style="margin-left:22%;">Choose between inside, graph,
+plain and fancy (thick boundary, alternating black/white
+frame; append + for rounded corners) [fancy]. For some map
+projections (e.g., Oblique Mercator), plain is the only
+option even if fancy is set as default. In general, fancy
+only applies to situations where the projected x and y
+directions parallel the lon and lat directions (e.g.,
+rectangular projections, polar projections). For situations
+where all boundary ticks and annotations must be inside the
+maps (e.g., for preparing geotiffs), chose inside. Finally,
+graph is used for linear projections only and will extend
+the axis by 7.5% and add arrow heads.</p>
+
+<p style="margin-left:11%;"><b><A NAME="CHAR_ENCODING">CHAR_ENCODING</A></b></p>
+
+<p style="margin-left:22%;">Names the eight bit character
+set being used for text in files and in command line
+parameters. This allows <b><A HREF="GMT.html">GMT</A></b> to ensure that the
+<i>PostScript</i> output generates the correct characters on
+the plot.. Choose from Standard, Standard+, ISOLatin1,
+ISOLatin1+, and ISO-8859-x (where x is in the ranges 1-10 or
+13-15). See Appendix F for details [ISOLatin1+ (or
+Standard+)].</p>
+
+<p style="margin-left:11%;"><b><A NAME="COLOR_BACKGROUND">COLOR_BACKGROUND</A></b></p>
+
+<p style="margin-left:22%;">Color used for the background
+of images (i.e., when z &lt; lowest colortable entry). Give
+a red/green/blue triplet, with each element in the
+0&minus;255 range. [0/0/0] (black)</p>
+
+<p style="margin-left:11%;"><b><A NAME="COLOR_FOREGROUND">COLOR_FOREGROUND</A></b></p>
+
+<p style="margin-left:22%;">Color used for the foreground
+of images (i.e., when z &gt; highest colortable entry). Give
+a red/green/blue triplet, with each element in the
+0&minus;255 range. [255/255/255] (white)</p>
+
+<p style="margin-left:11%;"><b><A NAME="COLOR_IMAGE">COLOR_IMAGE</A></b></p>
+
+<p style="margin-left:22%;">Selects which operator to use
+when rendering bit-mapped color images. Due to the lack of
+the colorimage operator in some <i>PostScript</i>
+implementations, as well as some <i>PostScript</i> editors
+inability to handle color gradations, <b><A HREF="GMT.html">GMT</A></b> offers two
+different options:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">adobe (Adobe&rsquo;s colorimage definition)
+[Default].</p> </td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">tiles (Plot image as many individual
+rectangles).</p> </td>
+</table>
+
+<p style="margin-left:11%;"><b><A NAME="COLOR_MODEL">COLOR_MODEL</A></b></p>
+
+<p style="margin-left:22%;">Selects if color palette files
+contain RGB values (r,g,b in 0-255 range), HSV values (h in
+0-360, s,v in 0-1 range), or CMYK values (c,m,y,k in 0-1
+range). A <b><A HREF="gmtdefaults.html#COLOR_MODEL">COLOR_MODEL</A></b> setting in the color palette
+file will override this setting. Internally, color
+interpolation takes place directly on the RGB values which
+can give unexpected hues, whereas interpolation directly on
+the HSV values better preserves the hues. Prepend the prefix
+&quot;+&quot; to force interpolation in the selected color
+system (does not apply to the CMYK system). For this
+additional option, the defaults take precedence over the
+color palette file [rgb].</p>
+
+<p style="margin-left:11%;"><b><A NAME="COLOR_NAN">COLOR_NAN</A></b></p>
+
+<p style="margin-left:22%;">Color used for the non-defined
+areas of images (i.e., where z == NaN). Give a
+red/green/blue triplet, with each element in the 0&minus;255
+range. [128/128/128] (gray)</p>
+
+<p style="margin-left:11%;"><b><A NAME="D_FORMAT">D_FORMAT</A></b></p>
+
+<p style="margin-left:22%;">Output format (C language
+printf syntax) to be used when printing double precision
+floating point numbers. For geographic coordinates, see
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>. [%.12g].</p>
+
+<p style="margin-left:11%;"><b><A NAME="DEGREE_SYMBOL">DEGREE_SYMBOL</A></b></p>
+
+<p style="margin-left:22%;">Determines what symbol is used
+to plot the degree symbol on geographic map annotations.
+Choose between ring, degree, colon, or none [ring].</p>
+
+<p style="margin-left:11%;"><b><A NAME="DOTS_PR_INCH">DOTS_PR_INCH</A></b></p>
+
+<p style="margin-left:22%;">Resolution of the plotting
+device (dpi). Note that in order to be as compact as
+possible, <b><A HREF="GMT.html">GMT</A></b> <i>PostScript</i> output uses integer
+formats only so the resolution should be set depending on
+what output device you are using. E.g, using 300 and sending
+the output to a Linotype 300 phototypesetter (2470 dpi) will
+not take advantage of the extra resolution (i.e.,
+positioning on the page and line thicknesses are still only
+done in steps of 1/300 inch; of course, text will look
+smoother) [300].</p>
+
+<p style="margin-left:11%;"><b><A NAME="ELLIPSOID">ELLIPSOID</A></b></p>
+
+<p style="margin-left:22%;">The (case sensitive) name of
+the ellipsoid used for the map projections [WGS-84]. Choose
+among:</p>
+
+<p style="margin-left:22%; margin-top: 1em">WGS-84 : World
+Geodetic System [Default] (1984) <br>
+OSU91A : Ohio State University (1991) <br>
+OSU86F : Ohio State University (1986) <br>
+Engelis : Goddard Earth Models (1985) <br>
+SGS-85 : Soviet Geodetic System (1985) <br>
+TOPEX : Used commonly for altimetry (1990) <br>
+MERIT-83 : United States Naval Observatory (1983) <br>
+GRS-80 : International Geodetic Reference System (1980) <br>
+Hughes-1980 : Hughes Aircraft Company for DMSP SSM/I grid
+products (1980) <br>
+Lerch : For geoid modelling (1979) <br>
+ATS77 : Average Terrestrial System, Canada Maritime
+provinces (1977) <br>
+IAG-75 : International Association of Geodesy (1975) <br>
+Indonesian : Applies to Indonesia (1974) <br>
+WGS-72 : World Geodetic System (1972) <br>
+NWL-10D : Naval Weapons Lab (Same as WGS-72) (1972) <br>
+South-American : Applies to South America (1969) <br>
+Fischer-1968 : Used by NASA for Mercury program (1968) <br>
+Modified-Mercury-1968 : Same as Fischer-1968 (1968) <br>
+GRS-67 : International Geodetic Reference System (1967) <br>
+International-1967 : Worldwide use (1967) <br>
+WGS-66 : World Geodetic System (1966) <br>
+NWL-9D : Naval Weapons Lab (Same as WGS-66) (1966) <br>
+Australian : Applies to Australia (1965) <br>
+APL4.9 : Appl. Physics (1965) <br>
+Kaula : From satellite tracking (1961) <br>
+Hough : Applies to the Marshall Islands (1960) <br>
+WGS-60 : World Geodetic System (1960) <br>
+Fischer-1960 : Used by NASA for Mercury program (1960) <br>
+Mercury-1960 : Same as Fischer-1960 (1960) <br>
+Modified-Fischer-1960 : Applies to Singapore (1960) <br>
+Fischer-1960-SouthAsia : Same as Modified-Fischer-1960
+(1960) <br>
+Krassovsky : Used in the (now former) Soviet Union (1940)
+<br>
+War-Office : Developed by G. T. McCaw (1926) <br>
+International-1924 : Worldwide use (1924) <br>
+Hayford-1909 : Same as the International 1924 (1909) <br>
+Helmert-1906 : Applies to Egypt (1906) <br>
+Clarke-1880 : Applies to most of Africa, France (1880) <br>
+Clarke-1880-Arc1950 : Modified Clarke-1880 for Arc 1950
+(1880) <br>
+Clarke-1880-IGN : Modified Clarke-1880 for IGN (1880) <br>
+Clarke-1880-Jamaica : Modified Clarke-1880 for Jamaica
+(1880) <br>
+Clarke-1880-Merchich : Modified Clarke-1880 for Merchich
+(1880) <br>
+Clarke-1880-Palestine : Modified Clarke-1880 for Palestine
+(1880) <br>
+Andrae : Applies to Denmark and Iceland (1876) <br>
+Clarke-1866 : Applies to North America, the Philippines
+(1866) <br>
+Clarke-1866-Michigan : Modified Clarke-1866 for Michigan
+(1866) <br>
+Struve : Friedrich Georg Wilhelm Struve (1860) <br>
+Clarke-1858 : Clarke&rsquo;s early ellipsoid (1858) <br>
+Airy : Applies to Great Britain (1830) <br>
+Airy-Ireland : Applies to Ireland in 1965 (1830) <br>
+Modified-Airy : Same as Airy-Ireland (1830) <br>
+Bessel : Applies to Central Europe, Chile, Indonesia (1841)
+<br>
+Bessel-Schwazeck : Applies to Namibia (1841) <br>
+Bessel-Namibia : Same as Bessel-Schwazeck (1841) <br>
+Bessel-NGO1948 : Modified Bessel for NGO 1948 (1841) <br>
+Everest-1830 : India, Burma, Pakistan, Afghanistan, Thailand
+(1830) <br>
+Everest-1830-Kalianpur : Modified Everest for Kalianpur
+(1956) (1830) <br>
+Everest-1830-Kertau : Modified Everest for Kertau, Malaysia
+&amp; Singapore (1830) <br>
+Everest-1830-Timbalai : Modified Everest for Timbalai, Sabah
+Sarawak (1830) <br>
+Everest-1830-Pakistan : Modified Everest for Pakistan (1830)
+<br>
+Walbeck : First least squares solution by Finnish astronomer
+(1819) <br>
+Plessis : Old ellipsoid used in France (1817) <br>
+Delambre : Applies to Belgium (1810) <br>
+CPM : Comm. des Poids et Mesures, France (1799) <br>
+Maupertius : Really old ellipsoid used in France (1738) <br>
+Sphere : The mean radius in WGS-84 (for spherical/plate
+tectonics applications) (1984) <br>
+Moon : Moon (IAU2000) (2000) <br>
+Mercury : Mercury (IAU2000) (2000) <br>
+Venus : Venus (IAU2000) (2000) <br>
+Mars : Mars (IAU2000) (2000) <br>
+Jupiter : Jupiter (IAU2000) (2000) <br>
+Saturn : Saturn (IAU2000) (2000) <br>
+Uranus : Uranus (IAU2000) (2000) <br>
+Neptune : Neptune (IAU2000) (2000) <br>
+Pluto : Pluto (IAU2000) (2000)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Note that for
+some global projections, <b><A HREF="GMT.html">GMT</A></b> may use a spherical
+approximation of the ellipsoid chosen, setting the
+flattening to zero, and using a mean radius. A warning will
+be given when this happens. If a different ellipsoid name
+than those mentioned here is given, <b><A HREF="GMT.html">GMT</A></b> will attempt
+to parse the name to extract the semi-major axis (<i>a</i>
+in m) and the flattening. Formats allowed are:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%">
+</td>
+<td width="8%">
+
+
+<p valign="top"><i>a</i></p></td>
+<td width="69%">
+</td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">implies a zero flattening</p></td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%">
+</td>
+<td width="8%">
+
+
+<p valign="top"><i>a</i>,<i>inv_f</i></p></td>
+<td width="69%">
+
+
+<p valign="top">where <i>inv_f</i> is the inverse
+flattening</p> </td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%">
+</td>
+<td width="8%">
+
+
+<p valign="top"><i>a</i>,<b>b=</b><i>b</i></p></td>
+<td width="69%">
+
+
+<p valign="top">where <i>b</i> is the semi-minor axis (in
+m)</p> </td>
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="8%">
+</td>
+<td width="8%">
+
+
+<p valign="top"><i>a</i>,<b>f=</b><i>f</i></p></td>
+<td width="69%">
+
+
+<p valign="top">where <i>f</i> is the flattening</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">This way a
+custom ellipsoid (e.g., those used for other planets) may be
+used. Further note that coordinate transformations in
+<b><A HREF="mapproject.html">mapproject</A></b> can also specify specific datums; see the
+<b><A HREF="mapproject.html">mapproject</A></b> man page for further details and how to
+view ellipsoid and datum parameters.</p>
+
+<p style="margin-left:11%;"><b><A NAME="FIELD_DELIMITER">FIELD_DELIMITER</A></b></p>
+
+<p style="margin-left:22%;">This setting determines what
+character will separate ASCII output data columns written by
+<b><A HREF="GMT.html">GMT</A></b>. Choose from tab, space, comma, and none
+[tab].</p>
+
+<p style="margin-left:11%;"><b><A NAME="FRAME_PEN">FRAME_PEN</A></b></p>
+
+<p style="margin-left:22%;">Pen attributes used to draw
+plain map frame in dpi units or points (append p)
+[1.25p].</p>
+
+<p style="margin-left:11%;"><b><A NAME="FRAME_WIDTH">FRAME_WIDTH</A></b></p>
+
+<p style="margin-left:22%;">Width (&gt; 0) of map borders
+for fancy map frame [0.2<b>c</b> (or 0.075<b>i</b>)].</p>
+
+<p style="margin-left:11%;"><b><A NAME="GLOBAL_X_SCALE">GLOBAL_X_SCALE</A></b></p>
+
+<p style="margin-left:22%;">Global x-scale (&gt; 0) to
+apply to plot-coordinates before plotting. Normally used to
+shrink the entire output down to fit a specific height/width
+[1.0].</p>
+
+<p style="margin-left:11%;"><b><A NAME="GLOBAL_Y_SCALE">GLOBAL_Y_SCALE</A></b></p>
+
+<p style="margin-left:22%;">Same, but for y-coordinates
+[1.0].</p>
+
+
+<p style="margin-left:11%;"><b><A NAME="GRID_CROSS_SIZE_PRIMARY">GRID_CROSS_SIZE_PRIMARY</A></b></p>
+
+<p style="margin-left:22%;">Size (&gt;= 0) of grid cross at
+lon-lat intersections. 0 means draw continuous gridlines
+instead [0].</p>
+
+
+<p style="margin-left:11%;"><b><A NAME="GRID_CROSS_SIZE_SECONDARY">GRID_CROSS_SIZE_SECONDARY</A></b></p>
+
+<p style="margin-left:22%;">Size (&gt;= 0) of grid cross at
+secondary lon-lat intersections. 0 means draw continuous
+gridlines instead [0].</p>
+
+<p style="margin-left:11%;"><b><A NAME="GRID_PEN_PRIMARY">GRID_PEN_PRIMARY</A></b></p>
+
+<p style="margin-left:22%;">Pen attributes used to draw
+grid lines in dpi units or points (append p) [0.25p].</p>
+
+<p style="margin-left:11%;"><b><A NAME="GRID_PEN_SECONDARY">GRID_PEN_SECONDARY</A></b></p>
+
+<p style="margin-left:22%;">Pen attributes used to draw
+grid lines in dpi units or points (append p) [0.5p].</p>
+
+<p style="margin-left:11%;"><b><A NAME="GRIDFILE_FORMAT">GRIDFILE_FORMAT</A></b></p>
+
+<p style="margin-left:22%;">Default file format for grids,
+with optional scale, offset and invalid value, written as
+<i>ff</i>/<i>scale</i>/<i>offset</i>/<i>invalid</i>. The
+2-letter format indicator can be one of
+[<b>bcnsr</b>][<b>bsifd</b>]. The first letter indicates
+native <b><A HREF="GMT.html">GMT</A></b> binary, old format netCDF,
+COARDS-compliant netCDF, Surfer format or Sun Raster format.
+The second letter stands for byte, short, int, float and
+double, respectively. When /<i>invalid</i> is omitted the
+appropriate value for the given format is used (NaN or
+largest negative). When /<i>scale</i>/<i>offset</i> is
+omitted, /1.0/0.0 is used. [nf].</p>
+
+<p style="margin-left:11%;"><b><A NAME="GRIDFILE_SHORTHAND">GRIDFILE_SHORTHAND</A></b></p>
+
+<p style="margin-left:22%;">If TRUE, all grid file names
+are examined to see if they use the file extension shorthand
+discussed in Section 4.17 of the <b><A HREF="GMT.html">GMT</A></b> Technical
+Reference and Cookbook. If FALSE, no filename expansion is
+done [FALSE].</p>
+
+<p style="margin-left:11%;"><b><A NAME="HEADER_FONT">HEADER_FONT</A></b></p>
+
+<p style="margin-left:22%;">Font to use when plotting
+headers. See <b><A HREF="gmtdefaults.html#ANNOT_FONT_PRIMARY">ANNOT_FONT_PRIMARY</A></b> for available fonts
+[Helvetica].</p>
+
+<p style="margin-left:11%;"><b><A NAME="HEADER_FONT_SIZE">HEADER_FONT_SIZE</A></b></p>
+
+<p style="margin-left:22%;">Font size (&gt; 0) for header
+[36p].</p>
+
+<p style="margin-left:11%;"><b><A NAME="HEADER_OFFSET">HEADER_OFFSET</A></b></p>
+
+<p style="margin-left:22%;">Distance from top of axis
+annotations (or axis label, if present) to base of plot
+header [0.5<b>c</b> (or 0.1875<b>i</b>)].</p>
+
+<p style="margin-left:11%;"><b><A NAME="HISTORY">HISTORY</A></b></p>
+
+<p style="margin-left:22%;">If TRUE, passes the history of
+past common command options via the hidden .gmtcommands4
+file [TRUE].</p>
+
+<p style="margin-left:11%;"><b><A NAME="HSV_MAX_SATURATION">HSV_MAX_SATURATION</A></b></p>
+
+<p style="margin-left:22%;">Maximum saturation (0&minus;1)
+assigned for most positive intensity value [0.1].</p>
+
+<p style="margin-left:11%;"><b><A NAME="HSV_MIN_SATURATION">HSV_MIN_SATURATION</A></b></p>
+
+<p style="margin-left:22%;">Minimum saturation (0&minus;1)
+assigned for most negative intensity value [1.0].</p>
+
+<p style="margin-left:11%;"><b><A NAME="HSV_MAX_VALUE">HSV_MAX_VALUE</A></b></p>
+
+<p style="margin-left:22%;">Maximum value (0&minus;1)
+assigned for most positive intensity value [1.0].</p>
+
+<p style="margin-left:11%;"><b><A NAME="HSV_MIN_VALUE">HSV_MIN_VALUE</A></b></p>
+
+<p style="margin-left:22%;">Minimum value (0&minus;1)
+assigned for most negative intensity value [0.3].</p>
+
+<p style="margin-left:11%;"><b><A NAME="INPUT_CLOCK_FORMAT">INPUT_CLOCK_FORMAT</A></b></p>
+
+<p style="margin-left:22%;">Formatting template that
+indicates how an input clock string is formatted. This
+template is then used to guide the reading of clock strings
+in data fields. To properly decode 12-hour clocks, append am
+or pm (or upper case) to match your data records. As
+examples, try hh:mm, hh:mm:ssAM, etc. [hh:mm:ss].</p>
+
+<p style="margin-left:11%;"><b><A NAME="INPUT_DATE_FORMAT">INPUT_DATE_FORMAT</A></b></p>
+
+<p style="margin-left:22%;">Formatting template that
+indicates how an input date string is formatted. This
+template is then used to guide the reading of date strings
+in data fields. You may specify either Gregorian calendar
+format or ISO week calendar format. Gregorian calendar: Use
+any combination of yyyy (or yy for 2-digit years; if so see
+<b><A HREF="gmtdefaults.html#Y2K_OFFSET_YEAR">Y2K_OFFSET_YEAR</A></b>), mm (or o for abbreviated month name
+in the current time language), and dd, with or without
+delimiters. For day-of-year data, use jjj instead of mm
+and/or dd. Examples can be ddmmyyyy, yy-mm-dd, dd-o-yyyy,
+yyyy/dd/mm, yyyy-jjj, etc. ISO Calendar: Expected template
+is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
+day. Either template must be consistent, e.g., you cannot
+specify months if you don&rsquo;t specify years. Examples
+are yyyyWwwd, yyyy-Www, etc. [yyyy-mm-dd].</p>
+
+<p style="margin-left:11%;"><b><A NAME="INTERPOLANT">INTERPOLANT</A></b></p>
+
+<p style="margin-left:22%;">Determines if linear (linear),
+Akima&rsquo;s spline (akima), natural cubic spline (cubic)
+or no interpolation (none) should be used for 1-D
+interpolations in various programs [akima].</p>
+
+<p style="margin-left:11%;"><b><A NAME="IO_HEADER">IO_HEADER</A></b></p>
+
+<p style="margin-left:22%;">(<b>* &minus;H</b>) Specifies
+whether input/output ASCII files have header record(s) or
+not [FALSE].</p>
+
+<p style="margin-left:11%;"><b><A NAME="LABEL_FONT">LABEL_FONT</A></b></p>
+
+<p style="margin-left:22%;">Font to use when plotting
+labels below axes. See <b><A HREF="gmtdefaults.html#ANNOT_FONT_PRIMARY">ANNOT_FONT_PRIMARY</A></b> for
+available fonts [Helvetica].</p>
+
+<p style="margin-left:11%;"><b><A NAME="LABEL_FONT_SIZE">LABEL_FONT_SIZE</A></b></p>
+
+<p style="margin-left:22%;">Font size (&gt; 0) for labels
+[24p].</p>
+
+<p style="margin-left:11%;"><b><A NAME="LABEL_OFFSET">LABEL_OFFSET</A></b></p>
+
+<p style="margin-left:22%;">Distance from base of axis
+annotations to the top of the axis label [0.3<b>c</b> (or
+0.1125<b>i</b>)].</p>
+
+<p style="margin-left:11%;"><b><A NAME="LINE_STEP">LINE_STEP</A></b></p>
+
+<p style="margin-left:22%;">Determines the maximum length
+(&gt; 0) of individual straight line-segments when drawing
+arcuate lines [0.025<b>c</b> (or 0.01<b>i</b>)]</p>
+
+<p style="margin-left:11%;"><b><A NAME="MAP_SCALE_FACTOR">MAP_SCALE_FACTOR</A></b></p>
+
+<p style="margin-left:22%;">Changes the default map scale
+factor used for the Polar Stereographic [0.9996], UTM
+[0.9996], and Transverse Mercator [1] projections in order
+to minimize areal distortion. Provide a new scale-factor or
+leave as default.</p>
+
+<p style="margin-left:11%;"><b><A NAME="MAP_SCALE_HEIGHT">MAP_SCALE_HEIGHT</A></b></p>
+
+<p style="margin-left:22%;">Sets the height (&gt; 0) on the
+map of the map scale bars drawn by various programs
+[0.2<b>c</b> (or 0.075<b>i</b>)].</p>
+
+<p style="margin-left:11%;"><b><A NAME="MEASURE_UNIT">MEASURE_UNIT</A></b></p>
+
+<p style="margin-left:22%;">Sets the unit length. Choose
+between cm, inch, m, and point. [cm]. Note that, in
+<b><A HREF="GMT.html">GMT</A></b>, one point is defined as 1/72 inch (the
+<i>PostScript</i> definition), while it is often defined as
+1/72.27 inch in the typesetting industry. There is no
+universal definition.</p>
+
+<p style="margin-left:11%;"><b><A NAME="N_COPIES">N_COPIES</A></b></p>
+
+<p style="margin-left:22%;">(<b>* &minus;c</b>) Number of
+plot copies to make [1].</p>
+
+<p style="margin-left:11%;"><b><A NAME="N_HEADER_RECS">N_HEADER_RECS</A></b></p>
+
+<p style="margin-left:22%;">Specifies how many header
+records to expect if <b>&minus;H</b> is turned on [1].</p>
+
+<p style="margin-left:11%;"><b><A NAME="NAN_RECORDS">NAN_RECORDS</A></b></p>
+
+<p style="margin-left:22%;">Determines what happens when
+input records containing NaNs for <i>x</i> or <i>y</i> (and
+in some cases <i>z</i>) are read. Choose between
+<i>skip</i>, which will simply report how many bad records
+were skipped, and <i>pass</i> [Default], which will pass
+these records on to the calling programs. For most programs
+this will result in output records with NaNs as well, but
+some will interpret these NaN records to indicate gaps in a
+series; programs may then use that information to detect
+segmentation (if applicable).</p>
+
+<p style="margin-left:11%;"><b><A NAME="OBLIQUE_ANNOTATION">OBLIQUE_ANNOTATION</A></b></p>
+
+<p style="margin-left:22%;">This integer is a sum of 6 bit
+flags (most of which only are relevant for oblique
+projections): If bit 1 is set (1), annotations will occur
+wherever a gridline crosses the map boundaries, else
+longitudes will be annotated on the lower and upper
+boundaries only, and latitudes will be annotated on the left
+and right boundaries only. If bit 2 is set (2), then
+longitude annotations will be plotted horizontally. If bit 3
+is set (4), then latitude annotations will be plotted
+horizontally. If bit 4 is set (8), then oblique tickmarks
+are extended to give a projection equal to the specified
+tick_length. If bit 5 is set (16), tickmarks will be drawn
+normal to the border regardless of gridline angle. If bit 6
+is set (32), then latitude annotations will be plotted
+parallel to the border. To set a combination of these, add
+up the values in parentheses. [1].</p>
+
+<p style="margin-left:11%;"><b><A NAME="OUTPUT_CLOCK_FORMAT">OUTPUT_CLOCK_FORMAT</A></b></p>
+
+<p style="margin-left:22%;">Formatting template that
+indicates how an output clock string is to be formatted.
+This template is then used to guide the writing of clock
+strings in data fields. To use a floating point format for
+the smallest unit (e.g., seconds), append .xxx, where the
+number of x indicates the desired precision. If no floating
+point is indicated then the smallest specified unit will be
+rounded off to nearest integer. For 12-hour clocks, append
+am, AM, a.m., or A.M. (<b><A HREF="GMT.html">GMT</A></b> will replace a|A with p|P
+for pm). If your template starts with a leading hyphen (-)
+then each integer item (y,m,d) will be printed without
+leading zeros (default uses fixed width formats). As
+examples, try hh:mm, hh.mm.ss, hh:mm:ss.xxxx, hha.m., etc.
+[hh:mm:ss].</p>
+
+<p style="margin-left:11%;"><b><A NAME="OUTPUT_DATE_FORMAT">OUTPUT_DATE_FORMAT</A></b></p>
+
+<p style="margin-left:22%;">Formatting template that
+indicates how an output date string is to be formatted. This
+template is then used to guide the writing of date strings
+in data fields. You may specify either Gregorian calendar
+format or ISO week calendar format. Gregorian calendar: Use
+any combination of yyyy (or yy for 2-digit years; if so see
+<b><A HREF="gmtdefaults.html#Y2K_OFFSET_YEAR">Y2K_OFFSET_YEAR</A></b>), mm (or o for abbreviated month name
+in the current time language), and dd, with or without
+delimiters. For day-of-year data, use jjj instead of mm
+and/or dd. As examples, try yy/mm/dd, yyyy=jjj, dd-o-yyyy,
+dd-mm-yy, yy-mm, etc. ISO Calendar: Expected template is
+yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
+day. Either template must be consistant, e.g., you cannot
+specify months if you don&rsquo;t specify years. As
+examples, try yyyyWww, yy-W-ww-d, etc. If your template
+starts with a leading hyphen (-) then each integer item
+(y,m,d) will be printed without leading zeros (default uses
+fixed width formats) [yyyy-mm-dd].</p>
+
+
+<p style="margin-left:11%;"><b><A NAME="OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b></p>
+
+<p style="margin-left:22%;">Formatting template that
+indicates how an output geographical coordinate is to be
+formatted. This template is then used to guide the writing
+of geographical coordinates in data fields. The template is
+in general of the form [+|-]D or
+[+|-]ddd[:mm[:ss]][.xxx][F]. By default, longitudes will be
+reported in the -180/+180 range. The various terms have the
+following purpose:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">+</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Output longitude in the 0 to 360 range
+[-180/+180]</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">-</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Output longitude in the -360 to 0 range
+[-180/+180]</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">D</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Use <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> for floating point
+degrees.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">ddd</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Fixed format integer degrees</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">:</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">delimiter used</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">mm</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Fixed format integer arc minutes</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">ss</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Fixed format integer arc seconds</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">F</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Encode sign using WESN suffix</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">The default is
++D.</p>
+
+<p style="margin-left:11%;"><b><A NAME="PAGE_COLOR">PAGE_COLOR</A></b></p>
+
+<p style="margin-left:22%;">Sets the color of the imaging
+background, i.e., the paper. Give a red/green/blue triplet,
+with each element in the 0&minus;255 range. [255/255/255]
+(white).</p>
+
+<p style="margin-left:11%;"><b><A NAME="PAPER_MEDIA">PAPER_MEDIA</A></b></p>
+
+<p style="margin-left:22%;">Sets the physical format of the
+current plot paper [A4 (or Letter)]. The following formats
+(and their widths and heights in points) are recognized
+(Additional site-specific formats may be specified in the
+gmt_custom_media.conf file in <b>$GMT_SHAREDIR</b>/conf or
+~/.gmt; see that file for details):</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">Media</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">width</p></td>
+<td width="62%">
+
+
+<p valign="top">height</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">A0</p></td>
+<td width="8%">
+
+
+<p valign="top">2380</p></td>
+<td width="7%">
+
+
+<p valign="top">3368</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">A1</p></td>
+<td width="8%">
+
+
+<p valign="top">1684</p></td>
+<td width="7%">
+
+
+<p valign="top">2380</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">A2</p></td>
+<td width="8%">
+
+
+<p valign="top">1190</p></td>
+<td width="7%">
+
+
+<p valign="top">1684</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">A3</p></td>
+<td width="8%">
+
+
+<p valign="top">842</p></td>
+<td width="7%">
+
+
+<p valign="top">1190</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">A4</p></td>
+<td width="8%">
+
+
+<p valign="top">595</p></td>
+<td width="7%">
+
+
+<p valign="top">842</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">A5</p></td>
+<td width="8%">
+
+
+<p valign="top">421</p></td>
+<td width="7%">
+
+
+<p valign="top">595</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">A6</p></td>
+<td width="8%">
+
+
+<p valign="top">297</p></td>
+<td width="7%">
+
+
+<p valign="top">421</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">A7</p></td>
+<td width="8%">
+
+
+<p valign="top">210</p></td>
+<td width="7%">
+
+
+<p valign="top">297</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">A8</p></td>
+<td width="8%">
+
+
+<p valign="top">148</p></td>
+<td width="7%">
+
+
+<p valign="top">210</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">A9</p></td>
+<td width="8%">
+
+
+<p valign="top">105</p></td>
+<td width="7%">
+
+
+<p valign="top">148</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">A10</p></td>
+<td width="8%">
+
+
+<p valign="top">74</p></td>
+<td width="7%">
+
+
+<p valign="top">105</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">B0</p></td>
+<td width="8%">
+
+
+<p valign="top">2836</p></td>
+<td width="7%">
+
+
+<p valign="top">4008</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">B1</p></td>
+<td width="8%">
+
+
+<p valign="top">2004</p></td>
+<td width="7%">
+
+
+<p valign="top">2836</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">B2</p></td>
+<td width="8%">
+
+
+<p valign="top">1418</p></td>
+<td width="7%">
+
+
+<p valign="top">2004</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">B3</p></td>
+<td width="8%">
+
+
+<p valign="top">1002</p></td>
+<td width="7%">
+
+
+<p valign="top">1418</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">B4</p></td>
+<td width="8%">
+
+
+<p valign="top">709</p></td>
+<td width="7%">
+
+
+<p valign="top">1002</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">B5</p></td>
+<td width="8%">
+
+
+<p valign="top">501</p></td>
+<td width="7%">
+
+
+<p valign="top">709</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">archA</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">648</p></td>
+<td width="62%">
+
+
+<p valign="top">864</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">archB</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">864</p></td>
+<td width="62%">
+
+
+<p valign="top">1296</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">archC</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">1296</p></td>
+<td width="62%">
+
+
+<p valign="top">1728</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">archD</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">1728</p></td>
+<td width="62%">
+
+
+<p valign="top">2592</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">archE</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">2592</p></td>
+<td width="62%">
+
+
+<p valign="top">3456</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">flsa</p></td>
+<td width="8%">
+
+
+<p valign="top">612</p></td>
+<td width="7%">
+
+
+<p valign="top">936</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">halfletter</p></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="62%">
+
+
+<p valign="top">396</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="62%">
+
+
+<p valign="top">612</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">statement</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">396</p></td>
+<td width="62%">
+
+
+<p valign="top">612</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">note</p></td>
+<td width="8%">
+
+
+<p valign="top">540</p></td>
+<td width="7%">
+
+
+<p valign="top">720</p></td>
+<td width="62%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">letter</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">612</p></td>
+<td width="62%">
+
+
+<p valign="top">792</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">legal</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">612</p></td>
+<td width="62%">
+
+
+<p valign="top">1008</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">11x17</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">792</p></td>
+<td width="62%">
+
+
+<p valign="top">1224</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">tabloid</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">792</p></td>
+<td width="62%">
+
+
+<p valign="top">1224</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">ledger</p></td>
+<td width="8%"></td>
+<td width="7%">
+
+
+<p valign="top">1224</p></td>
+<td width="62%">
+
+
+<p valign="top">792</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">For a
+completely custom format (e.g., for large format plotters)
+you may also specify Custom_WxH, where W and H are in points
+unless you append a unit to each dimension (<b>c</b>,
+<b>i</b>, <b>m</b> or <b>p</b> [Default]). To force the
+printer to request a manual paper feed, append
+&rsquo;-&rsquo; to the media name, e.g., A3- will require
+the user to insert a A3 paper into the printer&rsquo;s
+manual feed slot. To indicate you are making an EPS file,
+append &rsquo;+&rsquo; to the media name. Then, <b><A HREF="GMT.html">GMT</A></b>
+will attempt to issue a tight bounding box [Default Bounding
+Box is the paper dimension].</p>
+
+<p style="margin-left:11%;"><b><A NAME="PAGE_ORIENTATION">PAGE_ORIENTATION</A></b></p>
+
+<p style="margin-left:22%;">(<b>* &minus;P</b>) Sets the
+orientation of the page. Choose portrait or landscape
+[landscape].</p>
+
+<p style="margin-left:11%;"><b><A NAME="PLOT_CLOCK_FORMAT">PLOT_CLOCK_FORMAT</A></b></p>
+
+<p style="margin-left:22%;">Formatting template that
+indicates how an output clock string is to be plotted. This
+template is then used to guide the formatting of clock
+strings in plot annotations. See <b><A HREF="gmtdefaults.html#OUTPUT_CLOCK_FORMAT">OUTPUT_CLOCK_FORMAT</A></b>
+for details. [hh:mm:ss].</p>
+
+<p style="margin-left:11%;"><b><A NAME="PLOT_DATE_FORMAT">PLOT_DATE_FORMAT</A></b></p>
+
+<p style="margin-left:22%;">Formatting template that
+indicates how an output date string is to be plotted. This
+template is then used to guide the plotting of date strings
+in data fields. See <b><A HREF="gmtdefaults.html#OUTPUT_DATE_FORMAT">OUTPUT_DATE_FORMAT</A></b> for details.
+In addition, you may use a single o instead of mm (to plot
+month name) and u instead of W[-]ww to plot &quot;Week
+##&quot;. Both of these text strings will be affected by the
+<b><A HREF="gmtdefaults.html#TIME_LANGUAGE">TIME_LANGUAGE</A></b>, <b><A HREF="gmtdefaults.html#TIME_FORMAT_PRIMARY">TIME_FORMAT_PRIMARY</A></b> and
+<b><A HREF="gmtdefaults.html#TIME_FORMAT_SECONDARY">TIME_FORMAT_SECONDARY</A></b> setting. [yyyy-mm-dd].</p>
+
+<p style="margin-left:11%;"><b><A NAME="PLOT_DEGREE_FORMAT">PLOT_DEGREE_FORMAT</A></b></p>
+
+<p style="margin-left:22%;">Formatting template that
+indicates how an output geographical coordinate is to be
+plotted. This template is then used to guide the plotting of
+geographical coordinates in data fields. See
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b> for details. In addition, you
+can append A which plots the absolute value of the
+coordinate. The default is ddd:mm:ss. Not all items may be
+plotted as this depends on the annotation interval.</p>
+
+<p style="margin-left:11%;"><b><A NAME="POLAR_CAP">POLAR_CAP</A></b></p>
+
+<p style="margin-left:22%;">Controls the appearance of
+gridlines near the poles for all azimuthal projections and a
+few others in which the geographic poles are plotted as
+points (Lambert Conic, Hammer, Mollweide, Sinusoidal, and
+van der Grinten). Specify either none (in which case there
+is no special handling) or <i>pc_lat</i>/<i>pc_dlon</i>. In
+that case, normal gridlines are only drawn between the
+latitudes -<i>pc_lat</i>/+<i>pc_lat</i>, and above those
+latitudes the gridlines are spaced at the (presumably
+coarser) <i>pc_dlon</i> interval; the two domains are
+separated by a small circle drawn at the <i>pc_lat</i>
+latitude [85/90]. Note for r-theta (polar) projection where
+r = 0 is at the center of the plot the meaning of the cap is
+reversed, i.e., the default 85/90 will draw a r = 5 radius
+circle at the center of the map with less frequent radial
+lines there.</p>
+
+<p style="margin-left:11%;"><b><A NAME="PS_COLOR">PS_COLOR</A></b></p>
+
+<p style="margin-left:22%;">Determines whether
+<i>PostScript</i> output should use RGB, HSV, CMYK, or GRAY
+when specifying color [rgb]. Note if HSV is selected it does
+not apply to images which in that case uses RGB. When
+selecting GRAY, all colors will be converted to gray scale
+using YIQ (television) conversion.</p>
+
+<p style="margin-left:11%;"><b><A NAME="PS_IMAGE_COMPRESS">PS_IMAGE_COMPRESS</A></b></p>
+
+<p style="margin-left:22%;">Determines if <i>PostScript</i>
+images are compressed using the Run-Length Encoding scheme
+(rle), Lempel-Ziv-Welch compression (lzw), or not at all
+(none) [lzw].</p>
+
+<p style="margin-left:11%;"><b><A NAME="PS_IMAGE_FORMAT">PS_IMAGE_FORMAT</A></b></p>
+
+<p style="margin-left:22%;">Determines whether images
+created in <i>PostScript</i> should use ASCII or binary
+format. The latter takes up less space and executes faster
+but may choke some printers, especially those off serial
+ports. Select ascii or bin [ascii].</p>
+
+<p style="margin-left:11%;"><b><A NAME="PS_LINE_CAP">PS_LINE_CAP</A></b></p>
+
+<p style="margin-left:22%;">Determines how the ends of a
+line segment will be drawn. Choose among a <i>butt</i> cap
+(default) where there is no projection beyond the end of the
+path, a <i>round</i> cap where a semicircular arc with
+diameter equal to the linewidth is drawn around the end
+points, and <i>square</i> cap where a half square of size
+equal to the linewidth extends beyond the end of the path
+[butt].</p>
+
+<p style="margin-left:11%;"><b><A NAME="PS_LINE_JOIN">PS_LINE_JOIN</A></b></p>
+
+<p style="margin-left:22%;">Determines what happens at
+kinks in line segments. Choose among a <i>miter</i> join
+where the outer edges of the strokes for the two segments
+are extended until they meet at an angle (as in a picture
+frame; if the angle is too acute, a bevel join is used
+instead, with threshold set by <b><A HREF="gmtdefaults.html#PS_MITER_LIMIT">PS_MITER_LIMIT</A></b>),
+<i>round</i> join where a circular arc is used to fill in
+the cracks at the kinks, and <i>bevel</i> join which is a
+miter join that is cut off so kinks are triangular in shape
+[miter].</p>
+
+<p style="margin-left:11%;"><b><A NAME="PS_MITER_LIMIT">PS_MITER_LIMIT</A></b></p>
+
+<p style="margin-left:22%;">Sets the threshold angle in
+degrees (integer in 0-180 range) used for mitered joins
+only. When the angle between joining line segments is
+smaller than the threshold the corner will be bevelled
+instead of mitered. The default threshold is 35 degrees.
+Setting the threshold angle to 0 implies the
+<i>PostScript</i> default of about 11 degrees. Setting the
+threshold angle to 180 causes all joins to be beveled.</p>
+
+<p style="margin-left:11%;"><b><A NAME="PS_VERBOSE">PS_VERBOSE</A></b></p>
+
+<p style="margin-left:22%;">If TRUE we will issue comments
+in the <i>PostScript</i> file that explain the logic of
+operations. These are useful if you need to edit the file
+and make changes; otherwise you can set it to FALSE which
+yields a somewhat slimmer <i>PostScript</i> file
+[FALSE].</p>
+
+<p style="margin-left:11%;"><b><A NAME="TICK_LENGTH">TICK_LENGTH</A></b></p>
+
+<p style="margin-left:22%;">The length of a tickmark.
+Normally, tickmarks are drawn on the outside of the map
+boundaries. To select interior tickmarks, use a negative
+tick_length [0.2<b>c</b> (or 0.075<b>i</b>)].</p>
+
+<p style="margin-left:11%;"><b><A NAME="TICK_PEN">TICK_PEN</A></b></p>
+
+<p style="margin-left:22%;">Pen attributes to be used for
+tickmarks in dpi units or points (append p) [0.5p].</p>
+
+<p style="margin-left:11%;"><b><A NAME="TIME_EPOCH">TIME_EPOCH</A></b></p>
+
+<p style="margin-left:22%;">Specifies the value of the
+calendar and clock at the origin (zero point) of relative
+time units (see <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>). It is a string of the
+form yyyy-mm-ddT[hh:mm:ss] (Gregorian) or
+yyyy-Www-ddT[hh:mm:ss] (ISO) Default is 2000-01-01T12:00:00,
+the epoch of the J2000 system.</p>
+
+<p style="margin-left:11%;"><b><A NAME="TIME_FORMAT_PRIMARY">TIME_FORMAT_PRIMARY</A></b></p>
+
+<p style="margin-left:22%;">Controls how primary month-,
+week-, and weekday-names are formatted. Choose among full,
+abbreviated, and character. If the leading f, a, or c are
+replaced with F, A, and C the entire annotation will be in
+upper case.</p>
+
+
+<p style="margin-left:11%;"><b><A NAME="TIME_FORMAT_SECONDARY">TIME_FORMAT_SECONDARY</A></b></p>
+
+<p style="margin-left:22%;">Controls how secondary month-,
+week-, and weekday-names are formatted. Choose among full,
+abbreviated, and character. If the leading f, a, or c are
+replaced with F, A, and C the entire annotation will be in
+upper case.</p>
+
+
+<p style="margin-left:11%;"><b><A NAME="TIME_INTERVAL_FRACTION">TIME_INTERVAL_FRACTION</A></b></p>
+
+<p style="margin-left:22%;">Determines if partial intervals
+at the start and end of an axis should be annotated. If the
+range of the partial interval exceeds the specified fraction
+of the normal interval stride we will place the annotation
+centered on the partial interval [0.5].</p>
+
+<p style="margin-left:11%;"><b><A NAME="TIME_IS_INTERVAL">TIME_IS_INTERVAL</A></b></p>
+
+<p style="margin-left:22%;">Used when input calendar data
+should be truncated and adjusted to the middle of the
+relevant interval. In the following discussion, the unit
+<b>u</b> can be one of these time units: (<b>y</b> year,
+<b>o</b> month, <b>u</b> ISO week, <b>d</b> day, <b>h</b>
+hour, <b>m</b> minute, and <b>c</b> second).
+<b><A HREF="gmtdefaults.html#TIME_IS_INTERVAL">TIME_IS_INTERVAL</A></b> can have any of the following three
+values: (1) OFF [Default]. No adjustment, time is decoded as
+given. (2) +<i>n</i><b>u</b>. Activate interval adjustment
+for input by truncate to previous whole number of <i>n</i>
+units and then center time on the following interval. (3)
+-<i>n</i><b>u</b>. Same, but center time on the previous
+interval. For example, with <b><A HREF="gmtdefaults.html#TIME_IS_INTERVAL">TIME_IS_INTERVAL</A></b> = +1o,
+an input data string like 1999-12 will be interpreted to
+mean 1999-12-15T12:00:00.0 (exactly middle of December),
+while if <b><A HREF="gmtdefaults.html#TIME_IS_INTERVAL">TIME_IS_INTERVAL</A></b> = OFF then that date is
+interpreted to mean 1999-12-01T00:00:00.0 (start of
+December) [OFF].</p>
+
+<p style="margin-left:11%;"><b><A NAME="TIME_LANGUAGE">TIME_LANGUAGE</A></b></p>
+
+<p style="margin-left:22%;">Language to use when plotting
+calendar items such as months and days. Select from:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">BR</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Brazilian Portuguese</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">CN1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Simplified Chinese</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">CN2</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Traditional Chinese</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">DE</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">German</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">DK</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Danish</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">EH</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Basque</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">ES</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Spanish</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">FI</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Finnish</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">FR</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">French</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">GR</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Greek</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">HI</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Hawaiian</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">HU</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Hungarian</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">IE</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Irish</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">IL</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Hebrew</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">IS</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Icelandic</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">IT</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Italian</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">JP</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Japanese</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">NL</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Dutch</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">NO</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Norwegian</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">PL</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Polish</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">PT</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Portuguese</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">RU</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Russian</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">SE</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Swedish</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">SG</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Scottish Gaelic</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">TO</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Tongan</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">TR</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">Turkish</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">UK</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">British English</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">US</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">US English</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">If your
+language is not supported, please examine the
+<b>$GMT_SHAREDIR</b>/time/us.d file and make a similar file.
+Please submit it to the <b><A HREF="GMT.html">GMT</A></b> Developers for official
+inclusion. Custom language files can be placed in
+directories <b>$GMT_SHAREDIR</b>/time or ~/.gmt.</p>
+
+<p style="margin-left:11%;"><b><A NAME="TIME_SYSTEM">TIME_SYSTEM</A></b></p>
+
+<p style="margin-left:22%;">Shorthand for a combination of
+<b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>, specifying which
+time epoch the relative time refers to and what the units
+are. Choose from one of the preset systems below (epoch and
+units are indicated):</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">JD</p></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">-4713-11-25T12:00:00</p></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+
+
+<p valign="top">d</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+
+
+<p valign="top">(Julian Date)</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">MJD</p></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">1858-11-17T00:00:00</p></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">d</p></td>
+<td width="38%">
+
+
+<p valign="top">(Modified Julian Date)</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">J2000</p></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">2000-01-01T12:00:00</p></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+
+
+<p valign="top">d</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+
+
+<p valign="top">(Astronomical time)</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">S1985</p></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">1985-01-01T00:00:00</p></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+
+
+<p valign="top">c</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+
+
+<p valign="top">(Altimetric time)</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">UNIX</p></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">1970-01-01T00:00:00</p></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">c</p></td>
+<td width="38%">
+
+
+<p valign="top">(UNIX time)</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">RD0001</p></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">0001-01-01T00:00:00</p></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+
+
+<p valign="top">c</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">RATA</p></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="38%">
+</td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">0000-12-31T00:00:00</p></td>
+<td width="15%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="8%">
+
+
+<p valign="top">d</p></td>
+<td width="38%">
+</td>
+</table>
+
+<p style="margin-left:22%;">This parameter is not stored in
+the .gmtdefaults4 file but is translated to the respective
+values of <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>.</p>
+
+<p style="margin-left:11%;"><b><A NAME="TIME_UNIT">TIME_UNIT</A></b></p>
+
+<p style="margin-left:22%;">Specifies the units of relative
+time data since epoch (see <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>). Choose y
+(year - assumes all years are 365.2425 days), o (month -
+assumes all months are of equal length y/12), d (day), h
+(hour), m (minute), or c (second) [d].</p>
+
+<p style="margin-left:11%;"><b><A NAME="TIME_WEEK_START">TIME_WEEK_START</A></b></p>
+
+<p style="margin-left:22%;">When weeks are indicated on
+time axes, this parameter determines the first day of the
+week for Gregorian calendars. (The ISO weekly calendar
+always begins weeks with Monday.) [Monday (or Sunday)].</p>
+
+<p style="margin-left:11%;"><b><A NAME="TRANSPARENCY">TRANSPARENCY</A></b></p>
+
+<p style="margin-left:22%;">Makes printed material
+transparent. Specify transparency in percent: 0 is opaque
+(normal overlay plotting), 100 is fully transparent (i.e.,
+nothing will show). Use either as a pair
+(<i>stroke</i>/<i>fill</i>) to set the transparency of
+stroked material (lines) or filled material (polygons)
+separately, or use a single number to set both to the same
+value [0]. <b><br>
+Warning:</b> Most printers and <i>PostScript</i> viewers can
+not print or will not show transparency. They will simply
+ignore your attempt to create transparency and will plot any
+material as opaque. <i>Ghostscript</i> and all its
+derivatives like <b><A HREF="ps2raster.html">ps2raster</A></b>, Apple&rsquo;s
+<i>Preview</i> and the <i>CUPS</i> printing system are among
+those programs incapable of dealing with transparency. If
+you want to view transparent material you need to use
+<i>Acrobat Distiller</i> to create a PDF file. Note that the
+settings of <i>Acrobat Distiller</i> need to be changed to
+make transparency effective: change /AllowTransparency to
+true in the .joboptions file.</p>
+
+<p style="margin-left:11%;"><b><A NAME="UNIX_TIME">UNIX_TIME</A></b></p>
+
+<p style="margin-left:22%;">(<b>* &minus;U</b>) Specifies
+if a UNIX system time stamp should be plotted at the lower
+left corner of the plot [FALSE].</p>
+
+<p style="margin-left:11%;"><b><A NAME="UNIX_TIME_POS">UNIX_TIME_POS</A></b></p>
+
+<p style="margin-left:22%;">(<b>* &minus;U</b>) Sets the
+justification and the position of the UNIX time stamp box
+relative to the current plots lower left corner of the plot
+[BL/-2<b>c</b>/-2<b>c</b> (or
+BL/-0.75<b>i</b>/-0.75<b>i</b>)].</p>
+
+<p style="margin-left:11%;"><b><A NAME="UNIX_TIME_FORMAT">UNIX_TIME_FORMAT</A></b></p>
+
+<p style="margin-left:22%;">Defines the format of the time
+information in the UNIX time stamp. This format is parsed by
+the C function <b>strftime</b>, so that virtually any text
+can be used (even not containing any time information) [%Y
+%b %d %H:%M:%S].</p>
+
+<p style="margin-left:11%;"><b><A NAME="VECTOR_SHAPE">VECTOR_SHAPE</A></b></p>
+
+<p style="margin-left:22%;">Determines the shape of the
+head of a vector. Normally (i.e., for vector_shape = 0), the
+head will be triangular, but can be changed to an arrow (1)
+or an open V (2). Intermediate settings give something in
+between. Negative values (up to -2) are allowed as well
+[0].</p>
+
+<p style="margin-left:11%;"><b><A NAME="VERBOSE">VERBOSE</A></b></p>
+
+<p style="margin-left:22%;">(<b>* &minus;V</b>) Determines
+if <b><A HREF="GMT.html">GMT</A></b> programs should display run-time information
+or run silently [FALSE].</p>
+
+<p style="margin-left:11%;"><b><A NAME="X_AXIS_LENGTH">X_AXIS_LENGTH</A></b></p>
+
+<p style="margin-left:22%;">Sets the default length (&gt;
+0) of the x-axis [25<b>c</b> (or 9<b>i</b>)].</p>
+
+<p style="margin-left:11%;"><b><A NAME="X_ORIGIN">X_ORIGIN</A></b></p>
+
+<p style="margin-left:22%;">(<b>* &minus;X</b>) Sets the
+x-coordinate of the origin on the paper for a new plot
+[2.5<b>c</b> (or 1<b>i</b>)]. For an overlay, the default
+offset is 0.</p>
+
+<p style="margin-left:11%;"><b><A NAME="XY_TOGGLE">XY_TOGGLE</A></b></p>
+
+<p style="margin-left:22%;">(<b>* &minus;:</b>) Set if the
+first two columns of input and output files contain
+(latitude,longitude) or (y,x) rather than the expected
+(longitude,latitude) or (x,y). FALSE means we have (x,y)
+both on input and output. TRUE means both input and output
+should be (y,x). IN means only input has (y,x), while OUT
+means only output should be (y,x). [FALSE].</p>
+
+<p style="margin-left:11%;"><b><A NAME="Y_AXIS_LENGTH">Y_AXIS_LENGTH</A></b></p>
+
+<p style="margin-left:22%;">Sets the default length (&gt;
+0) of the y-axis [15<b>c</b> (or 6<b>i</b>)].</p>
+
+<p style="margin-left:11%;"><b><A NAME="Y_ORIGIN">Y_ORIGIN</A></b></p>
+
+<p style="margin-left:22%;">(<b>* &minus;Y</b>) Sets the
+y-coordinate of the origin on the paper for a new plot
+[2.5<b>c</b> (or 1<b>i</b>)]. For an overlay, the default
+offset is 0.</p>
+
+<p style="margin-left:11%;"><b><A NAME="Y_AXIS_TYPE">Y_AXIS_TYPE</A></b></p>
+
+<p style="margin-left:22%;">Determines if the annotations
+for a y-axis (for linear projections) should be plotted
+horizontally (hor_text) or vertically (ver_text)
+[hor_text].</p>
+
+<p style="margin-left:11%;"><b><A NAME="Y2K_OFFSET_YEAR">Y2K_OFFSET_YEAR</A></b></p>
+
+<p style="margin-left:22%;">When 2-digit years are used to
+represent 4-digit years (see various <b>DATE_FORMAT</b>s),
+<b><A HREF="gmtdefaults.html#Y2K_OFFSET_YEAR">Y2K_OFFSET_YEAR</A></b> gives the first year in a 100-year
+sequence. For example, if <b><A HREF="gmtdefaults.html#Y2K_OFFSET_YEAR">Y2K_OFFSET_YEAR</A></b> is 1729,
+then numbers 29 through 99 correspond to 1729 through 1799,
+while numbers 00 through 28 correspond to 1800 through 1828.
+[1950].</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+PENS</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p valign="top"><i>pen</i></p></td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p valign="top">The attributes of lines and symbol outlines
+as defined by <i>pen</i> is a comma delimetered list of
+<i>width</i>, <i>color</i> and <i>texture</i>, each of which
+is optional. <i>width</i> can be indicated as a measure
+(points, centimeters, inches) or as <b>faint</b>,
+<b>thin</b>[<b>ner</b>|<b>nest</b>],
+<b>thick</b>[<b>er</b>|<b>est</b>],
+<b>fat</b>[<b>ter</b>|<b>test</b>], or <b>obese</b>.
+<i>color</i> specifies a gray shade or color (see SPECIFYING
+COLOR below). <i>texture</i> is a combination of dashes
+&lsquo;-&rsquo; and dots &lsquo;.&rsquo;.</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+FILL</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p valign="top"><i>fill</i></p></td>
+<td width="5%"></td>
+<td width="78%">
+
+
+<p valign="top">The attribute <i>fill</i> specifies the
+solid shade or solid <i>color</i> (see SPECIFYING COLOR
+below) or the pattern used for filling polygons. Patterns
+are specified as <b>p</b><i>dpi/pattern</i>, where
+<i>pattern</i> gives the number of the built-in pattern
+(1-90) <i>or</i> the name of a Sun 1-, 8-, or 24-bit raster
+file. The <i>dpi</i> sets the resolution of the image. For
+1-bit rasters: use <b>P</b><i>dpi/pattern</i> for inverse
+video, or append
+<b>:F</b><i>color</i>[<b>B</b>[<i>color</i>]] to specify
+fore- and background colors (use <i>color</i> = - for
+transparency). See <b><A HREF="GMT.html">GMT</A></b> Cookbook &amp; Technical
+Reference Appendix E for information on individual
+patterns.</p> </td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+COLOR</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>color</i></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p valign="top">The <i>color</i> of lines, areas and
+patterns can be specified by a valid color name; by a gray
+shade (in the range 0&minus;255); by a decimal color code
+(r/g/b, each in range 0&minus;255; h-s-v, ranges
+0&minus;360, 0&minus;1, 0&minus;1; or c/m/y/k, each in range
+0&minus;1); or by a hexadecimal color code (#rrggbb, as used
+in HTML). See the <b><A HREF="gmtcolors.html">gmtcolors</A></b> manpage for more
+information and a full list of color names.</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To get a copy
+of the <b><A HREF="GMT.html">GMT</A></b> parameter defaults in your home directory,
+run</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtdefaults
+&minus;D</b> &gt; ~/.gmtdefaults4</p>
+
+<p style="margin-left:11%; margin-top: 1em">You may now
+change the settings by editing this file using a text editor
+of your choice, or use <b><A HREF="gmtset.html">gmtset</A></b> to change specified
+parameters on the command line.</p>
+
+<a name="BUGS"></a>
+<h2>BUGS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">If you have
+typographical errors in your .gmtdefaults4 file(s), a
+warning message will be issued, and the <b><A HREF="GMT.html">GMT</A></b> defaults
+for the affected parameters will be used.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="gmtcolors.html">gmtcolors</A></i>(5), <i><A HREF="gmtget.html">gmtget</A></i>(1), <i><A HREF="gmtset.html">gmtset</A></i>(1)</p>
+<hr>
+</body>
+</html>

@@ -1,0 +1,378 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Debugging for Developers &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="GMT C API" href="api.html" />
+    <link rel="prev" title="reStructuredText Cheatsheet" href="rst_cheatsheet.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Debugging GMT</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#xcode-on-macos">Xcode on macOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Debugging for Developers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/debug.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="debugging-for-developers">
+<span id="index-0"></span><h1>Debugging for Developers<a class="headerlink" href="#debugging-for-developers" title="Permalink to this headline">¶</a></h1>
+<p>GMT developers may need to run GMT in a debugger to figure out the problem reported by
+an issue.  Often there is a bit of detective work involved to find out where a module
+crashes and then step carefully through that section, examining variables etc., to learn
+why something fails.  This process depends on the particular debug tool one uses.  This page
+will explain the steps a developer must take to build gmt so it is suitable for your debug
+tool and how to use that tool.</p>
+<div class="section" id="xcode-on-macos">
+<h2>Xcode on macOS<a class="headerlink" href="#xcode-on-macos" title="Permalink to this headline">¶</a></h2>
+<p>Developers on macOS are most likely to want to use Xcode for this purpose. Chances are they
+are already using the command-line tools from Xcode (gcc, linker) anyway.  To use the GUI
+part of Xcode you must have installed the full Xcode (you most likely did, but there are
+ways to <em>only</em> install the command-line tools, so make sure you have an Xcode icon under
+Applications).  Xcode may change as versions change; the images below is for Xcode 10-11.</p>
+<ol class="arabic">
+<li><p class="first">You will need to make some changes to your <em>cmake/ConfigUser.cmake</em> file. Scroll down to the
+section that says “# Extra debugging for developers:” and uncomment the ~6 lines that has
+the if-test on “Xcode”.  This will pass a few flags that are used when debugging via Xcode.
+Also uncomment the two “add_definitions” lines that contain the word “DEBUG” in it somewhere.</p>
+</li>
+<li><p class="first">You will need to build GMT again.  I recommend you do this in a separate build directory (I
+call mine <em>xbuild</em>, and while at it I use <em>rbuild</em> for “Release Builds” and <em>dbuild</em> for regular
+debug command line builds, and <em>build</em> for the final build for the releases).  If you are in
+the <em>xbuild</em> directory, these two commands will do the build:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake -DCMAKE_INSTALL_PREFIX<span class="o">=</span>gmt6 -DCMAKE_BUILD_TYPE<span class="o">=</span>Debug -G Xcode ..
+xcodebuild
+</pre></div>
+</div>
+</li>
+<li><p class="first">After this step you can launch the Xcode application and then use the File-&gt;Open menu to
+open the project file <em>xbuild/GMT.xcodeproj</em>.  After it opens it may looks something like
+this (click on the figure to enlarge it):</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/xcode-1.png"><img alt="_images/xcode-1.png" src="_images/xcode-1.png" style="width: 100%;" /></a>
+</div>
+</li>
+<li><p class="first">Pull down the tab that says “&#64; ALL_BUILD” and select “gmt” about 35 lines down, then in the
+left sidebar open the folder called gmt-&gt;Source Files and select gmt.c. Now you may wish
+to drag the window to be a bit wider so the lines don’t wrap around so much.  After that step
+your screen may look more like this:</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/xcode-2.png"><img alt="_images/xcode-2.png" src="_images/xcode-2.png" style="width: 100%;" /></a>
+</div>
+</li>
+<li><p class="first">Scroll down to the part around line 119 and click the line number to place a stop point; it
+will add a blue fat arrow at that line:</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/xcode-3.png"><img alt="_images/xcode-3.png" src="_images/xcode-3.png" style="width: 100%;" /></a>
+</div>
+<p>This is <em>usually</em> the first stop you want in Xcode.  The exception would be if you are debugging
+gmt.c itself or you need to examine the code that creates the session via a call to GMT_Create_Session
+earlier in the program.</p>
+</li>
+<li><p class="first">Now we need to specify the particular command we wish to debug.  Let’s pretend that <a class="reference internal" href="pstext.html"><span class="doc">pstext</span></a>
+crashes when we run the command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt pstext my_text.txt -R0/30/-10/20 -JM15c -Baf -F+f16p &gt; text.ps
+</pre></div>
+</div>
+<p>Copy that command minus the initial “gmt ” part.  Now pull down the menu item “Product-&gt;Scheme-&gt;Edit Scheme”,
+then make sure “Arguments” is highlighted in blue in the top table, then click the “+” symbol beneath the
+section that says “Arguments Passed on Launch” and paste in our command; it should result in this display:</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/xcode-4.png"><img alt="_images/xcode-4.png" src="_images/xcode-4.png" style="width: 100%;" /></a>
+</div>
+<p>Normally you do not need to set any “Environmental Variables”, but if you are debugging a module that
+calls an external program (e.g., gs, gdal_translate, etc.) then you may need to add the name PATH and
+place the path to that program under “Value”.  Likewise, if the module needs to find a particular environmental
+setting like $X2SYS_HOME, then you must set those here as well.</p>
+</li>
+<li><p class="first">Any data files your command will read must either be placed in the <em>xbuild/src/Debug</em> subdirectory or you must
+change the command you pasted above to use the full path instead.  In other words, when Xcode runs
+your command, your current directory becomes <em>xbuild/src/Debug</em>.</p>
+</li>
+<li><p class="first">Click close and hit the “Play” button next to the green circle in the top left corner.  It may do some
+building and indexing before it starts and then stops at your highlighted line, opening up a display console
+below the source code:</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/xcode-5.png"><img alt="_images/xcode-5.png" src="_images/xcode-5.png" style="width: 100%;" /></a>
+</div>
+<p>You will see the current line is highlighted light greenish and the execution is stopped.  Below the code is a new window that
+lists some of the variables in the current scope.  You can examine that window to see what the variables are set
+to, you can type “print variable” in the lldb command window on the right (e.g., “print argc”), or you can place
+the cursor over a variable and a pop-up box will display its value.  Below I placed the cursor on the variable
+“module” on line 119 and this is what it looks like (minus the cursor which is not screen-grabbed!).</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/xcode-6.png"><img alt="_images/xcode-6.png" src="_images/xcode-6.png" style="width: 100%;" /></a>
+</div>
+</li>
+<li><p class="first">The tool bar below the source code has a pause-play button (continue to next stop point), a step-over button (execute
+next step but do not go <em>into</em> a function, the step-into button (execute next step which may be going into a function)
+and the step-out button (finish running current function then step back out).  Step into the GMT_Call_Module function
+using the step-into button, then scroll down to around line 10094 and place another stop point there like I did.  Press
+the pause-play button and you are now about to call your actual C function that correspond to the module (here pstext):</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/xcode-7.png"><img alt="_images/xcode-7.png" src="_images/xcode-7.png" style="width: 100%;" /></a>
+</div>
+</li>
+<li><p class="first">Click the step-into button and find yourself at the first executable line of code in GMT_pstext, the underlying
+C function at the heart of the pstext module.  You can now step your way down the code, using step-over to avoid going
+into the details of GMT sub-functions (or step-into it if that is the problem), set stop points and push pause-play to
+advance to the next stop point, examine variables, and so on.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/xcode-8.png"><img alt="_images/xcode-8.png" src="_images/xcode-8.png" style="width: 100%;" /></a>
+</div>
+</li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api.html" class="btn btn-neutral float-right" title="GMT C API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rst_cheatsheet.html" class="btn btn-neutral float-left" title="reStructuredText Cheatsheet" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,313 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>segy2grd &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="backtracker" href="../spotter/backtracker.html" />
+    <link rel="prev" title="pssegyz" href="pssegyz.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../spotter/backtracker.html" title="backtracker"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="pssegyz.html" title="pssegyz"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="segy2grd">
+<span id="index-0"></span><h1>segy2grd<a class="headerlink" href="#segy2grd" title="Permalink to this headline">¶</a></h1>
+<p>segy2grd - Converting SEGY data to a GMT grid</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>segy2grd</strong> <em>segyfile</em> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>grdfile</em>
+<a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>increment</em>
+<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong>[<strong>n</strong>|<strong>z</strong>] ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<strong>+x</strong><em>xname</em>][<strong>+y</strong><em>yname</em>][<strong>+z</strong><em>zname</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>][<strong>+t</strong><em>title</em>][<strong>+r</strong><em>remark</em>] ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong>[<em>nsamp</em>] ]
+[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong>[<em>ntraces</em>] ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>nodata</em> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><em>&lt;mode&gt;&lt;value&gt;</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong>[<em>header</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-bi</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>segy2grd</strong> reads an IEEE SEGY file and creates a binary grid file.
+Either a simple mapping (equivalent to <a class="reference internal" href="../../xyz2grd.html"><span class="doc">xyz2grd</span></a> -Z) or a more complicated
+averaging where a particular grid cell includes values from more than
+one sample in the SEGY file can be done. <strong>segy2grd</strong> will report if
+some of the nodes are not filled in with data. Such unconstrained nodes
+are set to a value specified by the user [Default is NaN]. Nodes with
+more than one value will be set to the average value.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<p><em>segyfile</em> is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.</p>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>grdfile</em></dt>
+<dd><em>grdfile</em> is the name of the binary output grid file.</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong></dt>
+<dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Append <strong>m</strong>
+to indicate minutes or <strong>s</strong> to indicate seconds.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt>
+<dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
+and you may specify them in decimal degrees or in
+[±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
+Append <strong>+r</strong> if lower left
+and upper right map coordinates are given instead of w/e/s/n. The
+two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
+and -180/+180 in longitude respectively, with -90/+90 in latitude).
+Alternatively for grid creation, give <strong>R</strong><em>code</em><em>lon</em>/<em>lat</em>/<em>nx</em>/<em>ny</em>, where
+<em>code</em> is a 2-character combination of L, C, R (for left, center, or right)
+and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
+indicates which point on a rectangular region the <em>lon</em>/<em>lat</em> coordinate
+refers to, and the grid dimensions <em>nx</em> and <em>ny</em> with grid spacings via
+<strong>-I</strong> is used to create the corresponding region.
+Alternatively, specify the name of an existing grid file and the
+<strong>-R</strong> settings (and grid spacing, if applicable) are copied from
+the grid. Appending <strong>+u</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.
+For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.
+In case of perspective view (<strong>-p</strong>), a z-range (<em>zmin</em>, <em>zmax</em>)
+can be appended to indicate the third dimension. This needs to be
+done only when using the <strong>-Jz</strong> option, not when using only the
+<strong>-p</strong> option. In the latter case a perspective view of the plane is
+plotted, with no third dimension.  </dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong>[<strong>n</strong>|<strong>z</strong>]</dt>
+<dd>Add up multiple values that belong to the same node (same as
+<strong>-Az</strong>). Append <strong>n</strong> to simply count the number of data points
+that were assigned to each node. [Default (no <strong>-A</strong> option) will
+calculate mean value]. Not used for simple mapping.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong>[<strong>+x</strong><em>xname</em>][<strong>+y</strong><em>yname</em>][<strong>+z</strong><em>zname</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>][<strong>+t</strong><em>title</em>][<strong>+r</strong><em>remark</em>]</dt>
+<dd>Give one or more combinations for values <em>xname</em>, <em>yname</em>, <em>zname</em> (give the names of those variables
+and in square bracket their units, e.g., “distance [km]”), <em>scale</em> (to multiply grid values after
+read [normally 1]), <em>offset</em> (to add to grid after scaling [normally 0]),
+<em>invalid</em> (a value to represent missing data [NaN]), <em>title</em> (anything you
+like), and <em>remark</em> (anything you like). Items not listed will remain untouched.
+Give a blank name to completely reset a particular string.
+Use quotes to group texts with more than one word.
+Note that for geographic grids (<strong>-fg</strong>) <em>xname</em> and <em>yname</em> are set automatically.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong></dt>
+<dd>Let <em>nsamp</em> override number of samples in each trace.</dd>
+</dl>
+<dl class="docutils" id="m">
+<dt><strong>-M</strong>[<em>ntraces</em>]</dt>
+<dd>Fix number of traces to read in. Default tries to read 10000 traces.
+<strong>-M</strong>0 will read number in binary header, <strong>-M</strong><em>ntraces</em> will
+attempt to read only <em>n</em> traces.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong><em>nodata</em></dt>
+<dd>No data. Set nodes with no input sample to this value [Default is
+NaN].</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Q</strong><em>&lt;mode&gt;&lt;value&gt;</em></dt>
+<dd><dl class="first last docutils">
+<dt>Can be used to change two different settings depending on <em>mode</em>:</dt>
+<dd><p class="first"><strong>-Qx</strong><em>x-scale</em> applies scalar <em>x-scale</em> to coordinates in trace
+header to match the coordinates specified in -R.</p>
+<p class="last"><strong>-Qy</strong><em>s_int</em> specifies sample interval as <em>s_int</em> if incorrect in the SEGY file.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong>[<em>header</em>]</dt>
+<dd>Set variable spacing; <em>header</em> is <strong>c</strong> for cdp, <strong>o</strong> for offset, or <strong>b</strong><em>number</em>
+for 4-byte float starting at byte <em>number</em>. If <strong>-S</strong> not set, assumes even
+spacing of samples at the <em>x_inc, y_inc</em> supplied with <strong>-I</strong>.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-r</strong> <a class="reference internal" href="../../gmt.html#nodereg-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set pixel node registration [gridline].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To create a grid file from an even spaced SEGY file test.segy, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">segy2grd</span> <span class="n">test</span><span class="o">.</span><span class="n">segy</span> <span class="o">-</span><span class="n">I0</span><span class="o">.</span><span class="mi">1</span><span class="o">/</span><span class="mf">0.1</span> <span class="o">-</span><span class="n">Gtest</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">R198</span><span class="o">/</span><span class="mi">208</span><span class="o">/</span><span class="mi">18</span><span class="o">/</span><span class="mi">25</span> <span class="o">-</span><span class="n">V</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note that this will read in 18-25s (or km) on each trace, but the
+first trace will be assumed to be at X=198</p>
+<p>To create a grid file from the SEGY file test.segy, locating traces
+according to the CDP number, where there are 10 CDPs per km and the
+sample interval is 0.1, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">segy2grd</span> <span class="n">test</span><span class="o">.</span><span class="n">segy</span> <span class="o">-</span><span class="n">Gtest</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">R0</span><span class="o">/</span><span class="mi">100</span><span class="o">/</span><span class="mi">0</span><span class="o">/</span><span class="mi">10</span> <span class="o">-</span><span class="n">I0</span><span class="o">.</span><span class="mi">5</span><span class="o">/</span><span class="mf">0.2</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">Qx0</span><span class="o">.</span><span class="mi">1</span> <span class="o">-</span><span class="n">Qy0</span><span class="o">.</span><span class="mi">1</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Because the grid interval is larger than the SEGY file sampling, the
+individual samples will be averaged in bins</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="../../grd2xyz.html"><span class="doc">grd2xyz</span></a>,
+<a class="reference internal" href="../../grdedit.html"><span class="doc">grdedit</span></a>, <a class="reference internal" href="pssegy.html"><span class="doc">pssegy</span></a>,
+<a class="reference internal" href="../../xyz2grd.html"><span class="doc">xyz2grd</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">segy2grd</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pssegyz.html"
+                        title="previous chapter">pssegyz</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../spotter/backtracker.html"
+                        title="next chapter">backtracker</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/segy/segy2grd.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../spotter/backtracker.html" title="backtracker"
+             >next</a> </li>
+        <li class="right" >
+          <a href="pssegyz.html" title="pssegyz"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

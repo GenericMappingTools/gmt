@@ -1,0 +1,511 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:42 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>BACKTRACKER</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>BACKTRACKER</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#COORDINATES">COORDINATES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">backtracker
+&minus; Reconstruct points, flowlines and hotspot tracks</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>backtracker</b>
+[<i>infile(s)</i>] <b>&minus;E</b><i>rotations.txt</i> |
+<b>&minus;e</b><i>lon</i>/<i>lat</i>/<i>angle</i> [
+<b>&minus;A</b>[<i>young</i>/<i>old</i>] ] [ <b>&minus;C</b>
+] [ <b>&minus;Df</b>|<b>b</b> ] [
+<b>&minus;F</b><i>drift.txt</i> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;Lf</b>|<b>b</b><i>step</i> ] [
+<b>&minus;N</b><i>upper_age</i> ] [
+<b>&minus;Q</b><i>fixed_age</i> ] [
+<b>&minus;S</b><i>filestem</i> ] [
+<b>&minus;T</b><i>zero_age</i> ] [ <b>&minus;V</b> ] [
+<b>&minus;W</b>[<b>a</b>|<b>t</b>] ] [
+<b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;b</b>[<b>i</b>|<b>o</b>][<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;m</b>[<b>i</b>|<b>o</b>][<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>backtracker</b>
+reads (longitude, latitude, age) positions from
+<i>infiles</i> [or standard input] and computes rotated
+(x,y,t) coordinates using the specified rotation parameters.
+It can either calculate final positions [Default] or create
+a sampled track (flowline or hotspot track) between the
+initial and final positions. The former mode allows
+additional data fields after the first 3 columns which must
+have (longitude,latitude,age). See option <b>&minus;:</b> on
+how to read (latitude,longitude,age) files.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="8%"></td>
+<td width="7%"></td>
+<td width="85%">
+
+
+<p valign="top">No space between the option flag and the
+associated arguments. Use upper case for the option flags
+and lower case for modifiers.</p></td>
+</table>
+
+<p style="margin-left:11%;"><i>infile(s)</i></p>
+
+<p style="margin-left:22%;">Data file(s) to be projected.
+If not given, standard input is read.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Give file with
+rotation parameters. This file must contain one record for
+each rotation; each record must be of the following
+format:</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><i>lon lat tstart [tstop] angle</i> [
+<i>khat a b c d e f g df</i> ]</p></td>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">where
+<i>tstart</i> and <i>tstop</i> are in Myr and <i>lon lat
+angle</i> are in degrees. <i>tstart</i> and <i>tstop</i> are
+the ages of the old and young ends of a stage. If
+<b>&minus;C</b> is set then a total reconstruction rotation
+is expected and <i>tstop</i> is implicitly set to 0 and
+should not be specified in the file. If a covariance matrix
+<b>C</b> for the rotation is available it must be specified
+in a format using the nine optional terms listed in
+brackets. Here, <b>C</b> = (<i>g</i>/<i>khat</i>)*[ <i>a b
+d; b c e; d e f</i> ] which shows <b>C</b> made up of three
+row vectors. If the degrees of freedom (<i>df</i>) in
+fitting the rotation is 0 or not given it is set to 10000.
+Blank lines and records whose first column contains # will
+be ignored.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;e</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Alternatively,
+specify the longitude, latitude, and opening angle (all in
+degrees and separated by /) for a single total
+reconstruction rotation that should be applied to all input
+points.</p> </td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Used in conjunction
+with <b>&minus;Lb</b>|<b>f</b> to limit the track output to
+those sections whose predicted ages lie between the
+specified <i>young</i> and <i>old</i> limits. If
+<b>&minus;LB</b>|<b>F</b> is used instead then the limits
+apply to the stage ids (id 1 is the youngest stage). If no
+limits are specified then individual limits for each record
+are expected in columns 4 and 5 of the input file.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Expect Total
+Reconstruction Rotations rather than Forward Stage Rotations
+[Default]. File format is similar to the stage pole format
+except that the <i>tstart</i> column is not present (assumed
+to be 0 Ma). Requires <b>&minus;E</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set the direction
+to go: <b>&minus;Df</b> will go backward in time (from
+younger to older positions), while <b>&minus;Db</b> will go
+forward in time (from older to younger positions) [Default].
+Note: For <b>&minus;Db</b> you are specifying the age at the
+given location, whereas for <b>&minus;Df</b> you are not;
+instead you specify the age at the reconstructed point.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Supply a file with
+lon, lat, age records that contains the history of hotspot
+motion for the current hotspot. If given, the
+reconstructions will only use the 3rd data input column
+(i.e., the age) to obtain the location of the hotspot at
+that time, via an interpolation of the hotspot motion
+history. This adjusted location is then used to reconstruct
+the point or path [No drift].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specify a sampled
+path between initial and final position: <b>&minus;Lf</b>
+will draw particle flowlines, while <b>&minus;Lb</b> will
+draw backtrack (hotspot track) paths. Append sampling
+interval in km. If <i>step</i> &lt; 0 then only the rotation
+times will be returned. When <b>&minus;LF</b> or
+<b>&minus;LB</b> is used, the third output column will
+contain the stage id (1 is youngest) [Default is along-track
+predicted ages]. You can control the direction of the paths
+by using <b>&minus;D</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set the maximum age
+to extend the oldest stage rotation back in time [Default is
+no extension].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Assign a fixed age
+to all positions. Only lon, lat input is expected [Default
+expects longitude, latitude, age]. Useful when the input are
+points defining isochrons.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">When
+<b>&minus;L</b> is set, the tracks are normally written to
+stdout as a multisegment file. Specify a <i>filestem</i> to
+have each track written to <i>filestem.#</i>, where <i>#</i>
+is the track number. The track number is also copied to the
+4th output column.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Set the current
+time [Default is 0 Ma].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Rotates the given
+input (lon,lat,t) and calculates the confidence ellipse for
+the projected point. The input point <i>must</i> have a time
+coordinate that exactly matches a particular finite rotation
+time, otherwise the point will be skipped. Append <b>t</b>
+or <b>a</b> to output time or angle, respectively, after the
+projected lon, lat. After these 2-3 items, we write azimuth,
+major, minor (in km) for the 95% confidence ellipse. See
+<b>&minus;D</b> for the direction of rotation.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 3 input columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.
+[Default depends on settings].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file(s). Segments are separated by a special record. For
+ASCII files the first character must be <i>flag</i> [Default
+is &rsquo;&gt;&rsquo;]. For binary files all fields must be
+NaN and <b>&minus;b</b> must set the number of output
+columns explicitly. By default the <b>&minus;m</b> setting
+applies to both input and output. Use <b>&minus;mi</b> and
+<b>&minus;mo</b> to give separate settings to input and
+output.</p> </td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To backtrack
+the (x,y,t) points in the file seamounts.d to their origin
+(presumably the hotspot), using the DC85.d Euler poles,
+run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>backtracker</b>
+seamounts.d <b>&minus;Db &minus;E</b> DC85.d &gt;
+newpos.d</p>
+
+<p style="margin-left:11%; margin-top: 1em">To project
+flowlines forward from the (x,y,t) points stored in several
+3-column, binary, double precision files, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>backtracker</b>
+points.* <b>&minus;Df &minus;E</b> DC85.d <b>&minus;Lf</b>
+25 <b>&minus;bo &minus;bi</b><i>3</i> &gt; lines.b</p>
+
+<p style="margin-left:11%; margin-top: 1em">This file can
+then be plotted with <b>psxy &minus;M</b>.</p>
+
+<p style="margin-left:11%; margin-top: 1em">To compute the
+predicted Hawaiian hotspot track from 0 to 80 Ma every 1 Ma,
+given a history of hotspot motion file (HIdrift.txt) and a
+set of total reconstruction rotations for the plate
+(PAC_APM.d), try</p>
+
+<p style="margin-left:11%; margin-top: 1em">echo 204 19 80
+| <b>backtracker &minus;Df &minus;C &minus;E</b> PAC_APM.d
+<b>&minus;Lb</b> 1 &gt; path.d</p>
+
+<a name="COORDINATES"></a>
+<h2>COORDINATES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Data
+coordinates are assumed to be geodetic and will
+automatically be converted to geocentric before spherical
+rotations are performed. We convert back to geodetic
+coordinates for output. Note: If your data already are
+geocentric, you can avoid the conversion by using
+--ELLIPSOID=sphere.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="project.html">project</A></i>(1), <i><A HREF="grdrotater.html">grdrotater</A></i>(1),
+<i><A HREF="grdspotter.html">grdspotter</A></i>(1), <i><A HREF="mapproject.html">mapproject</A></i>(1),
+<i><A HREF="hotspotter.html">hotspotter</A></i>(1), <i><A HREF="originator.html">originator</A></i>(1)</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Wessel, P.,
+1999, &quot;Hotspotting&quot; tools released, EOS Trans.
+AGU, 80 (29), p. 319.</p>
+<hr>
+</body>
+</html>

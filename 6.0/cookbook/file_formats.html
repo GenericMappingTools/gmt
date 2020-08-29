@@ -1,0 +1,803 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>8. GMT File Formats &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="9. Including GMT Graphics into your Documents" href="include_figures.html" />
+    <link rel="prev" title="7. GMT Supplemental Packages" href="supplemental_packages.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preface.html">1. Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html">2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">3. General Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="options.html">4. Standardized command line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinate_transformations.html">5. GMT Coordinate Transformations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="map_projections.html">6. GMT Map Projections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplemental_packages.html">7. GMT Supplemental Packages</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">8. GMT File Formats</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#table-data">8.1. Table data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ascii-tables">8.1.1. ASCII tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#binary-tables">8.1.2. Binary tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#netcdf-tables">8.1.3. NetCDF tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#shapefiles">8.1.4. Shapefiles</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#grid-files">8.2. Grid files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#netcdf-files">8.2.1. NetCDF files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#chunking-and-compression-with-netcdf">8.2.2. Chunking and compression with netCDF</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gridline-and-pixel-node-registration">8.2.3. Gridline and Pixel node registration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#boundary-conditions-for-operations-on-grids">8.2.4. Boundary Conditions for operations on grids</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#native-binary-grid-files">8.2.5. Native binary grid files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sun-raster-files">8.3. Sun raster files</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="include_figures.html">9. Including GMT Graphics into your Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predefined_patterns.html">10. Predefined Bit and Hachure Patterns in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="octal_codes.html">11. Chart of Octal Codes for Characters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postscript_fonts.html">12. PostScript Fonts Used by GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">13. Color Space: The Final Frontier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_filtering.html">14. Filtering of Data in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_unix_platforms.html">15. GMT on non-UNIX Platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpts.html">16. Of Colors and Color Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_symbols.html">17. Custom Plot Symbols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contour_annotations.html">18. Annotation of Contours and “Quoted Lines”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ogrgmt_format.html">19. The GMT Vector Data Format for OGR Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="one-liner.html">20. GMT Modern Mode One-line Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../cookbook.html">GMT Cookbook</a> &raquo;</li>
+        
+      <li>8. GMT File Formats</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/cookbook/file_formats.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="gmt-file-formats">
+<span id="id1"></span><h1>8. GMT File Formats<a class="headerlink" href="#gmt-file-formats" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="table-data">
+<h2>8.1. Table data<a class="headerlink" href="#table-data" title="Permalink to this headline">¶</a></h2>
+<p>These files have <em>N</em> records which have <em>M</em> fields each. All programs
+that handle tables can read multicolumn files. GMT can read both
+ASCII, native binary, netCDF table data, and ESRI shapefiles (which
+we convert to GMT/OGR format via GDAL’s ogr2ogr tool under the hood).</p>
+<div class="section" id="ascii-tables">
+<h3>8.1.1. ASCII tables<a class="headerlink" href="#ascii-tables" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="optional-file-header-records">
+<h4>8.1.1.1. Optional file header records<a class="headerlink" href="#optional-file-header-records" title="Permalink to this headline">¶</a></h4>
+<p>The first data record may be preceded by one or more header records. Any
+records that begins with ‘#’ is considered a header or comment line and
+are always processed correctly. If your data file has leading header
+records that do <em>not</em> start with ‘#’ then you must make sure to use the
+<strong>-h</strong> option and set the parameter <a class="reference internal" href="../gmt.conf.html#io-n-header-recs"><span class="std std-ref">IO_N_HEADER_RECS</span></a> in the <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a> file
+(GMT default is one header record if <strong>-h</strong> is given; you may also use
+<strong>-h</strong><em>nrecs</em> directly). Alternatively, you can override the header record marker ‘#’
+by modifying the <a class="reference internal" href="../gmt.conf.html#io-header-marker"><span class="std std-ref">IO_HEADER_MARKER</span></a> default setting.
+Fields within a record must be separated by
+spaces, tabs, commas, or semi-colons. Each field can be an integer or floating-point
+number or a geographic coordinate string using the
+[±]<em>dd</em>[:<em>mm</em>[:<em>ss</em>[.<em>xx…</em>]]][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>|<strong>w</strong>|<strong>e</strong>|<strong>s</strong>|<strong>n</strong>]
+format. Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid
+input strings. GMT is expected to handle most CVS (Comma-Separated Values)
+files, including numbers given in double quotes.  On output, fields will be separated by the character
+given by the parameter <a class="reference internal" href="../gmt.conf.html#io-col-separator"><span class="std std-ref">IO_COL_SEPARATOR</span></a>, which by default is a TAB.</p>
+</div>
+<div class="section" id="optional-segment-header-records">
+<h4>8.1.1.2. Optional segment header records<a class="headerlink" href="#optional-segment-header-records" title="Permalink to this headline">¶</a></h4>
+<p>When dealing with time- or (<em>x,y</em>)-series it is usually convenient to
+have each profile in separate files. However, this may sometimes prove
+impractical due to large numbers of profiles. An example is files of
+digitized lineations where the number of individual features may range
+into the thousands. One file per feature would in this case be
+unreasonable and furthermore clog up the directory. GMT provides a
+mechanism for keeping more than one profile in a file. Such files are
+called <em>multiple segment files</em> and are identical to the ones just
+outlined except that they have segment headers interspersed with data
+records that signal the start of a new segment. The segment headers may
+be of any format, but all must have the same character in the first
+column. The unique character is by default ‘&gt;’, but you can
+override that by modifying the <a class="reference internal" href="../gmt.conf.html#io-segment-marker"><span class="std std-ref">IO_SEGMENT_MARKER</span></a> default setting.
+Programs can examine the segment headers to see if they contain <strong>-D</strong>
+for a distance value, <strong>-W</strong> and <strong>-G</strong> options for specifying pen and
+fill attributes for individual segments, <strong>-Z</strong> to change color via a
+CPT, <strong>-L</strong> for label specifications, or <strong>-T</strong> for general-purpose
+text descriptions. These settings (and occasionally others) will
+override the corresponding command line options. GMT also provides for
+two special values for <a class="reference internal" href="../gmt.conf.html#io-segment-marker"><span class="std std-ref">IO_SEGMENT_MARKER</span></a> that can make
+interoperability with other software packages easier. Choose the marker
+<strong>B</strong> to have blank lines recognized as segment breaks, or use <strong>N</strong> to
+have data records whose fields equal NaN mean segment breaks (e.g., as
+used by Matlab or Octave). When these markers are used then no other
+segment header will be considered. Note that <a class="reference internal" href="../gmt.conf.html#io-segment-marker"><span class="std std-ref">IO_SEGMENT_MARKER</span></a> can
+be set differently for input and output.  Finally, if a segment represents
+a closed polygon that is a hole inside another polygon you indicate this
+by including <strong>-Ph</strong> in the segment header.  This setting will be read
+and processed if converting a file to the OGR format.</p>
+</div>
+</div>
+<div class="section" id="binary-tables">
+<h3>8.1.2. Binary tables<a class="headerlink" href="#binary-tables" title="Permalink to this headline">¶</a></h3>
+<p>GMT programs also support native binary tables to speed up
+input-output for i/o-intensive tasks like gridding and preprocessing.
+This is discussed in more detail in section <a class="reference internal" href="options.html#option-b"><span class="std std-ref">Map frame and axes annotations: The -B option</span></a>.</p>
+</div>
+<div class="section" id="netcdf-tables">
+<h3>8.1.3. NetCDF tables<a class="headerlink" href="#netcdf-tables" title="Permalink to this headline">¶</a></h3>
+<p>More and more programs are now producing binary data in the netCDF
+format, and so GMT programs started to support tabular netCDF data
+(files containing one or more 1-dimensional arrays) starting with
+GMT version 4.3.0. Because of the meta data contained in those files,
+reading them is much less complex than reading native binary tables, and
+even than ASCII tables. GMT programs will read as many 1-dimensional
+columns as are needed by the program, starting with the first
+1-dimensional it can find in the file. To specifically specify which
+variables are to be read, append the suffix
+<strong>?</strong><em>var1</em><strong>/</strong><em>var2</em><strong>/</strong><em>…</em> to the netCDF file name or
+add the option <strong>-bic</strong><em>var1</em><strong>/</strong><em>var2</em><strong>/</strong><em>…</em>, where
+<em>var1</em>, <em>var2</em>, etc.are the names of the variables to be processed. The
+latter option is particularly practical when more than one file is read:
+the <strong>-bic</strong> option will apply to all files. Currently, GMT only
+reads, but does not write, netCDF tabular data.</p>
+</div>
+<div class="section" id="shapefiles">
+<h3>8.1.4. Shapefiles<a class="headerlink" href="#shapefiles" title="Permalink to this headline">¶</a></h3>
+<p>GMT programs that read tables also support ESRI shapefiles, provided GMT was compiled
+with GDAL support.  By default, only the geographic coordinates are read.  To select
+some or all aspatial fields, see the <a class="reference internal" href="../gmt.html#aspatial-full"><span class="std std-ref">-a option</span></a>.</p>
+</div>
+</div>
+<div class="section" id="grid-files">
+<h2>8.2. Grid files<a class="headerlink" href="#grid-files" title="Permalink to this headline">¶</a></h2>
+<p>GMT allows numerous grid formats to be read. In addition to the default
+netCDF format it can use binary floating points, short integers, bytes, and
+bits, as well as 8-bit Sun raster files (colormap ignored).  Additional
+formats may be used by supplying read/write functions and linking these with
+the GMT libraries. The source file <code class="docutils literal notranslate"><span class="pre">gmt_customio.c</span></code> has the information
+that programmers will need to augment GMT to read custom grid files. See
+Section <a class="reference internal" href="features.html#grid-file-format"><span class="std std-ref">Grid file format specifications</span></a> for more information.</p>
+<div class="section" id="netcdf-files">
+<h3>8.2.1. NetCDF files<a class="headerlink" href="#netcdf-files" title="Permalink to this headline">¶</a></h3>
+<p>By default, GMT stores 2-D grids as COARDS-compliant netCDF files.
+COARDS (which stands for Cooperative Ocean/Atmosphere Research Data
+Service) is a convention used by many agencies distributing gridded data
+for ocean and atmosphere research. Sticking to this convention allows
+GMT to read gridded data provided by other institutes and other
+programs. Conversely, other general domain programs will be able to read
+grids created by GMT. COARDS is a subset of a more extensive
+convention for netCDF data called CF-1.5 (Climate and Forecast, version
+1.5). Hence, GMT grids are also automatically CF-1.5-compliant.
+However, since CF-1.5 has more general application than COARDS, not all
+CF-1.5 compliant netCDF files can be read by GMT.</p>
+<p>The netCDF grid file in GMT has several attributes (See Table
+<a class="reference internal" href="#tbl-netcdf-format"><span class="std std-ref">netcdf-format</span></a>) to describe the content. The routine
+that deals with netCDF grid files is sufficiently flexible so that grid files
+slightly deviating from the standards used by GMT can also be read.</p>
+<table border="1" class="docutils" id="tbl-netcdf-format">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Attribute</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>&#160;</td>
+<td><em>Global attributes</em></td>
+</tr>
+<tr class="row-odd"><td>Conventions</td>
+<td>COARDS, CF-1.5 (optional)</td>
+</tr>
+<tr class="row-even"><td>title</td>
+<td>Title (optional)</td>
+</tr>
+<tr class="row-odd"><td>source</td>
+<td>How file was created (optional)</td>
+</tr>
+<tr class="row-even"><td>node_offset</td>
+<td>0 for gridline node registration (default),
+1 for pixel registration</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><em>x- and y-variable attributes</em></td>
+</tr>
+<tr class="row-even"><td>long_name</td>
+<td>Coordinate name (e.g., “Longitude” and “Latitude”)</td>
+</tr>
+<tr class="row-odd"><td>units</td>
+<td>Unit of the coordinate (e.g., “degrees_east” and “degrees_north”)</td>
+</tr>
+<tr class="row-even"><td>actual range
+(or valid range)</td>
+<td>Minimum and maximum <em>x</em> and <em>y</em> of region; if absent the
+first and last <em>x</em>- and <em>y</em>-values are queried</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><em>z-variable attributes</em></td>
+</tr>
+<tr class="row-even"><td>long_name</td>
+<td>Name of the variable (default: “z”)</td>
+</tr>
+<tr class="row-odd"><td>units</td>
+<td>Unit of the variable</td>
+</tr>
+<tr class="row-even"><td>scale_factor</td>
+<td>Factor to multiply <em>z</em> with (default: 1)</td>
+</tr>
+<tr class="row-odd"><td>add_offset</td>
+<td>Offset to add to scaled <em>z</em> (default: 0)</td>
+</tr>
+<tr class="row-even"><td>actual_range</td>
+<td>Minimum and maximum <em>z</em> (in unpacked units, optional) and <em>z</em></td>
+</tr>
+<tr class="row-odd"><td>_FillValue
+(or missing_value)</td>
+<td>Value associated with missing or invalid data points; if absent an
+appropriate default value is assumed, depending on data type.</td>
+</tr>
+</tbody>
+</table>
+<p>By default, the first 2-dimensional variable in a netCDF file will be read as
+the <em>z</em> variable and the coordinate axes <em>x</em> and <em>y</em> will be determined from
+the dimensions of the <em>z</em> variable. GMT will recognize whether the <em>y</em>
+(latitude) variable increases or decreases. Both forms of data storage are
+handled appropriately.</p>
+<p>For more information on the use of COARDS-compliant netCDF files, and on how
+to load multi-dimensional grids, read Section <a class="reference internal" href="features.html#modifiers-for-cf"><span class="std std-ref">Modifiers for COARDS-compliant netCDF files</span></a>.</p>
+</div>
+<div class="section" id="chunking-and-compression-with-netcdf">
+<h3>8.2.2. Chunking and compression with netCDF<a class="headerlink" href="#chunking-and-compression-with-netcdf" title="Permalink to this headline">¶</a></h3>
+<p>GMT supports reading and writing of netCDF-4 files since release 5.0.  For
+performance reasons with ever-increasing grid sizes, the default output format
+of GMT is netCDF-4 with chunking enabled for grids with more than 16384 cells.
+Chunking means that the data are not stored sequentially in rows along latitude
+but rather split up into tiles.  Figure <a class="reference internal" href="#netcdf-chunking"><span class="std std-ref">Grid split into 3 by 3 chunks</span></a> illustrates
+the layout in a chunked netCDF file.  To access a subset of the data (e.g.,
+the four blue tiles in the lower left), netCDF only reads those tiles
+(“chunks”) instead of extracting data from long rows.</p>
+<div class="figure align-center" id="id2">
+<span id="netcdf-chunking"></span><img alt="../_images/GMT_chunking.png" src="../_images/GMT_chunking.png" />
+<p class="caption"><span class="caption-text">Grid split into 3 by 3 chunks</span></p>
+</div>
+<p>Gridded datasets in the earth sciences usually exhibit a strong spatial
+dependence (e.g. topography, potential fields, illustrated by blue and white
+cells in Figure <a class="reference internal" href="#netcdf-chunking"><span class="std std-ref">Grid split into 3 by 3 chunks</span></a>) and deflation can greatly reduce the
+file size and hence the file access time (deflating/inflating is faster than
+hard disk I/O).  It is therefore convenient to deflate grids with spatial
+dependence (levels 1–3 give the best speed/size-tradeoff).</p>
+<p>You may control the size of the chunks of data and compression with the
+configuration parameters <a class="reference internal" href="../gmt.conf.html#io-nc4-chunk-size"><span class="std std-ref">IO_NC4_CHUNK_SIZE</span></a>
+and <a class="reference internal" href="../gmt.conf.html#io-nc4-deflation-level"><span class="std std-ref">IO_NC 4_DEFLATION_LEVEL</span></a> as specified in
+<a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a> and you can check the netCDF format with <a class="reference internal" href="../grdinfo.html"><span class="doc">grdinfo</span></a>.</p>
+<p>Classic netCDF files were the <em>de facto</em> standard until netCDF 4.0 was released
+in 2008.  Most programs supporting netCDF by now are using the netCDF-4
+library and are thus capable of reading netCDF files generated with GMT 5,
+this includes official GMT releases since revision 4.5.8.  In rare occasions,
+when you have to load netCDF files with old software, you may be forced to
+export your grids in the old classic format.  This can be achieved by setting
+<a class="reference internal" href="../gmt.conf.html#io-nc4-chunk-size"><span class="std std-ref">IO_NC4_CHUNK_SIZE</span></a> to <strong>c</strong>lassic.</p>
+<p>Further reading:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.unidata.ucar.edu/software/netcdf/workshops/most-recent/performance/index.html">Unidata NetCDF Workshop: NetCDF Formats and Performance</a></li>
+<li><a class="reference external" href="http://www.unidata.ucar.edu/software/netcdf/workshops/most-recent/nc4chunking/WhatIsChunking.html">Unidata NetCDF Workshop: What is Chunking?</a></li>
+<li><a class="reference external" href="http://www.hdfgroup.org/pubs/papers/2008-06_netcdf4_perf_report.pdf">HDF NetCDF-4 Performance Report</a></li>
+</ul>
+</div>
+<div class="section" id="gridline-and-pixel-node-registration">
+<h3>8.2.3. Gridline and Pixel node registration<a class="headerlink" href="#gridline-and-pixel-node-registration" title="Permalink to this headline">¶</a></h3>
+<p>Scanline format means that the data are stored in rows (<em>y</em> = constant)
+going from the “top” (<span class="math notranslate nohighlight">\(y = y_{max}\)</span> (north)) to the “bottom”
+(<span class="math notranslate nohighlight">\(y = y_{min}\)</span> (south)). Data within each row are ordered from
+“left” (<span class="math notranslate nohighlight">\(x = x_{min}\)</span> (west)) to “right” (<span class="math notranslate nohighlight">\(x = x_{max}\)</span>
+(east)). The <em>registration</em> signals how the nodes are laid out. The grid
+is always defined as the intersections of all
+<em>x</em> ( <span class="math notranslate nohighlight">\(x = x_{min}, x_{min} + x_{inc}, x_{min} + 2 \cdot x_{inc}, \ldots, x_{max}\)</span> )
+and <em>y</em> ( <span class="math notranslate nohighlight">\(y = y_{min}, y_{min} + y_{inc}, y_{min} + 2 \cdot y_{inc}, \ldots, y_{max}\)</span> )
+lines. The two scenarios differ as to which area each data point
+represents. The default node registration in GMT is gridline node
+registration. Most programs can handle both types, and for some programs
+like <a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a> a pixel registered file
+makes more sense. Utility programs like
+<a class="reference internal" href="../grdsample.html"><span class="doc">grdsample</span></a> and
+<a class="reference internal" href="../grdproject.html"><span class="doc">grdproject</span></a> will allow you to
+convert from one format to the other;
+<a class="reference internal" href="../grdedit.html"><span class="doc">grdedit</span></a> can make changes to the grid
+header and convert a pixel- to a gridline-registered grid, or <em>vice
+versa</em>. The grid registration is determined by the common GMT <strong>-r</strong>
+option (see Section <a class="reference internal" href="options.html#option-nodereg"><span class="std std-ref">Grid registration: The -r option</span></a>).</p>
+</div>
+<div class="section" id="boundary-conditions-for-operations-on-grids">
+<h3>8.2.4. Boundary Conditions for operations on grids<a class="headerlink" href="#boundary-conditions-for-operations-on-grids" title="Permalink to this headline">¶</a></h3>
+<p>GMT has the option to specify boundary conditions in some programs
+that operate on grids (e.g.,
+<a class="reference internal" href="../grdsample.html"><span class="doc">grdsample</span></a>, <a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a>,
+<a class="reference internal" href="../grdtrack.html"><span class="doc">grdtrack</span></a>, <a class="reference internal" href="../nearneighbor.html"><span class="doc">nearneighbor</span></a>, and
+<a class="reference internal" href="../grdview.html"><span class="doc">grdview</span></a>, to name a few. The desired
+condition can be set with the common GMT option <strong>-n</strong>; see Section
+<a class="reference internal" href="options.html#option-n"><span class="std std-ref">Grid interpolation parameters: The -n option</span></a>. The boundary conditions come into play when
+interpolating or computing derivatives near the limits of the region
+covered by the grid. The <em>default</em> boundary conditions used are those
+which are “natural” for the boundary of a minimum curvature
+interpolating surface. If the user knows that the data are periodic in
+<em>x</em> (and/or <em>y</em>), or that the data cover a sphere with <em>x</em>,<em>y</em>
+representing <em>longitude</em>,<em>latitude</em>, then there are better choices for
+the boundary conditions. Periodic conditions on <em>x</em> (and/or <em>y</em>) are
+chosen by specifying <em>x</em> (and/or <em>y</em>) as the boundary condition flags;
+global spherical cases are specified using the <em>g</em> (geographical) flag.
+Behavior of these conditions is as follows:</p>
+<dl class="docutils">
+<dt>Periodic</dt>
+<dd>conditions on <em>x</em> indicate that the data are periodic in the
+distance (<span class="math notranslate nohighlight">\(x_{max} - x_{min}\)</span>) and thus repeat values after
+every <span class="math notranslate nohighlight">\(N = (x_{max} - x_{min})/x_{inc}\)</span>. Note that this
+implies that in a grid-registered file the values in the first and
+last columns are equal, since these are located at
+<span class="math notranslate nohighlight">\(x = x_{min}\)</span> and <span class="math notranslate nohighlight">\(x = x_{max}\)</span>, and there are
+<em>N + 1</em> columns in the file. This is not the case in a
+pixel-registered file, where there are only <em>N</em> and the first
+and last columns are located at <span class="math notranslate nohighlight">\(x_{min} + x_{inc}/2\)</span> and
+<span class="math notranslate nohighlight">\(x_{max} - x_{inc}/2\)</span>. If <em>y</em> is periodic all the same
+holds for <em>y</em>.</dd>
+<dt>Geographical</dt>
+<dd><p class="first">conditions indicate the following:</p>
+<ol class="arabic simple">
+<li>If <span class="math notranslate nohighlight">\((x_{max} - x_{min}) \geq 360\)</span> and also 180 modulo
+<span class="math notranslate nohighlight">\(x_{inc} = 0\)</span> then a periodic condition is used on
+<em>x</em> with a period of 360; else a default condition is used
+on the <em>x</em> boundaries.</li>
+<li>If condition 1 is true and also <span class="math notranslate nohighlight">\(y_{max} = 90\)</span> then a
+“north pole condition” is used at <span class="math notranslate nohighlight">\(y_{max}\)</span>, else a default
+condition is used there.</li>
+<li>If condition 1 is true and also <span class="math notranslate nohighlight">\(y_{min} = -90\)</span> then a
+“south pole condition” is used at <span class="math notranslate nohighlight">\(y_{min}\)</span>, else a default
+condition is used there.</li>
+</ol>
+<p class="last">“Pole conditions” use a 180º phase-shift of the data, requiring 180
+modulo <span class="math notranslate nohighlight">\(x_{inc} = 0\)</span>.</p>
+</dd>
+<dt>Default</dt>
+<dd><p class="first">boundary conditions are</p>
+<div class="math notranslate nohighlight">
+\[\nabla^2 f = \frac{\partial}{\partial n} \nabla^2 f = 0\]</div>
+<p>on the boundary, where <span class="math notranslate nohighlight">\(f(x, y)\)</span> is represented by the values
+in the grid file, and <span class="math notranslate nohighlight">\(\partial/\partial n\)</span> is the derivative
+in the direction normal to a boundary, and</p>
+<div class="math notranslate nohighlight">
+\[\nabla^2 = \left(\frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2}\right)\]</div>
+<p class="last">is the two-dimensional Laplacian operator.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="native-binary-grid-files">
+<h3>8.2.5. Native binary grid files<a class="headerlink" href="#native-binary-grid-files" title="Permalink to this headline">¶</a></h3>
+<p>The old-style native grid file format that was common in earlier version
+of GMT is still supported, although the use of netCDF files is
+strongly recommended. The file starts with a header of 892 bytes
+containing a number of attributes defining the content. The
+<a class="reference internal" href="../grdedit.html"><span class="doc">grdedit</span></a> utility program will allow you
+to edit parts of the header of an existing grid file. The attributes
+listed in Table <a class="reference internal" href="#tbl-grdheader"><span class="std std-ref">grdheader</span></a> are contained within the header record
+in the order given (except the <em>z</em>-array which is not part of the
+header structure, but makes up the rest of the file). As this header was
+designed long before 64-bit architectures became available, the jump
+from the first three integers to the subsequent doubles in the structure
+does not occur on a 16-byte alignment. While GMT handles the reading
+of these structures correctly, enterprising programmers must take care
+to read this header correctly (see our code for details).</p>
+<table border="1" class="docutils" id="tbl-grdheader">
+<colgroup>
+<col width="38%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Parameter</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>int</strong> <em>n_columns</em></td>
+<td>Number of nodes in the <em>x</em>-dimension</td>
+</tr>
+<tr class="row-odd"><td><strong>int</strong> <em>n_rows</em></td>
+<td>Number of nodes in the <em>y</em>-dimension</td>
+</tr>
+<tr class="row-even"><td><strong>int</strong> <em>registration</em></td>
+<td>0 for grid line registration, 1 for pixel registration</td>
+</tr>
+<tr class="row-odd"><td><strong>double</strong> <em>x_min</em></td>
+<td>Minimum <em>x</em>-value of region</td>
+</tr>
+<tr class="row-even"><td><strong>double</strong> <em>x_max</em></td>
+<td>Maximum <em>x</em>-value of region</td>
+</tr>
+<tr class="row-odd"><td><strong>double</strong> <em>y_min</em></td>
+<td>Minimum <em>y</em>-value of region</td>
+</tr>
+<tr class="row-even"><td><strong>double</strong> <em>y_max</em></td>
+<td>Maximum <em>y</em>-value of region</td>
+</tr>
+<tr class="row-odd"><td><strong>double</strong> <em>z_min</em></td>
+<td>Minimum <em>z</em>-value in data set</td>
+</tr>
+<tr class="row-even"><td><strong>double</strong> <em>z_max</em></td>
+<td>Maximum <em>z</em>-value in data set</td>
+</tr>
+<tr class="row-odd"><td><strong>double</strong> <em>x_inc</em></td>
+<td>Node spacing in <em>x</em>-dimension</td>
+</tr>
+<tr class="row-even"><td><strong>double</strong> <em>y_inc</em></td>
+<td>Node spacing in <em>y</em>-dimension</td>
+</tr>
+<tr class="row-odd"><td><strong>double</strong> <em>z_scale_factor</em></td>
+<td>Factor to multiply <em>z</em>-values after read</td>
+</tr>
+<tr class="row-even"><td><strong>double</strong> <em>z_add_offset</em></td>
+<td>Offset to add to scaled <em>z</em>-values</td>
+</tr>
+<tr class="row-odd"><td><strong>char</strong> <em>x_units</em>[80]</td>
+<td>Units of the <em>x</em>-dimension</td>
+</tr>
+<tr class="row-even"><td><strong>char</strong> <em>y_units</em>[80]</td>
+<td>Units of the <em>y</em>-dimension</td>
+</tr>
+<tr class="row-odd"><td><strong>char</strong> <em>z_units</em>[80]</td>
+<td>Units of the <em>z</em>-dimension</td>
+</tr>
+<tr class="row-even"><td><strong>char</strong> <em>title</em>[80]</td>
+<td>Descriptive title of the data set</td>
+</tr>
+<tr class="row-odd"><td><strong>char</strong> <em>command</em>[320]</td>
+<td>Command line that produced the grid file</td>
+</tr>
+<tr class="row-even"><td><strong>char</strong> <em>remark</em>[160]</td>
+<td>Any additional comments</td>
+</tr>
+<tr class="row-odd"><td><strong>TYPE</strong> <em>z</em>[n_columns*n_rows]</td>
+<td>1-D array with <em>z</em>-values in scanline format</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="sun-raster-files">
+<h2>8.3. Sun raster files<a class="headerlink" href="#sun-raster-files" title="Permalink to this headline">¶</a></h2>
+<p>The Sun raster file format consists of a header followed by a series of
+unsigned 1-byte integers that represents the bit-pattern. Bits are
+scanline oriented, and each row must contain an even number of bytes.
+The predefined 1-bit patterns in GMT have dimensions of 64 by 64, but
+other sizes will be accepted when using the <strong>-Gp|P</strong> option. The Sun
+header structure is outline in Table <a class="reference internal" href="#tbl-sunheader"><span class="std std-ref">sunheader</span></a>.</p>
+<table border="1" class="docutils" id="tbl-sunheader">
+<colgroup>
+<col width="42%" />
+<col width="58%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Parameter</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>int</strong> <em>ras_magic</em></td>
+<td>Magic number</td>
+</tr>
+<tr class="row-odd"><td><strong>int</strong> <em>ras_width</em></td>
+<td>Width (pixels) of image</td>
+</tr>
+<tr class="row-even"><td><strong>int</strong> <em>ras_height</em></td>
+<td>Height (pixels) of image</td>
+</tr>
+<tr class="row-odd"><td><strong>int</strong> <em>ras_depth</em></td>
+<td>Depth (1, 8, 24, 32 bits) of pixel</td>
+</tr>
+<tr class="row-even"><td><strong>int</strong> <em>ras_length</em></td>
+<td>Length (bytes) of image</td>
+</tr>
+<tr class="row-odd"><td><strong>int</strong> <em>ras_type</em></td>
+<td>Type of file; see RT_ below</td>
+</tr>
+<tr class="row-even"><td><strong>int</strong> <em>ras_maptype</em></td>
+<td>Type of colormap; see RMT_ below</td>
+</tr>
+<tr class="row-odd"><td><strong>int</strong> <em>ras_maplength</em></td>
+<td>Length (bytes) of following map</td>
+</tr>
+</tbody>
+</table>
+<p>After the header, the color map (if <em>ras_maptype</em> is not RMT_NONE)
+follows for <em>ras_maplength</em> bytes, followed by an image of
+<em>ras_length</em> bytes. Some related definitions are given in
+Table <a class="reference internal" href="#tbl-sundef"><span class="std std-ref">sundef</span></a>.</p>
+<table border="1" class="docutils" id="tbl-sundef">
+<colgroup>
+<col width="33%" />
+<col width="67%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Macro name</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>RAS_MAGIC</td>
+<td>0x59a66a95</td>
+</tr>
+<tr class="row-odd"><td>RT_STANDARD</td>
+<td>1 (Raw pixrect image in 68000 byte order)</td>
+</tr>
+<tr class="row-even"><td>RT_BYTE_ENCODED</td>
+<td>2 (Run-length compression of bytes)</td>
+</tr>
+<tr class="row-odd"><td>RT_FORMAT_RGB</td>
+<td>3 ([X]RGB instead of [X]BGR)</td>
+</tr>
+<tr class="row-even"><td>RMT_NONE</td>
+<td>0 (ras_maplength is expected to be 0)</td>
+</tr>
+<tr class="row-odd"><td>RMT_EQUAL_RGB</td>
+<td>1 (red[ras_maplength/3],green[],blue[])</td>
+</tr>
+</tbody>
+</table>
+<p>Numerous public-domain programs exist, such as <strong>xv</strong> and
+<strong>convert</strong> (in the GraphicsMagick or ImageMagick package), that will translate between
+various raster file formats such as tiff, gif, jpeg, and Sun raster.
+Raster patterns may be created with GMT plotting tools by generating
+PostScript plots that can be rasterized by ghostscript and
+translated into the right raster format.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="include_figures.html" class="btn btn-neutral float-right" title="9. Including GMT Graphics into your Documents" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="supplemental_packages.html" class="btn btn-neutral float-left" title="7. GMT Supplemental Packages" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

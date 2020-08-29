@@ -1,0 +1,176 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(44) Map inserts &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(45) Trend modeling" href="ex45.html" />
+    <link rel="prev" title="(43) Robust regression and outlier detection" href="ex43.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex45.html" title="(45) Trend modeling"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex43.html" title="(43) Robust regression and outlier detection"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="map-inserts">
+<span id="example-44"></span><h1>(44) Map inserts<a class="headerlink" href="#map-inserts" title="Permalink to this headline">¶</a></h1>
+<p>In this example show how the two modules <a class="reference internal" href="../psbasemap.html"><span class="doc">psbasemap</span></a>
+and <a class="reference internal" href="../mapproject.html"><span class="doc">mapproject</span></a> can be used
+to place map inserts on top of your map.  The map insert is usually
+intended for placing a smaller-scale version of the larger geographical
+context of your main plot, so that reader unfamiliar with the detailed
+map can see what region we are looking at.  While the Australia example
+is simplest since we know the insert will be a square map, the Spain
+example requires us to compute the dimensions of the insert first, via
+<a class="reference internal" href="../mapproject.html"><span class="doc">mapproject</span></a>, so that we can determine exact insert dimensions.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT EXAMPLE 44</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate use of map inserts</span>
+<span class="c1"># GMT modules:  pscoast, psbasemap, mapproject</span>
+<span class="c1"># Unix progs:   read</span>
+<span class="c1">#</span>
+
+<span class="nv">ps</span><span class="o">=</span>example_44.ps
+
+<span class="c1"># Bottom map of Australia</span>
+gmt pscoast -R110E/170E/44S/9S -JM6i -P -Baf -BWSne -Wfaint -N2/1p  -EAU+gbisque -Gbrown -Sazure1 -Da -K -Xc --FORMAT_GEO_MAP<span class="o">=</span>dddF &gt; <span class="nv">$ps</span>
+gmt psbasemap -R -J -O -K -DjTR+w1.5i+o0.15i/0.1i+stmp -F+gwhite+p1p+c0.1c+s &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">read</span> x0 y0 w h &lt; tmp
+gmt pscoast -Rg -JG120/30S/<span class="nv">$w</span> -Da -Gbrown -A5000 -Bg -Wfaint -EAU+gbisque -O -K -X<span class="nv">$x0</span> -Y<span class="nv">$y0</span> &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -K -T  -X-<span class="si">${</span><span class="nv">x0</span><span class="si">}</span> -Y-<span class="si">${</span><span class="nv">y0</span><span class="si">}</span> &gt;&gt; <span class="nv">$ps</span>
+<span class="c1"># Determine size of insert map of Europe</span>
+gmt mapproject -R15W/35E/30N/48N -JM2i -W &gt; tmp
+<span class="nb">read</span> w h &lt; tmp
+gmt pscoast -R10W/5E/35N/44N -JM6i -Baf -BWSne -EES+gbisque -Gbrown -Wfaint -N1/1p -Sazure1 -Df -O -K -Y4.5i --FORMAT_GEO_MAP<span class="o">=</span>dddF &gt;&gt; <span class="nv">$ps</span>
+gmt psbasemap -R -J -O -K -DjTR+w<span class="nv">$w</span>/<span class="nv">$h</span>+o0.15i/0.1i+stmp -F+gwhite+p1p+c0.1c+s &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">read</span> x0 y0 w h &lt; tmp
+gmt pscoast -R15W/35E/30N/48N -JM<span class="nv">$w</span> -Da -Gbrown -B0 -EES+gbisque -O -K -X<span class="nv">$x0</span> -Y<span class="nv">$y0</span> --MAP_FRAME_TYPE<span class="o">=</span>plain &gt;&gt; <span class="nv">$ps</span>
+gmt psxy -R -J -O -T -X-<span class="si">${</span><span class="nv">x0</span><span class="si">}</span> -Y-<span class="si">${</span><span class="nv">y0</span><span class="si">}</span> &gt;&gt; <span class="nv">$ps</span>
+rm -f tmp
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_44.png"><img alt="../_images/example_44.png" src="../_images/example_44.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Map Inserts.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex43.html"
+                        title="previous chapter">(43) Robust regression and outlier detection</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex45.html"
+                        title="next chapter">(45) Trend modeling</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex44.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex45.html" title="(45) Trend modeling"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex43.html" title="(43) Robust regression and outlier detection"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

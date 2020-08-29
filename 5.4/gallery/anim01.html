@@ -1,0 +1,236 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(1) Animation of the sine function &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(2) Examining DEMs using variable illumination" href="anim02.html" />
+    <link rel="prev" title="Introduction" href="anim_introduction.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="anim02.html" title="(2) Examining DEMs using variable illumination"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="anim_introduction.html" title="Introduction"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="animation-of-the-sine-function">
+<span id="anim-01"></span><h1>(1) Animation of the sine function<a class="headerlink" href="#animation-of-the-sine-function" title="Permalink to this headline">¶</a></h1>
+<p>Our first animation is not very ambitious: We wish to plot the sine
+function from 0-360 and take snap shots every 20. To get a smooth curve
+we must sample the function much more frequently; we settle on 10 times
+more frequently than the frame spacing. We place a bright red circle at
+the leading edge of the curve, and as we move forward in time (here,
+angles) we dim the older circles to a dark red color. We add a label
+that indicates the current angle value. Once the 18 frames are completed
+we convert them to a single animated GIF file and write a plain HTML
+wrapper with a simple legend. Opening the HTML page in <code class="docutils literal notranslate"><span class="pre">anim01.html</span></code>
+the browser will display the animation.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#               GMT ANIMATION 01</span>
+<span class="c1">#               $Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Make web page with simple animated GIF of sine function</span>
+<span class="c1"># GMT modules:  gmtmath, psbasemap, pstext, psxy, psconvert</span>
+<span class="c1"># Unix progs:   printf, mkdir, rm, mv, echo, convert, cat</span>
+<span class="c1"># Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.</span>
+<span class="c1">#</span>
+<span class="c1"># 1. Initialization</span>
+<span class="c1"># 1a) Assign movie parameters</span>
+. gmt_shell_functions.sh
+<span class="nv">width</span><span class="o">=</span>4i
+<span class="nv">height</span><span class="o">=</span>2i
+<span class="nv">dpi</span><span class="o">=</span><span class="m">125</span>
+<span class="nv">n_frames</span><span class="o">=</span><span class="m">18</span>
+<span class="nv">name</span><span class="o">=</span>anim_01
+<span class="nv">ps</span><span class="o">=</span><span class="si">${</span><span class="nv">name</span><span class="si">}</span>.ps
+<span class="c1"># 1b) Do frame-independent calculations and setup</span>
+<span class="nv">angle_step</span><span class="o">=</span><span class="sb">`</span>gmt math -Q <span class="m">360</span> <span class="si">${</span><span class="nv">n_frames</span><span class="si">}</span> <span class="nv">DIV</span> <span class="o">=</span><span class="sb">`</span>
+<span class="nv">angle_inc</span><span class="o">=</span><span class="sb">`</span>gmt math -Q <span class="si">${</span><span class="nv">angle_step</span><span class="si">}</span> <span class="m">10</span> <span class="nv">DIV</span> <span class="o">=</span><span class="sb">`</span>
+gmt psbasemap -R0/360/-1.2/1.6 -JX3.5i/1.65i -P -K -X0.35i -Y0.25i <span class="se">\</span>
+	-BWSne+glightgreen -Bxa90g90f30+u<span class="se">\\</span><span class="m">312</span> -Bya0.5f0.1g1 <span class="se">\</span>
+	--PS_MEDIA<span class="o">=</span><span class="si">${</span><span class="nv">width</span><span class="si">}</span>x<span class="si">${</span><span class="nv">height</span><span class="si">}</span> --FONT_ANNOT_PRIMARY<span class="o">=</span>9p &gt; <span class="nv">$$</span>.map.ps
+<span class="c1"># 2. Main frame loop</span>
+mkdir -p <span class="nv">$$</span>
+<span class="nv">frame</span><span class="o">=</span><span class="m">0</span>
+<span class="k">while</span> <span class="o">[</span> <span class="si">${</span><span class="nv">frame</span><span class="si">}</span> -le <span class="si">${</span><span class="nv">n_frames</span><span class="si">}</span> <span class="o">]</span><span class="p">;</span> <span class="k">do</span>
+	<span class="c1"># Create file name using a name_##.tif format</span>
+	<span class="nv">file</span><span class="o">=</span><span class="sb">`</span>gmt_set_framename <span class="si">${</span><span class="nv">name</span><span class="si">}</span> <span class="si">${</span><span class="nv">frame</span><span class="si">}</span><span class="sb">`</span>
+	cp -f <span class="nv">$$</span>.map.ps <span class="nv">$$</span>.ps
+	<span class="nv">angle</span><span class="o">=</span><span class="sb">`</span>gmt math -Q <span class="si">${</span><span class="nv">frame</span><span class="si">}</span> <span class="si">${</span><span class="nv">angle_step</span><span class="si">}</span> <span class="nv">MUL</span> <span class="o">=</span><span class="sb">`</span>
+	<span class="k">if</span> <span class="o">[</span> <span class="si">${</span><span class="nv">frame</span><span class="si">}</span> -gt <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>	<span class="c1"># First plot has no curves</span>
+<span class="c1">#		Plot smooth blue curve and dark red dots at all angle steps so far</span>
+		gmt math -T0/<span class="si">${</span><span class="nv">angle</span><span class="si">}</span>/<span class="si">${</span><span class="nv">angle_inc</span><span class="si">}</span> T <span class="nv">SIND</span> <span class="o">=</span> <span class="nv">$$</span>.sin.d
+		gmt psxy -R -J -O -K -W1p,blue <span class="nv">$$</span>.sin.d &gt;&gt; <span class="nv">$$</span>.ps
+		gmt math -T0/<span class="si">${</span><span class="nv">angle</span><span class="si">}</span>/<span class="si">${</span><span class="nv">angle_step</span><span class="si">}</span> T <span class="nv">SIND</span> <span class="o">=</span> <span class="nv">$$</span>.sin.d
+		gmt psxy -R -J -O -K -Sc0.1i -Gdarkred <span class="nv">$$</span>.sin.d &gt;&gt; <span class="nv">$$</span>.ps
+	<span class="k">fi</span>
+	<span class="c1">#	Plot red dot at current angle and annotate</span>
+	<span class="nv">sin</span><span class="o">=</span><span class="sb">`</span>gmt math -Q <span class="si">${</span><span class="nv">angle</span><span class="si">}</span> <span class="nv">SIND</span> <span class="o">=</span><span class="sb">`</span>
+	gmt psxy -R -J -O -K -Sc0.1i -Gred &gt;&gt; <span class="nv">$$</span>.ps <span class="o">&lt;&lt;&lt;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">angle</span><span class="si">}</span><span class="s2"> </span><span class="si">${</span><span class="nv">sin</span><span class="si">}</span><span class="s2">&quot;</span>
+	<span class="nb">printf</span> <span class="s2">&quot;0 1.6 a = %03d&quot;</span> <span class="si">${</span><span class="nv">angle</span><span class="si">}</span> <span class="p">|</span> gmt pstext -R -J -F+f14p,Helvetica-Bold+jTL -O -K <span class="se">\</span>
+		-N -Dj0.1i/0.05i &gt;&gt; <span class="nv">$$</span>.ps
+	gmt psxy -R -J -O -T &gt;&gt; <span class="nv">$$</span>.ps
+	<span class="o">[[</span> <span class="si">${</span><span class="nv">frame</span><span class="si">}</span> -eq <span class="m">0</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> cp <span class="nv">$$</span>.ps <span class="si">${</span><span class="nv">ps</span><span class="si">}</span>
+	<span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -eq <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+		gmt_cleanup .gmt
+		gmt_abort <span class="s2">&quot;</span><span class="si">${</span><span class="nv">0</span><span class="si">}</span><span class="s2">: First frame plotted to </span><span class="si">${</span><span class="nv">name</span><span class="si">}</span><span class="s2">.ps&quot;</span>
+	<span class="k">fi</span>
+<span class="c1">#	RIP to TIFF at specified dpi</span>
+	gmt psconvert -E<span class="si">${</span><span class="nv">dpi</span><span class="si">}</span> -Tt <span class="nv">$$</span>.ps
+	mv -f <span class="nv">$$</span>.tif <span class="nv">$$</span>/<span class="si">${</span><span class="nv">file</span><span class="si">}</span>.tif
+	<span class="nb">echo</span> <span class="s2">&quot;Frame </span><span class="si">${</span><span class="nv">file</span><span class="si">}</span><span class="s2"> completed&quot;</span>
+	<span class="nv">frame</span><span class="o">=</span><span class="sb">`</span>gmt_set_framenext <span class="si">${</span><span class="nv">frame</span><span class="si">}</span><span class="sb">`</span>
+<span class="k">done</span>
+<span class="c1"># 3. Create animated GIF file and HTML for web page</span>
+<span class="si">${</span><span class="nv">GRAPHICSMAGICK</span><span class="p">-gm</span><span class="si">}</span> convert -delay <span class="m">20</span> -loop <span class="m">0</span> <span class="nv">$$</span>/<span class="si">${</span><span class="nv">name</span><span class="si">}</span>_*.tif <span class="si">${</span><span class="nv">name</span><span class="si">}</span>.gif
+cat <span class="s">&lt;&lt; END &gt; ${name}.html</span>
+<span class="s">&lt;HTML&gt;</span>
+<span class="s">&lt;TITLE&gt;GMT Trigonometry: The sine movie&lt;/TITLE&gt;</span>
+<span class="s">&lt;BODY bgcolor=&quot;#ffffff&quot;&gt;</span>
+<span class="s">&lt;CENTER&gt;</span>
+<span class="s">&lt;H1&gt;GMT Trigonometry: The sine movie&lt;/H1&gt;</span>
+<span class="s">&lt;IMG src=&quot;${name}.gif&quot;&gt;</span>
+<span class="s">&lt;/CENTER&gt;</span>
+<span class="s">&lt;HR&gt;</span>
+<span class="s">We demonstrate how the sine function &lt;I&gt;y = sin(a)&lt;/I&gt; varies with &lt;I&gt;a&lt;/I&gt; over</span>
+<span class="s">the full 360-degree interval.  We plot a bright red circle at each</span>
+<span class="s">new angle, letting previous circles turn dark red.  The underlying</span>
+<span class="s">sine curve is sampled at 10 times the frame sampling rate in order to reproduce</span>
+<span class="s">a smooth curve.  Our animation uses GraphicsMagick&#39;s convert tool to make an animated GIF file</span>
+<span class="s">with a 0.2 second pause between frames, set to repeat forever.</span>
+<span class="s">&lt;HR&gt;</span>
+<span class="s">&lt;I&gt;${name}.sh: Created by ${USER} on `date`&lt;/I&gt;</span>
+<span class="s">&lt;/BODY&gt;</span>
+<span class="s">&lt;/HTML&gt;</span>
+<span class="s">END</span>
+<span class="c1"># 4. Clean up temporary files</span>
+gmt_cleanup .gmt
+</pre></div>
+</div>
+<p>Make sure you understand the purpose of all the steps in our script. In
+this case we did some trial-and-error to determine the exact values to
+use for the map projection, the region, the spacing around the frame,
+etc. so that the final result gave a reasonable layout. Do this planning
+on a single PostScript plot before running a lengthy animation script.</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/anim_01.gif"><img alt="../_images/anim_01.gif" src="../_images/anim_01.gif" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Animation of a simple sine function.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="anim_introduction.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="anim02.html"
+                        title="next chapter">(2) Examining DEMs using variable illumination</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/anim01.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="anim02.html" title="(2) Examining DEMs using variable illumination"
+             >next</a> </li>
+        <li class="right" >
+          <a href="anim_introduction.html" title="Introduction"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

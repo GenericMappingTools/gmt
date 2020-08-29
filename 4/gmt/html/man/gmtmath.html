@@ -1,0 +1,3693 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:15 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GMTMATH</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GMTMATH</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#ASCII FORMAT PRECISION">ASCII FORMAT PRECISION</a><br>
+<a href="#NOTES ON OPERATORS">NOTES ON OPERATORS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">gmtmath &minus;
+Reverse Polish Notation calculator for data tables</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtmath</b>
+[ <b>&minus;A</b><i>t_f(t).d</i> ] [
+<b>&minus;C</b><i>cols</i> ] [ <b>&minus;F</b><i>cols</i> ]
+[ <b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [ <b>&minus;I</b>
+] [ <b>&minus;N</b><i>n_col</i>/<i>t_col</i> ] [
+<b>&minus;Q</b> ] [ <b>&minus;S</b>[<b>f</b>|<b>l</b>] ] [
+<b>&minus;T</b><i>t_min</i>/<i>t_max</i>/<i>t_inc</i>[<b>+</b>]|<i>tfile</i>
+] [ <b>&minus;V</b> ] [
+<b>&minus;b</b>[<b>i</b>|<b>o</b>][<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ] [
+<b>&minus;m</b>[<b>i</b>|<b>o</b>][<i>flag</i>] ]
+<i>operand</i> [ <i>operand</i> ] <b>OPERATOR</b> [
+<i>operand</i> ] <b>OPERATOR</b> ... <b>=</b> [
+<i>outfile</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtmath</b>
+will perform operations like add, subtract, multiply, and
+divide on one or more table data files or constants using
+Reverse Polish Notation (RPN) syntax (e.g., Hewlett-Packard
+calculator-style). Arbitrarily complicated expressions may
+therefore be evaluated; the final result is written to an
+output file [or standard output]. When two data tables are
+on the stack, each element in file A is modified by the
+corresponding element in file B. However, some operators
+only require one operand (see below). If no data tables are
+used in the expression then options <b>&minus;T</b>,
+<b>&minus;N</b> can be set (and optionally <b>&minus;b</b>
+to indicate the data domain). If STDIN is given,
+&lt;stdin&gt; will be read and placed on the stack as if a
+file with that content had been given on the command line.
+By default, all columns except the &quot;time&quot; column
+are operated on, but this can be changed (see
+<b>&minus;C</b>). <i><br>
+operand</i></p>
+
+<p style="margin-left:22%;">If <i>operand</i> can be opened
+as a file it will be read as an ASCII (or binary, see
+<b>&minus;bi</b>) table data file. If not a file, it is
+interpreted as a numerical constant or a special symbol (see
+below). The special argument STDIN means that <i>stdin</i>
+will be read and placed on the stack; STDIN can appear more
+than once if necessary.</p>
+
+<p style="margin-left:11%;"><i>outfile</i></p>
+
+<p style="margin-left:22%;">The name of a table data file
+that will hold the final result. If not given then the
+output is sent to stdout.</p>
+
+<p style="margin-left:11%;"><b>OPERATORS</b></p>
+
+<p style="margin-left:22%;">Choose among the following 131
+operators. &quot;args&quot; are the number of input and
+output arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top">Operator</p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">args</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Returns</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ABS</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">abs (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ACOS</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">acos (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ACOSH</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">acosh (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ACOT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">acot (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ACSC</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">acsc (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ADD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A + B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>AND</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">NaN if A and B == NaN, B if A == NaN, else
+A.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ASEC</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">asec (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ASIN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">asin (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ASINH</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">asinh (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ATAN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">atan (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ATAN2</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">atan2 (A, B).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ATANH</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">atanh (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>BEI</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">bei (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>BER</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">ber (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CEIL</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">ceil (A) (smallest integer &gt;= A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CHICRIT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Critical value for
+chi-squared-distribution, with alpha = A and n = B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CHIDIST</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">chi-squared-distribution P(chi2,n), with
+chi2 = A and n = B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>COL</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Places column A on the stack.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CORRCOEFF</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Correlation coefficient r(A, B).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>COS</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">cos (A) (A in radians).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>COSD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">cos (A) (A in degrees).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>COSH</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">cosh (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>COT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">cot (A) (A in radians).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>COTD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">cot (A) (A in degrees).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CPOISS</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Cumulative Poisson distribution
+F(x,lambda), with x = A and lambda = B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CSC</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">csc (A) (A in radians).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>CSCD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">csc (A) (A in degrees).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>D2DT2</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">d^2(A)/dt^2 2nd derivative.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>D2R</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Converts Degrees to Radians.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>DDT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">d(A)/dt Central 1st derivative.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>DILOG</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">dilog (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>DIV</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A / B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>DUP</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 2</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Places duplicate of A on the stack.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>EQ</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if A == B, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ERF</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Error function erf (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ERFC</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Complementary Error function erfc (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ERFINV</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Inverse error function of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>EXCH</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 2</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Exchanges A and B on the stack.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>EXP</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">exp (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>FACT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A! (A factorial).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>FCRIT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">3 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Critical value for F-distribution, with
+alpha = A, n1 = B, and n2 = C.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>FDIST</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">3 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">F-distribution Q(F,n1,n2), with F = A, n1 =
+B, and n2 = C.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>FLIPUD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Reverse order of each column.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>FLOOR</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">floor (A) (greatest integer &lt;= A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>FMOD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A % B (remainder after truncated
+division).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>GE</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if A &gt;= B, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>GT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if A &gt; B, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>HYPOT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">hypot (A, B) = sqrt (A*A + B*B).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>I0</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Modified Bessel function of A (1st kind,
+order 0).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>I1</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Modified Bessel function of A (1st kind,
+order 1).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>IN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Modified Bessel function of A (1st kind,
+order B).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>INRANGE</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">3 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if B &lt;= A &lt;= C, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>INT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Numerically integrate A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>INV</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 / A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ISNAN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if A == NaN, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>J0</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Bessel function of A (1st kind, order
+0).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>J1</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Bessel function of A (1st kind, order
+1).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>JN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Bessel function of A (1st kind, order
+B).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>K0</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Modified Kelvin function of A (2nd kind,
+order 0).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>K1</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Modified Bessel function of A (2nd kind,
+order 1).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>KEI</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">kei (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>KER</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">ker (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>KN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Modified Bessel function of A (2nd kind,
+order B).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>KURT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Kurtosis of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LE</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if A &lt;= B, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LMSSCL</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">LMS scale estimate (LMS STD) of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LOG</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">log (A) (natural log).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LOG10</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">log10 (A) (base 10).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LOG1P</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">log (1+A) (accurate for small A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LOG2</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">log2 (A) (base 2).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LOWER</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">The lowest (minimum) value of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LRAND</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Laplace random noise with mean A and std.
+deviation B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LSQFIT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 0</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Let current table be [A | b]; return least
+squares solution x = A \ b.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>LT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if A &lt; B, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MAD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Median Absolute Deviation (L1 STD) of
+A.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MAX</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Maximum of A and B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MEAN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Mean value of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MED</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Median value of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MIN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Minimum of A and B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MOD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A mod B (remainder after floored
+division).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MODE</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Mode value (Least Median of Squares) of
+A.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>MUL</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A * B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>NAN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">NaN if A == B, else A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>NEG</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">-A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>NEQ</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 if A != B, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>NOT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">NaN if A == NaN, 1 if A == 0, else 0.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>NRAND</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Normal, random values with mean A and std.
+deviation B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>OR</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">NaN if A or B == NaN, else A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>PLM</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">3 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Associated Legendre polynomial P(A) degree
+B order C.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>PLMg</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">3 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Normalized associated Legendre polynomial
+P(A) degree B order C (geophysical convention).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>POP</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 0</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Delete top element from the stack.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>POW</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A ^ B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>PQUANT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">The B&rsquo;th Quantile (0-100%) of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>PSI</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Psi (or Digamma) of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>PV</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">3 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Legendre function Pv(A) of degree v =
+real(B) + imag(C).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>QV</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">3 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Legendre function Qv(A) of degree v =
+real(B) + imag(C).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>R2</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">R2 = A^2 + B^2.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>R2D</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Convert Radians to Degrees.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>RAND</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Uniform random values between A and B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>RINT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">rint (A) (nearest integer).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ROOTS</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Treats col A as f(t) = 0 and returns its
+roots.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ROTT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Rotate A by the (constant) shift B in the
+t-direction.</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SEC</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sec (A) (A in radians).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SECD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sec (A) (A in degrees).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SIGN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sign (+1 or -1) of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SIN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sin (A) (A in radians).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SINC</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sinc (A) (sin (pi*A)/(pi*A)).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SIND</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sin (A) (A in degrees).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SINH</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sinh (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SKEW</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Skewness of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SQR</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A^2.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SQRT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">sqrt (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>STD</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Standard deviation of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>STEP</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Heaviside step function H(A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>STEPT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Heaviside step function H(t-A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SUB</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">A - B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>SUM</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Cumulative sum of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>TAN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">tan (A) (A in radians).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>TAND</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">tan (A) (A in degrees).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>TANH</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">tanh (A).</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>TCRIT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Critical value for Student&rsquo;s
+t-distribution, with alpha = A and n = B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>TDIST</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Student&rsquo;s t-distribution A(t,n), with
+t = A, and n = B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>TN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Chebyshev polynomial Tn(-1&lt;A&lt;+1) of
+degree B.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>UPPER</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">The highest (maximum) value of A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>XOR</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">B if A == NaN, else A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>Y0</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Bessel function of A (2nd kind, order
+0).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>Y1</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Bessel function of A (2nd kind, order
+1).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>YN</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">2 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Bessel function of A (2nd kind, order
+B).</p> </td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ZCRIT</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Critical value for the normal-distribution,
+with alpha = A.</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>ZDIST</b></p></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">1 1</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%"></td>
+<td width="8%"></td>
+<td width="69%">
+
+
+<p valign="top">Cumulative normal-distribution C(x), with x
+= A.</p></td>
+</table>
+
+<p style="margin-left:11%;"><b>SYMBOLS</b></p>
+
+<p style="margin-left:22%;">The following symbols have
+special meaning:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>PI</b></p></td>
+<td width="77%">
+
+
+<p valign="top">3.1415926...</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>E</b></p></td>
+<td width="77%">
+
+
+<p valign="top">2.7182818...</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>EULER</b></p></td>
+<td width="77%">
+
+
+<p valign="top">0.5772156...</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>TMIN</b></p></td>
+<td width="77%">
+
+
+<p valign="top">Minimum t value</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>TMAX</b></p></td>
+<td width="77%">
+
+
+<p valign="top">Maximum t value</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>TINC</b></p></td>
+<td width="77%">
+
+
+<p valign="top">t increment</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>N</b></p></td>
+<td width="77%">
+
+
+<p valign="top">The number of records</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="-14%"></td>
+<td width="7%"></td>
+<td width="8%">
+
+
+<p valign="top"><b>T</b></p></td>
+<td width="77%">
+
+
+<p valign="top">Table with t-coordinates</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Requires
+<b>&minus;N</b> and will partially initialize a table with
+values from the given file containing <i>t</i> and
+<i>f(t)</i> only. The <i>t</i> is placed in column
+<i>t_col</i> while <i>f(t)</i> goes into column <i>n_col</i>
+- 1 (see <b>&minus;N</b>).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Select the columns
+that will be operated on until next occurrence of
+<b>&minus;C</b>. List columns separated by commas; ranges
+like 1,3-5,7 are allowed. <b>&minus;C</b> (no arguments)
+resets the default action of using all columns except time
+column (see <b>&minus;N</b>). <b>&minus;Ca</b> selects all
+columns, including time column, while <b>&minus;Cr</b>
+reverses (toggles) the current choices.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Give a
+comma-separated list of desired columns or ranges that
+should be part of the output (0 is first column) [Default
+outputs all columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Reverses the output
+row sequence from ascending time to descending
+[ascending].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Select the number
+of columns and the column number that contains the
+&quot;time&quot; variable. Columns are numbered starting at
+0 [2/0].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Q</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Quick mode for
+scalar calculation. Shorthand for <b>&minus;Ca &minus;N</b>
+1/0 <b>&minus;T</b> 0/0/1.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;S</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Only report the
+first or last row of the results [Default is all rows]. This
+is useful if you have computed a statistic (say the
+<b>MODE</b>) and only want to report a single number instead
+of numerous records with identical values. Append <b>l</b>
+to get the last row and <b>f</b> to get the first row only
+[Default].</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Required when no
+input files are given. Sets the t-coordinates of the first
+and last point and the equidistant sampling interval for the
+&quot;time&quot; column (see <b>&minus;N</b>). Append
+<b>+</b> if you are specifying the number of equidistant
+points instead. If there is no time column (only data
+columns), give <b>&minus;T</b> with no arguments; this also
+implies <b>&minus;Ca</b>. Alternatively, give the name of a
+file whose first column contains the desired t-coordinates
+which may be irregular.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.
+[Default is same as input, but see <b>&minus;F</b>]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file(s). Segments are separated by a special record. For
+ASCII files the first character must be <i>flag</i> [Default
+is &rsquo;&gt;&rsquo;]. For binary files all fields must be
+NaN and <b>&minus;b</b> must set the number of output
+columns explicitly. By default the <b>&minus;m</b> setting
+applies to both input and output. Use <b>&minus;mi</b> and
+<b>&minus;mo</b> to give separate settings to input and
+output.</p> </td>
+</table>
+
+<a name="ASCII FORMAT PRECISION"></a>
+<h2>ASCII FORMAT PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ASCII
+output formats of numerical data are controlled by
+parameters in your .gmtdefaults4 file. Longitude and
+latitude are formatted according to
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>, whereas other values are
+formatted according to <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>. Be aware that the
+format in effect can lead to loss of precision in the
+output, which can lead to various problems downstream. If
+you find the output is not written with enough precision,
+consider switching to binary output (<b>&minus;bo</b> if
+available) or specify more decimals using the
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> setting.</p>
+
+<a name="NOTES ON OPERATORS"></a>
+<h2>NOTES ON OPERATORS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">(1) The
+operators <b>PLM</b> and <b>PLMg</b> calculate the
+associated Legendre polynomial of degree L and order M in x
+which must satisfy -1 &lt;= x &lt;= +1 and 0 &lt;= M &lt;=
+L. x, L, and M are the three arguments preceding the
+operator. <b>PLM</b> is not normalized and includes the
+Condon-Shortley phase (-1)^M. <b>PLMg</b> is normalized in
+the way that is most commonly used in geophysics. The C-S
+phase can be added by using -M as argument. <b>PLM</b> will
+overflow at higher degrees, whereas <b>PLMg</b> is stable
+until ultra high degrees (at least 3000).</p>
+
+<p style="margin-left:11%; margin-top: 1em">(2) Files that
+have the same names as some operators, e.g., <b>ADD</b>,
+<b>SIGN</b>, <b>=</b>, etc. should be identified by
+prepending the current directory (i.e., ./LOG).</p>
+
+<p style="margin-left:11%; margin-top: 1em">(3) The stack
+depth limit is hard-wired to 100.</p>
+
+<p style="margin-left:11%; margin-top: 1em">(4) All
+functions expecting a positive radius (e.g., <b>LOG</b>,
+<b>KEI</b>, etc.) are passed the absolute value of their
+argument.</p>
+
+<p style="margin-left:11%; margin-top: 1em">(5) The
+<b>DDT</b> and <b>D2DT2</b> functions only work on regularly
+spaced data.</p>
+
+<p style="margin-left:11%; margin-top: 1em">(6) All
+derivatives are based on central finite differences, with
+natural boundary conditions.</p>
+
+<p style="margin-left:11%; margin-top: 1em">(7)
+<b>ROOTS</b> must be the last operator on the stack, only
+followed by <b>=</b>.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To take the
+square root of the content of the second data column being
+piped through <b>gmtmath</b> by process1 and pipe it through
+a 3rd process, use</p>
+
+<p style="margin-left:11%; margin-top: 1em">process1 |
+<b>gmtmath</b> STDIN <b>SQRT =</b> | process3</p>
+
+<p style="margin-left:11%; margin-top: 1em">To take log10
+of the average of 2 data files, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtmath</b>
+file1.d file2.d <b>ADD</b> 0.5 <b>MUL LOG10 =</b>
+file3.d</p>
+
+<p style="margin-left:11%; margin-top: 1em">Given the file
+samples.d, which holds seafloor ages in m.y. and seafloor
+depth in m, use the relation depth(in m) = 2500 + 350 * sqrt
+(age) to print the depth anomalies:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtmath</b>
+samples.d <b>T SQRT</b> 350 <b>MUL</b> 2500 <b>ADD SUB =</b>
+| lpr</p>
+
+<p style="margin-left:11%; margin-top: 1em">To take the
+average of columns 1 and 4-6 in the three data sets sizes.1,
+sizes.2, and sizes.3, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtmath
+&minus;C</b> 1,4-6 sizes.1 sizes.2 <b>ADD</b> sizes.3 <b>ADD
+3 DIV =</b> ave.d</p>
+
+<p style="margin-left:11%; margin-top: 1em">To take the
+1-column data set ages.d and calculate the modal value and
+assign it to a variable, try</p>
+
+<p style="margin-left:11%; margin-top: 1em">set mode_age =
+&lsquo;<b>gmtmath &minus;S &minus;T</b> ages.d <b>MODE
+=</b>&lsquo;</p>
+
+<p style="margin-left:11%; margin-top: 1em">To evaluate the
+dilog(x) function for coordinates given in the file t.d:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtmath
+&minus;T</b> t.d <b>T DILOG =</b> dilog.d</p>
+
+<p style="margin-left:11%; margin-top: 1em">To use gmtmath
+as a RPN Hewlett-Packard calculator on scalars (i.e., no
+input files) and calculate arbitrary expressions, use the
+<b>&minus;Q</b> option. As an example, we will calculate the
+value of Kei (((1 + 1.75)/2.2) + cos (60)) and store the
+result in the shell variable z:</p>
+
+<p style="margin-left:11%; margin-top: 1em">set z =
+&lsquo;<b>gmtmath &minus;Q</b> 1 1.75 <b>ADD</b> 2.2
+<b>DIV</b> 60 <b>COSD ADD KEI =</b>&lsquo;</p>
+
+<p style="margin-left:11%; margin-top: 1em">To use
+<b>gmtmath</b> as a general least squares equation solver,
+imagine that the current table is the augmented matrix [ A |
+b ] and you want the least squares solution x to the matrix
+equation A * x = b. The operator <b>LSQFIT</b> does this; it
+is your job to populate the matrix correctly first. The
+<b>&minus;A</b> option will facilitate this. Suppose you
+have a 2-column file ty.d with <i>t</i> and <i>b(t)</i> and
+you would like to fit a the model y(t) = a + b*t +
+c*H(t-t0), where H is the Heaviside step function for a
+given t0 = 1.55. Then, you need a 4-column augmented table
+loaded with t in column 1 and your observed y(t) in column
+3. The calculation becomes</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtmath
+&minus;N</b> 4/1 <b>&minus;A</b> ty.d <b>-C</b>0 1 <b>ADD
+&minus;C</b>2 1.55 <b>STEPT ADD &minus;Ca LSQFIT =</b>
+solution.d</p>
+
+<p style="margin-left:11%; margin-top: 1em">Note we use the
+<b>&minus;C</b> option to select which columns we are
+working on, then make active all the columns we need (here
+all of them, with <b>&minus;Ca</b>) before calling
+<b>LSQFIT</b>. The second and fourth columns (col numbers 1
+and 3) are preloaded with t and y(t), respectively, the
+other columns are zero. If you already have a precalculated
+table with the augmented matrix [ A | b ] in a file (say
+lsqsys.d), the least squares solution is simply</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtmath
+&minus;T</b> lsqsys.d <b>LSQFIT =</b> solution.d</p>
+
+<a name="REFERENCES"></a>
+<h2>REFERENCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Abramowitz, M.,
+and I. A. Stegun, 1964, <i>Handbook of Mathematical
+Functions</i>, Applied Mathematics Series, vol. 55, Dover,
+New York. <br>
+Holmes, S. A., and W. E. Featherstone, 2002, A unified
+approach to the Clenshaw summation and the recursive
+computation of very high degree and order normalised
+associated Legendre functions. <i>Journal of Geodesy</i>,
+76, 279-299. <br>
+Press, W. H., S. A. Teukolsky, W. T. Vetterling, and B. P.
+Flannery, 1992, <i>Numerical Recipes</i>, 2nd edition,
+Cambridge Univ., New York. <br>
+Spanier, J., and K. B. Oldman, 1987, <i>An Atlas of
+Functions</i>, Hemisphere Publishing Corp.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grdmath.html">grdmath</A></i>(1)</p>
+<hr>
+</body>
+</html>

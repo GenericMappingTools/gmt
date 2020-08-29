@@ -1,0 +1,283 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>gmtgravmag3d &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="gpsgridder" href="gpsgridder.html" />
+    <link rel="prev" title="gmtflexure" href="gmtflexure.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="gpsgridder.html" title="gpsgridder"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="gmtflexure.html" title="gmtflexure"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gmtgravmag3d">
+<span id="index-0"></span><h1>gmtgravmag3d<a class="headerlink" href="#gmtgravmag3d" title="Permalink to this headline">¶</a></h1>
+<p>gmtgravmag3d - Compute the gravity/magnetic effect of a 3-D body by the method of Okabe</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmtgravmag3d</strong> <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><strong>p</strong><em>xyz_file</em>[<strong>+m</strong>] <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><strong>v</strong><em>vert_file</em> OR <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><strong>r|s</strong><em>raw_file</em>
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>density</em> ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong> ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>thickness</em> ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>xy_file</em> ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outputgrid</em> ]
+[ <a class="reference internal" href="#h"><span> <strong>-H</strong></span></a></strong><em>f_dec</em>/<em>f_dip</em>/<em>m_int</em>/<em>m_dec</em>/<em>m_dip</em> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>z_observation</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>radius</em> ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong><em>level</em> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-fg</strong>]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmtgravmag3d</strong> will compute the gravity or magnetic anomaly of a body
+described by a set of triangles. The output can either be along a given
+set of xy locations or on a grid. This method is not particularly fast
+but allows computing the anomaly of arbitrarily complex shapes.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>density</em></dt>
+<dd>Sets body density in SI. This option is mutually exclusive with <strong>-H</strong>.</dd>
+</dl>
+<dl class="docutils" id="h">
+<dt><strong>-H</strong><em>f_dec</em>/<em>f_dip</em>/<em>m_int</em>/<em>m_dec</em>/<em>m_dip</em></dt>
+<dd>Sets parameters for computing a magnetic anomaly. Use
+<em>f_dec</em>/<em>f_dip</em> to set the geomagnetic declination/inclination in
+degrees. <em>m_int</em>/<em>m_dec</em>/<em>m_dip</em> are the body magnetic intensity
+declination and inclination.</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><em>xy_file</em></dt>
+<dd>Provide locations where the anomaly will be computed. Note this
+option is mutually exclusive with <strong>-G</strong>.</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><em>outgrid</em></dt>
+<dd>Output the gravity or magnetic anomaly at nodes of this grid file.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify the region of interest.  </dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-Tp</strong><em>xyz_file</em>[<strong>+m</strong>] <strong>-Tv</strong><em>vert_file</em> OR <strong>Tr|s</strong><em>raw_file</em></dt>
+<dd>Gives names of xyz (<strong>-Tp</strong><em>xyz_file</em>[<strong>+m</strong>]) and vertex (<strong>-Tv</strong><em>vert_file</em>) files defining a close surface.
+The file formats correspond to the output of the <a class="reference internal" href="../../triangulate.html"><span class="doc">triangulate</span></a> program.
+The optional <strong>+m</strong> flag to <strong>-Tp</strong> instructs the program that the xyzm file
+has four columns and that the fourth column contains the magnetization intensity (plus signal),
+which needs not to be constant. In this case the third argument of the <strong>-H</strong> option is
+ignored. A <em>raw</em> format (selected by the <strong>-Tr</strong> option) is a file with N rows (one per triangle)
+and 9 columns corresponding to the x,y,x coordinates of each of the three vertex of each triangle.
+Alternatively, the <strong>-Ts</strong> option indicates that the surface file is in the ASCII STL (Stereo Lithographic) format.
+These two type of files are used to provide a closed surface.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong>[<em>thickness</em>]</dt>
+<dd>give layer thickness in m [Default = 0 m]. Use this option only when
+the triangles describe a non-closed surface and you want the anomaly
+of a constant thickness layer.</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong>[<em>z_observation</em>]</dt>
+<dd>sets level of observation [Default = 0]. That is the height (z) at
+which anomalies are computed.</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><em>radius</em></dt>
+<dd>search radius in km. Triangle centroids that are further away than
+<em>radius</em> from current output point will not be taken into account.
+Use this option to speed up computation at expenses of a less
+accurate result.</dd>
+</dl>
+<dl class="docutils" id="z">
+<dt><strong>-Z</strong>[<em>level</em>]</dt>
+<dd>level of reference plane [Default = 0]. Use this option when the
+triangles describe a non-closed surface and the volume is defined
+from each triangle and this reference level. An example will be the
+hater depth to compute a Bouguer anomaly.</dd>
+<dt><strong>-fg</strong></dt>
+<dd>Geographic grids (dimensions of longitude, latitude) will be converted to
+meters via a “Flat Earth” approximation using the current ellipsoid parameters.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="grid-distance-units">
+<h2>Grid Distance Units<a class="headerlink" href="#grid-distance-units" title="Permalink to this headline">¶</a></h2>
+<p>If the grid does not have meter as the horizontal unit, append <strong>+u</strong><em>unit</em> to the input file name to convert from the
+specified unit to meter.  If your grid is geographic, convert distances to meters by supplying <strong>-fg</strong> instead.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Suppose you …</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">gmtgravmag3d</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="grdgravmag3d.html"><span class="doc">grdgravmag3d</span></a>,
+<a class="reference internal" href="talwani2d.html"><span class="doc">talwani2d</span></a>,
+<a class="reference internal" href="talwani3d.html"><span class="doc">talwani3d</span></a></p>
+</div>
+<div class="section" id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h2>
+<p>Okabe, M., Analytical expressions for gravity anomalies due to
+polyhedral bodies and translation into magnetic anomalies, <em>Geophysics</em>,
+44, (1979), p 730-741.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gmtgravmag3d</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#grid-distance-units">Grid Distance Units</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+<li><a class="reference internal" href="#reference">Reference</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gmtflexure.html"
+                        title="previous chapter">gmtflexure</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gpsgridder.html"
+                        title="next chapter">gpsgridder</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/potential/gmtgravmag3d.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="gpsgridder.html" title="gpsgridder"
+             >next</a> </li>
+        <li class="right" >
+          <a href="gmtflexure.html" title="gmtflexure"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

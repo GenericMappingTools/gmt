@@ -1,0 +1,173 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>(13) Plotting of vector fields &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(14) Gridding of data and trend surfaces" href="ex14.html" />
+    <link rel="prev" title="(12) Optimal triangulation of data" href="ex12.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ex14.html" title="(14) Gridding of data and trend surfaces"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="ex12.html" title="(12) Optimal triangulation of data"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" accesskey="U">The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="plotting-of-vector-fields">
+<span id="example-13"></span><h1>(13) Plotting of vector fields<a class="headerlink" href="#plotting-of-vector-fields" title="Permalink to this headline">¶</a></h1>
+<p>In many areas, such as fluid dynamics and elasticity, it is desirable to
+plot vector fields of various kinds. GMT provides a way to illustrate
+2-component vector fields using the
+<a class="reference internal" href="../grdvector.html"><span class="doc">grdvector</span></a> utility. The two
+components of the field (Cartesian or polar components) are stored in
+separate grid files. In this example we use
+<a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a> to generate a surface
+<span class="math notranslate nohighlight">\(z(x, y) = x \cdot \exp(-x^2 -y^2)\)</span> and to calculate
+<span class="math notranslate nohighlight">\(\nabla z\)</span> by returning the <em>x</em>- and <em>y</em>-derivatives separately.
+We superpose the gradient vector field and the surface <em>z</em> and also plot
+the components of the gradient in separate windows. A
+<a class="reference internal" href="../pstext.html"><span class="doc">pstext</span></a> call to place a header finishes the plot</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#		GMT EXAMPLE 13</span>
+<span class="c1">#		$Id$</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Illustrate vectors and contouring</span>
+<span class="c1"># GMT modules:	grdmath, grdcontour, grdvector, pstext</span>
+<span class="c1"># Unix progs:	echo, rm</span>
+<span class="c1">#</span>
+<span class="nv">ps</span><span class="o">=</span>example_13.ps
+gmt grdmath -R-2/2/-2/2 -I0.1 X Y R2 NEG EXP X <span class="nv">MUL</span> <span class="o">=</span> z.nc
+gmt grdmath z.nc <span class="nv">DDX</span> <span class="o">=</span> dzdx.nc
+gmt grdmath z.nc <span class="nv">DDY</span> <span class="o">=</span> dzdy.nc
+gmt grdcontour dzdx.nc -JX3i -B1 -BWSne -C0.1 -A0.5 -K -P -Gd2i -S4 -T+d0.1i/0.03i &gt; <span class="nv">$ps</span>
+gmt grdcontour dzdy.nc -J -B -C0.05 -A0.2 -O -K -Gd2i -S4 -T+d0.1i/0.03i -Xa3.45i &gt;&gt; <span class="nv">$ps</span>
+gmt grdcontour z.nc -J -B -C0.05 -A0.1 -O -K -Gd2i -S4 -T+d0.1i/0.03i -Y3.45i &gt;&gt; <span class="nv">$ps</span>
+gmt grdcontour z.nc -J -B -C0.05 -O -K -Gd2i -S4 -X3.45i &gt;&gt; <span class="nv">$ps</span>
+gmt grdvector dzdx.nc dzdy.nc -I0.2 -J -O -K -Q0.1i+e+n0.25i+h0.5 -Gblack -W1p -S5i &gt;&gt; <span class="nv">$ps</span>
+<span class="nb">echo</span> <span class="s2">&quot;3.2 3.6 z(x,y) = x@~\327@~exp(-x@+2@+-y@+2@+)&quot;</span> <span class="se">\</span>
+	<span class="p">|</span> gmt pstext -R0/6/0/4.5 -Jx1i -F+f40p,Times-Italic+jCB -O -X-3.45i &gt;&gt; <span class="nv">$ps</span>
+rm -f z.nc dzdx.nc dzdy.nc
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/example_13.png"><img alt="../_images/example_13.png" src="../_images/example_13.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Display of vector fields in GMT.</span></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ex12.html"
+                        title="previous chapter">(12) Optimal triangulation of data</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ex14.html"
+                        title="next chapter">(14) Gridding of data and trend surfaces</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/gallery/ex13.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ex14.html" title="(14) Gridding of data and trend surfaces"
+             >next</a> </li>
+        <li class="right" >
+          <a href="ex12.html" title="(12) Optimal triangulation of data"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../Gallery.html" >The GMT historical collection</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

@@ -1,0 +1,83 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:25 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>PSBBOX.SH</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>PSBBOX.SH</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#KNOWN LIMITATIONS">KNOWN LIMITATIONS</a><br>
+<a href="#OBSOLETE">OBSOLETE</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">psbbox.sh
+&minus; Replace BoundingBox line in PostScript files by
+&quot;real&quot; BoundingBox</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbbox.sh</b>
+<i>file</i> ...</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">This program
+replaces the BoundingBox line in all PostScript files
+specified on the command line by a BoundingBox determined by
+the bbox modules of Ghostscript.</p>
+
+<a name="KNOWN LIMITATIONS"></a>
+<h2>KNOWN LIMITATIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Works only for
+single-page PostScript files. Other limitations are the
+limitations of the Ghostscript bbox module. <br>
+EPS Ghostscript 7.07 occasionally produces no BoundingBox at
+all. Try using AFPL Ghostscript 8.00 or later instead.</p>
+
+<a name="OBSOLETE"></a>
+<h2>OBSOLETE</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">With the
+production of <b><A HREF="ps2raster.html">ps2raster</A></b>, this script became
+obsolete.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="ps2raster.html">ps2raster</A></i>(1)</p>
+<hr>
+</body>
+</html>

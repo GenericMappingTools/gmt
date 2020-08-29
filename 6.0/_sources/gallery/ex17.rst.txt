@@ -1,0 +1,41 @@
+.. _example_17:
+
+(17) Images clipped by coastlines
+---------------------------------
+
+This example demonstrates how :doc:`coast </coast>`
+can be used to set up clip paths based on coastlines. This approach is
+well suited when different gridded data sets are to be merged on a plot
+using different CPTs. Merging the files themselves may
+not be doable since they may represent different data sets, as we show
+in this example. Here, we lay down a color map of the geoid field near
+India with :doc:`grdimage </grdimage>`, use
+:doc:`coast </coast>` to set up land clip paths, and
+then overlay topography from the ETOPO5 data set with another call to
+:doc:`grdimage </grdimage>`. We finally undo the
+clippath with a second call to :doc:`coast </coast>`
+with the option **-Q** (See the Figure :ref:`fig_ex17`):
+
+We also plot a color legend on top of the land. So here we basically
+have three layers of "paint" stacked on top of each other: the
+underlaying geoid map, the land mask, and finally the color legend. This
+legend makes clear how :doc:`grd2cpt </grd2cpt>`
+distributed the colors over the range: they are not of equal length put
+are associated with equal amounts of area in the plot. Since the high
+amounts (in red) are not very prevalent, that color spans a long range.
+
+For this image it is appropriate to use the **-I** option in
+:doc:`colorbar </colorbar>` so the legend gets shaded,
+similar to the geoid grid. See :doc:`/cookbook/cpts` to learn more about
+CPTs and ways to draw color legends.
+
+.. literalinclude:: /_verbatim/ex17.txt
+   :language: bash
+
+.. _fig_ex17:
+
+.. figure:: /_images/ex17.*
+   :width: 500 px
+   :align: center
+
+   Clipping of images using coastlines

@@ -1,0 +1,781 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:16 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GMTSELECT</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GMTSELECT</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#ASCII FORMAT PRECISION">ASCII FORMAT PRECISION</a><br>
+<a href="#NOTE ON PROCESSING ASCII INPUT RECORDS">NOTE ON PROCESSING ASCII INPUT RECORDS</a><br>
+<a href="#NOTE ON DISTANCES">NOTE ON DISTANCES</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#GSHHS INFORMATION">GSHHS INFORMATION</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">gmtselect
+&minus; Select data subsets based on multiple spatial
+criteria</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtselect</b>
+[ <i>infiles</i> ] [
+<b>&minus;A</b><i>min_area</i>[<i>/min_level/max_level</i>][<b>+r</b>|<b>l</b>][<b>p</b><i>percent</i>]
+] [ <b>&minus;C</b>[<b>f</b>]<i>dist/ptfile</i> ] [
+<b>&minus;D</b><i>resolution</i>[<b>+</b>] ] [
+<b>&minus;F</b><i>polygonfile</i> ] [
+<b>&minus;H</b>[<b>i</b>][<i>nrec</i>] ] [
+<b>&minus;I</b>[<b>cflrsz</b>] ] [
+<b>&minus;J</b><i>parameters</i> ] [
+<b>&minus;L</b>[<b>p</b>]<i>dist/linefile</i> ] [
+<b>&minus;N</b><i>maskvalues</i>[<b>o</b>] ] [
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[<b>r</b>]
+] [ <b>&minus;V</b> ] [ <b>&minus;Z</b><i>min/max</i>] ] [
+<b>&minus;:</b>[<b>i</b>|<b>o</b>] ] [
+<b>&minus;b</b>[<b>i</b>|<b>o</b>][<b>s</b>|<b>S</b>|<b>d</b>|<b>D</b>[<i>ncol</i>]|<b>c</b>[<i>var1</i><b>/</b><i>...</i>]]
+] [ <b>&minus;f</b>[<b>i</b>|<b>o</b>]<i>colinfo</i> ] [
+<b>&minus;m</b>[<b>i</b>|<b>o</b>][<i>flag</i>] ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtselect</b>
+is a filter that reads (longitude, latitude) positions from
+the first 2 columns of <i>infiles</i> [or standard input]
+and uses a combination of 1-6 criteria to pass or reject the
+records. Records can be selected based on whether or not
+they are 1) inside a rectangular region (<b>&minus;R</b>
+[and <b>&minus;J</b>]), 2) within <i>dist</i> km of any
+point in <i>ptfile</i>, 3) within <i>dist</i> km of any line
+in <i>linefile</i>, 4) inside one of the polygons in the
+<i>polygonfile</i>, 5) inside geographical features (based
+on coastlines), or 6) has z-values within a given range. The
+sense of the tests can be reversed for each of these 6
+criteria by using the <b>&minus;I</b> option. See option
+<b>&minus;:</b> on how to read (latitude,longitude) files.
+<i><br>
+infiles</i></p>
+
+<p style="margin-left:22%;">ASCII (or binary, see
+<b>&minus;b</b>) data file(s) to be operated on. If not
+given, standard input is read.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;A</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Features with an
+area smaller than <i>min_area</i> in km^2 or of hierarchical
+level that is lower than <i>min_level</i> or higher than
+<i>max_level</i> will not be plotted [Default is 0/0/4 (all
+features)]. Level 2 (lakes) contains regular lakes and wide
+river bodies which we normally include as lakes; append
+<b>+r</b> to just get river-lakes or <b>+l</b> to just get
+regular lakes (requires GSHHS 2.0.1 or higher). Finally,
+append <b>+p</b><i>percent</i> to exclude polygons whose
+percentage area of the corresponding full-resolution feature
+is less than <i>percent</i> (requires GSHHS 2.0 or higher).
+See GSHHS INFORMATION below for more details. Ignored unless
+<b>&minus;N</b> is set.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;C</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Pass all records
+whose location is within <i>dist</i> of any of the points in
+the ASCII file <i>ptfile</i>. If <i>dist</i> is zero then
+the 3rd column of <i>ptfile</i> must have each point&rsquo;s
+individual radius of influence. Distances are Cartesian and
+in user units; specify <b>&minus;fg</b> to indicate
+spherical distances in km. Use <b>&minus;Cf</b> to indicate
+you want flat Earth distances (quicker but approximate)
+rather than geodesic distances (slower but exact). If
+<b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b> is spherical then geodesics become great
+circles (faster to compute than geodesic). Alternatively, if
+<b>&minus;R</b> and <b>&minus;J</b> are used then geographic
+coordinates are projected to map coordinates (in cm, inch,
+m, or points, as determined by <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b>) before
+Cartesian distances are compared to <i>dist</i>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Ignored unless
+<b>&minus;N</b> is set. Selects the resolution of the
+coastline data set to use ((<b>f</b>)ull, (<b>h</b>)igh,
+(<b>i</b>)ntermediate, (<b>l</b>)ow, or (<b>c</b>)rude). The
+resolution drops off by ~80% between data sets. [Default is
+<b>l</b>]. Append <b>+</b> to automatically select a lower
+resolution should the one requested not be available [abort
+if not found]. Note that because the coastlines differ in
+details it is not guaranteed that a point will remain inside
+[or outside] when a different resolution is selected.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Pass all records
+whose location is within one of the closed polygons in the
+multiple-segment file <i>polygonfile</i>. For spherical
+polygons (lon, lat), make sure no consecutive points are
+separated by 180 degrees or more in longitude. Note that
+<i>polygonfile</i> must be in ASCII regardless of whether
+<b>&minus;b</b> is used.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;H</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Input file(s) has
+header record(s). If used, the default number of header
+records is <b><A HREF="gmtdefaults.html#N_HEADER_RECS">N_HEADER_RECS</A></b>. Use <b>&minus;Hi</b> if
+only input data should have header records [Default will
+write out header records if the input data have them]. Blank
+lines and lines starting with # are always skipped.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;I</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Reverses the sense
+of the test for each of the criteria specified:</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>c</b> select records NOT inside any
+point&rsquo;s circle of influence.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>f</b> select records NOT inside any of
+the polygons.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>l</b> select records NOT within the
+specified distance of any line.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>r</b> select records NOT inside the
+specified rectangular region.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>s</b> select records NOT considered
+inside as specified by <b>&minus;N</b> (and <b>&minus;A</b>,
+<b>&minus;D</b>).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>z</b> select records NOT within the
+range specified by <b>&minus;Z</b>.</p></td>
+</table>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;J</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects the map
+projection. Scale is UNIT/degree, 1:xxxxx, or width in UNIT
+(upper case modifier). UNIT is cm, inch, or m, depending on
+the <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b> setting in .gmtdefaults4, but this
+can be overridden on the command line by appending <b>c</b>,
+<b>i</b>, or <b>m</b> to the scale/width value. When central
+meridian is optional, default is center of longitude range
+on <b>&minus;R</b> option. Default standard parallel is the
+equator. For map height, max dimension, or min dimension,
+append <b>h</b>, <b>+</b>, or <b>-</b> to the width,
+respectively.</p> </td>
+</table>
+
+<p style="margin-left:22%;">More details can be found in
+the <b><A HREF="psbasemap.html">psbasemap</A></b> man pages.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CYLINDRICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jc</b><i>lon0/lat0/scale</i>
+(Cassini) <b><br>
+
+&minus;Jcyl_stere</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Stereographic) <b><br>
+&minus;Jj</b>[<i>lon0/</i>]<i>scale</i> (Miller) <b><br>
+&minus;Jm</b>[<i>lon0</i>/[<i>lat0/</i>]]<i>scale</i>
+(Mercator) <b><br>
+&minus;Jm</b><i>lon0/lat0/scale</i> (Mercator - Give
+meridian and standard parallel) <b><br>
+&minus;Jo</b>[<b>a</b>]<i>lon0/lat0/azimuth/scale</i>
+(Oblique Mercator - point and azimuth) <b><br>
+&minus;Jo</b>[<b>b</b>]<i>lon0/lat0/lon1/lat1/scale</i>
+(Oblique Mercator - two points) <b><br>
+&minus;Joc</b><i>lon0/lat0/lonp/latp/scale</i> (Oblique
+Mercator - point and pole) <b><br>
+&minus;Jq</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equidistant) <b><br>
+&minus;Jt</b><i>lon0/</i>[<i>lat0/</i>]<i>scale</i> (TM -
+Transverse Mercator) <b><br>
+&minus;Ju</b><i>zone/scale</i> (UTM - Universal Transverse
+Mercator) <b><br>
+&minus;Jy</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+(Cylindrical Equal-Area)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CONIC
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jb</b><i>lon0/lat0/lat1/lat2/scale</i>
+(Albers) <b><br>
+&minus;Jd</b><i>lon0/lat0/lat1/lat2/scale</i> (Conic
+Equidistant) <b><br>
+&minus;Jl</b><i>lon0/lat0/lat1/lat2/scale</i> (Lambert Conic
+Conformal) <b><br>
+&minus;Jpoly</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+((American) Polyconic)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>AZIMUTHAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Ja</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Lambert Azimuthal Equal-Area) <b><br>
+&minus;Je</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Azimuthal Equidistant) <b><br>
+&minus;Jf</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Gnomonic) <b><br>
+&minus;Jg</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(Orthographic) <b><br>
+
+&minus;Jg</b><i>lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale</i>
+(General Perspective). <b><br>
+&minus;Js</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+(General Stereographic)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>MISCELLANEOUS
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jh</b>[<i>lon0/</i>]<i>scale</i>
+(Hammer) <b><br>
+&minus;Ji</b>[<i>lon0/</i>]<i>scale</i> (Sinusoidal) <b><br>
+&minus;Jkf</b>[<i>lon0/</i>]<i>scale</i> (Eckert IV) <b><br>
+&minus;Jk</b>[<b>s</b>][<i>lon0/</i>]<i>scale</i> (Eckert
+VI) <b><br>
+&minus;Jn</b>[<i>lon0/</i>]<i>scale</i> (Robinson) <b><br>
+&minus;Jr</b>[<i>lon0/</i>]<i>scale</i> (Winkel Tripel)
+<b><br>
+&minus;Jv</b>[<i>lon0/</i>]<i>scale</i> (Van der Grinten)
+<b><br>
+&minus;Jw</b>[<i>lon0/</i>]<i>scale</i> (Mollweide)</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>NON-GEOGRAPHICAL
+PROJECTIONS:</b></p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>&minus;Jp</b>[<b>a</b>]<i>scale</i>[<i>/origin</i>][<b>r</b>|<b>z</b>]
+(Polar coordinates (theta,r)) <b><br>
+
+&minus;Jx</b><i>x-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>][<i>/y-scale</i>[<b>d</b>|<b>l</b>|<b>p</b><i>pow</i>|<b>t</b>|<b>T</b>]]
+(Linear, log, and power scaling)</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Pass all records
+whose location is within <i>dist</i> of any of the line
+segments in the ASCII multiple-segment file <i>linefile</i>.
+If <i>dist</i> is zero then the 2nd column of each
+sub-header in the <i>ptfile</i> must have each lines&rsquo;s
+individual distance value. Distances are Cartesian and in
+user units; specify <b>&minus;fg</b> to indicate spherical
+distances in km. If <b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b> is spherical then
+geodesics become great circles (faster to compute than
+geodesic). Alternatively, if <b>&minus;R</b> and
+<b>&minus;J</b> are used then geographic coordinates are
+projected to map coordinates (in cm, inch, m, or points, as
+determined by <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b>) before Cartesian
+distances are compared to <i>dist</i>. Use <b>&minus;Lp</b>
+to ensure only points whose orthogonal projections onto the
+nearest line-segment fall within the segments endpoints
+[Default considers points &quot;beyond&quot; the
+line&rsquo;s endpoints.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Pass all records
+whose location is inside specified geographical features.
+Specify if records should be skipped (s) or kept (k) using 1
+of 2 formats:</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p valign="top"><b>&minus;N</b><i>wet/dry</i>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+
+<p valign="top"><b>&minus;N</b><i>ocean/land/lake/island/pond</i>.</p> </td>
+</table>
+
+<p style="margin-left:22%;">Append <b>o</b> to let points
+exactly on feature boundaries be considered outside the
+feature [Default is inside]. [Default is s/k/s/k/s (i.e.,
+s/k), which passes all points on dry land].</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xmin</i>,
+<i>xmax</i>, <i>ymin</i>, and <i>ymax</i> specify the Region
+of interest. For geographic regions, these limits correspond
+to <i>west, east, south,</i> and <i>north</i> and you may
+specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+calendar time coordinates you may either give (a) relative
+time (relative to the selected <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and in the
+selected <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>; append <b>t</b> to
+<b>&minus;JX</b>|<b>x</b>), or (b) absolute time of the form
+[<i>date</i>]<b>T</b>[<i>clock</i>] (append <b>T</b> to
+<b>&minus;JX</b>|<b>x</b>). At least one of <i>date</i> and
+<i>clock</i> must be present; the <b>T</b> is always
+required. The <i>date</i> string must be of the form
+[-]yyyy[-mm[-dd]] (Gregorian calendar) or yyyy[-Www[-d]]
+(ISO week calendar), while the <i>clock</i> string must be
+of the form hh:mm:ss[.xxx]. The use of delimiters and their
+type and positions must be exactly as indicated (however,
+input, output and plot formats are customizable; see
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b>). If no map projection is supplied we
+implicitly set <b>&minus;Jx</b> 1. Note: only supply
+<b>&minus;J</b> when your <b>&minus;R</b> is indicating a
+rectangular region in the projected coordinates (i.e., an
+oblique projection).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Pass all records
+whose 3rd column (z) lies within the given range, or is NaN.
+Input file must have at least three columns. To indicate no
+limit on min or max, specify a hyphen (-). If your 3rd
+column is absolute time then remember to supply
+<b>&minus;f</b> 2T.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;:</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Toggles between
+(longitude,latitude) and (latitude,longitude) input and/or
+output. [Default is (longitude,latitude)]. Append <b>i</b>
+to select input only or <b>o</b> to select output only.
+[Default affects both].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bi</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+input. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of columns in your binary input file if it exceeds
+the columns needed by the program. Or append <b>c</b> if the
+input file is netCDF. Optionally, append
+<i>var1</i><b>/</b><i>var2</i><b>/</b><i>...</i> to specify
+the variables to be read. [Default is 2 input columns].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;bo</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects binary
+output. Append <b>s</b> for single precision [Default is
+<b>d</b> (double)]. Uppercase <b>S</b> or <b>D</b> will
+force byte-swapping. Optionally, append <i>ncol</i>, the
+number of desired columns in your binary output file.
+[Default is same as input].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;f</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Special formatting
+of input and/or output columns (time or geographical data).
+Specify <b>i</b> or <b>o</b> to make this apply only to
+input or output [Default applies to both]. Give one or more
+columns (or column ranges) separated by commas. Append
+<b>T</b> (absolute calendar time), <b>t</b> (relative time
+in chosen <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b> since <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>),
+<b>x</b> (longitude), <b>y</b> (latitude), or <b>f</b>
+(floating point) to each column or column range item.
+Shorthand <b>&minus;f</b>[<b>i</b>|<b>o</b>]<b>g</b> means
+<b>&minus;f</b>[<b>i</b>|<b>o</b>]0<b>x</b>,1<b>y</b>
+(geographic coordinates).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;m</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Multiple segment
+file(s). Segments are separated by a special record. For
+ASCII files the first character must be <i>flag</i> [Default
+is &rsquo;&gt;&rsquo;]. For binary files all fields must be
+NaN and <b>&minus;b</b> must set the number of output
+columns explicitly. By default the <b>&minus;m</b> setting
+applies to both input and output. Use <b>&minus;mi</b> and
+<b>&minus;mo</b> to give separate settings to input and
+output. The <b>&minus;m</b> option make sure that segment
+headers in the input files are copied to output, but it has
+no effect on the data selection. Selection is always done
+point by point, not by segment.</p></td>
+</table>
+
+<a name="ASCII FORMAT PRECISION"></a>
+<h2>ASCII FORMAT PRECISION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ASCII
+output formats of numerical data are controlled by
+parameters in your .gmtdefaults4 file. Longitude and
+latitude are formatted according to
+<b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b>, whereas other values are
+formatted according to <b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b>. Be aware that the
+format in effect can lead to loss of precision in the
+output, which can lead to various problems downstream. If
+you find the output is not written with enough precision,
+consider switching to binary output (<b>&minus;bo</b> if
+available) or specify more decimals using the
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> setting. <br>
+This note applies to ASCII output only in combination with
+binary or netCDF input or the <b>&minus;:</b> option. See
+also the note below.</p>
+
+<a name="NOTE ON PROCESSING ASCII INPUT RECORDS"></a>
+<h2>NOTE ON PROCESSING ASCII INPUT RECORDS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Unless you are
+using the <b>&minus;:</b> option, selected ASCII input
+records are copied verbatim to output. That means that
+options like <b>&minus;foT</b> and settings like
+<b><A HREF="gmtdefaults.html#D_FORMAT">D_FORMAT</A></b> and <b><A HREF="gmtdefaults.html#OUTPUT_DEGREE_FORMAT">OUTPUT_DEGREE_FORMAT</A></b> will not
+have any effect on the output. On the other hand, it allows
+selecting records with diverse content, including character
+strings, quoted or not, comments, and other non-numerical
+content.</p>
+
+<a name="NOTE ON DISTANCES"></a>
+<h2>NOTE ON DISTANCES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">If options
+<b>&minus;C</b> or <b>&minus;L</b> are selected then
+distances are Cartesian and in user units; use
+<b>&minus;fg</b> to imply spherical distances in km and
+geographical (lon, lat) coordinates. Alternatively, specify
+<b>&minus;R</b> and <b>&minus;J</b> to measure projected
+Cartesian distances in map units (cm, inch, m, or points, as
+determined by <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b>). <br>
+This program has evolved over the years. Originally, the
+<b>&minus;R</b> and <b>&minus;J</b> were mandatory in order
+to handle geographic data, but now there is full support for
+spherical calculations. Thus, <b>&minus;J</b> should only be
+used if you want the tests to be applied on projected data
+and not the original coordinates. If <b>&minus;J</b> is used
+the distances given via <b>&minus;C</b> and <b>&minus;L</b>
+are projected distances.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To extract the
+subset of data set that is within 300 km of any of the
+points in pts.d but more than 100 km away from the lines in
+lines.d, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtselect</b>
+lonlatfile <b>&minus;fg &minus;C</b> 300/pts.d
+<b>&minus;L</b> 100/lines.d <b>&minus;Il</b> &gt; subset</p>
+
+<p style="margin-left:11%; margin-top: 1em">Here, you must
+specify <b>&minus;fg</b> so the program knows you are
+processing geographical data (otherwise 300 would be
+interpreted as Cartesian distance in x-y units instead of
+km).</p>
+
+<p style="margin-left:11%; margin-top: 1em">To keep all
+points in data.d within the specified region, except the
+points on land (as determined by the high-resolution
+coastlines), use</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtselect</b>
+data.d <b>&minus;R</b> 120/121/22/24 <b>&minus;Dh
+&minus;Nk</b>/<b>s</b> &gt; subset</p>
+
+<p style="margin-left:11%; margin-top: 1em">To return all
+points in quakes.d that are inside the spherical polygon
+lonlatpath.d, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtselect</b>
+quakes.d <b>&minus;F</b> lonlatpath.d <b>&minus;fg</b> &gt;
+subset1</p>
+
+<p style="margin-left:11%; margin-top: 1em">To return all
+points in stations.d that are within 5 cm of the point in
+origin.d for a certain projection, try</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gmtselect</b>
+stations.d <b>&minus;F</b> origin.d <b>&minus;R</b>
+20/50/-10/20 <b>&minus;JM</b> 20c &gt; subset2</p>
+
+<a name="GSHHS INFORMATION"></a>
+<h2>GSHHS INFORMATION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The coastline
+database is GSHHS which is compiled from two sources: World
+Vector Shorelines (WVS) and CIA World Data Bank II (WDBII).
+In particular, all level-1 polygons (ocean-land boundary)
+are derived from the more accurate WVS while all higher
+level polygons (level 2-4, representing land/lake,
+lake/island-in-lake, and
+island-in-lake/lake-in-island-in-lake boundaries) are taken
+from WDBII. Much processing has taken place to convert WVS
+and WDBII data into usable form for <b><A HREF="GMT.html">GMT</A></b>: assembling
+closed polygons from line segments, checking for duplicates,
+and correcting for crossings between polygons. The area of
+each polygon has been determined so that the user may choose
+not to draw features smaller than a minimum area (see
+<b>&minus;A</b>); one may also limit the highest
+hierarchical level of polygons to be included (4 is the
+maximum). The 4 lower-resolution databases were derived from
+the full resolution database using the Douglas-Peucker
+line-simplification algorithm. The classification of rivers
+and borders follow that of the WDBII. See the <b><A HREF="GMT.html">GMT</A></b>
+Cookbook and Technical Reference Appendix K for further
+details.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="gmtdefaults.html">gmtdefaults</A></i>(1),
+<i><A HREF="GMT.html">GMT</A></i>(1), <i><A HREF="grdlandmask.html">grdlandmask</A></i>(1), <i><A HREF="pscoast.html">pscoast</A></i>(1)</p>
+<hr>
+</body>
+</html>

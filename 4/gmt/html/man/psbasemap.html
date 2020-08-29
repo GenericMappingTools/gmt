@@ -1,0 +1,1543 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:25 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>PSBASEMAP</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>PSBASEMAP</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#NON-GEOGRAPHICAL PROJECTIONS">NON-GEOGRAPHICAL PROJECTIONS</a><br>
+<a href="#CYLINDRICAL MAP PROJECTIONS">CYLINDRICAL MAP PROJECTIONS</a><br>
+<a href="#CONIC MAP PROJECTIONS">CONIC MAP PROJECTIONS</a><br>
+<a href="#AZIMUTHAL MAP PROJECTIONS">AZIMUTHAL MAP PROJECTIONS</a><br>
+<a href="#MISCELLANEOUS MAP PROJECTIONS">MISCELLANEOUS MAP PROJECTIONS</a><br>
+<a href="#RESTRICTIONS">RESTRICTIONS</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">psbasemap
+&minus; To plot <i>PostScript</i> basemaps</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;B</b>[<b>p</b>|<b>s</b>]<i>parameters</i>
+<b>&minus;J</b><i>parameters</i>
+<b>&minus;R</b><i>west</i>/<i>east</i>/<i>south</i>/<i>north</i>[/<i>zmin</i>/<i>zmax</i>][<b>r</b>]
+[
+<b>&minus;E</b><i>azim</i>/<i>elev</i>[<b>+w</b><i>lon</i>/<i>lat</i>[/<i>z</i>]][<b>+v</b><i>x0</i>/<i>y0</i>]
+] [ <b>&minus;G</b><i>fill</i> ] [
+<b>&minus;Jz</b>|<b>Z</b><i>parameters</i> ] [
+<b>&minus;K</b> ] [
+<b>&minus;L</b>[<b>f</b>][<b>x</b>]<i>lon0</i>/<i>lat0</i>[/<i>slon</i>]/<i>slat</i>/<i>length</i>[<b>m</b>|<b>n</b>|<b>k</b>][<b>+l</b><i>label</i>][<b>+j</b><i>just</i>][<b>+p</b><i>pen</i>][<b>+f</b><i>fill</i>][<b>+u</b>]
+] ] [ <b>&minus;O</b> ] [ <b>&minus;P</b> ] [
+<b>&minus;U</b>[<i>just</i>/<i>dx</i>/<i>dy</i>/][<b>c</b>|<i>label</i>]
+] [
+<b>&minus;T</b>[<b>f</b>|<b>m</b>][<b>x</b>]<i>lon0</i>/<i>lat0</i>/<i>size</i>[/<i>info</i>][<b>:</b>w,e,s,n<b>:</b>][<b>+</b><i>gint</i>[/<i>mint</i>]]
+] [ <b>&minus;V</b> ] [
+<b>&minus;X</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>x-shift</i>[<b>u</b>]]
+] [
+<b>&minus;Y</b>[<b>a</b>|<b>c</b>|<b>r</b>][<i>y-shift</i>[<b>u</b>]]
+] [ <b>&minus;Z</b><i>zlevel</i> ] [
+<b>&minus;c</b><i>copies</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap</b>
+creates <i>PostScript</i> code that will produce a basemap.
+Several map projections are available, and the user may
+specify separate tickmark intervals for boundary annotation,
+ticking, and [optionally] gridlines. A simple map scale or
+directional rose may also be plotted.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;B</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets map boundary
+annotation and tickmark intervals. The format of
+<i>tickinfo</i> is
+[<b>p</b>|<b>s</b>]<i>xinfo</i>[/<i>yinfo</i>[/<i>zinfo</i>]][<b>:.</b>&quot;Title&quot;<b>:</b>][<b>W</b>|<b>w</b>][<b>E</b>|<b>e</b>][<b>S</b>|<b>s</b>][<b>N</b>|<b>n</b>][<b>Z</b>|<b>z</b>[<b>+</b>]].
+The leading <b>p</b> [Default] or <b>s</b> selects the
+primary or secondary annotation information. Each of the
+<i>?info</i> segments are textstrings of the form
+<i>info</i>[<b>:</b>&quot;Axis
+label&quot;<b>:</b>][<b>:=</b>&quot;prefix&quot;<b>:</b>][<b>:,</b>&quot;unit
+label&quot;<b>:</b>]. The <i>info</i> string is made up of
+one or more concatenated substrings of the form
+[<b>a</b>|<b>f</b>|<b>g</b>]<i>stride</i>[+-<i>phase</i>][<i>unit</i>].
+The leading <b>a</b> is used to specify the annotation and
+major tick spacing [Default], <b>f</b> for minor tick
+spacing, and <b>g</b> for gridline spacing. <i>stride</i> is
+the desired stride interval. The optional <i>phase</i>
+shifts the annotation interval by that amount (positive or
+negative). The optional <i>unit</i> indicates the unit of
+the <i>stride</i> and can be any of <b>Y</b> (year, plot
+with 4 digits), <b>y</b> (year, plot with 2 digits),
+<b>O</b> (month, plot using <b><A HREF="gmtdefaults.html#PLOT_DATE_FORMAT">PLOT_DATE_FORMAT</A></b>),
+<b>o</b> (month, plot with 2 digits), <b>U</b> (ISO week,
+plot using <b><A HREF="gmtdefaults.html#PLOT_DATE_FORMAT">PLOT_DATE_FORMAT</A></b>), <b>u</b> (ISO week,
+plot using 2 digits), <b>r</b> (Gregorian week, 7-day stride
+from start of week <b><A HREF="gmtdefaults.html#TIME_WEEK_START">TIME_WEEK_START</A></b>), <b>K</b> (ISO
+weekday, plot name of day), <b>D</b> (date, plot using
+<b><A HREF="gmtdefaults.html#PLOT_DATE_FORMAT">PLOT_DATE_FORMAT</A></b>), <b>d</b> (day, plot day of month
+0-31 or year 1-366, via <b><A HREF="gmtdefaults.html#PLOT_DATE_FORMAT">PLOT_DATE_FORMAT</A></b>), <b>R</b>
+(day, same as <b>d</b>, aligned with
+<b><A HREF="gmtdefaults.html#TIME_WEEK_START">TIME_WEEK_START</A></b>), <b>H</b> (hour, plot using
+<b><A HREF="gmtdefaults.html#PLOT_CLOCK_FORMAT">PLOT_CLOCK_FORMAT</A></b>), <b>h</b> (hour, plot with 2
+digits), <b>M</b> (minute, plot using
+<b><A HREF="gmtdefaults.html#PLOT_CLOCK_FORMAT">PLOT_CLOCK_FORMAT</A></b>), <b>m</b> (minute, plot with 2
+digits), <b>C</b> (second, plot using
+<b><A HREF="gmtdefaults.html#PLOT_CLOCK_FORMAT">PLOT_CLOCK_FORMAT</A></b>), <b>c</b> (second, plot with 2
+digits). Note for geographic axes <b>m</b> and <b>c</b>
+instead mean arc minutes and arc seconds. All entities that
+are language-specific are under control by
+<b><A HREF="gmtdefaults.html#TIME_LANGUAGE">TIME_LANGUAGE</A></b>. To specify separate x and y ticks,
+separate the substrings that apply to the x and y axes with
+a slash [/] (If a 3-D basemap is selected with
+<b>&minus;E</b> and <b>&minus;Jz</b>, a third substring
+pertaining to the vertical axis may be appended.) For
+linear/log/power projections (<b>&minus;Jx</b>|<b>X</b>):
+Labels for each axis can be added by surrounding them with
+colons (<b>:</b>). If the first character in the label is a
+period, then the label is used as plot title; if it is a
+comma (<b>,</b>) then the label is appended to each
+annotation; if it is an equal sign (<b>=</b>) the the prefix
+is prepended to each annotation (start label/prefix with -
+to avoid space between annotation and item); else it is the
+axis label. If the label consists of more than one word,
+enclose the entire label in double quotes (e.g.,
+<b>:</b>&quot;my label&quot;<b>:</b>). If you need to use a
+colon (:) as part of your label you must specify it using
+its octal code (\072).</p></td>
+</table>
+
+<p style="margin-left:22%;">By default, all 4 boundaries
+are plotted (referred to as <b>W, E, S, N</b>). To change
+the default, append the code for only those axes you want
+(e.g., <b>WS</b> for standard lower-left x- and y-axis
+system). Upper case (e.g., <b>W</b>) means draw
+axis/tickmarks AND annotate it, whereas lower case (e.g.,
+<b>w</b>) will only draw axis/tickmarks. (If a 3-D basemap
+is selected with <b>&minus;E</b> and <b>&minus;Jz</b>,
+append <b>Z</b> or <b>z</b> to control the appearance of the
+vertical axis. Append <b>+</b> to draw the outline of the
+cube defined by <b>&minus;R</b>. Note that for 3-D views the
+title, if given, will be suppressed.) <br>
+For non-geographical projections: Give negative scale (in
+<b>&minus;Jx</b>) or axis length (in <b>&minus;JX</b>) to
+change the direction of increasing coordinates (i.e., to
+make the y-axis positive down). For log10 axes: Annotations
+can be specified in one of three ways: (1) <i>stride</i> can
+be 1, 2, 3, or -<i>n</i>. Annotations will then occur at 1,
+1&minus;2&minus;5, or
+1&minus;2&minus;3&minus;4&minus;...&minus;9, respectively;
+for -<i>n</i> we annotate every <i>n</i>&rsquo;t magnitude.
+This option can also be used for the frame and grid
+intervals. (2) An <b>l</b> is appended to the
+<i>tickinfo</i> string. Then, log10 of the tick value is
+plotted at every integer log10 value. (3) A <b>p</b> is
+appended to the <i>tickinfo</i> string. Then, annotations
+appear as 10 raised to log10 of the tick value. For power
+axes: Annotations can be specified in one of two ways: (1)
+<i>stride</i> sets the regular annotation interval. (2) A
+<b>p</b> is appended to the <i>tickinfo</i> string. Then,
+the annotation interval is expected to be in transformed
+units, but the annotation value will be plotted as
+untransformed units. E.g., if <i>stride</i> = 1 and
+<i>power</i> = 0.5 (i.e., sqrt), then equidistant
+annotations labeled 1&minus;4&minus;9... will appear. <br>
+These GMT parameters can affect the appearance of the map
+boundary: <b><A HREF="gmtdefaults.html#ANNOT_MIN_ANGLE">ANNOT_MIN_ANGLE</A></b>, <b><A HREF="gmtdefaults.html#ANNOT_MIN_SPACING">ANNOT_MIN_SPACING</A></b>,
+<b><A HREF="gmtdefaults.html#ANNOT_FONT_PRIMARY">ANNOT_FONT_PRIMARY</A></b>, <b><A HREF="gmtdefaults.html#ANNOT_FONT_SECONDARY">ANNOT_FONT_SECONDARY</A></b>,
+<b><A HREF="gmtdefaults.html#ANNOT_FONT_SIZE_PRIMARY">ANNOT_FONT_SIZE_PRIMARY</A></b>,
+<b><A HREF="gmtdefaults.html#ANNOT_FONT_SIZE_SECONDARY">ANNOT_FONT_SIZE_SECONDARY</A></b>,
+<b><A HREF="gmtdefaults.html#ANNOT_OFFSET_PRIMARY">ANNOT_OFFSET_PRIMARY</A></b>, <b><A HREF="gmtdefaults.html#ANNOT_OFFSET_SECONDARY">ANNOT_OFFSET_SECONDARY</A></b>,
+<b><A HREF="gmtdefaults.html#BASEMAP_AXES">BASEMAP_AXES</A></b>, <b><A HREF="gmtdefaults.html#BASEMAP_FRAME_RGB">BASEMAP_FRAME_RGB</A></b>,
+<b><A HREF="gmtdefaults.html#BASEMAP_TYPE">BASEMAP_TYPE</A></b>, <b><A HREF="gmtdefaults.html#PLOT_DEGREE_FORMAT">PLOT_DEGREE_FORMAT</A></b>,
+<b><A HREF="gmtdefaults.html#FRAME_PEN">FRAME_PEN</A></b>, <b><A HREF="gmtdefaults.html#FRAME_WIDTH">FRAME_WIDTH</A></b>,
+<b><A HREF="gmtdefaults.html#GRID_CROSS_SIZE_PRIMARY">GRID_CROSS_SIZE_PRIMARY</A></b>, <b><A HREF="gmtdefaults.html#GRID_PEN_PRIMARY">GRID_PEN_PRIMARY</A></b>,
+<b><A HREF="gmtdefaults.html#GRID_CROSS_SIZE_SECONDARY">GRID_CROSS_SIZE_SECONDARY</A></b>, <b><A HREF="gmtdefaults.html#GRID_PEN_SECONDARY">GRID_PEN_SECONDARY</A></b>,
+<b><A HREF="gmtdefaults.html#HEADER_FONT">HEADER_FONT</A></b>, <b><A HREF="gmtdefaults.html#HEADER_FONT_SIZE">HEADER_FONT_SIZE</A></b>,
+<b><A HREF="gmtdefaults.html#LABEL_FONT">LABEL_FONT</A></b>, <b><A HREF="gmtdefaults.html#LABEL_FONT_SIZE">LABEL_FONT_SIZE</A></b>, <b><A HREF="gmtdefaults.html#LINE_STEP">LINE_STEP</A></b>,
+<b><A HREF="gmtdefaults.html#OBLIQUE_ANNOTATION">OBLIQUE_ANNOTATION</A></b>, <b><A HREF="gmtdefaults.html#PLOT_CLOCK_FORMAT">PLOT_CLOCK_FORMAT</A></b>,
+<b><A HREF="gmtdefaults.html#PLOT_DATE_FORMAT">PLOT_DATE_FORMAT</A></b>, <b><A HREF="gmtdefaults.html#TIME_FORMAT_PRIMARY">TIME_FORMAT_PRIMARY</A></b>,
+<b><A HREF="gmtdefaults.html#TIME_FORMAT_SECONDARY">TIME_FORMAT_SECONDARY</A></b>, <b><A HREF="gmtdefaults.html#TIME_LANGUAGE">TIME_LANGUAGE</A></b>,
+<b><A HREF="gmtdefaults.html#TIME_WEEK_START">TIME_WEEK_START</A></b>, <b><A HREF="gmtdefaults.html#TICK_LENGTH">TICK_LENGTH</A></b>, <b><A HREF="gmtdefaults.html#TICK_PEN">TICK_PEN</A></b>,
+and <b><A HREF="gmtdefaults.html#Y_AXIS_TYPE">Y_AXIS_TYPE</A></b>; see the <b><A HREF="gmtdefaults.html">gmtdefaults</A></b> man page
+for details.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;J</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects the map
+projection. The following character determines the
+projection. If the character is upper case then the
+argument(s) supplied as scale(s) is interpreted to be the
+map width (or axis lengths), else the scale argument(s) is
+the map scale (see its definition for each projection). UNIT
+is cm, inch, or m, depending on the <b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b>
+setting in .gmtdefaults4, but this can be overridden on the
+command line by appending <b>c</b>, <b>i</b>, or <b>m</b> to
+the <i>scale</i> or <i>width</i> values. Append <b>h</b>,
+<b>+</b>, or <b>-</b> to the given <i>width</i> if you
+instead want to set map height, the maximum dimension, or
+the minimum dimension, respectively [Default is <b>w</b> for
+width].</p> </td>
+</table>
+
+<p style="margin-left:22%;">In case the central meridian is
+an optional parameter and it is being omitted, then the
+center of the longitude range given by the <b>&minus;R</b>
+option is used. The default standard parallel is the
+equator. <br>
+The ellipsoid used in the map projections is user-definable
+by editing the .gmtdefaults4 file in your home directory. 73
+commonly used ellipsoids and spheroids are currently
+supported, and users may also specify their own custum
+ellipsoid parameters [Default is WGS-84]. Several GMT
+parameters can affect the projection: <b><A HREF="gmtdefaults.html#ELLIPSOID">ELLIPSOID</A></b>,
+<b><A HREF="gmtdefaults.html#INTERPOLANT">INTERPOLANT</A></b>, <b><A HREF="gmtdefaults.html#MAP_SCALE_FACTOR">MAP_SCALE_FACTOR</A></b>, and
+<b><A HREF="gmtdefaults.html#MEASURE_UNIT">MEASURE_UNIT</A></b>; see the <b><A HREF="gmtdefaults.html">gmtdefaults</A></b> man page for
+details. <br>
+Choose one of the following projections (The <b>E</b> or
+<b>C</b> after projection names stands for Equal-Area and
+Conformal, respectively):</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CYLINDRICAL
+PROJECTIONS: <br>
+&minus;Jc</b><i>lon0/lat0/scale</i> or
+<b>&minus;JC</b><i>lon0/lat0/width</i> (Cassini).</p>
+
+<p style="margin-left:32%;">Give projection center
+<i>lon0/lat0</i> and <i>scale</i> (<b>1:</b><i>xxxx</i> or
+UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jcyl_stere</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+or <b><br>
+
+&minus;JCyl_stere</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>width</i>
+(Cylindrical Stereographic).</p>
+
+<p style="margin-left:32%;">Give central meridian
+<i>lon0</i> (optional), standard parallel <i>lat0</i>
+(optional), and <i>scale</i> along parallel
+(<b>1:</b><i>xxxx</i> or UNIT/degree). The standard parallel
+is typically one of these (but can be any value):</p>
+
+<p style="margin-left:43%;">66.159467 - Miller&rsquo;s
+modified Gall <br>
+55 - Kamenetskiy&rsquo;s First <br>
+45 - Gall&rsquo;s Stereographic <br>
+30 - Bolshoi Sovietskii Atlas Mira or Kamenetskiy&rsquo;s
+Second <br>
+0 - Braun&rsquo;s Cylindrical</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jj</b>[<i>lon0/</i>]<i>scale</i>
+or <b>&minus;JJ</b>[<i>lon0/</i>]<i>width</i> (Miller
+Cylindrical <br>
+Projection).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i>
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jm</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+or
+<b>&minus;JM</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>width</i></p>
+
+<p style="margin-left:32%;">Give central meridian
+<i>lon0</i> (optional), standard parallel <i>lat0</i>
+(optional), and <i>scale</i> along parallel
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jo</b><i>parameters</i>
+(Oblique Mercator <b>[C]</b>).</p>
+
+<p style="margin-left:32%;">Typically used with
+<b>&minus;R</b>&lt;...&gt;<b>r</b>, otherwise region is in
+oblique coordinates. Specify one of: <b><br>
+&minus;Jo</b>[<b>a</b>]<i>lon0/lat0/azimuth/scale</i> or
+<b><br>
+&minus;JO</b>[<b>a</b>]<i>lon0/lat0/azimuth/width</i></p>
+
+<p style="margin-left:43%;">Set projection center
+<i>lon0/lat0</i>, <i>azimuth</i> of oblique equator, and
+<i>scale</i>.</p>
+
+
+<p style="margin-left:32%;"><b>&minus;Jo</b>[<b>b</b>]<i>lon0/lat0/lon1/lat1/scale</i>
+or <b><br>
+&minus;JO</b>[<b>b</b>]<i>lon0/lat0/lon1/lat1/scale</i></p>
+
+<p style="margin-left:43%;">Set projection center
+<i>lon0/lat0</i>, another point on the oblique equator
+<i>lon1/lat1</i>, and <i>scale</i>.</p>
+
+
+<p style="margin-left:32%;"><b>&minus;Joc</b><i>lon0/lat0/lonp/latp/scale</i>
+or <b><br>
+&minus;JOc</b><i>lon0/lat0/lonp/latp/scale</i></p>
+
+<p style="margin-left:43%;">Set projection center
+<i>lon0/lat0</i>, pole of oblique projection
+<i>lonp/latp</i>, and <i>scale</i>.</p>
+
+<p style="margin-left:32%; margin-top: 1em">Give
+<i>scale</i> along oblique equator (<b>1:</b><i>xxxx</i> or
+UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jq</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+or <b>&minus;JQ</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>width</i>
+(Cylindrical <br>
+Equidistant).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional), standard parallel <i>lat0</i>
+(optional), and <i>scale</i> (<b>1:</b><i>xxxx</i> or
+UNIT/degree). The standard parallel is typically one of
+these (but can be any value):</p>
+
+<p style="margin-left:43%;">61.7 - Grafarend and Niermann,
+minimum linear distortion <br>
+50.5 - Ronald Miller Equirectangular <br>
+43.5 - Ronald Miller, minimum continental distortion <br>
+42 - Grafarend and Niermann <br>
+37.5 - Ronald Miller, minimum overall distortion <br>
+0 - Plate Carree, Simple Cylindrical, Plain/Plane Chart</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jt</b><i>lon0/</i>[<i>lat0/</i>]<i>scale</i>
+or
+<b>&minus;JT</b><i>lon0/</i>[<i>lat0/</i>]<i>width</i></p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i>, central parallel <i>lat0</i> (optional), and
+<i>scale</i> (<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Ju</b><i>zone/scale</i>
+or <b>&minus;JU</b><i>zone/width</i> (UTM - Universal
+Transverse <br>
+Mercator <b>[C]</b>).</p>
+
+<p style="margin-left:32%;">Give the UTM zone
+(A,B,1-60[C-X],Y,Z)) and <i>scale</i> (<b>1:</b><i>xxxx</i>
+or UNIT/degree). <br>
+Zones: If C-X not given, prepend - or + to enforce southern
+or northern hemisphere conventions [northern if south &gt;
+0].</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jy</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+or <b>&minus;JY</b>[<i>lon0/</i>[<i>lat0/</i>]]<i>width</i>
+(Cylindrical <br>
+Equal-Area <b>[E]</b>).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional), standard parallel <i>lat0</i>
+(optional), and <i>scale</i> (<b>1:</b><i>xxxx</i> or
+UNIT/degree). The standard parallel is typically one of
+these (but can be any value):</p>
+
+<p style="margin-left:43%;">50 - Balthasart <br>
+45 - Gall <br>
+37.0666 - Caster <br>
+37.4 - Trystan Edwards <br>
+37.5 - Hobo-Dyer <br>
+30 - Behrman <br>
+0 - Lambert (default)</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>CONIC
+PROJECTIONS: <br>
+&minus;Jb</b><i>lon0/lat0/lat1/lat2/scale</i> or
+<b>&minus;JB</b><i>lon0/lat0/lat1/lat2/width</i> <br>
+(Albers <b>[E]</b>).</p>
+
+<p style="margin-left:32%;">Give projection center
+<i>lon0/lat0</i>, two standard parallels <i>lat1/lat2</i>,
+and <i>scale</i> (<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jd</b><i>lon0/lat0/lat1/lat2/scale</i>
+or <b>&minus;JD</b><i>lon0/lat0/lat1/lat2/width</i> <br>
+(Conic Equidistant)</p>
+
+<p style="margin-left:32%;">Give projection center
+<i>lon0/lat0</i>, two standard parallels <i>lat1/lat2</i>,
+and <i>scale</i> (<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jl</b><i>lon0/lat0/lat1/lat2/scale</i>
+or <b>&minus;JL</b><i>lon0/lat0/lat1/lat2/width</i> <br>
+(Lambert <b>[C]</b>)</p>
+
+<p style="margin-left:32%;">Give origin <i>lon0/lat0</i>,
+two standard parallels <i>lat1/lat2</i>, and <i>scale</i>
+along these (<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jpoly</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>scale</i>
+or
+<b>&minus;JPoly</b>/[<i>lon0/</i>[<i>lat0/</i>]]<i>width</i>
+<br>
+((American) Polyconic).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional), reference parallel <i>lat0</i>
+(optional, default = equator), and <i>scale</i> along
+central meridian (<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>AZIMUTHAL
+PROJECTIONS:</b></p>
+
+<p style="margin-left:22%; margin-top: 1em">Except for
+polar aspects, <b>&minus;R</b> w/e/s/n will be reset to
+<b>&minus;Rg</b>. Use <b>&minus;R</b>&lt;...&gt;<b>r</b> for
+smaller regions. <b><br>
+&minus;Ja</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+or
+<b>&minus;JA</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/width</i>
+<br>
+(Lambert <b>[E]</b>).</p>
+
+<p style="margin-left:32%;"><i>lon0/lat0</i> specifies the
+projection center. <i>horizon</i> specifies the max distance
+from projection center (in degrees, &lt;= 180, default 90).
+Give <i>scale</i> as <b>1:</b><i>xxxx</i> or
+<i>radius/lat</i>, where <i>radius</i> is distance in UNIT
+from origin to the oblique latitude <i>lat</i>.</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Je</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+or
+<b>&minus;JE</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/width</i>
+<br>
+(Azimuthal Equidistant).</p>
+
+<p style="margin-left:32%;"><i>lon0/lat0</i> specifies the
+projection center. <i>horizon</i> specifies the max distance
+from projection center (in degrees, &lt;= 180, default 180).
+Give <i>scale</i> as <b>1:</b><i>xxxx</i> or
+<i>radius/lat</i>, where <i>radius</i> is distance in UNIT
+from origin to the oblique latitude <i>lat</i>.</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jf</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+or
+<b>&minus;JF</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/width</i>
+<br>
+(Gnomonic).</p>
+
+<p style="margin-left:32%;"><i>lon0/lat0</i> specifies the
+projection center. <i>horizon</i> specifies the max distance
+from projection center (in degrees, &lt; 90, default 60).
+Give <i>scale</i> as <b>1:</b><i>xxxx</i> or
+<i>radius/lat</i>, where <i>radius</i> is distance in UNIT
+from origin to the oblique latitude <i>lat</i>.</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jg</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+or
+<b>&minus;JG</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/width</i>
+<br>
+(Orthographic).</p>
+
+<p style="margin-left:32%;"><i>lon0/lat0</i> specifies the
+projection center. <i>horizon</i> specifies the max distance
+from projection center (in degrees, &lt;= 90, default 90).
+Give <i>scale</i> as <b>1:</b><i>xxxx</i> or
+<i>radius/lat</i>, where <i>radius</i> is distance in UNIT
+from origin to the oblique latitude <i>lat</i>.</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jg</b><i>lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale</i>
+or <b><br>
+
+&minus;JG</b><i>lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/width</i>
+<br>
+(General Perspective).</p>
+
+<p style="margin-left:32%;"><i>lon0/lat0</i> specifies the
+projection center. <i>altitude</i> is the height (in km) of
+the viewpoint above local sea level. If <i>altitude</i> is
+less than 10, then it is the distance from the center of the
+earth to the viewpoint in earth radii. If <i>altitude</i>
+has a suffix <b>r</b> then it is the radius from the center
+of the earth in kilometers. <i>azimuth</i> is measured to
+the east of north of view. <i>tilt</i> is the upward tilt of
+the plane of projection. If <i>tilt</i> is negative, then
+the viewpoint is centered on the horizon. Further, specify
+the clockwise <i>twist</i>, <i>Width</i>, and <i>Height</i>
+of the viewpoint in degrees. Give <i>scale</i> as
+<b>1:</b><i>xxxx</i> or <i>radius/lat</i>, where
+<i>radius</i> is distance in UNIT from origin to the oblique
+latitude <i>lat</i>.</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Js</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/scale</i>
+or
+<b>&minus;JS</b><i>lon0/lat0</i>[<i>/horizon</i>]<i>/width</i>
+<br>
+(General Stereographic <b>[C]</b>).</p>
+
+<p style="margin-left:32%;"><i>lon0/lat0</i> specifies the
+projection center. <i>horizon</i> specifies the max distance
+from projection center (in degrees, &lt; 180, default 90).
+Give <i>scale</i> as <b>1:</b><i>xxxx</i> (true at pole) or
+<i>lat</i>/<b>1:</b><i>xxxx</i> (true at standard parallel
+<i>lat</i>) or <i>radius/lat</i> (<i>radius</i> in UNIT from
+origin to the oblique latitude <i>lat</i>). Note if
+<b>1:</b><i>xxxx</i> is used then to specify <i>horizon</i>
+you must also specify the <i>lat</i> as +-90 to avoid
+ambiguity.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>MISCELLANEOUS
+PROJECTIONS: <br>
+&minus;Jh</b>[<i>lon0/</i>]<i>scale</i> or
+<b>&minus;JH</b>[<i>lon0/</i>]<i>width</i> (Hammer
+<b>[E]</b>).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Ji</b>[<i>lon0/</i>]<i>scale</i>
+or <b>&minus;JI</b>[<i>lon0/</i>]<i>width</i> (Sinusoidal
+<b>[E]</b>).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jkf</b>[<i>lon0/</i>]<i>scale</i>
+or <b>&minus;JKf</b>[<i>lon0/</i>]<i>width</i> (Eckert IV)
+<b>[E]</b>).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jk</b>[<b>s</b>][<i>lon0/</i>]<i>scale</i>
+or <b>&minus;JK</b>[<b>s</b>][<i>lon0/</i>]<i>width</i>
+(Eckert VI) <b>[E]</b>).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jn</b>[<i>lon0/</i>]<i>scale</i>
+or <b>&minus;JN</b>[<i>lon0/</i>]<i>width</i>
+(Robinson).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jr</b>[<i>lon0/</i>]<i>scale</i>
+<b>&minus;JR</b>[<i>lon0/</i>]<i>width</i> (Winkel
+Tripel).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jv</b>[<i>lon0/</i>]<i>scale</i>
+or <b>&minus;JV</b>[<i>lon0/</i>]<i>width</i> (Van der
+Grinten).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jw</b>[<i>lon0/</i>]<i>scale</i>
+or <b>&minus;JW</b>[<i>lon0/</i>]<i>width</i> (Mollweide
+<b>[E]</b>).</p>
+
+<p style="margin-left:32%;">Give the central meridian
+<i>lon0</i> (optional) and <i>scale</i> along equator
+(<b>1:</b><i>xxxx</i> or UNIT/degree).</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>NON-GEOGRAPHICAL
+PROJECTIONS: <br>
+
+&minus;Jp</b>[<b>a</b>]<i>scale</i>[<i>/origin</i>][<b>r</b>|<b>z</b>]
+or
+<b>&minus;JP</b>[<b>a</b>]<i>width</i>[<i>/origin</i>][<b>r</b>|<b>z</b>]
+(Polar <br>
+coordinates (theta,r))</p>
+
+<p style="margin-left:32%;">Optionally insert <b>a</b>
+after <b>&minus;Jp</b> [ or <b>&minus;JP</b>] for azimuths
+CW from North instead of directions CCW from East [Default].
+Optionally append /<i>origin</i> in degrees to indicate an
+angular offset [0]). Finally, append <b>r</b> if r is
+elevations in degrees (requires s &gt;= 0 and n &lt;= 90) or
+<b>z</b> if you want to annotate depth rather than radius
+[Default]. Give <i>scale</i> in UNIT/r-unit.</p>
+
+
+<p style="margin-left:22%;"><b>&minus;Jx</b><i>x-scale</i>[<i>/y-scale</i>]
+or <b>&minus;JX</b><i>width</i>[<i>/height</i>] (Linear,
+log, and <br>
+power scaling)</p>
+
+<p style="margin-left:32%;">Give <i>x-scale</i>
+(<b>1:</b><i>xxxx</i> or UNIT/x-unit) and/or <i>y-scale</i>
+(<b>1:</b><i>xxxx</i> or UNIT/y-unit); or specify
+<i>width</i> and/or <i>height</i> in UNIT.
+<i>y-scale</i>=<i>x-scale</i> if not specified separately
+and using <b>1:</b><i>xxxx</i> implies that x-unit and
+y-unit are in meters. Use negative scale(s) to reverse the
+direction of an axis (e.g., to have y be positive down). Set
+<i>height</i> or <i>width</i> to 0 to have it recomputed
+based on the implied scale of the other axis. Optionally,
+append to <i>x-scale</i>, <i>y-scale</i>, <i>width</i> or
+<i>height</i> one of the following:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="10%">
+
+
+<p style="margin-top: 1em" valign="top"><b>d</b></p></td>
+<td width="1%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em" valign="top">Data are
+geographical coordinates (in degrees).</p></td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="10%">
+
+
+<p style="margin-top: 1em" valign="top"><b>l</b></p></td>
+<td width="1%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em" valign="top">Take log10 of
+values before scaling.</p></td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="10%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>p</b><i>power</i></p> </td>
+<td width="1%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em" valign="top">Raise values to
+<i>power</i> before scaling.</p></td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="10%">
+
+
+<p style="margin-top: 1em" valign="top"><b>t</b></p></td>
+<td width="1%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em" valign="top">Input coordinates
+are time relative to <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b>.</p></td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="10%">
+
+
+<p style="margin-top: 1em" valign="top"><b>T</b></p></td>
+<td width="1%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em" valign="top">Input coordinates
+are absolute time.</p></td>
+</table>
+
+<p style="margin-left:32%; margin-top: 1em">Default axis
+lengths (see <b><A HREF="gmtdefaults.html">gmtdefaults</A></b>) can be invoked using
+<b>&minus;JXh</b> (for landscape); <b>&minus;JXv</b> (for
+portrait) will swap the x- and y-axis lengths. The default
+unit for this installation is either cm or inch, as defined
+in the file share/gmt_setup.conf. However, you may change
+this by editing your .gmtdefaults4 file(s).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top"><i>xmin</i>,
+<i>xmax</i>, <i>ymin</i>, and <i>ymax</i> specify the Region
+of interest. For geographic regions, these limits correspond
+to <i>west, east, south,</i> and <i>north</i> and you may
+specify them in decimal degrees or in
+[+-]dd:mm[:ss.xxx][W|E|S|N] format. Append <b>r</b> if lower
+left and upper right map coordinates are given instead of
+w/e/s/n. The two shorthands <b>&minus;Rg</b> and
+<b>&minus;Rd</b> stand for global domain (0/360 and
+-180/+180 in longitude respectively, with -90/+90 in
+latitude). Alternatively, specify the name of an existing
+grid file and the <b>&minus;R</b> settings (and grid
+spacing, if applicable) are copied from the grid. For
+calendar time coordinates you may either give (a) relative
+time (relative to the selected <b><A HREF="gmtdefaults.html#TIME_EPOCH">TIME_EPOCH</A></b> and in the
+selected <b><A HREF="gmtdefaults.html#TIME_UNIT">TIME_UNIT</A></b>; append <b>t</b> to
+<b>&minus;JX</b>|<b>x</b>), or (b) absolute time of the form
+[<i>date</i>]<b>T</b>[<i>clock</i>] (append <b>T</b> to
+<b>&minus;JX</b>|<b>x</b>). At least one of <i>date</i> and
+<i>clock</i> must be present; the <b>T</b> is always
+required. The <i>date</i> string must be of the form
+[-]yyyy[-mm[-dd]] (Gregorian calendar) or yyyy[-Www[-d]]
+(ISO week calendar), while the <i>clock</i> string must be
+of the form hh:mm:ss[.xxx]. The use of delimiters and their
+type and positions must be exactly as indicated (however,
+input, output and plot formats are customizable; see
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b>).</p> </td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;E</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the
+viewpoint&rsquo;s azimuth and elevation (for perspective
+view) [180/90]. For frames used for animation, you may want
+to append <b>+</b> to fix the center of your data domain (or
+specify a particular world coordinate point with
+<b>+w</b><i>lon0</i>/<i>lat</i>[/<i>z</i>]) which will
+project to the center of your page size (or specify the
+coordinates of the projected view point with
+<b>+v</b><i>x0</i>/<i>y0).</i></p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;G</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Select fill shade,
+color or pattern for the inside of the basemap [Default is
+no fill color]. (See SPECIFYING FILL below).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Jz</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the vertical
+scaling (for 3-D maps). Same syntax as <b>&minus;Jx</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;K</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">More
+<i>PostScript</i> code will be appended later [Default
+terminates the plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;L</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draws a simple map
+scale centered on <i>lon0/lat0</i>. Use <b>&minus;Lx</b> to
+specify x/y position instead. Scale is calculated at
+latitude <i>slat</i> (optionally supply longitude
+<i>slon</i> for oblique projections [Default is central
+meridian]), <i>length</i> is in km [miles if <b>m</b> is
+appended; nautical miles if <b>n</b> is appended]. Use
+<b>&minus;Lf</b> to get a &quot;fancy&quot; scale [Default
+is plain]. Append <b>+l</b> to select the default label
+which equals the distance unit (km, miles, nautical miles)
+and is justified on top of the scale [t]. Change this by
+giving your own label (append <b>+l</b><i>label</i>). Change
+label justification with <b>+j</b><i>justification</i>
+(choose among l(eft), r(ight), t(op), and b(ottom)). Apply
+<b>+u</b> to append the unit to all distance annotations
+along the scale. If you want to place a rectangle behind the
+scale, specify suitable <b>+p</b><i>pen</i> and/or
+<b>+f</b><i>fill</i> parameters. (See SPECIFYING PENS and
+SPECIFYING FILL below).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;O</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Overlay
+plot mode [Default initializes a new plot system].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;P</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects Portrait
+plotting mode [Default is Landscape, see <b><A HREF="gmtdefaults.html">gmtdefaults</A></b>
+to change this].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draws a simple map
+directional rose centered on <i>lon0/lat0</i>. Use
+<b>&minus;Tx</b> to specify x/y position instead. The
+<i>size</i> is the diameter of the rose, and optional label
+information can be specified to override the default values
+of W, E, S, and N (Give <b>::</b> to suppress all labels).
+The default [plain] map rose only labels north. Use
+<b>&minus;Tf</b> to get a &quot;fancy&quot; rose, and
+specify in <i>info</i> what you want drawn. The default [1]
+draws the two principal E-W, N-S orientations, 2 adds the
+two intermediate NW-SE and NE-SW orientations, while 3 adds
+the eight minor orientations WNW-ESE, NNW-SSE, NNE-SSW, and
+ENE-WSW. For a magnetic compass rose, specify
+<b>&minus;Tm</b>. If given, <i>info</i> must be the two
+parameters <i>dec/dlabel</i>, where <i>dec</i> is the
+magnetic declination and <i>dlabel</i> is a label for the
+magnetic compass needle (specify <b>-</b> to format a label
+from <i>dec</i>). Then, both directions to geographic and
+magnetic north are plotted [Default is geographic only]. If
+the north label is <b>*</b> then a north star is plotted
+instead of the north label. Annotation and two levels of
+tick intervals for geographic and magnetic directions are
+10/5/1 and 30/5/1 degrees, respectively; override these
+settings by appending <b>+</b><i>gints</i>[/<i>mints</i>].
+Color and pen attributes are taken from
+<b><A HREF="gmtdefaults.html#COLOR_BACKGROUND">COLOR_BACKGROUND</A></b> and <b><A HREF="gmtdefaults.html#TICK_PEN">TICK_PEN</A></b>, respectively,
+while label fonts and sizes follow the usual annotation,
+label, and header font settings.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;U</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Draw Unix System
+time stamp on plot. By adding <i>just/dx/dy/</i>, the user
+may specify the justification of the stamp and where the
+stamp should fall on the page relative to lower left corner
+of the plot. For example, BL/0/0 will align the lower left
+corner of the time stamp with the lower left corner of the
+plot. Optionally, append a <i>label</i>, or <b>c</b> (which
+will plot the command string.). The <b><A HREF="GMT.html">GMT</A></b> parameters
+<b><A HREF="gmtdefaults.html#UNIX_TIME">UNIX_TIME</A></b>, <b><A HREF="gmtdefaults.html#UNIX_TIME_POS">UNIX_TIME_POS</A></b>, and
+<b><A HREF="gmtdefaults.html#UNIX_TIME_FORMAT">UNIX_TIME_FORMAT</A></b> can affect the appearance; see the
+<b><A HREF="gmtdefaults.html">gmtdefaults</A></b> man page for details. The time string
+will be in the locale set by the environment variable
+<b>TZ</b> (generally local time).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;X
+&minus;Y</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Shift plot origin
+relative to the current origin by (<i>x-shift,y-shift</i>)
+and optionally append the length unit (<b>c</b>, <b>i</b>,
+<b>m</b>, <b>p</b>). You can prepend <b>a</b> to shift the
+origin back to the original position after plotting, or
+prepend <b>r</b> [Default] to reset the current origin to
+the new location. If <b>&minus;O</b> is used then the
+default (<i>x-shift,y-shift</i>) is (0,0), otherwise it is
+(r1i, r1i) or (r2.5c, r2.5c). Alternatively, give <b>c</b>
+to align the center coordinate (x or y) of the plot with the
+center of the page based on current page size.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Z</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">For 3-D
+projections: Sets the z-level of the basemap [Default is at
+the bottom end of the z-axis].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;c</b></p> </td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Specifies the
+number of plot copies. [Default is 1].</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+PENS</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p valign="top"><i>pen</i></p></td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p valign="top">The attributes of lines and symbol outlines
+as defined by <i>pen</i> is a comma delimetered list of
+<i>width</i>, <i>color</i> and <i>texture</i>, each of which
+is optional. <i>width</i> can be indicated as a measure
+(points, centimeters, inches) or as <b>faint</b>,
+<b>thin</b>[<b>ner</b>|<b>nest</b>],
+<b>thick</b>[<b>er</b>|<b>est</b>],
+<b>fat</b>[<b>ter</b>|<b>test</b>], or <b>obese</b>.
+<i>color</i> specifies a gray shade or color (see SPECIFYING
+COLOR below). <i>texture</i> is a combination of dashes
+&lsquo;-&rsquo; and dots &lsquo;.&rsquo;.</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+FILL</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p valign="top"><i>fill</i></p></td>
+<td width="5%"></td>
+<td width="78%">
+
+
+<p valign="top">The attribute <i>fill</i> specifies the
+solid shade or solid <i>color</i> (see SPECIFYING COLOR
+below) or the pattern used for filling polygons. Patterns
+are specified as <b>p</b><i>dpi/pattern</i>, where
+<i>pattern</i> gives the number of the built-in pattern
+(1-90) <i>or</i> the name of a Sun 1-, 8-, or 24-bit raster
+file. The <i>dpi</i> sets the resolution of the image. For
+1-bit rasters: use <b>P</b><i>dpi/pattern</i> for inverse
+video, or append
+<b>:F</b><i>color</i>[<b>B</b>[<i>color</i>]] to specify
+fore- and background colors (use <i>color</i> = - for
+transparency). See <b><A HREF="GMT.html">GMT</A></b> Cookbook &amp; Technical
+Reference Appendix E for information on individual
+patterns.</p> </td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>SPECIFYING
+COLOR</b></p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p valign="top"><i>color</i></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p valign="top">The <i>color</i> of lines, areas and
+patterns can be specified by a valid color name; by a gray
+shade (in the range 0&minus;255); by a decimal color code
+(r/g/b, each in range 0&minus;255; h-s-v, ranges
+0&minus;360, 0&minus;1, 0&minus;1; or c/m/y/k, each in range
+0&minus;1); or by a hexadecimal color code (#rrggbb, as used
+in HTML). See the <b><A HREF="gmtcolors.html">gmtcolors</A></b> manpage for more
+information and a full list of color names.</p></td>
+</table>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The following
+section illustrates the use of the options by giving some
+examples for the available map projections. Note how scales
+may be given in several different ways depending on the
+projection. Also note the use of upper case letters to
+specify map width instead of map scale.</p>
+
+<a name="NON-GEOGRAPHICAL PROJECTIONS"></a>
+<h2>NON-GEOGRAPHICAL PROJECTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Linear x-y
+plot</b> <br>
+To make a linear x/y frame with all axes, but with only left
+and bottom axes annotated, using xscale = yscale = 1.0,
+ticking every 1 unit and annotating every 2, and using
+xlabel = &quot;Distance&quot; and ylabel = &quot;No of
+samples&quot;, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b> 0/9/0/5 <b>&minus;Jx</b> 1 <b>&minus;Bf</b>
+1<b>a</b>2<b>:</b>Distance<b>:</b>/<b>:</b>&quot;No of
+samples&quot;<b>:WeSn</b> &gt; linear.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Log-log
+plot</b> <br>
+To make a log-log frame with only the left and bottom axes,
+where the x-axis is 25 cm and annotated every 1-2-5 and the
+y-axis is 15 cm and annotated every power of 10 but has
+tickmarks every 0.1, run</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b> 1/10000/1e20/1e25 <b>&minus;JX</b>
+25<b>cl</b>/15<b>cl &minus;B</b>
+2<b>:</b>Wavelength<b>:</b>/<b>a</b>1<b>pf</b>3<b>:</b>Power<b>:WS</b>
+&gt; loglog.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Power
+axes</b> <br>
+To design an axis system to be used for a
+depth&minus;sqrt(age) plot with depth positive down, ticked
+and annotated every 500m, and ages annotated at 1 my, 4 my,
+9 my etc, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b> 0/100/0/5000 <b>&minus;Jx</b>
+1<b>p</b>0.5/-0.001 <b>&minus;B</b> 1<b>p:</b>&quot;Crustal
+age&quot;<b>:</b>/500<b>:</b>Depth<b>:</b> &gt; power.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Polar
+(theta,r) plot</b> <br>
+For a base map for use with polar coordinates, where the
+radius from 0 to 1000 should correspond to 3 inch and with
+gridlines and ticks every 30 degrees and 100 units, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b> 0/360/0/1000 <b>&minus;JP</b> 6<b>i
+&minus;B</b> 30<b>p</b>/100 &gt; polar.ps</p>
+
+<a name="CYLINDRICAL MAP PROJECTIONS"></a>
+<h2>CYLINDRICAL MAP PROJECTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Cassini</b>
+<br>
+A 10 -cm-wide basemap using the Cassini projection may be
+obtained by</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b> 20/50/20/35 <b>&minus;JC</b> 35/28/10<b>c
+&minus;P &minus;B</b> 5<b>g</b>5<b>:.</b>Cassini<b>:</b>
+&gt; cassini.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Mercator
+[conformal]</b> <br>
+A Mercator map with scale 0.025 inch/degree along equator,
+and showing the length of 5000 km along the equator
+(centered on 1/1 inch), may be plotted as</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b> 90/180/-50/50 <b>&minus;Jm</b> 0.025<b>i
+&minus;B</b> 30<b>g</b>30<b>:.</b>Mercator<b>: &minus;Lx</b>
+1<b>i</b>/1<b>i</b>/0/5000 &gt; mercator.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Miller</b>
+<br>
+A global Miller cylindrical map with scale 1:200,000,000 may
+be plotted as</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;Rg &minus;Jj</b> 180/1:200000000 <b>&minus;B</b>
+30<b>g</b>30<b>:.</b>Miller<b>:</b> &gt; miller.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Oblique
+Mercator [conformal]</b> <br>
+To create a page-size global oblique Mercator basemap for a
+pole at (90,30) with gridlines every 30 degrees, run</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b> 0/360/-70/70 <b>&minus;Joc</b>
+0/0/90/30/0.064<b>c</b>d <b>&minus;B</b>
+30<b>g</b>30<b>:.</b>&quot;Oblique Mercator&quot;<b>:</b>
+&gt; oblmerc.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Transverse
+Mercator [conformal]</b> <br>
+A regular Transverse Mercator basemap for some region may
+look like</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b> 69:30/71:45/-17/-15:15 <b>&minus;Jt</b>
+70/1:1000000 <b>&minus;B</b> 15<b>m:.</b>&quot;Survey
+area&quot;<b>: &minus;P</b> &gt; transmerc.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Equidistant
+Cylindrical Projection</b> <br>
+This projection only needs the central meridian and scale. A
+25 cm wide global basemap centered on the 130E meridian is
+made by</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b>-50/310/-90/90 <b>&minus;JQ</b> 130/25<b>c
+&minus;B</b> 30<b>g</b>30<b>:.</b>&quot;Equidistant
+Cylindrical&quot;<b>:</b> &gt; cyl_eqdist.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Universal
+Transverse Mercator [conformal]</b> <br>
+To use this projection you must know the UTM zone number,
+which defines the central meridian. A UTM basemap for
+Indo-China can be plotted as</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b> 95/5/108/20<b>r &minus;Ju</b>46/1:10000000
+<b>&minus;B</b> 3<b>g</b>3<b>:.</b>UTM<b>:</b> &gt;
+utm.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Cylindrical
+Equal-Area</b> <br>
+First select which of the cylindrical equal-area projections
+you want by deciding on the standard parallel. Here we will
+use 45 degrees which gives the Gall projection. A 9 inch
+wide global basemap centered on the Pacific is made by</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;Rg &minus;JY</b> 180/45/9<b>i &minus;B</b>
+30<b>g</b>30<b>:.</b>Gall<b>:</b> &gt; gall.ps</p>
+
+<a name="CONIC MAP PROJECTIONS"></a>
+<h2>CONIC MAP PROJECTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Albers
+[equal-area]</b> <br>
+A basemap for middle Europe may be created by</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b> 0/90/25/55 <b>&minus;Jb</b>
+45/20/32/45/0.25<b>c &minus;B</b>
+10<b>g</b>10<b>:.</b>&quot;Albers Equal-area&quot;<b>:</b>
+&gt; albers.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Lambert
+[conformal]</b> <br>
+Another basemap for middle Europe may be created by</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b> 0/90/25/55 <b>&minus;Jl</b> 45/20/32/45/0.1<b>i
+&minus;B</b> 10<b>g</b>10<b>:.</b>&quot;Lambert Conformal
+Conic&quot;<b>:</b> &gt; lambertc.ps</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Equidistant</b>
+<br>
+Yet another basemap of width 6 inch for middle Europe may be
+created by</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b> 0/90/25/55 <b>&minus;JD</b> 45/20/32/45/6<b>i
+&minus;B</b> 10<b>g</b>10<b>:.</b>&quot;Equidistant
+conic&quot;<b>:</b> &gt; econic.ps</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Polyconic</b>
+<br>
+A basemap for north America may be created by</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b>-180/-20/0/90 <b>&minus;JPoly</b>/4<b>i
+&minus;B</b>
+30<b>g</b>10/10<b>g</b>10<b>:.</b>&quot;Polyconic&quot;<b>:</b>
+&gt; polyconic.ps</p>
+
+<a name="AZIMUTHAL MAP PROJECTIONS"></a>
+<h2>AZIMUTHAL MAP PROJECTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Lambert
+[equal-area]</b> <br>
+A 15 -cm-wide global view of the world from the vantage
+point -80/-30 will give the following basemap:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;Rg &minus;JA</b>-80/-30/15<b>c &minus;B</b>
+30<b>g</b>30/15<b>g</b>15<b>:.</b>&quot;Lambert
+Azimuthal&quot;<b>:</b> &gt; lamberta.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">Follow the
+instructions for stereographic projection if you want to
+impose rectangular boundaries on the azimuthal equal-area
+map but substitute <b>&minus;Ja</b> for
+<b>&minus;Js</b>.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Equidistant</b>
+<br>
+A 15 -cm-wide global map in which distances from the center
+(here 125/10) to any point is true can be obtained by:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;Rg &minus;JE</b> 125/10/15<b>c &minus;B</b>
+30<b>g</b>30/15<b>g</b>15<b>:.</b>Equidistant<b>:</b> &gt;
+equi.ps</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Gnomonic</b>
+<br>
+A view of the world from the vantage point -100/40 out to a
+horizon of 60 degrees from the center can be made using the
+Gnomonic projection:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;Rg &minus;JF</b>-100/40/60/6<b>i &minus;B</b>
+30<b>g</b>30/15<b>g</b>15<b>:.</b>Gnomonic<b>:</b> &gt;
+gnomonic.ps</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Orthographic</b>
+<br>
+A global perspective (from infinite distance) view of the
+world from the vantage point 125/10 will give the following
+6 -inch-wide basemap:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;Rg &minus;JG</b> 125/10/6<b>i &minus;B</b>
+30<b>g</b>30/15<b>g</b>15<b>:.</b>Orthographic<b>:</b> &gt;
+ortho.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>General
+Perspective</b> <br>
+The <b>&minus;JG</b> option can be used in a more
+generalized form, specifying altitude above the surface,
+width and height of the view point, and twist and tilt. A
+view from 160 km above -74/41.5 with a tilt of 55 and
+azimuth of 210 degrees, and limiting the viewpoint to 30
+degrees width and height will product a 6 -inch-wide
+basemap:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;Rg &minus;JG</b>-74/41.5/160/210/55/30/30/6<b>i
+&minus;B</b> 5<b>g</b>1/5<b>g</b>1<b>:.</b>&quot;General
+Perspective&quot;<b>:</b> &gt; genper.ps</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Stereographic
+[conformal]</b> <br>
+To make a polar stereographic projection basemap with radius
+= 12 cm to &minus;60 degree latitude, with plot title
+&quot;Salinity measurements&quot;, using 5 degrees
+annotation/tick interval and 1 degree gridlines, run</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b>-45/45/-90/-60 <b>&minus;Js</b>
+0/-90/12<b>c</b>/-60 <b>&minus;B</b>
+5<b>g</b>5<b>:.</b>&quot;Salinity measurements&quot;<b>:</b>
+&gt; stereo1.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">To make a 12
+-cm-wide stereographic basemap for Australia from an
+arbitrary view point (not the poles), and use a rectangular
+boundary, we must give the pole for the new projection and
+use the <b>&minus;R</b> option to indicate the lower left
+and upper right corners (in lon/lat) that will define our
+rectangle. We choose a pole at 130/-30 and use 100/-45 and
+160/-5 as our corners. The command becomes</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b> 100/-45/160/-5<b>fP &minus;JS 130/-30/12c
+&minus;B 30g30/15g15:.&quot;General Stereographic
+View&quot;: &gt; stereo2.ps</b></p>
+
+<a name="MISCELLANEOUS MAP PROJECTIONS"></a>
+<h2>MISCELLANEOUS MAP PROJECTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Hammer
+[equal-area]</b> <br>
+The Hammer projection is mostly used for global maps and
+thus the spherical form is used. To get a world map centered
+on Greenwich at a scale of 1:200000000, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;Rd &minus;Jh</b> 0/1:200000000 <b>&minus;B</b>
+30<b>g</b>30/15<b>g</b>15<b>:.</b>Hammer<b>:</b> &gt;
+hammer.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Sinusoidal
+[equal-area]</b> <br>
+To make a sinusoidal world map centered on Greenwich, with a
+scale along the equator of 0.02 inch/degree, use</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;Rd &minus;Ji</b> 0/0.02<b>i &minus;B</b>
+30<b>g</b>30/15<b>g</b>15<b>:.</b>Sinusoidal<b>:</b> &gt;
+sinus1.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em">To make an
+interrupted sinusoidal world map with breaks at 160W, 20W,
+and 60E, with a scale along the equator of 0.02 inch/degree,
+run the following sequence of commands:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b>-160/-20/-90/90 <b>&minus;Ji</b>-90/0.02<b>i
+&minus;B</b> 30<b>g</b>30/15<b>g</b>15<b>Wesn &minus;K</b>
+&gt; sinus_i.ps <b><br>
+psbasemap &minus;R</b>-20/60/-90/90 <b>&minus;Ji</b>
+20/0.02<b>i &minus;B</b> 30<b>g</b>30/15<b>g</b>15<b>wesn
+&minus;O &minus;K &minus;X</b> 2.8<b>i</b> &gt;&gt;
+sinus_i.ps <b><br>
+psbasemap &minus;R</b> 60/200/-90/90 <b>&minus;Ji</b>
+130/0.02<b>i &minus;B</b> 30<b>g</b>30/15<b>g</b>15<b>wEsn
+&minus;O &minus;X</b> 1.6<b>i</b> &gt;&gt; sinus_i.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Eckert IV
+[equal-area]</b> <br>
+Pseudo-cylindrical projection typically used for global maps
+only. Set the central longitude and scale, e.g.,</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;Rg &minus;Jkf</b> 180/0.064<b>c &minus;B</b>
+30<b>g</b>30/15<b>g</b>15<b>:.</b>&quot;Eckert
+IV&quot;<b>:</b> &gt; eckert4.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Eckert VI
+[equal-area]</b> <br>
+Another pseudo-cylindrical projection typically used for
+global maps only. Set the central longitude and scale,
+e.g.,</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;Rg &minus;Jks</b> 180/0.064<b>c &minus;B</b>
+30<b>g</b>30/15<b>g</b>15<b>:.</b>&quot;Eckert
+VI&quot;<b>:</b> &gt; eckert6.ps</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Robinson</b>
+<br>
+Projection designed to make global maps &quot;look
+right&quot;. Set the central longitude and width, e.g.,</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;Rd &minus;JN</b> 0/8<b>i &minus;B</b>
+30<b>g</b>30/15<b>g</b>15<b>:.</b>Robinson<b>:</b> &gt;
+robinson.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Winkel
+Tripel</b> <br>
+Yet another projection typically used for global maps only.
+You can set the central longitude, e.g.,</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;R</b> 90/450/-90/90 <b>&minus;JR</b> 270/25<b>c
+&minus;B</b> 30<b>g</b>30/15<b>g</b>15<b>:.</b>&quot;Winkel
+Tripel&quot;<b>:</b> &gt; winkel.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Mollweide
+[equal-area]</b> <br>
+The Mollweide projection is also mostly used for global maps
+and thus the spherical form is used. To get a 25 -cm-wide
+world map centered on the Dateline:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;Rg &minus;JW</b> 180/25<b>c &minus;B</b>
+30<b>g</b>30/15<b>g</b>15<b>:.</b>Mollweide<b>:</b> &gt;
+mollweide.ps</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Van der
+Grinten</b> <br>
+The Van der Grinten projection is also mostly used for
+global maps and thus the spherical form is used. To get a 7
+-inch-wide world map centered on the Dateline:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>psbasemap
+&minus;Rg &minus;JV</b> 180/7<b>i &minus;B</b>
+30<b>g</b>30/15<b>g</b>15<b>:.</b>&quot;Van der
+Grinten&quot;<b>:</b> &gt; grinten.ps</p>
+
+<a name="RESTRICTIONS"></a>
+<h2>RESTRICTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">For some
+projections, a spherical earth is implicitly assumed. A
+warning will notify the user if <b>&minus;V</b> is set. Also
+note that plot titles are not plotted if <b>&minus;E</b> is
+given.</p>
+
+<a name="BUGS"></a>
+<h2>BUGS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The
+<b>&minus;B</b> option is somewhat complicated to explain
+and comprehend. However, it is fairly simple for most
+applications (see examples).</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="gmtcolors.html">gmtcolors</A></i>(5),
+<i><A HREF="gmtdefaults.html">gmtdefaults</A></i>(1), <i><A HREF="GMT.html">GMT</A></i>(1)</p>
+<hr>
+</body>
+</html>

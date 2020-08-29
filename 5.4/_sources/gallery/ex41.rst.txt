@@ -1,0 +1,17 @@
+.. _example_41:
+
+(41) Legend with tables
+-----------------------
+
+In this example we demonstrate how one can use the tool :doc:`pslegend </pslegend>`
+to typeset a table within a legend.  It also shows how one would set up
+variable-width columns and fill the cells with a background color.
+
+.. literalinclude:: /_verbatim/example_41.txt
+   :language: bash
+
+.. figure:: /_images/example_41.*
+   :width: 500 px
+   :align: center
+
+   Illustrate typesetting legends that include tables.

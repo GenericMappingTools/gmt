@@ -1,0 +1,339 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>(29) Gridding spherical surface data using splines &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(30) Trigonometric functions plotted in graph mode" href="ex30.html" />
+    <link rel="prev" title="(28) Mixing UTM and geographic data sets" href="ex28.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+        
+      <li>(29) Gridding spherical surface data using splines</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/gallery/ex29.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="gridding-spherical-surface-data-using-splines">
+<span id="example-29"></span><h1>(29) Gridding spherical surface data using splines<a class="headerlink" href="#gridding-spherical-surface-data-using-splines" title="Permalink to this headline">¶</a></h1>
+<p>Finally, we demonstrate how gridding on a spherical surface can be
+accomplished using Green’s functions of surface splines, with or without
+tension. Global gridding does not work particularly well in Cartesian
+coordinates hence the chosen approach. We use
+<a class="reference internal" href="../greenspline.html"><span class="doc">greenspline</span></a> to produce a crude
+topography grid for Mars based on radii estimates from the Mariner 9 and
+Viking Orbiter spacecrafts. This data comes from <em>Smith and Zuber</em>
+[Science, 1996] and is used here as a small (<em>N</em> = 370) remote data set we can
+use to demonstrate spherical surface gridding. Since
+<a class="reference internal" href="../greenspline.html"><span class="doc">greenspline</span></a> must solve a <em>N</em> by
+<em>N</em> matrix system your system memory may impose limits on how large data
+sets you can handle; also note that the spherical surface spline in
+tension is particularly slow to compute.</p>
+<p>Our script must first estimate the ellipsoidal shape of Mars from the
+parameters given by <em>Smith and Zuber</em> so that we can remove this
+reference surface from the gridded radii. We run the gridding twice:
+First with no tension using <em>Parker</em>’s [1990] method and then with
+tension using the <em>Wessel and Becker</em> [2008] method. The grids are then
+imaged with <a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a> and
+<a class="reference internal" href="../grdcontour.html"><span class="doc">grdcontour</span></a> and a color bar is placed between them.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#       GMT EXAMPLE 29</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:  Illustrates spherical surface gridding with Green&#39;s function of splines</span>
+<span class="c1"># GMT modules:  makecpt, grdcontour, grdimage, grdmath greenspline, colorbar, text</span>
+<span class="c1"># Unix progs:   echo, rm</span>
+<span class="c1">#</span>
+gmt begin ex29
+	<span class="c1"># This example uses 370 radio occultation data for Mars to grid the topography.</span>
+	<span class="c1"># Data and information from Smith, D. E., and M. T. Zuber (1996), The shape of</span>
+	<span class="c1"># Mars and the topographic signature of the hemispheric dichotomy, Science, 271, 184-187.</span>
+
+	<span class="c1"># Make Mars PROJ_ELLIPSOID given their three best-fitting axes:</span>
+	<span class="nv">a</span><span class="o">=</span><span class="m">3399</span>.472
+	<span class="nv">b</span><span class="o">=</span><span class="m">3394</span>.329
+	<span class="nv">c</span><span class="o">=</span><span class="m">3376</span>.502
+	gmt grdmath -Rg -I4 -r X COSD <span class="nv">$a</span> DIV DUP MUL X SIND <span class="nv">$b</span> DIV DUP MUL ADD Y COSD DUP MUL MUL Y <span class="se">\</span>
+			SIND <span class="nv">$c</span> DIV DUP MUL ADD SQRT <span class="nv">INV</span> <span class="o">=</span> PROJ_ELLIPSOID.nc
+
+	<span class="c1">#  Do both Parker and Wessel/Becker solutions (tension = 0.9975)</span>
+	gmt greenspline -RPROJ_ELLIPSOID.nc @mars370.txt -D4 -Sp -Gmars.nc
+	gmt greenspline -RPROJ_ELLIPSOID.nc @mars370.txt -D4 -Sq0.9975 -Gmars2.nc
+	<span class="c1"># Scale to km and remove PROJ_ELLIPSOID</span>
+	gmt grdmath mars.nc <span class="m">1000</span> DIV PROJ_ELLIPSOID.nc <span class="nv">SUB</span> <span class="o">=</span> mars.nc
+	gmt grdmath mars2.nc <span class="m">1000</span> DIV PROJ_ELLIPSOID.nc <span class="nv">SUB</span> <span class="o">=</span> mars2.nc
+
+	gmt <span class="nb">set</span> FONT_TAG 14p,Helvetica-Bold
+	gmt subplot begin 2x1 -Fs7i/0 -Rg -JH0/7i -B30g30 -BWsne -A -M0.25i
+		gmt subplot <span class="nb">set</span> <span class="m">0</span>
+		gmt grdimage mars.nc -I+ne0.75+a45 --FONT_ANNOT_PRIMARY<span class="o">=</span>12p
+		gmt grdcontour mars.nc -C1 -A5 -Glz+/z-
+		gmt plot -Sc0.045i -Gblack @mars370.txt
+		gmt colorbar -DJBC+o0/0.15i+w6i/0.1i -I --FONT_ANNOT_PRIMARY<span class="o">=</span>12p -Bx2f1 -By+lkm
+
+		gmt subplot <span class="nb">set</span> <span class="m">1</span>
+		gmt makecpt -Crainbow -T-7/15
+		gmt grdimage mars2.nc -I+ne0.75+a45 --FONT_ANNOT_PRIMARY<span class="o">=</span>12p
+		gmt grdcontour mars2.nc -C1 -A5 -Glz+/z-
+		gmt plot -Sc0.045i -Gblack @mars370.txt
+	gmt subplot end
+	rm -f mars.nc mars2.nc PROJ_ELLIPSOID.nc
+gmt end show
+</pre></div>
+</div>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/ex29.png"><img alt="../_images/ex29.png" src="../_images/ex29.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Gridding of spherical surface data using Green’s function splines.</span></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ex30.html" class="btn btn-neutral float-right" title="(30) Trigonometric functions plotted in graph mode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ex28.html" class="btn btn-neutral float-left" title="(28) Mixing UTM and geographic data sets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

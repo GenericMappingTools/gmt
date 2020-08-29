@@ -1,0 +1,330 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>mgd77convert &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="../../_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/searchtools.js"></script>
+    <script type="text/javascript" src="../../../../_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mgd77header" href="mgd77header.html" />
+    <link rel="prev" title="pssac" href="../meca/pssac.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="mgd77header.html" title="mgd77header"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="../meca/pssac.html" title="pssac"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="mgd77convert">
+<span id="index-0"></span><h1>mgd77convert<a class="headerlink" href="#mgd77convert" title="Permalink to this headline">¶</a></h1>
+<p>mgd77convert - Convert MGD77 data to other file formats</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>mgd77convert</strong> <em>NGDC-ids</em> <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><strong>a</strong>|<strong>c</strong>|<strong>m</strong> |<strong>t</strong>
+<a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong>[<strong>+</strong>]<strong>a</strong>|<strong>c</strong>|<strong>m</strong>|<strong>t</strong>
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong> ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong>[<strong>w</strong>][<strong>e</strong>][<strong>+</strong>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>mgd77convert</strong> reads versions of MGD77 files and writes the same data
+in (probably) another format to a new file in the current directory.
+Both pre- and post-Y2K MGD77 formats can be processed.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>NGDC-ids</em></dt>
+<dd><p class="first">Can be one or more of five kinds of specifiers:</p>
+<ol class="arabic simple">
+<li>8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.</li>
+<li>2-character <em>agency</em> codes which will return all cruises from each agency.</li>
+<li>4-character &lt;agency&gt;&lt;vessel&gt; codes, which will return all cruises from those vessels.</li>
+<li>=<em>list</em>, where <em>list</em> is a table with NGDC IDs, one per line.</li>
+<li>If nothing is specified we return all cruises in the data base.</li>
+</ol>
+<p class="last">(See mgd77info <strong>-L</strong> for agency and vessel codes). If no file
+extension is given then we search for files with one of the four
+known extensions.  The search order (and the extensions) tried
+is MGD77+ (“.nc”), MGD77T (“.m77t”), MGD77 (“.mgd77” ) and plain
+text file (“.dat”).  Use <strong>-I</strong> to ignore one or more of these
+file types). Cruise files will be looked
+for first in the current directory and second in all directories
+listed in <strong>$MGD77_HOME</strong>/mgd77_paths.txt [If <strong>$MGD77_HOME</strong> is
+not set it will default to <strong>$GMT_SHAREDIR</strong>/mgd77].</p>
+</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-Fa</strong>|<strong>c</strong>|<strong>m</strong> |<strong>t</strong></dt>
+<dd>Specifies the format of the input (From) files. Choose from <strong>a</strong>
+for standard MGD77 ASCII table (with extension .mgd77), <strong>c</strong> for
+the new MGD77+ netCDF format (with extension .nc), <strong>m</strong> for the
+new MGD77T format (extension .m77t) and <strong>t</strong> for a
+plain ASCII tab-separated table dump (with extension .dat). Use
+<strong>-FC</strong> to recover the original MGD77 setting from the MGD77+ file
+[Default will apply any E77 corrections encoded in the file].</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong>[<strong>+</strong>]<strong>a</strong>|<strong>c</strong>|<strong>m</strong> |<strong>t</strong></dt>
+<dd>Specifies the format of the output (To) files. Choose from <strong>a</strong> for
+standard MGD77 ASCII table (with extension .mgd77), <strong>c</strong> for the
+new MGD77+ netCDF format (with extension .nc), <strong>m</strong> for the
+new MGD77T format (extension .m77t) and <strong>t</strong> for a plain
+ASCII tab-separated table dump (with extension .dat). We will refuse
+to create the file(s) if they already exist in the current
+directory. Prepend <strong>+</strong> to override this policy.</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong></dt>
+<dd>Convert from NGDC two-file data sets *.h77, *.a77 to single file
+*.mgd77. No other options (except <strong>-V</strong>) are allowed. Give one or
+more names of *.h77 files, *.a77 files, or just the file prefixes.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong></dt>
+<dd>By default, the storage types used in a MGD77+ netCDF file greatly
+exceed the precision imposed by the ASCII MGD77 format. However, for
+the five items <strong>faa</strong>, <strong>eot</strong>, <strong>mag</strong>, <strong>diur</strong> and <strong>msd</strong> we
+use 2-byte integers with implied precisions of 0.1 mGal, 0.1 nTesla,
+and 1 m as in the MGD77 format. It is possible that at some point
+these items will need to be stored as 4-byte ints which would allow
+precisions of 10 fTesla, 1 nGal, and 0.01 mm, respectively. This
+option activates such storage [Default uses 2-byte integers].</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong>[<strong>w</strong>][<strong>e</strong>][<strong>+</strong>]</dt>
+<dd>Set the level of verification reporting [none] and where to send
+such reports [stderr]. Append a combination of <strong>w</strong> for warnings,
+<strong>e</strong> for errors, and <strong>+</strong> to send such log information to stdout.</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To convert a large set of a77,h77 pairs to proper mgd77 files, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">mgd77convert</span> <span class="o">-</span><span class="n">C</span> <span class="o">*.</span><span class="n">h77</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To convert 01010047.mgd77 and 01010008.mgd77 to new netCDF .nc files,
+and capture all verification messages, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">mgd77convert</span> <span class="mi">01010047</span> <span class="mi">01010008</span> <span class="o">-</span><span class="n">Fa</span> <span class="o">-</span><span class="n">Tc</span> <span class="o">-</span><span class="n">V</span> <span class="o">-</span><span class="n">Lew</span><span class="o">+</span> <span class="o">&gt;</span> <span class="n">log</span><span class="o">.</span><span class="n">lis</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To convert 01010047.nc back to MGD77 ASCII and make sure it is identical
+to the original file, try (Bourne shell syntax)</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span>orig=`gmt mgd77path 01010047 -Ic`
+gmt mgd77convert 01010047 -Fc -Ta -V
+diff $orig 01010047.mgd77
+</pre></div>
+</div>
+</div></blockquote>
+<p>To convert 01010047.nc to a plain ASCII table for manual editing,
+overwriting any existing table, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">mgd77convert</span> <span class="mi">01010047</span> <span class="o">-</span><span class="n">Fc</span> <span class="o">-</span><span class="n">T</span><span class="o">+</span><span class="n">t</span> <span class="o">-</span><span class="n">V</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To recover the original NGDC MGD77 version of 01020051.nc and ignore any
+E77 corrections, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">mgd77convert</span> <span class="mi">01020051</span> <span class="o">-</span><span class="n">FC</span> <span class="o">-</span><span class="n">Ta</span> <span class="o">-</span><span class="n">V</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="file-formats">
+<h2>File Formats<a class="headerlink" href="#file-formats" title="Permalink to this headline">¶</a></h2>
+<p><strong>mgd77convert</strong> handles four different formats.
+(1) NGDC has now started to use the new tab-delimited version of the
+MGD77 data format, called MGD77T.  In addition to all the info in old
+MGD77 files it contains a few more quality flags for grav, mag,
+and bathymetry.  (2) The MGD77+ netCDF format was developed to
+facilitate the use of MGD77 data by scientists. It contains all the
+information of the original MGD77 file and if you convert back and forth
+you end up with the original. However, file sizes are typically ~30% of
+the original ASCII format and is much faster to operate on. (3) The MGD77 ASCII
+tables are the traditional standard for distribution of underway
+geophysical data to and from the NGDC data center, now superseded by MGD77T.
+Normally, only the ship-operations people and the cruise PI might be involved
+in <em>making</em> an MGD77 ASCII file for transmission to NGDC; users are more interested
+in <em>reading</em> such files. (4) The plain ASCII tab-separated dump is available
+for users who need to manually edit the content of a MGD77 file.
+This is usually easier to do when the columns are tab-separated than when
+they are all crunched together in the MGD77 punch-card format.</p>
+</div>
+<div class="section" id="other-tools">
+<h2>Other Tools<a class="headerlink" href="#other-tools" title="Permalink to this headline">¶</a></h2>
+<p>The MGD77+ netCDF files are CF-1.0 and COARDS compliant and can be
+examined with general-purpose tools such as ncBrowse and ncView.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="mgd77manage.html"><span class="doc">mgd77manage</span></a>,
+<a class="reference internal" href="mgd77list.html"><span class="doc">mgd77list</span></a>,
+<a class="reference internal" href="mgd77info.html"><span class="doc">mgd77info</span></a>,
+<a class="reference internal" href="mgd77track.html"><span class="doc">mgd77track</span></a>
+<a class="reference internal" href="../x2sys/x2sys_init.html"><span class="doc">x2sys_init</span></a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>ncBrowse, see <a class="reference external" href="http://www.epic.noaa.gov/java/ncBrowse/">http://www.epic.noaa.gov/java/ncBrowse/</a>
+ncView, see <a class="reference external" href="http://meteora.ucsd.edu/~pierce/ncview_home_page/">http://meteora.ucsd.edu/~pierce/ncview_home_page/</a>
+The Marine Geophysical Data Exchange Format - “MGD77”, see
+<a class="reference external" href="http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt">http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mgd77convert</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#file-formats">File Formats</a></li>
+<li><a class="reference internal" href="#other-tools">Other Tools</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../meca/pssac.html"
+                        title="previous chapter">pssac</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mgd77header.html"
+                        title="next chapter">mgd77header</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/supplements/mgd77/mgd77convert.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="mgd77header.html" title="mgd77header"
+             >next</a> </li>
+        <li class="right" >
+          <a href="../meca/pssac.html" title="pssac"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="../../index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="../../man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

@@ -1,0 +1,270 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:22 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>GRDTREND</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>GRDTREND</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#REMARKS">REMARKS</a><br>
+<a href="#GRID FILE FORMATS">GRID FILE FORMATS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">grdtrend
+&minus; Fit and/or remove a polynomial trend in a grid
+file</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdtrend</b>
+<i>grdfile</i> <b>&minus;N</b><i>n_model</i>[<b>r</b>] [
+<b>&minus;D</b><i>diff.grd</i> ] [
+<b>&minus;T</b><i>trend.grd</i> ] [ <b>&minus;V</b> ] [
+<b>&minus;W</b><i>weight.grd</i> ]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdtrend</b>
+reads a 2-D grid file and fits a low-order polynomial trend
+to these data by [optionally weighted] least-squares. The
+trend surface is defined by:</p>
+
+<p style="margin-left:11%; margin-top: 1em">m1 + m2*x +
+m3*y + m4*x*y + m5*x*x + m6*y*y + m7*x*x*x + m8*x*x*y +
+m9*x*y*y + m10*y*y*y.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The user must
+specify <b>&minus;N</b><i>n_model</i>, the number of model
+parameters to use; thus, <b>&minus;N</b><i>4</i> fits a
+bilinear trend, <b>&minus;N</b><i>6</i> a quadratic surface,
+and so on. Optionally, append <b>r</b> to the
+<b>&minus;N</b> option to perform a robust fit. In this
+case, the program will iteratively reweight the data based
+on a robust scale estimate, in order to converge to a
+solution insensitive to outliers. This may be handy when
+separating a &quot;regional&quot; field from a
+&quot;residual&quot; which should have non-zero mean, such
+as a local mountain on a regional surface.</p>
+
+<p style="margin-left:11%; margin-top: 1em">If data file
+has values set to NaN, these will be ignored during fitting;
+if output files are written, these will also have NaN in the
+same locations.</p>
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.
+<i><br>
+grdfile</i></p>
+
+<p style="margin-left:22%;">The name of a 2-D binary grid
+file.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;N</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+
+<p style="margin-top: 1em" valign="top">[<b>r</b>]<i>n_model</i>
+sets the number of model parameters to fit. Append <b>r</b>
+for robust fit.</p></td>
+</table>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">No space
+between the option flag and the associated arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;D</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Write the
+difference (input data - trend) to the file
+<i>diff.grd</i>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;T</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Write the fitted
+trend to the file <i>trend.grd</i>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;V</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Selects verbose
+mode, which will send progress reports to stderr [Default
+runs &quot;silently&quot;].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;W</b></p> </td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">If
+<i>weight.grd</i> exists, it will be read and used to solve
+a weighted least-squares problem. [Default: Ordinary
+least-squares fit.] If the robust option has been selected,
+the weights used in the robust fit will be written to
+<i>weight.grd</i>.</p> </td>
+</table>
+
+<a name="REMARKS"></a>
+<h2>REMARKS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The domain of x
+and y will be shifted and scaled to [-1, 1] and the basis
+functions are built from Legendre polynomials. These have a
+numerical advantage in the form of the matrix which must be
+inverted and allow more accurate solutions. NOTE: The model
+parameters listed with <b>&minus;V</b> are Legendre
+polynomial coefficients; they are not numerically equivalent
+to the m#s in the equation described above. The description
+above is to allow the user to match <b>&minus;N</b> with the
+order of the polynomial surface. See <b><A HREF="grdmath.html">grdmath</A></b> if you
+need to evaluate the trend using the reported
+coefficients.</p>
+
+<a name="GRID FILE FORMATS"></a>
+<h2>GRID FILE FORMATS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">By default
+<b><A HREF="GMT.html">GMT</A></b> writes out grid as single precision floats in a
+COARDS-complaint netCDF file format. However, <b><A HREF="GMT.html">GMT</A></b> is
+able to produce grid files in many other commonly used grid
+file formats and also facilitates so called
+&quot;packing&quot; of grids, writing out floating point
+data as 2- or 4-byte integers. To specify the precision,
+scale and offset, the user should add the suffix
+<b>=</b><i>id</i>[<b>/</b><i>scale</i><b>/</b><i>offset</i>[<b>/</b><i>nan</i>]],
+where <i>id</i> is a two-letter identifier of the grid type
+and precision, and <i>scale</i> and <i>offset</i> are
+optional scale factor and offset to be applied to all grid
+values, and <i>nan</i> is the value used to indicate missing
+data. When reading grids, the format is generally
+automatically recognized. If not, the same suffix can be
+added to input grid file names. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1)
+and Section 4.17 of the GMT Technical Reference and Cookbook
+for more information.</p>
+
+<p style="margin-left:11%; margin-top: 1em">When reading a
+netCDF file that contains multiple grids, <b><A HREF="GMT.html">GMT</A></b> will
+read, by default, the first 2-dimensional grid that can find
+in that file. To coax <b><A HREF="GMT.html">GMT</A></b> into reading another
+multi-dimensional variable in the grid file, append
+<b>?</b><i>varname</i> to the file name, where
+<i>varname</i> is the name of the variable. Note that you
+may need to escape the special meaning of <b>?</b> in your
+shell program by putting a backslash in front of it, or by
+placing the filename and suffix between quotes or double
+quotes. The <b>?</b><i>varname</i> suffix can also be used
+for output grids to specify a variable name different from
+the default: &quot;z&quot;. See <b><A HREF="grdreformat.html">grdreformat</A></b>(1) and
+Section 4.18 of the GMT Technical Reference and Cookbook for
+more information, particularly on how to read splices of 3-,
+4-, or 5-dimensional grids.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To remove a
+planar trend from hawaii_topo.grd and write result in
+hawaii_residual.grd:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdtrend</b>
+hawaii_topo.grd <b>&minus;N</b> 3 <b>&minus;D</b>
+hawaii_residual.grd</p>
+
+<p style="margin-left:11%; margin-top: 1em">To do a robust
+fit of a bicubic surface to hawaii_topo.grd, writing the
+result in hawaii_trend.grd and the weights used in
+hawaii_weight.grd, and reporting the progress:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>grdtrend</b>
+hawaii_topo.grd <b>&minus;N</b> 10<b>r &minus;T</b>
+hawaii_trend.grd <b>&minus;W</b> hawaii_weight.grd
+<b>&minus;V</b></p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="grdfft.html">grdfft</A></i>(1), <i><A HREF="grdfilter.html">grdfilter</A></i>(1)</p>
+<hr>
+</body>
+</html>

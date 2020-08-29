@@ -1,0 +1,748 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>17. Custom Plot Symbols &mdash; GMT 6.0.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="18. Annotation of Contours and “Quoted Lines”" href="contour_annotations.html" />
+    <link rel="prev" title="16. Of Colors and Color Legends" href="cpts.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                6.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">GMT Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">GMT Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">GMT Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preface.html">1. Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html">2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">3. General Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="options.html">4. Standardized command line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinate_transformations.html">5. GMT Coordinate Transformations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="map_projections.html">6. GMT Map Projections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplemental_packages.html">7. GMT Supplemental Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html">8. GMT File Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="include_figures.html">9. Including GMT Graphics into your Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predefined_patterns.html">10. Predefined Bit and Hachure Patterns in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="octal_codes.html">11. Chart of Octal Codes for Characters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postscript_fonts.html">12. PostScript Fonts Used by GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">13. Color Space: The Final Frontier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_filtering.html">14. Filtering of Data in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_unix_platforms.html">15. GMT on non-UNIX Platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpts.html">16. Of Colors and Color Legends</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">17. Custom Plot Symbols</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#background">17.1. Background</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-macro-language">17.2. The macro language</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#comment-lines">17.2.1. Comment lines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#symbol-variables">17.2.2. Symbol variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#macro-commands">17.2.3. Macro commands</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#symbol-fill-and-outline">17.2.4. Symbol fill and outline</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#symbol-substitution">17.2.5. Symbol substitution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text-substitution">17.2.6. Text substitution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text-alignment-and-font-attributes">17.2.7. Text alignment and font attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#conditional-statements">17.2.8. Conditional statements</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="contour_annotations.html">18. Annotation of Contours and “Quoted Lines”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ogrgmt_format.html">19. The GMT Vector Data Format for OGR Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="one-liner.html">20. GMT Modern Mode One-line Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_contrib_symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated_defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different GMT versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier GMT version</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std_opts_classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules_classic.html">GMT Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rst_cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+</ul>
+
+            
+          
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../cookbook.html">GMT Cookbook</a> &raquo;</li>
+        
+      <li>17. Custom Plot Symbols</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/GenericMappingTools/gmt/edit/6.0/doc/rst/source/cookbook/custom_symbols.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="custom-plot-symbols">
+<span id="app-custom-symbols"></span><h1>17. Custom Plot Symbols<a class="headerlink" href="#custom-plot-symbols" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="background">
+<h2>17.1. Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>The GMT tools <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> and <a class="reference internal" href="../plot3d.html"><span class="doc">plot3d</span></a> are capable of using custom
+symbols as alternatives to the built-in, standard geometrical shapes
+such as circles, triangles, and many others. One the command line, custom
+symbols are selected via the <strong>-Sk</strong><em>symbolname</em>[<em>size</em>] symbol
+selection, where <em>symbolname</em> refers to a special symbol definition file
+called <code class="docutils literal notranslate"><span class="pre">symbolname.def</span></code> that must be available via the standard GMT user paths. Several
+custom symbols comes pre-configured with GMT (see
+Figure <a class="reference internal" href="#custom-symbols"><span class="std std-ref">Custom symbols</span></a>)</p>
+<div class="figure align-center" id="id1">
+<span id="custom-symbols"></span><a class="reference internal image-reference" href="../_images/GMT_App_N_1.png"><img alt="../_images/GMT_App_N_1.png" src="../_images/GMT_App_N_1.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Custom plot symbols supported by GMT. These are all single-parameter symbols.
+Be aware that some symbols may have a hardwired fill or no-fill component,
+while others duplicate what is already available as standard built-in symbols.</span></p>
+</div>
+<p>You may find it convenient to examine some of these and use them as a
+starting point for your own design; they can be found in GMT’s
+share/custom directory.  In addition to the ones listed in Figure <a class="reference internal" href="#custom-symbols"><span class="std std-ref">Custom symbols</span></a>
+you can use the symbol <strong>QR</strong> to place the GMT QR Code that links to www.generic-mapping-tools.org;
+alternatively use <strong>QR_transparent</strong> to <em>not</em> plot the background opaque white square.</p>
+</div>
+<div class="section" id="the-macro-language">
+<h2>17.2. The macro language<a class="headerlink" href="#the-macro-language" title="Permalink to this headline">¶</a></h2>
+<p>To make your own custom plot symbol, you will need to design your own
+*.def files. This section defines the language used to build custom
+symbols. You can place these definition files in your current directory
+or in your <code class="docutils literal notranslate"><span class="pre">~/.gmt</span></code> user directory. When designing the symbol you are working
+in a relative coordinate system centered on (0,0). This point will be
+mapped to the actual location specified by your data coordinates.
+Furthermore, your symbol should be constructed within the domain
+<span class="math notranslate nohighlight">\({-\frac{1}{2},+\frac{1}{2},-\frac{1}{2},+\frac{1}{2}}\)</span>, resulting
+in a 1 by 1 relative canvas area. This 1 x 1 square will be scaled to your
+actual symbol size when plotted.  However, there are no requirement that
+all your design fit inside this domain.</p>
+<div class="section" id="comment-lines">
+<h3>17.2.1. Comment lines<a class="headerlink" href="#comment-lines" title="Permalink to this headline">¶</a></h3>
+<p>Your definition file may have any number of comment lines, defined to
+begin with the character #. These are skipped by GMT but provides a
+mechanism for you to clarify what your symbol does.</p>
+</div>
+<div class="section" id="symbol-variables">
+<h3>17.2.2. Symbol variables<a class="headerlink" href="#symbol-variables" title="Permalink to this headline">¶</a></h3>
+<p>Simple symbols, such as circles and triangles, only take a single
+parameter: the symbol size, which is either given on the command line
+(via <strong>-Sk</strong>) or as part of the input data. However, more complicated
+symbols that involve angles, or conditional tests, may require more
+parameters. If your custom symbol requires more than the implicit single size
+parameter you must include the line</p>
+<blockquote>
+<div><strong>N</strong>: <em>n_extra_parameters</em> [<em>types</em>]</div></blockquote>
+<p>before any other macro commands. It is an optional statement in that
+<em>n_extra_parameters</em> will default to 0 unless explicitly set. By
+default the extra parameters are considered to be quantities that should
+be passed directly to the symbol machinery. However, you can use the
+<em>types</em> argument to specify different types of parameters and thus single
+out parameters for pre-processing. The available types are</p>
+<blockquote>
+<div><p><strong>a</strong> Geographic azimuth (positive clockwise from north toward east). Parameters
+identified as azimuth will first be converted to map angle
+(positive counter-clockwise from horizontal) given the current
+map projection (or simply via 90-azimuth for Cartesian plots).
+We ensure the angles fall in the 0-360 range and any macro test can rely on this range.</p>
+<p><strong>l</strong> Length, i.e., an additional length scale (in cm, inch, or point as
+per <a class="reference internal" href="../gmt.conf.html#proj-length-unit"><span class="std std-ref">PROJ_LENGTH_UNIT</span></a>) in addition to the given symbol size.</p>
+<p><strong>o</strong> Other, i.e., a numerical quantity to be passed to the custom symbol unchanged.</p>
+<p><strong>r</strong> rotation angles (positive counter-clockwise from horizontal).
+We ensure the angles fall in the 0-360 range and any macro test can rely on this range.</p>
+<p><strong>s</strong> String, i.e., a single column of text to be placed by the <strong>l</strong> command.
+Use octal \040 to include spaces to ensure the text string remains a single word.</p>
+</div></blockquote>
+<p>To use the extra parameters in your macro you address them as $1, $2, etc.  There
+is no limit on how many parameters your symbol may use. To access the trailing text in
+the input file you use $t.</p>
+</div>
+<div class="section" id="macro-commands">
+<h3>17.2.3. Macro commands<a class="headerlink" href="#macro-commands" title="Permalink to this headline">¶</a></h3>
+<p>The custom symbol language contains commands to rotate the relative
+coordinate system, draw free-form polygons and lines, change the current
+fill and/or pen, place text, and include basic geometric symbols as part of the
+overall design (e.g., circles, triangles, etc.). The available commands
+are listed in Table <a class="reference internal" href="#tbl-custsymb"><span class="std std-ref">custsymb</span></a>.  Note that all angles
+in the arguments can be provided as variables while the remaining parameters
+are constants.</p>
+<table border="1" class="docutils" id="tbl-custsymb">
+<colgroup>
+<col width="14%" />
+<col width="11%" />
+<col width="36%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Name</strong></th>
+<th class="head"><strong>Code</strong></th>
+<th class="head"><strong>Purpose</strong></th>
+<th class="head"><strong>Arguments</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>rotate</td>
+<td><strong>R</strong></td>
+<td>Rotate the coordinate system</td>
+<td><span class="math notranslate nohighlight">\(\alpha\)</span>[<strong>a</strong>]</td>
+</tr>
+<tr class="row-odd"><td>moveto</td>
+<td><strong>M</strong></td>
+<td>Set a new anchor point</td>
+<td><span class="math notranslate nohighlight">\(x_0, y_0\)</span></td>
+</tr>
+<tr class="row-even"><td>drawto</td>
+<td><strong>D</strong></td>
+<td>Draw line from previous point</td>
+<td><span class="math notranslate nohighlight">\(x, y\)</span></td>
+</tr>
+<tr class="row-odd"><td>arc</td>
+<td><strong>A</strong></td>
+<td>Append circular arc to existing path</td>
+<td><span class="math notranslate nohighlight">\(x_c, y_c, d, \alpha_1, \alpha_2\)</span></td>
+</tr>
+<tr class="row-even"><td>stroke</td>
+<td><strong>S</strong></td>
+<td>Stroke existing path only</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>texture</td>
+<td><strong>T</strong></td>
+<td>Change current pen and fill</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>star</td>
+<td><strong>a</strong></td>
+<td>Plot a star</td>
+<td><span class="math notranslate nohighlight">\(x, y, size\)</span></td>
+</tr>
+<tr class="row-odd"><td>circle</td>
+<td><strong>c</strong></td>
+<td>Plot a circle</td>
+<td><span class="math notranslate nohighlight">\(x, y, size\)</span></td>
+</tr>
+<tr class="row-even"><td>diamond</td>
+<td><strong>d</strong></td>
+<td>Plot a diamond</td>
+<td><span class="math notranslate nohighlight">\(x, y, size\)</span></td>
+</tr>
+<tr class="row-odd"><td>ellipse</td>
+<td><strong>e</strong></td>
+<td>Plot a ellipse</td>
+<td><span class="math notranslate nohighlight">\(x, y, \alpha\)</span>,<em>major</em>,<em>minor</em></td>
+</tr>
+<tr class="row-even"><td>octagon</td>
+<td><strong>g</strong></td>
+<td>Plot an octagon</td>
+<td><span class="math notranslate nohighlight">\(x, y, size\)</span></td>
+</tr>
+<tr class="row-odd"><td>hexagon</td>
+<td><strong>h</strong></td>
+<td>Plot a hexagon</td>
+<td><span class="math notranslate nohighlight">\(x, y, size\)</span></td>
+</tr>
+<tr class="row-even"><td>invtriangle</td>
+<td><strong>i</strong></td>
+<td>Plot an inverted triangle</td>
+<td><span class="math notranslate nohighlight">\(x, y, size\)</span></td>
+</tr>
+<tr class="row-odd"><td>rotrectangle</td>
+<td><strong>j</strong></td>
+<td>Plot an rotated rectangle</td>
+<td><span class="math notranslate nohighlight">\(x, y, \alpha, width, height\)</span></td>
+</tr>
+<tr class="row-even"><td>letter</td>
+<td><strong>l</strong></td>
+<td>Plot a letter</td>
+<td><span class="math notranslate nohighlight">\(x, y, size, string\)</span></td>
+</tr>
+<tr class="row-odd"><td>marc</td>
+<td><strong>m</strong></td>
+<td>Plot a math arc (no heads)</td>
+<td><span class="math notranslate nohighlight">\(x, y, r, \alpha_1, \alpha_2\)</span></td>
+</tr>
+<tr class="row-even"><td>pentagon</td>
+<td><strong>n</strong></td>
+<td>Plot a pentagon</td>
+<td><span class="math notranslate nohighlight">\(x, y, size\)</span></td>
+</tr>
+<tr class="row-odd"><td>plus</td>
+<td><strong>+</strong></td>
+<td>Plot a plus sign</td>
+<td><span class="math notranslate nohighlight">\(x, y, size\)</span></td>
+</tr>
+<tr class="row-even"><td>rect</td>
+<td><strong>r</strong></td>
+<td>Plot a rectangle</td>
+<td><span class="math notranslate nohighlight">\(x, y, width, height\)</span></td>
+</tr>
+<tr class="row-odd"><td>square</td>
+<td><strong>s</strong></td>
+<td>Plot a square</td>
+<td><span class="math notranslate nohighlight">\(x, y, size\)</span></td>
+</tr>
+<tr class="row-even"><td>triangle</td>
+<td><strong>t</strong></td>
+<td>Plot a triangle</td>
+<td><span class="math notranslate nohighlight">\(x, y, size\)</span></td>
+</tr>
+<tr class="row-odd"><td>wedge</td>
+<td><strong>w</strong></td>
+<td>Plot a wedge</td>
+<td><span class="math notranslate nohighlight">\(x, y, d, \alpha_1, \alpha_2\)</span></td>
+</tr>
+<tr class="row-even"><td>cross</td>
+<td><strong>x</strong></td>
+<td>Plot a cross</td>
+<td><span class="math notranslate nohighlight">\(x, y, size\)</span></td>
+</tr>
+<tr class="row-odd"><td>x-dash</td>
+<td><strong>-</strong></td>
+<td>Plot a x-dash</td>
+<td><span class="math notranslate nohighlight">\(x, y, size\)</span></td>
+</tr>
+<tr class="row-even"><td>y-dash</td>
+<td><strong>y</strong></td>
+<td>Plot a y-dash</td>
+<td><span class="math notranslate nohighlight">\(x, y, size\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Note for <strong>R</strong>: if an <strong>a</strong> is appended to the angle then <span class="math notranslate nohighlight">\(\alpha\)</span> is considered
+to be a map azimuth; otherwise it is a Cartesian map angle.  The <strong>a</strong> modifier
+does not apply if the angle is given via a variable, in which case the type of angle
+has already been specified via <strong>N:</strong> above and already converged before seen by <strong>R</strong>.
+Finally, the <strong>R</strong> command can also be given the negative of a variable, e.g., -$2 to
+undo a rotation, if necessary.</p>
+</div>
+<div class="section" id="symbol-fill-and-outline">
+<h3>17.2.4. Symbol fill and outline<a class="headerlink" href="#symbol-fill-and-outline" title="Permalink to this headline">¶</a></h3>
+<p>Normally, symbols, polygons and lines will be rendered using any
+fill and outline options you have given on the command line, similarly to how
+the regular built-in symbols behave. For <strong>M</strong>, <strong>T</strong>, and all the lower-case
+symbol codes you may optionally append specific pens (with <strong>-W</strong><em>pen</em>) and fills (with
+<strong>-G</strong><em>pen</em>).  These options will force the use of these settings and
+ignore any pens and fills you may or may not have specified on the command line.
+Passing <strong>-G</strong>- or <strong>-W</strong>- means a symbol or polygon will have no
+fill or outline, respectively, regardless of what your command line settings are.
+Unlike pen options on the command line, a pen setting inside the macro symbol
+offers more control.  Here, pen width is a <em>dimension</em> and you can specify
+it in three different ways: (1) Give a fixed pen width with trailing unit (e.g., <strong>-W</strong>1p,red);
+we then apply that pen exactly as it is regardless of the size of the symbol,
+(2) give a normalized pen thickness in the 0-1 range (e.g., <strong>-W</strong>0.02);
+at run-time this thickness will be multiplied by the current symbol size to yield
+the actual pen thickness, and (3) specify a variable pen thickness (e.g., <strong>-W</strong>$1,blue); we then
+obtain the actual pen thickness from the data record at run-time.
+Finally, you may indicate that a symbol or polygon should be filled using the color
+of the current pen instead of the current fill; do this by specifying <strong>-G+p</strong>.
+Likewise, you may indicate that an outline should be drawn with the color of the
+current fill instead of the current pen; do this by appending <strong>+g</strong> to your
+<strong>-W</strong> setting (which may also indicate pen thickness and texture).  E.g.,
+<strong>-W</strong>1p,-+g would mean “draw the outline with a 1p thick dashed pen but obtain
+the color from the current fill”.</p>
+</div>
+<div class="section" id="symbol-substitution">
+<h3>17.2.5. Symbol substitution<a class="headerlink" href="#symbol-substitution" title="Permalink to this headline">¶</a></h3>
+<p>Custom symbols that need to plot any of the standard geometric symbols
+(i.e., those controlled by a single size) can make the symbol code a variable.  By specifying <strong>?</strong> instead
+of the symbol codes <strong>a</strong>, <strong>c</strong>, <strong>d</strong>, <strong>g</strong>, <strong>h</strong>, <strong>i</strong>, <strong>n</strong>, <strong>+</strong>, <strong>s</strong>, <strong>t</strong>,
+<strong>x</strong>, <strong>-</strong>, or <strong>y</strong> the actual symbol code is expected to be found at the end of
+each data record.  Such custom symbols must be invoked with <strong>-SK</strong> rather than <strong>-Sk</strong>.</p>
+</div>
+<div class="section" id="text-substitution">
+<h3>17.2.6. Text substitution<a class="headerlink" href="#text-substitution" title="Permalink to this headline">¶</a></h3>
+<p>Normally, the <strong>l</strong> macro code will place a hard-wired text string.  However,
+you can also obtain the entire string from your input file via a single symbol
+variable <strong>$t</strong> that must be declared with type <strong>s</strong> (string).  The string will be taken
+as all trialing text in your data record.  To select a single word from the trailing text
+you just use <strong>$t</strong><em>k</em>, where <em>k</em> starts at 0 for the first word, regardless of how many numerical
+columns that precede it.  For each word you plan to use you must add a type <strong>s</strong> above.
+Words must be separated by one tab or space only.  To place the dollar sign $ itself you must
+use octal \044 so as to not confuse the parser with a symbol variable.
+The string itself, if obtained from the symbol definition file,
+may contain special codes that will be expanded given information from the current record.  You
+can embed the codes %X or %Y to add the current longitude (or x) and latitude (or y) in
+your label string. You may also use $n (<em>n</em> is 1, 2, etc.) to embed a numerical symbol variable as text.
+It will be formatted according to <a class="reference internal" href="../gmt.conf.html#format-float-map"><span class="std std-ref">FORMAT_FLOAT_MAP</span></a>,
+unless you append the modifiers <strong>+X</strong> (format as longitude via <a class="reference internal" href="../gmt.conf.html#format-geo-map"><span class="std std-ref">FORMAT_GEO_MAP</span></a>),
+<strong>+Y</strong> (format as latitude via <a class="reference internal" href="../gmt.conf.html#format-geo-map"><span class="std std-ref">FORMAT_GEO_MAP</span></a>), or <strong>+T</strong> (format as calendar time via
+<a class="reference internal" href="../gmt.conf.html#format-date-map"><span class="std std-ref">FORMAT_DATE_MAP</span></a> and <a class="reference internal" href="../gmt.conf.html#format-clock-map"><span class="std std-ref">FORMAT_CLOCK_MAP</span></a>.</p>
+</div>
+<div class="section" id="text-alignment-and-font-attributes">
+<h3>17.2.7. Text alignment and font attributes<a class="headerlink" href="#text-alignment-and-font-attributes" title="Permalink to this headline">¶</a></h3>
+<p>Like the <strong>Sl</strong> symbol in <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a>, you can change the current
+font by appending to <strong>l</strong> the modifier <strong>+f</strong><em>font</em> [FONT_ANNOT_PRIMARY] and change the text justification
+by appending the modifier <strong>+j</strong><em>justify</em> [CM]. Note: Here, the <em>font</em> specification
+will only be considered for the font type and not its size (which is set separately by your <em>size</em>
+argument) or color and outline (which are set separately by <strong>-G</strong> and <strong>-W</strong> arguments).
+Finally, there are two ways to specify the font size.  If a fixed font size is given in points
+(e.g,, 12p) then the text will be set at that size regardless of the symbol size specified in <strong>-S</strong>.
+Without the trailing <strong>p</strong> we interpret the size as a relative size in the 0-1 range and the actual
+font size will then scale with the symbol size, just like other symbol items.</p>
+</div>
+<div class="section" id="conditional-statements">
+<h3>17.2.8. Conditional statements<a class="headerlink" href="#conditional-statements" title="Permalink to this headline">¶</a></h3>
+<p>There are two types of conditional statements in the macro language: A
+simple condition preceding a single command, or a more elaborate
+if-then-elseif-else construct. In any test you may use one (and only
+one) of many logical operators, as listed in Table <a class="reference internal" href="#tbl-custop"><span class="std std-ref">custop</span></a>.</p>
+<table border="1" class="docutils" id="tbl-custop">
+<colgroup>
+<col width="22%" />
+<col width="78%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Operator</strong></th>
+<th class="head"><strong>Purpose</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>&lt;</td>
+<td>Is <em>left</em> less than <em>right</em>?</td>
+</tr>
+<tr class="row-odd"><td>&lt;=</td>
+<td>Is <em>left</em> less than or equal to <em>right</em>?</td>
+</tr>
+<tr class="row-even"><td>==</td>
+<td>Is <em>left</em> equal to <em>right</em>?</td>
+</tr>
+<tr class="row-odd"><td>!=</td>
+<td>Is <em>left</em> not equal to <em>right</em>?</td>
+</tr>
+<tr class="row-even"><td>&gt;=</td>
+<td>Is <em>left</em> greater than or equal to <em>right</em>?</td>
+</tr>
+<tr class="row-odd"><td>&gt;</td>
+<td>Is <em>left</em> greater than <em>right</em>?</td>
+</tr>
+<tr class="row-even"><td>%</td>
+<td>Does <em>left</em> have a remainder with <em>right</em>?</td>
+</tr>
+<tr class="row-odd"><td>!%</td>
+<td>Is <em>left</em> an exact multiple of <em>right</em>?</td>
+</tr>
+<tr class="row-even"><td>&lt;&gt;</td>
+<td>Is <em>left</em> within the exclusive range of <em>right</em>?</td>
+</tr>
+<tr class="row-odd"><td>[]</td>
+<td>Is <em>left</em> within the inclusive range of <em>right</em>?</td>
+</tr>
+<tr class="row-even"><td>&lt;]</td>
+<td>Is <em>left</em> within the in/ex-clusive range of <em>right</em>?</td>
+</tr>
+<tr class="row-odd"><td>[&gt;</td>
+<td>Is <em>left</em> within the ex/in-clusive range of <em>right</em>?</td>
+</tr>
+</tbody>
+</table>
+<p>Above, <em>left</em> refers to one of your variable arguments (e.g., $1, $2) or any constant
+(e.g. 45, 2c, 1i) on the left hand side of the operator.  On the right hand side of the
+operator, <em>right</em> is either one of your other variables, or a constant, or a range indicated by
+two colon-separated constants or variables (e.g., 10:50, $2:60, $3:$4, etc.).
+You can also use $x and $y for tests involving the current point’s longitude (or <em>x</em>) and
+latitude (or <em>y</em>) values, respectively.  Note that any tests involving $x will not consider
+the periodicity of longitudes.  Finally, $s can be used to access the current symbol size.
+Note that symbol size internally is converted to inches so any test you write that compares
+the size to a constant should use a constant with the appropriate unit appended (e.g., 2c).
+For text comparison note that case will be considered, so “A” does not equal “a”.</p>
+<div class="section" id="simple-conditional-test">
+<h4>17.2.8.1. Simple conditional test<a class="headerlink" href="#simple-conditional-test" title="Permalink to this headline">¶</a></h4>
+<p>The simple if-test uses a one-line format, defined as</p>
+<blockquote>
+<div><strong>if</strong> <em>left</em> <em>operator</em> <em>right</em> <strong>then</strong> <em>command</em></div></blockquote>
+<p>where <em>left</em> must be one of the symbol parameters, specified as $1, $2,
+$3, etc., or a constant. You must document what these additional parameters control. For
+example, to plot a small cyan circle at (0.2, 0.3) with diameter 0.4
+only if $2 exceeds 45 you would write</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nv">$2</span> &gt; <span class="m">45</span> <span class="k">then</span> <span class="m">0</span>.2 <span class="m">0</span>.3 <span class="m">0</span>.4 c -Gcyan
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note that this form of the conditional test has no mechanism for an
+<strong>else</strong> branch, but this can be accomplished by repeating the test but
+reversing the logic for the second copy, e.g.,</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nv">$1</span> &gt; <span class="m">10</span> <span class="k">then</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span>.5 c -Gred
+<span class="k">if</span> <span class="nv">$1</span> &lt;<span class="o">=</span> <span class="m">10</span> <span class="k">then</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span>.5 c -Gblue
+</pre></div>
+</div>
+</div></blockquote>
+<p>or you may instead consider the complete conditional construct below.
+Using a comparison between variables is similarly straightforward:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nv">$2</span> &gt; <span class="nv">$3</span> <span class="k">then</span> <span class="m">0</span>.2 <span class="m">0</span>.3 <span class="m">0</span>.4 c -Ggreen
+</pre></div>
+</div>
+</div></blockquote>
+<p>If you are comparing text strings then $t can be on either side of the operator and
+the other side would be a string constant (in quotes if containing spaces).</p>
+</div>
+<div class="section" id="complete-conditional-test">
+<h4>17.2.8.2. Complete conditional test<a class="headerlink" href="#complete-conditional-test" title="Permalink to this headline">¶</a></h4>
+<p>The complete conditional test uses a multi-line format, such as</p>
+<div class="line-block">
+<div class="line"><strong>if</strong> <em>left</em> <em>operator</em> <em>right</em> <strong>then</strong> {</div>
+<div class="line-block">
+<div class="line">&lt;one or more lines with commands&gt;</div>
+</div>
+<div class="line">} <strong>elseif</strong> <em>left</em> <em>operator</em> <em>right</em> <strong>then</strong> {</div>
+<div class="line-block">
+<div class="line">&lt;one or more lines with commands&gt;</div>
+</div>
+<div class="line">} <strong>else</strong> {</div>
+<div class="line-block">
+<div class="line">&lt;one or more lines with commands&gt;</div>
+</div>
+<div class="line">}</div>
+</div>
+<p>The <strong>elseif</strong> (one or more) and <strong>else</strong> branches are optional. Note
+that the syntax is strictly enforced, meaning the opening brace must
+appear after <strong>then</strong> with nothing following it, and the closing brace
+must appear by itself with no other text, and that the <strong>elseif</strong> and
+<strong>else</strong> statements must have both closing and opening braces on the
+same line (and nothing else). If you need comments please add them as
+separate lines.  You may nest tests as well (up to 10
+levels deep), e.g.,</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nv">$1</span> &gt; <span class="m">45</span> <span class="k">then</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="nv">$2</span> <span class="o">[</span>&gt; <span class="m">0</span>:10 <span class="k">then</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span>.5 c -Gred
+<span class="o">}</span> elseif <span class="nv">$1</span> &lt; <span class="m">15</span> <span class="k">then</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="nv">$2</span> <span class="o">[</span>&gt; <span class="m">0</span>:10 <span class="k">then</span> <span class="m">0</span> <span class="m">0</span> <span class="m">0</span>.5 c -Ggreen
+<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="nv">$2</span> <span class="o">[</span>&gt; <span class="m">10</span>:20 <span class="k">then</span> <span class="o">{</span>
+                <span class="m">0</span> <span class="m">0</span> M -W1p,blue
+                <span class="m">0</span>.3 <span class="m">0</span>.3 D
+                S
+                <span class="m">0</span>.3 <span class="m">0</span>.3 <span class="m">0</span>.3 c -Gcyan
+        <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="contour_annotations.html" class="btn btn-neutral float-right" title="18. Annotation of Contours and “Quoted Lines”" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="cpts.html" class="btn btn-neutral float-left" title="16. Of Colors and Color Legends" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, The GMT Team.
+      <span class="lastupdated">
+        Last updated on Jan 16, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

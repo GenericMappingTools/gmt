@@ -1,0 +1,563 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>gmt2kml &#8212; GMT 5.4.6_c5d65a4_2019.11.05 documentation</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/searchtools.js"></script>
+    <script type="text/javascript" src="_static/rtd-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gmt5syntax" href="gmt5syntax.html" />
+    <link rel="prev" title="gmt" href="gmt.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="gmt5syntax.html" title="gmt5syntax"
+             accesskey="N">next</a> </li>
+        <li class="right" >
+          <a href="gmt.html" title="gmt"
+             accesskey="P">previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" accesskey="U">Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gmt2kml">
+<span id="index-0"></span><h1>gmt2kml<a class="headerlink" href="#gmt2kml" title="Permalink to this headline">¶</a></h1>
+<p>gmt2kml - Convert GMT data tables to KML files for Google Earth</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt2kml</strong> [ <em>table</em> ]
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><strong>a</strong>|<strong>g</strong>|<strong>s</strong>[<em>alt</em>|<strong>x</strong><em>scale</em>] ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>cpt</em> ] [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>descriptfile</em> ] [ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<em>altitude</em>] ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><strong>e</strong>|<strong>s</strong>|<strong>t</strong>|<strong>l</strong>|<strong>p</strong>|<strong>w</strong> ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><strong>f|n</strong><strong>-</strong>|<em>fill</em> ]
+[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>icon</em> ] [ <strong>-K</strong>]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>col1:name1</em>,<em>col2:name2</em>,… ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong>[+|<em>name_template</em>|<em>name</em>] ] [ <strong>-O</strong>]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><strong>a</strong>|<strong>i</strong><em>az</em> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><strong>s</strong><em>scale</em>[<em>unit</em>] ]
+[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><strong>a</strong>|<em>w/e/s/n</em> ]
+[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><strong>c</strong>|<strong>n</strong><em>scale</em>] ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>title</em>[/<em>foldername</em>] ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<em>pen</em>][<em>attr</em>] ]
+[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong><em>args</em> ]
+[ <strong>-bi</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ &gt; <em>output.kml</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt2kml</strong> reads one or more GMT table file and converts them to a
+single output file using Google Earth’s KML format. Data may represent
+points, lines, polygons, or wiggles, and you may specify additional attributes
+such as title, altitude mode, colors, pen widths, transparency, regions,
+and data descriptions. You may also extend the feature down to ground
+level (assuming it is above it) and use custom icons for point symbols.
+Finally, there are controls on visibility depending on level of detail
+settings, altitude, regions, including the status upon loading into
+Google Earth as well as fading depending on zoom.</p>
+<p>The input files should contain the following columns:</p>
+<p><em>lon</em> <em>lat</em> [ <em>alt</em> ] [ <em>timestart</em> [ <em>timestop</em> ] ]</p>
+<p>where <em>lon</em> and <em>lat</em> are required for all features, <em>alt</em> is optional
+for all features (see also <strong>-A</strong> and <strong>-C</strong>), and <em>timestart</em> and
+<em>timestop</em> apply to events and timespan features.   For wiggles,
+the <em>alt</em> column is required but is expected to represent an along-track
+data anomaly such as gravity, magnetics, etc.  These values will be
+scaled to yield distances from the line in degrees.</p>
+</div>
+<div class="section" id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<p>None.</p>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><em>table</em></dt>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </dd>
+</dl>
+<dl class="docutils" id="a">
+<dt><strong>-A</strong><strong>a</strong>|<strong>g</strong>|<strong>s</strong>[<em>alt</em>|<strong>x</strong><em>scale</em>]</dt>
+<dd>Select one of three altitude modes recognized by Google Earth that
+determines the altitude (in m) of the feature: <strong>a</strong> absolute
+altitude, <strong>g</strong> altitude relative to sea surface or ground, <strong>s</strong>
+altitude relative to seafloor or ground. To plot the features at a
+fixed altitude, append an altitude <em>alt</em> (in m). Use 0 to clamp the
+features to the chosen reference surface. Append <strong>x</strong><em>scale</em> to
+scale the altitude from the input file by that factor. If no value
+is appended, the altitude (in m) is read from the 3rd column of the
+input file. [By default the features are clamped to the sea surface or ground].</dd>
+</dl>
+<dl class="docutils" id="c">
+<dt><strong>-C</strong><em>cpt</em></dt>
+<dd>Use the CPT for assigning colors to the symbol, event, or
+timespan icons, based on the value in the 3rd column of the input
+file. For lines or polygons we examine the segment header for
+-Z&lt;value&gt; statements and obtain the color via the cpt lookup. Note
+only discrete colors are possible.</dd>
+</dl>
+<dl class="docutils" id="d">
+<dt><strong>-D</strong><em>descriptfile</em></dt>
+<dd>File with HTML snippets that will be included as part of the main
+description content for the KML file [no description]. See SEGMENT
+INFORMATION below for feature-specific descriptions.</dd>
+</dl>
+<dl class="docutils" id="e">
+<dt><strong>-E</strong>[<em>altitude</em>]</dt>
+<dd>Extrude feature down to ground level [no extrusion].</dd>
+</dl>
+<dl class="docutils" id="f">
+<dt><strong>-F</strong><strong>e</strong>|<strong>s</strong>|<strong>t</strong>|<strong>l</strong>|<strong>p</strong>|<strong>w</strong></dt>
+<dd>Sets the feature type. Choose from points (<strong>e</strong>vent,
+<strong>s</strong>ymbol, or <strong>t</strong>imespan), <strong>l</strong>ine, <strong>p</strong>olygon, or
+<strong>w</strong>iggle [symbol]. The first two columns of the input file should contain
+(<em>lon</em>, <em>lat</em>). When altitude or value is required (i.e., no
+<em>altitude</em> value was given with <strong>-A</strong>, or <strong>-C</strong> is set), the third
+column needs to contain the <em>altitude</em> (in m) or <em>value</em>. The event
+(<strong>-Fe</strong>) is a symbol that should only be active at a particular
+<em>time</em>, given in the next column. Timespan (<strong>-Ft</strong>) is a symbol
+that should only be active during a particular time period indicated
+by the next two columns (<em>timestart</em>, <em>timestop</em>). Use NaN to
+indicate unbounded time limits. If used, times should be in ISO
+format yyyy-mm-ddThh:mm:ss[.xxx] or in GMT relative time format
+(see <strong>-f</strong>).  For wiggles, the data anomaly is required to be
+in the 3rd input column.  If you also need to plot the track itself
+then do that separately with <strong>-Fl</strong>.</dd>
+</dl>
+<dl class="docutils" id="g">
+<dt><strong>-G</strong><strong>f|n</strong><em>fill</em></dt>
+<dd>Sets color fill (<strong>-Gf</strong>) or label font color (<strong>-Gn</strong>).
+Fill: Set fill color for symbols, extrusions, polygons and positive anomaly
+wiggles [Default is light orange at 75% transparency].  Optionally,
+use <strong>-Gf-</strong> to turn off polygon fill.
+Text labels: Specify color for font [Default is white]. Optionally
+use <strong>-Gn-</strong> to disable labels.</dd>
+</dl>
+<dl class="docutils" id="i">
+<dt><strong>-I</strong><em>icon</em></dt>
+<dd>Specify the URL to an alternative icon that should be used for the
+symbol [Default is a Google Earth circle]. If the URL starts with +
+then we will prepend
+<a class="reference external" href="http://maps.google.com/mapfiles/kml/">http://maps.google.com/mapfiles/kml/</a>
+to the name. To turn off icons entirely (e.g., when just wanting a
+text label), use <strong>-I</strong>-. [Default is a local icon with no directory path].</dd>
+</dl>
+<dl class="docutils" id="k">
+<dt><strong>-K</strong></dt>
+<dd>Allow more KML code to be appended to the output later [finalize the KML file].</dd>
+</dl>
+<dl class="docutils" id="l">
+<dt><strong>-L</strong><em>name1</em>,<em>name2</em>,…</dt>
+<dd>Extended data given. Append one or more column names separated by
+commas. We will expect the listed data columns to exist in the input
+immediately following the data coordinates and they will be encoded
+in the KML file as Extended Data sets, whose attributes will be
+available in a Google Earth balloon when the item is selected.
+This option is not available unless input is an ASCII file.</dd>
+</dl>
+<dl class="docutils" id="n">
+<dt><strong>-N</strong>[-|+|<em>name_template</em>|<em>name</em>]</dt>
+<dd>By default, if segment headers contain a <strong>-L</strong>”label string” then
+we use that for the name of the KML feature (polygon, line segment
+or set of symbols). Default names for these segments are “Line %d”
+and “Point Set %d”, depending on the feature, where %d is a sequence
+number of line segments within a file. Each point within a line
+segment will be named after the line segment plus a sequence number.
+Default is simply “Point %d”.
+Alternatively, select one of these options: (1) append <strong>-</strong> to
+supply individual symbol labels (single word) via the field
+immediately following the data coordinates, (2) append <strong>+</strong> to
+supply individual symbol labels as everything to the end of the data
+record following the data coordinates, (3) append a string that may
+include %d or a similar integer format to assign unique name IDs for
+each feature, with the segment number (for lines and polygons) or
+point number (symbols) appearing where %d is placed, (4) give no
+arguments to turn symbol labeling off; line segments will still be
+named. Note: if <strong>-N-</strong> is used with <strong>-L</strong> then the label must
+appear before the extended data columns.  Also note that options
+(1) and (2) are not available unless input is an ASCII file.</dd>
+</dl>
+<dl class="docutils" id="o">
+<dt><strong>-O</strong></dt>
+<dd>Append KML code to an existing KML file [initialize a new KML file].</dd>
+</dl>
+<dl class="docutils" id="q">
+<dt><strong>-Qa</strong>|<strong>i</strong><em>azimuth</em></dt>
+<dd>Option in support of wiggle plots (requires <strong>-Fw</strong>). You may
+control which directions the positive wiggles will tend to point
+to with <strong>-Qa</strong>.  The provided azimuth defines a half-circle
+centered on the selected azimuth [0] where positive anomalies
+will plot.  If outside then switch by 180 degrees.  Alternatively,
+use <strong>-Qi</strong> to set a fixed direction with no further variation.</dd>
+<dt><strong>-Qs</strong><em>scale</em>[<em>unit</em>]</dt>
+<dd>Required setting for wiggle plots (i.e., it requires <strong>-Fw</strong>).
+Sets a wiggle scale in <em>z</em>-data units per the user’s units (given
+via the trailing unit taken from d|m|s|e|f|k|M|n|u [e]). This scale
+is then inverted to yield degrees per user z-unit and used to
+convert wiggle anomalies to map distances and positions.</dd>
+</dl>
+<dl class="docutils" id="r">
+<dt><strong>-Ra</strong>|<em>w/e/s/n</em></dt>
+<dd>Issue a single Region tag. Append <em>w/e/s/n</em> to set a particular
+region (will ignore points outside the region), or append <strong>a</strong> to
+determine and use the actual domain of the data (single file only)
+[no region tags issued].</dd>
+</dl>
+<dl class="docutils" id="s">
+<dt><strong>-S</strong><strong>c</strong>|<strong>n</strong><em>scale</em>]</dt>
+<dd>Scale icons or labels. Here, <strong>-Sc</strong> sets a scale for the symbol
+icon, whereas <strong>-Sn</strong> sets a scale for the name labels [1 for both].</dd>
+</dl>
+<dl class="docutils" id="t">
+<dt><strong>-T</strong><em>title</em>[/<em>foldername</em>]</dt>
+<dd>Sets the document title [default is unset]. Optionally, append
+/<em>FolderName</em>; this allows you, with <strong>-O</strong>, <strong>-K</strong>, to group
+features into folders within the KML document. [The default folder
+name is “<em>Name</em> Features”, where <em>Name</em> is Point, Event, Timespan,
+Line, Polygon or Wiggle].</dd>
+</dl>
+<dl class="docutils" id="v">
+<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select verbosity level [c].  </dd>
+</dl>
+<dl class="docutils" id="w">
+<dt><strong>-W</strong>[<em>pen</em>][<em>attr</em>] <a class="reference internal" href="GMT_Docs.html#wpen-attrib"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Set pen attributes for lines, wiggles or polygon outlines. Append pen
+attributes to use [Defaults: width = default, color = black, style =
+solid]. If the modifier <strong>+cl</strong> is appended then the color of the line
+are taken from the CPT (see <strong>-C</strong>). If instead modifier <strong>+cf</strong> is
+appended then the color from the cpt file is applied to symbol fill.
+Use just <strong>+c</strong> for both effects.  Note that for KML the pen width is
+given in (fractional) pixels and not in points (1/72 inch).</dd>
+</dl>
+<dl class="docutils" id="z">
+<dt><strong>-Z</strong><em>args</em></dt>
+<dd>Set one or more attributes of the Document and Region tags. Append
+<strong>+a</strong><em>alt_min/alt_max</em> to specify limits on visibility based on
+altitude. Append <strong>+l</strong><em>lod_min/lod_max</em> to specify limits on
+visibility based on Level Of Detail, where <em>lod_max</em> == -1 means it
+is visible to infinite size. Append <strong>+f</strong><em>fade_min/fade_max</em> to
+fade in and out over a ramp [abrupt]. Append <strong>+v</strong> to make a
+feature <em>not</em> visible when loaded [visible]. Append <strong>+o</strong> to open a
+folder or document in the sidebar when loaded [closed].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select native binary input. [Default is 2 or more input columns, depending on settings].</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-di</strong><em>nodata</em> <a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Replace input columns that equal <em>nodata</em> with NaN.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>”pattern”</em> <strong>|</strong> <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Only accept data records that match the given pattern.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Specify data types of input and/or output columns.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] <a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Determine data gaps and line breaks.  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+r</strong><em>remark</em>][<strong>+r</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Skip or produce header record(s).  </dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Select input columns and transformations (0 is first column).</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt>
+<dd>Swap 1st and 2nd column on input and/or output.</dd>
+</dl>
+<dl class="docutils">
+<dt><strong>-^</strong> or just <strong>-</strong></dt>
+<dd>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt>
+<dd>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</dd>
+<dt><strong>-?</strong> or no arguments</dt>
+<dd>Print a complete usage (help) message, including the explanation of all options, then exits.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To convert a file with point locations (lon, lat) into a KML file with
+red circle symbols, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt2kml</span> <span class="n">mypoints</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">Gfred</span> <span class="o">-</span><span class="n">Fs</span> <span class="o">&gt;</span> <span class="n">mypoints</span><span class="o">.</span><span class="n">kml</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To convert a multisegment file with lines (lon, lat) separated by
+segment headers that contain a <strong>-L</strong>labelstring with the feature
+name, selecting a thick white pen, and title the document, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt2kml</span> <span class="n">mylines</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">Wthick</span><span class="p">,</span><span class="n">white</span> <span class="o">-</span><span class="n">Fl</span> <span class="o">-</span><span class="n">T</span><span class="s2">&quot;Lines from here to there&quot;</span> <span class="o">&gt;</span> <span class="n">mylines</span><span class="o">.</span><span class="n">kml</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To convert a multisegment file with polygons (lon, lat) separated by
+segment headers that contain a <strong>-L</strong>labelstring with the feature
+name, selecting a thick black pen and semi-transparent yellow fill,
+giving a title to the document, and prescribing a particular region
+limit, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">gmt2kml</span> <span class="n">mypolygons</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">Gfyellow</span><span class="o">@</span><span class="mi">50</span> <span class="o">-</span><span class="n">Fp</span> <span class="o">-</span><span class="n">T</span><span class="s2">&quot;My polygons&quot;</span> <span class="o">-</span><span class="n">R30</span><span class="o">/</span><span class="mi">90</span><span class="o">/-</span><span class="mi">20</span><span class="o">/</span><span class="mi">40</span> <span class="o">&gt;</span> <span class="n">mypolygons</span><span class="o">.</span><span class="n">kml</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To convert a file with point locations (lon, lat, time) into a KML file
+with green circle symbols that will go active at the specified time and
+stay active going forward, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">awk</span> <span class="s1">&#39;{print $1, $2, $3, &quot;NaN&quot;}&#39;</span> <span class="n">mypoints</span><span class="o">.</span><span class="n">txt</span> <span class="o">|</span> <span class="n">gmt</span> <span class="n">gmt2kml</span> <span class="o">-</span><span class="n">Gfgreen</span> <span class="o">-</span><span class="n">Ft</span> <span class="o">&gt;</span> <span class="n">mytimepoints</span><span class="o">.</span><span class="n">kml</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To extract contours and labels every 10 units from the grid temp.nc and
+plot them in KML, using red lines at 75% transparency and red labels (no
+transparency), try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">grdcontour</span> <span class="n">temp</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">Jx1id</span> <span class="o">-</span><span class="n">A10</span><span class="o">+</span><span class="n">tlabel</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">C10</span> <span class="o">-</span><span class="n">Dcontours</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">gmt</span> <span class="n">gmt2kml</span>    <span class="n">contours</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">Fl</span> <span class="o">-</span><span class="n">W1p</span><span class="p">,</span><span class="n">red</span><span class="o">@</span><span class="mi">75</span> <span class="o">-</span><span class="n">K</span> <span class="o">&gt;</span> <span class="n">contours</span><span class="o">.</span><span class="n">kml</span>
+<span class="n">gmt</span> <span class="n">gmt2kml</span>    <span class="o">-</span><span class="n">O</span> <span class="o">-</span><span class="n">N</span><span class="o">+</span> <span class="o">-</span><span class="n">Fs</span> <span class="o">-</span><span class="n">Sn2</span> <span class="o">-</span><span class="n">Gnred</span><span class="o">@</span><span class="mi">0</span> <span class="n">label</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">I</span><span class="o">-</span> <span class="o">&gt;&gt;</span> <span class="n">contours</span><span class="o">.</span><span class="n">kml</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To instead plot the contours as lines with colors taken from the cpt
+file contours.cpt, try</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">gmt2kml</span> <span class="n">contours</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">Fl</span> <span class="o">-</span><span class="n">Ccontours</span><span class="o">.</span><span class="n">cpt</span> <span class="o">&gt;</span> <span class="n">contours</span><span class="o">.</span><span class="n">kml</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To plot magnetic anomalies as wiggles along track, with positive
+wiggles painted orange and the wiggle line drawn with a black pen
+of width 2p, scaling the magnetic anomalies (in nTesla) so that
+50 nT equals 1 nm on the map, and place the wiggles 50m above the
+sea surface, use</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gmt</span> <span class="n">gmt2kml</span> <span class="n">magnetics_lon_lat_mag</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">Fw</span> <span class="o">-</span><span class="n">Gforange</span> <span class="o">-</span><span class="n">W2p</span> <span class="o">-</span><span class="n">Ag50</span> <span class="o">-</span><span class="n">Qs50n</span> <span class="o">&gt;</span> <span class="n">wiggles</span><span class="o">.</span><span class="n">kml</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h2>
+<p>Google Earth has trouble displaying filled polygons across the Dateline.
+For now you must manually break any polygon crossing the dateline into a
+west and east polygon and plot them separately.  Google Earth also has
+other less obvious limitations on file size or line length.  These do
+not seem to be documented.  If features do not show and you are not
+getting an error, try to reduce the size of the file by splitting
+things up.</p>
+</div>
+<div class="section" id="making-kmz-files">
+<h2>Making Kmz Files<a class="headerlink" href="#making-kmz-files" title="Permalink to this headline">¶</a></h2>
+<p>Using the KMZ format is preferred as it takes less space. KMZ is simply
+a KML file and any data files, icons, or images referenced by the KML,
+contained in a zip archive. One way to organize large data sets is to
+split them into groups called Folders. A Document can contain any number
+of folders. Using scripts you can create a composite KML file using the
+<strong>-K</strong>, <strong>-O</strong> options just like you do with GMT plots. See <strong>-T</strong> for
+switching between folders and documents.  The gmt_shell_scripts.sh
+contains function gmt_build_kmz that can assist in building a KMZ file
+from any number of KML files (and optionally images they may refer to).</p>
+</div>
+<div class="section" id="kml-hierarchy">
+<h2>Kml Hierarchy<a class="headerlink" href="#kml-hierarchy" title="Permalink to this headline">¶</a></h2>
+<p>GMT stores the different features in hierarchical folders by feature
+type (when using <strong>-O</strong>, <strong>-K</strong> or <strong>-T/</strong><em>foldername</em>), by input file
+(if not standard input), and by line segment (using the name from the
+segment header, or <strong>-N</strong>). This makes it more easy in Google Earth to
+switch on or off parts of the contents of the Document. The following is
+a crude example:</p>
+<p>[ KML header information; not present if <strong>-O</strong> was used ]</p>
+<p>&lt;Document&gt;&lt;name&gt;GMT Data Document&lt;/name&gt;</p>
+<p>&lt;Folder&gt;&lt;name&gt;Point Features&lt;/name&gt;</p>
+<p>&lt;!--This level of folder is inserted only when using -O, -K&gt;</p>
+<p>&lt;Folder&gt;&lt;name&gt;file1.dat&lt;/name&gt;</p>
+<p>&lt;!--One folder for each input file (not when standard input)&gt;</p>
+<p>&lt;Folder&gt;&lt;name&gt;Point Set 0&lt;/name&gt;</p>
+<p>&lt;!--One folder per line segment&gt;</p>
+<p>&lt;!--Points from the first line segment in file file1.dat go here&gt;</p>
+<p>&lt;Folder&gt;&lt;name&gt;Point Set 1&lt;/name&gt;</p>
+<p>&lt;!--Points from the second line segment in file file1.dat go here&gt;</p>
+<p>&lt;/Folder&gt;</p>
+<p>&lt;/Folder&gt;</p>
+<p>&lt;Folder&gt;&lt;name&gt;Line Features&lt;/name&gt;</p>
+<p>&lt;Folder&gt;&lt;name&gt;file1.dat&lt;/name&gt;</p>
+<p>&lt;!--One folder for each input file (not when standard input)&gt;</p>
+<p>&lt;Placemark&gt;&lt;name&gt;Line 0&lt;/name&gt;</p>
+<p>&lt;!--Here goes the first line segment&gt;</p>
+<p>&lt;/Placemark&gt;</p>
+<p>&lt;Placemark&gt;&lt;name&gt;Line 1&lt;/name&gt;</p>
+<p>&lt;!--Here goes the second line segment&gt;</p>
+<p>&lt;/Placemark&gt;</p>
+<p>&lt;/Folder&gt;</p>
+<p>&lt;Folder&gt;</p>
+<p>&lt;/Document&gt;</p>
+<p>[ KML trailer information; not present if <strong>-K</strong> was used ]</p>
+</div>
+<div class="section" id="segment-information">
+<h2>Segment Information<a class="headerlink" href="#segment-information" title="Permalink to this headline">¶</a></h2>
+<p><strong>gmt2kml</strong> will scan the segment headers for substrings of the form
+<strong>-L</strong>”<em>some label</em>” [also see <strong>-N</strong> discussion] and <strong>-T</strong>”<em>some
+text description</em>”. If present, these are parsed to supply name and
+description tags, respectively, for the current feature.</p>
+</div>
+<div class="section" id="id1">
+<h2>Making KMZ files<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>If you have made a series of KML files (which may depend on other items
+like local PNG images), you can consolidate these into a single KMZ file
+for saving space and for grouping related files together.  The bash function
+<strong>gmt_build_kmz</strong> in the <a class="reference internal" href="gmt_shell_functions.sh.html"><span class="doc">gmt_shell_functions.sh</span></a> can be used to
+do this.  You need to source gmt_shell_functions.sh first before you can
+use it.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a> , <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>, <a class="reference internal" href="gmt_shell_functions.sh.html"><span class="doc">gmt_shell_functions.sh</span></a>,
+<a class="reference internal" href="supplements/img/img2google.html"><span class="doc">img2google</span></a>,
+<a class="reference internal" href="kml2gmt.html"><span class="doc">kml2gmt</span></a> , <a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gmt2kml</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#required-arguments">Required Arguments</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional Arguments</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
+<li><a class="reference internal" href="#making-kmz-files">Making Kmz Files</a></li>
+<li><a class="reference internal" href="#kml-hierarchy">Kml Hierarchy</a></li>
+<li><a class="reference internal" href="#segment-information">Segment Information</a></li>
+<li><a class="reference internal" href="#id1">Making KMZ files</a></li>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gmt.html"
+                        title="previous chapter">gmt</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gmt5syntax.html"
+                        title="next chapter">gmt5syntax</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/gmt2kml.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="gmt5syntax.html" title="gmt5syntax"
+             >next</a> </li>
+        <li class="right" >
+          <a href="gmt.html" title="gmt"
+             >previous</a> </li>
+  <li><a href="/projects/gmt/wiki/Documentation">Project Home</a>  &#187;</li>
+  
+        <li class="nav-item nav-item-0"><a href="index.html">GMT 5.4.6_c5d65a4_2019.11.05 documentation</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="man_pages.html" >Man Pages</a> &#187;</li>
+<li class="right">
+<form class="search" accept-charset="UTF-8" action="search.html" method="get">
+  <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <label for="q">
+    <a class="search" href="search.html" accesskey="s" original-title="">Search:</a>
+  </label>
+  <input accesskey="f" class="small" id="q" name="q" size="20" type="text">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form></li>
+   
+
+      </ul>
+    </div>
+<div class="footer">
+    &copy; Copyright 2019, The GMT Team.
+  Last updated on Jun 14, 2020.
+  Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+  <br />Theme based on <a href="http://readthedocs.org/">Read The Docs</a>
+
+</div>
+
+
+  </body>
+</html>

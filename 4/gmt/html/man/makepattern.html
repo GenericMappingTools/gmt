@@ -1,0 +1,136 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Sun Jun 24 21:09:40 2018 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>MAKEPATTERN</title>
+
+</head>
+<body bgcolor="#ffffff">
+
+<h1 align=center>MAKEPATTERN</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#WIN32 fix">WIN32 fix</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">makepattern
+&minus; make GMT color pattern from b/w pattern or icon</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>makepattern</b>
+<i>1bit.ras</i> | <i>iconfile</i>
+<b>&minus;Cf</b><i>r/g/b</i>
+<b>&minus;Cb</b><i>r/g/b</i></p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>makepattern</b>
+reads either a Sun 1-bit rasterfile OR a Sun icon file. It
+then accepts color choices for the foreground and background
+pixels and colorizes the pattern, writing it as a 8-bit Sun
+rasterfile on stdout. These patterns may then be used in
+<b><A HREF="GMT.html">GMT</A></b> (3.1 or later) <b>&minus;Gp</b> settings or by
+<b><A HREF="psimage.html">psimage</A></b>. <i><br>
+1bit.ras</i> | <i>iconfile</i></p>
+
+<p style="margin-left:22%;">Either a 1-bit Sun rasterfile
+(standard format, no RLE) or a Sun icon file (as used in
+<b><A HREF="GMT.html">GMT</A></b> 3.0).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Cf</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the color for
+the foreground pixels (the ones) [black].</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;Cb</b></p> </td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em" valign="top">Sets the color for
+the background pixels (the zeros) [white].</p></td>
+</table>
+
+<a name="WIN32 fix"></a>
+<h2>WIN32 fix</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Since binary
+redirection under WIN32 does not work, you must specify the
+output file with <b>&minus;G</b><i>newfile.ras</i>. This
+option is only available under WIN32.</p>
+
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">To create a
+colorized red/blue 8-bit Sun rasterfile pattern from the old
+3.0-style iconpattern stored in file custom.icon, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>makepattern</b>
+custom.icon <b>&minus;Cf</b> red <b>&minus;Cb</b> blue &gt;
+custom.ras</p>
+
+<p style="margin-left:11%; margin-top: 1em">To create a
+green/blue 8-bit Sun rasterfile pattern from a 1-bit Sun
+raster called bits.ras, run</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>makepattern</b>
+bits.ras <b>&minus;Cf</b> green <b>&minus;Cb</b> blue &gt;
+colorbits.ras</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><A HREF="GMT.html">GMT</A></i>(1),
+<i><A HREF="psimage.html">psimage</A></i>(1)</p>
+<hr>
+</body>
+</html>
