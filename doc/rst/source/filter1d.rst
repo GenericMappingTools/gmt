@@ -90,6 +90,12 @@ Required Arguments
 
     In the case of **L**\|\ **U** it is possible that no data passes
     the initial sign test; in that case the filter will return 0.0.
+    Apart from custom coefficients (**f**), the other filters may accept variable
+    filter widths by passing *width* as a two-column time-series file with filter widths
+    in the second column.  The filter-width file does not need to be co-registered with
+    the data as we obtain the required filter width at each output location via
+    interpolation.
+
 
 Optional Arguments
 ------------------
