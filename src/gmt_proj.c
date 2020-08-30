@@ -655,8 +655,6 @@ GMT_LOCAL void gmtproj_ipolar (struct GMT_CTRL *GMT, double *x, double *y, doubl
 GMT_LOCAL void gmtproj_vmerc (struct GMT_CTRL *GMT, double lon0, double slat) {
 	/* Set up a Mercator transformation with origin at (lon0, lat0) */
 
-	if (GMT->current.proj.GMT_convert_latitudes) slat = gmt_M_latg_to_latc (GMT, slat);
-
 	GMT->current.proj.central_meridian = lon0;
 	GMT->current.proj.j_x = cosd (slat) / d_sqrt (1.0 - GMT->current.proj.ECC2 * sind (slat) * sind (slat)) * GMT->current.proj.EQ_RAD;
 	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
