@@ -652,15 +652,17 @@ GMT_LOCAL void gmtproj_ipolar (struct GMT_CTRL *GMT, double *x, double *y, doubl
 
 /* -JM MERCATOR PROJECTION */
 
-GMT_LOCAL void gmtproj_vmerc (struct GMT_CTRL *GMT, double lon0, double slat) {
+GMT_LOCAL void gmtproj_vmerc (struct GMT_CTRL *GMT, double lon0, double lat0) {
 	/* Set up a Mercator transformation with origin at (lon0, lat0) */
 
-	if (GMT->current.proj.GMT_convert_latitudes) slat = gmt_M_latg_to_latc (GMT, slat);
+	double aux_lat0 = (GMT->current.proj.GMT_convert_latitudes) ? gmt_M_latg_to_latc (GMT, lat0) : lat0;
 
 	GMT->current.proj.central_meridian = lon0;
-	GMT->current.proj.j_x = cosd (slat) / d_sqrt (1.0 - GMT->current.proj.ECC2 * sind (slat) * sind (slat)) * GMT->current.proj.EQ_RAD;
+	/* Need geodetic latitude in this expression: */
+	GMT->current.proj.j_x = cosd (lat0) / d_sqrt (1.0 - GMT->current.proj.ECC2 * sind (lat0) * sind (lat0)) * GMT->current.proj.EQ_RAD;
 	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
-	GMT->current.proj.j_yc = (fabs (slat) > 0.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * slat)) : 0.0;
+	/* Need conformal latitude in this expression (same as in gmtproj_merc_sph) */
+	GMT->current.proj.j_yc = (fabs (lat0) > 0.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * aux_lat0)) : 0.0;
 }
 
 /* Mercator projection for the sphere */
@@ -672,14 +674,14 @@ GMT_LOCAL void gmtproj_merc_sph (struct GMT_CTRL *GMT, double lon, double lat, d
 	if (GMT->current.proj.GMT_convert_latitudes) lat = gmt_M_latg_to_latc (GMT, lat);
 
 	*x = GMT->current.proj.j_x * D2R * lon;
-	*y = (fabs (lat) < 90.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * lat)) - GMT->current.proj.j_yc : copysign (DBL_MAX, lat);
+	*y = (fabs (lat) < 90.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * lat)) : copysign (DBL_MAX, lat);
 }
 
 GMT_LOCAL void gmtproj_imerc_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Mercator x/y to lon/lat  (GMT->current.proj.EQ_RAD in GMT->current.proj.j_ix) */
 
 	*lon = x * GMT->current.proj.j_ix * R2D + GMT->current.proj.central_meridian;
-	*lat = atand (sinh ((y + GMT->current.proj.j_yc) * GMT->current.proj.j_ix));
+	*lat = atand (sinh (y * GMT->current.proj.j_ix));
 	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_latc_to_latg (GMT, *lat);
 }
 

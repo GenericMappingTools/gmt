@@ -865,7 +865,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 2, 2};	/* Just a single data table with one segment with two 2-column records */
 	bool was_R, was_J;
 	double wesn[4];
-	char buffer[GMT_LEN256] = {""}, Jstring[GMT_LEN128] = {""}, in_string[GMT_VF_LEN] = {""}, out_string[GMT_VF_LEN] = {""}, *v = NULL;
+	char buffer[GMT_LEN256] = {""}, Jstring[GMT_LEN128] = {""}, in_string[GMT_VF_LEN] = {""}, out_string[GMT_VF_LEN] = {""}, origin_flag[4] = {""}, *v = NULL;
 	struct GMT_DATASET *In = NULL, *Out = NULL;
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call gmtinit_rectR_to_geoR to convert projected -R to geo -R\n");
@@ -911,6 +911,8 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "UTM projection insufficiently specified to auto-determine geographic region\n");
 				return (GMT_MAP_NO_PROJECTION);
 			}
+			if (GMT->current.proj.projection_GMT == GMT_MERCATOR)	/* Special use of Mercator units relative to stated origin */
+				strcpy (origin_flag, "+m");
 			break;
 		case 2: /* Conical: Use default patch */
 			break;
@@ -948,8 +950,8 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 				v[0] = '\0';
 		}
 	}
-	snprintf (buffer, GMT_LEN256, "-R%g/%g/%g/%g -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s --GMT_HISTORY=readonly",
-		wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], Jstring, unit, in_string, out_string);
+	snprintf (buffer, GMT_LEN256, "-R%g/%g/%g/%g -J%s -I -F%c -C%s -bi2d -bo2d -<%s ->%s --GMT_HISTORY=readonly",
+		wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], Jstring, unit, origin_flag, in_string, out_string);
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Obtaining geographic corner coordinates via mapproject %s\n", buffer);
 	if (GMT_Call_Module (GMT->parent, "mapproject", GMT_MODULE_CMD, buffer) != GMT_OK)	/* Get the corners in degrees via mapproject */
 		return (GMT->parent->error);
