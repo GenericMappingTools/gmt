@@ -652,13 +652,17 @@ GMT_LOCAL void gmtproj_ipolar (struct GMT_CTRL *GMT, double *x, double *y, doubl
 
 /* -JM MERCATOR PROJECTION */
 
-GMT_LOCAL void gmtproj_vmerc (struct GMT_CTRL *GMT, double lon0, double slat) {
+GMT_LOCAL void gmtproj_vmerc (struct GMT_CTRL *GMT, double lon0, double lat0) {
 	/* Set up a Mercator transformation with origin at (lon0, lat0) */
 
+	double aux_lat0 = (GMT->current.proj.GMT_convert_latitudes) ? gmt_M_latg_to_latc (GMT, lat0) : lat0;
+
 	GMT->current.proj.central_meridian = lon0;
-	GMT->current.proj.j_x = cosd (slat) / d_sqrt (1.0 - GMT->current.proj.ECC2 * sind (slat) * sind (slat)) * GMT->current.proj.EQ_RAD;
+	/* Need geodetic latitude in this expression: */
+	GMT->current.proj.j_x = cosd (lat0) / d_sqrt (1.0 - GMT->current.proj.ECC2 * sind (lat0) * sind (lat0)) * GMT->current.proj.EQ_RAD;
 	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
-	GMT->current.proj.j_yc = (fabs (slat) > 0.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * slat)) : 0.0;
+	/* Need conformal latitude in this expression (same as in gmtproj_merc_sph) */
+	GMT->current.proj.j_yc = (fabs (lat0) > 0.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * aux_lat0)) : 0.0;
 }
 
 /* Mercator projection for the sphere */
