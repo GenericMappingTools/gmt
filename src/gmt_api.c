@@ -11027,6 +11027,12 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 	else {	/* Call the function and pass back its return value */
 		gmt_manage_workflow (API, GMT_USE_WORKFLOW, NULL);		/* First detect and set modern mode if modern mode session dir is found */
 		gmtapi_check_for_modern_oneliner (API, module, mode, args);	/* If a modern mode one-liner we must switch run--mode here */
+		if (API->external && gmt_M_is_verbose (API->GMT, GMT_MSG_INFORMATION)) {
+			/* For externals, print the equivalent command line string under -Vi */
+			char *text = (mode == GMT_MODULE_OPT) ? GMT_Create_Cmd (API, args) : args;
+			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Revised command before memory-substitution: %s\n", text);
+			if (mode == GMT_MODULE_OPT) GMT_Destroy_Cmd (API, &text);
+		}
 		status = (*p_func) (V_API, mode, args);				/* Call the module in peace */
 	}
 	return (status);
