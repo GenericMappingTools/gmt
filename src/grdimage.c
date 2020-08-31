@@ -932,11 +932,11 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	/* If given, get intensity grid or compute intensities (for a constant intensity) */
 
 	if (use_intensity_grid) {	/* Illumination wanted */
-
+		double *region = (gmt_file_is_tiled_list (API, Ctrl->In.file[0], NULL, NULL, NULL)) ? API->tile_wesn : wesn;	/* Region to pass to grdgradient */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocates memory and read intensity file\n");
 
 		/* Remember, the illumination header was already read at the start of grdimage */
-		if (!Ctrl->I.derive && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->I.file, Intens_orig) == NULL) {
+		if (!Ctrl->I.derive && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, region, Ctrl->I.file, Intens_orig) == NULL) {
 			Return (API->error);	/* Failed to read the intensity grid data */
 		}
 		mixed = grdimage_clean_global_headers (GMT, Intens_orig->header);
