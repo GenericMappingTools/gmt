@@ -932,7 +932,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	/* If given, get intensity grid or compute intensities (for a constant intensity) */
 
 	if (use_intensity_grid) {	/* Illumination wanted */
-		double *region = (gmt_file_is_tiled_list (API, Ctrl->In.file[0], NULL, NULL, NULL)) ? API->tile_wesn : wesn;	/* Region to pass to grdgradient */
+		double *region = (gmt_file_is_tiled_list (API, Ctrl->In.file[0], NULL, NULL, NULL)) ? API->tile_wesn : wesn;	/* Subset to pass to GMT_Read_Data if data set is tiled */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocates memory and read intensity file\n");
 
 		/* Remember, the illumination header was already read at the start of grdimage */
