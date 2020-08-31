@@ -17511,3 +17511,58 @@ bool gmt_is_gmt_end_show (char *line) {
 	if (!strcmp (word, "show")) return true;	/* Yes, found gmt end show */
 	return false;	/* Not gmt end show */
 }
+
+int64_t gmt_eliminate_duplicates (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t cols[], uint64_t ncols) {
+	/* Scan dataset per segment and eliminate any duplicate record as identified by having change in all the specified cols.
+	 * If no change then we skip the duplicate records.  No segment will be eliminated since first record always survives. */
+	uint64_t tbl, seg, row, last_row, k, n_equal, n_dup_seg, n_dup = 0;
+	int64_t n_skip;
+	unsigned int mode;
+	struct GMT_DATASEGMENT *S = NULL;
+
+	if (ncols == 0) return -GMT_N_COLS_NOT_SET;
+	if (cols == NULL) return -GMT_N_COLS_NOT_SET;
+	for (k = 0; k < ncols; k++) if (cols[k] >= D->n_columns) return -GMT_DIM_TOO_LARGE;
+
+	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* Examine each table */
+		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* Examine each segment */
+			S = D->table[tbl]->segment[seg];	/* Current segment shorthand */
+			mode = (S->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
+			last_row = 0;	/* Always keep the first row of any segment */
+			n_dup_seg = 0;	/* None yet found in this segment */
+			row = 0;
+			while (row < (S->n_rows-1)) {	/* Since we increase row inside we stop at one less */
+				n_skip = -1;
+				do {	/* Check if this row is same as last, for given cols */
+					row++;
+					n_skip++;
+					for (k = n_equal = 0; k < ncols; k++) {
+						if (doubleAlmostEqualZero (S->data[cols[k]][row], S->data[cols[k]][last_row]))
+						n_equal++;
+					}	
+				} while (n_equal == ncols && row < S->n_rows);
+
+				if (n_skip) {	/* Must move up all memory and bury this repeat record */
+					for (k = 0; k < S->n_columns; k++)
+						memmove (&S->data[k][row-n_skip], &S->data[k][row], (S->n_rows-row)*sizeof(double));
+					S->n_rows -= n_skip;	/* Since we lost records */
+					n_dup_seg += n_skip;
+					row -= n_skip;
+				}
+				last_row++;
+			}
+			if (n_dup_seg) {	/* Found duplicates, need  to reallocate arrays */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Removed %" PRIu64 " duplicate records from table %" PRIu64", segment %" PRIu64"\n", n_dup_seg, tbl, seg);
+				if (gmt_alloc_segment (GMT, S, S->n_rows, S->n_columns, mode, false))
+					return -GMT_RUNTIME_ERROR;	/* Failure of some sort */
+				n_dup += n_dup_seg;
+			}
+		}
+	}
+	if (n_dup) {
+		gmt_set_dataset_minmax (GMT, D);	/* Update min/max for each column */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Removed %" PRIu64 " duplicate records from the entire dataset\n", n_dup);
+	}
+
+	return (n_dup);
+}

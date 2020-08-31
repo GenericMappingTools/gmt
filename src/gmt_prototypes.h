@@ -369,6 +369,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC int64_t gmt_eliminate_duplicates (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t cols[], uint64_t ncols);
 EXTERN_MSC bool gmt_same_fill (struct GMT_CTRL *GMT, struct GMT_FILL *F1, struct GMT_FILL *F2);
 EXTERN_MSC unsigned int gmt_contour_first_pos (struct GMT_CTRL *GMT, char *arg);
 EXTERN_MSC unsigned int gmt_contour_A_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct CONTOUR_ARGS *A);
