@@ -1348,7 +1348,7 @@ EXTERN_MSC int GMT_grdfilter (void *V_API, int mode, void *args) {
 			}
 			sprintf (cmd, "%s -G%s -R%s -V%c", in_string, out_string, Ctrl->In.file, V_level[GMT->current.setting.verbose]);
 			if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
-			strcat (cmd, " --GMT_HISTORY=false");
+			strcat (cmd, " --GMT_HISTORY=readonly");
 			GMT_Report (API, GMT_MSG_INFORMATION,
 					"Highpass requires us to resample the lowpass result at original registration via grdsample %s\n", cmd);
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Calling grdsample with args %s\n", cmd);

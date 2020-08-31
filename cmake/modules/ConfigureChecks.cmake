@@ -160,9 +160,10 @@ check_function_exists (strdup           HAVE_STRDUP)
 check_function_exists (strndup          HAVE_STRNDUP)
 check_function_exists (strsep           HAVE_STRSEP)
 check_function_exists (strtod           HAVE_STRTOD)
+check_function_exists (strtok_r         HAVE_STRTOK_R)
 # Note: trailing underscore = GDAL workaround
 check_function_exists (strtof           HAVE_STRTOF_)
-check_function_exists (strtok_r         HAVE_STRTOK_R)
+check_function_exists (strsignal        HAVE_STRSIGNAL)
 
 if (WIN32)
 	check_function_exists (_fseeki64      HAVE__FSEEKI64)

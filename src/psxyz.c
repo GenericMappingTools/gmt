@@ -858,7 +858,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		/* Determine if we need to worry about repeating periodic symbols */
 		if (clip_set && (Ctrl->N.mode == PSXYZ_CLIP_REPEAT || Ctrl->N.mode == PSXYZ_NO_CLIP_REPEAT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_is_geographic (GMT, GMT_IN)) {
 			/* Only do this for projection where west and east are split into two separate repeating boundaries */
-			periodic = (gmt_M_is_cylindrical (GMT) || gmt_M_is_misc (GMT));
+			periodic = gmt_M_is_periodic (GMT);
 			if (S.symbol == GMT_SYMBOL_GEOVECTOR) periodic = false;
 		}
 		n_times = (periodic) ? 2 : 1;	/* For periodic boundaries we plot each symbol twice to allow for periodic clipping */
@@ -1752,13 +1752,26 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 					gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 				}
-				if (change & 4 && penset_OK) gmt_setpen (GMT, &current_pen);
-				if (change & 1) polygon = true;
-				if (change & 2 && !Ctrl->L.polygon) {
-					polygon = false;
-					PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
+
+				if (Ctrl->W.cpt_effect) {
+					if (Ctrl->W.pen.cptmode & 1) {	/* Change current pen color via CPT */
+						gmt_M_rgb_copy (current_pen.rgb, current_fill.rgb);
+						gmt_setpen (GMT, &current_pen);
+					}
+					if ((Ctrl->W.pen.cptmode & 2) == 0 && !Ctrl->G.active)	/* Turn off CPT fill */
+						gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
+					else if (Ctrl->G.active)
+						current_fill = Ctrl->G.fill;
 				}
-				if (change & 4) gmt_setpen (GMT, &current_pen);
+				else if (Zin == NULL) {
+					if (change & 1) polygon = true;
+					if (change & 2 && !Ctrl->L.polygon) {
+						polygon = false;
+						PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
+					}
+					if (change & 4 && penset_OK) gmt_setpen (GMT, &current_pen);
+				}
+
 				if (S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from segment header */
 					gmt_extract_label (GMT, L->header, S.G.label, SH->ogr);
 

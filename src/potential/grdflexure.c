@@ -830,7 +830,7 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 		return NULL;
 	}
 	/* Note: If input grid is read-only then we must duplicate it; otherwise Grid points to Orig */
-	(void) gmt_set_outgrid (API->GMT, file, false, Orig, &Grid);
+	(void) gmt_set_outgrid (API->GMT, file, false, 0, Orig, &Grid);
 	if (Ctrl->W.active) {	/* See if any part of the load sticks above water, and if so scale this amount as if it was submerged */
 		uint64_t node, n_subaerial = 0;
 		double boost = Ctrl->D.rhol / (Ctrl->D.rhol - Ctrl->D.rhow);
@@ -1205,7 +1205,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	}
 
 	error = GMT_NOERROR;
-	if (Ctrl->L.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->L.file, L) != GMT_NOERROR) {
+	if (Ctrl->L.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, Ctrl->L.file, L) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failure while writing list of grid files to %s\n", Ctrl->L.file);
 		error = API->error;
 	}

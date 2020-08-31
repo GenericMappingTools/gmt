@@ -442,7 +442,9 @@ EXTERN_MSC int GMT_originater (void *V_API, int mode, void *args) {
 		}
 	}
 
-	n_stages = spotter_init (GMT, Ctrl->E.file, &p, 1, false, Ctrl->E.mode, &Ctrl->N.t_upper);
+	if ((error = spotter_init (GMT, Ctrl->E.file, &p, 1, false, Ctrl->E.mode, &Ctrl->N.t_upper)) < 0)
+		Return (-error);
+	n_stages = (unsigned int)error;
 
 	hot = gmt_M_memory (GMT, NULL, n_hotspots, struct HOTSPOT_ORIGINATOR);
 

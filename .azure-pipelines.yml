@@ -17,24 +17,6 @@ variables:
 
 jobs:
 
-- job:
-  displayName: 'Code Checker'
-
-  steps:
-  - bash: |
-      set -x -e
-      cd src
-      bash gmt_make_PSL_strings.sh
-      bash gmt_make_enum_dicts.sh
-      bash gmt_make_module_purpose.sh
-      cd ..
-      # check if any files are changed
-      if [ $(git ls-files -m) ]; then
-        git diff HEAD
-        exit 1
-      fi
-    displayName: Check if any C codes and headers need to be manually updated
-
 # Lint Checker
 - job:
   displayName: 'Lint Checker'
@@ -67,7 +49,26 @@ jobs:
     BUILD_DOCS: false
     DEPLOY_DOCS: false
     PACKAGE: false
-    TEST: false
+    RUN_TESTS: false
+
+  steps:
+  - template: ci/azure-pipelines-linux.yml
+
+# Linux - Compile only (no GDAL et. al.)
+########################################################################################
+- job:
+  displayName: 'Linux | Compile only (GDAL et. al. excluded)'
+  condition: ne(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'ubuntu-18.04'
+
+  variables:
+    BUILD_DOCS: false
+    DEPLOY_DOCS: false
+    PACKAGE: false
+    RUN_TESTS: false
+    EXCLUDE_OPTIONAL: true
 
   steps:
   - template: ci/azure-pipelines-linux.yml
@@ -86,7 +87,7 @@ jobs:
     BUILD_DOCS: true
     DEPLOY_DOCS: true
     PACKAGE: true
-    TEST: false
+    RUN_TESTS: false
 
   steps:
   - template: ci/azure-pipelines-linux.yml
@@ -104,7 +105,7 @@ jobs:
     BUILD_DOCS: false
     DEPLOY_DOCS: false
     PACKAGE: false
-    TEST: true
+    RUN_TESTS: true
 
   steps:
   - template: ci/azure-pipelines-linux.yml
@@ -122,7 +123,7 @@ jobs:
     BUILD_DOCS: false
     DEPLOY_DOCS: false
     PACKAGE: false
-    TEST: false
+    RUN_TESTS: false
 
   steps:
   - template: ci/azure-pipelines-mac.yml
@@ -140,7 +141,7 @@ jobs:
     BUILD_DOCS: true
     DEPLOY_DOCS: false
     PACKAGE: true
-    TEST: false
+    RUN_TESTS: false
 
   steps:
   - template: ci/azure-pipelines-mac.yml
@@ -158,7 +159,7 @@ jobs:
     BUILD_DOCS: false
     DEPLOY_DOCS: false
     PACKAGE: false
-    TEST: true
+    RUN_TESTS: true
 
   steps:
   - template: ci/azure-pipelines-mac.yml
@@ -240,6 +241,13 @@ jobs:
         containerImage: ubuntu:16.04
       Ubuntu1804:   # CMake 3.10.2 + GNU 7.4.0
         containerImage: ubuntu:18.04
+      Debian9:      # CMake 3.7.2 + GNU 6.3.0
+        containerImage: debian:stretch
+      Debian10:     # CMake 3.13.4 + GNU 8.3.0
+        containerImage: debian:buster
+      DebianSid:    # CMake 3.16.3 + GNU 10.1.0
+        containerImage: debian:sid
+
 
   container:
     image: $[ variables['containerImage'] ]

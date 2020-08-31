@@ -217,7 +217,7 @@ GMT_LOCAL struct popen2 * psconvert_popen2 (const char *cmdline) {
 		close (pipe_stdout[0]);
 		dup2 (pipe_stdout[1], 1);
 		execl ("/bin/sh", "sh", "-c", cmdline, NULL);
-		perror ("execl"); exit (99);
+		perror ("execl"); return NULL;
 	}
 	/* Return the file handles back via structure */
 	F = calloc (1, sizeof (struct popen2));
@@ -2808,7 +2808,7 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 
 	/* Now finally check that the gswinXXc.exe exists */
 	if (access (data, R_OK)) {
-		GMT_Report (API, GMT_MSG_ERROR, "gswinXXc.exe does not exist.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Registry registered %s does not exist. Resorting to the one provided in GMT.\n", data);
 		return (GMT_RUNTIME_ERROR);
 	}
 

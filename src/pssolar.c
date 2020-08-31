@@ -28,7 +28,7 @@
 #define THIS_MODULE_MODERN_NAME	"solar"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot day-light terminators and other sunlight parameters"
-#define THIS_MODULE_KEYS	">X},>DI,>DM@ID),MD)"
+#define THIS_MODULE_KEYS	">X},>DI,>DM"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbpto" GMT_OPT("c")
 

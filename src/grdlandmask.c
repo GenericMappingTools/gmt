@@ -318,7 +318,7 @@ EXTERN_MSC int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	}
 	HH = gmt_get_H_hidden (Grid->header);
 
-	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
+	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set, true);
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 	gmt_M_memset (count, GRDLANDMASK_N_CLASSES, uint64_t);		/* Counts of each level */
 

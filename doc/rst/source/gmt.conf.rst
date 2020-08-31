@@ -243,16 +243,20 @@ FORMAT Parameters
         By default, longitudes will be reported in the range [-180,180]. The
         various terms have the following purpose:
 
-        - **D**: Use :term:`FORMAT_FLOAT_OUT` for floating point degrees [default].
-        - **+D**: Output longitude in the range [0,360]
-        - **-D**: Output longitude in the range [-360,0]
-        - **ddd**: Fixed format integer degrees
-        - **:**: Delimiter used
-        - **mm**: Fixed format integer arc minutes
-        - **ss**: Fixed format integer arc seconds
-        - **.xxx**: Floating fraction of previous integer field, fixed width.
-        - **F**: Encode sign using WESN suffix
-        - **G**: Same as **F** but with a leading space before suffix
+        ========   =================================================================
+        Term       Purpose
+        ========   =================================================================
+        **D**      Use :term:`FORMAT_FLOAT_OUT` for floating point degrees [default]
+        **+D**     Output longitude in the range [0,360]
+        **-D**     Output longitude in the range [-360,0]
+        **ddd**    Fixed format integer degrees
+        **:**      Delimiter used
+        **mm**     Fixed format integer arc minutes
+        **ss**     Fixed format integer arc seconds
+        **.xxx**   Floating fraction of previous integer field, fixed width
+        **F**      Encode sign using WESN suffix
+        **G**      Same as **F** but with a leading space before suffix
+        ========   =================================================================
 
     **FORMAT_FLOAT_MAP**
         Format (C language printf syntax) to be used when plotting double
@@ -614,12 +618,12 @@ MAP Parameters
         :term:`MAP_GRID_PEN_PRIMARY`, :term:`MAP_GRID_PEN_SECONDARY`,
         :term:`MAP_FRAME_PEN`, :term:`MAP_TICK_PEN_PRIMARY`, and
         :term:`MAP_TICK_PEN_SECONDARY` by the color of :term:`MAP_DEFAULT_PEN`
-        [default,black].
+        [0.25p,black].
 
     **MAP_DEGREE_SYMBOL**
         Determines what symbol is used to plot the degree symbol on
         geographic map annotations. Choose between ring, degree, colon, or
-        none [ring].
+        none [degree].
 
     **MAP_FRAME_AXES**
         Sets which axes to draw and annotate. Combine any uppercase **W**,
@@ -683,7 +687,7 @@ MAP Parameters
 
     **MAP_GRID_PEN_PRIMARY**
         Pen attributes used to draw primary grid lines in dpi units or
-        points (append p) [default,black].
+        points (append p) [0.25p,black].
 
     **MAP_GRID_PEN_SECONDARY**
         Pen attributes used to draw secondary grid lines in dpi units or

@@ -267,8 +267,16 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'D':
 				Ctrl->D.active = true;
-				gmt_M_str_free (Ctrl->D.opt);
-				if (opt->arg[0]) Ctrl->D.opt = strdup (opt->arg);
+				if (opt->arg[0] == '+' && (strstr (opt->arg, "+e") || strstr (opt->arg, "+n")) && strstr (opt->arg, "w") == NULL) {
+					/* Only want +e or +n to be added to defaults */
+					sprintf (string, "%s%s", Ctrl->D.opt, opt->arg);
+					gmt_M_str_free (Ctrl->D.opt);
+					Ctrl->D.opt = strdup (string);
+				}
+				else if (opt->arg[0]) {
+					gmt_M_str_free (Ctrl->D.opt);
+					Ctrl->D.opt = strdup (opt->arg);
+				}
 				break;
 			case 'E':
 				GMT_Report (API, GMT_MSG_COMPAT, "The -E option is deprecated but is accepted.\n");
@@ -1607,7 +1615,7 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 		if (Ptrunc == NULL)
 			Return (EXIT_FAILURE);
 		P = Ptrunc;
-		//GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, "chop.cpt", P);
+		//GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, "chop.cpt", P);
 	}
 	if (Ctrl->W.active)	/* Scale all z values */
 		gmt_scale_cpt (GMT, P, Ctrl->W.scale);

@@ -22,7 +22,7 @@
  * Version:	6 API
  *
  * Brief synopsis: gmtselect is a general-purpose spatial filter.  Data pass
- * or fail basedon one or more conditions.  Seven conditions may be set:
+ * or fail based on one or more conditions.  Seven conditions may be set:
  *
  *	1. Only data inside a rectangular area may pass
  *	2. Only data within a certain distance from given points may pass
@@ -87,8 +87,10 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 	} A;
 	struct GMTSELECT_C {	/* [-C[-|=|+]<dist>/<ptfile>] */
 		bool active;
+		bool point;	/* True if we got a single point */
 		int mode;	/* Form of distance calculation (can be negative) */
 		double dist;	/* Radius of influence for each point */
+		double lon, lat;	/* Coordinates give for a single point */
 		char unit;	/* Unit name */
 		char *file;	/* Name of file with points */
 	} C;
@@ -179,7 +181,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [%s]\n", name, GMT_A_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<ptfile>+d%s] [-D<resolution>][+f] [-E[f][n]] [-F<polygon>] [-G<gridmask>] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<ptfile|lon/lat>+d%s] [-D<resolution>][+f] [-E[f][n]] [-F<polygon>] [-G<gridmask>] [%s]\n",
 	             GMT_DIST_OPT, GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cfglrsz] [-L<lfile>+d%s[+p]] [-N<info>] [%s]\n\t[%s] [-Z<min>[/<max>][+c<col>][+a][+i]] [%s] "
 	             "[%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
@@ -194,6 +196,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   (ignored  unless -N is set).\n");
 	gmt_dist_syntax (API->GMT, 'C', "Pass locations that are within <dist> of any point in the ASCII <ptfile>.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give distance as 0 if 3rd column of <ptfile> has individual distances.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a single point you can instead specify <lon>/<lat>+d[unit].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n",
 	             API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Choose one of the following resolutions: (Ignored unless -N is set).\n");
@@ -336,7 +339,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 				Ctrl->A.active = true;
 				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
-			case 'C':	/* Near a point test  Syntax -C<pfile>+d<distance>  */
+			case 'C':	/* Near a point test  Syntax -C<pfile>+d<distance> or -C<lon/lat>+d<distance> */
 				Ctrl->C.active = true;
 				if ((c = strstr (opt->arg, "+d")) == NULL) {	/* Must be old syntax or error */
 					n_errors += gmtselect_old_C_parser (API, opt->arg, Ctrl);
@@ -347,8 +350,16 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 					GMT_Report (API, GMT_MSG_ERROR, "Option -C: No file given\n");
 					n_errors++;
 				}
-				else
+				else {
 					Ctrl->C.file = gmt_get_filename (API, opt->arg, "d");
+					if (gmt_count_char (GMT, Ctrl->C.file, '/') == 1 && gmt_access (GMT, Ctrl->C.file, R_OK)) {	/* Check if we got a lon/lat point */
+						if ((j = sscanf (Ctrl->C.file, "%[^/]/%s", za, zb)) != 2) continue;	/* No, strange... */
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, za, gmt_M_type (GMT, GMT_IN, GMT_X), false, &Ctrl->C.lon), za);
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, zb, gmt_M_type (GMT, GMT_IN, GMT_Y), false, &Ctrl->C.lat), zb);
+						if (n_errors == 0)
+							Ctrl->C.point = true;
+					}
+				}
 				Ctrl->C.mode = gmt_get_distance (GMT, &c[2], &(Ctrl->C.dist), &(Ctrl->C.unit));
 				break;
 			case 'D':	/* Set GSHHS resolution */
@@ -507,7 +518,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -1, "Option -C: Unrecognized distance unit\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -2, "Option -C: Unable to decode distance\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -3, "Option -C: Distance is negative\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && gmt_access (GMT, Ctrl->C.file, R_OK),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.point && gmt_access (GMT, Ctrl->C.file, R_OK),
 	                                   "Option -C: Cannot read file %s!\n", Ctrl->C.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && gmt_access (GMT, Ctrl->F.file, R_OK),
 	                                   "Option -F: Cannot read file %s!\n", Ctrl->F.file);
@@ -607,7 +618,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 	if (do_project) GMT_Report (API, GMT_MSG_WARNING, "-J means all data will be projected before tests are applied\n");
 
 	if (Ctrl->N.active) {	/* Set up GSHHS */
-		if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
+		if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set, true);
 		if (Ctrl->D.active) base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 		if (Ctrl->N.mode) {	/* Post-process -N choice */
 			Ctrl->N.mask[3] = Ctrl->N.mask[1];
@@ -640,17 +651,28 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
 
-	if (Ctrl->C.active) { 	/* Initialize point structure used in test for proximity to points [use Ctrl->C.dist ]*/
-		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->C.file, NULL)) == NULL) {
-			Return (API->error);
+	if (Ctrl->C.active) { 	/* Initialize point structure used in test for proximity to points [use Ctrl->C.dist] */
+		if (Ctrl->C.point) {
+			uint64_t dim[4] = {1, 1, 1, 2};
+			if ((Cin = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+				Return (API->error);
+			}
+			/* Place the given point in the array */
+			Cin->table[0]->segment[0]->data[GMT_X][0] = Ctrl->C.lon;
+			Cin->table[0]->segment[0]->data[GMT_Y][0] = Ctrl->C.lat;
 		}
-		if (Cin->n_columns < 2) {	/* Trouble */
-			GMT_Report (API, GMT_MSG_ERROR, "Option -C: %s does not have at least 2 columns with coordinates\n", Ctrl->C.file);
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (Ctrl->C.dist == 0.0 && Cin->n_columns <= 2) {	/* Trouble */
-			GMT_Report (API, GMT_MSG_ERROR, "Option -C: %s does not have a 3rd column with distances, yet -C0/<file> was given\n", Ctrl->C.file);
-			Return (GMT_RUNTIME_ERROR);
+		else {	/* Read from file */
+			if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->C.file, NULL)) == NULL) {
+				Return (API->error);
+			}
+			if (Cin->n_columns < 2) {	/* Trouble */
+				GMT_Report (API, GMT_MSG_ERROR, "Option -C: %s does not have at least 2 columns with coordinates\n", Ctrl->C.file);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			if (Ctrl->C.dist == 0.0 && Cin->n_columns <= 2) {	/* Trouble */
+				GMT_Report (API, GMT_MSG_ERROR, "Option -C: %s does not have a 3rd column with distances, yet -C0/<file> was given\n", Ctrl->C.file);
+				Return (GMT_RUNTIME_ERROR);
+			}
 		}
 		point = Cin->table[0];	/* Can only be one table since we read a single file */
 		for (seg = 0; seg < point->n_segments; seg++) {

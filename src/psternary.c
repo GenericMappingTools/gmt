@@ -30,7 +30,7 @@
 #define THIS_MODULE_MODERN_NAME	"ternary"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot data on ternary diagrams"
-#define THIS_MODULE_KEYS	"<D{,>X},>DM,C-(@<D{,MD),C-("
+#define THIS_MODULE_KEYS	"<D{,>X},>DM,C-("
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqstxy"
 
@@ -396,7 +396,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	gmt_set_dataset_minmax (GMT, D);		/* Update column stats */
 
 	if (Ctrl->M.active) {	/* Just print the converted data and exit */
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, 0, NULL, NULL, D) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_NORMAL, NULL, NULL, D) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to write x,y file to stdout\n");
 			Return (API->error);
 		}
@@ -426,10 +426,10 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	 * axis arguments.  We also must handle the canvas filling separately.  The three axis are 60 degrees
 	 * relative to each other and we do this directly with PSL calls. */
 
-	if (GMT->current.map.frame.paint) {	/* Paint the inside of the map with specified fill */
-		gmt_setfill (GMT, &GMT->current.map.frame.fill, 0);
+	if (GMT->current.map.frame.paint[GMT_Z]) {	/* Paint the inside of the map with specified fill */
+		gmt_setfill (GMT, &GMT->current.map.frame.fill[GMT_Z], 0);
 		PSL_plotpolygon (PSL, tri_x, tri_y, 4);
-		GMT->current.map.frame.paint = false;
+		GMT->current.map.frame.paint[GMT_Z] = false;
 	}
 	/* Count how many of the three sides will be drawn */
 	if (GMT->current.map.frame.side[S_SIDE]) n_sides++;	/* The bottom (a) side */

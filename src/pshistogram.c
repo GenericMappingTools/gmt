@@ -28,7 +28,7 @@
 #define THIS_MODULE_MODERN_NAME	"histogram"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Calculate and plot histograms"
-#define THIS_MODULE_KEYS	"<D{,CC(,>X},>D),>DI@<D{,ID)"
+#define THIS_MODULE_KEYS	"<D{,CC(,>X},>D),>DI"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhipqstxy" GMT_OPT("Ec")
 
@@ -1007,7 +1007,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 				row++;
 			}
 			S->n_rows = row;
-			if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, 0, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
+			if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, GMT_WRITE_NORMAL, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				if (F.weights) gmt_M_free (GMT, weights);
 				Return (API->error);

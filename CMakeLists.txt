@@ -183,14 +183,25 @@ endif (GMT_INSTALL_MODULE_LINKS)
 # Configure header file to pass some of the CMake settings to the source code
 configure_file (src/config.h.in src/config.h)
 
+if (DCW_PATH)
+	set (GMT_CONFIG_DCW_MESSAGE "${DCW_PATH} (${DCW_VERSION})")
+else (DCW_PATH)
+	set (GMT_CONFIG_DCW_MESSAGE "${DCW_PATH} (GMT will download on demand)")
+endif (DCW_PATH)
+if (GSHHG_PATH)
+	set (GMT_CONFIG_GSHHG_MESSAGE "${GSHHG_PATH} (${GSHHG_VERSION})")
+else (GSHHG_PATH)
+	set (GMT_CONFIG_GSHHG_MESSAGE "${GSHHG_PATH} (GMT will download on demand)")
+endif (GSHHG_PATH)
+
 # Configuration done
 message(
 	"*\n"
 	"*  GMT Version:               : ${GMT_PACKAGE_VERSION_WITH_GIT_REVISION}\n"
 	"*\n"
 	"*  Options:\n"
-	"*  Found GSHHG database       : ${GSHHG_PATH} (${GSHHG_VERSION})\n"
-	"*  Found DCW-GMT database     : ${DCW_PATH} (${DCW_VERSION})\n"
+	"*  Found GSHHG database       : ${GMT_CONFIG_GSHHG_MESSAGE}\n"
+	"*  Found DCW-GMT database     : ${GMT_CONFIG_DCW_MESSAGE}\n"
 	"*  Found GMT data server      : ${GMT_DATA_SERVER}\n"
 	"*  NetCDF library             : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir         : ${NETCDF_INCLUDE_DIR}\n"

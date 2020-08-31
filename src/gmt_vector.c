@@ -316,6 +316,7 @@ GMT_LOCAL uint64_t gmtvector_fix_up_path_cartonly (struct GMT_CTRL *GMT, double 
 	GMT->hidden.mem_coord[GMT_X][0] = x[0];	GMT->hidden.mem_coord[GMT_Y][0] = y[0];
 
 	for (i = k = 1; i < n; i++) {	/* For remaining points we must insert an intermediate node */
+		gmt_prep_tmp_arrays (GMT, GMT_NOTSET, k+1, 2);	/* Init or reallocate two tmp vectors */
 		if (mode == GMT_STAIRS_X) {	/* First follow x, then y */
 			GMT->hidden.mem_coord[GMT_X][k] = x[i];
 			GMT->hidden.mem_coord[GMT_Y][k] = y[i-1];
@@ -326,6 +327,7 @@ GMT_LOCAL uint64_t gmtvector_fix_up_path_cartonly (struct GMT_CTRL *GMT, double 
 		}
 		k++;
 		/* Then add original point */
+		gmt_prep_tmp_arrays (GMT, GMT_NOTSET, k+1, 2);	/* Init or reallocate two tmp vectors */
 		GMT->hidden.mem_coord[GMT_X][k] = x[i];	GMT->hidden.mem_coord[GMT_Y][k] = y[i];
 		k++;
 	}
@@ -1275,6 +1277,7 @@ void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_
 }
 
 void gmt_matrix_matrix_add (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_colsA, double *C) {
+	gmt_M_unused(GMT);
 	uint64_t row, col, ij;
 	for (row = ij = 0; row < n_rowsA; row++) {
 		for (col = 0; col < n_colsA; col++, ij++) {

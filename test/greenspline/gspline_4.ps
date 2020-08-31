@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_720051f [64-bit] Document from psbasemap
+%%Title: GMT v6.2.0_da08edb_2020.08.24 [64-bit] Document from psbasemap
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Sep 17 08:38:24 2018
+%%CreationDate: Mon Aug 24 12:34:09 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -651,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -662,8 +658,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -678,53 +675,9 @@ O0
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 25 W
-O1
-4 W
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 1231.27 0] concat
-3000 7200 0 0 Sb
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 1231.27 0] concat
-3000 -3600 3600 0 Sb
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 0 1429.67] concat
-3000 -7200 7200 0 Sb
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 7997.06 1040.72] concat
-3000 3600 0 0 Sb
-PSL_GPP setmatrix
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 0 0.906308 0 6867.52] concat
-0 -6000 T
-25 W
-N 0 3000 M 0 -3000 D S
-/PSL_A0_y 83 def
-/PSL_A1_y 0 def
-8 W
-N 0 600 M -83 0 D S
-N 0 1800 M -83 0 D S
-N 0 3000 M -83 0 D S
-/PSL_AH0 0
-/MM {neg exch M} def
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(6) sh mx
-(8) sh mx
-(10) sh mx
-def
-/PSL_A0_y PSL_A0_y 83 add def
-600 PSL_A0_y MM
-V 90 R (6) bc Z U
-1800 PSL_A0_y MM
-V 90 R (8) bc Z U
-3000 PSL_A0_y MM
-V 90 R (10) bc Z U
-/PSL_A0_y PSL_A0_y PSL_AH0 add def
-N 0 0 M -42 0 D S
-N 0 1200 M -42 0 D S
-N 0 2400 M -42 0 D S
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
-0 6000 T
-PSL_GPP setmatrix
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
 4 W
 0 0 M
 0 3600 D
@@ -810,6 +763,7 @@ S
 0 3600 M
 7200 0 D
 S
+/PSL_slant_y 0 def
 2 setlinecap
 25 W
 N 0 3600 M 0 -3600 D S
@@ -823,8 +777,10 @@ N 0 1800 M -83 0 D S
 N 0 2400 M -83 0 D S
 N 0 3000 M -83 0 D S
 N 0 3600 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
 (0) sw mx
 (1) sw mx
 (2) sw mx
@@ -874,8 +830,8 @@ N 1080 0 M 0 -83 D S
 N 2880 0 M 0 -83 D S
 N 4680 0 M 0 -83 D S
 N 6480 0 M 0 -83 D S
-/PSL_AH0 0
 /MM {neg M} def
+/PSL_AH0 0
 (15) sh mx
 (20) sh mx
 (25) sh mx
@@ -938,6 +894,69 @@ N 7200 0 M 0 42 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -3600 T
 0 setlinecap
+O1
+4 W
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 1231.27251597 0] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 1231.27251597 0] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 0 1429.67254308] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 7997.05938563 1040.71650086] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 1231.27251597 0] concat
+0 W
+0 0 M
+0 3000 D
+7200 0 D
+0 -3000 D
+S
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 1231.27251597 0] concat
+3600 0 M
+0 3000 D
+-3600 0 D
+0 -3000 D
+S
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 0 1429.67254308] concat
+7200 0 M
+0 3000 D
+-7200 0 D
+0 -3000 D
+S
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 7997.05938563 1040.71650086] concat
+0 0 M
+0 3000 D
+3600 0 D
+0 -3000 D
+S
+PSL_GPP setmatrix
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 0 0.906307787037 0 6867.5192653] concat
+0 -6000 T
+25 W
+N 0 3000 M 0 -3000 D S
+/PSL_A0_y 83 def
+/PSL_A1_y 0 def
+8 W
+N 0 600 M -83 0 D S
+N 0 1800 M -83 0 D S
+N 0 3000 M -83 0 D S
+/MM {neg exch M} def
+/PSL_AH0 0
+(6) sw mx
+(8) sw mx
+(10) sw mx
+def
+/PSL_A0_y PSL_A0_y 83 add def
+600 PSL_A0_y MM
+(6) mr Z
+1800 PSL_A0_y MM
+(8) mr Z
+3000 PSL_A0_y MM
+(10) mr Z
+/PSL_A0_y PSL_A0_y PSL_AH0 add def
+N 0 0 M -42 0 D S
+N 0 1200 M -42 0 D S
+N 0 2400 M -42 0 D S
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 6000 T
+PSL_GPP setmatrix
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 PSL_GPP setmatrix
 %%EndObject
 0 A
@@ -946,155 +965,155 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psxyz -R12/32/0/6/5/10 -JX6i/3i -JZ2.5i -p200/25 -O -K @Table_5_23.txt -Su0.05i -Gblack -Wfaint
+%@GMT: gmt psxyz -R12/32/0/6/5/10 -JX6i/3i -JZ2.5i -p200/25 -O -K /Users/pwessel/.gmt/cache/Table_5_23.txt -Su0.05i -Gblack -Wfaint
 %@PROJ: xy 12.00000000 32.00000000 0.00000000 6.00000000 12.000 32.000 0.000 6.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 0 W
 V
 {0 A} FS
 O1
 {0.0408 A} FS
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 7630.58 984.344] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 7630.57926352 984.344357062] concat
 60 60 2670 1170 Sb
 {0.5 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 318.079 1060.34] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 318.078733293 1060.34046945] concat
 60 60 6810 1170 Sb
 {0.00113 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 -0.34202 0.397131 1231.27 1114.76] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 1114.75857806] concat
 60 60 6810 2670 Sb
 {0 A} FS
 {0.0408 A} FS
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 4585.98 516.022] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 4585.97517218 516.021931676] concat
 60 60 2970 1770 Sb
 {0.5 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 215.473 1179.48] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 215.472690295 1179.47984804] concat
 60 60 3570 1770 Sb
 {0.00113 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 -0.34202 0.397131 1231.27 1658.54] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 1658.54325028] concat
 60 60 3570 2970 Sb
 {0 A} FS
 {0.0408 A} FS
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 6954 880.273] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 6954.00057656 880.272706976] concat
 60 60 1770 2370 Sb
 {0.5 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 625.897 702.922] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 625.896862286 702.922333682] concat
 60 60 6090 2370 Sb
 {0.00113 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 -0.34202 0.397131 1231.27 2202.33] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 2202.3279225] concat
 60 60 6090 1770 Sb
 {0 A} FS
 {0.0408 A} FS
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 5600.84 672.129] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 5600.84320263 672.129406805] concat
 60 60 1770 870 Sb
 {0.5 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 625.897 702.922] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 625.896862286 702.922333682] concat
 60 60 4650 870 Sb
 {0.00113 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 -0.34202 0.397131 1231.27 842.866] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 842.866241944] concat
 60 60 4650 1770 Sb
 {0 A} FS
 {0.0408 A} FS
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 5939.13 724.165] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 5939.13254611 724.165231848] concat
 60 60 1470 2370 Sb
 {0.5 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 728.503 583.783] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 728.502905284 583.782955092] concat
 60 60 5010 2370 Sb
 {0.00113 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 -0.34202 0.397131 1231.27 2202.33] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 2202.3279225] concat
 60 60 5010 1470 Sb
 {0 A} FS
 {0.0408 A} FS
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 2556.24 203.807] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 2556.23911128 203.806981418] concat
 60 60 2670 2370 Sb
 {0.5 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 318.079 1060.34] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 318.078733293 1060.34046945] concat
 60 60 1410 2370 Sb
 {0.00113 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 -0.34202 0.397131 1231.27 2202.33] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 2202.3279225] concat
 60 60 1410 2670 Sb
 {0 A} FS
 {0.0408 A} FS
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 6615.71 828.237] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 6615.71123308 828.236881933] concat
 60 60 870 1170 Sb
 {0.5 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 933.715 345.504] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 933.714991279 345.504197911] concat
 60 60 5730 1170 Sb
 {0.00113 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 -0.34202 0.397131 1231.27 1114.76] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 1114.75857806] concat
 60 60 5730 870 Sb
 {0 A} FS
 {0.0408 A} FS
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 6277.42 776.201] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 6277.42188959 776.20105689] concat
 60 60 870 870 Sb
 {0.5 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 933.715 345.504] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 933.714991279 345.504197911] concat
 60 60 5370 870 Sb
 {0.00113 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 -0.34202 0.397131 1231.27 842.866] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 842.866241944] concat
 60 60 5370 870 Sb
 {0 A} FS
 {0.0408 A} FS
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 3909.4 411.95] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 3909.39648521 411.95028159] concat
 60 60 1770 1170 Sb
 {0.5 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 625.897 702.922] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 625.896862286 702.922333682] concat
 60 60 2850 1170 Sb
 {0.00113 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 -0.34202 0.397131 1231.27 1114.76] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 1114.75857806] concat
 60 60 2850 1770 Sb
 {0 A} FS
 {0.0408 A} FS
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 3909.4 411.95] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 3909.39648521 411.95028159] concat
 60 60 1770 2970 Sb
 {0.5 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 625.897 702.922] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 625.896862286 702.922333682] concat
 60 60 2850 2970 Sb
 {0.00113 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 -0.34202 0.397131 1231.27 2746.11] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 2746.11259472] concat
 60 60 2850 1770 Sb
 {0 A} FS
 {0.0408 A} FS
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 2217.95 151.771] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 2217.9497678 151.771156375] concat
 60 60 1770 570 Sb
 {0.5 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 625.897 702.922] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 625.896862286 702.922333682] concat
 60 60 1050 570 Sb
 {0.00113 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 -0.34202 0.397131 1231.27 570.974] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 570.973905833] concat
 60 60 1050 1770 Sb
 {0 A} FS
 {0.0408 A} FS
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 1879.66 99.7353] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 1879.66042431 99.7353313323] concat
 60 60 1770 2070 Sb
 {0.5 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 625.897 702.922] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 625.896862286 702.922333682] concat
 60 60 690 2070 Sb
 {0.00113 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 -0.34202 0.397131 1231.27 1930.44] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 1930.43558639] concat
 60 60 690 1770 Sb
 {0 A} FS
 {0.0408 A} FS
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 2894.53 255.843] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 2894.52845476 255.842806461] concat
 60 60 1170 1470 Sb
 {0.5 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 831.109 464.644] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 831.108948281 464.643576502] concat
 60 60 1770 1470 Sb
 {0.00113 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 -0.34202 0.397131 1231.27 1386.65] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 1386.65091417] concat
 60 60 1770 1170 Sb
 {0 A} FS
 {0.0408 A} FS
-PSL_GPP setmatrix [-0.34202 0.397131 0 0.906308 1541.37 47.6995] concat
+PSL_GPP setmatrix [-0.342020143326 0.397131261967 0 0.906307787037 1541.37108083 47.6995062894] concat
 60 60 570 570 Sb
 {0.5 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 0 0.906308 1036.32 226.365] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 0 0.906307787037 1036.32103428 226.364819321] concat
 60 60 330 570 Sb
 {0.00113 A} FS
-PSL_GPP setmatrix [0.939693 0.144544 -0.34202 0.397131 1231.27 570.974] concat
+PSL_GPP setmatrix [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 570.973905833] concat
 60 60 330 570 Sb
 U
 PSL_GPP setmatrix
@@ -1110,8 +1129,8 @@ O0
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -1231,8 +1250,8 @@ O1
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -1244,8 +1263,8 @@ O0
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -1435,8 +1454,8 @@ O1
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -1448,8 +1467,8 @@ O0
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -1664,8 +1683,8 @@ O1
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -1677,8 +1696,8 @@ O0
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -1908,8 +1927,8 @@ O1
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -1921,8 +1940,8 @@ O0
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -2165,8 +2184,8 @@ O1
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -2178,8 +2197,8 @@ O0
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -2444,8 +2463,8 @@ O1
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -2457,8 +2476,8 @@ O0
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -2752,8 +2771,8 @@ FO
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -2765,8 +2784,8 @@ O0
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -3075,8 +3094,8 @@ FO
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -3088,8 +3107,8 @@ O0
 %%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -3404,8 +3423,8 @@ FO
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -3417,8 +3436,8 @@ O0
 %%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -3748,8 +3767,8 @@ FO
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -3761,8 +3780,8 @@ O0
 %%BeginObject PSL_Layer_13
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -4114,8 +4133,8 @@ FO
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -4127,8 +4146,8 @@ O0
 %%BeginObject PSL_Layer_14
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -4509,8 +4528,8 @@ FO
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -4522,8 +4541,8 @@ O0
 %%BeginObject PSL_Layer_15
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -4899,8 +4918,8 @@ FO
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -4912,8 +4931,8 @@ O0
 %%BeginObject PSL_Layer_16
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -5277,8 +5296,8 @@ FO
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -5290,8 +5309,8 @@ O0
 %%BeginObject PSL_Layer_17
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -5647,8 +5666,8 @@ FO
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -5660,8 +5679,8 @@ O0
 %%BeginObject PSL_Layer_18
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -5992,8 +6011,8 @@ FO
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -6005,8 +6024,8 @@ O0
 %%BeginObject PSL_Layer_19
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -6268,8 +6287,8 @@ FO
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -6281,8 +6300,8 @@ O0
 %%BeginObject PSL_Layer_20
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -6536,8 +6555,8 @@ FO
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -6549,8 +6568,8 @@ O0
 %%BeginObject PSL_Layer_21
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -6786,8 +6805,8 @@ FO
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -6799,8 +6818,8 @@ O0
 %%BeginObject PSL_Layer_22
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -7013,8 +7032,8 @@ FO
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -7026,8 +7045,8 @@ O0
 %%BeginObject PSL_Layer_23
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -7114,8 +7133,8 @@ O1
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -7127,8 +7146,8 @@ O0
 %%BeginObject PSL_Layer_24
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 /image39 {<~
@@ -7195,8 +7214,8 @@ O1
 P
 FO
 %%EndObject
-currentdict /image38 undef
-currentdict /pattern38 undef
+currentdict /image39 undef
+currentdict /pattern39 undef
 0 A
 FQ
 O0
@@ -7208,8 +7227,8 @@ O0
 %%BeginObject PSL_Layer_25
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 2718.92] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 2718.92336111] concat
 clipsave
 0 0 M
 7200 0 D
@@ -7237,8 +7256,8 @@ O0
 %%BeginObject PSL_Layer_26
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.939693 0.144544 -0.34202 0.397131 1231.27 0] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.939692620786 0.144543958453 -0.342020143326 0.397131261967 1231.27251597 0] concat
 12 W
 PSL_GPP setmatrix
 1231 0 M
@@ -7253,7 +7272,8 @@ S
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U

@@ -47,7 +47,7 @@
 #define THIS_MODULE_MODERN_NAME	"rose"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot a polar histogram (rose, sector, windrose diagrams)"
-#define THIS_MODULE_KEYS	"<D{,CC(,ED(,>X},>D),>DI@<D{,ID),CC("
+#define THIS_MODULE_KEYS	"<D{,CC(,ED(,>X},>D),>DI,ID)"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipqstxy" GMT_OPT("c")
 
@@ -743,8 +743,8 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 		Return (GMT_PROJECTION_ERROR);
 	}
 
-	if (GMT->current.map.frame.paint) {	/* Until psrose uses a polar projection we must bypass the basemap fill and do it ourself here */
-		GMT->current.map.frame.paint = false;	/* Turn off so gmt_plotinit won't fill */
+	if (GMT->current.map.frame.paint[GMT_Z]) {	/* Until psrose uses a polar projection we must bypass the basemap fill and do it ourself here */
+		GMT->current.map.frame.paint[GMT_Z] = false;	/* Turn off so gmt_plotinit won't fill */
 		do_fill = true;
 	}
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
@@ -779,14 +779,14 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 
 	if (do_fill) {	/* Until psrose uses a polar projection we must bypass the basemap fill and do it ourself here */
 		double dim = 2.0 * Ctrl->S.scale;
-		GMT->current.map.frame.paint = true;	/* Restore original setting */
+		GMT->current.map.frame.paint[GMT_Z] = true;	/* Restore original setting */
 		if (half_only) {	/* Clip the bottom half of the circle */
 			double xc[4], yc[4];
 			xc[0] = xc[3] = -Ctrl->S.scale;	xc[1] = xc[2] = Ctrl->S.scale;
 			yc[0] = yc[1] = 0.0;	yc[2] = yc[3] = Ctrl->S.scale;
 			PSL_beginclipping (PSL, xc, yc, 4, GMT->session.no_rgb, 3);
 		}
-		gmt_setfill (GMT, &GMT->current.map.frame.fill, 0);
+		gmt_setfill (GMT, &GMT->current.map.frame.fill[GMT_Z], 0);
 		PSL_plotsymbol (PSL, 0.0, 0.0, &dim, PSL_CIRCLE);
 		if (half_only) PSL_endclipping (PSL, 1);		/* Reduce polygon clipping by one level */
 	}

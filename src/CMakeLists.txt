@@ -142,6 +142,7 @@ include_directories (${NETCDF_INCLUDE_DIR})
 find_package (CURL REQUIRED)
 include_directories (${CURL_INCLUDE_DIRS})
 list (APPEND GMT_OPTIONAL_LIBRARIES ${CURL_LIBRARIES})
+set (CURL_LIBRARY ${CURL_LIBRARIES} CACHE INTERNAL "")
 
 if (NOT DEFINED GMT_EXCLUDE_GDAL)
 	find_package (GDAL)
@@ -251,6 +252,7 @@ if (ZLIB_FOUND)
 	set (HAVE_ZLIB TRUE CACHE INTERNAL "System has ZLIB")
 	include_directories (${ZLIB_INCLUDE_DIRS})
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${ZLIB_LIBRARY})
+	set (ZLIB_LIBRARY ${ZLIB_LIBRARY} CACHE INTERNAL "")
 endif (ZLIB_FOUND)
 
 if (APPLE)
@@ -301,22 +303,10 @@ endif (GMT_USE_THREADS AND NOT GLIB_FOUND)
 
 
 ##
-##	Find GSHHG and DCW data needed by GMT
-##
-# Examples and tests depend on Shorelines
+##	Find pre-downloaded/pre-installed GSHHG and DCW data
+##  Will be automatically downloaded to user directory if not found during installing
 find_package (GSHHG)
-if (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
-	message (FATAL_ERROR "Cannot proceed without GSHHG Shorelines. "
-		"Need to either set GSHHG_ROOT or disable tests.")
-endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
-
-# Examples and tests depend on DCW
 find_package (DCW)
-if (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
-	message (FATAL_ERROR "Cannot proceed without DCW polygons. "
-		"Need to either set DCW_ROOT or disable tests."
-		"Obtain dcw-gmt-<version>.tar.gz from ftp://ftp.soest.hawaii.edu/gmt and make DCW_ROOT variable point to the directory where you unarchived the files")
-endif (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 
 
 ##
@@ -360,7 +350,7 @@ set (GMT_COMPAT_MODULES minmax gmtdp gmtstitch grdreformat ps2raster originator 
 
 # gmt core modules
 set (GMT_PROGS_SRCS batch.c blockmean.c blockmedian.c blockmode.c dimfilter.c docs.c filter1d.c
-	fitcircle.c gmt2kml.c gmtconnect.c gmtconvert.c gmtdefaults.c gmtget.c gmtinfo.c gmtlogo.c
+	fitcircle.c gmt2kml.c  gmtbinstats.c gmtconnect.c gmtconvert.c gmtdefaults.c gmtget.c gmtinfo.c gmtlogo.c
 	gmtmath.c gmtselect.c gmtsimplify.c gmtspatial.c gmtregress.c gmtset.c gmtvector.c gmtwhich.c
 	grd2cpt.c grd2kml.c grd2xyz.c grdblend.c grdclip.c grdcontour.c grdconvert.c grdcut.c grdedit.c
 	grdfft.c grdfill.c grdfilter.c grdgdal.c grdgradient.c grdhisteq.c grdimage.c grdinfo.c

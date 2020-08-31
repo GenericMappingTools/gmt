@@ -15,7 +15,7 @@ Synopsis
 **gmt mapproject** [ *tables* ] |-J|\ *parameters*
 |SYN_OPT-R|
 [ |-A|\ **b**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**] ]
-[ |-C|\ [*dx*/*dy*] ]
+[ |-C|\ [*dx*/*dy*][**+m**] ]
 [ |-D|\ **c**\|\ **i**\|\ **p** ]
 [ |-E|\ [*datum*] ] [ |-F|\ [*unit*] ]
 [ |-G|\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ *unit*][**+v**] ]
@@ -105,7 +105,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*dx*/*dy*]
+**-C**\ [*dx*/*dy*][**+m**]
     Set center of projected coordinates to be at map projection center
     [Default is lower left corner]. Optionally, add offsets in the
     projected units to be added (or subtracted when **-I** is set) to
@@ -113,7 +113,9 @@ Optional Arguments
     northings for particular projection zones [0/0]. The unit used for
     the offsets is the plot distance unit in effect (see
     :term:`PROJ_LENGTH_UNIT`) unless **-F** is used, in which case the
-    offsets are in meters.
+    offsets are in meters.  Alternatively, for the Mercator projection
+    only, append **+m** to set the origin of the projected *y* coordinates
+    to coincide with the standard parallel [Equator].
 
 .. _-D:
 

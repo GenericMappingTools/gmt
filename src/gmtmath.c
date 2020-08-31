@@ -387,7 +387,7 @@ GMT_LOCAL int gmtmath_solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO
 			sprintf (header, "#coefficients");
 			if (GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, D)) return (GMT->parent->error);
 		}
-		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, (file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, 0, NULL, file, D) != GMT_NOERROR)
+		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, (file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, file, D) != GMT_NOERROR)
 			return (GMT->parent->error);
 	}
 	else {	/* Return t, y, p(t), r(t), where p(t) is the predicted solution and r(t) is the residuals */
@@ -420,7 +420,7 @@ GMT_LOCAL int gmtmath_solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO
 			else if (info->w_mode == GMTMATH_SIGMAS) strcat (header, "\tsigma(t)[4]");
 			if (GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, D)) return (GMT->parent->error);
 		}
-		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, (file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, 0, NULL, file, D) != GMT_NOERROR) {
+		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, (file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, file, D) != GMT_NOERROR) {
 			return (GMT->parent->error);
 		}
 	}
@@ -3348,7 +3348,7 @@ GMT_LOCAL int gmtmath_MADW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	wmed = gmt_median_weighted (GMT, pair, k);
 	/* 3. Compute the absolute deviations from this median */
 	for (row = 0; row < k; row++) pair[row].value = (gmt_grdfloat)fabs (pair[row].value - wmed);
-	/* 4. Find the weighted median absolue deviation */
+	/* 4. Find the weighted median absolute deviation */
 	wmad = gmt_median_weighted (GMT, pair, k);
 	gmt_M_free (GMT, pair);
 

@@ -4977,6 +4977,7 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 			GMT->current.proj.fwd = &gmt_proj4_fwd;
 			GMT->current.proj.inv = &gmt_proj4_inv;
 			GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.proj4_scl;
+			GMT->current.map.n_lon_nodes = 360;	GMT->current.map.n_lat_nodes = 180;
 			if (GMT->common.R.oblique) {
 				gmt_proj4_fwd (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 				gmt_proj4_fwd (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
@@ -6584,7 +6585,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	double Hmaj[4] = {2.0, 3.0, 6.0, 12.0}, Hsub[4] = {1.0, 1.0, 3.0, 3.0};
 	double Omaj[4] = {3.0, 6.0}, Osub[4] = {1.0, 3.0};
 	double Dmaj[4] = {2.0, 3.0, 7.0, 14.0}, Dsub[4] = {1.0, 1.0, 1.0, 7.0};
-	double d, f, p, *maj = defmaj, *sub = defsub;
+	double d, f, p, sxy = 1.0, sz = 1.0, *maj = defmaj, *sub = defsub;
 	struct GMT_PLOT_AXIS *A = &GMT->current.map.frame.axis[axis];
 	struct GMT_PLOT_AXIS_ITEM *T;
 
@@ -6595,21 +6596,24 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 		!(A->item[item+2].active && A->item[item+2].interval == 0.0) &&
 		!(A->item[item+4].active && A->item[item+4].interval == 0.0)) return;
 
+	if (GMT->current.proj.three_D) {	/* Make an approximate adjustment to the "sizes" given a perspective view */
+		sxy = 1.0 - cosd (GMT->current.proj.z_project.view_elevation);
+		sz  = 1.0 - fabs (sind (GMT->current.proj.z_project.view_elevation));
+	}
 	/* f = frame width/height (inch); d = domain width/height (world coordinates) */
 	if (axis == GMT_X) {
-		f = fabs (GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO]);
+		f = sxy * fabs (GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO]);
 		d = fabs (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]);
 	}
 	else if (axis == GMT_Y) {
-		f = fabs (GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO]);
+		f = sxy * fabs (GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO]);
 		d = fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]);
 	}
 	else {
-		f = fabs (GMT->current.proj.zmax - GMT->current.proj.zmin);
+		f = sz * fabs (GMT->current.proj.zmax - GMT->current.proj.zmin);
 		d = fabs (GMT->common.R.wesn[ZHI] - GMT->common.R.wesn[ZLO]);
 	}
 	f *= GMT->session.u2u[GMT_INCH][GMT_PT];	/* Change to points */
-
 	/* First guess of interval */
 	d *= MAX (0.05, MIN (5.0 * GMT->current.setting.font_annot[item].size / f, 0.20));
 
@@ -6678,7 +6682,8 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	/* Finally set grid interval (if annotation set as well, use major, otherwise minor interval) */
 	T = &A->item[item+4];
 	if (T->active && T->interval == 0.0) {
-		T->interval = set_a ? d : f, T->generated = true;
+		T->interval = set_a ? d : f, T->generated = true; /* Commented out because f is too fine for gridline spacing, even if no annotations */
+		// T->interval = d, T->generated = true;
 		snprintf (tmp, GMT_LEN16, "g%g", T->interval); strcat (string, tmp);
 		if (is_time) T->unit = unit, strcat (string, sunit);
 	}
@@ -7684,8 +7689,10 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 	double xlon[4], xlat[4], xx[4], yy[4];
 	double this_x, this_y, last_x, last_y, dummy[4];
 
+	if (n == 0) return 0;	/* Absolutely nothing to do */
 	while (n > GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
 
+	/* Here we know n is at least 1 */
 	np = 0;
 	gmt_geo_to_xy (GMT, lon[0], lat[0], &last_x, &last_y);
 	if (!gmt_map_outside (GMT, lon[0], lat[0])) {	/* First point is inside the region */
@@ -7956,13 +7963,24 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 	O->header->z_min = FLT_MAX; O->header->z_max = -FLT_MAX;	/* Min/max for out */
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
-		int n_columns = O->header->n_columns, n_rows = O->header->n_rows;
+		bool skip_repeat = false, duplicate_east = false;
+		int n_columns = O->header->n_columns, n_rows = O->header->n_rows, kase, duplicate_col;
 		nz = gmt_M_memory (GMT, NULL, O->header->size, short int);
 		/* Cannot do OPENMP yet here since it would require a reduction into an output array (nz) */
+		kase = gmt_whole_earth (GMT, I->header->wesn, GMT->common.R.wesn);
+		if (kase == 1 && I->header->registration == GMT_GRID_NODE_REG) {
+			/* Need to avoid giving the repeated east and west meridian values double weight when they plot inside the image.
+			 * This is only likely to happen when external global grids are passed in via GMT_IS_REFERENCE. */
+			skip_repeat = true;	/* Since both -180 and +180 fall inside the image, we only want to use one of then (-180) */
+			duplicate_east = gmt_M_is_periodic (GMT);	/* Since the meridian corresponding to map west only appears once we may need to duplicate on east */
+			if (duplicate_east)	/* Find the column in I->data that corresponds to the longitude of the left boundary of the map */
+				duplicate_col = gmt_M_grd_x_to_col (GMT, GMT->common.R.wesn[XLO], I->header);
+		}
 
 		gmt_M_row_loop (GMT, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (gmt_M_is_rect_graticule (GMT)) y_proj = y_in_proj[row_in];
 			gmt_M_col_loop (GMT, I, row_in, col_in, ij_in) {	/* Loop over the input grid col coordinates */
+				if (skip_repeat && col_in == 0) continue;
 				if (gmt_M_is_rect_graticule (GMT))
 					x_proj = x_in_proj[col_in];
 				else if (inverse)
@@ -7990,6 +8008,38 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 				if (gmt_M_is_fnan (O->data[ij_out])) continue;
 				if (O->data[ij_out] < O->header->z_min) O->header->z_min = O->data[ij_out];
 				else if (O->data[ij_out] > O->header->z_max) O->header->z_max = O->data[ij_out];
+			}
+			if (duplicate_east) {
+				ij_in = ij_in - I->header->n_columns + duplicate_col;	/* Rewind to the col to be duplicated */
+				col_in = duplicate_col;
+				if (gmt_M_is_rect_graticule (GMT))
+					x_proj = GMT->current.proj.rect[XHI];
+				else if (inverse)
+					gmt_xy_to_geo (GMT, &x_proj, &y_proj, x_in[col_in], y_in[row_in]);
+				else {
+					if (GMT->current.map.outside (GMT, x_in[col_in], y_in[row_in])) continue;	/* Quite possible we are beyond the horizon */
+					gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], y_in[row_in], &x_proj, &y_proj);
+				}
+
+				/* Here, (x_proj, y_proj) is the projected grid point.  Now find nearest node on the output grid */
+
+				row_out = gmt_M_grd_y_to_row (GMT, y_proj, O->header);
+				if (row_out < 0 || row_out >= n_rows) continue;	/* Outside our grid region */
+				col_out = gmt_M_grd_x_to_col (GMT, x_proj, O->header);
+				if (col_out < 0 || col_out >= n_columns) continue;	/* Outside our grid region */
+
+				/* OK, this projected point falls inside the projected grid's rectangular domain */
+
+				ij_out = gmt_M_ijp (O->header, row_out, col_out);	/* The output node */
+				if (nz[ij_out] == 0) O->data[ij_out] = 0.0f;	/* First time, override the initial value */
+				if (nz[ij_out] < SHRT_MAX) {			/* Avoid overflow */
+					O->data[ij_out] += I->data[ij_in];	/* Add up the z-sum inside this rect... */
+					nz[ij_out]++;				/* ..and how many points there were */
+				}
+				if (gmt_M_is_fnan (O->data[ij_out])) continue;
+				if (O->data[ij_out] < O->header->z_min) O->header->z_min = O->data[ij_out];
+				else if (O->data[ij_out] > O->header->z_max) O->header->z_max = O->data[ij_out];
+
 			}
 		}
 	}
@@ -8029,8 +8079,9 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 			if (!GMT->common.n.antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
 				O->data[ij_out] = (gmt_grdfloat)z_int;
-			else if (gmt_M_is_dnan (z_int))		/* Take the average of what we accumulated */
-				O->data[ij_out] /= nz[ij_out];	/* Plain average */
+			else if (gmt_M_is_dnan (z_int)) {		/* Take the average of what we accumulated */
+				if (nz[ij_out]) O->data[ij_out] /= nz[ij_out];	/* Plain average */
+			}
 			else {					/* Weighted average between blockmean'ed and interpolated values */
 				inv_nz = 1.0 / nz[ij_out];
 				O->data[ij_out] = (gmt_grdfloat) ((O->data[ij_out] + z_int * inv_nz) / (nz[ij_out] + inv_nz));
@@ -9136,7 +9187,7 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 
 	if (gmt_M_x_is_lon (GMT, GMT_IN)) {
 		/* Limit east-west range to 360 and make sure east > -180 and west < 360 */
-		if (!GMT->common.R.oblique) {	/* Only makes sense if not corner coordinates */
+		if (!GMT->common.R.oblique || gmt_M_is_rect_graticule (GMT)) {	/* Only makes sense if not corner coordinates */
 			if (wesn[XHI] < wesn[XLO]) wesn[XHI] += 360.0;
 			if ((fabs (wesn[XHI] - wesn[XLO]) - 360.0) > GMT_CONV4_LIMIT) Return (GMT_MAP_EXCEEDS_360);
 		}
