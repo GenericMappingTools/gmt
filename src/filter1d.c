@@ -994,8 +994,8 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 		if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != 0) Return (error, "Error in GMT_Set_Columns");
 		save_col[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
 		save_col[GMT_Y] = GMT->current.io.col_type[GMT_IN][GMT_Y];	/* Save col type in case it is a time column */
-		gmt_set_column (GMT, GMT_IN, GMT_X, GMT->current.io.col_type[GMT_IN][Ctrl->N.col]);	/* Always read the weights as floats */
-		gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);	/* Always read the weights as floats */
+		gmt_set_column (GMT, GMT_IN, GMT_X, GMT->current.io.col_type[GMT_IN][F.tcol]);	/* Same units as time-series "t"*/
+		gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);	/* Always read the widths as floats */
 		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
 		if ((F.W = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error, "Error Reading input\n");
