@@ -901,8 +901,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 
 	if (n_grids) {	/* Get grid dimensions */
-		n_columns = gmt_M_get_n (GMT, wesn[XLO], wesn[XHI], Grid_orig[0]->header->inc[GMT_X], Grid_orig[0]->header->registration);
-		n_rows = gmt_M_get_n (GMT, wesn[YLO], wesn[YHI], Grid_orig[0]->header->inc[GMT_Y], Grid_orig[0]->header->registration);
+		double *region = (gmt_file_is_tiled_list (API, Ctrl->In.file[0], NULL, NULL, NULL)) ? API->tile_wesn : wesn;	/* Make sure we get correct dimensions if tiled grids are used */
+		n_columns = gmt_M_get_n (GMT, region[XLO], region[XHI], Grid_orig[0]->header->inc[GMT_X], Grid_orig[0]->header->registration);
+		n_rows = gmt_M_get_n (GMT, region[YLO], region[YHI], Grid_orig[0]->header->inc[GMT_Y], Grid_orig[0]->header->registration);
 	}
 
 	if (Ctrl->D.active) {	/* Trust the info from gdal to make it more stable against pixel vs grid registration troubles */
