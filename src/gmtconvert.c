@@ -422,7 +422,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 }
 
 GMT_LOCAL bool gmtconvert_is_duplicate_row (struct GMT_DATASEGMENT *S, struct GMT_INT_SELECTION *C, uint64_t row) {
-	uint64_t col;
+	uint64_t col, k;
 	if (C == NULL) {
 		/* Loop over all columns and compare the two records, if any differ then return false.
 		 * If passes all columns then they are the same and we return true. */
@@ -439,7 +439,7 @@ GMT_LOCAL bool gmtconvert_is_duplicate_row (struct GMT_DATASEGMENT *S, struct GM
 		}
 	}
 	else {	/* Only compare the columns given in select */
-		for (unsigned int k = 0; k < C->n; k++) {
+		for (k = 0; k < C->n; k++) {
 			col = C->item[k];
 			if (!doubleAlmostEqualZero (S->data[col][row], S->data[col][row-1])) return false;
 		}
