@@ -113,7 +113,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   p: Same, but first follow parallel (along x) then meridian (along y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r: Resample at equidistant locations; input points not necessarily included.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   R: Same, but adjust given spacing to fit the track length exactly.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to delete records with no change in time [no].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to skip records that has no increase in <time_col> value [no skipping].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to compute distances along rhumblines (loxodromes) [no].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the interpolation mode.  Choose from:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   l Linear interpolation.\n");
