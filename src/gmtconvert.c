@@ -93,6 +93,7 @@ struct GMTCONVERT_CTRL {
 	} S;
 	struct GMTCONVERT_T {	/* -T[sd] */
 		bool active[2];
+		bool text;
 		struct GMT_INT_SELECTION *C;
 	} T;
 	struct GMTCONVERT_W {	/* -W[+n] */
@@ -183,6 +184,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append selection of columns to consider in the test [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <selection> syntax is [~]<range>[,<range>,...] where each <range> of items is\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   either a single number, start-stop (for range), start:step:stop (for stepped range).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To include trailing text in the comparison, add column t.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Convert trailing text to numbers, if possible.  Append +n to suppress NaN columns.\n");
 	GMT_Option (API, "a,bi,bo,d,e,f,g,h,i,o,q,s,:,.");
@@ -330,11 +332,17 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 				Ctrl->S.select = gmt_set_text_selection (GMT, opt->arg);
 				break;
 			case 'T':	/* -T[h]: Do not write segment headers, -Td: Skip duplicate records */
-				if ((c = strchr (opt->arg, 'd'))) { /* Skip duplicates */
+				strncpy (p, opt->arg, GMT_BUFSIZ-1);
+				if ((c = strchr (p, 'd'))) { /* Skip duplicates */
+					char *d = NULL;
 					Ctrl->T.active[1] = true;
-					if (c[1]) Ctrl->T.C = gmt_set_int_selection (GMT, &c[1]);
+					if ((d = strstr (c, ",t")) || (d = strchr (c, 't'))) {	/* Got either d<cols>,t or just t */
+						Ctrl->T.text = true;
+						d[0] = '\0';
+					}
+					if (c[1]) Ctrl->T.C = gmt_set_int_selection (GMT, &c[1]);	/* if we gave -Tdt then no columns and c[1] is 0 */
 				}
-				if (!opt->arg[0] || strchr (opt->arg, 'h'))	/* Skip segment headers */
+				if (!p[0] || strchr (p, 'h'))	/* Skip segment headers */
 					Ctrl->T.active[0] = true;
 				break;
 			case 'W':
@@ -421,7 +429,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL bool gmtconvert_is_duplicate_row (struct GMT_DATASEGMENT *S, struct GMT_INT_SELECTION *C, uint64_t row) {
+GMT_LOCAL bool gmtconvert_is_duplicate_row (struct GMT_DATASEGMENT *S, struct GMT_INT_SELECTION *C, bool text, uint64_t row) {
 	uint64_t col, k;
 	if (C == NULL) {
 		/* Loop over all columns and compare the two records, if any differ then return false.
@@ -444,6 +452,7 @@ GMT_LOCAL bool gmtconvert_is_duplicate_row (struct GMT_DATASEGMENT *S, struct GM
 			if (!doubleAlmostEqualZero (S->data[col][row], S->data[col][row-1])) return false;
 		}
 	}
+	if (text) return (!strcmp (S->text[row], S->text[row-1]));	/* Also compare trailing text */
 	return true;
 }
 
@@ -676,7 +685,7 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 				n_in_rows++;
 				if (Ctrl->Z.active && (n_in_rows < Ctrl->Z.first || n_in_rows > Ctrl->Z.last)) continue;	/* Skip if outside limited record range */
 				if (!Ctrl->E.active) {
-					if (Ctrl->T.active[1] && row && gmtconvert_is_duplicate_row (S, Ctrl->T.C, row)) continue;	/* Skip duplicate records */
+					if (Ctrl->T.active[1] && row && gmtconvert_is_duplicate_row (S, Ctrl->T.C, Ctrl->T.text, row)) continue;	/* Skip duplicate records */
 				}
 				else if (Ctrl->E.mode < 0) {	/* Only pass first or last or both of them, skipping all others */
 					if (row > 0 && row < last_row) continue;		/* Always skip the middle of the segment */
