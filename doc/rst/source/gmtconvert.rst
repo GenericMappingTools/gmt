@@ -23,7 +23,7 @@ Synopsis
 [ |-N|\ *col*\ [**+a**\|\ **d**] ]
 [ |-Q|\ [**~**]\ *selection*]
 [ |-S|\ [**~**]\ *"search string"* \| |-S|\ [**~**]/\ *regexp*/[**i**] ]
-[ |-T|\ [**h**\|\ **d**] ]
+[ |-T|\ [**h**][**d**\ [[**~**]\ *selection*]] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+n**] ]
 [ |SYN_OPT-a| ]
@@ -195,10 +195,17 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [**h**\|\ **d**]
+**-T**\ [**h**][**d**\ [[**~**]\ *selection*]]
     Suppress the writing of certain records on output.  Append **h** to
-    suppress segment headers [Default] or **d** to suppress duplicate
-    data records.  Use **-Thd** to suppress both types of records.
+    suppress segment headers [Default], and/or **d** to suppress duplicate
+    data records.  Use **-Thd** to suppress both types of records.  By default,
+    all columns must be identical across the two records to skip the record.
+    ALternatively, append a column selection to only use those columns instead.
+    The *selection* syntax is
+    *range*\ [,\ *range*,...] where each *range* of items is either a single
+    segment *number* or a range with stepped increments given via *start*\ [:*step*:]\ :*stop*
+    (*step* is optional and defaults to 1). A leading **~** will
+    invert the selection and select all columns but the ones listed.
 
 .. _-V:
 
