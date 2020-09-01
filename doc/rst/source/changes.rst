@@ -4,6 +4,13 @@
 Changelog
 =========
 
+Release of GMT 6.1.1
+====================
+
+The GMT 6.1.1 release adds no new features but fixes a number of bugs that have been reported
+since the release of 6.1. As such, it is a stable and recommended upgrade for all 6.1 users.
+For new features in 6.1.x in general, please read the following sections.
+
 New Features in GMT 6.1
 =======================
 
