@@ -205,7 +205,9 @@ Optional Arguments
     *range*\ [,\ *range*,...] where each *range* of items is either a single
     segment *number* or a range with stepped increments given via *start*\ [:*step*:]\ :*stop*
     (*step* is optional and defaults to 1). A leading **~** will
-    invert the selection and select all columns but the ones listed.
+    invert the selection and select all columns but the ones listed. To add the
+    trailing text to the comparison as well, add the column *t* to the list.
+    If no numerical columns are specified, just *t*, then we only consider trailing text.
 
 .. _-V:
 

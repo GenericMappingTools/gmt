@@ -184,7 +184,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append selection of columns to consider in the test [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <selection> syntax is [~]<range>[,<range>,...] where each <range> of items is\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   either a single number, start-stop (for range), start:step:stop (for stepped range).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To include trailing text in the comparison, add column t.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To include trailing text in the comparison, add column t.  If no numerical columns\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   are specified, only t, then we only use trailing text comparisons to decide.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Convert trailing text to numbers, if possible.  Append +n to suppress NaN columns.\n");
 	GMT_Option (API, "a,bi,bo,d,e,f,g,h,i,o,q,s,:,.");
@@ -434,8 +435,10 @@ GMT_LOCAL bool gmtconvert_is_duplicate_row (struct GMT_DATASEGMENT *S, struct GM
 	if (C == NULL) {
 		/* Loop over all columns and compare the two records, if any differ then return false.
 		 * If passes all columns then they are the same and we return true. */
-		for (col = 0; col < S->n_columns; col++)
-			if (!doubleAlmostEqualZero (S->data[col][row], S->data[col][row-1])) return false;
+		if (!text) {
+			for (col = 0; col < S->n_columns; col++)
+				if (!doubleAlmostEqualZero (S->data[col][row], S->data[col][row-1])) return false;
+		}
 	}
 	else if (C->invert) {	/* Only compare the columns not given in select */
 		for (col = k = 0; col < S->n_columns; col++) {
