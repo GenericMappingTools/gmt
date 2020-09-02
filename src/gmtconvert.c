@@ -94,7 +94,7 @@ struct GMTCONVERT_CTRL {
 		bool active;
 		struct GMT_TEXT_SELECTION *select;
 	} S;
-	struct GMTCONVERT_T {	/* -T[sd] */
+	struct GMTCONVERT_T {	/* -T[h][d[[~]selection]] */
 		bool active[2];
 		bool text;
 		struct GMT_INT_SELECTION *C;
