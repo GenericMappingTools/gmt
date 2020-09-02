@@ -404,9 +404,9 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Requested time column is greater than data number of columns (%d)\n", (int)Din->n_columns);
 		Return (GMT_RUNTIME_ERROR);
 	}
-	if (Ctrl->A.delete) {	/* Remove duplicates in time column */
+	if (Ctrl->A.delete) {	/* Remove duplicate rows based on time column */
 		uint64_t tcol = Ctrl->N.col;	/* The single time column */
-		int64_t n_dup = gmt_eliminate_duplicates (GMT, Din, &tcol, 1);
+		int64_t n_dup = gmt_eliminate_duplicates (GMT, Din, &tcol, 1, false);
 		if (n_dup)
 			GMT_Report (API, GMT_MSG_INFORMATION, "Removed %" PRId64 " records with no change in the time column\n", n_dup);
 	}

@@ -17512,11 +17512,13 @@ bool gmt_is_gmt_end_show (char *line) {
 	return false;	/* Not gmt end show */
 }
 
-int64_t gmt_eliminate_duplicates (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t cols[], uint64_t ncols) {
-	/* Scan dataset per segment and eliminate any duplicate record as identified by having change in all the specified cols.
-	 * If no change then we skip the duplicate records.  No segment will be eliminated since first record always survives. */
-	uint64_t tbl, seg, row, last_row, k, n_equal, n_dup_seg, n_dup = 0;
-	int64_t n_skip;
+int64_t gmt_eliminate_duplicates (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t cols[], uint64_t ncols, bool text) {
+	/* Scan dataset per segment and eliminate any duplicate records as identified by having no change in all the specified cols.
+	 * If no change then we skip the duplicate records.  No segment will be eliminated since first record always survives.
+	 * Including the trailing text in the comparison is optional and requires setting of the text flag to true. */
+	bool may_be_duplicate;	/* Initially true, gets set to false if we fail any of the one or more tests */
+	uint64_t tbl, seg, row, last_row, k, n_dup_seg, n_dup = 0, n_match = ncols + text;
+	int64_t n_skip;	/* Number of consecutive duplicate rows */
 	unsigned int mode;
 	struct GMT_DATASEGMENT *S = NULL;
 
@@ -17531,20 +17533,25 @@ int64_t gmt_eliminate_duplicates (struct GMT_CTRL *GMT, struct GMT_DATASET *D, u
 			last_row = 0;	/* Always keep the first row of any segment */
 			n_dup_seg = 0;	/* None yet found in this segment */
 			row = 0;
-			while (row < (S->n_rows-1)) {	/* Since we increase row inside we stop at one less */
-				n_skip = -1;
+			while (row < (S->n_rows-1)) {	/* Since we increase row inside we must stop this loop at one less */
+				n_skip = -1;	/* Since incremented before the test */
 				do {	/* Check if this row is same as last, for given cols */
-					row++;
-					n_skip++;
-					for (k = n_equal = 0; k < ncols; k++) {
-						if (doubleAlmostEqualZero (S->data[cols[k]][row], S->data[cols[k]][last_row]))
-						n_equal++;
-					}	
-				} while (n_equal == ncols && row < S->n_rows);
+					row++;	/* Advance to next record */
+					n_skip++;	/* So now it is 0 the very first time */
+					may_be_duplicate = true;	/* See if we can fail a test */
+					for (k = 0; may_be_duplicate && k < ncols; k++) {	/* Check the columns indicated as long as the records may be duplicates */
+						if (!doubleAlmostEqualZero (S->data[cols[k]][row], S->data[cols[k]][last_row]))
+							may_be_duplicate = false;	/* Failed to match across these two rows for this column */
+					}
+					if (may_be_duplicate && text && mode && S->text[row] && S->text[last_row] && strcmp (S->text[row], S->text[last_row]))
+						may_be_duplicate = false;	/* Failed to match across these two rows for trailing text */
+				} while (may_be_duplicate && row < S->n_rows);
 
 				if (n_skip) {	/* Must move up all memory and bury this repeat record */
 					for (k = 0; k < S->n_columns; k++)
 						memmove (&S->data[k][row-n_skip], &S->data[k][row], (S->n_rows-row)*sizeof(double));
+					if (mode & GMT_WITH_STRINGS)
+						memmove (&S->text[row-n_skip], &S->text[row], (S->n_rows-row)*sizeof(char *));
 					S->n_rows -= n_skip;	/* Since we lost records */
 					n_dup_seg += n_skip;
 					row -= n_skip;
