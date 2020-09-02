@@ -469,7 +469,7 @@ GMT_LOCAL bool gmtconvert_is_duplicate_row (struct GMT_DATASEGMENT *S, struct GM
 EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	bool match = false, prevent_seg_headers = false;
 	int error = 0;
-	uint64_t out_col, col, n_cols_in = 0, n_cols_out, tbl, tlen;
+	uint64_t out_col, col, n_cols_in = 0, n_cols_out, tbl, tlen, n_duplicates = 0;
 	uint64_t n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
 	uint64_t last_row, n_rows, row, seg, n_out_seg = 0, out_seg = 0;
 	int64_t n_in_rows;
@@ -691,7 +691,10 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 				n_in_rows++;
 				if (Ctrl->Z.active && (n_in_rows < Ctrl->Z.first || n_in_rows > Ctrl->Z.last)) continue;	/* Skip if outside limited record range */
 				if (!Ctrl->E.active) {
-					if (Ctrl->T.active[EXCLUDE_DUPLICATES] && row && gmtconvert_is_duplicate_row (S, Ctrl->T.C, Ctrl->T.text, row)) continue;	/* Skip duplicate records */
+					if (Ctrl->T.active[EXCLUDE_DUPLICATES] && row && gmtconvert_is_duplicate_row (S, Ctrl->T.C, Ctrl->T.text, row)) {
+						n_duplicates++;
+						continue;	/* Skip duplicate records */
+					}
 				}
 				else if (Ctrl->E.mode < 0) {	/* Only pass first or last or both of them, skipping all others */
 					if (row > 0 && row < last_row) continue;		/* Always skip the middle of the segment */
@@ -851,6 +854,7 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " tables %s, %" PRIu64 " records passed (input cols = %d; output cols = %d)\n",
 		D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
 	if (Ctrl->Q.active || Ctrl->S.active) GMT_Report (API, GMT_MSG_INFORMATION, "Extracted %" PRIu64 " from a total of %" PRIu64 " segments\n", n_out_seg, D[GMT_OUT]->n_segments);
+	if (n_duplicates) GMT_Report (API, GMT_MSG_INFORMATION, "Eliminated %" PRIu64 " duplicate records\n", n_duplicates);
 
 	Return (GMT_NOERROR);
 }
