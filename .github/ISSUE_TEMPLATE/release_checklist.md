@@ -44,8 +44,12 @@ assignees: ''
 - [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
 - [ ] update README and VERSION files on the GMT FTP (@PaulWessel)
 - [ ] make a tag and push it to github (**Must be done after uploading packages to the GMT FTP**)
-    ```
+    ```bash
+    # checkout master (for minor releases) or 6.x branch (for patch releases)
+    git checkout XXXX
+    # create the tag x.x.x
     git tag x.x.x
+    # Push tags to GitHub
     git push --tags
     ```
 - [ ] make a GitHub release.
