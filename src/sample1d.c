@@ -427,7 +427,7 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
 			if (S->n_rows < 2) {
-				GMT_Report (API, GMT_MSG_WARNING, "Segment %" PRIu64 " in table %" PRIu64 " has < 2 records - skipped as no interpolation is possible\n", seg, tbl);
+				GMT_Report (API, GMT_MSG_WARNING, "Table %" PRIu64 " Segment %" PRIu64 " has %" PRIu64 " record - no interpolation possible\n", tbl, seg, S->n_rows);
 				continue;
 			}
 			gmt_M_memset (nan_flag, Din->n_columns, unsigned char);
