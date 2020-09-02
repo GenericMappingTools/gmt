@@ -406,8 +406,11 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->A.delete) {	/* Remove duplicate rows based on time column */
 		uint64_t tcol = Ctrl->N.col;	/* The single time column */
-		int64_t n_dup = gmt_eliminate_duplicates (GMT, Din, &tcol, 1, false);
-		if (n_dup)
+		int64_t n_dup = gmt_eliminate_duplicates (API, Din, &tcol, 1, false);
+		if (n_dup < 0) {
+			Return (GMT_RUNTIME_ERROR);
+		}
+		else if (n_dup)
 			GMT_Report (API, GMT_MSG_INFORMATION, "Removed %" PRId64 " records with no change in the time column\n", n_dup);
 	}
 	if (!Ctrl->T.active) {	/* Did not have information for -Tinc during parsing, do now */
