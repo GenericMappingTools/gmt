@@ -75,7 +75,8 @@ Optional Arguments
     **r** to resample at equidistant locations; input points are not
     necessarily included in the output, and **R** as **r**, but adjust
     given spacing to fit the track length exactly. Finally, append
-    **+d** to delete input records with no change in the time column, and
+    **+d** to delete duplicate input records (identified by having
+    no change in the time column, and
     **+l** if distances should be measured along rhumb lines (loxodromes).
 
 .. _-F:
