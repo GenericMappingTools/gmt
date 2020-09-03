@@ -935,6 +935,10 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		/* For specified symbol, size, color we can do an auto-legend entry under modern mode */
 		struct GMT_SYMBOL S;
 		gmt_M_memset (&S, 1U, sizeof (struct GMT_SYMBOL));
+		if (GMT->common.l.item.size == 0.0) {	/* Select square at size set by annotation height */
+			S.symbol = PSL_SQUARE;
+			S.size_x = GMT->common.l.item.size = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+		}
 		gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
 	}
 

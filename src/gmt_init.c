@@ -17039,12 +17039,15 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			}
 			if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, pen, fill, off)) {	/* Unplaced legend file */
 				/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
+				bool active = API->GMT->common.l.active;	/* Must temporarily turn off -l since should not be passed to legend and plot */
+				API->GMT->common.l.active = false;
 				snprintf (cmd, GMT_BUFSIZ, "-Dj%s+w%gi+o%s -F+p%s+g%s -S%g", legend_justification, legend_width, off, pen, fill, legend_scale);
 				if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 					GMT_Report (API, GMT_MSG_ERROR, "Failed to place auto-legend on figure %s\n", fig[k].prefix);
 					gmt_M_free (API->GMT, fig);
 					return error;
 				}
+				API->GMT->common.l.active = active;
 			}
 
 			/* Here the file exists and we can call psconvert. Note we still pass *.ps- even if *.ps+ was found since psconvert will do the same check */
