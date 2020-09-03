@@ -56,7 +56,7 @@ if [ -f gmt-${Version}-src.tar.xz ]; then
 	cp -f gmt-${Version}-src.tar.xz ../../gmt
 	chmod og+r ../../gmt/gmt-${Version}-src.tar.xz
 fi
-# Self-descruct
+# Self-destruct
 rm -f release.sh
 EOF
 # 3. Copy script to pwessel/release dir:
