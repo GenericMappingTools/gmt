@@ -709,8 +709,20 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 						/* Find the largest symbol size specified */
 						if ((c = strrchr (size, '/')))	/* Front, use the last arg as size since closest to height */
 							x = gmt_M_to_inch (GMT, &c[1]);
-						else
-							x = (strcmp (size, "-")) ? gmt_M_to_inch (GMT, size) : 0.0;
+						else {
+							if (strcmp (size, "-")) {
+								char *c = NULL;
+								if ((c = strchr (size, ','))) {	/* Probably got width,height for rectangle */
+									c[0] = '\0';
+									x = gmt_M_to_inch (GMT, size);
+									c[0] = ',';
+								}
+								else
+									x = gmt_M_to_inch (GMT, size);
+							}
+							else
+								x = 0.0;
+						}
 						if (symbol[0] == '-') {	/* Line symbol */
 							got_line = true;
 							if (x > 0.0) line_size = x;

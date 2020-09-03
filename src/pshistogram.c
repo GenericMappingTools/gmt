@@ -934,11 +934,19 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	if (GMT->common.l.active) {	/* Can we do auto-legend? */
 		/* For specified symbol, size, color we can do an auto-legend entry under modern mode */
 		struct GMT_SYMBOL S;
-		gmt_M_memset (&S, 1U, sizeof (struct GMT_SYMBOL));
-		if (GMT->common.l.item.size == 0.0) {	/* Select square at size set by annotation height */
+		gmt_M_memset (&S, 1U, struct GMT_SYMBOL);
+		if (GMT->common.l.item.size == 0.0)	/* Select default height given by annotation height */
+			GMT->common.l.item.size = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+		if (GMT->common.l.item.scale == 0.0) {	/* Select square at size set by annotation height */
 			S.symbol = PSL_SQUARE;
-			S.size_x = GMT->common.l.item.size = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+			S.size_x = GMT->common.l.item.size;
 		}
+		else {	/* Interpret as width/height scaling ratio for a rectangle */
+			S.symbol = PSL_RECT;
+			S.size_x = GMT->common.l.item.scale * GMT->common.l.item.size;
+			S.size_y = GMT->common.l.item.size;
+		}
+		GMT->common.l.item.scale = GMT->common.l.item.size = 0.0;	/* Reset */
 		gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
 	}
 
