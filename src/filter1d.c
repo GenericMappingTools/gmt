@@ -622,7 +622,11 @@ GMT_LOCAL int filter1d_do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INF
 
 	while (k <= last_k) {
 		if (F->variable) {	/* Must obtain the filter width for this time */
-			if (F->T.array[k] < F->ft[0] || F->T.array[k] > F->ft[F->nw-1]) continue;	/* Outside filter width array */
+			double halfw = (F->use_ends) ? 0.0 : F->half_width;	/* Since t_start and t_stop is not yet set */
+			if (F->T.array[k] < (F->ft[0] + halfw) || F->T.array[k] > (F->ft[F->nw-1] - halfw)) {
+				k++;
+				continue;	/* Outside filter width array */
+			}
 			result = gmt_intpol (GMT, F->ft, F->fw, NULL, F->nw, 1, &(F->T.array[k]), &(F->filter_width), 0.0, GMT->current.setting.interpolant);
 			filter1d_set_up_filter (GMT, F);
 		}
@@ -1005,7 +1009,7 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 		gmt_set_column (GMT, GMT_IN, GMT_Y, save_col[GMT_Y]);	/* Reset this col type to whatever it actually is */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " filter weights from file %s.\n", F.W->n_records, Ctrl->F.file);
 		if (! (F.W->n_segments == 1 || F.W->n_segments == D->n_segments)) {
-			Return (API->error, "Variable filter width requires either one segment or one per input data segments\n");
+			Return (API->error, "Variable filter width requires either one segment (shared with all data segments) or one width segment per input data segments\n");
 		}
 	}
 
