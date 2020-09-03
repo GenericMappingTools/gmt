@@ -4860,7 +4860,7 @@ void psl_got_composite_fontswitch (struct PSL_CTRL *PSL, char *text) {
 	 * We look for such cases and count the occurrences, plus replace the font changing code
 	 * @ (either @~ or @%font% with ASCII escape (27)). */
 	size_t k;
-	int n = 0, step;
+	int n = 0;
 	for (k = 0; k < strlen (text); k++) {
 		if (text[k] != '@') continue;
 		/* Start of an escape sequence */
@@ -4872,14 +4872,11 @@ void psl_got_composite_fontswitch (struct PSL_CTRL *PSL, char *text) {
 		/* Here we do have such a thing, and we need to avoid the regular string splitting at @ in PSL_plottext and PSL_deftextdim */
 		text[k] = PSL_ASCII_ES;	/* Replace @ with ASCII ESC code for now */
 		k++;	/* Font code type is ~ or % */
-		if (text[k] == '~') {	/* Symbol font */
+		if (text[k] == '~')	/* Symbol font */
 			k++;	/* Step to character2 */
-			step = 1;	/* Since we will toggle back with @~ */
-		}
 		else {	/* Some random font switch */
 			k++;	/* Step past first % */
 			while (text[k] != '%') k++;	/* Skip past the font name or number */
-			step = 2;	/* Since we will toggle back with @%% */
 			k++;	/* Step to character2 */
 		}
 		if (text[k] == '\\') k += 4; else k++;	/* Skip the octal or regular second character */

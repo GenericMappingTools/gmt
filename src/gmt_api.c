@@ -13930,3 +13930,70 @@ EXTERN_MSC void * gmtlib_get_ctrl (void *V_API) {
 	API = gmtapi_get_api_ptr (V_API);
 	return API->GMT;	/* Pass back the GMT ctrl pointer as void pointer */
 }
+
+int64_t gmt_eliminate_duplicates (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, uint64_t cols[], uint64_t ncols, bool text) {
+	/* Scan dataset per segment and eliminate any duplicate records as identified by having no change in all the specified cols.
+	 * If no change then we skip the duplicate records.  No segment will be eliminated since first record always survives.
+	 * Including the trailing text in the comparison is optional and requires setting of the text flag to true. */
+	bool may_be_duplicate;	/* Initially true, gets set to false if we fail any of the one or more tests */
+	uint64_t tbl, seg, row, last_row, k, n_dup_seg, n_dup = 0, n_match = ncols + text;
+	int64_t n_skip;	/* Number of consecutive duplicate rows */
+	unsigned int mode;
+	struct GMT_DATASEGMENT *S = NULL;
+
+	if (ncols == 0 || cols == NULL) {
+		gmtlib_report_error (API, GMT_N_COLS_NOT_SET);
+		return -GMT_N_COLS_NOT_SET;
+	}
+	for (k = 0; k < ncols; k++) if (cols[k] >= D->n_columns) {
+		gmtlib_report_error (API, GMT_DIM_TOO_LARGE);
+		return -GMT_DIM_TOO_LARGE;
+	}
+
+	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* Examine each table */
+		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* Examine each segment */
+			S = D->table[tbl]->segment[seg];	/* Current segment shorthand */
+			mode = (S->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
+			last_row = 0;	/* Always keep the first row of any segment */
+			n_dup_seg = 0;	/* None yet found in this segment */
+			row = 0;
+			while (row < (S->n_rows-1)) {	/* Since we increase row inside we must stop this loop at one less */
+				n_skip = -1;	/* Since incremented before the test */
+				do {	/* Check if this row is same as last, for given cols */
+					row++;	/* Advance to next record */
+					n_skip++;	/* So now it is 0 the very first time */
+					may_be_duplicate = true;	/* See if we can fail a test */
+					for (k = 0; may_be_duplicate && k < ncols; k++) {	/* Check the columns indicated as long as the records may be duplicates */
+						if (!doubleAlmostEqualZero (S->data[cols[k]][row], S->data[cols[k]][last_row]))
+							may_be_duplicate = false;	/* Failed to match across these two rows for this column */
+					}
+					if (may_be_duplicate && text && mode && S->text[row] && S->text[last_row] && strcmp (S->text[row], S->text[last_row]))
+						may_be_duplicate = false;	/* Failed to match across these two rows for trailing text */
+				} while (may_be_duplicate && row < S->n_rows);
+
+				if (n_skip) {	/* Must move up all memory and bury this repeat record */
+					for (k = 0; k < S->n_columns; k++)
+						memmove (&S->data[k][row-n_skip], &S->data[k][row], (S->n_rows-row)*sizeof(double));
+					if (mode & GMT_WITH_STRINGS)
+						memmove (&S->text[row-n_skip], &S->text[row], (S->n_rows-row)*sizeof(char *));
+					S->n_rows -= n_skip;	/* Since we lost records */
+					n_dup_seg += n_skip;
+					row -= n_skip;
+				}
+				last_row++;
+			}
+			if (n_dup_seg) {	/* Found duplicates, need  to reallocate arrays */
+				GMT_Report (API, GMT_MSG_DEBUG, "Removed %" PRIu64 " duplicate records from table %" PRIu64", segment %" PRIu64"\n", n_dup_seg, tbl, seg);
+				if (gmt_alloc_segment (API->GMT, S, S->n_rows, S->n_columns, mode, false))
+					return -GMT_RUNTIME_ERROR;	/* Failure of some sort */
+				n_dup += n_dup_seg;
+			}
+		}
+	}
+	if (n_dup) {
+		gmt_set_dataset_minmax (API->GMT, D);	/* Update min/max for each column */
+		GMT_Report (API, GMT_MSG_DEBUG, "Removed %" PRIu64 " duplicate records from the entire dataset\n", n_dup);
+	}
+
+	return (n_dup);
+}

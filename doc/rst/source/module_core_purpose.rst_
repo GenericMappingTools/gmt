@@ -10,7 +10,7 @@
 
 .. |blockmode_purpose| replace:: Block average (x,y,z) data tables by mode estimation
 
-.. |clear_purpose| replace:: Delete current default settings, or the cache, data or sessions directories
+.. |clear_purpose| replace:: Delete current default settings, or the cache, data, geography or sessions directories
 
 .. |dimfilter_purpose| replace:: Directional filtering of grids in the space domain
 

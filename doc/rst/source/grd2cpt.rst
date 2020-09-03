@@ -224,6 +224,7 @@ Optional Arguments
     only applies if **-E** selects CDF output.
 .. include:: explain_-bo.rst_
 
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_help.rst_
