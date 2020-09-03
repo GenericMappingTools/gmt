@@ -30,7 +30,7 @@
 #define THIS_MODULE_PURPOSE	"Calculate and plot histograms"
 #define THIS_MODULE_KEYS	"<D{,CC(,>X},>D),>DI"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhipqstxy" GMT_OPT("Ec")
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhilpqstxy" GMT_OPT("Ec")
 
 /* Note: The NEEDS must be JR.  Although pshistogram can create a region from data, it
  * does so indirectly by building the histogram and setting the ymin/ymax that way, NOT by
@@ -537,7 +537,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   4 - Log10 (1+counts).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   5 - Log10 (1+frequency percent).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to use bin weights in 2nd column rather than counts.\n");
-	GMT_Option (API, "bi2,c,di,e,f,h,i,p,qi,s,t,.");
+	GMT_Option (API, "bi2,c,di,e,f,h,i,l,p,qi,s,t,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -929,6 +929,13 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		}
 		Ctrl->T.T.min = F.T->inc * floor (F.wesn[XLO] / F.T->inc);
 		Ctrl->T.T.max = F.T->inc * ceil  (F.wesn[XHI] / F.T->inc);
+	}
+
+	if (GMT->common.l.active) {	/* Can we do auto-legend? */
+		/* For specified symbol, size, color we can do an auto-legend entry under modern mode */
+		struct GMT_SYMBOL S;
+		gmt_M_memset (&S, 1U, sizeof (struct GMT_SYMBOL));
+		gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
 	}
 
 	/* Set up bin boundaries array */
