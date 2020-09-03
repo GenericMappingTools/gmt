@@ -94,7 +94,9 @@ Required Arguments
     filter widths by passing *width* as a two-column time-series file with filter widths
     in the second column.  The filter-width file does not need to be co-registered with
     the data as we obtain the required filter width at each output location via
-    interpolation.
+    interpolation.  For multi-segment data files the filter file must either have
+    the same number of segments or just a single segment to be used for all data
+    segments.
 
 
 Optional Arguments

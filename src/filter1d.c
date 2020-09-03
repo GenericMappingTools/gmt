@@ -175,7 +175,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	return (C);
 }
 
-static void Free_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->F.file);
 	gmt_free_array (GMT, &(C->T.T));
@@ -622,13 +622,16 @@ GMT_LOCAL int filter1d_do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INF
 
 	while (k <= last_k) {
 		if (F->variable) {	/* Must obtain the filter width for this time */
-			double halfw = (F->use_ends) ? 0.0 : F->half_width;	/* Since t_start and t_stop is not yet set */
-			if (F->T.array[k] < (F->ft[0] + halfw) || F->T.array[k] > (F->ft[F->nw-1] - halfw)) {
+			if (F->T.array[k] < F->ft[0] || F->T.array[k] > F->ft[F->nw-1]) {
 				k++;
 				continue;	/* Outside filter width array */
 			}
 			result = gmt_intpol (GMT, F->ft, F->fw, NULL, F->nw, 1, &(F->T.array[k]), &(F->filter_width), 0.0, GMT->current.setting.interpolant);
 			filter1d_set_up_filter (GMT, F);
+			if (F->T.array[k] < F->t_start || F->T.array[k] > F->t_stop) {
+				k++;
+				continue;	/* Outside full filter window */
+			}
 		}
 
 		while ((F->T.array[k] - F->data[F->t_col][left] - small) > F->half_width) ++left;
