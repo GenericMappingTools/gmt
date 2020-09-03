@@ -13930,7 +13930,7 @@ int64_t gmt_eliminate_duplicates (struct GMTAPI_CTRL *API, struct GMT_DATASET *D
 	 * If no change then we skip the duplicate records.  No segment will be eliminated since first record always survives.
 	 * Including the trailing text in the comparison is optional and requires setting of the text flag to true. */
 	bool may_be_duplicate;	/* Initially true, gets set to false if we fail any of the one or more tests */
-	uint64_t tbl, seg, row, last_row, k, n_dup_seg, n_dup = 0, n_match = ncols + text;
+	uint64_t tbl, seg, row, last_row, k, n_dup_seg, n_dup = 0;
 	int64_t n_skip;	/* Number of consecutive duplicate rows */
 	unsigned int mode;
 	struct GMT_DATASEGMENT *S = NULL;
