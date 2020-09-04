@@ -936,11 +936,17 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		struct GMT_SYMBOL S;
 		gmt_M_memset (&S, 1U, struct GMT_SYMBOL);
 		S.symbol = PSL_RECT;
-		if (GMT->common.l.item.size == 0.0)	/* Select default width given by annotation height scaled by actual fractional height times 1.5 */
+		if (GMT->common.l.item.size == 0.0) {	/* Select default width given by annotation height scaled by actual fractional height times 1.5 */
 			S.size_x = 1.5 * GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
-		else	/* Use given size as rectangle width */
+			S.size_y = S.size_x / 1.5;	/* Width to height ratio is 3:2 */
+		}
+		else {	/* Use given size as rectangle width */
 			S.size_x = GMT->common.l.item.size;
-		S.size_y = S.size_x / 1.5;	/* Width to height ratio is 3:2 */
+			if (GMT->common.l.item.size2 > 0.0)	/* Gave both width and height */
+				S.size_y = GMT->common.l.item.size2;
+			else
+				S.size_y = S.size_x / 1.5;	/* Width to height ratio is 3:2 */
+		}
 		gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
 	}
 
