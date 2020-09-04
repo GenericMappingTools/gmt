@@ -572,7 +572,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_label_syntax (API->GMT, 7, 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Rectangles: If not given, the x- and y-dimensions must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +s if instead the diagonal corner coordinates are given in columns 3-4.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Rounded rectangles: x- and y-dimensions and corner radius must be in columns 3-5.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Rounded rectangles: If not given. the x- and y-dimensions and corner radius must be in columns 3-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Vectors: Direction and length must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SV rather than -Sv is selected, %s will expect azimuth and\n", mod_name);
 	GMT_Message (API, GMT_TIME_NONE, "\t     length and convert azimuths based on the chosen map projection.\n");
@@ -1552,12 +1552,16 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 						break;
 					case PSL_RNDRECT:
-						dim[2] = in[ex3];
-						if (gmt_M_is_dnan (dim[2])) {
-							GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle corner radius = NaN near line %d. Skipped\n", n_total_read);
-							continue;
+						if (S.n_required == 3) {	/* Got radius from input file */
+							dim[2] = in[ex3];
+							if (gmt_M_is_dnan (dim[2])) {
+								GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle corner radius = NaN near line %d. Skipped\n", n_total_read);
+								continue;
+							}
 						}
-						/* Intentionally fall through - to pick up the other parameters */
+						else
+							dim[2] = S.factor;
+						/* Intentionally fall through - to pick up the other two parameters */
 					case PSL_RECT:
 						if (S.diagonal) {	/* Special rectangle give by opposing corners on a diagonal */
 							if (gmt_M_is_dnan (in[pos2x])) {

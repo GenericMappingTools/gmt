@@ -138,7 +138,7 @@
         and then the diagonal corner coordinates are expected in columns 3 and 4.
 
     **-SR**
-        **R**\ ounded rectangle. No size needs to be specified, but the x-
+        **R**\ ounded rectangle. If *width*/*height*/*radius* are not given, then the x-
         and y-dimensions and corner radius must be found in columns 3, 4, and 5.
 
     **-Sw**

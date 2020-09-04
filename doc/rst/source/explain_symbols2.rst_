@@ -349,7 +349,7 @@
         y-dimensions must be found in data columns 4 and 5.
 
     **-SR**
-        **R**\ ounded rectangle. No size needs to be specified, but the x-
+        **R**\ ounded rectangle. If *width*/*height*/*radius* are not given, then the x-
         and y-dimensions and corner radius must be found in columns 4, 5, and 6.
 
     **-Ss**
