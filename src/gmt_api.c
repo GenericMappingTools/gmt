@@ -7895,6 +7895,8 @@ GMT_LOCAL bool gmtapi_is_passable (struct GMTAPI_DATA_OBJECT *S_obj, unsigned in
 	return true; /* True to its word, otherwise we fall through and read the data */
 }
 
+#define gmtapi_M_is_output(file) (file[GMTAPI_OBJECT_DIR_START] == 'O')
+
 /*! . */
 void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], const char *infile, void *data) {
 	/* Function to read data files directly into program memory as a set (not record-by-record).
@@ -7919,6 +7921,8 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	API = gmtapi_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 	just_get_data = (gmt_M_file_is_memory (input));	/* A regular GMT resource passed via memory */
+	if (just_get_data && gmtapi_M_is_output (input))	/* A virtual output file created elsewhere, retrieve and we are done */
+		return (GMT_Read_VirtualFile (API, input));
 	reset = (mode & GMT_IO_RESET);	/* We want to reset resource as unread after reading it */
 	if (reset) mode -= GMT_IO_RESET;
 	module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we reading a resource that should be considered a module input? */
