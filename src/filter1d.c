@@ -293,7 +293,7 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 					}
 					if (gmt_access (GMT, &opt->arg[1], R_OK))
 						Ctrl->F.width = atof (&opt->arg[1]);
-					else {	/* Got variable filter width series */
+					else if (Ctrl->F.filter != 'f') {	/* Got variable filter width series */
 						Ctrl->F.variable = true;
 						Ctrl->F.file = strdup (&opt->arg[1]);
 					}
