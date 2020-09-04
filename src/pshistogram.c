@@ -934,7 +934,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	if (GMT->common.l.active) {	/* Can we do auto-legend? */
 		/* Always plot rectangle, possibly degenerated to square, using fill and pen */
 		struct GMT_SYMBOL S;
-		double scl = (GMT->common.l.item.scale == 0.0) ? 1.0 : GMT->common.l.item.scale;
+		double scl = (GMT->common.l.item.scale == 0.0) ? 1.5 : GMT->common.l.item.scale;
 		gmt_M_memset (&S, 1U, struct GMT_SYMBOL);
 		S.symbol = PSL_RECT;
 		if (GMT->common.l.item.size == 0.0)	/* Select default height given by annotation height */
