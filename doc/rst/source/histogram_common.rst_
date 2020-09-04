@@ -167,7 +167,7 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
-.. |Add_-l| replace:: Default symbol is a square with height to equal the annotation font size. Use **+s** to set a width-to-height ratio for a rectangle instead.
+.. |Add_-l| replace:: Symbol is a rectangle with width-to-height ratio of 3:2.
 .. include:: explain_-l.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
