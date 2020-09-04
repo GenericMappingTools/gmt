@@ -936,7 +936,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		struct GMT_SYMBOL S;
 		gmt_M_memset (&S, 1U, struct GMT_SYMBOL);
 		if (GMT->common.l.item.size == 0.0)	/* Select default height given by annotation height */
-			GMT->common.l.item.size = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+			GMT->common.l.item.size = GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 		if (GMT->common.l.item.scale == 0.0) {	/* Select square at size set by annotation height */
 			S.symbol = PSL_SQUARE;
 			S.size_x = GMT->common.l.item.size;
