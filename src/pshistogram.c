@@ -939,7 +939,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			GMT->common.l.item.size = GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 		if (GMT->common.l.item.scale == 0.0) {	/* Select square at size set by annotation height */
 			S.symbol = PSL_SQUARE;
-			S.size_x = GMT->common.l.item.size;
+			S.size_x = GMT->common.l.item.size * M_SQRT2;	/* Account for the fact that plot will think size is diameter of circumscribed square */
 		}
 		else {	/* Interpret as width/height scaling ratio for a rectangle */
 			S.symbol = PSL_RECT;
