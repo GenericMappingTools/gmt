@@ -7895,6 +7895,7 @@ GMT_LOCAL bool gmtapi_is_passable (struct GMTAPI_DATA_OBJECT *S_obj, unsigned in
 	return true; /* True to its word, otherwise we fall through and read the data */
 }
 
+/* Simple macro to tell us if this file (which we know is a memory file when called) is an output file */
 #define gmtapi_M_is_output(file) (file[GMTAPI_OBJECT_DIR_START] == 'O')
 
 /*! . */
