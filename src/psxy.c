@@ -572,7 +572,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_label_syntax (API->GMT, 7, 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Rectangles: If not given, the x- and y-dimensions must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +s if instead the diagonal corner coordinates are given in columns 3-4.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Rounded rectangles: If not given. the x- and y-dimensions and corner radius must be in columns 3-5.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Rounded rectangles: If not given, the x- and y-dimensions and corner radius must be in columns 3-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Vectors: Direction and length must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SV rather than -Sv is selected, %s will expect azimuth and\n", mod_name);
 	GMT_Message (API, GMT_TIME_NONE, "\t     length and convert azimuths based on the chosen map projection.\n");
