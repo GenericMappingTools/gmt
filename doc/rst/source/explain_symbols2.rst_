@@ -345,8 +345,8 @@
         the quoted text attributes on a segment-by-segment basis.
 
     **-Sr**
-        **r**\ ectangle. No size needs to be specified, but the x- and
-        y-dimensions must be found in columns 4 and 5.
+        **r**\ ectangle. If *width*/*height* are not given, then, the x- and
+        y-dimensions must be found in data columns 4 and 5.
 
     **-SR**
         **R**\ ounded rectangle. No size needs to be specified, but the x-

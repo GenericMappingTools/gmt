@@ -104,8 +104,8 @@
         **p**\ oint. No size needs to be specified (1 pixel is used).
 
     **-Sr**
-        **r**\ ectangle. No size needs to be specified, but the x- and
-        y-dimensions must be found in columns 3 and 4.
+        **r**\ ectangle. If *width*/*height* are not given, then the x- and
+        y-dimensions must be found in data columns 3 and 4.
 
     **-SR**
         **R**\ ounded rectangle. No size needs to be specified, but the x-

@@ -133,8 +133,8 @@
         For allowable geographical units, see `Units`_ [Default is k for km].
 
     **-Sr**
-        **r**\ ectangle. No size needs to be specified, but the x- and
-        y-dimensions must be found in columns 3 and 4.  Alternatively, append **+s**
+        **r**\ ectangle. If *width*/*height* are not given, then the x- and
+        y-dimensions must be found in data columns 3 and 4.  Alternatively, append **+s**
         and then the diagonal corner coordinates are expected in columns 3 and 4.
 
     **-SR**
