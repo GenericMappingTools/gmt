@@ -937,8 +937,8 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		gmt_M_memset (&S, 1U, struct GMT_SYMBOL);
 		S.symbol = PSL_RECT;
 		if (GMT->common.l.item.size == 0.0) {	/* Select default width given by annotation height scaled by actual fractional height times 1.5 */
-			S.size_x = 1.5 * GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
-			S.size_y = S.size_x / 1.5;	/* Width to height ratio is 3:2 */
+			S.size_y = GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+			S.size_x = 1.5 * S.size_y;	/* Width to height ratio is 3:2 */
 		}
 		else {	/* Use given size as rectangle width */
 			S.size_x = GMT->common.l.item.size;
