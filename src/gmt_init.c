@@ -15308,7 +15308,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->symbol = PSL_RECT;
 			if (strstr (text, "+s"))	/* Make a rectangle from two corners of a diagonal */
 				p->diagonal = true;
-			p->n_required = 2;
+			p->n_required = (n >= 2) ? 0 : 2;	/* If we did not give width/height then we must read them from input */
 			check = false;
 			break;
 		case 'R':
