@@ -497,7 +497,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		if (gmt_M_360_range (H->wesn[XLO], H->wesn[XHI]) && gmt_M_180_range (H->wesn[YHI], H->wesn[YLO]))
 			gmt_set_geographic (GMT, GMT_IN);	/* If exactly fitting the Earth then we assume geographic image */
 		for (band = 0; band < H->n_bands; band++) {	/* March across the RGB values in both images and increment counters */
-			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, H->wesn, H->inc, GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) {
+			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, H->wesn, H->inc, H->registration, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a grid for output!\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -536,7 +536,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) {	/* Combine 1 or 3 grids into a new single image, while handling the optional -A -I information */
 		uint64_t dim[3] = {0,0,3};
 		GMT_Report (API, GMT_MSG_INFORMATION, "Construct image from %d component grid layers\n", Ctrl->In.n_in);
-		if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, G_in[0]->header->wesn, G_in[0]->header->inc, GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) {
+		if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, G_in[0]->header->wesn, G_in[0]->header->inc, G_in[0]->header->registration, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate an image for output!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
