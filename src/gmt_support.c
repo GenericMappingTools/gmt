@@ -9331,10 +9331,9 @@ void gmt_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 	G->draw = true;
 	G->spacing = true;
 	G->half_width = UINT_MAX;	/* Auto */
-	G->label_dist_spacing = 4.0;	/* Inches */
 	G->label_dist_frac = 0.25;	/* Fraction of above head start for closed labels */
 	G->box = 2;			/* Rect box shape is Default */
-	if (GMT->current.setting.proj_length_unit == GMT_CM) G->label_dist_spacing = 10.0 / 2.54;
+	G->label_dist_spacing = (GMT->current.setting.proj_length_unit == GMT_CM) ? 10.0 / 2.54 : 4.0;	/* Inches */
 	G->clearance[GMT_X] = G->clearance[GMT_Y] = 15.0;	/* 15 % */
 	G->clearance_flag = 1;	/* Means we gave percentages of label font size */
 	G->just = PSL_MC;

@@ -7332,7 +7332,8 @@ void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	char *type[3] = {"contour", "quoted line", "decorated line"};
 	char *feature[3] = {"label", "label", "symbol"};
 
-	gap = 4.0 * GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+	gap = (GMT->current.setting.proj_length_unit == GMT_CM) ? 10.0 / 2.54 : 4.0;
+	gap *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 
 	pad[0] = '\t';	for (i = 1; i <= indent; i++) pad[i] = ' ';	pad[i] = '\0';
 	gmt_message (GMT, "%sd<dist>[%s] or D<dist>[%s]  [Default is d%g%c].\n",
