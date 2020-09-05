@@ -116,7 +116,7 @@
         shape of the ellipse will be affected by the properties of the map projection.
 
     **-Sj**
-        Rotated rectangle. The *directiond (in degrees counter-clockwise from
+        Rotated rectangle. The *direction* (in degrees counter-clockwise from
         horizontal), *width*, and *height* must be found in columns 3, 4, and 5.
 
     **-SJ**
