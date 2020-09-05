@@ -1222,7 +1222,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			}
 			done = true;	/* Only doing the loop once here since no -Q */
 		}
-		else {	/* Dealing with images, three grids, and/or PostScript colormasking */
+		else {	/* Dealing with images and/or PostScript colormasking */
 			for (row = 0, byte = colormask_offset; row < n_rows; row++) {	/* March along scanlines */
 				kk = gmt_M_ijpgi (header_work, actual_row[row], 0);	/* Start pixel of this row */
 				if (Ctrl->D.active && row == 0 || !normal_y) node_RGBA = kk;		/* First time per row equals 'node', afterwards it grows alone */
@@ -1237,7 +1237,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 							rgb[0] = gmt_M_is255 (Img_proj->data[node_RGBA++]);
 						else {
 							for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Img_proj->data[node_RGBA++]);
-							//if (Img_proj->header->n_bands == 4) node_RGBA++;	/* Must skip the alpha transparency byte in the image */
 							if (Img_proj->header->n_bands == 4) {
 								/* Here we assume background color is white, hence t * 1.
 								   But what would it take to have a user selected bg color? */
