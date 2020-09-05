@@ -738,10 +738,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		grid_registration = I->header->registration;
-		if (grid_registration != GMT_GRID_PIXEL_REG) {
-			GMT_Report(API, GMT_MSG_WARNING, "Your image has gridline registration but all images should be pixel registered - forcing pixel registration.\n");
-			grid_registration = GMT_GRID_PIXEL_REG;
-		}
+		if (grid_registration != GMT_GRID_PIXEL_REG)
+			GMT_Report(API, GMT_MSG_INFORMATION, "Your image has gridline registration yet all images ought to be pixel registered.\n");
 		mixed = grdimage_clean_global_headers (GMT, I->header);
 		HH = gmt_get_H_hidden (I->header);
 		if ((I->header->n_bands > 1 && strncmp (I->header->mem_layout, "BRP", 3)) || strncmp (I->header->mem_layout, "BR", 2))
