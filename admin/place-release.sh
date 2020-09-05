@@ -4,7 +4,7 @@
 #
 
 if [ ! "${USER}" = "pwessel" ]; then	# Place file in pwessel SOEST ftp release directory and set permissions
-	echo "place-release.sh: Can currenlty only be run by user pwessel" >&2
+	echo "place-release.sh: Can currently only be run by user pwessel" >&2
 	exit 1
 fi
 
