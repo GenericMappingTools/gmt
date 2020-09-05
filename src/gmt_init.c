@@ -8725,7 +8725,7 @@ int gmt_parse_j_option (struct GMT_CTRL *GMT, char *arg) {
 
 /*! Parse the legend-building option -l */
 GMT_LOCAL int gmtinit_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
-	char *c = NULL;
+	char *c = NULL, *q = NULL;
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) {     /* Not in modern mode */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "-l is only recognized in modern mode\n");
 		return GMT_PARSE_ERROR;
@@ -8758,7 +8758,16 @@ GMT_LOCAL int gmtinit_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 					}
 					break;
 				case 'N': GMT->common.l.item.ncols = atoi (&txt[1]);			break;	/* Number of columns */
-				case 'S': GMT->common.l.item.size = gmt_M_to_inch (GMT, &txt[1]);		break;	/* Fixed size for a symbol */
+				case 'S':	/* Fixed size for a symbol */
+						if ((q = strchr (&txt[1], '/'))) {	/* Got two dimensions, e.g. width/height */
+							q[0] = '\0';
+							GMT->common.l.item.size  = gmt_M_to_inch (GMT, &txt[1]);
+							GMT->common.l.item.size2 = gmt_M_to_inch (GMT, &q[1]);
+							q[0] = '/';
+						}
+						else
+							GMT->common.l.item.size = gmt_M_to_inch (GMT, &txt[1]);
+						break;
 				case 'V': /* Draw vertical line(s) */
 					GMT->common.l.item.draw |= GMT_LEGEND_DRAW_V;
 					if (&txt[1]) strncpy (GMT->common.l.item.pen[GMT_LEGEND_PEN_V], &txt[1], GMT_LEN32-1);
@@ -17043,12 +17052,15 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			}
 			if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, pen, fill, off)) {	/* Unplaced legend file */
 				/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
+				bool active = API->GMT->common.l.active;	/* Must temporarily turn off -l since should not be passed to legend and plot */
+				API->GMT->common.l.active = false;
 				snprintf (cmd, GMT_BUFSIZ, "-Dj%s+w%gi+o%s -F+p%s+g%s -S%g", legend_justification, legend_width, off, pen, fill, legend_scale);
 				if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 					GMT_Report (API, GMT_MSG_ERROR, "Failed to place auto-legend on figure %s\n", fig[k].prefix);
 					gmt_M_free (API->GMT, fig);
 					return error;
 				}
+				API->GMT->common.l.active = active;
 			}
 
 			/* Here the file exists and we can call psconvert. Note we still pass *.ps- even if *.ps+ was found since psconvert will do the same check */
@@ -17504,7 +17516,10 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	else {	/* Regular symbol */
 		if (!(do_fill || do_line)) do_line = true;	/* If neither fill nor pen is selected, plot will draw line, so override do_line here */
 		if (do_line && pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
-		fprintf (fp, "S - %c %gi %s %s - %s\n", S->symbol, size, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", item->label);
+		if (S->size_x > 0.0 && S->size_y > 0.0 && S->symbol == PSL_RECT)
+			fprintf (fp, "S - %c %gi,%gi %s %s - %s\n", S->symbol, size, S->size_y, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", item->label);
+		else
+			fprintf (fp, "S - %c %gi %s %s - %s\n", S->symbol, size, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", item->label);
 	}
 
 	if (item->draw & GMT_LEGEND_DRAW_V && item->pen[GMT_LEGEND_PEN_V][0]) {	/* Must end with horizontal, then vertical line */
@@ -17516,7 +17531,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 
 bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale, char justification[], char pen[], char fill[], char off[]) {
 	/* Determine if there is a hidden legend file that has not been placed */
-	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""}, size[GMT_LEN32] = {""}, dim[GMT_LEN32] = {""};
+	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""}, size[GMT_LEN32] = {""}, dim[GMT_LEN32] = {""}, *c = NULL;
 	size_t L, N_max = 0;
 	int ncols = 1;
 	double W, W_max = 0.0;
@@ -17549,7 +17564,16 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale,
 		if (file[0] != 'S') continue;	/* Only examine symbol requests */
 		sscanf (file, "%*s %*s %*s %s %*s %*s %*s %[^\n]\n", size, label);
 		if ((L = strlen (label)) > N_max) N_max = L;
-		if (size[0] != '-' && (W = gmt_M_to_inch (API->GMT, size)) > W_max) W_max = W;
+		if (size[0] != '-') {	/* Gave a symbol size(width) but watch for two args */
+			if ((c = strchr (size, ','))) {	/* Probably got width,height for rectangle */
+				c[0] = '\0';
+				W = gmt_M_to_inch (API->GMT, size);
+				c[0] = ',';
+			}
+			else
+				W = gmt_M_to_inch (API->GMT, size);
+			if (W > W_max) W_max = W;
+		}
 	}
 	fclose (fp);
 
