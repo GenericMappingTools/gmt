@@ -1241,12 +1241,12 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			done = true;	/* Only doing the loop once here since no -Q */
 		}
 		else {	/* Dealing with images, three grids, and/or PostScript colormasking */
-		/* Because we will in via scanlines, there are complications when the image has reversed x and/or y direction (normal_x, normal_y are false) */
+			/* Because we will in via scanlines, there are complications when the image has reversed x and/or y direction (normal_x, normal_y are false) */
 			for (row = 0, byte = colormask_offset; row < n_rows; row++) {	/* March along scanlines in the output bitimage */
 				kk = gmt_M_ijpgi (header_work, actual_row[row], 0);	/* Start pixel of this row */
 				if (Ctrl->D.active) {	/* Must set pixel node node_RGBA */
 					if ((row == 0 || !normal_y || !normal_x)) node_RGBA = kk;	/* First time per row equals 'node', afterwards it grows alone, except when one of normal_? is false */
-					if (!normal_x) node_RGBA += (n_columns-1)*Img_proj->header->n_bands;	/* Go to last column instead of first */
+					if (!normal_x) node_RGBA += (n_columns-1)*Img_proj->header->n_bands;	/* Go to last column instead of first column */
 				}
 				for (col = 0; col < n_columns; col++) {	/* Compute rgb for each pixel along this scanline */
 					node = kk + actual_col[col];
@@ -1270,7 +1270,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 								node_RGBA++;
 							}
 						}
-						if (!normal_x) node_RGBA -= 2*Img_proj->header->n_bands;	/* Go to start of previous column instead */
+						if (!normal_x) node_RGBA -= 2*Img_proj->header->n_bands;	/* Go to start of previous column instead of where we are (start of next) */
 					}
 					else	/* Got three grids with red, green, blue values */
 						index = grdimage_set_rgb_three_grids (Grid_proj, node, NaN_rgb, rgb);
@@ -1295,7 +1295,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 							rgb_used[(i_rgb[0]*256 + i_rgb[1])*256+i_rgb[2]] = true;
 					}
 				}
-				if (!n_grids && normal_x) node_RGBA += header_work->n_bands * (header_work->pad[XLO] + header_work->pad[XHI]);	/* Increment the node index for the image row unless reverse x dir*/
+				if (!n_grids && normal_x) node_RGBA += header_work->n_bands * (header_work->pad[XLO] + header_work->pad[XHI]);	/* Increment the node index for the image row unless reverse x dir */
 			}
 		}
 		if (rgb_cube_scan) {	/* Check that we found an unused r/g/b value so colormasking will work as advertised */
