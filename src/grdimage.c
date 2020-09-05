@@ -604,8 +604,8 @@ EXTERN_MSC int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GM
 EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false, do_rgb = false;
 	bool nothing_inside = false, use_intensity_grid = false, got_data_tiles = false, set_gray, rgb_from_z, rgb_cube_scan;
-	bool has_content = false, mem_G = false, mem_I = false, mem_D = false;
-	unsigned int n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG, n_grids = 1, intensity_mode;
+	bool has_content = false, mem_G = false, mem_I = false, mem_D = false, got_z_grid = true;
+	unsigned int n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG, intensity_mode;
 	unsigned int colormask_offset = 0, try, row, col, mixed = 0, *actual_row = NULL, *actual_col = NULL;
 	uint64_t node_RGBA = 0;             /* uint64_t for the RGB(A) image array. */
 	uint64_t node, k, kk, byte, step, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
@@ -743,7 +743,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		mixed = grdimage_clean_global_headers (GMT, I->header);
 		HH = gmt_get_H_hidden (I->header);
 		if ((I->header->n_bands > 1 && strncmp (I->header->mem_layout, "BRP", 3)) || strncmp (I->header->mem_layout, "BR", 2))
-			GMT_Report(API, GMT_MSG_WARNING, "The image memory layout (%s) is of a wrong type. It should be BRPa.\n", I->header->mem_layout);
+			GMT_Report(API, GMT_MSG_INFORMATION, "The image memory layout (%s) may be of the wrong type. It should be BRPa.\n", I->header->mem_layout);
 
 		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active[RSET])	/* No -R or -I. Use image dimensions as -R */
 			gmt_M_memcpy (GMT->common.R.wesn, I->header->wesn, 4, double);
@@ -768,7 +768,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 
 		do_rgb = (I->header->n_bands >= 3);
-		n_grids = 0;	/* Flag that we are using a GMT_IMAGE instead of a GMT_GRID */
+		got_z_grid = false;	/* Flag that we are using a GMT_IMAGE instead of a GMT_GRID */
 
 		if (I->header->ProjRefPROJ4 != NULL)
 			GMT_Report (API, GMT_MSG_INFORMATION, "Data projection (Proj4 type)\n\t%s\n", I->header->ProjRefPROJ4);
@@ -801,11 +801,11 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			Ctrl->C.active = true;	/* Use default CPT (GMT_DEFAULT_CPT_NAME) and autostretch or under modern reuse current CPT */
 	}
 
-	if (n_grids) header_work = Grid_orig->header;	/* OK, we are in GRID mode and this was not set previously. Do it now */
+	if (got_z_grid) header_work = Grid_orig->header;	/* OK, we are in GRID mode and this was not set previously. Do it now */
 
 	/* Determine what wesn to pass to map_setup */
 
-	if (!GMT->common.R.active[RSET] && n_grids)	/* -R was not set so we use the grid domain */
+	if (!GMT->common.R.active[RSET] && got_z_grid)	/* -R was not set so we use the grid domain */
 		gmt_set_R_from_grd (GMT, Grid_orig->header);
 
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
@@ -834,7 +834,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
-	if (Ctrl->W.active && n_grids && gmt_M_is_dnan (header_work->z_min))
+	if (Ctrl->W.active && got_z_grid && gmt_M_is_dnan (header_work->z_min))
 		ret_val = GMT_IMAGE_NO_DATA;	/* Flag that our output image has no information*/
 
 	/* Here the grid/image is inside the plot domain.  The same must be true of any
@@ -884,7 +884,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			GMT_Close_VirtualFile (API, int4_grd);
 	}
 
-	if (n_grids) {	/* Get grid dimensions */
+	if (got_z_grid) {	/* Get grid dimensions */
 		double *region = (gmt_file_is_tiled_list (API, Ctrl->In.file, NULL, NULL, NULL)) ? API->tile_wesn : wesn;	/* Make sure we get correct dimensions if tiled grids are used */
 		n_columns = gmt_M_get_n (GMT, region[XLO], region[XHI], Grid_orig->header->inc[GMT_X], Grid_orig->header->registration);
 		n_rows = gmt_M_get_n (GMT, region[YLO], region[YHI], Grid_orig->header->inc[GMT_Y], Grid_orig->header->registration);
@@ -904,7 +904,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* Read the grid data, possibly via subset in wesn */
 
-	if (n_grids && !got_data_tiles) {	/* Only skip this if we already read a SRTM tile bunch earlier under I.derive = true */
+	if (got_z_grid && !got_data_tiles) {	/* Only skip this if we already read a SRTM tile bunch earlier under I.derive = true */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate and read data from file %s\n", Ctrl->In.file);
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, Grid_orig) == NULL) {	/* Get grid data */
 			Return (API->error);
@@ -923,7 +923,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			Return (API->error);	/* Failed to read the intensity grid data */
 		}
 		mixed = grdimage_clean_global_headers (GMT, Intens_orig->header);
-		if (n_grids && (Intens_orig->header->n_columns != Grid_orig->header->n_columns ||
+		if (got_z_grid && (Intens_orig->header->n_columns != Grid_orig->header->n_columns ||
 		                Intens_orig->header->n_rows != Grid_orig->header->n_rows)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Dimensions of intensity grid do not match that of the data grid!\n");
 			Return (GMT_RUNTIME_ERROR);
@@ -952,7 +952,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	}
 
-	if (n_grids && (gmt_whole_earth (GMT, Grid_orig->header->wesn, wesn) == 1))
+	if (got_z_grid && (gmt_whole_earth (GMT, Grid_orig->header->wesn, wesn) == 1))
 		need_to_project = true;	/* This can only happen if reading a global geographic memory grid */
 
 	if (need_to_project) {	/* Need to resample the grd file using the specified map projection */
@@ -980,7 +980,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 				Return (API->error);	/* Failed to free the image */
 			}
 		}
-		if (n_grids) {	/* Project the grid */
+		if (got_z_grid) {	/* Project the grid */
 			if ((Grid_proj = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Grid_orig)) == NULL)
 				Return (API->error);	/* Just to get a header we can change */
 			/* Determine the dimensions of the projected grid */
@@ -1000,7 +1000,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (use_intensity_grid) {	/* Must also project the intensity grid */
 			if ((Intens_proj = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Intens_orig)) == NULL)	/* Just to get a header we can change */
 				Return (API->error);
-			if (n_grids)	/* Use projected grid bounds as template */
+			if (got_z_grid)	/* Use projected grid bounds as template */
 				gmt_M_memcpy (Intens_proj->header->wesn, Grid_proj->header->wesn, 4, double);
 			else	/* Use projected image bounds as template */
 				gmt_M_memcpy (Intens_proj->header->wesn, Img_proj->header->wesn, 4, double);
@@ -1023,7 +1023,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 	else {	/* Simply set the unused Grid_proj/Intens_proj pointers to point to original unprojected Grid_orig/Intens_orig objects */
 		struct GMT_GRID_HEADER *tmp_header = gmt_get_header (GMT);
-		if (n_grids) {	/* Must get a copy of the header so we can change one without affecting the other */
+		if (got_z_grid) {	/* Must get a copy of the header so we can change one without affecting the other */
 			gmt_copy_gridheader (GMT, tmp_header, Grid_orig->header);
 			if (mem_G) {
 				header_G = gmt_get_header (GMT);
@@ -1039,7 +1039,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			}
 			Intens_proj = Intens_orig;
 		}
-		if (n_grids) /* Dealing with 1 or 3 projected grids */
+		if (got_z_grid) /* Dealing with 1 or 3 projected grids */
 			grid_registration = Grid_orig->header->registration;
 		else {	/* Dealing with a projected image */
 			gmt_copy_gridheader (GMT, tmp_header, I->header);
@@ -1056,7 +1056,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	/* From here, use Grid_proj or Img_proj plus optional Intens_proj in making the Cartesian image */
 
 	if (use_intensity_grid) IH = gmt_get_H_hidden (Intens_proj->header);
-	if (n_grids) { /* Dealing with 1 or 3 projected grids, only one band */
+	if (got_z_grid) { /* Dealing with 1 or 3 projected grids, only one band */
 		Grid_proj->header->n_bands = 1;
 		header_work = Grid_proj->header;     /* Later when need to refer to the header, use this copy */
 	}
@@ -1182,7 +1182,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	for (col = 0; col < n_columns; col++) actual_col[col] = (normal_x) ? col : n_columns - col - 1;
 
 	intensity_mode = use_intensity_grid;				/* Set bit 1 */
-	if (!n_grids || (IH && IH->reset_pad)) intensity_mode |= 2;	/* Add bit 2 */
+	if (!got_z_grid || (IH && IH->reset_pad)) intensity_mode |= 2;	/* Add bit 2 */
 	set_gray = gray_only;
 	rgb_from_z = (!Ctrl->D.active && !do_rgb);		/* Normal case of getting rgb from z(x,y) */
 	rgb_cube_scan = (P && Ctrl->Q.active && !Ctrl->A.active);	/* Need to look for unique rgb for PostScript masking */
@@ -1275,7 +1275,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 							rgb_used[(i_rgb[0]*256 + i_rgb[1])*256+i_rgb[2]] = true;
 					}
 				}
-				if (!n_grids && normal_x) node_RGBA += header_work->n_bands * (header_work->pad[XLO] + header_work->pad[XHI]);	/* Increment the node index for the image row unless reverse x dir */
+				if (!got_z_grid && normal_x) node_RGBA += header_work->n_bands * (header_work->pad[XLO] + header_work->pad[XHI]);	/* Increment the node index for the image row unless reverse x dir */
 			}
 		}
 		if (rgb_cube_scan) {	/* Check that we found an unused r/g/b value so colormasking will work as advertised */
@@ -1305,7 +1305,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, actual_col);
 
 	if (use_intensity_grid) {	/* Also done with the intensity grid */
-		if (need_to_project || !n_grids) {
+		if (need_to_project || !got_z_grid) {
 			if (GMT_Destroy_Data (API, &Intens_proj) != GMT_NOERROR)
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to free Intens_proj\n");
 		}
@@ -1421,7 +1421,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, bitimage_24);
 	}
 
-	if (need_to_project && n_grids && GMT_Destroy_Data (API, &Grid_proj) != GMT_NOERROR) {
+	if (need_to_project && got_z_grid && GMT_Destroy_Data (API, &Grid_proj) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to free Grid_proj\n");
 	}
 
@@ -1430,7 +1430,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		I->x = Ix;	I->y = Iy;
 	}
 
-	if (n_grids) {	/* If memory grids are passed in we must restore the headers */
+	if (got_z_grid) {	/* If memory grids are passed in we must restore the headers */
 		if (mem_G && Grid_orig && header_G) {
 			gmt_copy_gridheader (GMT, Grid_orig->header, header_G);
 			gmt_free_header (API->GMT, &header_G);
