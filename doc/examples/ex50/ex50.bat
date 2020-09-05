@@ -70,7 +70,7 @@ gmt begin ex50
 	REM Plot Chi-squared cumulative distribution
 	gmt math -T0/12/0.1 T 4 CHI2CDF = p.txt
 	gmt plot -R0/12/0/1.02 p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y2.25c
-	gmt text -R0/17/0/25 -Jx1c -N -X-9c -F+f18p+cTC+t"Probability @;lightgreen;Density@;; and @;lightred;Cumulative@;; Distribution Functions"
+	gmt text -R0/17/0/3 -Jx1c -N -X-9c -F+f18p+cTC+t"Probability @;lightgreen;Density@;; and @;lightred;Cumulative@;; Distribution Functions"
 
 	echo 8.3  2.25 Binomial P@-8,0.25@-	> tmp.txt
 	echo 8.3  4.50 Poisson P(@~l=2@~)	>> tmp.txt
@@ -83,5 +83,5 @@ gmt begin ex50
 	echo 8.3 20.25 Weibull P(z,1,1.5)			>> tmp.txt
 	echo 8.3 22.50 @~c@~@+2@+(z,@~n=4@~)			>> tmp.txt
 	gmt text tmp.txt -R0/17/0/25 -F+f14p,Times-Italic+jTC -Dj0.9c -N -Y-20.25c
-	del p.txt
+	del p.txt tmp.txt
 gmt end show
