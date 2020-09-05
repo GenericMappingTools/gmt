@@ -413,7 +413,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 		char output[GMT_VF_LEN] = {""}, cmd[GMT_LEN512] = {""};
 		GMT_Report (API, GMT_MSG_COMPAT, "Passing three grids instead of an image is deprecated.  Please consider using an image instead.\n");
 		GMT_Open_VirtualFile (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, output);
-		sprintf (cmd, "%s %s %s -C -G%s", file[0], file[1], file[2], output);
+		sprintf (cmd, "%s %s %s -C -N -G%s", file[0], file[1], file[2], output);
 		if (GMT_Call_Module (API, "grdmix", GMT_MODULE_CMD, cmd)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to combine %s/%s/%s into an image - aborting.\n", file[0], file[1], file[2]);
 			n_errors++;
@@ -736,6 +736,11 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate memory and read image file %s\n", Ctrl->In.file);
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_IMAGE_NO_INDEX, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
+		}
+		grid_registration = I->header->registration;
+		if (grid_registration != GMT_GRID_PIXEL_REG) {
+			GMT_Report(API, GMT_MSG_WARNING, "Your image has gridline registration but all images should be pixel registered - forcing pixel registration.\n");
+			grid_registration = GMT_GRID_PIXEL_REG;
 		}
 		mixed = grdimage_clean_global_headers (GMT, I->header);
 		HH = gmt_get_H_hidden (I->header);
