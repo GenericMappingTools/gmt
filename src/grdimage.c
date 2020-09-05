@@ -1241,7 +1241,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			done = true;	/* Only doing the loop once here since no -Q */
 		}
 		else {	/* Dealing with images, three grids, and/or PostScript colormasking */
-			/* Because we will in via scanlines, there are complications when the image has reversed x and/or y direction (normal_x, normal_y are false) */
+			/* Because we fill bitimage in via scanlines, there are complications when the image has reversed x and/or y direction (normal_x, normal_y are false) */
 			for (row = 0, byte = colormask_offset; row < n_rows; row++) {	/* March along scanlines in the output bitimage */
 				kk = gmt_M_ijpgi (header_work, actual_row[row], 0);	/* Start pixel of this row */
 				if (Ctrl->D.active) {	/* Must set pixel node node_RGBA */
