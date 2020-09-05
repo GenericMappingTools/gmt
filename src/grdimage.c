@@ -1243,7 +1243,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		else {	/* Dealing with images, three grids, and/or PostScript colormasking */
 			for (row = 0, byte = colormask_offset; row < n_rows; row++) {	/* March along scanlines */
 				kk = gmt_M_ijpgi (header_work, actual_row[row], 0);	/* Start pixel of this row */
-				if (Ctrl->D.active && row == 0) node_RGBA = kk;		/* First time per row equals 'node', afterwards it grows alone */
+				if (Ctrl->D.active && row == 0 || !normal_y) node_RGBA = kk;		/* First time per row equals 'node', afterwards it grows alone */
 				for (col = 0; col < n_columns; col++) {	/* Compute rgb for each pixel along this scanline */
 					node = kk + actual_col[col];
 					if (rgb_from_z) {	/* Got a single grid and need to look up color via the CPT */
