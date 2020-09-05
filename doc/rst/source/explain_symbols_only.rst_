@@ -25,7 +25,7 @@
 
     The uppercase symbols **A**, **C**, **D**, **G**, **H**, **I**, **N**,
     **S**, **T** are normalized to have the same area as a circle with
-    diameter *size*, while the size of the corresponding lowercase symbols
+    diameter *size*, while the *size* of the corresponding lowercase symbols
     refers to the diameter of a circumscribed circle.
 
     You can change symbols by adding the required **-S** option to any of
