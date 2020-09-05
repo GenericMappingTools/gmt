@@ -24,7 +24,7 @@
     
     The uppercase symbols **A**, **C**, **D**, **G**, **H**, **I**, **N**,
     **S**, **T** are normalized to have the same area as a circle with
-    diameter *size*, while the size of the corresponding lowercase symbols
+    diameter *size*, while the *size* of the corresponding lowercase symbols
     refers to the diameter of a circumscribed circle.
 
     You can change symbols by adding the required **-S** option to any of
@@ -133,7 +133,7 @@
         **$GMT\_SHAREDIR**/custom. The symbol as defined in that file is of size
         1.0 by default; the appended *size* will scale symbol accordingly.
         The symbols are plotted in the *x-y* plane.  Users
-        may add their own custom \*.def files; see CUSTOM SYMBOLS below.
+        may add their own custom \*.def files; see `Custom Symbols`_ below.
 
     **-Sl**
         **l**\ etter or text string (less than 64 characters). Give size, and
