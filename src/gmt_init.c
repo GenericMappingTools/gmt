@@ -14879,7 +14879,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		}
 		col_off++;
 	}
-	else if (strchr (allowed_symbols[mode], (int) text[0]) && (text[1] == '\n' || !text[1]) && !strchr ("EJW", text[0])) {
+	else if (strchr (allowed_symbols[mode], (int) text[0]) && (text[1] == '\n' || !text[1]) && !strchr ("EJWw", text[0])) {
 		/* Symbol, but no size given (size assumed given on command line) */
 		sscanf (text, "%c", &symbol_type);
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
