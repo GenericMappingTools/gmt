@@ -64,22 +64,22 @@
         **d**\ iamond. *size* is diameter of circumscribing circle.
 
     **-Se**
-        **e**\ llipse. Direction (in degrees counter-clockwise from horizontal),
-        major\_axis, and minor\_axis must be found in columns 4, 5, and 6.
+        **e**\ llipse. If not given, then *direction* (in degrees counter-clockwise from horizontal),
+        *major_axis*, and *minor_axis* must be found in columns 4, 5, and 6.  If only *size* is
+        given then we plot a degenerate ellipse (circle) with given diameter
 
     **-SE**
-        Same as **-Se**, except azimuth (in degrees east of north) should be
-        given instead of direction. The azimuth will be mapped into an angle
+        Same as **-Se**, except *azimuth* (in degrees east of north) should be
+        given instead of *direction*. The *azimuth* will be mapped into an angle
         based on the chosen map projection (**-Se** leaves the directions
-        unchanged.) Furthermore, the axes lengths must be given in geographical instead of
-        plot-distance units. An exception occurs for a linear projection in
-        which we assume the ellipse axes are given in the same units as **-R**.
-	For degenerate ellipses (circles) with just the diameter given, use **-SE-**.
-	The diameter is excepted to be given in column 4.  Alternatively, append
-	the desired diameter to **-SE-** and this fixed diameter is used instead.
-	For allowable geographical units, see `Units`_ [Default is k for km].
+        unchanged.)  Furthermore, *major_axis* and *minor_axis* must be given in
+        geographical instead of plot-distance units.  For degenerate ellipses (i.e.,
+        circles) with just a *diameter* given in column 4, use **-SE-**. For a
+        linear projection we assume the dimensions are given in the same units as **-R**.
+        For allowable geographical units, see `Units`_ [Default is **k** for km].
+        The shape of the ellipse will be affected by the properties of the map projection.
 
-    **-Sf**\ [±]\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b+c+f+s+t**][**+i**][**+o**\ *offset*][**+p**\ [*pen*]].
+    **-Sf**\ [±]\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b**\|\ **+c**\|\ **+f**\|\ **+s**\ [*angle*]\ \|\ **+t**][**+o**\ *offset*][**+p**\ [*pen*]].
         Draw a **f**\ ront.  Supply distance *gap* between symbols and symbol size. If *gap* is
         negative, it is interpreted to mean the number of symbols along the
         front instead. If *gap* has a leading + then we use the value exactly as given
@@ -110,21 +110,20 @@
         **i**\ nverted triangle. *size* is diameter of circumscribing circle.
 
     **-Sj**
-        Rotated rectangle. Direction (in degrees counter-clockwise from
-        horizontal), x-dimension, and y-dimension must be found in columns 4, 5, and 6.
+        Rotated rectangle. If not given, then *direction* (in degrees counter-clockwise from
+        horizontal), *width* and *height* must be found in columns 4, 5, and 6.  If only *size* is
+        given then we plot a degenerate ellipse (circle) with given diameter.
 
     **-SJ**
-        Same as **-Sj**, except azimuth (in degrees east of north) should be
-        given instead of direction. The azimuth will be mapped into an angle
+        Same as **-Sj**, except *azimuth* (in degrees east of north) should be
+        given instead of *direction*. The *azimuth* will be mapped into an angle
         based on the chosen map projection (**-Sj** leaves the directions
-        unchanged.) Furthermore, the dimensions must be given in geographical instead of
-        plot-distance units.
-	For a degenerate rectangle (square) with one dimension given, use **-SJ-**.
-	The dimension is excepted to be given in column 4.  Alternatively, append
-	the dimension diameter to **-SJ-** and this fixed dimension is used instead.
-	An exception occurs for a linear projection in
-        which we assume the dimensions are given in the same units as **-R**.
-	For allowable geographical units, see `Units`_ [Default is k for km].
+        unchanged.) Furthermore, the two dimensions must be given in geographical
+        instead of plot-distance units. For a degenerate rectangle (i.e., square)
+        with one *dimension* expected to be given in column 4, use **-SJ-**. For
+        a linear projection we assume the dimensions are given in the same units as **-R**.
+        For allowable geographical units, see `Units`_ [Default is k for km].
+        The shape of the rectangle will be affected by the properties of the map projection.
 
     **-Sk**
         **k**\ ustom symbol. Append <name>/*size*, and we will look for a
@@ -147,7 +146,7 @@
         **m**\ ath angle arc, optionally with one or two arrow heads [Default is
         no arrow heads]. The *size* is the length of the vector head. Arc width
         is set by **-W**, with vector head outlines defaulting to half of arc width.
-	The radius of the arc and its start and stop
+        The radius of the arc and its start and stop
         directions (in degrees counter-clockwise from horizontal) must be given
         in columns 4-6. See `Vector Attributes`_ for specifying attributes.
 
@@ -200,7 +199,7 @@
                 \* dist* [0.25].
 
             **f**\ *ffile.d*
-                Reads the ASCII file *ffile.d* and places labels at locations in the
+                Read the ASCII file *ffile.d* and places labels at locations in the
                 file that matches locations along the quoted lines. Inexact matches
                 and points outside the region are skipped.
 
@@ -215,7 +214,7 @@
                 as defining great circles [Default is straight line].
 
             **n**\ *n\_label*
-                Specifies the number of equidistant labels for quoted lines line
+                Specify the number of equidistant labels for quoted lines line
                 [1]. Upper case **N** starts labeling exactly at the start of the
                 line [Default centers them along the line]. **N**-1 places one
                 justified label at start, while **N**\ +1 places one justified label
@@ -224,7 +223,7 @@
                 minimum distance separation between successive labels is enforced.
 
             **x\|X**\ *xfile.d*
-                Reads the multisegment file *xfile.d* and places labels at the
+                Read the ASCII multisegment file *xfile.d* and places labels at the
                 intersections between the quoted lines and the lines in *xfile.d*.
                 **X** will resample the lines first along great-circle arcs.
                 In addition, you may optionally append
@@ -240,12 +239,12 @@
                 **+ap** for line-parallel [Default].
 
             **+c**\ *dx*\ [/*dy*]
-                Sets the clearance between label and optional text box. Append
+                Set the clearance between label and optional text box. Append
                 **c**\|\ **i**\|\ **p** to specify the unit or % to indicate a
                 percentage of the label font size [15%].
 
             **+d**\ [*pen*]
-                Turns on debug which will draw helper points and lines to illustrate
+                Turn on debug which will draw helper points and lines to illustrate
                 the workings of the quoted line setup.  Optionally append the pen
                 to use [:term:`MAP_DEFAULT_PEN`].
 
@@ -256,25 +255,25 @@
                 finally plots the original text.
 
             **+f**\ *font*
-                Sets the desired font [Default :term:`FONT_ANNOT_PRIMARY` with its
+                Set the desired font [Default :term:`FONT_ANNOT_PRIMARY` with its
                 size changed to 9p].
 
             **+g**\ [*color*]
-                Selects opaque text boxes [Default is transparent]; optionally
+                Select opaque text boxes [Default is transparent]; optionally
                 specify the color [Default is :term:`PS_PAGE_COLOR`].
 
             **+i**
                 Make the main quoted line invisible [Draw it per **-W**].
 
             **+j**\ *just*
-                Sets label justification [Default is MC]. Ignored when
+                Set label justification [Default is MC]. Ignored when
                 **-SqN**\|\ **n**\ +\|-1 is used.
 
             **+l**\ *label*
-                Sets the constant label text.
+                Set the constant label text.
 
             **+L**\ *flag*
-                Sets the label text according to the specified flag:
+                Set the label text according to the specified flag:
 
                 **+Lh**
                 Take the label from the current segment header (first scan for
@@ -300,19 +299,19 @@
                 Requires the crossing file option.
 
             **+n**\ *dx*\ [/*dy*]
-                Nudges the placement of labels by the specified amount (append
+                Nudge the placement of labels by the specified amount (append
                 **c**\|\ **i**\|\ **p** to specify the units). Increments
                 are considered in the coordinate system defined by the
                 orientation of the line; use **+N** to force increments in the
                 plot x/y coordinates system [no nudging]. Not allowed with **+v**.
 
             **+o**
-                Selects rounded rectangular text box [Default is rectangular].
+                Select rounded rectangular text box [Default is rectangular].
                 Not applicable for curved text (**+v**) and only makes sense for
                 opaque text boxes.
 
             **+p**\ [*pen*]
-                Draws the outline of text boxes [Default is no outline];
+                Draw the outline of text boxes [Default is no outline];
                 optionally specify pen for outline [Default is width = 0.25p,
                 color = black, style = solid].
 
@@ -321,23 +320,23 @@
                 less than *min\_rad* [Default is 0].
 
             **+t**\ [*file*]
-                Saves line label x, y, and text to *file* [Line\_labels.txt].
+                Save line label x, y, and text to *file* [Line\_labels.txt].
                 Use **+T** to save x, y, angle, text instead.
 
             **+u**\ *unit*
-                Appends *unit* to all line labels. If *unit* starts with a
+                Append *unit* to all line labels. If *unit* starts with a
                 leading hyphen (-) then there will be no space between label
                 value and the unit. [Default is no unit].
 
             **+v**
-                Specifies curved labels following the path [Default is straight labels].
+                Specify curved labels following the path [Default is straight labels].
 
             **+w**
-                Specifies how many (*x*,\ *y*) points will be used to estimate
+                Specify how many (*x*,\ *y*) points will be used to estimate
                 label angles [Default is 10].
 
             **+=**\ *prefix*
-                Prepends *prefix* to all line labels. If *prefix* starts with a
+                Prepend *prefix* to all line labels. If *prefix* starts with a
                 leading hyphen (-) then there will be no space between label
                 value and the prefix. [Default is no prefix].
 
@@ -370,7 +369,7 @@
         if not specified on the command-line, should be  present in column 3,
         pushing the other items to later columns.
         The *size* is the length of the vector head. Vector width is set by **-W**,
-	with head outline pen width defaulting to half of stem pen width.
+        with head outline pen width defaulting to half of stem pen width.
         See `Vector Attributes`_ for specifying attributes. But also be aware
         that using color via a CPT implies a shift of columns 4 and on to accommodate
         the color fill determined by the z-value in new 4rd column (See **-C** option).
@@ -387,7 +386,7 @@
         columns 4 and 5.  Append /*inner* to select a separate inner diameter [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
         if *dr* is appended then we draw all arc lines separated radially by *dr*.
- 	Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
+        Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
         if *da* is appended then we draw all radial lines separated angularly by *da*.
         These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
 
@@ -401,7 +400,7 @@
         Append /*inner* to select a separate inner diameter [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
         if *dr* is appended then we draw all arc lines separated radially by *dr*.
- 	Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
+        Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
         if *da* is appended then we draw all radial lines separated angularly by *da*.
         These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
 
@@ -439,7 +438,7 @@
                 \* dist* [0.25].
 
             **f**\ *ffile.d*
-                Reads the ASCII file *ffile.d* and places symbols at locations in the
+                Read the ASCII file *ffile.d* and places symbols at locations in the
                 file that matches locations along the decorated lines. Inexact matches
                 and points outside the region are skipped.
 
@@ -453,7 +452,7 @@
                 **L** will interpret the point pairs as defining great circles [Default is straight line].
 
             **n**\|\ **N**\ *n_symbol*
-                Specifies the number of equidistant symbols for decorated lines
+                Specify the number of equidistant symbols for decorated lines
                 [1]. Upper case **N** starts placing symbols exactly at the start of the
                 line [Default centers them along the line]. **N**-1 places one symbol
                 at start, while **N**\ +1 places one symbol
@@ -466,7 +465,7 @@
 		        first to be converted into a series of 2-point line segments before plotting.
 
             **x**\|\ **X**\ *xfile.d*
-                Reads the multisegment file *xfile.d* and places symbols at the
+                Read the ASCII multisegment file *xfile.d* and places symbols at the
                 intersections between the decorated lines and the lines in *xfile.d*.
                 **X** will resample the lines first along great-circle arcs.
 
@@ -479,7 +478,7 @@
                 **+ap** for line-parallel [Default].
 
             **+d**\ [*pen*]
-                Turns on debug which will draw helper points and lines to illustrate
+                Turn on debug which will draw helper points and lines to illustrate
                 the workings of the decorated line setup. Optionally append the pen
                 to use [:term:`MAP_DEFAULT_PEN`].
 
@@ -490,23 +489,23 @@
                 Make the main decorated line invisible [Draw it using pen settings provided by **-W**].
 
             **+n**\ *dx*\ [/*dy*]
-                Nudges the placement of symbols by the specified amount (append
+                Nudge the placement of symbols by the specified amount (append
                 **c**\|\ **i**\|\ **p** to specify the units). Increments
                 are considered in the coordinate system defined by the
                 orientation of the line; use **+N** to force increments in the
                 plot x/y coordinates system [no nudging].
 
             **+p**\ [*pen*]
-                Draws the outline of symbols [Default is no outline];
+                Draw the outline of symbols [Default is no outline];
                 optionally specify pen for outline [Default is width = 0.25p,
                 color = black, style = solid].
 
             **+s**\ <symbol><size> or **+sk**\ *customsymbol*/*size*
-                Specifies the code and size of the decorative symbol.
+                Specify the code and size of the decorative symbol.
                 Custom symbols need to be simple, i.e., not require data columns.
 
             **+w**
-                Specifies how many (*x*,\ *y*) points will be used to estimate
+                Specify how many (*x*,\ *y*) points will be used to estimate
                 symbol angles [Default is 10].
 
         If neither **+g** nor **+p** are set we select the default pen outline (:term:`MAP_DEFAULT_PEN`).

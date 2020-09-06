@@ -98,39 +98,37 @@
         but expect geographic azimuths and distances.
 
     **-Se**
-        **e**\ llipse. The *direction* (in degrees counter-clockwise from horizontal),
+        **e**\ llipse. If not given, then *direction* (in degrees counter-clockwise from horizontal),
         *major_axis*, and *minor_axis* must be found in columns 3, 4, and 5. This option yields
-        a Cartesian ellipse whose shape is unaffected by the map projection.
+        a Cartesian ellipse whose shape is unaffected by the map projection.  If only a *size* is
+        given then we plot a degenerate ellipse (circle) with given diameter.
 
     **-SE**
         Same as **-Se**, except *azimuth* (in degrees east of north) should be
         given instead of *direction*. The *azimuth* will be mapped into an angle
         based on the chosen map projection (**-Se** leaves the directions
-        unchanged.)  Furthermore, *major_axis* and *minor_axis* must be given in geographical instead of
-        plot-distance units. An exception occurs for a linear projection in
-        which we assume the ellipse axes are given in the same units as **-R**.
-        For degenerate ellipses (circles) requiring just the *diameter*, use **-SE-**.
-        The *diameter* is excepted to be given in column 3.  Alternatively, append
-        the desired *diameter* to **-SE-** and this fixed *diameter* is used instead.
-        For allowable geographical units, see `Units`_ [Default is **k** for km]. The
-        shape of the ellipse will be affected by the properties of the map projection.
+        unchanged.)  Furthermore, *major_axis* and *minor_axis* must be given in
+        geographical instead of plot-distance units.  For degenerate ellipses (i.e.,
+        circles) with just a *diameter* given in column 3, use **-SE-**. For a
+        linear projection we assume the dimensions are given in the same units as **-R**.
+        For allowable geographical units, see `Units`_ [Default is **k** for km].
+        The shape of the ellipse will be affected by the properties of the map projection.
 
     **-Sj**
-        Rotated rectangle. The *direction* (in degrees counter-clockwise from
-        horizontal), *width*, and *height* must be found in columns 3, 4, and 5.
+        Rotated rectangle. If not given, then *direction* (in degrees counter-clockwise from
+        horizontal), *width*, and *height* must be found in columns 3, 4, and 5.  If only *size* is
+        given then we plot a degenerate rectangle (square) with given size.
 
     **-SJ**
         Same as **-Sj**, except *azimuth* (in degrees east of north) should be
         given instead of *direction*. The *azimuth* will be mapped into an angle
         based on the chosen map projection (**-Sj** leaves the directions
         unchanged.) Furthermore, the two dimensions must be given in geographical
-        instead of plot-distance units.
-        For a degenerate rectangle (square) with one *dimension* given, use **-SJ-**.
-        The *dimension* is excepted to be given in column 3.  Alternatively, append
-        the *dimension* to **-SJ-** and this fixed *dimension* is used instead.
-        An exception occurs for a linear projection in
-        which we assume the dimensions are given in the same units as **-R**.
+        instead of plot-distance units. For a degenerate rectangle (i.e., square)
+        with one *dimension* expected to be given in column 3, use **-SJ-**. For
+        a linear projection we assume the dimensions are given in the same units as **-R**.
         For allowable geographical units, see `Units`_ [Default is k for km].
+        The shape of the rectangle will be affected by the properties of the map projection.
 
     **-Sr**
         **r**\ ectangle. If *width*/*height* are not given, then these

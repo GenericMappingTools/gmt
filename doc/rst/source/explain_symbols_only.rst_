@@ -65,8 +65,9 @@
         **d**\ iamond. *size* is diameter of circumscribing circle.
 
     **-Se**
-        **e**\ llipse. Direction (in degrees counter-clockwise from horizontal),
-        major_axis, and minor_axis must be found in columns 3, 4, and 5.
+        **e**\ llipse. If not given, then *direction* (in degrees counter-clockwise from horizontal),
+        *major_axis*, and *minor_axis* must be found in columns 3, 4, and 5.  If only *size* is
+        given then we plot a degenerate ellipse (circle) with given diameter.
 
     **-Sg**
         octa\ **g**\ on. *size* is diameter of circumscribing circle.
@@ -78,8 +79,9 @@
         **i**\ nverted triangle. *size* is diameter of circumscribing circle.
 
     **-Sj**
-        Rotated rectangle. Direction (in degrees counter-clockwise from
-        horizontal), x-dimension, and y-dimension must be found in columns 3, 4, and 5.
+        Rotated rectangle. If not given, then *direction* (in degrees counter-clockwise from
+        horizontal), *width*, and *height* must be found in columns 3, 4, and 5.  If only *size* is
+        given then we plot a degenerate rectangle (square) with given size.
 
     **-Sk**
         **k**\ ustom symbol. Append *name*\ /\ *size*, and we will look for a
