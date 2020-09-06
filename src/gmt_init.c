@@ -14854,7 +14854,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->size_x = p->given_size_x = gmt_M_to_inch (GMT, arg), check = false;
 		}
 	}
-	else if (strchr (allowed_symbols[mode], (int) text[0]) && strchr (GMT_DIM_UNITS, (int) text[1])) {
+	else if (strchr (allowed_symbols[mode], (int) text[0]) && text[1] && strchr (GMT_DIM_UNITS, (int) text[1])) {
 		/* Symbol, but no size given (size assumed given on command line), only unit information */
 		sscanf (text, "%c", &symbol_type);
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
@@ -14868,7 +14868,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		}
 		col_off++;
 	}
-	else if (strchr (allowed_symbols[mode], (int) text[0]) && (text[1] == '\n' || !text[1])) {
+	else if (strchr (allowed_symbols[mode], (int) text[0]) && (text[1] == '\n' || !text[1]) && !strchr ("EJ", text[0])) {
 		/* Symbol, but no size given (size assumed given on command line) */
 		sscanf (text, "%c", &symbol_type);
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
@@ -15015,7 +15015,21 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 			p->w_type = type;
 		}
-		else if (!(symbol_type == 'r' && strstr (text, "+s"))) {	/* Don't want to interpret -Sr+s a dimension */
+		else if (strchr ("ej", symbol_type) && n >= 2) {	/* Don't want to interpret angle as dimension */
+			if (n == 4) {
+				p->size_x = p->given_size_x = gmt_M_to_inch (GMT, txt_b);
+				p->size_y = p->given_size_y = gmt_M_to_inch (GMT, txt_c);
+				p->factor = atof (txt_a);
+			}
+			else if (n == 2) {	/* Degenerate */
+				p->size_x = p->given_size_x = p->size_y = p->given_size_y = gmt_M_to_inch (GMT, txt_a);
+				p->factor = 0.0;
+			}
+			else
+				decode_error++;
+			p->par_set = (n == 2 || n == 4);
+		}
+		else if (!strchr ("EJ", symbol_type) && !(symbol_type == 'r' && strstr (text, "+s"))) {	/* Don't want to interpret -Sr+s a dimension */
 			p->size_x = p->given_size_x = gmt_M_to_inch (GMT, txt_a);
 			if (n == 4) p->factor = gmt_M_to_inch (GMT, txt_c);	/* Place the radius of rounded rectangles here */
 			if (n >= 3)
@@ -15083,15 +15097,28 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'E':	/* Expect axis in km to be scaled based on -J */
 			p->symbol = PSL_ELLIPSE;
 			p->convert_angles = 1;
+			if (n == 2) {
+				degenerate = true;
+				strcpy (diameter, txt_a);
+			}
 			if (degenerate) {	/* Degenerate ellipse = circle */
 				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
 					(void)gmtlib_scanf_geodim (GMT, diameter, &p->size_y);
 					p->size_x = p->size_y;
+					p->factor = 0.0;
+					p->par_set = true;
 				}
 				else {	/* Must read from data file */
 					p->n_required = 1;	/* Only expect diameter */
 					p->nondim_col[p->n_nondim++] = 2 + mode;	/* Since diameter is in geo-units, not inches or cm etc */
 				}
+			}
+			else if (n == 4) {	/* Gave three parameters on the command line */
+				(void)gmtlib_scanf_geodim (GMT, txt_b, &p->size_x);
+				(void)gmtlib_scanf_geodim (GMT, txt_c, &p->size_y);
+				p->factor = atof (txt_a);
+				p->par_set = true;
+				p->n_required = 0;	/* All set */
 			}
 			else {
 				p->n_required = 3;
@@ -15104,8 +15131,12 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'e':
 			p->symbol = PSL_ELLIPSE;
 			/* Expect angle in degrees, then major and major axes in plot units */
-			p->n_required = 3;
-			p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
+			if (!p->par_set) {	/* Must read parameters from file */
+				p->n_required = 3;
+				p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
+			}
+			else
+				p->n_required = 0;	/* All set */
 			check = false;
 			break;
 
@@ -15216,15 +15247,28 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'J':	/* Expect dimensions in km to be scaled based on -J */
 			p->symbol = PSL_ROTRECT;
 			p->convert_angles = 1;
+			if (n == 2) {
+				degenerate = true;
+				strcpy (diameter, txt_a);
+			}
 			if (degenerate) {	/* Degenerate rectangle = square with zero angle */
 				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
 					(void)gmtlib_scanf_geodim (GMT, diameter, &p->size_y);
 					p->size_x = p->size_y;
+					p->factor = 0.0;
+					p->par_set = true;
 				}
 				else {	/* Must read diameter from data file */
 					p->n_required = 1;	/* Only expect diameter */
 					p->nondim_col[p->n_nondim++] = 2 + mode;	/* Since diameter is in km, not inches or cm etc */
 				}
+			}
+			else if (n == 4) {	/* Gave three parameters on the command line */
+				(void)gmtlib_scanf_geodim (GMT, txt_b, &p->size_x);
+				(void)gmtlib_scanf_geodim (GMT, txt_c, &p->size_y);
+				p->factor = atof (txt_a);
+				p->par_set = true;
+				p->n_required = 0;	/* All set */
 			}
 			else {	/* Get all three from file */
 				p->n_required = 3;
@@ -15236,8 +15280,12 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'j':
 			p->symbol = PSL_ROTRECT;
-			p->n_required = 3;
-			p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
+			if (!p->par_set) {	/* Must read parameters from file */
+				p->n_required = 3;
+				p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
+			}
+			else
+				p->n_required = 0;	/* All set */
 			check = false;
 			break;
 		case 'l':
