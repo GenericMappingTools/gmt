@@ -162,6 +162,9 @@ struct GMT_SYMBOL {
 	unsigned int w_mode;	/* Distance mode */
 	enum GMT_enum_wedgetype w_type;	/* Wedge type */
 	bool w_active;
+	bool w_get_do;	/* True if we must read outer diameter */
+	bool w_get_di;	/* True if we must read inner diameter */
+	bool w_get_a;	/* True if we must read the two angles */
 
 	/* These apply to vectors */
 

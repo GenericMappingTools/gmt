@@ -119,27 +119,30 @@
     **-St**
         **t**\ riangle. *size* is diameter of circumscribing circle.
 
-    **-Sw**
-        pie **w**\ edge. Start and stop directions (in degrees
-        counter-clockwise from horizontal) for pie slice must be found in
-        columns 3 and 4.  Append /*inner* to select a separate inner diameter [0].
+    **-Sw**\ [*outer*[/*startdir*/*stopdir*]][**+i**\ [*inner*]]
+        pie **w**\ edge. Give the outer diameter *outer*, *startdir* and *stopdir*.
+        These are directions (in degrees counter-clockwise from horizontal) for pie slice.
+        Parameters not appended are read from file starting from column 3.
+        Append **+i and append a nonzero inner diameter *inner* or it will be read last [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
         if *dr* is appended then we draw all arc lines separated radially by *dr*.
         Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
         if *da* is appended then we draw all radial lines separated angularly by *da*.
         These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
 
-    **-SW**
+    **-SW**\ [*outer*[/*startdir*/*stopdir*]][**+i**\ [*inner*]]
         Same as **-Sw**, except azimuths (in degrees east of north) should
         be given instead of the two directions. The azimuths will be mapped
         into angles based on the chosen map projection (**-Sw** leaves the
-        directions unchanged).
-        Append /*inner* to select a separate inner diameter [0].
+        directions unchanged).  The two diameters are expected in geographic units.
+        However, if specified on the command line we also accept plot dimension units.
+        Append **+i and append a nonzero inner diameter *inner* or it will be read last [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
         if *dr* is appended then we draw all arc lines separated radially by *dr*.
         Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
         if *da* is appended then we draw all radial lines separated angularly by *da*.
         These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
+        For allowable geographical units, see `Units`_ [Default is k for km].
 
     **-Sx**
         cross (x). *size* is diameter of circumscribing circle.

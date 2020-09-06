@@ -577,12 +577,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SV rather than -Sv is selected, %s will expect azimuth and\n", mod_name);
 	GMT_Message (API, GMT_TIME_NONE, "\t     length and convert azimuths based on the chosen map projection.\n");
 	gmt_vector_syntax (API->GMT, 19);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Wedges: Start and stop directions of wedge must be in columns 3-4.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     If -SW rather than -Sw is selected, specify two azimuths instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -SW: Specify <size><unit> with units either from %s or %s [Default is k].\n", GMT_LEN_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Sw: Specify <size><unit> with units from %s [Default is %s].\n", GMT_DIM_UNITS_DISPLAY,
+	GMT_Message (API, GMT_TIME_NONE, "\t   Wedges: Append [<outerdiameter>[<startdir><stopdir>]] or we read these parameters from file from column 3.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     If -SW rather than -Sw is selected, specify two azimuths instead of directions.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -SW: Specify <outerdiameter><unit> with units either from %s or %s [Default is k].\n", GMT_LEN_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Sw: Specify <outerdiameter><unit> with units from %s [Default is %s].\n", GMT_DIM_UNITS_DISPLAY,
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +a[<dr>] to just draw arc(s) or +r[<da>] to just draw radial lines [wedge].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append +i[<innerdiameter>] for a nonzero inner diameter; we read from file if not appended.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Geovectors: Azimuth and length must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to length [k].\n", GMT_LEN_UNITS_DISPLAY);
 	gmt_vector_syntax (API->GMT, 3);
@@ -1189,6 +1190,13 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 	}
 	if (S.symbol == PSL_WEDGE) {
+		if (S.w_get_do && S.w_active) gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
+		if (S.w_get_di && S.w_active) {
+			unsigned int col = ex1 + 1;
+			if (S.w_get_a) col += 2;
+			gmt_set_column (GMT, GMT_IN, col, GMT_IS_GEODIMENSION);
+		}
+
 		if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge spider pen specified separately */
 			PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
 			last_spiderpen = S.v.pen;
@@ -1216,7 +1224,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT, GMT_SYMBOL_QUOTED_LINE, GMT_SYMBOL_DECORATED_LINE) */
 		bool periodic = false, delayed_unit_scaling = false;
-		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
+		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, col;
 		double xpos[2], width = 0.0, dim[PSL_MAX_DIMS];
 		struct GMT_RECORD *In = NULL;
 		struct GMT_DATASET *Diag = NULL;
@@ -1793,29 +1801,52 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 						break;
 					case PSL_WEDGE:
-						if (gmt_M_is_dnan (in[ex1+S.read_size])) {
-							GMT_Report (API, GMT_MSG_WARNING, "Wedge start angle = NaN near line %d. Skipped\n", n_total_read);
-							continue;
+						col = ex1+S.read_size;
+						if (S.w_get_do) {	/* Must read from file */
+							if (gmt_M_is_dnan (in[col])) {
+								GMT_Report (API, GMT_MSG_WARNING, "Wedge outer diameter = NaN near line %d. Skipped\n", n_total_read);
+									continue;
+							}
+							dim[0] = in[col++];
 						}
-						if (gmt_M_is_dnan (in[ex2+S.read_size])) {
-							GMT_Report (API, GMT_MSG_WARNING, "Wedge stop angle = NaN near line %d. Skipped\n", n_total_read);
-							continue;
+						else	/* Set during -S parsing */
+							dim[0] = S.w_radius;
+						if (S.w_get_a) {	/* Must read from file */
+							if (gmt_M_is_dnan (in[col])) {
+								GMT_Report (API, GMT_MSG_WARNING, "Wedge start angle = NaN near line %d. Skipped\n", n_total_read);
+									continue;
+							}
+							dim[1] = in[col++];
+							if (gmt_M_is_dnan (in[col])) {
+								GMT_Report (API, GMT_MSG_WARNING, "Wedge stop angle = NaN near line %d. Skipped\n", n_total_read);
+									continue;
+							}
+							dim[2] = in[col++];
 						}
-						if (!S.convert_angles) {
-							dim[1] = in[ex1+S.read_size];
-							dim[2] = in[ex2+S.read_size];
+						else {	/* Angles were set during -S parsing */
+							dim[1] = S.size_x;
+							dim[2] = S.size_y;
 						}
-						else if (gmt_M_is_cartesian (GMT, GMT_IN)) {
-							/* Note that the direction of the arc gets swapped when converting from azimuth */
-							dim[2] = 90.0 - in[ex1+S.read_size];
-							dim[1] = 90.0 - in[ex2+S.read_size];
+						if (S.w_get_di) {	/* Must read from file else it was set during -S parsing */
+							if (gmt_M_is_dnan (in[col])) {
+								GMT_Report (API, GMT_MSG_WARNING, "Wedge inner diameter = NaN near line %d. Skipped\n", n_total_read);
+								continue;
+							}
+							S.w_radius_i = in[col++];
 						}
-						else {
-							dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
-							dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex2+S.read_size]);
+						if (S.convert_angles) {
+							if (gmt_M_is_cartesian (GMT, GMT_IN)) {
+								/* Note that the direction of the arc gets swapped when converting from azimuth */
+								dim[2] = 90.0 - dim[2];
+								dim[1] = 90.0 - dim[1];
+							}
+							else {
+								dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, dim[2]);
+								dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, dim[1]);
+							}
 						}
 						if (S.w_active)	/* Geo-wedge */
-							gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius_i, S.w_radius, S.w_dr, dim[1], dim[2], S.w_da, S.w_type, fill_active || get_rgb, outline_active);
+							gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius_i, dim[0], S.w_dr, dim[1], dim[2], S.w_da, S.w_type, fill_active || get_rgb, outline_active);
 						else {	/* Cartesian wedge */
 							dim[0] *= 0.5;	/* Change from diameter to radius */
 							dim[3] = S.w_type;
