@@ -847,7 +847,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
 		bool periodic = false, delayed_unit_scaling[2] = {false, false};
-		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, last_time;
+		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, last_time, col;
 		double in2[7] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
 		double xpos[2], width, d;
 		struct GMT_RECORD *In = NULL;
@@ -1338,26 +1338,52 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					data[n].dim[12] = s * data[n].h.width;	/* Possibly shrunk head pen width */
 					break;
 				case PSL_WEDGE:
-					if (gmt_M_is_dnan (in[ex1+S.read_size])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Wedge start angle = NaN near line %d. Skipped\n", n_total_read);
-						continue;
+					col = ex1+S.read_size;
+					if (S.w_get_do) {	/* Must read from file */
+						if (gmt_M_is_dnan (in[col])) {
+							GMT_Report (API, GMT_MSG_WARNING, "Wedge outer diameter = NaN near line %d. Skipped\n", n_total_read);
+								continue;
+						}
+						data[n].dim[0] = in[col++];
 					}
-					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Wedge stop angle = NaN near line %d. Skipped\n", n_total_read);
-						continue;
+					else	/* Set during -S parsing */
+						data[n].dim[0] = S.w_radius;
+					if (S.w_get_a) {	/* Must read from file */
+						if (gmt_M_is_dnan (in[col])) {
+							GMT_Report (API, GMT_MSG_WARNING, "Wedge start angle = NaN near line %d. Skipped\n", n_total_read);
+								continue;
+						}
+						data[n].dim[1] = in[col++];
+						if (gmt_M_is_dnan (in[col])) {
+							GMT_Report (API, GMT_MSG_WARNING, "Wedge stop angle = NaN near line %d. Skipped\n", n_total_read);
+								continue;
+						}
+						data[n].dim[2] = in[col++];
 					}
-					if (!S.convert_angles) {
-						data[n].dim[1] = in[ex1+S.read_size];			/* Start direction in degrees */
-						data[n].dim[2] = in[ex2+S.read_size];			/* Stop direction in degrees */
+					else {	/* Angles were set during -S parsing */
+						data[n].dim[1] = S.size_x;
+						data[n].dim[2] = S.size_y;
 					}
-					else if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Got azimuths instead */
-						data[n].dim[1] = 90.0 - in[ex1+S.read_size];		/* Start direction in degrees */
-						data[n].dim[2] = 90.0 - in[ex2+S.read_size];		/* Stop direction in degrees */
+					if (S.w_get_di) {	/* Must read from file else it was set during -S parsing */
+						if (gmt_M_is_dnan (in[col])) {
+							GMT_Report (API, GMT_MSG_WARNING, "Wedge inner diameter = NaN near line %d. Skipped\n", n_total_read);
+							continue;
+						}
+						S.w_radius_i = in[col];
 					}
-					else {
-						data[n].dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
-						data[n].dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex2+S.read_size]);
+					if (S.convert_angles) {
+						if (gmt_M_is_cartesian (GMT, GMT_IN)) {
+							/* Note that the direction of the arc gets swapped when converting from azimuth */
+							data[n].dim[2] = 90.0 - data[n].dim[2];
+							data[n].dim[1] = 90.0 - data[n].dim[1];
+						}
+						else {
+							data[n].dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, data[n].dim[2]);
+							data[n].dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, data[n].dim[1]);
+						}
+						gmt_M_double_swap (data[n].dim[1], data[n].dim[2]);	/* Must switch the order of the angles */
 					}
+					/* Load up the rest of the settings */
 					data[n].dim[3] = S.w_type;
 					data[n].dim[4] = S.w_radius_i;
 					data[n].dim[5] = S.w_dr;	/* In case there is a request for radially spaced arcs */
@@ -1586,9 +1612,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							gmt_xy_to_geo (GMT, &dx, &dy, data[i].y, data[i].y);	/* Just recycle dx, dy here */
 							gmt_geo_wedge (GMT, dx, dy, data[n].dim[4], S.w_radius, data[n].dim[5], data[i].dim[1], data[i].dim[2], data[n].dim[6], status, fill_active || get_rgb, outline_active);
 						}
-						else {
+						else
 							PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_WEDGE);
-						}
 						break;
 					case GMT_SYMBOL_ZDASH:
 						gmt_xyz_to_xy (GMT, xpos[item], data[i].y, data[i].z, &x_1, &y_1);

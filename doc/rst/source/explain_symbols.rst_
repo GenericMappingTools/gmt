@@ -1,5 +1,5 @@
 **-S**\ [*symbol*][*size*]
-    Plot symbols (including vectors, pie slices, fronts, decorated or quoted lines).
+    Plot symbols (including vectors, wedges, fronts, decorated or quoted lines).
     If present, *size* is symbol size in the unit set in
     :doc:`gmt.conf` (unless **c**, **i**, or **p** is appended). If the symbol
     code (see below) is not given it will be read from the last column in
@@ -139,29 +139,30 @@
         **R**\ ounded rectangle. If *width*/*height*/*radius* are not given, then the
         two dimensions and corner radius must be found in columns 3, 4, and 5.
 
-    **-Sw**
-        Pie **w**\ edge. Start and stop directions (in degrees
-        counter-clockwise from horizontal) for pie slice must be found in
-        columns 3 and 4.  Append /*inner* to select a separate inner diameter [0].
+    **-Sw**\ [*outer*\ [/*startdir*/*stopdir*]][**+i**\ [*inner*]]
+        Pie **w**\ edge. Give the outer diameter *outer*, *startdir* and *stopdir*.
+        These are directions (in degrees counter-clockwise from horizontal) for wedge.
+        Parameters not appended are read from file starting from column 3.
+        Append **+i** and append a nonzero inner diameter *inner* or it will be read last [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
         if *dr* is appended then we draw all arc lines separated radially by *dr*.
-        Append **+r**\ [*da*] to draw radial lines (at start and stop directions);
+        Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
         if *da* is appended then we draw all radial lines separated angularly by *da*.
-        These spider-web lines are drawn using the current pen, unless **+p**\ *pen* is added.
+        These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
 
-    **-SW**
+    **-SW**\ [*outer*\ [/*startaz*/*stopaz*]][**+i**\ [*inner*]]
         Same as **-Sw**, except azimuths (in degrees east of north) should
         be given instead of the two directions. The azimuths will be mapped
         into angles based on the chosen map projection (**-Sw** leaves the
-        directions unchanged). Specify *size* as a geographical diameter.
-        For allowable geographical units, see `Units`_ [Default is k for km]. To instead
-        specify a diameter in plot units, you must append the desired unit.
-        Append /*inner* to select a separate inner diameter [0].
+        directions unchanged).  The two diameters are expected in geographic units.
+        However, if specified on the command line we also accept plot dimension units.
+        Append **+i** and append a nonzero inner diameter *inner* or it will be read last [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
         if *dr* is appended then we draw all arc lines separated radially by *dr*.
-        Append **+r**\ [*da*] to draw radial lines (at start and stop directions);
+        Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
         if *da* is appended then we draw all radial lines separated angularly by *da*.
         These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
+        For allowable geographical units, see `Units`_ [Default is k for km].
 
     Text is normally placed with :doc:`text` but there are times we wish to treat a character
     of even a string as a plottable symbol:
