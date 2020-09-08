@@ -14704,13 +14704,19 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 	return (error);
 }
 
-double gmtinit_get_diameter (struct GMT_CTRL *GMT, char code, char *text) {
+double gmtinit_get_diameter (struct GMT_CTRL *GMT, char code, char *text, bool *geo) {
+	bool is_geo;
 	size_t len = strlen (text);
 	double d;
-	if (code == 'w' || strchr (GMT_DIM_UNITS, text[len-1]))	/* Got diameter in plot units */
+	if (code == 'w' || strchr (GMT_DIM_UNITS, text[len-1])) {	/* Got diameter in plot units */
+		is_geo = false;
 		d = gmt_M_to_inch (GMT, text);
-	else	/* Geo-wedge with radius given in a distance unit */
+	}
+	else {	/* Geo-wedge with radius given in a distance unit */
 		(void)gmtlib_scanf_geodim (GMT, text, &d);
+		is_geo = true;
+	}
+	if (geo) *geo = is_geo;	/* Since geo may be passed as NULL */
 	return (d);
 }
 
@@ -14970,7 +14976,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				if (txt_d[0] == '\0')	/* Must read from file */
 					p->w_get_di = true;
 				else	/* Get that value now */
-					p->w_radius_i = gmtinit_get_diameter (GMT, symbol_type, txt_d);
+					p->w_radius_i = gmtinit_get_diameter (GMT, symbol_type, txt_d, &p->w_active);
 			}
 			if ((c = gmt_first_modifier (GMT, text, "aipr"))) c[0] = '\0';	/* Chop off all modifiers so we can parse the info */
 			n_slash = gmt_count_char (GMT, text, '/');
@@ -14993,10 +14999,10 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 			check = false;
 			if (n == 1) {	/* Got at least the diameter */
-				p->w_radius = gmtinit_get_diameter (GMT, symbol_type, txt_a);
+				p->w_radius = gmtinit_get_diameter (GMT, symbol_type, txt_a, &p->w_active);
 			}
 			if (n_slash == 1)	/* Deprecated syntax */
-				p->w_radius_i = gmtinit_get_diameter (GMT, symbol_type, txt_d);
+				p->w_radius_i = gmtinit_get_diameter (GMT, symbol_type, txt_d, &p->w_active);
 			else if (n_slash == 2) {	/* New syntax for angles */
 				p->size_x = p->given_size_x = atof (txt_b);
 				p->size_y = p->given_size_y = atof (txt_c);
@@ -15010,7 +15016,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 						case 'a':	/* Arc(s) */
 							type |= GMT_WEDGE_ARCS;	/* Arc only */
 							if (q[1])	/* Got delta_r */
-								p->w_dr = gmtinit_get_diameter (GMT, symbol_type, &q[1]);
+								p->w_dr = gmtinit_get_diameter (GMT, symbol_type, &q[1], NULL);
 							break;
 						case 'p':	/* Spider pen, stored in the vector structure */
 							if (gmt_getpen (GMT, &q[1], &p->v.pen)) {
