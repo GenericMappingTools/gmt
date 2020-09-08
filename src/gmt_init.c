@@ -14997,8 +14997,12 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad argument -S%s\n", text);
 					decode_error++;
 			}
+			if (p->w_get_do && p->read_symbol_cmd && p->size_x > 0.0) {	/* Got a fixed size via -S<size> and must honor it throughout as diameter */
+				p->w_radius = p->size_x;
+				p->w_get_do = false;
+			}
 			check = false;
-			if (n == 1) {	/* Got at least the diameter */
+			if (n >= 1) {	/* Got at least the diameter */
 				p->w_radius = gmtinit_get_diameter (GMT, symbol_type, txt_a, &p->w_active);
 			}
 			if (n_slash == 1)	/* Deprecated syntax */
@@ -15007,7 +15011,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->size_x = p->given_size_x = atof (txt_b);
 				p->size_y = p->given_size_y = atof (txt_c);
 			}
-			if (c && c[0]) {	/* Now process any modifiers (other than +i) */
+			if (c) {	/* Now process any modifiers (other than +i) */
 				char q[GMT_LEN256] = {""};
 				unsigned int pos = 0, error = 0;
 				c[0] = '+';	/* Restore that character */

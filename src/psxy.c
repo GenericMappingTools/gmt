@@ -1832,7 +1832,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 								GMT_Report (API, GMT_MSG_WARNING, "Wedge inner diameter = NaN near line %d. Skipped\n", n_total_read);
 								continue;
 							}
-							S.w_radius_i = in[col++];
+							S.w_radius_i = in[col];
 						}
 						if (S.convert_angles) {
 							if (gmt_M_is_cartesian (GMT, GMT_IN)) {
@@ -1844,6 +1844,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 								dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, dim[2]);
 								dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, dim[1]);
 							}
+							gmt_M_double_swap (dim[1], dim[2]);	/* Must switch the order of the angles */
 						}
 						if (S.w_active)	/* Geo-wedge */
 							gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius_i, dim[0], S.w_dr, dim[1], dim[2], S.w_da, S.w_type, fill_active || get_rgb, outline_active);
