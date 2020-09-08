@@ -380,24 +380,24 @@
         based on the chosen map projection (**-Sv** leaves the directions
         unchanged.) See `Vector Attributes`_ for specifying attributes.
 
-    **-Sw**\ [*outer*[/*startdir*/*stopdir*]][**+i**\ [*inner*]]
-        pie **w**\ edge. Give the outer diameter *outer*, *startdir* and *stopdir*.
-        These are directions (in degrees counter-clockwise from horizontal) for pie slice.
+    **-Sw**\ [*outer*\ [/*startdir*/*stopdir*]][**+i**\ [*inner*]]
+        Pie **w**\ edge. Give the outer diameter *outer*, *startdir* and *stopdir*.
+        These are directions (in degrees counter-clockwise from horizontal) for wedge.
         Parameters not appended are read from file starting from column 4.
-        Append **+i and append a nonzero inner diameter *inner* or it will be read last [0].
+        Append **+i** and append a nonzero inner diameter *inner* or it will be read last [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
         if *dr* is appended then we draw all arc lines separated radially by *dr*.
         Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
         if *da* is appended then we draw all radial lines separated angularly by *da*.
         These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
 
-    **-SW**\ [*outer*[/*startdir*/*stopdir*]][**+i**\ [*inner*]]
+    **-SW**\ [*outer*\ [/*startdir*/*stopdir*]][**+i**\ [*inner*]]
         Same as **-Sw**, except azimuths (in degrees east of north) should
         be given instead of the two directions. The azimuths will be mapped
         into angles based on the chosen map projection (**-Sw** leaves the
         directions unchanged).The two diameters are expected in geographic units.
         However, if specified on the command line we also accept plot dimension units.
-        Append **+i and append a nonzero inner diameter *inner* or it will be read last [0].
+        Append **+i** and append a nonzero inner diameter *inner* or it will be read last [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
         if *dr* is appended then we draw all arc lines separated radially by *dr*.
         Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
