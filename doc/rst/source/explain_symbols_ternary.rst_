@@ -14,9 +14,9 @@
     those values to suitable symbol sizes via the **-i** mechanism. The general
     input expectations are::
 
-    *x y* [ *z* ] [ *size* ] [ *symbol-parameters* ] [ *symbol* ]
+    *coordinates* [ *value* ] [ *size* ] [ *symbol-parameters* ] [ *symbol* ]
 
-    where the optional *z* is required when **-C** is used, the optional
+    where the optional *value* is required when **-C** is used, the optional
     *size* is required when no symbol size is specified, and the trailing
     text with the symbol code is required when symbol code is not specified
     on the command line.  The *symbol-parameters* may vary in numbers; see
@@ -49,8 +49,8 @@
 
     **-Se**\ *direction*/*major_axis*/*minor_axis*
         **e**\ llipse. If not given, then *direction* (in degrees counter-clockwise from horizontal),
-        *major_axis*, and *minor_axis* must be found in columns 3, 4, and 5.  If only a single
-        *size* is given then we plot a degenerate ellipse (circle) with given diameter.
+        *major_axis*, and *minor_axis* must be found after the location [and *value*] columns.
+        If only a single *size* is given then we plot a degenerate ellipse (circle) with given diameter.
 
     **-Sg**\ *size*
         octa\ **g**\ on. *size* is diameter of circumscribing circle.
@@ -63,8 +63,8 @@
 
     **-Sj**\ *direction*/*width*/*height*
         Rotated rectangle. If not given, then *direction* (in degrees counter-clockwise from
-        horizontal), *width*, and *height* must be found in columns 3, 4, and 5.  If only a single
-        *size* is given then we plot a degenerate rectangle (square) with given size.
+        horizontal), *width*, and *height* must be found after the location [and *value*] columns.
+        If only a single *size* is given then we plot a degenerate rectangle (square) with given size.
 
     **-Sk**\ *name*\ /\ *size*
         **k**\ ustom symbol. We will look for a symbol definition file called *name*\ .def in
@@ -91,11 +91,11 @@
 
     **-Sr**\ *width*/*height*
         **r**\ ectangle. If *width*/*height* are not given, then the x- and
-        y-dimensions must be found in data columns 3 and 4.
+        y-dimensions must be found after the location [and *value*] columns.
 
     **-SR**\ *width*/*height*/*radius*
-        **R**\ ounded rectangle. If *width*/*height*/*radius* are not given, then the x-
-        and y-dimensions and corner radius must be found in columns 3, 4, and 5.
+        **R**\ ounded rectangle. If *width*/*height*/*radius* are not given, then the two
+        dimensions and corner radius must be found after the location [and *value*] columns.
 
     **-Ss**\ *size*
         **s**\ quare. *size* is diameter of circumscribing circle.
@@ -106,7 +106,7 @@
     **-Sw**\ [*outer*\ [/*startdir*/*stopdir*]][**+i**\ [*inner*]]
         Pie **w**\ edge. Give the outer diameter *outer*, *startdir* and *stopdir*.
         These are directions (in degrees counter-clockwise from horizontal) for wedge.
-        Parameters not appended are read from file starting from column 3.
+        Parameters not appended are read from file after the location [and *value*] columns.
         Append **+i** and append a nonzero inner diameter *inner* or it will be read last [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
         if *dr* is appended then we draw all arc lines separated radially by *dr*.

@@ -13,7 +13,7 @@
     those values to suitable symbol sizes via the **-i** mechanism. The general
     input expectations are:
 
-    *x y* [ *value* ] [ *size* ] [ *symbol-parameters* ] [ *symbol* ]
+    *coordinates* [ *value* ] [ *size* ] [ *symbol-parameters* ] [ *symbol* ]
 
     where the optional *value* is required when **-C** is used, the optional
     *size* is required when no symbol size is specified, and the trailing
