@@ -354,7 +354,7 @@
     **-St**\ *size*
         **t**\ riangle. *size* is diameter of circumscribing circle.
 
-    **-Su**
+    **-Su**\ *size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]
         c\ **u**\ be (3-D).  The *size)* sets length of all sides. Append
         **u** if *size* is in x-units [Default is plot-distance units].
         The facet colors will be modified to simulate shading.
