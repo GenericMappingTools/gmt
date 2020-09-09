@@ -13,21 +13,23 @@
     those values to suitable symbol sizes via the **-i** mechanism. The general
     input expectations are:
 
-    *coordinates* [ *value* ] [ *size* ] [ *symbol-parameters* ] [ *symbol* ]
+    *coordinates* [ *value* ] [ *parameters* ] [ *symbol* ]
 
-    where *coordinates* is two or three columns specifying the location of the point,
+    where *coordinates* is two or three columns specifying the location of a point,
     the optional *value* is required when **-C** is used to control color, the optional
-    *size* is required when no symbol size is specified, and the trailing
-    text with leading symbol code is required when symbol code is not specified
-    on the command line.  The extra *symbol-parameters* may vary in numbers depending
-    on the symbol and is used when a symbol requires more than one *size* parameter;
-    see specifics below.
+    *parameters* is required when no symbol size is specified, and the trailing
+    text with leading *symbol* code is required when the symbol code is not specified
+    on the command line.  **Note**: *parameters* may represent more than one *size*
+    column as some symbols require several parameters to be defined (e.g., a circle
+    just needs one column, a rectangle needs two dimensions, while an ellipse needs an
+    orientation and two dimensions, and so on); see specifics below.  When there is only
+    a single parameter we will refer to it as *size*.
 
     You can also change symbols by adding the required **-S** option to any of
     your multi-segment headers.
 
     We will first outline the 14 basic geometric symbols that only require
-    a *single* size parameter:
+    a *single* parameter: *size*.
 
     .. figure:: /_images/GMT_base_symbols1.*
         :width: 600 px
@@ -86,8 +88,8 @@
     diameter *size*, while the *size* of the corresponding lowercase symbols
     refers to the diameter of a circumscribed circle.
 
-    The next collection shows five symbols that require two or more size parameters, and
-    some have optional modifiers to extend the symbol appearance.
+    The next collection shows five symbols that require two or more parameters, and
+    some have optional modifiers to enhance the symbol appearance.
 
     .. figure:: /_images/GMT_base_symbols2.*
         :width: 600 px
@@ -166,7 +168,7 @@
         For allowable geographical units, see `Units`_ [Default is k for km].
 
     Text is normally placed with :doc:`text` but there are times we wish to treat a character
-    of even a string as a plottable symbol:
+    of even a string as a symbol to be plotted:
 
     .. figure:: /_images/GMT_base_symbols3.*
         :width: 600 px
@@ -210,8 +212,8 @@
         data column.  Use **+B**\ [*base*] if the bar length is measured relative
         to *base* [Relative to origin].
 
-    The next family of symbols are all different types of *vectors*. Apart from requiring
-    either *length* and *direction* (or optionally the two coordinates of the end point), we
+    The next family of symbols are all different types of *vectors*. Apart from requiring parameters
+    such as *length* and *direction* (or optionally the coordinates of the end point), we also
     offer a rich set of modifiers to customize the vector head(s).
 
     .. figure:: /_images/GMT_base_symbols5.*
