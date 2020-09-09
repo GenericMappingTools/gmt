@@ -9,17 +9,19 @@
     :term:`PROJ_LENGTH_UNIT`]. **Note**: If you provide *both* size and symbol via the
     input file you *must* use :term:`PROJ_LENGTH_UNIT` to indicate the unit
     used for the symbol size or append the units to the sizes listed in the file.
-    If symbol sizes are expected via the a data column then you may convert
+    If symbol sizes are expected via one or more data columns then you may convert
     those values to suitable symbol sizes via the **-i** mechanism. The general
     input expectations are:
 
     *coordinates* [ *value* ] [ *size* ] [ *symbol-parameters* ] [ *symbol* ]
 
-    where the optional *value* is required when **-C** is used, the optional
+    where *coordinates* is two or three columns specifying the location of the point,
+    the optional *value* is required when **-C** is used to control color, the optional
     *size* is required when no symbol size is specified, and the trailing
     text with leading symbol code is required when symbol code is not specified
-    on the command line.  Extra *symbol-parameters* may vary in numbers depending
-    on the symbol; see specifics below.
+    on the command line.  The extra *symbol-parameters* may vary in numbers depending
+    on the symbol and is used when a symbol requires more than one *size* parameter;
+    see specifics below.
 
     You can also change symbols by adding the required **-S** option to any of
     your multi-segment headers.
