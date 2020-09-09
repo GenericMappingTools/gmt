@@ -82,7 +82,7 @@ Optional Arguments
 
 .. _-S:
 
-.. include:: explain_symbols_only.rst_
+.. include:: explain_symbols_ternary.rst_
 
 .. _-U:
 
