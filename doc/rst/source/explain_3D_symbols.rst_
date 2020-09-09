@@ -25,7 +25,7 @@
         requires **-C** and will use the band number (0, 1, *nbands*\ -1) to assign the band color.
 
     **-Su**\ *size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]
-        c\ **u**\ be (3-D).  The *size)* sets length of all sides. Append
+        c\ **u**\ be (3-D).  The *size* sets length of all sides. Append
         **u** if *size* is in x-units [Default is plot-distance units].
         The facet colors will be modified to simulate shading.
         Use **-SU** to disable 3-D illumination.
