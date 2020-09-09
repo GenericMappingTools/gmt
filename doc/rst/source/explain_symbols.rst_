@@ -100,7 +100,7 @@
 
     **-Se**\ *direction*/*major_axis*/*minor_axis*
         **e**\ llipse. If not given, then *direction* (in degrees counter-clockwise from horizontal),
-        *major_axis*, and *minor_axis* must be found after the location [and *value*] columns. This option yields
+        *major_axis*, and *minor_axis* must be found after the *coordinates* [and *value*] columns. This option yields
         a Cartesian ellipse whose shape is unaffected by the map projection.  If only a single
         *size* is given then we plot a degenerate ellipse (circle) with given diameter.
 
