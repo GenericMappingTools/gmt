@@ -12,7 +12,7 @@
     used for the symbol size or append the units to the sizes in the file.
     If symbol sizes are expected via the third data column then you may convert
     those values to suitable symbol sizes via the **-i** mechanism. The general
-    input expectations are::
+    input expectations are:
 
     *coordinates* [ *value* ] [ *parameters* ] [ *symbol* ]
 
