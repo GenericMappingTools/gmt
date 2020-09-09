@@ -132,7 +132,9 @@ Optional Arguments
 
 .. _-S:
 
-.. include:: explain_symbols2.rst_
+.. include:: explain_symbols.rst_
+
+.. include:: explain_3D_symbols.rst_
 
 .. _-U:
 
