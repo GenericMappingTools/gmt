@@ -14,13 +14,17 @@
     those values to suitable symbol sizes via the **-i** mechanism. The general
     input expectations are::
 
-    *coordinates* [ *value* ] [ *size* ] [ *symbol-parameters* ] [ *symbol* ]
+    *coordinates* [ *value* ] [ *parameters* ] [ *symbol* ]
 
-    where the optional *value* is required when **-C** is used, the optional
-    *size* is required when no symbol size is specified, and the trailing
-    text with the symbol code is required when symbol code is not specified
-    on the command line.  The *symbol-parameters* may vary in numbers; see
-    specifics below.
+    where *coordinates* is two or three columns specifying the location of a point,
+    the optional *value* is required when **-C** is used to control color, the optional
+    *parameters* is required when no symbol size is specified, and the trailing
+    text with leading *symbol* code is required when the symbol code is not specified
+    on the command line.  **Note**: *parameters* may represent more than one *size*
+    column as some symbols require several parameters to be defined (e.g., a circle
+    just needs one column, a rectangle needs two dimensions, while an ellipse needs an
+    orientation and two dimensions, and so on); see specifics below.  When there is only
+    a single parameter we will refer to it as *size*.
     
     The uppercase symbols **A**, **C**, **D**, **G**, **H**, **I**, **N**,
     **S**, **T** are normalized to have the same area as a circle with
