@@ -79,7 +79,7 @@
         Alternatively, you can supply an EPS file instead of a \*.def file and
         we will scale and place that graphic as a symbol.
 
-    **-Sl**\ *size*\ **+t**\ *string*\ [**+f**\ *font*]
+    **-Sl**\ *size*\ **+t**\ *string*\ [**+f**\ *font*][**+j**\ *justify*]
         **l**\ etter or text string (less than 256 characters). Give size, and
         append **+t**\ *string* after the size. Note that the size is only approximate;
         no individual scaling is done for different characters. Remember to
@@ -94,8 +94,9 @@
         **p**\ oint. No size needs to be specified (1 pixel is used).
 
     **-Sr**\ *width*/*height*
-        **r**\ ectangle. If *width*/*height* are not given, then the x- and
-        y-dimensions must be found after the location [and *value*] columns.
+        **r**\ ectangle. If *width*/*height* are not given, then these
+        dimensions must be found after the location [and *value*] columns.  Alternatively, append **+s**
+        and then the diagonal corner coordinates are expected after the location [and *value*] columns instead.
 
     **-SR**\ *width*/*height*/*radius*
         **R**\ ounded rectangle. If *width*/*height*/*radius* are not given, then the two

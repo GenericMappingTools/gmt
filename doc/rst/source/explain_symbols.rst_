@@ -136,7 +136,7 @@
     **-Sr**\ *width*/*height*
         **r**\ ectangle. If *width*/*height* are not given, then these
         dimensions must be found after the location [and *value*] columns.  Alternatively, append **+s**
-        and then the diagonal corner coordinates are expected in columns 3 and 4 instead.
+        and then the diagonal corner coordinates are expected after the location [and *value*] columns instead.
 
     **-SR**\ *width*/*height*/*radius*
         **R**\ ounded rectangle. If *width*/*height*/*radius* are not given, then the
@@ -178,7 +178,7 @@
         specific fonts (size and type) and control outline and the fill properties. Note there
         is no mechanism to perfectly center the string; see **-D** to make a simple global adjustment.
 
-    **-Sl**\ *size*\ **+t**\ *string*\ [**+f**\ *font*]
+    **-Sl**\ *size*\ **+t**\ *string*\ [**+f**\ *font*][**+j**\ *justify*]
         **l**\ etter or text string (less than 256 characters). Give size, and
         append **+t**\ *string* after the size. **Note**: The size is only approximate;
         no individual scaling is done for different characters. Remember to
