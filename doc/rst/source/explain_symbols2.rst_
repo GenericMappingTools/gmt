@@ -28,20 +28,20 @@
     refers to the diameter of a circumscribed circle.
 
     You can change symbols by adding the required **-S** option to any of
-    your multisegment headers.
+    your multi-segment headers.
 
     Choose between these symbol codes:
 
-    **-S-**
+    **-S-**\ *size*
         x-dash (-). *size* is the length of a short horizontal (x-dir) line segment.
 
-    **-S+**
+    **-S+**\ *size*
         plus (+). *size* is diameter of circumscribing circle.
 
-    **-Sa**
+    **-Sa**\ *size*
         st\ **a**\ r. *size* is diameter of circumscribing circle.
 
-    **-Sb**
+    **-Sb**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ \|\ **B**\ [*base*]]
         Vertical **b**\ ar extending from *base* to y. The *size* is bar width.
         Append **u** if *size* is in x-units [Default is plot-distance units].
         By default, *base* = 0. Append **+b**\ [*base*] to change this
@@ -49,7 +49,7 @@
         data column.  Use **+B**\ [*base*] if the bar height is measured relative
         to *base* [Relative to origin].
 
-    **-SB**
+    **-SB**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ \|\ **B**\ [*base*]]
         Horizontal **b**\ ar extending from *base* to x. The *size* is bar width.
         Append **u** if *size* is in y-units [Default is plot-distance units].
         By default, *base* = 0. Append **+b**\ [*base*] to change this
@@ -57,18 +57,18 @@
         data column.  Use **+B**\ [*base*] if the bar length is measured relative
         to *base* [Relative to origin].
 
-    **-Sc**
+    **-Sc**\ *size*
         **c**\ ircle. *size* is diameter of circle.
 
-    **-Sd**
+    **-Sd**\ *size*
         **d**\ iamond. *size* is diameter of circumscribing circle.
 
-    **-Se**
+    **-Se**\ *direction*/*major_axis*/*minor_axis*
         **e**\ llipse. If not given, then *direction* (in degrees counter-clockwise from horizontal),
-        *major_axis*, and *minor_axis* must be found in columns 4, 5, and 6.  If only *size* is
-        given then we plot a degenerate ellipse (circle) with given diameter
+        *major_axis*, and *minor_axis* must be found in columns 4, 5, and 6.  If only a single
+        *size* is given then we plot a degenerate ellipse (circle) with given diameter.
 
-    **-SE**
+    **-SE**\ *azimuth*/*major_axis*/*minor_axis*
         Same as **-Se**, except *azimuth* (in degrees east of north) should be
         given instead of *direction*. The *azimuth* will be mapped into an angle
         based on the chosen map projection (**-Se** leaves the directions
@@ -100,21 +100,21 @@
         By placing **-Sf** options in the segment header you can change the front
         types on a segment-by-segment basis.
 
-    **-Sg**
+    **-Sg**\ *size*
         octa\ **g**\ on. *size* is diameter of circumscribing circle.
 
-    **-Sh**
+    **-Sh**\ *size*
         **h**\ exagon. *size* is diameter of circumscribing circle.
 
-    **-Si**
+    **-Si**\ *size*
         **i**\ nverted triangle. *size* is diameter of circumscribing circle.
 
-    **-Sj**
+    **-Sj**\ *direction*/*width*/*height*
         Rotated rectangle. If not given, then *direction* (in degrees counter-clockwise from
-        horizontal), *width* and *height* must be found in columns 4, 5, and 6.  If only *size* is
-        given then we plot a degenerate ellipse (circle) with given diameter.
+        horizontal), *width* and *height* must be found in columns 4, 5, and 6.  If only a single
+        *size* is given then we plot a degenerate ellipse (circle) with given diameter.
 
-    **-SJ**
+    **-SJ**\ *azimuth*/*width*/*height*
         Same as **-Sj**, except *azimuth* (in degrees east of north) should be
         given instead of *direction*. The *azimuth* will be mapped into an angle
         based on the chosen map projection (**-Sj** leaves the directions
@@ -125,16 +125,16 @@
         For allowable geographical units, see `Units`_ [Default is k for km].
         The shape of the rectangle will be affected by the properties of the map projection.
 
-    **-Sk**
-        **k**\ ustom symbol. Append <name>/*size*, and we will look for a
-        definition file called <name>.def in (1) the current
-        directory or (2) in ~/.gmt or (3) in
-        **$GMT\_SHAREDIR**/custom. The symbol as defined in that file is of size
-        1.0 by default; the appended *size* will scale symbol accordingly.
-        The symbols are plotted in the *x-y* plane.  Users
-        may add their own custom \*.def files; see `Custom Symbols`_ below.
+    **-Sk**\ *name*\ /\ *size*
+        **k**\ ustom symbol. We will look for a symbol definition file called *name*\ .def in
+        (1) the current directory, (2) in ~/.gmt or (3) in **$GMT_SHAREDIR**/custom.
+        The symbol defined in the definition file is of normalized unit size by default;
+        the appended *size* will scale the symbol accordingly. Users may create their own
+        custom \*.def files; see `Custom Symbols`_ below.
+        Alternatively, you can supply an EPS file instead of a \*.def file and
+        we will scale and place that graphic as a symbol.
 
-    **-Sl**
+    **-Sl**\ *size*\ **+t**\ *string*\ [**+f**\ *font*]
         **l**\ etter or text string (less than 64 characters). Give size, and
         append /*string* after the size. Note that the size is only approximate;
         no individual scaling is done for different characters. Remember to
@@ -142,7 +142,7 @@
         to select a particular font [Default is :term:`FONT_ANNOT_PRIMARY`] and
         **+j**\ *justify* to change justification [CM].
 
-    **-Sm**
+    **-Sm**\ *size*\ [**+**\ *vecmodifiers*]
         **m**\ ath angle arc, optionally with one or two arrow heads [Default is
         no arrow heads]. The *size* is the length of the vector head. Arc width
         is set by **-W**, with vector head outlines defaulting to half of arc width.
@@ -150,14 +150,14 @@
         directions (in degrees counter-clockwise from horizontal) must be given
         in columns 4-6. See `Vector Attributes`_ for specifying attributes.
 
-    **-SM**
+    **-SM**\ *size*\ [**+**\ *vecmodifiers*]
         Same as **-Sm** but switches to straight angle symbol if angles subtend
         90 degrees exactly.
 
-    **-Sn**
+    **-Sn**\ *size*
         pe\ **n**\ tagon. *size* is diameter of circumscribing circle.
 
-    **-So**
+    **-So**\ *size*\ [**c**\|\ **i**\|\ **p**\|\ **u**][**+b**\ \|\ **B**\ [*base*]]
         c\ **o**\ lumn (3-D) extending from *base* to *z*.  The *size* sets base width
         (Use *xsize/ysize* if not the same).  Append **u** if *size* is in the users' x-units
         [Default is plot-distance units].  If no *size* is given we expect both *xsize*
@@ -177,14 +177,11 @@
     **-Sp**
         **p**\ oint. No size needs to be specified (1 pixel is used).
 
-    **-Sq**
-        **q**\ uoted line, i.e., lines with annotations such as contours.
-        It is assumed that each individual line has a constant *z* level
-        (i.e., each line must lie in the *x-y* plane).  Append
-        [**d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **x**\|\ **X**]\ *info*\ [:*labelinfo*].
-        Note the colon that separates the algorithm settings from the label information.
-        The required argument controls the placement of labels along the quoted
-        lines. Choose among five controlling algorithms:
+    **-Sq**\ **d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **N**\|\ **s**\|\ **S**\|\ **x**\|\ **X**\ *posinfo*\ [:*labelinfo*]
+        **q**\ uoted line, i.e., lines with occasional annotations such as contours. Append
+        a required algorithm code and *posinfo* that control the placement of labels along the quoted lines.
+        **Note**: The colon separates the algorithm settings from the label information.
+        Choose among six controlling algorithms:
 
             **d**\ *dist*\ [**c**\|\ **i**\|\ **p**] or **D**\ *dist*\ [**d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**]
                 For lower case **d**, give distances between labels on the plot in
@@ -343,18 +340,18 @@
         **Note**: By placing **-Sq** options in the segment header you can change
         the quoted text attributes on a segment-by-segment basis.
 
-    **-Sr**
+    **-Sr**\ *width*/*height*
         **r**\ ectangle. If *width*/*height* are not given, then, the x- and
         y-dimensions must be found in data columns 4 and 5.
 
-    **-SR**
+    **-SR**\ *width*/*height*/*radius*
         **R**\ ounded rectangle. If *width*/*height*/*radius* are not given, then the x-
         and y-dimensions and corner radius must be found in columns 4, 5, and 6.
 
-    **-Ss**
+    **-Ss**\ *size*
         **s**\ quare. *size* is diameter of circumscribing circle.
 
-    **-St**
+    **-St**\ *size*
         **t**\ riangle. *size* is diameter of circumscribing circle.
 
     **-Su**
@@ -363,7 +360,7 @@
         The facet colors will be modified to simulate shading.
         Use **-SU** to disable such 3-D illumination.
 
-    **-Sv**
+    **-Sv**\ *size*\ [**+**\ *vecmodifiers*]
         **v**\ ector. Direction (in degrees counter-clockwise from
         horizontal) and length must be found in columns 4 and 5, and *size*,
         if not specified on the command-line, should be  present in column 3,
@@ -374,7 +371,7 @@
         that using color via a CPT implies a shift of columns 4 and on to accommodate
         the color fill determined by the z-value in new 4rd column (See **-C** option).
 
-    **-SV**
+    **-SV**\ *size*\ [**+**\ *vecmodifiers*]
         Same as **-Sv**, except azimuth (in degrees east of north) should be
         given instead of direction. The azimuth will be mapped into an angle
         based on the chosen map projection (**-Sv** leaves the directions
@@ -405,13 +402,13 @@
         These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
         For allowable geographical units, see `Units`_ [Default is k for km].
 
-    **-Sx**
+    **-Sx**\ *size*
         cross (x). *size* is diameter of circumscribing circle.
 
-    **-Sy**
+    **-Sy**\ *size*
         y-dash (\|). *size* is the length of a short horizontal (y-dir) line segment.
 
-    **-S=**
+    **-S=**\ [**+**\ *vecmodifiers*]
         geovector. Azimuth (in degrees east from north) and length (in km)
         must be found in columns 4 and 5. The *size* is the length of the
         vector head. Vector width is set by **-W**. See `Vector Attributes`_
@@ -419,12 +416,11 @@
         filled polygons and hence pen attributes like dashed and dotted are
         not available. For allowable geographical units, see `Units`_.
 
-    **-S~**
-        decorated line, i.e., lines with symbols along them. Append
-        [**d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **N**\|\ **s**\|\ **S**\|\ **x**\|\ **X**]\ *info*\ [:*symbolinfo*].
-        Note the colon that separates the algorithm settings from the symbol information.
-        The required argument controls the placement of symbols along the decorated
-        lines. Choose among six controlling algorithms:
+    **-S~**\ **d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **N**\|\ **s**\|\ **S**\|\ **x**\|\ **X**\ *posinfo*\ :*symbolinfo*
+        Decorated line, i.e., lines with symbols placed along them. Append
+        a required algorithm code and *posinfo* that control the placement of symbols along the decorated lines.
+        **Note**: The colon separates the algorithm settings from the required symbol information.
+        Choose among six controlling algorithms:
 
             **d**\ *dist*\ [**c**\|\ **i**\|\ **p**] or **D**\ *dist*\ [**d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**]
                 For lower case **d**, give distances between symbols on the plot in
@@ -470,9 +466,9 @@
                 intersections between the decorated lines and the lines in *xfile.d*.
                 **X** will resample the lines first along great-circle arcs.
 
-            The optional *symbolinfo* controls the specifics of the symbol selection and
-            formatting and consists of a concatenated string made up of any of
-            the following control arguments:
+            The optional *labelinfo* controls the specifics of the label
+            formatting.  If not provided we default to the text "N/A".  The argument
+            consists of a concatenated string made up of any of the following modifiers:
 
             **+a**\ *angle*
                 For symbols at a fixed angle, **+an** for line-normal, or

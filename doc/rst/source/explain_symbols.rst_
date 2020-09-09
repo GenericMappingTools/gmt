@@ -23,7 +23,7 @@
     specifics below.
 
     You can change symbols by adding the required **-S** option to any of
-    your multisegment headers.
+    your multi-segment headers.
 
     We will first outline the 14 basic geometric symbols that only require
     a *single* size parameter:
@@ -38,46 +38,46 @@
         may have outline (**-W**) and fill (**-G**) specified.
         The thin circles represent the circumscribing circle of the same size.
 
-    **-S-**
+    **-S-**\ *size*
         x-dash (-). *size* is the length of a short horizontal (x-dir) line segment.
 
-    **-S+**
+    **-S+**\ *size*
         Plus (+). *size* is diameter of circumscribing circle.
 
-    **-Sa**
+    **-Sa**\ *size*
         St\ **a**\ r. *size* is diameter of circumscribing circle.
 
-    **-Sc**
+    **-Sc**\ *size*
         **c**\ ircle. *size* is diameter of circle.
 
-    **-Sd**
+    **-Sd**\ *size*
         **d**\ iamond. *size* is diameter of circumscribing circle.
 
-    **-Sg**
+    **-Sg**\ *size*
         Octa\ **g**\ on. *size* is diameter of circumscribing circle.
 
-    **-Sh**
+    **-Sh**\ *size*
         **h**\ exagon. *size* is diameter of circumscribing circle.
 
-    **-Si**
+    **-Si**\ *size*
         **i**\ nverted triangle. *size* is diameter of circumscribing circle.
 
-    **-Sn**
+    **-Sn**\ *size*
         Pe\ **n**\ tagon. *size* is diameter of circumscribing circle.
 
-    **-Sp**
+    **-Sp**\ *size*
         **p**\ oint. No size needs to be specified (1 pixel is used).
 
-    **-Ss**
+    **-Ss**\ *size*
         **s**\ quare. *size* is diameter of circumscribing circle.
 
-    **-St**
+    **-St**\ *size*
         **t**\ riangle. *size* is diameter of circumscribing circle.
 
-    **-Sx**
+    **-Sx**\ *size*
         Cross (x). *size* is diameter of circumscribing circle.
 
-    **-Sy**
+    **-Sy**\ *size*
         y-dash (\|). *size* is the length of a short vertical (y-dir) line segment.
 
     **Note**: The uppercase symbols **A**, **C**, **D**, **G**, **H**, **I**, **N**,
@@ -97,13 +97,13 @@
         Upper-case versions **E**, **J**, and **W** are similar to **e**, **j** and **w**
         but expect geographic azimuths and distances.
 
-    **-Se**
+    **-Se**\ *direction*/*major_axis*/*minor_axis*
         **e**\ llipse. If not given, then *direction* (in degrees counter-clockwise from horizontal),
         *major_axis*, and *minor_axis* must be found in columns 3, 4, and 5. This option yields
-        a Cartesian ellipse whose shape is unaffected by the map projection.  If only a *size* is
-        given then we plot a degenerate ellipse (circle) with given diameter.
+        a Cartesian ellipse whose shape is unaffected by the map projection.  If only a single
+        *size* is given then we plot a degenerate ellipse (circle) with given diameter.
 
-    **-SE**
+    **-SE**\ *azimuth*/*major_axis*/*minor_axis*
         Same as **-Se**, except *azimuth* (in degrees east of north) should be
         given instead of *direction*. The *azimuth* will be mapped into an angle
         based on the chosen map projection (**-Se** leaves the directions
@@ -114,12 +114,12 @@
         For allowable geographical units, see `Units`_ [Default is **k** for km].
         The shape of the ellipse will be affected by the properties of the map projection.
 
-    **-Sj**
+    **-Sj**\ *direction*/*width*/*height*
         Rotated rectangle. If not given, then *direction* (in degrees counter-clockwise from
-        horizontal), *width*, and *height* must be found in columns 3, 4, and 5.  If only *size* is
-        given then we plot a degenerate rectangle (square) with given size.
+        horizontal), *width*, and *height* must be found in columns 3, 4, and 5.   If only a single
+        *size* is given then we plot a degenerate rectangle (square) with given size.
 
-    **-SJ**
+    **-SJ**\ *azimuth*/*width*/*height*
         Same as **-Sj**, except *azimuth* (in degrees east of north) should be
         given instead of *direction*. The *azimuth* will be mapped into an angle
         based on the chosen map projection (**-Sj** leaves the directions
@@ -130,12 +130,12 @@
         For allowable geographical units, see `Units`_ [Default is k for km].
         The shape of the rectangle will be affected by the properties of the map projection.
 
-    **-Sr**
+    **-Sr**\ *width*/*height*
         **r**\ ectangle. If *width*/*height* are not given, then these
         dimensions must be found in data columns 3 and 4.  Alternatively, append **+s**
         and then the diagonal corner coordinates are expected in columns 3 and 4 instead.
 
-    **-SR**
+    **-SR**\ *width*/*height*/*radius*
         **R**\ ounded rectangle. If *width*/*height*/*radius* are not given, then the
         two dimensions and corner radius must be found in columns 3, 4, and 5.
 
@@ -175,7 +175,7 @@
         specific fonts (size and type) and control outline and the fill properties. Note there
         is no mechanism to perfectly center the string; see **-D** to make a simple global adjustment.
 
-    **-Sl**
+    **-Sl**\ *size*\ **+t**\ *string*\ [**+f**\ *font*]
         **l**\ etter or text string (less than 256 characters). Give size, and
         append **+t**\ *string* after the size. **Note**: The size is only approximate;
         no individual scaling is done for different characters. Remember to
@@ -221,7 +221,7 @@
         While their use is slightly different, they all share common modifiers that affect how
         they are displayed.
 
-    **-Sm**
+    **-Sm**\ *size*\ [**+**\ *vecmodifiers*]
         **m**\ ath angle arc, optionally with one or two arrow heads [Default is
         no arrow heads]. The *size* is the length of the vector head. Arc width
         is set by **-W**, with vector head outlines defaulting to half of arc width.
@@ -229,11 +229,11 @@
         directions (in degrees counter-clockwise from horizontal) must be given
         in columns 3-5. See `Vector Attributes`_ for specifying other attributes.
 
-    **-SM**
+    **-SM**\ *size*\ [**+**\ *vecmodifiers*]
         Same as **-Sm** but switches to straight angle symbol if *start* and *stop*
         angles subtend 90 degrees exactly.
 
-    **-Sv**
+    **-Sv**\ *size*\ [**+**\ *vecmodifiers*]
         **v**\ ector. The *direction* (in degrees counter-clockwise from
         horizontal) and *length* must be found in columns 3 and 4, and *size*,
         if not specified on the command-line, should be present in column 5, pushing
@@ -244,7 +244,7 @@
         Using color via a CPT implies a shift of columns 3 and beyond to accommodate
         the color fill determined by the z-value in new 3rd column (See **-C** option).
 
-    **-SV**
+    **-SV**\ *size*\ [**+**\ *vecmodifiers*]
         Same as **-Sv**, except *azimuth* (in degrees east of north) should be
         given instead of *direction*. The *azimuth* will be mapped into an angle
         based on the chosen map projection (**-Sv** leaves the directions
@@ -253,7 +253,7 @@
         to scale the corresponding column via the **+s**\ *scale* modifier.
         See `Vector Attributes`_ for specifying symbol attributes.
 
-    **-S=**
+    **-S=**\ *size*\ [**+**\ *vecmodifiers*]
         Geographic vector. Here, *azimuth* (in degrees east from north) and geographical *length*
         must be found in columns 3 and 4. The *size* is the length of the
         vector head. Vector width is set by **-W**. See `Vector Attributes`_
@@ -270,17 +270,16 @@
         Custom symbols are designed using the :ref:`Custom Symbol Macro Language <Custom_symbols>`.
         We supply about 40 custom symbols, and users have contributed discipline-specific
         symbols for structural geology and marine biology that you can explore from
-        the RESOURCES (see sidebar), so you have lots of
+        the RESOURCES page (see sidebar), so you have lots of
         examples to use as a template.  The language allows you to design symbols that
         takes many parameters and can make decisions based on these parameters.
 
-    **-Sk**
-        **k**\ ustom symbol. Append *name*\ /\ *size*, and we will look for a
-        definition file called *name*\ .def in (1) the current
-        directory or (2) in ~/.gmt or (3) in
-        **$GMT_SHAREDIR**/custom. The symbol as defined in that file is of size
-        1.0 by default; the appended *size* will scale symbol accordingly. Users
-        may add their own custom \*.def files; see `Custom Symbols`_ below.
+    **-Sk**\ *name*\ /\ *size*
+        **k**\ ustom symbol. We will look for a symbol definition file called *name*\ .def in
+        (1) the current directory, (2) in ~/.gmt or (3) in **$GMT_SHAREDIR**/custom.
+        The symbol defined in the definition file is of normalized unit size by default;
+        the appended *size* will scale the symbol accordingly. Users may create their own
+        custom \*.def files; see `Custom Symbols`_ below.
         Alternatively, you can supply an EPS file instead of a \*.def file and
         we will scale and place that graphic as a symbol.
 
@@ -328,16 +327,15 @@
         :width: 600 px
         :align: center
 
-        Quoted lines are lines with text.  However, the text can be static, read via files,
+        Quoted lines (**-Sq**) are lines with text.  However, the text can be static, read via files,
         or be quantities computed along the line.  This example just shows a wiggly line with
         a text-aligned label.  A rich set of modifier controls the appearance.
 
-    **-Sq**
-        **q**\ uoted line, i.e., lines with annotations such as contours. Append
-        [**d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **N**\|\ **s**\|\ **S**\|\ **x**\|\ **X**]\ *info*\ [:*labelinfo*].
+    **-Sq**\ **d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **N**\|\ **s**\|\ **S**\|\ **x**\|\ **X**\ *posinfo*\ [:*labelinfo*]
+        **q**\ uoted line, i.e., lines with occasional annotations such as contours. Append
+        a required algorithm code and *posinfo* that control the placement of labels along the quoted lines.
         **Note**: The colon separates the algorithm settings from the label information.
-        The required argument controls the placement of labels along the quoted
-        lines. Choose among six controlling algorithms:
+        Choose among six controlling algorithms:
 
             **d**\ *dist*\ [**c**\|\ **i**\|\ **p**] or **D**\ *dist*\ [**d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**]
                 For lower case **d**, give distances between labels on the plot in
@@ -387,8 +385,8 @@
                 label separation in the x-y plane [no limitation].
 
             The optional *labelinfo* controls the specifics of the label
-            formatting and consists of a concatenated string made up of any of
-            the following modifiers:
+            formatting.  If not provided we default to the text "N/A".  The argument
+            consists of a concatenated string made up of any of the following modifiers:
 
             **+a**\ *angle*
                 Force annotations at a fixed angle, **+an** for line-normal, or
@@ -507,7 +505,7 @@
         **Note**: By placing **-Sq** options in the segment header you can change
         the quoted text attributes on a segment-by-segment basis.
 
-    The final type of embellished line is called a *decorated* line.  It is a hybrid
+    The final type of embellished line is called a *decorated* line (**-S~**).  It is a hybrid
     between a *front* and *quoted* lines in that it offers symbols similar to a front
     but the placement can be specified in ways similar to the quoted line:
 
@@ -519,12 +517,11 @@
         the symbol is aligned with the line trend, but numerous modifiers allow you to
         customize the appearance, including to make the line invisible.
 
-    **-S~**
+    **-S~**\ **d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **N**\|\ **s**\|\ **S**\|\ **x**\|\ **X**\ *posinfo*\ :*symbolinfo*
         Decorated line, i.e., lines with symbols placed along them. Append
-        [**d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **N**\|\ **s**\|\ **S**\|\ **x**\|\ **X**]\ *info*\ [:*symbolinfo*].
-        **Note**: The colon separates the algorithm settings from the symbol information.
-        The required argument controls the placement of symbols along the decorated
-        lines. Choose among six controlling algorithms:
+        a required algorithm code and *posinfo* that control the placement of symbols along the decorated lines.
+        **Note**: The colon separates the algorithm settings from the required symbol information.
+        Choose among six controlling algorithms:
 
             **d**\ *dist*\ [**c**\|\ **i**\|\ **p**] or **D**\ *dist*\ [**d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**]
                 For lower case **d**, give distances between symbols on the plot in
@@ -570,7 +567,7 @@
                 intersections between the decorated lines and the lines in *xfile.txt*.
                 **X** will resample the lines first along great-circle arcs.
 
-            The optional *symbolinfo* controls the specifics of the symbol selection and
+            The required *symbolinfo* controls the specifics of the symbol selection and
             formatting and consists of a concatenated string made up of any of
             the following modifiers:
 
