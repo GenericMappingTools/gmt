@@ -1,7 +1,7 @@
 **-S**\ [*symbol*][*size*]
     Plot individual symbols in a ternary diagram.
-    If present, *size* is symbol size in the unit set in
-    :doc:`gmt.conf` (unless **c**, **i**, or **p** is appended). If the symbol
+    If present, *size* is symbol size in the unit set by
+    :term:`PROJ_LENGTH_UNIT` (unless **c**, **i**, or **p** is appended). If the symbol
     code (see below) is not given it will be read from the last column in
     the input data; this cannot be used in conjunction with binary input.
     Optionally, append **c**, **i**, or
