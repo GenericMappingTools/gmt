@@ -14962,7 +14962,6 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	}
 	else {	/* Everything else */
 		char s_upper;
-		size_t len;
 		n = sscanf (text, "%c%[^/]/%[^/]/%s", &symbol_type, txt_a, txt_b, txt_c);
 		s_upper = (char)toupper ((int)symbol_type);
 		if (strchr ("FVQM~", s_upper))	/* "Symbols" that do not take a normal symbol size */

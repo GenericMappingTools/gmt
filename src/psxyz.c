@@ -589,7 +589,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	bool default_outline, outline_active, save_u = false, geovector = false, can_update_headpen = true;
 	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol = 0, tcol = 0;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
-	unsigned int col, bcol, ex1, ex2, ex3, change = 0, n_needed, n_z = 0;
+	unsigned int bcol, ex1, ex2, ex3, change = 0, n_needed, n_z = 0;
 	int error = GMT_NOERROR;
 
 	uint64_t i, n, n_total_read = 0;
