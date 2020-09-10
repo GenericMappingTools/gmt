@@ -154,7 +154,6 @@ GMT_LOCAL double x2syssolve_basis_z (double **P, unsigned int which, uint64_t ro
 	return (P[COL_Z1+which][row]);
 }
 
-
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_SOLVE_CTRL *C;
 
@@ -280,7 +279,6 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GM
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
-
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
