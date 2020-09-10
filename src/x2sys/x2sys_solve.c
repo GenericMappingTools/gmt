@@ -596,6 +596,7 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	normalize = (Ctrl->E.mode == F_IS_DRIFT_T || Ctrl->E.mode == F_IS_DRIFT_D);	/* Only when the linear drift term is in effect */
 	if (normalize) {	/* For numerical stability, normalize distances or times to fall in 0-1 range */
+		char *type = (Ctrl->E.mode == F_IS_DRIFT_T) ? "times" : "distances";
 		min_extent = DBL_MAX;	max_extent = -DBL_MAX;
 		j = (Ctrl->E.mode == F_IS_DRIFT_T) ? COL_T1 : COL_D1;	/* Which variable we are working on */
 		for (k = 0; k < n_COE; k++) {
@@ -606,6 +607,7 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		}
 		range = max_extent - min_extent;
 		for (k = 0; k < n_COE; k++) for (i = 0; i < 2; i++) data[j+i][k] /= range;	/* Get normalized time or distance */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Normalized all %s by dividing with the maximum range = %g\n", type, range);
 	}
 
 	/* Estimate old weighted mean and std.dev */
