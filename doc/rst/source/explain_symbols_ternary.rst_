@@ -25,7 +25,7 @@
     just needs one column, a rectangle needs two dimensions, while an ellipse needs an
     orientation and two dimensions, and so on); see specifics below.  When there is only
     a single parameter we will refer to it as *size*.
-    
+
     The uppercase symbols **A**, **C**, **D**, **G**, **H**, **I**, **N**,
     **S**, **T** are normalized to have the same area as a circle with
     diameter *size*, while the *size* of the corresponding lowercase symbols
@@ -75,7 +75,7 @@
         (1) the current directory, (2) in ~/.gmt or (3) in **$GMT_SHAREDIR**/custom.
         The symbol defined in the definition file is of normalized unit size by default;
         the appended *size* will scale the symbol accordingly. Users may create their own
-        custom \*.def files; see `Custom Symbols`_ below.
+        custom \*.def files; see :ref:`Custom Symbols <Custom_symbols>`.
         Alternatively, you can supply an EPS file instead of a \*.def file and
         we will scale and place that graphic as a symbol.
 
