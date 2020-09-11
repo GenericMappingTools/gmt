@@ -16950,7 +16950,7 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 		answer = true;
 	}
 	if (fp) pclose (fp);
-
+	if (text) gmt_chop (text);	/* Get rid of newline */
 	return (answer);
 }
 
