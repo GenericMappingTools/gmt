@@ -2077,19 +2077,21 @@ GMT_LOCAL bool gmtmap_genperw_overlap (struct GMT_CTRL *GMT, double lon0, double
 	return (out0 != out1);
 }
 
+#define GMTMAP_N_STEPS 500	/* To avoid repeating 500 in many places */
+
 /*! . */
 GMT_LOCAL void gmtmap_xy_search (struct GMT_CTRL *GMT, double *x0, double *x1, double *y0, double *y1, double w0, double e0, double s0, double n0) {
 	unsigned int i, j;
-	double xmin, xmax, ymin, ymax, w, s, x, y, dlon, dlat;
+	double xmin, xmax, ymin, ymax, w, s, x = 0.0, y = 0.0, dlon, dlat;
 
 	/* Find min/max forward values */
 
 	xmax = ymax = -DBL_MAX;
 	xmin = ymin = DBL_MAX;
-	dlon = fabs (e0 - w0) / 500;
-	dlat = fabs (n0 - s0) / 500;
+	dlon = fabs (e0 - w0) / GMTMAP_N_STEPS;
+	dlat = fabs (n0 - s0) / GMTMAP_N_STEPS;
 
-	for (i = 0; i <= 500; i++) {
+	for (i = 0; i <= GMTMAP_N_STEPS; i++) {
 		w = w0 + i * dlon;
 		(*GMT->current.proj.fwd) (GMT, w, s0, &x, &y);
 		if (x < xmin) xmin = x;
@@ -2102,7 +2104,7 @@ GMT_LOCAL void gmtmap_xy_search (struct GMT_CTRL *GMT, double *x0, double *x1, d
 		if (x > xmax) xmax = x;
 		if (y > ymax) ymax = y;
 	}
-	for (j = 0; j <= 500; j++) {
+	for (j = 0; j <= GMTMAP_N_STEPS; j++) {
 		s = s0 + j * dlat;
 		(*GMT->current.proj.fwd) (GMT, w0, s, &x, &y);
 		if (x < xmin) xmin = x;
