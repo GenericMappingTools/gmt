@@ -9,6 +9,8 @@ Segment header records may contain one of more of the following options:
     Turn filling off
 **-G**
     Revert to default fill (none if not set on command line)
+**-L**\ *label*
+    Set a label for this segment (e.g., perhaps for quoted lines)
 **-W**\ *pen*
     Use the new *pen* and turn outline on
 **-W**

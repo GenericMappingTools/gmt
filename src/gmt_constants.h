@@ -511,7 +511,7 @@ enum GMT_enum_inonout {GMT_IOO_UNKNOWN = 0,	/* Decide based on range and type */
 	GMT_IOO_SPHERICAL};			/* Use spherical inside function */
 
 enum GMT_enum_path {GMT_RESAMPLE_PATH = 0,	/* Default: Resample geographic paths based in a max gap allowed (path_step) */
-	GMT_LEAVE_PATH};	/* Options like -A can turn of this resampling, where available */
+	GMT_LEAVE_PATH};	/* Options like -A can turn off this resampling, where available */
 
 enum GMT_enum_stairpath {GMT_STAIRS_OFF = 0,	/* Default: No stairclimbing */
 	GMT_STAIRS_Y,	/* Move vertically (meridian) to next point along y, then horizontally along x */

@@ -15886,6 +15886,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 		}
 		else {	/* Old syntax with no +modifier and with things separated by slashes */
 			if ((n = sscanf (&arg[k], "%[^/]/%s", txt_x, the_rest)) < 1) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Parsing of arguments (%s) failed \n", option, &arg[k]);
 				gmt_M_str_free (arg);
 				return NULL;	/* Not so good */
 			}
@@ -15908,6 +15909,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 				mode = GMT_REFPOINT_PLOT;
 			}
 			else if ((n2 = sscanf (&arg[k], "%[^/]/%s", txt_x, txt_y)) < 2) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Parsing of reference point (%s) failed - expected slash-separated pair of coordinates\n", option, &arg[k]);
 				arg[n] = '+';	/* Restore modifiers */
 				gmt_M_str_free (arg);
 				return NULL;	/* Not so good */
@@ -15915,6 +15917,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 		}
 		else { /* No such modifiers given, so just slashes or nothing follows */
 			if ((n = sscanf (&arg[k], "%[^/]/%[^/]/%s", txt_x, txt_y, the_rest)) < 2) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Parsing of arguments (%s )failed \n", option, &arg[k]);
 				gmt_M_str_free (arg);
 				return NULL;	/* Not so good */
 			}
@@ -16947,7 +16950,7 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 		answer = true;
 	}
 	if (fp) pclose (fp);
-
+	if (text) gmt_chop (text);	/* Get rid of newline */
 	return (answer);
 }
 

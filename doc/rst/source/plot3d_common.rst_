@@ -65,13 +65,13 @@ Optional Arguments
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
     If **-S** is set, let symbol fill color be
-    determined by the t-value in the fourth column. Additional fields are
+    determined by the *value* in the fourth column. Additional fields are
     shifted over by one column (optional size would be in 5th rather than
     4th field, etc.). An exception to this rule is for multi-band 3-D
     columns where each band gets its color from each slice in the CPT.
     If **-S** is not set, then we expect the user
     to supply a multisegment file (where each segment header contains a
-    **-Z**\ *val* string. The *val* will control the color of the line or
+    **-Z**\ *value* string. The *vauel* will control the color of the line or
     polygon (if **-L** is set) via the CPT.  If modern mode and no argument is given
     then we select the current CPT.
 
@@ -132,7 +132,9 @@ Optional Arguments
 
 .. _-S:
 
-.. include:: explain_symbols2.rst_
+.. include:: explain_symbols.rst_
+
+.. include:: explain_3D_symbols.rst_
 
 .. _-U:
 

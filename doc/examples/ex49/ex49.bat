@@ -42,13 +42,13 @@ gmt begin ex49
 	gmt plot -Ss0.4c -Gblue modal.txt -Ey+p1p,blue
 	gmt plot -Ss0.1c -Gwhite modal.txt
 	gmt basemap -R0/100/0/6.5 -JX6i/-4i -Bxaf+u" Myr" -Byaf+u" km" -BWsNe
-	echo S 0.5c - 0.9c - 4p,green 1c Parsons & Sclater (1977) > tmp.txt
-	echo S 0.5c - 0.9c - 4p,white 1c Stein & Stein (1992)	>> tmp.txt
+	echo S 0.5c - 0.9c - 4p,green 1c Parsons ^& Sclater (1977) > tmp.txt
+	echo S 0.5c - 0.9c - 4p,white 1c Stein ^& Stein (1992)	>> tmp.txt
 	echo S 0.5c s 0.4c blue - 1c Modal depth estimates		>> tmp.txt
 	gmt legend tmp.txt -DjRT+w6.5c+o0.25c -F+p1p+gbeige+s
 	echo S 0.5c - 0.9c - 1p 0.75c	> tmp.txt
 	echo S 0.5c - 0.9c - 1p 0.75c	>> tmp.txt
 	echo S 0.5c s 0.1c white - 0.75c	>> tmp.txt
 	gmt legend tmp.txt -DjRT+w6.5c+o0.25c
-	del age_pixel.nc depth_pixel.nc age.bin depth.bin depth-age.bin density.nc modal.txt ps.txt ss.txt z.cpt t.cpt
+	del age_pixel.nc depth_pixel.nc age.bin depth.bin depth-age.bin density.nc modal.txt ps.txt ss.txt z.cpt t.cpt tmp.txt
 gmt end show
