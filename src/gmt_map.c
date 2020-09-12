@@ -1049,7 +1049,7 @@ GMT_LOCAL int gmtmap_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double 
 	dx = x1 - x0;
 	if (fabs (dx) > map_half_size) {	/* Possible jump; let's see how far apart those longitudes really are */
 		/* This test on longitudes was added to deal with issue #672, also see test/psxy/nojump.sh */
-		double last_lon, this_lon, dummy, dlon;
+		double last_lon = 0.0, this_lon = 0.0, dummy = 0.0, dlon;
 		gmt_xy_to_geo (GMT, &last_lon, &dummy, x0, y0);
 		gmt_xy_to_geo (GMT, &this_lon, &dummy, x1, y1);
 		gmt_M_set_delta_lon (last_lon, this_lon, dlon);	/* Beware of jumps due to sign differences */
@@ -1077,7 +1077,7 @@ GMT_LOCAL int gmtmap_jump_xy (struct GMT_CTRL *GMT, double x0, double y0, double
 	dx = x1 - x0;
 	if (fabs (dx) > map_half_width) {	/* Possible jump; let's see how far apart those longitudes really are */
 		/* This test on longitudes was added to deal with issue #672, also see test/psxy/nojump.sh */
-		double last_lon, this_lon, dummy, dlon;
+		double last_lon = 0.0, this_lon = 0.0, dummy = 0.0, dlon;
 		double half_lon_range = (GMT->common.R.oblique) ? 180.0 : 0.5 * (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]);
 		gmt_xy_to_geo (GMT, &last_lon, &dummy, x0, y0);
 		gmt_xy_to_geo (GMT, &this_lon, &dummy, x1, y1);
@@ -2082,7 +2082,7 @@ GMT_LOCAL bool gmtmap_genperw_overlap (struct GMT_CTRL *GMT, double lon0, double
 /*! . */
 GMT_LOCAL void gmtmap_xy_search (struct GMT_CTRL *GMT, double *x0, double *x1, double *y0, double *y1, double w0, double e0, double s0, double n0) {
 	unsigned int i, j;
-	double xmin, xmax, ymin, ymax, w, s, x = 0.0, y = 0.0, dlon, dlat;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, w, s, x = 0.0, y = 0.0, dlon, dlat;
 
 	/* Find min/max forward values */
 
@@ -2749,7 +2749,7 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
  *	TRANSFORMATION ROUTINES FOR POLAR (theta,r) PROJECTION (GMT_POLAR)
  */
 GMT_LOCAL int gmtmap_init_polar (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	*search = false;
 	gmtproj_vpolar (GMT, GMT->current.proj.pars[1]);
@@ -2793,7 +2793,7 @@ GMT_LOCAL int gmtmap_init_polar (struct GMT_CTRL *GMT, bool *search) {
  *	TRANSFORMATION ROUTINES FOR THE MERCATOR PROJECTION (GMT_MERCATOR)
  */
 GMT_LOCAL int gmtmap_init_merc (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax, D = 1.0;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, D = 1.0;
 
 	*search = false;	/* No need to search for wesn */
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
@@ -2837,7 +2837,7 @@ GMT_LOCAL int gmtmap_init_merc (struct GMT_CTRL *GMT, bool *search) {
  *	TRANSFORMATION ROUTINES FOR CYLINDRICAL EQUAL-AREA PROJECTIONS (GMT_CYL_EQ)
  */
 GMT_LOCAL int gmtmap_init_cyleq (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	*search = false;	/* No need to search for wesn */
 	GMT->current.proj.Dx = GMT->current.proj.Dy = 0.0;
@@ -2887,7 +2887,7 @@ GMT_LOCAL int gmtmap_init_cyleq (struct GMT_CTRL *GMT, bool *search) {
  */
 
 GMT_LOCAL bool gmtmap_init_cyleqdist (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	*search = false;	/* No need to search for wesn */
 
@@ -2970,7 +2970,7 @@ GMT_LOCAL int gmtmap_init_miller (struct GMT_CTRL *GMT, bool *search) {
  *	TRANSFORMATION ROUTINES FOR CYLINDRICAL STEREOGRAPHIC PROJECTIONS (GMT_CYL_STEREO)
  */
 GMT_LOCAL int gmtmap_init_cylstereo (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	*search = false;	/* No need to search for wesn */
 	gmtmap_set_spherical (GMT, true);	/* Force spherical for now */
@@ -3007,7 +3007,7 @@ GMT_LOCAL int gmtmap_init_cylstereo (struct GMT_CTRL *GMT, bool *search) {
 
 GMT_LOCAL int gmtmap_init_stereo (struct GMT_CTRL *GMT, bool *search) {
 	unsigned int i;
-	double xmin, xmax, ymin, ymax, dummy, radius, latg, D = 1.0;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, dummy = 0.0, radius = 0.0, latg, D = 1.0;
 
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	latg = GMT->current.proj.pars[1];
@@ -3152,7 +3152,7 @@ GMT_LOCAL int gmtmap_init_stereo (struct GMT_CTRL *GMT, bool *search) {
  */
 
 GMT_LOCAL int gmtmap_init_lambert (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	GMT->current.proj.GMT_convert_latitudes = gmtmap_quickconic (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
@@ -3251,7 +3251,7 @@ GMT_LOCAL void gmtmap_pole_rotate_inverse (struct GMT_CTRL *GMT, double *lon, do
 
 /*! . */
 GMT_LOCAL void gmtmap_get_origin (struct GMT_CTRL *GMT, double lon1, double lat1, double lon_p, double lat_p, double *lon2, double *lat2) {
-	double beta, dummy, d, az, c;
+	double beta = 0.0, dummy = 0.0, d, az, c;
 
 	/* Now find origin that is 90 degrees from pole, let oblique lon=0 go through lon1/lat1 */
 	c = cosd (lat_p) * cosd (lat1) * cosd (lon1-lon_p);
@@ -3303,8 +3303,8 @@ GMT_LOCAL void gmtmap_get_rotate_pole (struct GMT_CTRL *GMT, double lon1, double
 
 /*! . */
 GMT_LOCAL int gmtmap_init_oblique (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax, dummy;
-	double o_x, o_y, p_x, p_y, az, b_x, b_y, w, e, s, n;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, dummy = 0.0;
+	double o_x = 0.0, o_y = 0.0, p_x = 0.0, p_y = 0.0, az, b_x = 0.0, b_y = 0.0, w, e, s, n;
 
 	*search = true;
 	gmtmap_set_spherical (GMT, true);	/* PW: Force spherical for now */
@@ -3497,7 +3497,7 @@ GMT_LOCAL int gmtmap_jump_tm (struct GMT_CTRL *GMT, double x0, double y0, double
 
 /*! . */
 GMT_LOCAL int gmtmap_init_tm (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	*search = GMT->common.R.oblique;
 
@@ -3528,7 +3528,7 @@ GMT_LOCAL int gmtmap_init_tm (struct GMT_CTRL *GMT, bool *search) {
 
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.map.is_world) {	/* Gave oblique degrees */
-		double w, e, dummy;
+		double w, e, dummy = 0.0;
 		w = GMT->current.proj.central_meridian + GMT->common.R.wesn[YLO];
 		e = GMT->current.proj.central_meridian + GMT->common.R.wesn[YHI];
 		GMT->common.R.wesn[YLO] = -90;
@@ -3648,7 +3648,7 @@ GMT_LOCAL void gmtmap_set_utmzone (struct GMT_CTRL *GMT) {
 
 /*! . */
 GMT_LOCAL int gmtmap_init_utm (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax, lon0;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, lon0;
 
 	*search = GMT->common.R.oblique;
 
@@ -3746,7 +3746,7 @@ GMT_LOCAL double gmtmap_UTMzone_to_clon (struct GMT_CTRL *GMT, unsigned int zone
 /*! . */
 GMT_LOCAL int gmtmap_init_lambeq (struct GMT_CTRL *GMT, bool *search) {
 	unsigned int i;
-	double xmin, xmax, ymin, ymax, dummy, radius;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, dummy = 0.0, radius = 0.0;
 
 	*search = GMT->common.R.oblique;
 	GMT->current.proj.Dx = GMT->current.proj.Dy = 1.0;
@@ -3854,7 +3854,7 @@ GMT_LOCAL int gmtmap_init_lambeq (struct GMT_CTRL *GMT, bool *search) {
 /*! . */
 GMT_LOCAL int gmtmap_init_ortho (struct GMT_CTRL *GMT, bool *search) {
 	unsigned int i;
-	double xmin, xmax, ymin, ymax, dummy, radius;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, dummy = 0.0, radius = 0.0;
 
 	*search  =GMT->common.R.oblique;
 
@@ -3958,7 +3958,7 @@ GMT_LOCAL double gmtmap_right_genper (struct GMT_CTRL *GMT, double y) {
 /*! . */
 GMT_LOCAL int gmtmap_init_genper (struct GMT_CTRL *GMT, bool *search) {
 	unsigned int i;
-	double xmin, xmax, ymin, ymax, dummy, radius = 0.0;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, dummy = 0.0, radius = 0.0;
 	double alt, azimuth, tilt, width, height;
 	double twist, scale, units;
 
@@ -4083,7 +4083,7 @@ GMT_LOCAL int gmtmap_init_genper (struct GMT_CTRL *GMT, bool *search) {
 
 /*! . */
 GMT_LOCAL int gmtmap_init_gnomonic (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax, dummy, radius;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, dummy = 0.0, radius = 0.0;
 
 	*search = GMT->common.R.oblique;
 
@@ -4166,7 +4166,7 @@ GMT_LOCAL int gmtmap_init_gnomonic (struct GMT_CTRL *GMT, bool *search) {
 /*! . */
 GMT_LOCAL int gmtmap_init_azeqdist (struct GMT_CTRL *GMT, bool *search) {
 	unsigned int i;
-	double xmin, xmax, ymin, ymax, dummy, radius;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, dummy = 0.0, radius = 0.0;
 
 	*search = GMT->common.R.oblique;
 
@@ -4252,7 +4252,7 @@ GMT_LOCAL int gmtmap_init_azeqdist (struct GMT_CTRL *GMT, bool *search) {
 
 /*! . */
 GMT_LOCAL int gmtmap_init_mollweide (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax, y, dummy;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, y, dummy;
 
 	*search = GMT->common.R.oblique;
 
@@ -4311,7 +4311,7 @@ GMT_LOCAL int gmtmap_init_mollweide (struct GMT_CTRL *GMT, bool *search) {
 
 /*! . */
 GMT_LOCAL int gmtmap_init_hammer (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	*search = GMT->common.R.oblique;
 
@@ -4340,7 +4340,7 @@ GMT_LOCAL int gmtmap_init_hammer (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.frame.check_side = true;
 	}
 	else {
-		double x, y, dummy;
+		double x, y, dummy = 0.0;
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
 		x = (fabs (GMT->common.R.wesn[XLO] - GMT->current.proj.central_meridian) > fabs (GMT->common.R.wesn[XHI] - GMT->current.proj.central_meridian)) ? GMT->common.R.wesn[XLO] : GMT->common.R.wesn[XHI];
 		gmtproj_hammer (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
@@ -4369,7 +4369,7 @@ GMT_LOCAL int gmtmap_init_hammer (struct GMT_CTRL *GMT, bool *search) {
 
 /*! . */
 GMT_LOCAL int gmtmap_init_grinten (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	*search = GMT->common.R.oblique;
 
@@ -4397,7 +4397,7 @@ GMT_LOCAL int gmtmap_init_grinten (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.frame.check_side = true;
 	}
 	else {
-		double x, y, dummy;
+		double x, y, dummy = 0.0;
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
 		x = (fabs (GMT->common.R.wesn[XLO] - GMT->current.proj.central_meridian) > fabs (GMT->common.R.wesn[XHI] - GMT->current.proj.central_meridian)) ? GMT->common.R.wesn[XLO] : GMT->common.R.wesn[XHI];
 		gmtproj_grinten (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
@@ -4427,7 +4427,7 @@ GMT_LOCAL int gmtmap_init_grinten (struct GMT_CTRL *GMT, bool *search) {
 
 /*! . */
 GMT_LOCAL int gmtmap_init_winkel (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	*search = GMT->common.R.oblique;
 
@@ -4453,7 +4453,7 @@ GMT_LOCAL int gmtmap_init_winkel (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.frame.check_side = true;
 	}
 	else {
-		double x, y, dummy;
+		double x, y, dummy = 0.0;
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
 		x = (fabs (GMT->common.R.wesn[XLO] - GMT->current.proj.central_meridian) > fabs (GMT->common.R.wesn[XHI] - GMT->current.proj.central_meridian)) ? GMT->common.R.wesn[XLO] : GMT->common.R.wesn[XHI];
 		gmtproj_winkel (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
@@ -4481,7 +4481,7 @@ GMT_LOCAL int gmtmap_init_winkel (struct GMT_CTRL *GMT, bool *search) {
 
 /*! . */
 GMT_LOCAL int gmtmap_init_eckert4 (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	*search = GMT->common.R.oblique;
 
@@ -4508,7 +4508,7 @@ GMT_LOCAL int gmtmap_init_eckert4 (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.frame.check_side = true;
 	}
 	else {
-		double y, dummy;
+		double y, dummy = 0.0;
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
 		gmtproj_eckert4 (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
 		gmtproj_eckert4 (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
@@ -4537,7 +4537,7 @@ GMT_LOCAL int gmtmap_init_eckert4 (struct GMT_CTRL *GMT, bool *search) {
 
 /*! . */
 GMT_LOCAL int gmtmap_init_eckert6 (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	*search = GMT->common.R.oblique;
 
@@ -4564,7 +4564,7 @@ GMT_LOCAL int gmtmap_init_eckert6 (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.frame.check_side = true;
 	}
 	else {
-		double y, dummy;
+		double y, dummy = 0.0;
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
 		gmtproj_eckert6 (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
 		gmtproj_eckert6 (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
@@ -4593,7 +4593,7 @@ GMT_LOCAL int gmtmap_init_eckert6 (struct GMT_CTRL *GMT, bool *search) {
 
 /*! . */
 GMT_LOCAL int gmtmap_init_robinson (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	*search = GMT->common.R.oblique;
 
@@ -4619,7 +4619,7 @@ GMT_LOCAL int gmtmap_init_robinson (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.frame.check_side = true;
 	}
 	else {
-		double y, dummy;
+		double y, dummy = 0.0;
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
 		gmtproj_robinson (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
 		gmtproj_robinson (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
@@ -4648,7 +4648,7 @@ GMT_LOCAL int gmtmap_init_robinson (struct GMT_CTRL *GMT, bool *search) {
 
 /*! . */
 GMT_LOCAL int gmtmap_init_sinusoidal (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	*search = GMT->common.R.oblique;
 
@@ -4680,7 +4680,7 @@ GMT_LOCAL int gmtmap_init_sinusoidal (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.frame.check_side = true;
 	}
 	else {
-		double dummy, y;
+		double dummy = 0.0, y;
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
 		gmtproj_sinusoidal (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YLO], &dummy, &ymin);
 		gmtproj_sinusoidal (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YHI], &dummy, &ymax);
@@ -4709,7 +4709,7 @@ GMT_LOCAL int gmtmap_init_sinusoidal (struct GMT_CTRL *GMT, bool *search) {
 /*! . */
 GMT_LOCAL int gmtmap_init_cassini (struct GMT_CTRL *GMT, bool *search) {
 	bool too_big;
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	*search = GMT->common.R.oblique;
 
@@ -4767,7 +4767,7 @@ GMT_LOCAL int gmtmap_init_cassini (struct GMT_CTRL *GMT, bool *search) {
 
 /*! . */
 GMT_LOCAL int gmtmap_init_albers (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax, dy, az, x1, y1;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, dy, az, x1, y1;
 
 	*search = GMT->common.R.oblique;
 
@@ -4829,7 +4829,7 @@ GMT_LOCAL int gmtmap_init_albers (struct GMT_CTRL *GMT, bool *search) {
 
 /*! . */
 GMT_LOCAL int gmtmap_init_econic (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax, dy, az, x1, y1;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, dy, az, x1, y1;
 
 	*search = GMT->common.R.oblique;
 
@@ -4881,7 +4881,7 @@ GMT_LOCAL int gmtmap_init_econic (struct GMT_CTRL *GMT, bool *search) {
 
 /*! . */
 GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	*search = GMT->common.R.oblique;
 
@@ -4911,7 +4911,7 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.frame.check_side = true;
 	}
 	else {
-		double y, dummy;
+		double y, dummy = 0.0;
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
@@ -4942,7 +4942,7 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 	*  and at the end just replace the pointers to the FWD & INV transform functions to those of GDAL.
 	*/
 	int error = GMT_NOERROR;
-	double xmin, xmax, ymin, ymax;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
 	*search = false;
 	switch (GMT->current.proj.projection_GMT) {
