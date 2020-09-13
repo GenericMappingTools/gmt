@@ -978,14 +978,12 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
 	bool nothing_inside = false, use_intensity_grid = false, got_data_tiles = false, rgb_cube_scan;
 	bool has_content = false, mem_G = false, mem_I = false, mem_D = false, got_z_grid = true;
-	unsigned int n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG;
-	unsigned int colormask_offset = 0, try, row, col, mixed = 0;
-	uint64_t node_RGBA = 0;             /* uint64_t for the RGB(A) image array. */
-	uint64_t node, k, kk, byte, step, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
-	int index = 0, ks, error = 0, ret_val = GMT_NOERROR, ftype = GMT_NOTSET;
+	unsigned int n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG, try, row, col, mixed = 0;
+	uint64_t node, k, kk, byte, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
+	int error = 0, ret_val = GMT_NOERROR, ftype = GMT_NOTSET;
 
 	char *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"}, cmd[GMT_LEN256] = {""}, data_grd[GMT_VF_LEN] = {""};
-	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
+	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL;
 
 	double dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	double img_wesn[4], img_inc[2] = {1.0, 1.0};    /* Image increments & min/max for writing images or external interfaces */
@@ -1332,7 +1330,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			}
 			Intens_orig = G2;	/* ...and point to the resampled intensity grid */
 		}
-
 	}
 
 	if (got_z_grid && (gmt_whole_earth (GMT, Grid_orig->header->wesn, wesn) == 1))
@@ -1438,7 +1435,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		gmt_free_header (API->GMT, &tmp_header);
 	}
 
-	/* From here, use Grid_proj or Img_proj plus optional Intens_proj in making the (now) Cartesian rectangular image */
+	/* From here, use Grid_proj or Img_proj plus optionally Intens_proj in making the (now) Cartesian rectangular image */
 
 	if (use_intensity_grid) IH = gmt_get_H_hidden (Intens_proj->header);
 	if (got_z_grid) { /* Dealing with a projected grid, so we only have one band [z]*/
@@ -1470,10 +1467,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			if (cpt) gmt_M_str_free (cpt);
 			gray_only = (P && P->is_gray);	/* Flag that we are doing a gray scale image below */
 			Conf->P = P;
+			if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPTs will be ignored\n");
 		}
 	}
-
-	if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPTs will be ignored\n");
 
 	NaN_rgb = (P) ? P->bfn[GMT_NAN].rgb : GMT->current.setting.color_patch[GMT_NAN];	/* Determine which color represents a NaN grid node */
 	if (Ctrl->Q.active) {	/* Want colormasking via the grid's NaN entries */
@@ -1553,8 +1549,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (Ctrl->M.active || gray_only)	/* Only need a byte-array to hold this image */
 			bitimage_8 = gmt_M_memory (GMT, NULL, header_work->nm, unsigned char);
 		else {	/* Need 3-byte array for a 24-bit image, plus possibly 3 bytes for the NaN mask color */
-			if (Ctrl->Q.active) colormask_offset = 3;
-			bitimage_24 = gmt_M_memory (GMT, NULL, 3 * header_work->nm + colormask_offset, unsigned char);
+			if (Ctrl->Q.active) Conf->colormask_offset = 3;
+			bitimage_24 = gmt_M_memory (GMT, NULL, 3 * header_work->nm + Conf->colormask_offset, unsigned char);
 		}
 		if (P && Ctrl->Q.active && !(Ctrl->M.active || gray_only)) {
 			for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (P->bfn[GMT_NAN].rgb[k]);	/* Scale the NaN rgb up to 0-255 range */
@@ -1573,7 +1569,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	for (col = 0; col < n_columns; col++) Conf->actual_col[col] = (normal_x) ? col : n_columns - col - 1;
 
 	rgb_cube_scan = (P && Ctrl->Q.active && !Ctrl->A.active);	/* Need to look for unique rgb for PostScript masking */
-	step = (gray_only || Ctrl->M.active) ? 1 : 3;
 
 	/* Evaluate colors at least once (try = 0), but may do twice if -Q is active and we need to select another unique NaN color not used in the image */
 	for (try = 0, done = false; !done && try < 2; try++) {
@@ -1614,6 +1609,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			}
 		}
 		if (Ctrl->Q.active) {	/* Fill in the RGB cube use */
+			int index = 0, ks;
 			for (kk = 0; kk < Conf->nm; kk++) {
 				k = 3 * kk + Conf->colormask_offset;
 				rgb_used[(bitimage_24[k]*256 + bitimage_24[k+1])*256+bitimage_24[k+2]] = true;
