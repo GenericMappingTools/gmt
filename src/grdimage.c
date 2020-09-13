@@ -857,7 +857,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		/* Create a virtual file to hold the intensity grid */
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, int_grd))
 			Return (API->error);
-		if (Ctrl->I.file) {	/* Gave a file to derive from */
+		if (Ctrl->I.file) {	/* Gave a file to derive from. In case it is a tiled grid we read it in here */
 			if ((I_data = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Ctrl->I.file, NULL)) == NULL)	/* Get grid data */
 				Return (API->error);
 			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, I_data, int4_grd))
@@ -874,9 +874,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			strcat (cmd, data_grd);
 		else if (got_int4_grid)	/* Use the virtual file just assigned a few lines above this call */
 			strcat (cmd, int4_grd);
-		else if (Ctrl->I.file)
-			strcat (cmd, Ctrl->I.file);
-		else
+		else	/* Default is to use the data file */
 			strcat (cmd, Ctrl->In.file);
 		/* Call the grdgradient module */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Calling grdgradient with args %s\n", cmd);
