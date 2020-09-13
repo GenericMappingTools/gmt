@@ -102,6 +102,21 @@ struct GRDIMAGE_CTRL {
 	} W;
 };
 
+struct GRDIMAGE_CONF {
+	/* Configuration structure for things to pass around to sub-functions */
+	unsigned int colormask_offset;	/* Either 0 or 3 depending on -Q */
+	bool int_mode;
+	unsigned int *actual_row;	/* Array with actual rows as a function of pseudo row */
+	unsigned int *actual_col;	/* Array of actual columns as a function of pseudo col */
+	int n_columns, n_rows;		/* Signed dimensions for use in OpenMP loops */
+	uint64_t nm;				/* Number of pixels */
+	struct GMT_PALETTE *P;		/* Pointer to the active palette */
+	struct GMT_GRID_HEADER *H;	/* Pointer to the active header */
+	struct GMT_GRID *Grid;		/* Pointer to the active grid [NULL if image] */
+	struct GMT_GRID *Intens;	/* Pointer to the active intensity grid [NULL if no intensity] */
+	struct GMT_IMAGE *Image;	/* Pointer to the active image [NUYLL if grid] */
+};
+
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDIMAGE_CTRL *C;
 
@@ -842,9 +857,9 @@ GMT_LOCAL void grdimage_img_gray_no_intensity (struct GMT_CTRL *GMT, struct GRDI
 
 GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color -> gray via YIQ, 3) with intensity */
-	bool transparency = (C->Image->header->n_bands == 4);
+	bool transparency = (Conf->Image->header->n_bands == 4);
 	int srow, scol, k;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	unsigned n_bands = C->Image->header->n_bands;
+	unsigned n_bands = Conf->Image->header->n_bands;
 	uint64_t byte, kk, node;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 
@@ -872,9 +887,9 @@ GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 
 GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color -> gray via YIQ, 3) with intensity */
-	bool transparency = (C->Image->header->n_bands == 4);
+	bool transparency = (Conf->Image->header->n_bands == 4);
 	int srow, scol, k;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	unsigned n_bands = C->Image->header->n_bands;
+	unsigned n_bands = Conf->Image->header->n_bands;
 	uint64_t byte, kk, node;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 
@@ -896,9 +911,9 @@ GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 
 GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color, 3) with intensity */
-	bool transparency = (C->Image->header->n_bands == 4);
+	bool transparency = (Conf->Image->header->n_bands == 4);
 	int srow, scol, k;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	unsigned n_bands = C->Image->header->n_bands;
+	unsigned n_bands = Conf->Image->header->n_bands;
 	uint64_t byte, kk, node;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 
@@ -920,9 +935,9 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 
 GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color, 3) with intensity */
-	bool transparency = (C->Image->header->n_bands == 4);
+	bool transparency = (Conf->Image->header->n_bands == 4);
 	int srow, scol, k;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	unsigned n_bands = C->Image->header->n_bands;
+	unsigned n_bands = Conf->Image->header->n_bands;
 	uint64_t byte, kk, node;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 
@@ -958,20 +973,6 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
                                     urint (h->wesn[XHI]) == h->n_columns && urint (h->wesn[YHI]) == h->n_rows)
 #define img_region_is_invalid(h) (h->wesn[XLO] == 0.0 && h->wesn[YLO] == 0.0 && img_inc_is_one(h) && \
                                   (h->wesn[YHI] > 90.0 || h->wesn[XHI] > 720.0))
-
-struct GRDIMAGE_CONF {
-	/* Configuration structure for things to pass around to sub-functions */
-	unsigned int colormask_offset;	/* Either 0 or 3 depending on -Q */
-	bool int_mode;
-	unsigned int *actual_row;	/* Array with actual rows as a function of pseudo row */
-	unsigned int *actual_col;	/* Array of actual columns as a function of pseudo col */
-	int n_columns, n_rows;		/* Signed dimensions for use in OpenMP loops */
-	struct GMT_PALETTE *P;		/* Pointer to the active palette */
-	struct GMT_GRID_HEADER *H;	/* Pointer to the active header */
-	struct GMT_GRID *Grid;		/* Pointer to the active grid [NULL if image] */
-	struct GMT_GRID *Intens;	/* Pointer to the active intensity grid [NULL if no intensity] */
-	struct GMT_IMAGE *Image;	/* Pointer to the active image [NUYLL if grid] */
-};
 
 EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
@@ -1455,6 +1456,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	Conf->n_columns = header_work->n_columns;
 	Conf->n_rows    = header_work->n_rows;
 	Conf->int_mode  = use_intensity_grid;
+	Conf->nm        = header_work->nm;
 
 	/* Get or calculate a color palette file */
 
@@ -1614,7 +1616,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.active) {	/* Fill in the RGB cube use */
 			for (kk = 0; kk < Conf->nm; kk++) {
 				k = 3 * kk + Conf->colormask_offset;
-				rgb_used[(bitimage_24[k++]*256 + bitimage_24[k++])*256+bitimage_24[k]] = true;
+				rgb_used[(bitimage_24[k]*256 + bitimage_24[k+1])*256+bitimage_24[k+2]] = true;
 			}
 			/* Check that we found an unused r/g/b value so that colormasking will work as advertised */
 			index = (gmt_M_u255(P->bfn[GMT_NAN].rgb[0])*256 + gmt_M_u255(P->bfn[GMT_NAN].rgb[1]))*256 + gmt_M_u255(P->bfn[GMT_NAN].rgb[2]);	/* The index into the cube for the selected NaN color */
@@ -1634,6 +1636,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 					for (k = 0; k < 3; k++) P->bfn[GMT_NAN].rgb[k] = gmt_M_is255 (bitimage_24[k]);	/* Set new NaN color */
 				}
 			}
+			else
+				done = true;	/* Original NaN color was never used by other nodes */
 		}
 		else
 			done = true;	/* Only doing the loop once here since no -Q */
