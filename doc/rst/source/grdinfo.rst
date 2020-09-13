@@ -14,7 +14,7 @@ Synopsis
 
 **gmt grdinfo** *grdfiles* [ |-C|\ [**n**\|\ **t**\] ]
 [ |-D|\ [*xoff*\ [/*yoff*]][**+i**] ]
-[ |-E|\ [**x**\|\ **y**][**+h**\|\ **H**\|\ **l**\|\ **L**] ]
+[ |-E|\ [**x**\|\ **y**][**+l**\|\ **L**\|\ **u**\|\ **U**] ]
 [ |-F| ]
 [ |-I|\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**] ]
 [ |-L|\ [**0**\|\ **1**\|\ **2**\|\ **p**\|\ **a**] ] [ |-M| ]
@@ -79,9 +79,9 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**x**\|\ **y**][**+h**\|\ **H**\|\ **l**\|\ **L**]
+**-E**\ [**x**\|\ **y**][**+l**\|\ **L**\|\ **u**\|\ **U**]
     Report the extreme values found on a per column (**-Ex**) or per
-    row (**-Ey**) basis.  By default, we look for the global maxima (**+h**\|\ **H**)
+    row (**-Ey**) basis.  By default, we look for the global maxima (**+u**\|\ **U**)
     for each column.  Append **+l**\|\ **L** to look for minima instead.
     Upper case **+L** means we find the minimum of the positive values only, while
     upper case **+U** means we find the maximum of the negative values only [use all values].
