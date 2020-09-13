@@ -602,8 +602,8 @@ GMT_LOCAL void grdimage_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_H
                                   (h->wesn[YHI] > 90.0 || h->wesn[XHI] > 720.0))
 
 EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
-	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false, do_rgb = false;
-	bool nothing_inside = false, use_intensity_grid = false, got_data_tiles = false, set_gray, rgb_cube_scan;
+	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
+	bool nothing_inside = false, use_intensity_grid = false, got_data_tiles = false, rgb_cube_scan;
 	bool has_content = false, mem_G = false, mem_I = false, mem_D = false, got_z_grid = true;
 	unsigned int n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG, intensity_mode;
 	unsigned int colormask_offset = 0, try, row, col, mixed = 0, *actual_row = NULL, *actual_col = NULL;
@@ -769,7 +769,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			I->y = gmt_grd_coord (GMT, I->header, GMT_Y);
 		}
 
-		do_rgb = (I->header->n_bands >= 3);	/* Do we have a color image or a grayscale image? */
+		gray_only = (I->header->n_bands == 1);	/* Got a grayscale image */
 		got_z_grid = false;	/* Flag that we are using a GMT_IMAGE instead of a GMT_GRID as main input */
 
 		if (I->header->ProjRefPROJ4 != NULL)	/* We are not using this information yet, but report it under -V */
@@ -1076,7 +1076,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* Get or calculate a color palette file */
 
-	if (!do_rgb) {	/* Got a single grid so need to convert z to color via a CPT, or a gray scale image */
+	if (got_z_grid) {	/* Got a single grid so need to convert z to color via a CPT */
 		if (Ctrl->C.active) {	/* Read a palette file */
 			char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file);
 			if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max, Ctrl->C.dz)) == NULL) {
@@ -1086,8 +1086,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			if (cpt) gmt_M_str_free (cpt);
 			gray_only = (P && P->is_gray);	/* Flag that we are doing a gray scale image below */
 		}
-		else
-			gray_only = true;
 	}
 
 	if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPTs will be ignored\n");
@@ -1191,9 +1189,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	intensity_mode = use_intensity_grid;	/* Set bit 1 */
 	if (!got_z_grid || (IH && IH->reset_pad)) intensity_mode |= 2;	/* Add bit 2 */
-	set_gray = gray_only;
 	rgb_cube_scan = (P && Ctrl->Q.active && !Ctrl->A.active);	/* Need to look for unique rgb for PostScript masking */
-	step = (set_gray || Ctrl->M.active) ? 1 : 3;
+	step = (gray_only || Ctrl->M.active) ? 1 : 3;
 
 	/* Evaluate colors at least once (try = 0), but may do twice if -Q is active and we need to select another unique NaN color not used in the image */
 	for (try = 0, done = false; !done && try < 2; try++) {
@@ -1201,7 +1198,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			int srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Basic z(x,y) with optional illumination and no PostScript colormasking.\n");
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,scol,node,index,rgb,k) shared(n_rows,header_work,actual_row,n_columns,step,GMT,P,Grid_proj,Ctrl,intensity_mode,Intens_proj,set_gray,bitimage_8,bitimage_24)
+#pragma omp parallel for private(srow,byte,kk,scol,node,index,rgb,k) shared(n_rows,header_work,actual_row,n_columns,step,GMT,P,Grid_proj,Ctrl,intensity_mode,Intens_proj,gray_only,bitimage_8,bitimage_24)
 #endif
 			for (srow = 0; srow < (int)n_rows; srow++) {	/* March along scanlines */
 				byte = colormask_offset + srow * n_columns * step;
@@ -1217,7 +1214,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 							gmt_illuminate (GMT, Ctrl->I.value, rgb);
 					}
 					/* Assigning bytes to colorimage */
-					if (set_gray)	/* Color table only has grays, just use r since r = g = b here */
+					if (gray_only)	/* Color table only has grays, just use r since r = g = b here */
 						bitimage_8[byte] = gmt_M_u255 (rgb[0]);
 					else if (Ctrl->M.active)	/* Convert rgb to gray using the gmt_M_yiq transformation */
 						bitimage_8[byte] = gmt_M_u255 (gmt_M_yiq (rgb));
@@ -1272,7 +1269,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 							gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
 					}
 
-					if (set_gray)	/* Color table only has grays, just use r since r = g = b here */
+					if (gray_only)	/* Color table only has grays, just use r since r = g = b here */
 						bitimage_8[byte++] = gmt_M_u255 (rgb[0]);
 					else if (Ctrl->M.active)	/* Convert rgb to gray using the gmt_M_yiq transformation */
 						bitimage_8[byte++] = gmt_M_u255 (gmt_M_yiq (rgb));
