@@ -2080,7 +2080,7 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 				S->range = GMT_IS_M360_TO_0_RANGE;
 				if (i != 0) error++;		/* Only valid as first flag */
 				break;
-			case 'D':	/* Want to use decimal degrees using D_FORMAT [Default] */
+			case 'D':	/* Want to use decimal degrees using FORMAT_FLOAT_OUT [Default] */
 				S->decimal = true;
 				if (i > 1) error++;		/* Only valid as first or second flag */
 				break;
@@ -5083,7 +5083,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 					sprintf (path, "%s/%s/%s/%s", udir[3], subdir[d], subsubdir[s], stem);
 					found = (!access (path, F_OK));
 					s++;
-				}			
+				}
 				gmtlib_free_dir_list (GMT, &subsubdir);
 			}
 			d++;
@@ -5093,7 +5093,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	if (found && gmtio_file_is_readable (GMT, path)) {	/* Yes, can read it */
 		if (mode == R_OK) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found readable file %s\n", path);
 		return (path);
-	}				
+	}
 
 	return (NULL);	/* No file found, give up */
 }
