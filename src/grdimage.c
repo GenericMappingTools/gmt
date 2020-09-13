@@ -19,9 +19,9 @@
  * Date:	1-JAN-2010
  * Version:	6 API
  *
- * Brief synopsis: grdimage will read one (or 3) grid file and image the area
- * with optional shading. Alternatively, it will read an image and project it
- * using the selected projection.
+ * Brief synopsis: grdimage will read a grid or image and plot the area
+ * with optional shading using the selected projection.  Optionally, it
+ * may return the raw raster image.
  *
  */
 
@@ -36,6 +36,7 @@
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Sc") GMT_ADD_x_OPT
 
 #ifdef HAVE_GDAL
+/* These are images that GDAL knows how to read for us. Otherwise we can only deal with ppm */
 #define N_IMG_EXTENSIONS 6
 static char *gdal_ext[N_IMG_EXTENSIONS] = {"tiff", "tif", "gif", "png", "jpg", "bmp"};
 #endif
@@ -53,7 +54,7 @@ struct GRDIMAGE_CTRL {
 	} Out;
 	struct GRDIMAGE_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...][+i<dz>] */
 		bool active;
-		double dz;
+		double dz;	/* Rounding for min/max determined from data */
 		char *file;
 	} C;
 	struct GRDIMAGE_D {	/* -D to read image instead of grid */
@@ -75,7 +76,7 @@ struct GRDIMAGE_CTRL {
 		bool active;
 		double rgb[2][4];
 	} G;
-	struct GRDIMAGE_I {	/* -I[<intensfile>|<value>|<modifiers>] */
+	struct GRDIMAGE_I {	/* -I[<intens_or_zfile>|<value>|<modifiers>] */
 		bool active;
 		bool constant;
 		bool derive;
@@ -109,7 +110,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->G.rgb[GMT_BGD][0] = C->G.rgb[GMT_BGD][1] = C->G.rgb[GMT_BGD][2] = 1.0;	/* White background pixel, black foreground defaults  */
 	C->I.azimuth = strdup ("-45.0");	/* Default azimuth for shading when -I+d is used */
 	C->I.method  = strdup ("t1");		/* Default normalization for shading when -I+d is used */
-	C->I.ambient  = strdup ("0");		/* Default ambient light for shading when -I+d is used */
+	C->I.ambient = strdup ("0");		/* Default ambient light for shading when -I+d is used */
 
 	return (C);
 }
@@ -132,16 +133,16 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	if (API->external) {	/* External interface */
-		GMT_Message (API, GMT_TIME_NONE, "usage: %s <grd_z>|<img> %s [%s] [-A] [-C<cpt>]\n", name, GMT_J_OPT, GMT_B_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid>|<image> %s [%s] [-A] [-C<cpt>]\n", name, GMT_J_OPT, GMT_B_OPT);
 		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G<rgb>[+b|f]] [-I[<intensgrid>|<value>|<modifiers>]] %s[-M] [-N] %s%s[-Q]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	}
 	else {
 #ifdef HAVE_GDAL
-		GMT_Message (API, GMT_TIME_NONE, "usage: %s <grd_z>|<img> %s [%s] [-A<out_img>[=<driver>]] [-C<cpt>]\n",
+		GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid>|<image> %s [%s] [-A<out_img>[=<driver>]] [-C<cpt>]\n",
 		             name, GMT_J_OPT, GMT_B_OPT);
 		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G<rgb>[+b|f]] [-I[<intensgrid>|<value>|<modifiers]] %s[-M] [-N] %s%s[-Q]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 #else
-		GMT_Message (API, GMT_TIME_NONE, "usage: %s <grd_z>|<img> %s [%s] [-C<cpt>] [-Ei[|<dpi>]]\n",
+		GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid>|<image> %s [%s] [-C<cpt>] [-Ei[|<dpi>]]\n",
 		             name, GMT_J_OPT, GMT_B_OPT);
 		GMT_Message (API, GMT_TIME_NONE, "\t[-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers]] %s[-M] [-N] %s%s[-Q]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 #endif
@@ -152,11 +153,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<grd_z> is data set to be plotted.  Its z-values are in user units and will be\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is data set to be plotted.  Its z-values are in user units and will be\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  converted to rgb colors via the CPT.  Alternatively, give a raster image.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  If the image is plain (e.g., JPG, PNG, GIF) you must also give a corresponding -R.\n");
 	if (API->external)	/* External interface */
-		GMT_Message (API, GMT_TIME_NONE, "\t  If -D is used then <grd_z> is instead expected to be an image.\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t  If -D is used then <grid> is instead expected to be an image.\n");
 
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -179,7 +180,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
 	if (API->external)	/* External interface */
-		GMT_Message (API, GMT_TIME_NONE, "\t-D <img> is an image instead of a grid. Append r to equate image region to -R region.\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t-D <image> is an image instead of a grid. Append r to equate image region to -R region.\n");
 #ifdef HAVE_GDAL
 	else {
 		GMT_Message (API, GMT_TIME_NONE, "\t-D GMT automatically detects standard image formats. For non-standard formats you must\n");
@@ -192,13 +193,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_rgb_syntax (API->GMT, 'G', "Set transparency color for images that otherwise would result in 1-bit images.\n\t  ");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +b to set background or +f to set foreground color [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Apply directional illumination. Append name of intensity grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity (i.e., change the ambient light), append a value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grd_z> instead, append +a<azim> [-45], +n<method> [t1], and +m<ambient> [0]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity (i.e., change the ambient light), just give a value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grid> instead, append +a<azim> [-45], +n<method> [t1], and +m<ambient> [0]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or use -I+d to accept the default values (see grdgradient for details).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To derive from another grid than <grd_z>, give a filename as well.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To derive from another grid than <grid>, give an alternative data grid with modifiers.\n");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Force monochrome image.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not clip image at the map boundary.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Force a monochrome (gray-scale) image.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not clip image at the map boundary.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use PS Level 3 colormasking to make nodes with z = NaN transparent.\n");
 	GMT_Option (API, "R");
@@ -830,7 +831,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			/* Not implemented yet */
 			GMT_Report (API, GMT_MSG_WARNING, "No image returned\n");
 		}
-		else {	/* PLot that blank canvas */
+		else {	/* Plot that blank canvas */
 			if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -845,7 +846,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	 * auto-derived intensities we may create below */
 
 	if (Ctrl->W.active && got_z_grid && gmt_M_is_dnan (header_work->z_min))
-		ret_val = GMT_IMAGE_NO_DATA;	/* Flag that our output image has no information - this is needed by grd2kml only */
+		ret_val = GMT_IMAGE_NO_DATA;	/* Flag that our output image has no information - this is needed by grd2kml only so far */
 
 	if (Ctrl->I.derive) {	/* Auto-create intensity grid from data grid using the now determined data region */
 		bool got_int4_grid = false;
