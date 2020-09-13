@@ -150,7 +150,7 @@ enum gmt_enum_wesnids {
 /*! IJ macro using h but treats the entire grid with pad as no-pad grid, i.e. using mx as width */
 #define gmt_M_ij(h,row,col) ((uint64_t)(((int64_t)(row))*((int64_t)h->mx)+(int64_t)(col)))
 /*! IJPGI macro using h and the pad info that works for either grids (n_bands = 1) or images (n_bands = 1,3,4) */
-#define gmt_M_ijpgi(h,row,col) ((uint64_t)(((int64_t)(row)+(int64_t)h->pad[YHI])*((int64_t)h->mx*(int64_t)h->n_bands)+(int64_t)(col)+(int64_t)h->pad[XLO]*(int64_t)h->n_bands))
+#define gmt_M_ijpgi(h,row,col) ((uint64_t)(((int64_t)(row)+(int64_t)h->pad[YHI])*((int64_t)h->mx*(int64_t)h->n_bands)+((int64_t)(col)+(int64_t)h->pad[XLO])*(int64_t)h->n_bands))
 
 /*! Obtain row and col from index */
 #define gmt_M_col(h,ij) (((ij) % h->mx) - h->pad[XLO])
