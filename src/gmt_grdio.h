@@ -42,6 +42,8 @@
 #define GMT_IMG_MINLAT_85	-85.0511287798
 #define GMT_IMG_MAXLAT_85	+85.0511287798
 
+#define GMT_IMG_REMARK	"Spherical Mercator Projected with -Jm1 -R"
+
 enum GMT_enum_img {
 	GMT_IMG_NLON_1M    = 21600U, /* At 1 min resolution */
 	GMT_IMG_NLON_2M    = 10800U, /* At 2 min resolution */
