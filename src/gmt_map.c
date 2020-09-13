@@ -6868,7 +6868,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 /*! . */
 double gmt_x_to_xx (struct GMT_CTRL *GMT, double x) {
 	/* Converts x to xx using the current linear projection */
-	double xx;
+	double xx = 0.0;
 	(*GMT->current.proj.fwd_x) (GMT, x, &xx);
 	return (xx * GMT->current.proj.scale[GMT_X] + GMT->current.proj.origin[GMT_X]);
 }
@@ -6876,7 +6876,7 @@ double gmt_x_to_xx (struct GMT_CTRL *GMT, double x) {
 /*! . */
 double gmt_y_to_yy (struct GMT_CTRL *GMT, double y) {
 	/* Converts y to yy using the current linear projection */
-	double yy;
+	double yy = 0.0;
 	(*GMT->current.proj.fwd_y) (GMT, y, &yy);
 	return (yy * GMT->current.proj.scale[GMT_Y] + GMT->current.proj.origin[GMT_Y]);
 }
@@ -6884,7 +6884,7 @@ double gmt_y_to_yy (struct GMT_CTRL *GMT, double y) {
 /*! . */
 double gmt_z_to_zz (struct GMT_CTRL *GMT, double z) {
 	/* Converts z to zz using the current linear projection */
-	double zz;
+	double zz = 0.0;
 	(*GMT->current.proj.fwd_z) (GMT, z, &zz);
 	return (zz * GMT->current.proj.scale[GMT_Z] + GMT->current.proj.origin[GMT_Z]);
 }
