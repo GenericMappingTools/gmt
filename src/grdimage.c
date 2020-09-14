@@ -1699,7 +1699,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active) gmt_M_free (GMT, rgb_used);	/* Done using the r/g/b cube */
 	gmt_M_free (GMT, Conf->actual_row);
 	gmt_M_free (GMT, Conf->actual_col);
-	gmt_M_free (GMT, Conf);
 
 	if (use_intensity_grid) {	/* Also done with the intensity grid */
 		if (need_to_project || !got_z_grid) {
@@ -1762,6 +1761,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		    	Conf->n_columns, Conf->n_rows, (Ctrl->E.device_dpi ? -24 : 24));
 		}
 	}
+
+	gmt_M_free (GMT, Conf);	/* Done with the configuration structure */
 
 	if (!Ctrl->A.active) {	/* Finalize PostScript plot, possibly including basemap */
 		if (!Ctrl->N.active) gmt_map_clip_off (GMT);
