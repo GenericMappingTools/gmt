@@ -475,8 +475,7 @@
                 less than *min_rad* [Default is 0].
 
             **+t**\ [*file*]
-                Save line label *x, y, text* to *file* [Line_labels.txt].
-                Use **+T** to save *x, y, angle, text* instead.
+                Save line label *x, y, angle, text* to *file* [Line_labels.txt].
 
             **+u**\ *unit*
                 Append *unit* to all line labels. If *unit* starts with a
