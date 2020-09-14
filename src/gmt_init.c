@@ -14179,7 +14179,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		unsigned int srtm_flag;
 		char *list = NULL, *c = NULL;
 		double wesn[4];
-		struct GMT_OPTION *opt_J = NULL;
+		struct GMT_OPTION *opt_J = NULL, *opt_S = NULL;
 		struct GMT_DATA_INFO *I = NULL;
 
 		opt_R = GMT_Find_Option (API, 'R', *options);
@@ -14211,9 +14211,41 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				 * Since -J may be needed if -R does oblique or give a region in projected units
 				 * we must also parse -J here first before parsing -R. If just -R -J then we must update from history now */
 
-				if (opt_R == NULL) {	/* In this context we imply -Rd */
-					wesn[XLO] = -180.0;	wesn[XHI] = +180.0;	wesn[YLO] = -90.0;	wesn[YHI] = +90.0;
-					GMT_Report (API, GMT_MSG_DEBUG, "Modern: Assuming -Rd since %s was given and no -R specified\n", opt->arg);
+				if (opt_R == NULL) {	/* In this context we imply -Rd unless grdcut -S is what we are running */
+					if (!strncmp (mod_name, "grdcut", 6U) && (opt_S = GMT_Find_Option (API, 'S', *options))) {
+						char Sunit, za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, zc[GMT_LEN64] = {""}, *s = NULL;
+						int k = 0, Smode, n_errors = 0;
+						double Slon, Slat, Sradius;
+						if ((s = strstr (opt_S->arg, "+n")))
+							s[0] = '\0';	/* Chop off modifier */
+						else if (opt_S->arg[k] == 'n' && gmt_M_compat_check (API->GMT, 5))	/* Old-style -Sn<lon>/<lat>/<radius> syntax */
+							k = 1;	/* Skip leading n */
+						gmt_set_geographic (API->GMT, GMT_IN);	/* Ensure we expect geographic coordinates */
+						if (sscanf (&opt_S->arg[k], "%[^/]/%[^/]/%s", za, zb, zc) == 3) {
+							n_errors += gmt_verify_expectations (API->GMT, GMT_IS_LON, gmt_scanf_arg (API->GMT, za, GMT_IS_LON, false, &Slon), za);
+							n_errors += gmt_verify_expectations (API->GMT, GMT_IS_LAT, gmt_scanf_arg (API->GMT, zb, GMT_IS_LAT, false, &Slat), zb);
+							if (n_errors) {
+								GMT_Report (API, GMT_MSG_DEBUG, "Cannot parse lon/lat given grdcut -S%s\n", opt_S->arg);
+								return NULL;
+							}
+							Smode = gmt_get_distance (API->GMT, zc, &Sradius, &Sunit);
+						}
+						else {
+							GMT_Report (API, GMT_MSG_DEBUG, "Cannot parse arguments given grdcut -S%s\n", opt_S->arg);
+							return NULL;
+						}
+						if (s) s[0] = '+';	/* Restore modifier */
+						if (gmt_init_distaz (API->GMT, Sunit, Smode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) {
+							GMT_Report (API, GMT_MSG_DEBUG, "Cannot initialize distances given grdcut -S%s\n", opt_S->arg);
+							return NULL;
+						}
+						Sradius = R2D * (Sradius / API->GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.mean_radius;	/* Approximate radius in degrees */
+						gmt_circle_to_region (API->GMT, Slon, Slat, Sradius, wesn);	/* Get equivalent region */
+					}
+					else {	/* Must assume a global region */
+						wesn[XLO] = -180.0;	wesn[XHI] = +180.0;	wesn[YLO] = -90.0;	wesn[YHI] = +90.0;
+						GMT_Report (API, GMT_MSG_DEBUG, "Modern: Assuming -Rd since %s was given and no -R specified\n", opt->arg);
+					}
 				}
 				else {
 					char codes[3] = {""};

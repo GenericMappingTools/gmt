@@ -9728,3 +9728,37 @@ bool gmt_segment_BB_outside_map_BB (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT
 	}
 	return false;
 }
+
+int gmt_circle_to_region (struct GMT_CTRL *GMT, double lon, double lat, double radius, double *wesn) {
+	/* Given a (lon,lat) point and a radius in spherical degrees, return w/e/s/n for a rectangular geographic region */
+	int code = 0;	/* Will return 1 if w/e extends the full 360, else we return 0 */
+	gmt_M_unused (GMT);
+	/* Set w/e to center point */
+	wesn[XLO] = wesn[XHI] = lon;
+	wesn[YLO] = wesn[YHI] = lat;
+	/* First adjust the S and N boundaries */
+	wesn[YLO] -= radius;	/* Approximate south limit in degrees */
+	if (wesn[YLO] < -90.0)	/* Too far south, reset to S pole */
+		wesn[YLO] = -90.0;
+	wesn[YHI] += radius;	/* Approximate north limit in degrees */
+	if (wesn[YHI] > 90.0)	/* Way north, reset to N pole */
+		wesn[YHI] = 90.0;
+	radius /= cosd (lat);	/* Approximate e-w half-width in degrees longitude at the latitude of center point */
+	if (doubleAlmostEqual (wesn[YLO], -90.0) || doubleAlmostEqual (wesn[YHI], 90.0) || radius >= 180.0) {	/* Need all longitudes when a pole is inside the radius or the circle is really large */
+		wesn[XLO] = lon - 180.0;
+		wesn[XHI] = lon + 180.0;
+		code = 1;
+	}
+	else {	/* Determine longitude limits */
+		wesn[XLO] -= radius;	/* Approximate west limit in degrees */
+		wesn[XHI] += radius;	/* Approximate east limit in degrees */
+		if ((wesn[XHI] - wesn[XLO]) >= 360.0) {	/* Global reach after all */
+			wesn[XLO] = lon - 180.0;
+			wesn[XHI] = lon + 180.0;
+			code = 1;
+		}
+		if (wesn[XHI] > 360.0) wesn[XLO] -= 360.0, wesn[XHI] -= 360.0;
+		if (wesn[XHI] < 0.0)   wesn[XLO] += 360.0, wesn[XHI] += 360.0;
+	}
+	return (code);
+}
