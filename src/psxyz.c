@@ -926,7 +926,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (get_rgb)
 				GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for variable symbol color. Option -l ignored.\n");
 			else if (S.read_size && gmt_M_is_zero (GMT->common.l.item.size))
-				GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for variable symbol size unless +s<size> is used. Option -l ignored.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for variable symbol size unless +S<size> is used. Option -l ignored.\n");
 			else {
 				/* For specified symbol, size, color we can do an auto-legend entry under modern mode */
 				gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
