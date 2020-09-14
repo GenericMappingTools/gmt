@@ -921,7 +921,7 @@ GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,k,scol,node,index,rgb) shared(GMT,Conf,Ctrl,image)
+#pragma omp parallel for private(srow,byte,kk,k,scol,node,rgb) shared(GMT,Conf,Ctrl,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
 		byte = srow * Conf->n_columns;
@@ -949,9 +949,10 @@ GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 	unsigned n_bands = Conf->Image->header->n_bands;
 	uint64_t byte, kk, node;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	gmt_M_unused (Ctrl);
 
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,k,scol,node,index,rgb) shared(GMT,Conf,Ctrl,image)
+#pragma omp parallel for private(srow,byte,kk,k,scol,node,rgb) shared(GMT,Conf,Ctrl,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
 		byte = srow * Conf->n_columns;
@@ -973,9 +974,10 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 	unsigned n_bands = Conf->Image->header->n_bands;
 	uint64_t byte, kk, node;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	gmt_M_unused (Ctrl);
 
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,k,scol,node,index,rgb) shared(GMT,Conf,Ctrl,image)
+#pragma omp parallel for private(srow,byte,kk,k,scol,node,rgb) shared(GMT,Conf,Ctrl,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
 		byte = Conf->colormask_offset + 3 * srow * Conf->n_columns;
@@ -999,7 +1001,7 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,k,scol,node,index,rgb) shared(GMT,Conf,Ctrl,image)
+#pragma omp parallel for private(srow,byte,kk,k,scol,node,rgb) shared(GMT,Conf,Ctrl,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
 		byte = Conf->colormask_offset + 3 * srow * Conf->n_columns;
