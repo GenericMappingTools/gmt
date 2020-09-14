@@ -478,9 +478,7 @@
                 Save line label *x, y, angle, text* to *file* [Line_labels.txt].
 
             **+u**\ *unit*
-                Append *unit* to all line labels. If *unit* starts with a
-                leading hyphen (-) then there will be no space between label
-                value and the unit. [Default is no unit].
+                Append *unit* to all line labels [Default is no unit].
 
             **+v**
                 Specify curved labels following the path [Default is straight labels].
@@ -497,9 +495,7 @@
                 [Default just adds a prime to the second label].
 
             **+=**\ *prefix*
-                Prepend *prefix* to all line labels. If *prefix* starts with a
-                leading hyphen (-) then there will be no space between label
-                value and the prefix. [Default is no prefix].
+                Prepend *prefix* to all line labels [Default is no prefix].
 
         **Note**: By placing **-Sq** options in the segment header you can change
         the quoted text attributes on a segment-by-segment basis.
