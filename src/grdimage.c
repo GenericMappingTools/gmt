@@ -774,6 +774,29 @@ GMT_LOCAL void grdimage_grd_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 	}
 }
 
+GMT_LOCAL void grdimage_grd_color_no_intensity_CM (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image, unsigned char *rgb_used) {
+	/* Function that fills out the image in the special case of 1) grid, 2) color, 3) no intensity */
+	unsigned char i_rgb[3];
+	int srow, scol, k, index;
+	uint64_t byte, kk, node;
+	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
+	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
+		byte = Conf->colormask_offset + 3 * srow * Conf->n_columns;
+		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
+			node = kk + Conf->actual_col[scol];	/* Current grid node */
+			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node], rgb);
+			for (k = 0; k < 3; k++) image[byte++] = i_rgb[k] = gmt_M_u255 (rgb[k]);
+			if (index != GRDIMAGE_NAN_INDEX) {	/* Deal with illumination */
+				index = (i_rgb[0]*256 + i_rgb[1])*256 + i_rgb[2];	/* The index into the cube for the selected NaN color */
+				rgb_used[index] = true;
+			}
+		}
+	}
+}
+
 GMT_LOCAL void grdimage_grd_color_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) grid, 2) color, 3) no intensity */
 	int srow, scol, index, k;	/* Due to OPENMP on Windows requiring signed int loop variables */
@@ -797,6 +820,40 @@ GMT_LOCAL void grdimage_grd_color_with_intensity (struct GMT_CTRL *GMT, struct G
 					gmt_illuminate (GMT, Ctrl->I.value, rgb);
 			}
 			for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);
+		}
+	}
+}
+
+GMT_LOCAL void grdimage_grd_color_with_intensity_CM (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image, unsigned char *rgb_used) {
+	/* Function that fills out the image in the special case of 1) grid, 2) color, 3) no intensity */
+	unsigned char i_rgb[3], n_rgb[3];
+	int srow, scol, index, k;	/* Due to OPENMP on Windows requiring signed int loop variables */
+	uint64_t byte, kk, node;
+	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
+	/* Determine NaN rgb 0-255 triple ones */
+	(void)gmt_get_rgb_from_z (GMT, Conf->P, GMT->session.d_NaN, rgb);
+	for (k = 0; k < 3; k++) n_rgb[k] = gmt_M_u255 (rgb[k]);
+
+	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
+		byte = Conf->colormask_offset + 3 * srow * Conf->n_columns;
+		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
+			node = kk + Conf->actual_col[scol];	/* Current grid node */
+			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node], rgb);
+			if (index == GRDIMAGE_NAN_INDEX) {	 /* Nan color */
+				for (k = 0; k < 3; k++) image[byte++] = n_rgb[k];
+			}
+			else {	/* Deal with illumination for non-NaN nodes */
+				if (Conf->int_mode)	/* Intensity value comes from the grid */
+					gmt_illuminate (GMT, Conf->Intens->data[node], rgb);
+				else	/* A constant (ambient) intensity was given via -I */
+					gmt_illuminate (GMT, Ctrl->I.value, rgb);
+				for (k = 0; k < 3; k++) i_rgb[k] = image[byte++] = gmt_M_u255 (rgb[k]);
+				index = (i_rgb[0]*256 + i_rgb[1])*256 + i_rgb[2];	/* The index into the cube for the selected NaN color */
+				rgb_used[index] = true;
+			}
 		}
 	}
 }
@@ -1578,15 +1635,19 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 					grdimage_grd_gray_with_intensity (GMT, Ctrl, Conf, bitimage_8);
 				else if (Ctrl->M.active) 	/* Grid, color converted to gray, with intensity */
 					grdimage_grd_c2s_with_intensity (GMT, Ctrl, Conf, bitimage_8);
-				else 	/* Grid, color, with intensity */
+				else if (Ctrl->Q.active) /* Must deal with colormasking */
+					grdimage_grd_color_with_intensity_CM (GMT, Ctrl, Conf, bitimage_24, rgb_used);
+				else 	/* Grid, color, with intensity, no colormasking */
 					grdimage_grd_color_with_intensity (GMT, Ctrl, Conf, bitimage_24);
 			}
 			else {	/* No intensity */
 				if (gray_only)	/* Grid, grayscale, no intensity */
 					grdimage_grd_gray_no_intensity (GMT, Ctrl, Conf, bitimage_8);
 				else if (Ctrl->M.active) 	/* Grid, color converted to gray, with intensity */
-					grdimage_grd_color_no_intensity (GMT, Ctrl, Conf, bitimage_8);
-				else	/* Grid, color, no intensit */
+					grdimage_grd_c2s_no_intensity (GMT, Ctrl, Conf, bitimage_8);
+				else if (Ctrl->Q.active) /* Must deal with colormasking */
+					grdimage_grd_color_no_intensity_CM (GMT, Ctrl, Conf, bitimage_24, rgb_used);
+				else	/* Grid, color, no intensity */
 					grdimage_grd_color_no_intensity (GMT, Ctrl, Conf, bitimage_24);
 			}
 		}
@@ -1603,17 +1664,13 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 				if (gray_only)	/* Image, grayscale, no intensity */
 					grdimage_img_gray_no_intensity (GMT, Ctrl, Conf, bitimage_8);
 				else if (Ctrl->M.active) 	/* Image, color converted to gray, with intensity */
-					grdimage_img_color_no_intensity (GMT, Ctrl, Conf, bitimage_8);
+					grdimage_img_c2s_no_intensity (GMT, Ctrl, Conf, bitimage_8);
 				else	/* Image, color, no intensity */
 					grdimage_img_color_no_intensity (GMT, Ctrl, Conf, bitimage_24);
 			}
 		}
 		if (Ctrl->Q.active) {	/* Fill in the RGB cube use */
 			int index = 0, ks;
-			for (kk = 0; kk < Conf->nm; kk++) {
-				k = 3 * kk + Conf->colormask_offset;
-				rgb_used[(bitimage_24[k]*256 + bitimage_24[k+1])*256+bitimage_24[k+2]] = true;
-			}
 			/* Check that we found an unused r/g/b value so that colormasking will work as advertised */
 			index = (gmt_M_u255(P->bfn[GMT_NAN].rgb[0])*256 + gmt_M_u255(P->bfn[GMT_NAN].rgb[1]))*256 + gmt_M_u255(P->bfn[GMT_NAN].rgb[2]);	/* The index into the cube for the selected NaN color */
 			if (rgb_used[index]) {	/* This r/g/b already appears in the image as a non-NaN color; we must find a replacement NaN color */
