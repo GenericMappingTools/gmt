@@ -897,6 +897,7 @@ GMT_LOCAL void grdimage_img_gray_with_intensity (struct GMT_CTRL *GMT, struct GR
 GMT_LOCAL void grdimage_img_gray_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) gray, 3) no intensity */
 	int srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
+	gmt_M_unused (Ctrl);
 	uint64_t byte, kk, node;
 
 #ifdef _OPENMP
@@ -1021,7 +1022,6 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 		}
 	}
 }
-
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
