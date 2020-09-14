@@ -1035,7 +1035,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
 	bool nothing_inside = false, use_intensity_grid = false, got_data_tiles = false, rgb_cube_scan;
 	bool has_content = false, mem_G = false, mem_I = false, mem_D = false, got_z_grid = true;
-	unsigned int n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG, try, row, col, mixed = 0;
+	unsigned int grid_registration = GMT_GRID_NODE_REG, try, row, col, mixed = 0;
 	uint64_t node, k, kk, byte, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
 	int error = 0, ret_val = GMT_NOERROR, ftype = GMT_NOTSET;
 
@@ -1325,12 +1325,12 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (got_z_grid) {	/* Get grid dimensions */
 		double *region = (gmt_file_is_tiled_list (API, Ctrl->In.file, NULL, NULL, NULL)) ? API->tile_wesn : wesn;	/* Make sure we get correct dimensions if tiled grids are used */
-		n_columns = gmt_M_get_n (GMT, region[XLO], region[XHI], Grid_orig->header->inc[GMT_X], Grid_orig->header->registration);
-		n_rows    = gmt_M_get_n (GMT, region[YLO], region[YHI], Grid_orig->header->inc[GMT_Y], Grid_orig->header->registration);
+		Conf->n_columns = gmt_M_get_n (GMT, region[XLO], region[XHI], Grid_orig->header->inc[GMT_X], Grid_orig->header->registration);
+		Conf->n_rows    = gmt_M_get_n (GMT, region[YLO], region[YHI], Grid_orig->header->inc[GMT_Y], Grid_orig->header->registration);
 	}
 	else {	/* Trust the image info from GDAL to make it more stable against pixel vs grid registration troubles */
-		n_columns = I->header->n_columns;
-		n_rows    = I->header->n_rows;
+		Conf->n_columns = I->header->n_columns;
+		Conf->n_rows    = I->header->n_rows;
 	}
 
 	if (!Ctrl->A.active) {	/* Initialize the PostScript plot */
@@ -1376,7 +1376,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
    			/* Create a virtual file to hold the resampled grid - out_string then holds the name of this output "file" */
     		GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, out_string);
 			/* Create the command to do the resampling via the grdsample module */
-			sprintf (cmd, "%s -G%s -I%d+/%d+ --GMT_HISTORY=readonly", in_string, out_string, n_columns, n_rows);
+			sprintf (cmd, "%s -G%s -I%d+/%d+ --GMT_HISTORY=readonly", in_string, out_string, Conf->n_columns, Conf->n_rows);
 			GMT_Report (API, GMT_MSG_INFORMATION, "Calling grdsample with args %s\n", cmd);
 			if (GMT_Call_Module (GMT->parent, "grdsample", GMT_MODULE_CMD, cmd) != GMT_NOERROR)	/* Do the resampling */
 				return (API->error);
@@ -1397,8 +1397,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		double inc[2] = {0.0, 0.0};
 
 		if (Ctrl->E.dpi == 0) {	/* Use input # of nodes as # of projected nodes */
-			nx_proj = n_columns;
-			ny_proj = n_rows;
+			nx_proj = Conf->n_columns;
+			ny_proj = Conf->n_rows;
 		}
 		if (Ctrl->D.active) { /* Must project the input image instead */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
@@ -1514,9 +1514,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* Get or calculate a color palette file */
 
-	n_columns = header_work->n_columns;
-	n_rows    = header_work->n_rows;
-
 	if (got_z_grid) {	/* Got a single grid so need to convert z to color via a CPT */
 		if (Ctrl->C.active) {	/* Read a palette file */
 			char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file);
@@ -1556,8 +1553,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			img_wesn[YHI] = GMT->current.proj.rect_m[YHI];	img_wesn[YLO] = GMT->current.proj.rect_m[YLO];
 		}
 		/* Determine raster image pixel sizes in the final units */
-		img_inc[0] = (img_wesn[XHI] - img_wesn[XLO]) / (n_columns - !grid_registration);
-		img_inc[1] = (img_wesn[YHI] - img_wesn[YLO]) / (n_rows - !grid_registration);
+		img_inc[0] = (img_wesn[XHI] - img_wesn[XLO]) / (Conf->n_columns - !grid_registration);
+		img_inc[1] = (img_wesn[YHI] - img_wesn[YLO]) / (Conf->n_rows - !grid_registration);
 
 		if (grid_registration == GMT_GRID_NODE_REG) {	/* Adjust domain by 1/2 pixel since SW pixel is outside the domain */
 			img_wesn[XLO] -= 0.5 * img_inc[0];		img_wesn[XHI] += 0.5 * img_inc[0];
@@ -1623,10 +1620,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	normal_x = !(GMT->current.proj.projection_GMT == GMT_LINEAR && !GMT->current.proj.xyz_pos[0] && !resampled);
 	normal_y = !(GMT->current.proj.projection_GMT == GMT_LINEAR && !GMT->current.proj.xyz_pos[1] && !resampled);
 
-	Conf->actual_row = gmt_M_memory (GMT, NULL, n_rows, unsigned int);	/* Deal with any reversal of the y-axis due to -J */
-	for (row = 0; row < n_rows; row++) Conf->actual_row[row] = (normal_y) ? row : n_rows - row - 1;
-	Conf->actual_col = gmt_M_memory (GMT, NULL, n_columns, unsigned int);	/* Deal with any reversal of the x-axis due to -J */
-	for (col = 0; col < n_columns; col++) Conf->actual_col[col] = (normal_x) ? col : n_columns - col - 1;
+	Conf->actual_row = gmt_M_memory (GMT, NULL, Conf->n_rows, unsigned int);	/* Deal with any reversal of the y-axis due to -J */
+	for (row = 0; row < Conf->n_rows; row++) Conf->actual_row[row] = (normal_y) ? row : Conf->n_rows - row - 1;
+	Conf->actual_col = gmt_M_memory (GMT, NULL, Conf->n_columns, unsigned int);	/* Deal with any reversal of the x-axis due to -J */
+	for (col = 0; col < Conf->n_columns; col++) Conf->actual_col[col] = (normal_x) ? col : Conf->n_columns - col - 1;
 
 	rgb_cube_scan = (P && Ctrl->Q.active && !Ctrl->A.active);	/* Need to look for unique rgb for PostScript masking */
 
@@ -1712,8 +1709,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 
 	/* Get actual plot size of each pixel */
-	dx = gmt_M_get_inc (GMT, header_work->wesn[XLO], header_work->wesn[XHI], n_columns, header_work->registration);
-	dy = gmt_M_get_inc (GMT, header_work->wesn[YLO], header_work->wesn[YHI], n_rows,    header_work->registration);
+	dx = gmt_M_get_inc (GMT, header_work->wesn[XLO], header_work->wesn[XHI], Conf->n_columns, header_work->registration);
+	dy = gmt_M_get_inc (GMT, header_work->wesn[YLO], header_work->wesn[YHI], Conf->n_rows,    header_work->registration);
 
 	/* Set lower left position of image on map; this depends on grid or image registration */
 
@@ -1724,17 +1721,16 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 
 	/* Full rectangular dimension of the projected image in inches */
-	x_side = dx * n_columns;
-	y_side = dy * n_rows;
+	x_side = dx * Conf->n_columns;
+	y_side = dy * Conf->n_rows;
 
 	if (P && gray_only && !Ctrl->A.active) /* Determine if the gray image in fact is just black & white since the PostScript can then simplify */
 		for (kk = 0, P->is_bw = true; P->is_bw && kk < header_work->nm; kk++)
 			if (!(bitimage_8[kk] == 0 || bitimage_8[kk] == 255)) P->is_bw = false;
 
-	if (P && P->is_bw && !Ctrl->A.active) {	/* Can get away with a 1-bit image, but we must pack the original byte to 8 image bits, unless we are returning the image (8 or 24 bit only allowed) */
-		grdimage_blackwhite_PS_image (GMT, Ctrl, bitimage_8, n_columns, n_rows, x0, y0, dx, dy);
-	}
-	else if (gray_only || Ctrl->M.active) {	/* Here we have a 1-layer 8 bit grayscale image */
+	if (P && P->is_bw && !Ctrl->A.active)	/* Can get away with a 1-bit image, but we must pack the original byte to 8 image bits, unless we are returning the image (8 or 24 bit only allowed) */
+		grdimage_blackwhite_PS_image (GMT, Ctrl, bitimage_8, Conf->n_columns, Conf->n_rows, x0, y0, dx, dy);
+	else if (gray_only || Ctrl->M.active) {	/* Here we have a 1-layer 8 bit grayshade image */
 		if (Ctrl->A.active) {	/* Creating a raster image, not PostScript */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Writing 8-bit grayshade image %s\n", way[Ctrl->A.way]);
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
@@ -1742,16 +1738,16 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 		else {	/* Lay down a PostScript 8-bit image */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Plotting 8-bit grayshade image\n");
-			PSL_plotcolorimage (PSL, x0, y0, x_side, y_side, PSL_BL, bitimage_8, n_columns, n_rows, (Ctrl->E.device_dpi ? -8 : 8));
+			PSL_plotcolorimage (PSL, x0, y0, x_side, y_side, PSL_BL, bitimage_8, Conf->n_columns, Conf->n_rows, (Ctrl->E.device_dpi ? -8 : 8));
 		}
 	}
 	else {	/* Dealing with a 24-bit color image */
 		if (Ctrl->A.active) {	/* Creating a raster image, not PostScript */
 			if (Ctrl->Q.active) {	/* Must initialize the transparency byte (alpha): 255 everywhere except at NaNs where it should be 0 */
 				memset (Out->alpha, 255, header_work->nm);
-				for (node = row = 0; row < n_rows; row++) {
+				for (node = row = 0; row < Conf->n_rows; row++) {
 					kk = gmt_M_ijpgi (header_work, row, 0);
-					for (col = 0; col < n_columns; col++, node++) {
+					for (col = 0; col < Conf->n_columns; col++, node++) {
 						if (gmt_M_is_fnan (Grid_proj->data[kk + col])) Out->alpha[node] = 0;
 					}
 				}
@@ -1763,7 +1759,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		else {	/* Lay down a PostScript 24-bit color image */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Plotting 24-bit color image\n");
 			PSL_plotcolorimage (PSL, x0, y0, x_side, y_side, PSL_BL, bitimage_24, (Ctrl->Q.active ? -1 : 1) *
-		    	n_columns, n_rows, (Ctrl->E.device_dpi ? -24 : 24));
+		    	Conf->n_columns, Conf->n_rows, (Ctrl->E.device_dpi ? -24 : 24));
 		}
 	}
 
