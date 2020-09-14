@@ -105,12 +105,12 @@ struct GRDIMAGE_CTRL {
 struct GRDIMAGE_CONF {
 	/* Configuration structure for things to pass around to sub-functions */
 	unsigned int colormask_offset;	/* Either 0 or 3 depending on -Q */
-	bool int_mode;
+	bool int_mode;				/* true if we are to apply illumination */
 	unsigned int *actual_row;	/* Array with actual rows as a function of pseudo row */
 	unsigned int *actual_col;	/* Array of actual columns as a function of pseudo col */
 	int n_columns, n_rows;		/* Signed dimensions for use in OpenMP loops */
-	uint64_t nm;				/* Number of pixels */
-	struct GMT_PALETTE *P;		/* Pointer to the active palette */
+	uint64_t nm;				/* Number of pixels in the image */
+	struct GMT_PALETTE *P;		/* Pointer to the active palette [NULL if image] */
 	struct GMT_GRID_HEADER *H;	/* Pointer to the active header */
 	struct GMT_GRID *Grid;		/* Pointer to the active grid [NULL if image] */
 	struct GMT_GRID *Intens;	/* Pointer to the active intensity grid [NULL if no intensity] */
