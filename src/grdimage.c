@@ -1651,7 +1651,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 					grdimage_grd_color_no_intensity (GMT, Ctrl, Conf, bitimage_24);
 			}
 		}
-		else {	/* Dealing with an image, so no CPT lookup */
+		else {	/* Dealing with an image, so no CPT lookup nor colormasking */
 			if (Ctrl->I.active) {	/* With intensity */
 				if (gray_only)	/* Image, grayscale, with intensity, with intensity */
 					grdimage_img_gray_with_intensity (GMT, Ctrl, Conf, bitimage_8);
