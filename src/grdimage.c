@@ -417,7 +417,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 			case 'Q':	/* PS3 colormasking */
 				Ctrl->Q.active = true;
 				break;
-			case 'W':	/* Warn if no image */
+			case 'W':	/* Warn if no image, usually when called from grd2kml */
 				Ctrl->W.active = true;
 				break;
 
@@ -1034,7 +1034,7 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
 	bool nothing_inside = false, use_intensity_grid = false, got_data_tiles = false, rgb_cube_scan;
-	bool has_content = false, mem_G = false, mem_I = false, mem_D = false, got_z_grid = true;
+	bool has_content, mem_G = false, mem_I = false, mem_D = false, got_z_grid = true;
 	unsigned int grid_registration = GMT_GRID_NODE_REG, try, row, col, mixed = 0;
 	uint64_t node, k, kk, byte, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
 	int error = 0, ret_val = GMT_NOERROR, ftype = GMT_NOTSET;
@@ -1272,14 +1272,12 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			gmt_plane_perspective (GMT, -1, 0.0);
 			gmt_plotend (GMT);
 		}
-		Return (GMT_NOERROR);
+		if (Ctrl->W.active) ret_val = GMT_IMAGE_NO_DATA;	/* Flag that output image has no data - needed by grd2kml only so far */
+		Return (ret_val);
 	}
 
 	/* Here the grid/image is inside the plot domain.  The same must be true of any
 	 * auto-derived intensities we may create below */
-
-	if (Ctrl->W.active && got_z_grid && gmt_M_is_dnan (header_work->z_min))
-		ret_val = GMT_IMAGE_NO_DATA;	/* Flag that our output image has no information - this is needed by grd2kml only so far */
 
 	if (Ctrl->I.derive) {	/* Auto-create intensity grid from data grid using the now determined data region */
 		bool got_int4_grid = false;
@@ -1494,6 +1492,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* From here, use Grid_proj or Img_proj plus optionally Intens_proj in making the (now) Cartesian rectangular image */
 
+	has_content = (got_z_grid) ? false : true;	/* Images always have content but grids may be all NaN */
 	if (use_intensity_grid) IH = gmt_get_H_hidden (Intens_proj->header);
 	if (got_z_grid) { /* Dealing with a projected grid, so we only have one band [z]*/
 		Grid_proj->header->n_bands = 1;
@@ -1525,6 +1524,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			gray_only = (P && P->is_gray);	/* Flag that we are doing a gray scale image below */
 			Conf->P = P;
 			if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPTs will be ignored\n");
+		}
+		if (Ctrl->W.active) {	/* Check if there are just NaNs in the grid */
+			for (node = 0; !has_content && node < header_work->size; node++)
+				if (!gmt_M_is_dnan (Conf->Grid->data[node])) has_content = true;
 		}
 	}
 
@@ -1811,7 +1814,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	/* May return a flag that the image/PS has no data (see -Qn), or just NO_ERROR */
+	/* May return a flag that the image/PS had no data (see -W), or just NO_ERROR */
 	ret_val = (Ctrl->W.active && !has_content) ? GMT_IMAGE_NO_DATA : GMT_NOERROR;
 	Return (ret_val);
 }
