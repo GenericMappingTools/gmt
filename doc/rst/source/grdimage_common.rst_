@@ -4,7 +4,7 @@ Description
 -----------
 
 **grdimage** reads a 2-D grid file and produces a gray-shaded (or
-colored) map by by building a rectangular image and assigning pixels
+colored) map by building a rectangular image and assigning pixels
 a gray-shade (or color) based on the z-value and the CPT file.
 Optionally, illumination may be added by providing a file with
 intensities in the (-1,+1) range or instructions to derive intensities
