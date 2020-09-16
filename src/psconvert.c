@@ -2715,14 +2715,12 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 	   and http://juknull.wordpress.com/tag/regenumkeyex-example */
 
 	HKEY hkey;              /* Handle to registry key */
-	char data[GMT_LEN256] = {""}, ver[GMT_LEN8] = {""}, *ptr;
+	char data[GMT_LEN256] = {""}, ver[GMT_LEN16] = {""}, *ptr;
 	char key[32] = "SOFTWARE\\GPL Ghostscript\\";
-	unsigned long datalen = GMT_LEN256;
+	unsigned long datalen = GMT_LEN256, verlen = GMT_LEN16;
 	unsigned long datatype;
 	long RegO, rc = 0;
-	int n = 0;
 	bool bits64 = true;
-	float maxVersion = 0;		/* In case more than one GS, hold the number of the highest version */
 
 	/* Before of all rest, check if we have a ghost in GMT/bin */
 	sprintf (data, "%s/gswin64c.exe", API->GMT->init.runtime_bindir);
@@ -2750,21 +2748,13 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 		return (GMT_RUNTIME_ERROR);
 	}
 
-	while (rc != ERROR_NO_MORE_ITEMS) {
-		rc  = RegEnumKeyEx (hkey, n++, data, &datalen, 0, NULL, NULL, NULL);
-		datalen = GMT_LEN256; /* reset to buffer length (including terminating \0) */
-		if (rc == ERROR_SUCCESS)
-			maxVersion = MAX(maxVersion, strtof(data, NULL));	/* If more than one GS, keep highest version number */
-	}
-
-	RegCloseKey(hkey);
-
-	if (maxVersion == 0) {
-		GMT_Report (API, GMT_MSG_ERROR, "Unknown version reported in registry\n");
+	if ((rc = RegEnumKeyEx (hkey, 0, ver, &verlen, 0, NULL, NULL, NULL)) != ERROR_SUCCESS) {
+		GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript not found in registry. Fallback to PATH.\n");
+		RegCloseKey(hkey);
 		return (GMT_RUNTIME_ERROR);
 	}
 
-	sprintf(ver, "%.2f", maxVersion);
+	RegCloseKey(hkey);
 	strcat(key, ver);
 
 	/* Open the HKLM key, key, from which we wish to get data.
@@ -2781,7 +2771,7 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
 #endif
 	if (RegO != ERROR_SUCCESS) {
-		GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript not found in registry. Fallback to PATH.\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript not found in registry (2). Fallback to PATH.\n");
 		return (GMT_RUNTIME_ERROR);
 	}
 
