@@ -23,9 +23,10 @@ assignees: ''
 - [ ] reserve a DOI on [zenodo](https://zenodo.org) (@PaulWessel)
 - [ ] run `src/gmt_make_*.sh` to update some .c and .h files
 - [ ] run `admin/gs_check.sh` to test if latest ghostscript version works
-- [ ] update changelog
+- [ ] update [changelog](/doc/rst/source/changes.rst)
 - [ ] update INSTALL.md
 - [ ] check if there are any warnings when build the documentation
+- [ ] add one new entry in `doc/rst/_static/version_switch.js` if it's a minor release
 - [ ] check/set values in `cmake/ConfigDefault.cmake`
     - [ ] `GMT_VERSION_YEAR` is current year
     - [ ] `GMT_PACKAGE_VERSION_*` is correctly set
@@ -43,13 +44,17 @@ assignees: ''
 - [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
 - [ ] update README and VERSION files on the GMT FTP (@PaulWessel)
 - [ ] make a tag and push it to github (**Must be done after uploading packages to the GMT FTP**)
-    ```
+    ```bash
+    # checkout master (for minor releases) or 6.x branch (for patch releases)
+    git checkout XXXX
+    # create the tag x.x.x
     git tag x.x.x
+    # Push tags to GitHub
     git push --tags
     ```
 - [ ] make a GitHub release.
-  Go to the [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) page,
-  check the draft release (automatically created by github-actions after pushing the tag).
+  The GitHub Actions automatically create a draft release after pushing the tag to github.
+  We need to go to the [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) page, and review it manually.
   - [ ] 6 files are attached as release assets (2 source tarballs, 3 installers and 1 checksum file).
   - [ ] download the checksum file and check if the checksums are correct
   - [ ] edit the draft release, set the target to the correct tag, and publish the release

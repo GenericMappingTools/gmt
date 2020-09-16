@@ -15,7 +15,7 @@
     **+e**
        Delay the plotting of the text. This is used to build a clip path
        based on the text, then lay down other overlays while that clip path
-       is in effect, then turning of clipping with clip **-Cs** which
+       is in effect, then turning off clipping with clip **-Cs** which
        finally plots the original text.
 
     **+f**\ *font*

@@ -705,14 +705,6 @@ GMT_LOCAL inline struct GMT_POSTSCRIPT  * gmtapi_get_postscript_data (struct GMT
 GMT_LOCAL inline struct GMT_PALETTE  * gmtapi_get_palette_data (struct GMT_PALETTE *ptr) {return (ptr);}
 GMT_LOCAL inline char ** gmtapi_get_char_char_ptr     (char **ptr)  {return (ptr);}
 
-/*! If API is not set or do_not_exit is false then we call system exit, else we move along.
- * This is required for some external interfaces where calling exit would bring down the
- * external environment (this is true for MATLAB, for instance). */
-GMT_LOCAL inline void gmtapi_exit (struct GMTAPI_CTRL *API, int code) {
-	if (API->do_not_exit == false)
-		GMT_exit (API->GMT, code);
-}
-
 /*! gmtapi_return_address is a convenience function that, given type, calls the correct converter */
 GMT_LOCAL void * gmtapi_return_address (void *data, unsigned int type) {
 	void *p = NULL;
@@ -1023,7 +1015,7 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Loading core GMT shared library: %s\n", API->lib[0].path);
 		if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while loading core GMT shared library: %s\n", dlerror());
-			gmtapi_exit (API, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+			return -GMT_RUNTIME_ERROR;
 		}
 		dlerror (); /* Clear any existing error */
 	}
@@ -1816,8 +1808,8 @@ GMT_LOCAL p_func_uint64_t gmtapi_get_2d_to_index (struct GMTAPI_CTRL *API, enum 
 			p = (shape == GMT_IS_ROW_FORMAT) ? gmtapi_2d_to_index_c_cplx_imag : gmtapi_2d_to_index_f_cplx_imag;
 			break;
 		default:
-			GMT_Report (API, GMT_MSG_ERROR, "gmtapi_get_2d_to_index: Illegal mode passed - aborting\n");
-			gmtapi_exit (API, GMT_RUNTIME_ERROR); return (NULL);
+			GMT_Report (API, GMT_MSG_ERROR, "gmtapi_get_2d_to_index: Illegal mode passed\n");
+			return (NULL);
 	}
 	return (p);
 }
@@ -3507,7 +3499,8 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				D_obj->table[D_obj->n_tables] = gmt_get_table (GMT);
 				D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, s_alloc, struct GMT_DATASEGMENT *);
 				S = D_obj->table[D_obj->n_tables]->segment[0] = GMT_Alloc_Segment (API, smode, M_obj->n_rows, n_columns, NULL, NULL);
-				GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
+				if ((GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL)) == NULL)
+					return_null (API, GMT_WRONG_MATRIX_SHAPE);
 				if ((api_get_val = gmtapi_select_get_function (API, M_obj->type)) == NULL)
 					return_null (API, GMT_NOT_A_VALID_TYPE);
 
@@ -3908,7 +3901,8 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 			}
 
 			/* Set up index and put-value functions for this matrix */
-			GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
+			if ((GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL)) == NULL)
+				return (gmtlib_report_error (API, GMT_WRONG_MATRIX_SHAPE));
 			if ((api_put_val = gmtapi_select_put_function (API, M_obj->type)) == NULL)
 				return (gmtlib_report_error (API, GMT_NOT_A_VALID_TYPE));
 
@@ -4409,7 +4403,8 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 			GMT_Report (API, GMT_MSG_INFORMATION, "Importing image data from user memory location\n");
 			gmt_set_grddim (GMT, I_obj->header);	/* Set all dimensions */
 			I_obj->data = gmt_M_memory (GMT, NULL, I_obj->header->size, unsigned char);
-			GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
+			if ((GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL)) == NULL)
+				return_null (API, GMT_WRONG_MATRIX_SHAPE);
 			if ((api_get_val = gmtapi_select_get_function (API, M_obj->type)) == NULL)
 				return_null (API, GMT_NOT_A_VALID_TYPE);
 			gmt_M_grd_loop (GMT, I_obj, row, col, ij) {
@@ -4854,7 +4849,8 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			G_obj->header->complex_mode = (mode & GMT_GRID_IS_COMPLEX_MASK);	/* Set the complex mode */
 			GH->alloc_mode = GMT_ALLOC_INTERNALLY;
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
-			GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
+			if ((GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL)) == NULL)
+				return_null (API, GMT_WRONG_MATRIX_SHAPE);
 			if ((api_get_val = gmtapi_select_get_function (API, M_obj->type)) == NULL)
 				return_null (API, GMT_NOT_A_VALID_TYPE);
 			HH = gmt_get_H_hidden (G_obj->header);
@@ -5177,7 +5173,8 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 				if ((error = gmtlib_alloc_univector (GMT, &(M_obj->data), M_obj->type, size)) != GMT_NOERROR) return (error);
 				MH->alloc_mode = GMT_ALLOC_INTERNALLY;
 			}
-			GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
+			if ((GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL)) == NULL)
+				return (gmtlib_report_error (API, GMT_WRONG_MATRIX_SHAPE));
 			if ((api_put_val = gmtapi_select_put_function (API, M_obj->type)) == NULL)
 				return (gmtlib_report_error (API, GMT_NOT_A_VALID_TYPE));
 			gmt_M_grd_loop (GMT, G_obj, row, col, ijp) {
@@ -5340,7 +5337,8 @@ GMT_LOCAL struct GMT_MATRIX * gmtapi_read_matrix (struct GMT_CTRL *GMT, void *so
 	}
 	if ((api_put_val = gmtapi_select_put_function (GMT->parent, M->type)) == NULL)	/* Get correct put function given data type */
 		return_null (GMT->parent, GMT_NOT_A_VALID_TYPE);
-	GMT_2D_to_index = gmtapi_get_2d_to_index (GMT->parent, M->shape, GMT_GRID_IS_REAL);	/* Get ij index function */
+	if ((GMT_2D_to_index = gmtapi_get_2d_to_index (GMT->parent, M->shape, GMT_GRID_IS_REAL)) == NULL)	/* Get ij index function */
+		return_null (GMT->parent, GMT_WRONG_MATRIX_SHAPE);
 	for (col = 0; col < M->n_columns; col++) {
 		for (row = 0; row < M->n_rows; row++) {
 			ij = GMT_2D_to_index (row, col, M->dim);	/* Index into the user data matrix depends on layout (M->shape) */
@@ -5389,7 +5387,8 @@ GMT_LOCAL void * gmtapi_grid2matrix (struct GMTAPI_CTRL *API, struct GMT_GRID *I
 		if ((error = gmtlib_alloc_univector (API->GMT, &(Out->data), Out->type, Out->n_rows * Out->n_columns)) != GMT_NOERROR)
 			return_null (API, error);
 	}
-	GMT_2D_to_index = gmtapi_get_2d_to_index (API, Out->shape, GMT_GRID_IS_REAL);
+	if ((GMT_2D_to_index = gmtapi_get_2d_to_index (API, Out->shape, GMT_GRID_IS_REAL)) == NULL)
+		return_null (API, GMT_WRONG_MATRIX_SHAPE);
 	if ((api_put_val = gmtapi_select_put_function (API, Out->type)) == NULL)
 		return_null (API, GMT_NOT_A_VALID_TYPE);
 
@@ -5421,7 +5420,8 @@ GMT_LOCAL void * gmtapi_matrix2grid (struct GMTAPI_CTRL *API, struct GMT_MATRIX 
 		if ((error = gmtapi_alloc_grid_xy (API, Out)) != GMT_NOERROR)
 			return_null (API, error);	/* Allocation error */
 	}
-	GMT_2D_to_index = gmtapi_get_2d_to_index (API, In->shape, GMT_GRID_IS_REAL);
+	if ((GMT_2D_to_index = gmtapi_get_2d_to_index (API, In->shape, GMT_GRID_IS_REAL)) == NULL)
+		return_null (API, GMT_WRONG_MATRIX_SHAPE);
 	if ((api_get_val = gmtapi_select_get_function (API, In->type)) == NULL)
 		return_null (API, GMT_NOT_A_VALID_TYPE);
 
@@ -5575,7 +5575,8 @@ GMT_LOCAL int gmtapi_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned in
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s Matrix to %s\n", msg1[append], &M_file[append]);
 
 	/* Set index and put-value functions */
-	GMT_2D_to_index = gmtapi_get_2d_to_index (GMT->parent, M->shape, GMT_GRID_IS_REAL);
+	if ((GMT_2D_to_index = gmtapi_get_2d_to_index (GMT->parent, M->shape, GMT_GRID_IS_REAL)) == NULL)
+		return (GMT_WRONG_MATRIX_SHAPE);
 	if ((api_get_val = gmtapi_select_get_function (GMT->parent, M->type)) == NULL)
 		return (GMT_NOT_A_VALID_TYPE);
 
@@ -5607,7 +5608,7 @@ GMT_LOCAL int gmtapi_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned in
 			fprintf (fp, "\n");
 		}
 	}
-	GMT->current.setting.io_header[GMT_OUT] = was;
+	if (M->n_headers) GMT->current.setting.io_header[GMT_OUT] = was;  /* Revert to the original setting */
 
 	if (close_file) fclose (fp);
 	return (GMT_NOERROR);
@@ -5764,7 +5765,7 @@ GMT_LOCAL int gmtapi_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned in
 	gmt_M_free (GMT, api_get_val);
 
 	if (close_file) fclose (fp);
-	GMT->current.setting.io_header[GMT_OUT] = was;
+	if (V->n_headers) GMT->current.setting.io_header[GMT_OUT] = was;  /* Revert to the original setting */
 
 	return (GMT_NOERROR);
 }
@@ -6830,7 +6831,7 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	API->verbose = (mode >> 16);	/* Pick up any -V settings from gmt.c */
 	API->pad = pad;		/* Preserve the default pad value for this session */
 	API->print_func = (print_func == NULL) ? gmtapi_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
-	API->do_not_exit = mode & GMT_SESSION_NOEXIT;	/* if set, then gmtapi_exit & GMT_exit are simply a return; otherwise they call exit */
+	API->do_not_exit = mode & GMT_SESSION_NOEXIT;	/* Deprecated, we no longer call exit anywhere in the API (gmt_api.c) */
 	API->external = mode & GMT_SESSION_EXTERNAL;	/* if false|0 then we don't list read and write as modules */
 	API->shape = (mode & GMT_SESSION_COLMAJOR) ? GMT_IS_COL_FORMAT : GMT_IS_ROW_FORMAT;		/* if set then we must use column-major format [row-major] */
 	API->runmode = mode & GMT_SESSION_RUNMODE;		/* If nonzero we set up modern GMT run-mode, else classic */
@@ -6901,7 +6902,8 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	else
 		API->GMT->init.module_name = unknown; /* or unknown */
 
-	gmtapi_init_sharedlibs (API);				/* Count how many shared libraries we should know about, and get their names and paths */
+	if (gmtapi_init_sharedlibs (API) < 0)				/* Count how many shared libraries we should know about, and get their names and paths */
+		return_null (API, GMT_RUNTIME_ERROR);
 
 	return (API);	/* Pass the structure back out */
 }
@@ -7378,7 +7380,8 @@ GMT_LOCAL int gmtapi_end_io_matrix (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_
 		if (api_put_val == NULL) return_error (API, GMT_NOT_A_VALID_TYPE);
 		p_func_uint64_t GMT_2D_to_index = NULL;
 		uint64_t col, ij;
-		GMT_2D_to_index = gmtapi_get_2d_to_index (API, GMT_IS_ROW_FORMAT, GMT_GRID_IS_REAL);	/* Can only do row-format until end of this function */
+		if ((GMT_2D_to_index = gmtapi_get_2d_to_index (API, GMT_IS_ROW_FORMAT, GMT_GRID_IS_REAL)) == NULL)	/* Can only do row-format until end of this function */
+			return_error (API, GMT_WRONG_MATRIX_SHAPE);
 		while (S->delay) {	/* Place delayed NaN-rows(s) up front */
 			S->delay--;
 			for (col = 0; col < M->n_columns; col++) {	/* Place the output items */
@@ -7892,6 +7895,9 @@ GMT_LOCAL bool gmtapi_is_passable (struct GMTAPI_DATA_OBJECT *S_obj, unsigned in
 	return true; /* True to its word, otherwise we fall through and read the data */
 }
 
+/* Simple macro to tell us if this file (which we know is a memory file when called) is an output file */
+#define gmtapi_M_is_output(file) (file[GMTAPI_OBJECT_DIR_START] == 'O')
+
 /*! . */
 void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], const char *infile, void *data) {
 	/* Function to read data files directly into program memory as a set (not record-by-record).
@@ -7916,6 +7922,8 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	API = gmtapi_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 	just_get_data = (gmt_M_file_is_memory (input));	/* A regular GMT resource passed via memory */
+	if (just_get_data && gmtapi_M_is_output (input))	/* A virtual output file created elsewhere, retrieve and we are done */
+		return (GMT_Read_VirtualFile (API, input));
 	reset = (mode & GMT_IO_RESET);	/* We want to reset resource as unread after reading it */
 	if (reset) mode -= GMT_IO_RESET;
 	module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we reading a resource that should be considered a module input? */
@@ -8472,7 +8480,8 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
 		}
 		API->current_get_M = gmtapi_get_matrix_data (S->resource);
 		API->current_get_n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : S->n_columns;
-		API->current_get_M_index = gmtapi_get_2d_to_index (API, API->current_get_M->shape, GMT_GRID_IS_REAL);
+		if ((API->current_get_M_index = gmtapi_get_2d_to_index (API, API->current_get_M->shape, GMT_GRID_IS_REAL)) == NULL)
+			return NULL;
 		if ((API->current_get_M_val = gmtapi_select_get_function (API, API->current_get_M->type)) == NULL)
 			return NULL;
 		record = NULL;
@@ -8654,7 +8663,9 @@ GMT_LOCAL void gmtapi_get_record_init (struct GMTAPI_CTRL *API) {
 		case GMT_IS_REFERENCE|GMT_VIA_MATRIX:
 			API->current_get_M = gmtapi_get_matrix_data (S->resource);
 			API->current_get_n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : S->n_columns;
-			API->current_get_M_index = gmtapi_get_2d_to_index (API, API->current_get_M->shape, GMT_GRID_IS_REAL);
+			if ((API->current_get_M_index = gmtapi_get_2d_to_index (API, API->current_get_M->shape, GMT_GRID_IS_REAL)) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "GMTAPI: Internal error: gmtapi_get_record_init called gmtapi_get_2d_to_index with wring shape\n");
+			}
 			API->current_get_M_val = gmtapi_select_get_function (API, API->current_get_M->type);
 			if (API->current_get_M->text == NULL) GMT->current.io.record.text = NULL;
 			API->api_get_record = api_get_record_matrix;
@@ -9107,7 +9118,8 @@ GMT_LOCAL int gmtapi_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode
 			}
 			/* Place current matrix parameters in API */
 			API->current_put_M = M_obj;
-			API->current_put_M_index = gmtapi_get_2d_to_index (API, GMT_IS_ROW_FORMAT, GMT_GRID_IS_REAL);	/* Since we cannot do col_format without knowing dimension - see end_io_matrix */
+			if ((API->current_put_M_index = gmtapi_get_2d_to_index (API, GMT_IS_ROW_FORMAT, GMT_GRID_IS_REAL)) == NULL)	/* Since we cannot do col_format without knowing dimension - see end_io_matrix */
+				return GMT_WRONG_MATRIX_SHAPE;
 			if ((API->current_put_M_val = gmtapi_select_put_function (API, M_obj->type)) == NULL)
 				return GMT_NOT_A_VALID_TYPE;
 			API->api_put_record = gmtapi_put_record_matrix;
@@ -12553,7 +12565,7 @@ GMT_LOCAL void * gmtapi_dataset2matrix (struct GMTAPI_CTRL *API, struct GMT_DATA
 		MH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 	if ((api_put_val = gmtapi_select_put_function (API, Out->type)) == NULL) return (NULL);
-	GMT_2D_to_index = gmtapi_get_2d_to_index (API, Out->shape, GMT_GRID_IS_REAL);
+	if ((GMT_2D_to_index = gmtapi_get_2d_to_index (API, Out->shape, GMT_GRID_IS_REAL)) == NULL) return (NULL);
 	for (tbl = row_out = 0; tbl < In->n_tables; tbl++) {
 		D = In->table[tbl];	/* Shorthand to current input data table */
 		for (seg = 0; seg < D->n_segments; seg++) {
@@ -12637,7 +12649,8 @@ GMT_LOCAL void * gmtapi_matrix2dataset (struct GMTAPI_CTRL *API, struct GMT_MATR
 	SD = Out->table[0]->segment[0];	/* Shorthand to only segment in the dataset */
 	if ((api_get_val = gmtapi_select_get_function (API, In->type)) == NULL)
 		return_null (API, GMT_NOT_A_VALID_TYPE);
-	GMT_2D_to_index = gmtapi_get_2d_to_index (API, In->shape, GMT_GRID_IS_REAL);
+	if ((GMT_2D_to_index = gmtapi_get_2d_to_index (API, In->shape, GMT_GRID_IS_REAL)) == NULL)
+		return_null (API, GMT_WRONG_MATRIX_SHAPE);
 	for (row = 0; row < In->n_rows; row++) {
 		for (col = 0; col < In->n_columns; col++) {
 			ij = GMT_2D_to_index (row, col, In->dim);	/* Index into the user data matrix depends on layout (M->shape) */
@@ -12678,7 +12691,8 @@ GMT_LOCAL void * gmtapi_matrix2vector (struct GMTAPI_CTRL *API, struct GMT_MATRI
 		return_null (API, GMT_NOT_A_VALID_TYPE);
 	if ((api_put_val_v = gmtapi_select_put_function (API, GMT->current.setting.export_type)) == NULL)	/* Since all columns are of same type we get the pointer here */
 		return_null (API, GMT_NOT_A_VALID_TYPE);
-	GMT_2D_to_index = gmtapi_get_2d_to_index (API, In->shape, GMT_GRID_IS_REAL);
+	if ((GMT_2D_to_index = gmtapi_get_2d_to_index (API, In->shape, GMT_GRID_IS_REAL)) == NULL)
+		return_null (API, GMT_WRONG_MATRIX_SHAPE);
 	for (row = 0; row < In->n_rows; row++) {
 		for (col = 0; col < In->n_columns; col++) {
 			ij = GMT_2D_to_index (row, col, In->dim);	/* Index into the user data matrix depends on layout (M->shape) */
@@ -12747,7 +12761,8 @@ GMT_LOCAL void * gmtapi_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTO
 		MH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 
-	GMT_2D_to_index = gmtapi_get_2d_to_index (API, Out->shape, GMT_GRID_IS_REAL);
+	if ((GMT_2D_to_index = gmtapi_get_2d_to_index (API, Out->shape, GMT_GRID_IS_REAL)) == NULL)
+		return (NULL);
 	if ((api_put_val = gmtapi_select_put_function (API, Out->type)) == NULL)	/* Since all columns are of same type we get the pointer here */
 		return (NULL);
 	for (col = 0; col < In->n_columns; col++) {
@@ -13913,4 +13928,71 @@ EXTERN_MSC void * gmtlib_get_ctrl (void *V_API) {
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	API = gmtapi_get_api_ptr (V_API);
 	return API->GMT;	/* Pass back the GMT ctrl pointer as void pointer */
+}
+
+int64_t gmt_eliminate_duplicates (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, uint64_t cols[], uint64_t ncols, bool text) {
+	/* Scan dataset per segment and eliminate any duplicate records as identified by having no change in all the specified cols.
+	 * If no change then we skip the duplicate records.  No segment will be eliminated since first record always survives.
+	 * Including the trailing text in the comparison is optional and requires setting of the text flag to true. */
+	bool may_be_duplicate;	/* Initially true, gets set to false if we fail any of the one or more tests */
+	uint64_t tbl, seg, row, last_row, k, n_dup_seg, n_dup = 0;
+	int64_t n_skip;	/* Number of consecutive duplicate rows */
+	unsigned int mode;
+	struct GMT_DATASEGMENT *S = NULL;
+
+	if (ncols == 0 || cols == NULL) {
+		gmtlib_report_error (API, GMT_N_COLS_NOT_SET);
+		return -GMT_N_COLS_NOT_SET;
+	}
+	for (k = 0; k < ncols; k++) if (cols[k] >= D->n_columns) {
+		gmtlib_report_error (API, GMT_DIM_TOO_LARGE);
+		return -GMT_DIM_TOO_LARGE;
+	}
+
+	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* Examine each table */
+		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* Examine each segment */
+			S = D->table[tbl]->segment[seg];	/* Current segment shorthand */
+			mode = (S->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
+			last_row = 0;	/* Always keep the first row of any segment */
+			n_dup_seg = 0;	/* None yet found in this segment */
+			row = 0;
+			while (row < (S->n_rows-1)) {	/* Since we increase row inside we must stop this loop at one less */
+				n_skip = -1;	/* Since incremented before the test */
+				do {	/* Check if this row is same as last, for given cols */
+					row++;	/* Advance to next record */
+					n_skip++;	/* So now it is 0 the very first time */
+					may_be_duplicate = true;	/* See if we can fail a test */
+					for (k = 0; may_be_duplicate && k < ncols; k++) {	/* Check the columns indicated as long as the records may be duplicates */
+						if (!doubleAlmostEqualZero (S->data[cols[k]][row], S->data[cols[k]][last_row]))
+							may_be_duplicate = false;	/* Failed to match across these two rows for this column */
+					}
+					if (may_be_duplicate && text && mode && S->text[row] && S->text[last_row] && strcmp (S->text[row], S->text[last_row]))
+						may_be_duplicate = false;	/* Failed to match across these two rows for trailing text */
+				} while (may_be_duplicate && row < S->n_rows);
+
+				if (n_skip) {	/* Must move up all memory and bury this repeat record */
+					for (k = 0; k < S->n_columns; k++)
+						memmove (&S->data[k][row-n_skip], &S->data[k][row], (S->n_rows-row)*sizeof(double));
+					if (mode & GMT_WITH_STRINGS)
+						memmove (&S->text[row-n_skip], &S->text[row], (S->n_rows-row)*sizeof(char *));
+					S->n_rows -= n_skip;	/* Since we lost records */
+					n_dup_seg += n_skip;
+					row -= n_skip;
+				}
+				last_row++;
+			}
+			if (n_dup_seg) {	/* Found duplicates, need  to reallocate arrays */
+				GMT_Report (API, GMT_MSG_DEBUG, "Removed %" PRIu64 " duplicate records from table %" PRIu64", segment %" PRIu64"\n", n_dup_seg, tbl, seg);
+				if (gmt_alloc_segment (API->GMT, S, S->n_rows, S->n_columns, mode, false))
+					return -GMT_RUNTIME_ERROR;	/* Failure of some sort */
+				n_dup += n_dup_seg;
+			}
+		}
+	}
+	if (n_dup) {
+		gmt_set_dataset_minmax (API->GMT, D);	/* Update min/max for each column */
+		GMT_Report (API, GMT_MSG_DEBUG, "Removed %" PRIu64 " duplicate records from the entire dataset\n", n_dup);
+	}
+
+	return (n_dup);
 }

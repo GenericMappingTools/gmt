@@ -228,6 +228,7 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMTAPI_CTRL *API, in
 		return NULL;
 	}	
 	if ((I = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_INFO)) == NULL) {
+		fclose (fp);
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to allocated %d GMT_DATA_INFO structures!\n", *n);
 		return NULL;
 	}

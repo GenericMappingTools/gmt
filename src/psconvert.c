@@ -217,7 +217,7 @@ GMT_LOCAL struct popen2 * psconvert_popen2 (const char *cmdline) {
 		close (pipe_stdout[0]);
 		dup2 (pipe_stdout[1], 1);
 		execl ("/bin/sh", "sh", "-c", cmdline, NULL);
-		perror ("execl"); exit (99);
+		perror ("execl"); return NULL;
 	}
 	/* Return the file handles back via structure */
 	F = calloc (1, sizeof (struct popen2));
@@ -1449,7 +1449,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	char **ps_names = NULL;
 	char ps_file[PATH_MAX] = "", no_U_file[PATH_MAX] = "", clean_PS_file[PATH_MAX] = "", tmp_file[PATH_MAX] = "",
 	     out_file[PATH_MAX] = "", BB_file[PATH_MAX] = "", resolution[GMT_LEN128] = "";
-	char *line = NULL, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""},
+	char *line = NULL, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""}, GSstring[GMT_LEN64] = {""},
 	     cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""}, *quiet = NULL;
 	char *gs_BB = NULL, *proj4_cmd = NULL;
 	char *device[N_GS_DEVICES] = {"", "pdfwrite", "svg", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha",
@@ -1496,7 +1496,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	struct { int major, minor; } gsVersion = {0, 0};
+	struct { int major, minor, patch; } gsVersion = {0, 0, 0};
 	struct GMT_POSTSCRIPT *PS = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -1522,17 +1522,16 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	/* Test if Ghostscript can be executed (version query) */
-	if (gmt_check_executable (GMT, Ctrl->G.file, "--version", NULL, cmd)) {	/* Found Ghostscript */
-		int n = sscanf (cmd, "%d.%d", &gsVersion.major, &gsVersion.minor);
-		if (n != 2) {
+	if (gmt_check_executable (GMT, Ctrl->G.file, "--version", NULL, GSstring)) {	/* Found Ghostscript */
+		int n = sscanf (GSstring, "%d.%d.%d", &gsVersion.major, &gsVersion.minor, &gsVersion.patch);
+		if (n < 2) {
 			/* command execution failed or cannot parse response */
-			GMT_Report (API, GMT_MSG_ERROR, "Failed to parse response to Ghostscript version query [n = %d %d %d].\n",
-			            n, gsVersion.major, gsVersion.minor);
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to parse response [%s] to Ghostscript version query [n = %d major = %d minor = %d patch = %d].\n",
+			            GSstring, n, gsVersion.major, gsVersion.minor, gsVersion.patch);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		else {
-			GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript version: %d.%d\n", gsVersion.major, gsVersion.minor);
-		}
+		else
+			GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript version: %s\n", GSstring);
 	}
 	else {	/* Failure to open Ghostscript */
 		GMT_Report (API, GMT_MSG_ERROR, "Cannot execute Ghostscript (%s).\n", Ctrl->G.file);
@@ -1540,8 +1539,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->T.device == GS_DEV_SVG && (gsVersion.major > 9 || (gsVersion.major == 9 && gsVersion.minor >= 16))) {
-		GMT_Report (API, GMT_MSG_ERROR, "Your Ghostscript version (%d.%d) no longer supports the SVG device.\n",
-		            gsVersion.major, gsVersion.minor);
+		GMT_Report (API, GMT_MSG_ERROR, "Your Ghostscript version (%s) no longer supports the SVG device.\n", GSstring);
 		GMT_Report (API, GMT_MSG_ERROR, "We recommend converting to PDF and then installing the pdf2svg package.\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -2308,7 +2306,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 
 		if (has_transparency && gsVersion.major == 9 && (gsVersion.minor == 51 || gsVersion.minor == 52))
-				GMT_Report (API, GMT_MSG_WARNING, "Input file has transparency but your gs version 9.%d has a bug preventing it - please downgrade to 9.50\n", gsVersion.minor);
+				GMT_Report (API, GMT_MSG_WARNING, "Input file has transparency but your gs version %s has a bug preventing it - please downgrade to 9.50\n", GSstring);
 		if (transparency && Ctrl->T.device != GS_DEV_PDF)	/* Must reset to PDF settings since we have transparency */
 				gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
 
@@ -2808,7 +2806,7 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 
 	/* Now finally check that the gswinXXc.exe exists */
 	if (access (data, R_OK)) {
-		GMT_Report (API, GMT_MSG_ERROR, "gswinXXc.exe does not exist.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Registry registered %s does not exist. Resorting to the one provided in GMT.\n", data);
 		return (GMT_RUNTIME_ERROR);
 	}
 

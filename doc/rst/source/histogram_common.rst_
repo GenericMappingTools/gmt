@@ -167,6 +167,9 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
+.. |Add_-l| replace:: Symbol is a rectangle with width-to-height ratio of 3:2.  Use **+S**\ *width*[/*height*] to overwrite with custom width and optionally height.
+.. include:: explain_-l.rst_
+
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
 

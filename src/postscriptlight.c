@@ -333,6 +333,7 @@ static struct PSL_FONT PSL_standard_fonts[PSL_N_STANDARD_FONTS] = {
 #define PSL_SUB_DOWN		0.25	/* Baseline shift down in font size for subscript */
 #define PSL_SUP_UP_LC		0.35	/* Baseline shift up in font size for superscript after lowercase letter */
 #define PSL_SUP_UP_UC		0.35	/* Baseline shift up in font size for superscript after uppercase letter */
+#define PSL_ASCII_ES		27		/* ASCII code for escape (used to prevent +? strings in plain text from being seen as modifiers) */
 #if 0
 /* These are potential revisions to some of the settings above but remains to be tested */
 #define PSL_SUBSUP_SIZE		0.58	/* Relative size of sub/sup-script to normal size */
@@ -4852,6 +4853,42 @@ int PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fontsize, 
 	return (PSL_NO_ERROR);
 }
 
+void psl_got_composite_fontswitch (struct PSL_CTRL *PSL, char *text) {
+	/* If a composite character is made from two different fonts then we need to flag these.
+	 * E.g., Epsilon time-derivative = @!\277@~145@~ using current and Symbol font.
+	 * Here we need to switch to symbol font for one char, from whatever font we are using.
+	 * We look for such cases and count the occurrences, plus replace the font changing code
+	 * @ (either @~ or @%font% with ASCII escape (27)). */
+	size_t k;
+	int n = 0;
+	for (k = 0; k < strlen (text); k++) {
+		if (text[k] != '@') continue;
+		/* Start of an escape sequence */
+		k++;
+		if (text[k] != '!') continue;	/* Not a composite character request */
+		k++;	/* Step to start of character1 */
+		if (text[k] == '\\') k += 4; else k++;	/* Skip the octal or regular first character */
+		if (text[k] != '@') continue;	/* No font switching in the composite glyph */
+		/* Here we do have such a thing, and we need to avoid the regular string splitting at @ in PSL_plottext and PSL_deftextdim */
+		text[k] = PSL_ASCII_ES;	/* Replace @ with ASCII ESC code for now */
+		k++;	/* Font code type is ~ or % */
+		if (text[k] == '~')	/* Symbol font */
+			k++;	/* Step to character2 */
+		else {	/* Some random font switch */
+			k++;	/* Step past first % */
+			while (text[k] != '%') k++;	/* Skip past the font name or number */
+			k++;	/* Step to character2 */
+		}
+		if (text[k] == '\\') k += 4; else k++;	/* Skip the octal or regular second character */
+		if (text[k] != '@')	/* Not ideal, user error presumably */
+			PSL_message (PSL, PSL_MSG_WARNING, "Warning: psl_got_composite_fontswitch expected a font-change at end of composite character 2\n");
+		else	/* Get passed the font return code */
+			text[k] = PSL_ASCII_ES;	/* Skip to end of text section */
+		n++;	/* Found one of these cases */
+	}
+	if (n) PSL_message (PSL, PSL_MSG_DEBUG, "psl_got_composite_fontswitch found %d composite characters with different fonts/char sets\n", n);
+}
+
 int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char *text) {
 	/* Will calculate the dimension of the given text string.
 	 * Because of possible escape sequences we need to examine the string
@@ -4866,9 +4903,9 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	 * depth or both width and height on the PostScript stack.
 	 */
 
-	char *tempstring = NULL, *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, *plast = NULL, previous[BUFSIZ] = {""};
-	int dy, font, sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, last_chr, kase = PSL_LC;
-	bool last_sub = false, last_sup = false, supersub;
+	char *tempstring = NULL, *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, *plast = NULL, previous[BUFSIZ] = {""}, c;
+	int dy, font, font2, sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, last_chr, kase = PSL_LC;
+	bool last_sub = false, last_sup = false, supersub, composite;
 	double orig_size, small_size, size, scap_size, ustep[2], dstep;
 
 	if (strlen (text) >= (PSL_BUFSIZ-1)) {
@@ -4891,6 +4928,8 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 		return (PSL_NO_ERROR);
 	}
 
+	psl_got_composite_fontswitch (PSL, string);
+
 	/* Here, we have special request for Symbol font and sub/superscript
 	 * @~ toggles between Symbol font and default font
 	 * @%<fontno>% switches font number <fontno>; give @%% to reset
@@ -4904,14 +4943,14 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	piece  = PSL_memory (PSL, NULL, 2 * PSL_BUFSIZ, char);
 	piece2 = PSL_memory (PSL, NULL, PSL_BUFSIZ, char);
 
-	font = old_font = PSL->current.font_no;
+	font = font2 = old_font = PSL->current.font_no;
 	orig_size = size = fontsize;
 	small_size = size * PSL->current.subsupsize;	/* Sub-script/Super-script set at given fraction of font size */
 	scap_size = size * PSL->current.scapssize;	/* Small caps set at given fraction of font size */
 	ustep[PSL_LC] = PSL->current.sup_up[PSL_LC] * size;	/* Super-script baseline raised by given fraction of font size for lower case*/
 	ustep[PSL_UC] = PSL->current.sup_up[PSL_UC] * size;	/* Super-script baseline raised by given fraction of font size for upper case */
 	dstep = PSL->current.sub_down * size;		/* Sub-script baseline lowered by given fraction of font size */
-	sub_on = super_on = scaps_on = symbol_on = font_on = size_on = color_on = under_on = false;
+	sub_on = super_on = scaps_on = symbol_on = font_on = size_on = color_on = under_on = composite = false;
 	supersub = (strstr (string, "@-@+") || strstr (string, "@+@-"));	/* Check for sub/super combo */
 	tempstring = PSL_memory (PSL, NULL, strlen(string)+1, char);	/* Since strtok steps on it */
 	strcpy (tempstring, string);
@@ -4925,13 +4964,51 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	}
 
 	while (ptr) {
-		if (ptr[0] == '!') {	/* Composite character */
+		if (ptr[0] == '!') {	/* Composite character. Only use the second character to measure width */
 			ptr++;
 			if (ptr[0] == '\\')	/* Octal code */
 				ptr += 4;
 			else
 				ptr++;
-			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
+			/* Watch out for escaped font change before 2nd character */
+			if (ptr[0] == PSL_ASCII_ES) {	/* Have a font change on either side of 2nd character */
+				ptr++;
+				if (ptr[0] == '~')	/* Toggle the symbol font */
+					font2 = PSL_SYMBOL_FONT;
+				else {	/* Font switching with @%font% ...@%% */
+					ptr++;
+					font2 = psl_getfont (PSL, ptr);
+					while (*ptr != '%') ptr++;
+				}
+				ptr++;	/* Now at start of 2nd character */
+			}
+			else	/* No 2nd font */
+				font2 = font;
+			if (ptr[0] == '\\') {	/* Octal code */
+				c = ptr[4];
+				ptr[4] = '\0';	/* Temporary chop at end of this code */
+			}
+			else {
+				c = ptr[1];
+				ptr[1] = '\0';	/* Temporary chop at end of char */
+			}
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);	/* Picked character2 */
+			if (ptr[0] == '\\')	{	/* Octal code */
+				ptr[4] = c;	/* Restore code */
+				ptr += 4;
+			}
+			else {
+				ptr[1] = c;	/* Restore char */
+				ptr++;
+			}
+			if (font2 != font) {	/* Skip past the font switcher */
+				ptr++;	/* Step over the implicit @ (ASCII 27) */
+				if (font2 == PSL_SYMBOL_FONT)
+					ptr++;	/* Move past the ~ */
+				else
+					ptr += 2;	/* Move past the %% */
+			}
+			composite = true;	/* Flag this case */
 		}
 		else if (ptr[0] == '~') {	/* Symbol font toggle */
 			symbol_on = !symbol_on;
@@ -5028,6 +5105,10 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 				PSL_command (PSL, "PSL_last_width 0 G ");	/* Rewind position to orig baseline */
 				last_sub = last_sup = false;
 			}
+			if (ptr && composite) {
+				strcat (piece, ptr);
+				composite = false;
+			}
 			PSL_command (PSL, "%d F%d (%s) FP ", psl_ip (PSL, size), font, piece);
 			last_chr = ptr[strlen(piece)-1];
 			if (!super_on && (last_chr > 0 && last_chr < 255)) kase = (islower (last_chr)) ? PSL_LC : PSL_UC;
@@ -5103,7 +5184,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	const char *justcmd[12] = {"", "bl ", "bc ", "br ", "", "ml ", "mc ", "mr ", "", "tl ", "tc ", "tr "};
 	/* PS strings to be used dependent on "justify%4". Empty string added for unused value. */
 	const char *align[4] = {"0", "-2 div", "neg", ""};
-	int dy, i = 0, j, font, x_just, y_just, upen, ugap;
+	int dy, i = 0, j, font, font2, x_just, y_just, upen, ugap;
 	int sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, n_uline, start_uline, stop_uline, last_chr, kase = PSL_LC;
 	bool last_sub = false, last_sup = false, supersub;
 	double orig_size, small_size, size, scap_size, ustep[2], dstep, last_rgb[4] = {0.0, 0.0, 0.0, 0.0};
@@ -5148,6 +5229,8 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 		return (PSL_NO_ERROR);
 	}
 
+	psl_got_composite_fontswitch (PSL, string);
+
 	/* For more difficult cases we use the PSL_deftextdim machinery to get the size of the font box */
 
 	if (justify > 1) {
@@ -5189,7 +5272,6 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 		last_chr = ptr[strlen(ptr)-1];
 		ptr = strtok_r (NULL, "@", &plast);
 		kase = ((last_chr > 0 && last_chr < 255) && islower (last_chr)) ? PSL_LC : PSL_UC;
-
 	}
 
 	font = old_font = PSL->current.font_no;
@@ -5216,6 +5298,21 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 				piece[0] = ptr[0];	piece[1] = 0;
 				ptr++;
 			}
+			/* Watch out for escaped font change before 2nd character */
+			if (ptr[0] == PSL_ASCII_ES) {	/* Have a font change on either side of 2nd character */
+				ptr++;
+				if (ptr[0] == '~')	/* Toggle the symbol font */
+					font2 = PSL_SYMBOL_FONT;
+				else {	/* Font switching with @%font% ...@%% */
+					ptr++;
+					font2 = psl_getfont (PSL, ptr);
+					psl_encodefont (PSL, font);
+					while (*ptr != '%') ptr++;
+				}
+				ptr++;	/* Now at start of 2nd character */
+			}
+			else
+				font2 = font;
 			if (ptr[0] == '\\') {	/* Octal code again */
 				strncpy (piece2, ptr, 4U);
 				piece2[4] = 0;
@@ -5225,8 +5322,17 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 				piece2[0] = ptr[0];	piece2[1] = 0;
 				ptr++;
 			}
+			if (font2 != font) {	/* Skip past the font switcher */
+				ptr++;	/* Step over the implicit @ (ascii 27) */
+				if (font2 == PSL_SYMBOL_FONT)
+					ptr++;	/* Move past the ~ */
+				else
+					ptr += 2;	/* Move past the %% */
+			}
 			/* Try to center justify these two character to make a composite character - may not be right */
-			PSL_command (PSL, "%d F%d (%s) E exch %s -2 div dup 0 G\n", psl_ip (PSL, size), font, piece2, op[mode]);
+			PSL_command (PSL, "%d F%d (%s) E exch %s -2 div dup 0 G\n", psl_ip (PSL, size), font2, piece2, op[mode]);
+			if (font2 != font)	/* Must switch font in the call */
+				PSL_command (PSL, "%d F%d\n", psl_ip (PSL, size), font);
 			PSL_command (PSL, "(%s) E -2 div dup 0 G exch %s sub neg dup 0 lt {pop 0} if 0 G\n", piece, op[mode]);
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}

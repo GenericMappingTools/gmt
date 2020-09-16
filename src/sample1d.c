@@ -46,8 +46,8 @@ struct SAMPLE1D_CTRL {
 		bool active;
 		char *file;
 	} Out;
-	struct SAMPLE1D_A {	/* -A[f|m|p|r|R|l][+l] */
-		bool active, loxo;
+	struct SAMPLE1D_A {	/* -A[f|m|p|r|R|l][+d][+l] */
+		bool active, loxo, delete;
 		enum GMT_enum_track mode;
 	} A;
 	struct SAMPLE1D_F {	/* -Fl|a|c|n|s<p>[+d1|2] */
@@ -98,7 +98,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n|s<p>][+d1|2] [-N<time_col>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[f|m|p|r|R][+d][+l]] [-Fl|a|c|n|s<p>][+d1|2] [-N<time_col>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T[<min>/<max>/]<inc>[+n|a] [%s] [-W<w_col>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 	             GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_PAR_OPT);
 
@@ -113,6 +113,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   p: Same, but first follow parallel (along x) then meridian (along y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r: Resample at equidistant locations; input points not necessarily included.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   R: Same, but adjust given spacing to fit the track length exactly.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to skip records that has no increase in <time_col> value [no skipping].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to compute distances along rhumblines (loxodromes) [no].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the interpolation mode.  Choose from:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   l Linear interpolation.\n");
@@ -190,14 +191,17 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 
 			case 'A':	/* Change track resampling mode */
 				Ctrl->A.active = true;
-				switch (opt->arg[0]) {
-					case 'f': Ctrl->A.mode = GMT_TRACK_FILL;   break;
-					case 'm': Ctrl->A.mode = GMT_TRACK_FILL_M; break;
-					case 'p': Ctrl->A.mode = GMT_TRACK_FILL_P; break;
-					case 'r': Ctrl->A.mode = GMT_TRACK_SAMPLE_FIX; break;
-					case 'R': Ctrl->A.mode = GMT_TRACK_SAMPLE_ADJ; break;
-					default: GMT_Report (API, GMT_MSG_ERROR, "Option -A: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
+				if (opt->arg[0] != '+') {	/* Gave a mode */
+					switch (opt->arg[0]) {
+						case 'f': Ctrl->A.mode = GMT_TRACK_FILL;   break;
+						case 'm': Ctrl->A.mode = GMT_TRACK_FILL_M; break;
+						case 'p': Ctrl->A.mode = GMT_TRACK_FILL_P; break;
+						case 'r': Ctrl->A.mode = GMT_TRACK_SAMPLE_FIX; break;
+						case 'R': Ctrl->A.mode = GMT_TRACK_SAMPLE_ADJ; break;
+						default: GMT_Report (API, GMT_MSG_ERROR, "Option -A: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
+					}
 				}
+				if (strstr (opt->arg, "+d")) Ctrl->A.delete = true;
 				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;
 				break;
 			case 'F':
@@ -400,6 +404,15 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Requested time column is greater than data number of columns (%d)\n", (int)Din->n_columns);
 		Return (GMT_RUNTIME_ERROR);
 	}
+	if (Ctrl->A.delete) {	/* Remove duplicate rows based on time column */
+		uint64_t tcol = Ctrl->N.col;	/* The single time column */
+		int64_t n_dup = gmt_eliminate_duplicates (API, Din, &tcol, 1, false);
+		if (n_dup < 0) {
+			Return (GMT_RUNTIME_ERROR);
+		}
+		else if (n_dup)
+			GMT_Report (API, GMT_MSG_INFORMATION, "Removed %" PRId64 " records with no change in the time column\n", n_dup);
+	}
 	if (!Ctrl->T.active) {	/* Did not have information for -Tinc during parsing, do now */
 		char string[GMT_LEN32] = {""};
 		/* Get the first data increment as our fixed increment */
@@ -427,7 +440,7 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
 			if (S->n_rows < 2) {
-				GMT_Report (API, GMT_MSG_WARNING, "Segment %" PRIu64 " in table %" PRIu64 " has < 2 records - skipped as no interpolation is possible\n", seg, tbl);
+				GMT_Report (API, GMT_MSG_WARNING, "Table %" PRIu64 " Segment %" PRIu64 " has %" PRIu64 " record - no interpolation possible\n", tbl, seg, S->n_rows);
 				continue;
 			}
 			gmt_M_memset (nan_flag, Din->n_columns, unsigned char);
@@ -458,7 +471,10 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 				double min, max;
 				min = (Ctrl->T.T.delay[GMT_X]) ? ceil (S->data[Ctrl->N.col][0] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.min;
 				max = (Ctrl->T.T.delay[GMT_Y]) ? floor (S->data[Ctrl->N.col][S->n_rows-1] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.max;
-				gmt_create_array (GMT, 'T', &(Ctrl->T.T), &min, &max);
+				if (gmt_create_array(GMT, 'T', &(Ctrl->T.T), &min, &max) != GMT_NOERROR) {
+					GMT_Report(API, GMT_MSG_WARNING, "Segment %" PRIu64 " in table %" PRIu64 " had troubles.\n", seg, tbl);
+					continue;
+				}
 				m = Ctrl->T.T.n;
 				t_out = Ctrl->T.T.array;
 			}

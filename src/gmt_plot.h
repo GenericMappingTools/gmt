@@ -131,6 +131,7 @@ struct GMT_SYMBOL {
 	unsigned int u;		/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
 	unsigned int read_symbol_cmd;	/* 1 when -S indicated we must read symbol type from file, 2 with -SK is used */
 	bool u_set;		/* true if u was set */
+	bool par_set;		/* true if all parameters were set for e,j */
 	double factor;		/* Scaling needed to unify symbol area for circle, triangles, etc. [1] */
 	double size_x;		/* Current symbol size in x */
 	double size_y;		/* Current symbol size in y */
@@ -161,6 +162,9 @@ struct GMT_SYMBOL {
 	unsigned int w_mode;	/* Distance mode */
 	enum GMT_enum_wedgetype w_type;	/* Wedge type */
 	bool w_active;
+	bool w_get_do;	/* True if we must read outer diameter */
+	bool w_get_di;	/* True if we must read inner diameter */
+	bool w_get_a;	/* True if we must read the two angles */
 
 	/* These apply to vectors */
 

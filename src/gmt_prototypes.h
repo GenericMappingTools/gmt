@@ -521,6 +521,8 @@ EXTERN_MSC void gmt_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_GCA
 
 /* gmt_map.c: */
 
+
+EXTERN_MSC int gmt_circle_to_region (struct GMT_CTRL *GMT, double lon, double lat, double radius, double *wesn);
 EXTERN_MSC void gmt_translate_point (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat);
 EXTERN_MSC bool gmt_segment_BB_outside_map_BB (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S);
 EXTERN_MSC struct GMT_DATASEGMENT * gmt_get_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major, double minor, double azimuth, uint64_t m);
@@ -684,6 +686,7 @@ EXTERN_MSC void gmt_polar_to_cart (struct GMT_CTRL *GMT, double r, double theta,
 EXTERN_MSC void gmt_cart_to_polar (struct GMT_CTRL *GMT, double *r, double *theta, double *a, bool degrees);
 
 /* From gmt_api.c */
+EXTERN_MSC int64_t gmt_eliminate_duplicates (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, uint64_t cols[], uint64_t ncols, bool text);
 EXTERN_MSC unsigned int gmt_whole_earth (struct GMT_CTRL *GMT, double we_in[], double we_out[]);
 EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 EXTERN_MSC struct GMTAPI_CTRL * gmt_get_api_ptr (struct GMTAPI_CTRL *ptr);
