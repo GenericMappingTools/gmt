@@ -154,7 +154,6 @@ steps:
     # disable MinGW's path conversion, see #1035.
     export MSYS_NO_PATHCONV=1
     cd build
-    which gs
     which gswin64c
     echo $PATH
     ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed || ctest ${CTEST_ARGS} --rerun-failed
