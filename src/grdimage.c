@@ -116,7 +116,6 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 }
 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* Deallocate control structure */
-	int k;
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->A.file);
