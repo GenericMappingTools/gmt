@@ -6085,6 +6085,11 @@ void gmt_draw_vertical_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 	char txt[GMT_LEN256] = {""};
 	int form, just = PSL_ML;
 
+	gmt_set_refpoint (GMT, ms->refpoint);	/* Finalize reference point plot coordinates, if needed */
+	if (ms->origin_mode == GMT_SCALE_ORIGIN_PLACE)	/* Pick the lon/lat of the scale placement as map scale origin */
+		gmt_xy_to_geo (GMT, &ms->origin[GMT_X], &ms->origin[GMT_Y], ms->refpoint->x, ms->refpoint->y);
+	else if (ms->origin_mode == GMT_SCALE_ORIGIN_MIDDLE)	/* Pick middle of map as map scale origin */
+		gmt_xy_to_geo (GMT, &ms->origin[GMT_X], &ms->origin[GMT_Y], 0.5 * GMT->current.map.width, 0.5 * GMT->current.map.height);
 	if (ms->label[0]) /* Append data unit to the scale length */
 		snprintf (txt, GMT_LEN256, "%g %s", ms->length, ms->label);
 	else
@@ -6100,7 +6105,6 @@ void gmt_draw_vertical_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 	dim[GMT_X] = strlen (txt) * GMT_DEC_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH + off;
 	dim[GMT_Y] = 2.0 * half_scale_length;
 
-	gmt_set_refpoint (GMT, ms->refpoint);	/* Finalize reference point plot coordinates, if needed */
 	gmt_adjust_refpoint (GMT, ms->refpoint, dim, ms->off, ms->justify, PSL_ML);	/* Adjust refpoint to ML */
 
 	x0 = ms->refpoint->x;	y0 = ms->refpoint->y;
