@@ -42,7 +42,13 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="grdimage" href="grdimage-classic.html" />
-    <link rel="prev" title="gmtlogo" href="gmtlogo-classic.html" /> 
+    <link rel="prev" title="gmtlogo" href="gmtlogo-classic.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -295,7 +301,7 @@ the workings of the contour line setup.</p>
 </dd>
 <dt><strong>+e</strong></dt><dd><p>Delay the plotting of the text. This is used to build a clip path
 based on the text, then lay down other overlays while that clip path
-is in effect, then turning of clipping with clip <strong>-Cs</strong> which
+is in effect, then turning off clipping with clip <strong>-Cs</strong> which
 finally plots the original text.</p>
 </dd>
 <dt><strong>+f</strong><em>font</em></dt><dd><p>Sets the desired font [Default <a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a> with its
@@ -557,7 +563,7 @@ and that special precautions must be taken when determining
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-l</strong>[<em>label</em>][<strong>+D</strong><em>pen</em>][<strong>+G</strong><em>gap</em>][<strong>+H</strong><em>header</em>][<strong>+L</strong>[<em>code</em>/]<em>txt</em>][<strong>+N</strong><em>cols</em>][<strong>+S</strong><em>size</em>][<strong>+V</strong>[<em>pen</em>]][<strong>+f</strong><em>font</em>][<strong>+g</strong><em>fill</em>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>off</em>][<strong>+p</strong><em>pen</em>][<strong>+s</strong><em>scale</em>][<strong>+w</strong><em>width</em>] <a class="reference internal" href="gmt.html#l-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Add a legend entry for the symbol or line being plotted. Normally, the annotated contour is selected for the legend. You can select the regular contour instead, or both of them, by considering the <em>label</em> to be of the format [<em>annotcontlabel</em>][/<em>contlabel</em>].  If either label contains a slash (/) character then use | as the separator for the two labels instead.</p>
+<dt><strong>-l</strong>[<em>label</em>][<strong>+D</strong><em>pen</em>][<strong>+G</strong><em>gap</em>][<strong>+H</strong><em>header</em>][<strong>+L</strong>[<em>code</em>/]<em>txt</em>][<strong>+N</strong><em>cols</em>][<strong>+S</strong><em>size</em>[/<em>height</em>]][<strong>+V</strong>[<em>pen</em>]][<strong>+f</strong><em>font</em>][<strong>+g</strong><em>fill</em>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>off</em>][<strong>+p</strong><em>pen</em>][<strong>+s</strong><em>scale</em>][<strong>+w</strong><em>width</em>] <a class="reference internal" href="gmt.html#l-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Add a legend entry for the symbol or line being plotted. Normally, the annotated contour is selected for the legend. You can select the regular contour instead, or both of them, by considering the <em>label</em> to be of the format [<em>annotcontlabel</em>][/<em>contlabel</em>].  If either label contains a slash (/) character then use | as the separator for the two labels instead.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -715,7 +721,7 @@ contours_O.txt for open contours, try</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Aug 28, 2020.
+        Last updated on Sep 19, 2020.
       </span>
 
     </p>

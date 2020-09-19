@@ -42,7 +42,13 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="grdvector" href="grdvector-classic.html" />
-    <link rel="prev" title="grdcontour" href="grdcontour-classic.html" /> 
+    <link rel="prev" title="grdcontour" href="grdcontour-classic.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -244,19 +250,17 @@
 </div>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p><strong>grdimage</strong> reads one 2-D grid file and produces a gray-shaded (or
-colored) map by plotting rectangles centered on each grid node and
-assigning them a gray-shade (or color) based on the z-value.
-Alternatively, <strong>grdimage</strong> reads three 2-D grid files with the red,
-green, and blue components directly (all must be in the 0-255 range).
+<p><strong>grdimage</strong> reads a 2-D grid file and produces a gray-shaded (or
+colored) map by by building a rectangular image and assigning pixels
+a gray-shade (or color) based on the z-value and the CPT file.
 Optionally, illumination may be added by providing a file with
 intensities in the (-1,+1) range or instructions to derive intensities
 from the input data grid. Values outside this range will be
 clipped. Such intensity files can be created from the grid using
 <a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a> and, optionally, modified by <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> or
 <a class="reference internal" href="grdhisteq.html"><span class="doc">grdhisteq</span></a>. A third alternative is available when GMT is build
-with GDAL support. Pass <em>img</em> which can be an image file (geo-referenced or not).
-In this case the images can optionally be illuminated with the
+with GDAL support. Pass <em>image</em> which can be an image file (geo-referenced or not).
+In this case the image can optionally be illuminated with the
 file provided via the <strong>-I</strong> option. Here, if image has no coordinates
 then those of the intensity file will be used.</p>
 <p>When using map projections, the grid is first resampled on a new
@@ -275,7 +279,7 @@ than that implied by the extent of the grid.</p>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
-<dt><em>grd_z</em> | <em>img</em> | <em>grd_r grd_g grd_b</em></dt><dd><p>2-D gridded data set (or red, green, blue grids)  or image to be imaged (See
+<dt><em>grid</em> | <em>image</em></dt><dd><p>2-D gridded data set or image to be plotted (See
 GRID FILE FORMATS below.)</p>
 </dd>
 </dl>
@@ -351,18 +355,18 @@ pixels (1) or <strong>+f</strong> for the foreground pixels [Default].</p>
 <dl class="simple" id="i">
 <dt><strong>-I</strong>[<em>intensfile</em>|<em>intensity</em>|<em>modifiers</em>]</dt><dd><p>Gives the name of a grid file with intensities in the (-1,+1) range,
 or a constant intensity to apply everywhere (affects the ambient light).
-Alternatively, derive an intensity grid from the input data grid <em>grd_z</em>
+Alternatively, derive an intensity grid from the input data grid <em>grid</em>
 via a call to <a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a>; append <strong>+a</strong><em>azimuth</em>, <strong>+n</strong><em>args</em>,
 and <strong>+m</strong><em>ambient</em> to specify azimuth, intensity, and ambient arguments
 for that module, or just give <strong>+d</strong> to select the
 default arguments (<strong>+a</strong>-45<strong>+nt</strong>1<strong>+m</strong>0). If you want a more
 specific intensity scenario then run <a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a> separately first.
-If we should derive intensities from another file than <em>grd_z</em>, specify the file
-[Default is no illumination].</p>
+If we should derive intensities from another file than <em>grid</em>, specify the
+file with suitable modifiers [Default is no illumination].</p>
 </dd>
 </dl>
 <dl class="simple" id="m">
-<dt><strong>-M</strong></dt><dd><p>Force conversion to monochrome image using the (television) YIQ
+<dt><strong>-M</strong></dt><dd><p>Force conversion to monochrome image using the (old-style television) YIQ
 transformation. Cannot be used with <strong>-Q</strong>.</p>
 </dd>
 </dl>
@@ -691,7 +695,7 @@ remotely located Jessica Rabbit</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Aug 28, 2020.
+        Last updated on Sep 19, 2020.
       </span>
 
     </p>

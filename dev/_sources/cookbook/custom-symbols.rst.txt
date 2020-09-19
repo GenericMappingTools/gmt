@@ -45,7 +45,10 @@ Furthermore, your symbol should be constructed within the domain
 :math:`{-\frac{1}{2},+\frac{1}{2},-\frac{1}{2},+\frac{1}{2}}`, resulting
 in a 1 by 1 relative canvas area. This 1 x 1 square will be scaled to your
 actual symbol size when plotted.  However, there are no requirement that
-all your design fit inside this domain.
+all your design fit inside this domain.  This command will produce a nice
+template for you to draw your design::
+
+    gmt basemap -R-0.5/0.5/-0.5/0.5 -JX15c -Bpa0.1fg0.02 -Bsg0.1 --GRID_PEN_PRIMARY=faint -pdf template
 
 Comment lines
 ~~~~~~~~~~~~~

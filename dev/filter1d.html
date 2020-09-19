@@ -42,7 +42,13 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="fitcircle" href="fitcircle.html" />
-    <link rel="prev" title="figure" href="figure.html" /> 
+    <link rel="prev" title="figure" href="figure.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -277,7 +283,14 @@ to return the lowermost or uppermost of the modal values.</p>
 robust filter versions: i.e., replace outliers (2.5 L1 scale off
 median, using 1.4826 * median absolute deviation [MAD]) with median during filtering.</p>
 <p>In the case of <strong>L</strong>|<strong>U</strong> it is possible that no data passes
-the initial sign test; in that case the filter will return 0.0.</p>
+the initial sign test; in that case the filter will return 0.0.
+Apart from custom coefficients (<strong>f</strong>), the other filters may accept variable
+filter widths by passing <em>width</em> as a two-column time-series file with filter widths
+in the second column.  The filter-width file does not need to be co-registered with
+the data as we obtain the required filter width at each output location via
+interpolation.  For multi-segment data files the filter file must either have
+the same number of segments or just a single segment to be used for all data
+segments.</p>
 </dd>
 </dl>
 </div>
@@ -569,7 +582,7 @@ and not shorten the track, and add the distances to the file, use</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Aug 28, 2020.
+        Last updated on Sep 19, 2020.
       </span>
 
     </p>

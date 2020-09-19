@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt sample1d** [ *table* ]
-[ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
+[ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+d**][**+l**] ]
 [ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |-N|\ *col* ]
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
@@ -65,7 +65,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**
+**-A**\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+d**][**+l**]
     For track resampling (if **-T**...\ *unit* is set) we can select how
     this is to be performed. Append **f** to keep original points, but
     add intermediate points if needed; note this selection does not
@@ -75,6 +75,8 @@ Optional Arguments
     **r** to resample at equidistant locations; input points are not
     necessarily included in the output, and **R** as **r**, but adjust
     given spacing to fit the track length exactly. Finally, append
+    **+d** to delete duplicate input records (identified by having
+    no change in the time column, and
     **+l** if distances should be measured along rhumb lines (loxodromes).
 
 .. _-F:

@@ -65,7 +65,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**
+**-A**\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**]
     For track resampling (if **-T**...\ *unit* is set) we can select how
     this is to be performed. Append **f** to keep original points, but
     add intermediate points if needed; note this selection does not

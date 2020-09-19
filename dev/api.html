@@ -42,7 +42,13 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="PostScriptLight" href="postscriptlight.html" />
-    <link rel="prev" title="Debugging for Developers" href="debug.html" /> 
+    <link rel="prev" title="Debugging for Developers" href="debug.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -608,19 +614,19 @@ tables (<code class="docutils literal notranslate"><span class="pre">struct</spa
 records, and each record with any number of (fixed) columns. Thus, the arguments
 to GMT API functions that handle such data sets expect a struct <a class="reference internal" href="#struct-dataset"><span class="std std-ref">GMT_DATASET</span></a>.
 All segments are expected to have the same number of columns.</p>
-<div class="highlight-c notranslate" id="struct-dataset2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_DATASET</span> <span class="p">{</span> <span class="cm">/* Single container for an array of GMT tables (files) */</span>
+<div class="highlight-c notranslate" id="struct-dataset2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_DATASET</span> <span class="p">{</span> <span class="cm">/* Single container for an array of GMT tables (files) */</span>
     <span class="kt">uint64_t</span>  <span class="n">n_tables</span><span class="p">;</span>     <span class="cm">/* The total number of tables contained */</span>
     <span class="kt">uint64_t</span>  <span class="n">n_columns</span><span class="p">;</span>    <span class="cm">/* The number of data columns */</span>
     <span class="kt">uint64_t</span>  <span class="n">n_segments</span><span class="p">;</span>   <span class="cm">/* The total number of segments across all tables */</span>
     <span class="kt">uint64_t</span>  <span class="n">n_records</span><span class="p">;</span>    <span class="cm">/* The total number of data records across all tables */</span>
     <span class="kt">double</span>   <span class="o">*</span><span class="n">min</span><span class="p">;</span>         <span class="cm">/* Minimum coordinate for each column */</span>
     <span class="kt">double</span>   <span class="o">*</span><span class="n">max</span><span class="p">;</span>         <span class="cm">/* Maximum coordinate for each column */</span>
-    <span class="k">struct</span> <span class="n">GMT_DATATABLE</span> <span class="o">**</span><span class="n">table</span><span class="p">;</span>    <span class="cm">/* Pointer to array of tables */</span>
+    <span class="k">struct</span> <span class="nc">GMT_DATATABLE</span> <span class="o">**</span><span class="n">table</span><span class="p">;</span>    <span class="cm">/* Pointer to array of tables */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
 <p>The top-level dataset structure for pure data tables contains the table structure, as defined below:</p>
-<div class="highlight-c notranslate" id="struct-datatable2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_DATATABLE</span> <span class="p">{</span>  <span class="cm">/* Single container for an array of data segments */</span>
+<div class="highlight-c notranslate" id="struct-datatable2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_DATATABLE</span> <span class="p">{</span>  <span class="cm">/* Single container for an array of data segments */</span>
     <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">n_headers</span><span class="p">;</span>    <span class="cm">/* Number of table header records (0 if no header) */</span>
     <span class="kt">uint64_t</span>     <span class="n">n_columns</span><span class="p">;</span>    <span class="cm">/* Number of columns (fields) in each record */</span>
     <span class="kt">uint64_t</span>     <span class="n">n_segments</span><span class="p">;</span>   <span class="cm">/* Number of segments in the array */</span>
@@ -628,12 +634,12 @@ All segments are expected to have the same number of columns.</p>
     <span class="kt">double</span>      <span class="o">*</span><span class="n">min</span><span class="p">;</span>          <span class="cm">/* Minimum coordinate for each column */</span>
     <span class="kt">double</span>      <span class="o">*</span><span class="n">max</span><span class="p">;</span>          <span class="cm">/* Maximum coordinate for each column */</span>
     <span class="kt">char</span>       <span class="o">**</span><span class="n">header</span><span class="p">;</span>       <span class="cm">/* Array with all table header records, if any) */</span>
-    <span class="k">struct</span> <span class="n">GMT_DATASEGMENT</span> <span class="o">**</span><span class="n">segment</span><span class="p">;</span> <span class="cm">/* Pointer to array of segments */</span>
+    <span class="k">struct</span> <span class="nc">GMT_DATASEGMENT</span> <span class="o">**</span><span class="n">segment</span><span class="p">;</span> <span class="cm">/* Pointer to array of segments */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
 <p>Finally, the table structure depends on a structure for individual data segments:</p>
-<div class="highlight-c notranslate" id="struct-datasegment2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_DATASEGMENT</span> <span class="p">{</span>       <span class="cm">/* For holding segment lines in memory */</span>
+<div class="highlight-c notranslate" id="struct-datasegment2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_DATASEGMENT</span> <span class="p">{</span>       <span class="cm">/* For holding segment lines in memory */</span>
     <span class="kt">uint64_t</span> <span class="n">n_rows</span><span class="p">;</span>           <span class="cm">/* Number of points in this segment */</span>
     <span class="kt">uint64_t</span> <span class="n">n_columns</span><span class="p">;</span>        <span class="cm">/* Number of fields in each record (&gt;= 2) */</span>
     <span class="kt">double</span>  <span class="o">*</span><span class="n">min</span><span class="p">;</span>              <span class="cm">/* Minimum coordinate for each column */</span>
@@ -657,14 +663,14 @@ float array with metadata kept in a separate <code class="docutils literal notra
 this information via a <code class="docutils literal notranslate"><span class="pre">struct</span></code> <a class="reference internal" href="#struct-grid"><span class="std std-ref">GMT_GRID</span></a>, which is a container that
 holds both items. Thus, the arguments to GMT API functions that handle
 GMT grids expect this type of variable.</p>
-<div class="highlight-c notranslate" id="struct-grid2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_GRID</span> <span class="p">{</span>                        <span class="cm">/* A GMT float grid and header in one container */</span>
-    <span class="k">struct</span> <span class="n">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">;</span>      <span class="cm">/* The full GMT header for the grid */</span>
+<div class="highlight-c notranslate" id="struct-grid2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_GRID</span> <span class="p">{</span>                        <span class="cm">/* A GMT float grid and header in one container */</span>
+    <span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">;</span>      <span class="cm">/* The full GMT header for the grid */</span>
     <span class="kt">float</span>                  <span class="o">*</span><span class="n">data</span><span class="p">;</span>        <span class="cm">/* Pointer to the float grid array */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
 <p>The top-level grid structure, holding both header and data array, depends on the grid header structure:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_GRID_HEADER</span> <span class="p">{</span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="p">{</span>
     <span class="kt">uint32_t</span> <span class="n">n_columns</span><span class="p">;</span>                     <span class="cm">/* Number of columns */</span>
     <span class="kt">uint32_t</span> <span class="n">n_rows</span><span class="p">;</span>                        <span class="cm">/* Number of rows */</span>
     <span class="kt">uint32_t</span> <span class="n">registration</span><span class="p">;</span>                  <span class="cm">/* GMT_GRID_NODE_REG (0) for node grids,</span>
@@ -701,11 +707,11 @@ GMT API functions that handle GMT images expect this type of
 variable. Unlike the other objects, writing images has only partial
 support via <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> <a class="footnote-reference brackets" href="#id10" id="id4">4</a>.
 For the full definition, see <a class="reference internal" href="#struct-image"><span class="std std-ref">GMT_IMAGE</span></a>.</p>
-<div class="highlight-c notranslate" id="struct-image2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_IMAGE</span> <span class="p">{</span>     <span class="cm">/* A GMT char image, header, and colormap in one container */</span>
+<div class="highlight-c notranslate" id="struct-image2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_IMAGE</span> <span class="p">{</span>     <span class="cm">/* A GMT char image, header, and colormap in one container */</span>
     <span class="k">enum</span> <span class="n">GMT_enum_type</span>      <span class="n">type</span><span class="p">;</span>             <span class="cm">/* Data type, e.g. GMT_FLOAT */</span>
     <span class="kt">int</span>                    <span class="o">*</span><span class="n">colormap</span><span class="p">;</span>         <span class="cm">/* Array with color lookup values */</span>
     <span class="kt">int</span>                     <span class="n">n_indexed_colors</span><span class="p">;</span> <span class="cm">/* Number of colors in a color-mapped image */</span>
-    <span class="k">struct</span> <span class="n">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">;</span>           <span class="cm">/* Pointer to full GMT header for the image */</span>
+    <span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">;</span>           <span class="cm">/* Pointer to full GMT header for the image */</span>
     <span class="kt">unsigned</span> <span class="kt">char</span>          <span class="o">*</span><span class="n">data</span><span class="p">;</span>             <span class="cm">/* Pointer to actual image */</span>
 <span class="p">};</span>
 </pre></div>
@@ -725,12 +731,12 @@ directly, but rather use this mechanism to hold them in memory and
 pass as arguments to GMT modules.  Developers are unlikely to actually
 manipulate the contents of CPT structures but if needed then
 the full definition can be found in <a class="reference internal" href="#struct-palette"><span class="std std-ref">GMT_PALETTE</span></a>.</p>
-<div class="highlight-c notranslate" id="struct-palette2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_PALETTE</span> <span class="p">{</span> <span class="cm">/* Holds color-related parameters for look-up */</span>
+<div class="highlight-c notranslate" id="struct-palette2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_PALETTE</span> <span class="p">{</span> <span class="cm">/* Holds color-related parameters for look-up */</span>
     <span class="kt">unsigned</span> <span class="kt">int</span>          <span class="n">n_headers</span><span class="p">;</span>     <span class="cm">/* Number of CPT header records (0 if no header) */</span>
     <span class="kt">unsigned</span> <span class="kt">int</span>          <span class="n">n_colors</span><span class="p">;</span>      <span class="cm">/* Number of colors in the data array */</span>
     <span class="kt">unsigned</span> <span class="kt">int</span>          <span class="n">mode</span><span class="p">;</span>          <span class="cm">/* Flags controlling use of BFN colors */</span>
-    <span class="k">struct</span> <span class="n">GMT_LUT</span>       <span class="o">*</span><span class="n">data</span><span class="p">;</span>          <span class="cm">/* CPT lookup data with color information */</span>
-    <span class="k">struct</span> <span class="n">GMT_BFN</span>        <span class="n">bfn</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>        <span class="cm">/* Structures with back/fore/nan fills */</span>
+    <span class="k">struct</span> <span class="nc">GMT_LUT</span>       <span class="o">*</span><span class="n">data</span><span class="p">;</span>          <span class="cm">/* CPT lookup data with color information */</span>
+    <span class="k">struct</span> <span class="nc">GMT_BFN</span>        <span class="n">bfn</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>        <span class="cm">/* Structures with back/fore/nan fills */</span>
     <span class="kt">char</span>                <span class="o">**</span><span class="n">header</span><span class="p">;</span>        <span class="cm">/* Array with all CPT header records, if any) */</span>
 <span class="p">};</span>
 </pre></div>
@@ -743,7 +749,7 @@ or a designated file.  Alternatively, you can tell the API to write to a
 memory buffer instead and then receive a structure with the final
 plot (or partial plot) represented as a long text string.
 The full structure definition can be found in <a class="reference internal" href="#struct-postscript"><span class="std std-ref">GMT_POSTSCRIPT</span></a>.</p>
-<div class="highlight-c notranslate" id="struct-postscript2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_POSTSCRIPT</span> <span class="p">{</span>      <span class="cm">/* Single container for a chunk of PostScript text */</span>
+<div class="highlight-c notranslate" id="struct-postscript2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_POSTSCRIPT</span> <span class="p">{</span>      <span class="cm">/* Single container for a chunk of PostScript text */</span>
     <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">n_headers</span><span class="p">;</span>          <span class="cm">/* Number of PostScript header records (0 if no header) */</span>
     <span class="kt">size_t</span> <span class="n">n_bytes</span><span class="p">;</span>                  <span class="cm">/* Length of data array so far */</span>
     <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">mode</span><span class="p">;</span>               <span class="cm">/* Bit-flag for header (1) and trailer (2) */</span>
@@ -764,7 +770,7 @@ file. To handle this case we create a <code class="docutils literal notranslate"
 assign the appropriate union pointer to your data matrix and provide information on dimensions
 and data type. We then open this container as a virtual file and pass its filename to any module.
 The full structure definition can be found in <a class="reference internal" href="#struct-matrix"><span class="std std-ref">GMT_MATRIX</span></a>.</p>
-<div class="highlight-c notranslate" id="struct-matrix2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_MATRIX</span> <span class="p">{</span>  <span class="cm">/* Single container to hold a user matrix */</span>
+<div class="highlight-c notranslate" id="struct-matrix2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_MATRIX</span> <span class="p">{</span>  <span class="cm">/* Single container to hold a user matrix */</span>
    <span class="kt">uint64_t</span>             <span class="n">n_rows</span><span class="p">;</span>        <span class="cm">/* Number of rows in the matrix */</span>
    <span class="kt">uint64_t</span>             <span class="n">n_columns</span><span class="p">;</span>     <span class="cm">/* Number of columns in the matrix */</span>
    <span class="kt">uint64_t</span>             <span class="n">n_layers</span><span class="p">;</span>      <span class="cm">/* Number of layers in a 3-D matrix */</span>
@@ -774,7 +780,7 @@ The full structure definition can be found in <a class="reference internal" href
    <span class="kt">size_t</span>               <span class="n">size</span><span class="p">;</span>          <span class="cm">/* Byte length of data */</span>
    <span class="k">enum</span> <span class="n">GMT_enum_type</span>   <span class="n">type</span><span class="p">;</span>          <span class="cm">/* Data type, e.g. GMT_FLOAT */</span>
    <span class="kt">double</span>               <span class="n">range</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>      <span class="cm">/* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */</span>
-   <span class="k">union</span> <span class="n">GMT_UNIVECTOR</span>  <span class="n">data</span><span class="p">;</span>          <span class="cm">/* Pointer to actual matrix of the chosen type */</span>
+   <span class="k">union</span> <span class="nc">GMT_UNIVECTOR</span>  <span class="n">data</span><span class="p">;</span>          <span class="cm">/* Pointer to actual matrix of the chosen type */</span>
    <span class="kt">char</span>               <span class="o">**</span><span class="n">text</span><span class="p">;</span>          <span class="cm">/* Pointer to optional array of strings [NULL] */</span>
 <span class="p">};</span>
 </pre></div>
@@ -795,12 +801,12 @@ Simply create a new <a class="reference internal" href="#struct-vector"><span cl
 information on length, data types, and optionally range. Again, once we open this data
 as a virtual file we can pass its filename to any module expecting such data.
 The full structure definition can be found in <a class="reference internal" href="#struct-vector"><span class="std std-ref">GMT_VECTOR</span></a>.</p>
-<div class="highlight-c notranslate" id="struct-vector2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_VECTOR</span> <span class="p">{</span>   <span class="cm">/* Single container to hold user vectors */</span>
+<div class="highlight-c notranslate" id="struct-vector2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_VECTOR</span> <span class="p">{</span>   <span class="cm">/* Single container to hold user vectors */</span>
     <span class="kt">uint64_t</span>             <span class="n">n_columns</span><span class="p">;</span>     <span class="cm">/* Number of vectors */</span>
     <span class="kt">uint64_t</span>             <span class="n">n_rows</span><span class="p">;</span>        <span class="cm">/* Number of rows in each vector */</span>
     <span class="k">enum</span> <span class="n">GMT_enum_reg</span>    <span class="n">registration</span><span class="p">;</span>  <span class="cm">/* 0 for gridline and 1 for pixel registration */</span>
     <span class="k">enum</span> <span class="n">GMT_enum_type</span>  <span class="o">*</span><span class="n">type</span><span class="p">;</span>          <span class="cm">/* Array with data type for each vector */</span>
-    <span class="k">union</span> <span class="n">GMT_UNIVECTOR</span> <span class="o">*</span><span class="n">data</span><span class="p">;</span>          <span class="cm">/* Array with unions for each column */</span>
+    <span class="k">union</span> <span class="nc">GMT_UNIVECTOR</span> <span class="o">*</span><span class="n">data</span><span class="p">;</span>          <span class="cm">/* Array with unions for each column */</span>
     <span class="kt">double</span>               <span class="n">range</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>      <span class="cm">/* The min and max limits on t-range (or 0,0) */</span>
     <span class="kt">char</span>               <span class="o">**</span><span class="n">text</span><span class="p">;</span>          <span class="cm">/* Pointer to optional array of strings [NULL] */</span>
 <span class="p">};</span>
@@ -810,7 +816,7 @@ The full structure definition can be found in <a class="reference internal" href
 <div class="section" id="data-record">
 <h4>Data record<a class="headerlink" href="#data-record" title="Permalink to this headline">¶</a></h4>
 <p>For record-by-record i/o we use the GMT_RECORD structure.</p>
-<div class="highlight-c notranslate" id="struct-record"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_RECORD</span> <span class="p">{</span>  <span class="cm">/* Single container for an array of GMT tables (files) */</span>
+<div class="highlight-c notranslate" id="struct-record"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_RECORD</span> <span class="p">{</span>  <span class="cm">/* Single container for an array of GMT tables (files) */</span>
     <span class="kt">double</span>  <span class="o">*</span><span class="n">data</span><span class="p">;</span>   <span class="cm">/* Pointer to array of double-precision numbers [NULL] */</span>
     <span class="kt">char</span>  <span class="o">*</span><span class="n">text</span><span class="p">;</span>     <span class="cm">/* Pointer to the trailing string [NULL] */</span>
 <span class="p">};</span>
@@ -869,8 +875,8 @@ this program:</p>
 <div class="highlight-c notranslate" id="example-code1"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;gmt.h&quot;</span><span class="cp"></span>
 <span class="kt">int</span> <span class="nf">main</span> <span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
     <span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">;</span>                        <span class="cm">/* The API control structure */</span>
-    <span class="k">struct</span> <span class="n">GMT_DATASET</span> <span class="o">*</span><span class="n">D</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>     <span class="cm">/* Structure to hold input dataset */</span>
-    <span class="k">struct</span> <span class="n">GMT_GRID</span> <span class="o">*</span><span class="n">G</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>        <span class="cm">/* Structure to hold output grid */</span>
+    <span class="k">struct</span> <span class="nc">GMT_DATASET</span> <span class="o">*</span><span class="n">D</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>     <span class="cm">/* Structure to hold input dataset */</span>
+    <span class="k">struct</span> <span class="nc">GMT_GRID</span> <span class="o">*</span><span class="n">G</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>        <span class="cm">/* Structure to hold output grid */</span>
     <span class="kt">char</span> <span class="n">input</span><span class="p">[</span><span class="n">GMT_VF_LEN</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">};</span>    <span class="cm">/* String to hold virtual input filename */</span>
     <span class="kt">char</span> <span class="n">output</span><span class="p">[</span><span class="n">GMT_VF_LEN</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">};</span>   <span class="cm">/* String to hold virtual output filename */</span>
     <span class="kt">char</span> <span class="n">args</span><span class="p">[</span><span class="mi">128</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">};</span>            <span class="cm">/* String to hold module command arguments */</span>
@@ -1648,7 +1654,7 @@ and hook your items to them.  Likewise, if you want to receive the output of GMT
 into user arrays or matrices then you will need to access those data.
 The following utility functions are used for these tasks:</p>
 <blockquote id="gmt-put-matrix">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Put_Matrix</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="n">GMT_MATRIX</span> <span class="o">*</span><span class="n">M</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">type</span><span class="p">,</span> <span class="kt">int</span> <span class="n">pad</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">matrix</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Put_Matrix</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_MATRIX</span> <span class="o">*</span><span class="n">M</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">type</span><span class="p">,</span> <span class="kt">int</span> <span class="n">pad</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">matrix</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -1659,14 +1665,14 @@ intend the matrix to serve as grid input to a module then GMT will expect 2.  If
 been extended by 2 extra rows and columns then pass <code class="docutils literal notranslate"><span class="pre">pad</span></code> = 2.
 To extract a custom matrix from an output <a class="reference internal" href="#struct-matrix"><span class="std std-ref">GMT_MATRIX</span></a> you can use</p>
 <blockquote id="gmt-get-matrix">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="o">*</span><span class="nf">GMT_Get_Matrix</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="n">GMT_MATRIX</span> <span class="o">*</span><span class="n">M</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="o">*</span><span class="nf">GMT_Get_Matrix</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_MATRIX</span> <span class="o">*</span><span class="n">M</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
 <p>which simply returns a pointer to the right union pointer.
 For vectors the same principles apply:</p>
 <blockquote id="gmt-put-vector">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Put_Vector</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="n">GMT_VECTOR</span> <span class="o">*</span><span class="n">V</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">col</span><span class="p">,</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Put_Vector</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_VECTOR</span> <span class="o">*</span><span class="n">V</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">col</span><span class="p">,</span>
     <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">type</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">vector</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -1679,7 +1685,7 @@ we expect an array of strings with ISO datetime strings and we do the conversion
 GMT time and allocate a vector to hold the result in the given <code class="docutils literal notranslate"><span class="pre">col</span></code>.
 To extract a custom vector from an output <a class="reference internal" href="#struct-vector"><span class="std std-ref">GMT_VECTOR</span></a> you can use</p>
 <blockquote id="gmt-get-vector">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="o">*</span><span class="nf">GMT_Get_Vector</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="n">GMT_VECTOR</span> <span class="o">*</span><span class="n">V</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">col</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="o">*</span><span class="nf">GMT_Get_Vector</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_VECTOR</span> <span class="o">*</span><span class="n">V</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">col</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -2223,7 +2229,7 @@ say, <a class="reference internal" href="blockmean.html"><span class="doc">block
 row-by-row reading with <a class="reference internal" href="#gmt-read-data">GMT_Read_Data</a> and then use the
 <a class="reference internal" href="#gmt-get-row">GMT_Get_Row</a> function in a loop; the prototype is</p>
 <blockquote id="gmt-get-row">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Get_Row</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row_no</span><span class="p">,</span> <span class="k">struct</span> <span class="n">GMT_GRID</span> <span class="o">*</span><span class="n">G</span><span class="p">,</span> <span class="kt">float</span> <span class="o">*</span><span class="n">row</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Get_Row</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row_no</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_GRID</span> <span class="o">*</span><span class="n">G</span><span class="p">,</span> <span class="kt">float</span> <span class="o">*</span><span class="n">row</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -2271,7 +2277,7 @@ function will be used below in our example on grid manipulation.</p>
 2-D reference to our 1-D array index.  Because of grid and image boundary padding
 the relationship is not straightforward, hence we supply</p>
 <blockquote id="gmt-get-index">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int64_t</span> <span class="nf">GMT_Get_Index</span> <span class="p">(</span><span class="k">struct</span> <span class="n">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row</span><span class="p">,</span> <span class="kt">int</span> <span class="n">col</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int64_t</span> <span class="nf">GMT_Get_Index</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row</span><span class="p">,</span> <span class="kt">int</span> <span class="n">col</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -2280,7 +2286,7 @@ the relationship is not straightforward, hence we supply</p>
 position; again this function is used below in our example.  Likewise, for images
 with many layers we also define</p>
 <blockquote id="gmt-get-pixel">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int64_t</span> <span class="nf">GMT_Get_Pixel</span> <span class="p">(</span><span class="k">struct</span> <span class="n">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row</span><span class="p">,</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int64_t</span> <span class="nf">GMT_Get_Pixel</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">col</span><span class="p">,</span> <span class="kt">int</span> <span class="n">layer</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -2319,7 +2325,7 @@ column does not enter you can instead do a single loop:</p>
 <blockquote>
 <div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">node</span><span class="p">;</span>
 <span class="cm">/*... create a grid G or read one ... */</span>
-<span class="k">for</span> <span class="p">(</span><span class="n">node</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">node</span> <span class="o">&lt;</span> <span class="n">G</span><span class="o">-&gt;</span><span class="n">header</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">)</span> <span class="n">G</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">9999.0</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">node</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">node</span> <span class="o">&lt;</span> <span class="n">G</span><span class="o">-&gt;</span><span class="n">header</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">)</span> <span class="n">G</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="mf">-9999.0</span><span class="p">;</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -2339,8 +2345,8 @@ records and add 1 to all columns beyond the first two (x and y), and if
 the data has a trailing string it will print it to stdout:</p>
 <blockquote>
 <div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">uint64_t</span> <span class="n">tbl</span><span class="p">,</span> <span class="n">seg</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">;</span>
-<span class="k">struct</span> <span class="n">GMT_DATATABLE</span> <span class="o">*</span><span class="n">T</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
-<span class="k">struct</span> <span class="n">GMT_DATASEGMENT</span> <span class="o">*</span><span class="n">S</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="k">struct</span> <span class="nc">GMT_DATATABLE</span> <span class="o">*</span><span class="n">T</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="k">struct</span> <span class="nc">GMT_DATASEGMENT</span> <span class="o">*</span><span class="n">S</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
 
 <span class="cm">/* ... create a dataset D or read one ... */</span>
 <span class="k">for</span> <span class="p">(</span><span class="n">tbl</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">tbl</span> <span class="o">&lt;</span> <span class="n">D</span><span class="o">-&gt;</span><span class="n">n_tables</span><span class="p">;</span> <span class="n">tbl</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>       <span class="cm">/* For each table */</span>
@@ -2761,7 +2767,7 @@ writing (which is passed back with <code class="docutils literal notranslate"><s
 row-by-row writing with <a class="reference internal" href="#gmt-read-data">GMT_Read_Data</a> and then use the
 <a class="reference internal" href="#gmt-put-row">GMT_Put_Row</a> function in a loop; the prototype is</p>
 <blockquote id="gmt-put-row">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Put_Row</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row_no</span><span class="p">,</span> <span class="k">struct</span> <span class="n">GMT_GRID</span> <span class="o">*</span><span class="n">G</span><span class="p">,</span> <span class="kt">float</span> <span class="o">*</span><span class="n">row</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Put_Row</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row_no</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_GRID</span> <span class="o">*</span><span class="n">G</span><span class="p">,</span> <span class="kt">float</span> <span class="o">*</span><span class="n">row</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -2866,7 +2872,7 @@ layouts.</p>
 <h4>Parsing the GMT common options<a class="headerlink" href="#parsing-the-gmt-common-options" title="Permalink to this headline">¶</a></h4>
 <p>The parsing of all GMT common option is done by on call to</p>
 <blockquote id="gmt-parse-common">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Parse_Common</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="n">list</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Parse_Common</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">list</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -2893,7 +2899,7 @@ been parsed then the function returns the number of parameters passed
 back via <code class="docutils literal notranslate"><span class="pre">par</span></code>; otherwise we return -1. For instance, to determine if
 the <code class="docutils literal notranslate"><span class="pre">-R</span></code> was set and to obtain the specified region you may call</p>
 <blockquote>
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">GMT_Get_Common</span> <span class="p">(</span><span class="n">API</span><span class="p">,</span> <span class="sc">&#39;R&#39;</span><span class="p">,</span> <span class="n">wesn</span><span class="p">))</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">GMT_Get_Common</span> <span class="p">(</span><span class="n">API</span><span class="p">,</span> <span class="sc">&#39;R&#39;</span><span class="p">,</span> <span class="n">wesn</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">-1</span><span class="p">)</span> <span class="p">{</span>
     <span class="cm">/* wesn now contains the boundary information */</span>
 <span class="p">}</span>
 </pre></div>
@@ -2988,7 +2994,7 @@ The function returns the corresponding integer value.  For unrecognized names we
 <p>For indexed access to custom grids and images we may need to know the internal matrix layout.
 You can change this information via</p>
 <blockquote id="gmt-set-index">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int64_t</span> <span class="nf">GMT_Set_Index</span> <span class="p">(</span><span class="k">struct</span> <span class="n">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">code</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int64_t</span> <span class="nf">GMT_Set_Index</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">code</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3066,11 +3072,11 @@ workings are better suited to generate such arguments -- we call this the
 “options” mode. The order in the list is not important as GMT will
 sort it internally according to need. The option structure is defined below.</p>
 <blockquote id="options">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="p">{</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="p">{</span>
     <span class="kt">char</span>               <span class="n">option</span><span class="p">;</span>  <span class="cm">/* Single option character (e.g., &#39;G&#39; for -G) */</span>
     <span class="kt">char</span>              <span class="o">*</span><span class="n">arg</span><span class="p">;</span>     <span class="cm">/* String with arguments (NULL if not used) */</span>
-    <span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>    <span class="cm">/* Next option pointer (NULL for last option) */</span>
-    <span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>    <span class="cm">/* Previous option (NULL for first option) */</span>
+    <span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>    <span class="cm">/* Next option pointer (NULL for last option) */</span>
+    <span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>    <span class="cm">/* Previous option (NULL for first option) */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -3081,7 +3087,7 @@ sort it internally according to need. The option structure is defined below.</p>
 <p>To assist programmers there are also two convenience functions that
 allow you to convert between the two argument formats. They are</p>
 <blockquote id="gmt-create-options">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="nf">GMT_Create_Options</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">args</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">GMT_Create_Options</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">args</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3098,7 +3104,7 @@ passing this as a bad file name option, call <a class="reference internal" href=
 multiple options (in lieu of an array of text strings), then pass
 <code class="docutils literal notranslate"><span class="pre">argc</span></code> = 0. When no longer needed you can remove the entire list by calling</p>
 <blockquote id="gmt-destroy-options">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Destroy_Options</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">**</span><span class="n">list</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Destroy_Options</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">**</span><span class="n">list</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3106,7 +3112,7 @@ multiple options (in lieu of an array of text strings), then pass
 with <code class="docutils literal notranslate"><span class="pre">API-&gt;error</span></code>), otherwise it returns 0 (<code class="docutils literal notranslate"><span class="pre">GMT_NOERROR</span></code>).</p>
 <p>The inverse function prototype is</p>
 <blockquote id="gmt-create-args">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">char</span> <span class="o">**</span><span class="nf">GMT_Create_Args</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">argc</span><span class="p">,</span> <span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="n">list</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">char</span> <span class="o">**</span><span class="nf">GMT_Create_Args</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">argc</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">list</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3127,7 +3133,7 @@ an error (which is passed back with <code class="docutils literal notranslate"><
 <p>Finally, to convert the linked list of option structures to a single
 text string command, use</p>
 <blockquote id="gmt-create-cmd">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">char</span> <span class="o">*</span><span class="nf">GMT_Create_Cmd</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="n">list</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">char</span> <span class="o">*</span><span class="nf">GMT_Create_Cmd</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">list</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3162,7 +3168,7 @@ values given the <code class="docutils literal notranslate"><span class="pre">op
 no argument for this option), and return a pointer to the allocated
 structure. The prototype is</p>
 <blockquote id="gmt-make-option">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="nf">GMT_Make_Option</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">char</span> <span class="n">option</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">arg</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">GMT_Make_Option</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">char</span> <span class="n">option</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">arg</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3174,8 +3180,8 @@ pass an error code via <code class="docutils literal notranslate"><span class="p
 <p><a class="reference internal" href="#gmt-append-option">GMT_Append_Option</a> will append the specified <code class="docutils literal notranslate"><span class="pre">option</span></code> to the end of
 the doubly-linked <code class="docutils literal notranslate"><span class="pre">list</span></code>. The prototype is</p>
 <blockquote id="gmt-append-option">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="nf">GMT_Append_Option</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="n">option</span><span class="p">,</span>
-    <span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="n">list</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">GMT_Append_Option</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">option</span><span class="p">,</span>
+    <span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">list</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3190,8 +3196,8 @@ the linked list starting at <code class="docutils literal notranslate"><span cla
 <code class="docutils literal notranslate"><span class="pre">option</span></code>. If not found we return NULL. While this is not necessarily
 an error we still set <code class="docutils literal notranslate"><span class="pre">API-&gt;error</span></code> accordingly. The prototype is</p>
 <blockquote id="gmt-find-option">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="nf">GMT_Find_Option</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">char</span> <span class="n">option</span><span class="p">,</span>
-    <span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="n">list</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">GMT_Find_Option</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">char</span> <span class="n">option</span><span class="p">,</span>
+    <span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">list</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3210,7 +3216,7 @@ following the previously found option as the <code class="docutils literal notra
 new argument <code class="docutils literal notranslate"><span class="pre">arg</span></code> and otherwise leave the option at its place in the
 list. The prototype is</p>
 <blockquote id="gmt-update-option">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Update_Option</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="n">current</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">arg</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Update_Option</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">current</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">arg</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3222,7 +3228,7 @@ NULL. The function returns 1 if there is an error, otherwise it returns 0 (<code
 <p>You may use <a class="reference internal" href="#gmt-delete-option">GMT_Delete_Option</a> to remove the <code class="docutils literal notranslate"><span class="pre">current</span></code> option from the linked
 <code class="docutils literal notranslate"><span class="pre">list</span></code>. The prototype is</p>
 <blockquote id="gmt-delete-option">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Delete_Option</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="n">current</span><span class="p">,</span> <span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">**</span><span class="n">head</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Delete_Option</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">current</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">**</span><span class="n">head</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3275,8 +3281,8 @@ API developers will rely on <a class="reference internal" href="#gmt-open-virtua
 above syntax to correct options for <a class="reference internal" href="#gmt-call-module">GMT_Call_Module</a>.
 The prototype is</p>
 <blockquote id="gmt-encode-options">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_RESOURCE</span> <span class="o">*</span><span class="nf">GMT_Encode_Options</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">module</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n_in</span><span class="p">,</span>
-                                           <span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">**</span><span class="n">head</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">n_items</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_RESOURCE</span> <span class="o">*</span><span class="n">GMT_Encode_Options</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">module</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n_in</span><span class="p">,</span>
+                                           <span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">**</span><span class="n">head</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">n_items</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3288,11 +3294,11 @@ that contains specific information for those options that
 items in the array is returned via the <code class="docutils literal notranslate"><span class="pre">n_items</span></code> variable.  The function
 returns NULL if there are errors and sets <code class="docutils literal notranslate"><span class="pre">API-&gt;error</span></code> to the corresponding
 error number.  The GMT_RESOURCE structure is defined below:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_RESOURCE</span> <span class="p">{</span>        <span class="cm">/* Information for passing external resources */</span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_RESOURCE</span> <span class="p">{</span>        <span class="cm">/* Information for passing external resources */</span>
     <span class="k">enum</span> <span class="n">GMT_enum_family</span> <span class="n">family</span><span class="p">;</span>     <span class="cm">/* GMT data family */</span>
     <span class="k">enum</span> <span class="n">GMT_enum_geometry</span> <span class="n">geometry</span><span class="p">;</span> <span class="cm">/* One of the recognized GMT geometries */</span>
     <span class="k">enum</span> <span class="n">GMT_enum_std</span> <span class="n">direction</span><span class="p">;</span>     <span class="cm">/* Either GMT_IN or GMT_OUT */</span>
-    <span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="n">option</span><span class="p">;</span>       <span class="cm">/* Pointer to the corresponding module option */</span>
+    <span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">option</span><span class="p">;</span>       <span class="cm">/* Pointer to the corresponding module option */</span>
     <span class="kt">int</span> <span class="n">object_ID</span><span class="p">;</span>                   <span class="cm">/* Object ID returned by GMT_Register_IO */</span>
     <span class="kt">int</span> <span class="n">pos</span><span class="p">;</span>                         <span class="cm">/* Index into external object in|out arrays */</span>
     <span class="kt">int</span> <span class="n">mode</span><span class="p">;</span>                        <span class="cm">/* 0 means primary i/o object, 1 means secondary */</span>
@@ -3312,7 +3318,7 @@ used for memory references the developer should replace the place-holder <code c
 in any option string with the actual reference name.  This is accomplished by
 calling <a class="reference internal" href="#gmt-expand-option">GMT_Expand_Option</a>, with prototype</p>
 <blockquote id="gmt-expand-option">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Expand_Option</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="n">GMT_OPTION</span> <span class="o">*</span><span class="n">option</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Expand_Option</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_OPTION</span> <span class="o">*</span><span class="n">option</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3339,7 +3345,7 @@ further development and can be found in the gmt-custom repository.</p>
 modifier sets to the user. The API makes these available as well. If
 your program needs to present the FFT option usage you can call</p>
 <blockquote id="gmt-fft-option">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">GMT_FFT_Option</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">char</span> <span class="n">option</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">dim</span><span class="p">,</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">GMT_FFT_Option</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">char</span> <span class="n">option</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">dim</span><span class="p">,</span>
                                <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">string</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -3697,7 +3703,7 @@ all variables accessible via the structures.</p>
 tables represented by a <a class="reference internal" href="#struct-datatable"><span class="std std-ref">GMT_DATATABLE</span></a>, and each table consists of one or more
 segments represented by a <a class="reference internal" href="#struct-datasegment"><span class="std std-ref">GMT_DATASEGMENT</span></a>, and each segment contains one or
 more rows of a fixed number of columns.</p>
-<div class="highlight-c notranslate" id="struct-dataset"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_DATASET</span> <span class="p">{</span> <span class="cm">/* Single container for an array of GMT tables (files) */</span>
+<div class="highlight-c notranslate" id="struct-dataset"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_DATASET</span> <span class="p">{</span> <span class="cm">/* Single container for an array of GMT tables (files) */</span>
     <span class="cm">/* Variables we document for the API: */</span>
     <span class="kt">uint64_t</span>               <span class="n">n_tables</span><span class="p">;</span>       <span class="cm">/* Total number of tables (files) contained */</span>
     <span class="kt">uint64_t</span>               <span class="n">n_columns</span><span class="p">;</span>      <span class="cm">/* Number of data columns */</span>
@@ -3705,7 +3711,7 @@ more rows of a fixed number of columns.</p>
     <span class="kt">uint64_t</span>               <span class="n">n_records</span><span class="p">;</span>      <span class="cm">/* Total number of data records across all tables */</span>
     <span class="kt">double</span>                 <span class="o">*</span><span class="n">min</span><span class="p">;</span>           <span class="cm">/* Minimum coordinate for each column */</span>
     <span class="kt">double</span>                 <span class="o">*</span><span class="n">max</span><span class="p">;</span>           <span class="cm">/* Maximum coordinate for each column */</span>
-    <span class="k">struct</span> <span class="n">GMT_DATATABLE</span>   <span class="o">**</span><span class="n">table</span><span class="p">;</span>        <span class="cm">/* Pointer to array of tables */</span>
+    <span class="k">struct</span> <span class="nc">GMT_DATATABLE</span>   <span class="o">**</span><span class="n">table</span><span class="p">;</span>        <span class="cm">/* Pointer to array of tables */</span>
     <span class="kt">unsigned</span> <span class="kt">int</span>           <span class="n">type</span><span class="p">;</span>           <span class="cm">/* The data record type of this dataset */</span>
     <span class="kt">unsigned</span> <span class="kt">int</span>           <span class="n">geometry</span><span class="p">;</span>       <span class="cm">/* The geometry of this dataset */</span>
     <span class="k">const</span> <span class="kt">char</span>             <span class="o">*</span><span class="n">ProjRefPROJ4</span><span class="p">;</span>  <span class="cm">/* To store a referencing system string in PROJ.4 format */</span>
@@ -3716,7 +3722,7 @@ more rows of a fixed number of columns.</p>
 </pre></div>
 </div>
 <p>Here is the full definition of the <code class="docutils literal notranslate"><span class="pre">GMT_DATATABLE</span></code> structure:</p>
-<div class="highlight-c notranslate" id="struct-datatable"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_DATATABLE</span> <span class="p">{</span>  <span class="cm">/* To hold an array of line segment structures and header information in one container */</span>
+<div class="highlight-c notranslate" id="struct-datatable"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_DATATABLE</span> <span class="p">{</span>  <span class="cm">/* To hold an array of line segment structures and header information in one container */</span>
     <span class="cm">/* Variables we document for the API: */</span>
     <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">n_headers</span><span class="p">;</span>           <span class="cm">/* Number of file header records (0 if no header) */</span>
     <span class="kt">uint64_t</span> <span class="n">n_columns</span><span class="p">;</span>               <span class="cm">/* Number of columns (fields) in each record */</span>
@@ -3725,13 +3731,13 @@ more rows of a fixed number of columns.</p>
     <span class="kt">double</span> <span class="o">*</span><span class="n">min</span><span class="p">;</span>                      <span class="cm">/* Minimum coordinate for each column */</span>
     <span class="kt">double</span> <span class="o">*</span><span class="n">max</span><span class="p">;</span>                      <span class="cm">/* Maximum coordinate for each column */</span>
     <span class="kt">char</span> <span class="o">**</span><span class="n">header</span><span class="p">;</span>                    <span class="cm">/* Array with all file header records, if any) */</span>
-    <span class="k">struct</span> <span class="n">GMT_DATASEGMENT</span> <span class="o">**</span><span class="n">segment</span><span class="p">;</span> <span class="cm">/* Pointer to array of segments */</span>
+    <span class="k">struct</span> <span class="nc">GMT_DATASEGMENT</span> <span class="o">**</span><span class="n">segment</span><span class="p">;</span> <span class="cm">/* Pointer to array of segments */</span>
     <span class="kt">void</span> <span class="o">*</span><span class="n">hidden</span><span class="p">;</span>                     <span class="cm">/* ---- Variables &quot;hidden&quot; from the API ---- */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
 <p>Here is the full definition of the <code class="docutils literal notranslate"><span class="pre">GMT_DATASEGMENT</span></code> structure:</p>
-<div class="highlight-c notranslate" id="struct-datasegment"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_DATASEGMENT</span> <span class="p">{</span>     <span class="cm">/* For holding segment lines in memory */</span>
+<div class="highlight-c notranslate" id="struct-datasegment"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_DATASEGMENT</span> <span class="p">{</span>     <span class="cm">/* For holding segment lines in memory */</span>
     <span class="cm">/* Variables we document for the API: */</span>
     <span class="kt">uint64_t</span> <span class="n">n_rows</span><span class="p">;</span>         <span class="cm">/* Number of points in this segment */</span>
     <span class="kt">uint64_t</span> <span class="n">n_columns</span><span class="p">;</span>      <span class="cm">/* Number of fields in each record (&gt;= 2) */</span>
@@ -3751,8 +3757,8 @@ more rows of a fixed number of columns.</p>
 <p>A grid is represented by a <a class="reference internal" href="#struct-grid"><span class="std std-ref">GMT_GRID</span></a> that consists of a header structure
 represented by a <a class="reference internal" href="#struct-gridheader"><span class="std std-ref">GMT_GRID_HEADER</span></a> and an float array <code class="docutils literal notranslate"><span class="pre">data</span></code> that
 contains the grid values.</p>
-<div class="highlight-c notranslate" id="struct-grid"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_GRID</span> <span class="p">{</span>                        <span class="cm">/* To hold a GMT float grid and its header in one container */</span>
-    <span class="k">struct</span> <span class="n">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">;</span>      <span class="cm">/* Pointer to full GMT header for the grid */</span>
+<div class="highlight-c notranslate" id="struct-grid"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_GRID</span> <span class="p">{</span>                        <span class="cm">/* To hold a GMT float grid and its header in one container */</span>
+    <span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">;</span>      <span class="cm">/* Pointer to full GMT header for the grid */</span>
     <span class="kt">float</span>                  <span class="o">*</span><span class="n">data</span><span class="p">;</span>        <span class="cm">/* Pointer to the float grid */</span>
     <span class="kt">double</span>                 <span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">y</span><span class="p">;</span>       <span class="cm">/* Vector of coordinates */</span>
     <span class="kt">void</span> <span class="o">*</span><span class="n">hidden</span><span class="p">;</span>                        <span class="cm">/* ---- Variables &quot;hidden&quot; from the API ---- */</span>
@@ -3760,7 +3766,7 @@ contains the grid values.</p>
 </pre></div>
 </div>
 <p>The full definition of the <code class="docutils literal notranslate"><span class="pre">GMT_GRID_HEADER</span></code> structure.  Most of these members are only used internally:</p>
-<div class="highlight-c notranslate" id="struct-gridheader"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_GRID_HEADER</span> <span class="p">{</span>
+<div class="highlight-c notranslate" id="struct-gridheader"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="p">{</span>
     <span class="cm">/* Variables we document for the API:</span>
 <span class="cm">       They are copied verbatim to the native grid header and must be 4-byte unsigned ints. */</span>
     <span class="kt">uint32_t</span> <span class="n">n_columns</span><span class="p">;</span>                   <span class="cm">/* Number of columns */</span>
@@ -3812,11 +3818,11 @@ It is represented by a <a class="reference internal" href="#struct-image"><span 
 contains the image values.  The type of the array is determined by the value of <code class="docutils literal notranslate"><span class="pre">type</span></code>.
 <strong>Note</strong>: The header <em>size</em> value reflects number of nodes per band, so the actual memory
 allocated will be <em>size * n_bands</em>.</p>
-<div class="highlight-c notranslate" id="struct-image"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_IMAGE</span> <span class="p">{</span>
+<div class="highlight-c notranslate" id="struct-image"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_IMAGE</span> <span class="p">{</span>
     <span class="k">enum</span> <span class="n">GMT_enum_type</span>      <span class="n">type</span><span class="p">;</span>             <span class="cm">/* Data type, e.g. GMT_FLOAT */</span>
     <span class="kt">int</span>                    <span class="o">*</span><span class="n">colormap</span><span class="p">;</span>         <span class="cm">/* Array with color lookup values */</span>
     <span class="kt">int</span>                     <span class="n">n_indexed_colors</span><span class="p">;</span> <span class="cm">/* Number of colors in a color-mapped image */</span>
-    <span class="k">struct</span> <span class="n">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">;</span>           <span class="cm">/* Pointer to full GMT header for the image */</span>
+    <span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">;</span>           <span class="cm">/* Pointer to full GMT header for the image */</span>
     <span class="kt">unsigned</span> <span class="kt">char</span>          <span class="o">*</span><span class="n">data</span><span class="p">;</span>             <span class="cm">/* Pointer to actual image */</span>
     <span class="kt">unsigned</span> <span class="kt">char</span>          <span class="o">*</span><span class="n">alpha</span><span class="p">;</span>            <span class="cm">/* Pointer to an optional transparency layer */</span>
     <span class="k">const</span> <span class="kt">char</span>             <span class="o">*</span><span class="n">color_interp</span><span class="p">;</span>     <span class="cm">/* Color interpretation name */</span>
@@ -3834,10 +3840,10 @@ contains the color information per interval.  The background, foreground and Nan
 colors specified by the <a class="reference internal" href="#struct-bnf"><span class="std std-ref">GMT_BFN</span></a> array structure <code class="docutils literal notranslate"><span class="pre">bfn</span></code>.  As each actual
 color may be specified in different ways, including as an image, each color slice is represented by
 the <a class="reference internal" href="#struct-fill"><span class="std std-ref">GMT_FILL</span></a> structure.</p>
-<div class="highlight-c notranslate" id="struct-palette"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_PALETTE</span> <span class="p">{</span>         <span class="cm">/* Holds all pen, color, and fill-related parameters */</span>
+<div class="highlight-c notranslate" id="struct-palette"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_PALETTE</span> <span class="p">{</span>         <span class="cm">/* Holds all pen, color, and fill-related parameters */</span>
     <span class="cm">/* Variables we document for the API: */</span>
-    <span class="k">struct</span> <span class="n">GMT_LUT</span>       <span class="o">*</span><span class="n">data</span><span class="p">;</span>               <span class="cm">/* CPT lookup data read by GMT_read_cpt */</span>
-    <span class="k">struct</span> <span class="n">GMT_BFN</span>        <span class="n">bfn</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>             <span class="cm">/* Structures with back/fore/nan fills */</span>
+    <span class="k">struct</span> <span class="nc">GMT_LUT</span>       <span class="o">*</span><span class="n">data</span><span class="p">;</span>               <span class="cm">/* CPT lookup data read by GMT_read_cpt */</span>
+    <span class="k">struct</span> <span class="nc">GMT_BFN</span>        <span class="n">bfn</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>             <span class="cm">/* Structures with back/fore/nan fills */</span>
     <span class="kt">unsigned</span> <span class="kt">int</span>          <span class="n">n_headers</span><span class="p">;</span>          <span class="cm">/* Number of CPT header records (0 if no header) */</span>
     <span class="kt">unsigned</span> <span class="kt">int</span>          <span class="n">n_colors</span><span class="p">;</span>           <span class="cm">/* Number of colors in CPT lookup table */</span>
     <span class="kt">unsigned</span> <span class="kt">int</span>          <span class="n">mode</span><span class="p">;</span>               <span class="cm">/* Flags controlling use of BFN colors */</span>
@@ -3859,28 +3865,28 @@ the <a class="reference internal" href="#struct-fill"><span class="std std-ref">
 </pre></div>
 </div>
 <p>The full definition of the <code class="docutils literal notranslate"><span class="pre">GMT_LUT</span></code> structure.</p>
-<div class="highlight-c notranslate" id="struct-lut"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_LUT</span> <span class="p">{</span>         <span class="cm">/* For back-, fore-, and nan-colors */</span>
+<div class="highlight-c notranslate" id="struct-lut"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_LUT</span> <span class="p">{</span>         <span class="cm">/* For back-, fore-, and nan-colors */</span>
     <span class="kt">double</span>                <span class="n">z_low</span><span class="p">,</span> <span class="n">z_high</span><span class="p">,</span> <span class="n">i_dz</span><span class="p">;</span>
     <span class="kt">double</span>                <span class="n">rgb_low</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">rgb_high</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">rgb_diff</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
     <span class="kt">double</span>                <span class="n">hsv_low</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">hsv_high</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">hsv_diff</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
     <span class="kt">unsigned</span> <span class="kt">int</span>          <span class="n">annot</span><span class="p">;</span>              <span class="cm">/* 1 for Lower, 2 for Upper, 3 for Both */</span>
     <span class="kt">unsigned</span> <span class="kt">int</span>          <span class="n">skip</span><span class="p">;</span>               <span class="cm">/* true means skip this slice */</span>
-    <span class="k">struct</span> <span class="n">GMT_FILL</span>      <span class="o">*</span><span class="n">fill</span><span class="p">;</span>               <span class="cm">/* For patterns instead of color */</span>
+    <span class="k">struct</span> <span class="nc">GMT_FILL</span>      <span class="o">*</span><span class="n">fill</span><span class="p">;</span>               <span class="cm">/* For patterns instead of color */</span>
     <span class="kt">char</span>                 <span class="o">*</span><span class="n">label</span><span class="p">;</span>              <span class="cm">/* For non-number labels */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
 <p>The full definition of the <code class="docutils literal notranslate"><span class="pre">GMT_BFN</span></code> structure:</p>
-<div class="highlight-c notranslate" id="struct-bnf"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_BFN</span> <span class="p">{</span>   <span class="cm">/* For back-, fore-, and nan-colors */</span>
+<div class="highlight-c notranslate" id="struct-bnf"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_BFN</span> <span class="p">{</span>   <span class="cm">/* For back-, fore-, and nan-colors */</span>
     <span class="kt">double</span>                <span class="n">rgb</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>             <span class="cm">/* Red, green, blue, and alpha */</span>
     <span class="kt">double</span>                <span class="n">hsv</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>             <span class="cm">/* Hue, saturation, value, alpha */</span>
     <span class="kt">unsigned</span> <span class="kt">int</span>          <span class="n">skip</span><span class="p">;</span>               <span class="cm">/* true means skip this slice */</span>
-    <span class="k">struct</span> <span class="n">GMT_FILL</span>      <span class="o">*</span><span class="n">fill</span><span class="p">;</span>               <span class="cm">/* For patterns instead of color */</span>
+    <span class="k">struct</span> <span class="nc">GMT_FILL</span>      <span class="o">*</span><span class="n">fill</span><span class="p">;</span>               <span class="cm">/* For patterns instead of color */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
 <p>The full definition of the <code class="docutils literal notranslate"><span class="pre">GMT_FILL</span></code> structure.  <strong>Note</strong>: Not part of the GMT API:</p>
-<div class="highlight-c notranslate" id="struct-fill"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_FILL</span> <span class="p">{</span>        <span class="cm">/*! Holds fill attributes */</span>
+<div class="highlight-c notranslate" id="struct-fill"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_FILL</span> <span class="p">{</span>        <span class="cm">/*! Holds fill attributes */</span>
     <span class="kt">double</span>                <span class="n">rgb</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>             <span class="cm">/* Chosen color if no pattern + Transparency 0-1 [0 = opaque] */</span>
     <span class="kt">double</span>                <span class="n">f_rgb</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">b_rgb</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span> <span class="cm">/* Colors applied to unset and set bits in 1-bit image */</span>
     <span class="kt">bool</span>                  <span class="n">use_pattern</span><span class="p">;</span>        <span class="cm">/* true if pattern rather than rgb is set */</span>
@@ -3896,7 +3902,7 @@ the <a class="reference internal" href="#struct-fill"><span class="std std-ref">
 <p>Bulk PostScript is represented by a <a class="reference internal" href="#struct-postscript"><span class="std std-ref">GMT_POSTSCRIPT</span></a> structure that contains
 <code class="docutils literal notranslate"><span class="pre">data</span></code> that points to the text array containing <code class="docutils literal notranslate"><span class="pre">n_bytes</span></code> characters of raw PostScript code.  The
 <code class="docutils literal notranslate"><span class="pre">mode</span></code> parameter reflects the status of the PostScript document.</p>
-<div class="highlight-c notranslate" id="struct-postscript"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_POSTSCRIPT</span> <span class="p">{</span>      <span class="cm">/* Single container for a chunk of PostScript code */</span>
+<div class="highlight-c notranslate" id="struct-postscript"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_POSTSCRIPT</span> <span class="p">{</span>      <span class="cm">/* Single container for a chunk of PostScript code */</span>
     <span class="cm">/* Variables we document for the API: */</span>
     <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">n_headers</span><span class="p">;</span>          <span class="cm">/* Number of PostScript header records (0 if no header) */</span>
     <span class="kt">size_t</span> <span class="n">n_bytes</span><span class="p">;</span>                  <span class="cm">/* Length of data array so far */</span>
@@ -3914,7 +3920,7 @@ the <a class="reference internal" href="#struct-fill"><span class="std std-ref">
 <code class="docutils literal notranslate"><span class="pre">data</span></code> that points to an array of size <code class="docutils literal notranslate"><span class="pre">n_columns</span></code> by <code class="docutils literal notranslate"><span class="pre">n_rows</span></code>.  The
 <code class="docutils literal notranslate"><span class="pre">type</span></code> indicates the memory type of the matrix, which is represented
 by the <a class="reference internal" href="#struct-univector"><span class="std std-ref">GMT_UNIVECTOR</span></a> union.</p>
-<div class="highlight-c notranslate" id="struct-matrix"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_MATRIX</span> <span class="p">{</span>
+<div class="highlight-c notranslate" id="struct-matrix"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_MATRIX</span> <span class="p">{</span>
     <span class="kt">uint64_t</span>             <span class="n">n_rows</span><span class="p">;</span>        <span class="cm">/* Number of rows in the matrix */</span>
     <span class="kt">uint64_t</span>             <span class="n">n_columns</span><span class="p">;</span>     <span class="cm">/* Number of columns in the matrix */</span>
     <span class="kt">uint64_t</span>             <span class="n">n_layers</span><span class="p">;</span>      <span class="cm">/* Number of layers in a 3-D matrix */</span>
@@ -3924,7 +3930,7 @@ by the <a class="reference internal" href="#struct-univector"><span class="std s
     <span class="kt">size_t</span>               <span class="n">size</span><span class="p">;</span>          <span class="cm">/* Byte length of data */</span>
     <span class="k">enum</span> <span class="n">GMT_enum_type</span>   <span class="n">type</span><span class="p">;</span>          <span class="cm">/* Data type, e.g. GMT_FLOAT */</span>
     <span class="kt">double</span>               <span class="n">range</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>      <span class="cm">/* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */</span>
-    <span class="k">union</span> <span class="n">GMT_UNIVECTOR</span>  <span class="n">data</span><span class="p">;</span>          <span class="cm">/* Union with pointer to actual matrix of the chosen type */</span>
+    <span class="k">union</span> <span class="nc">GMT_UNIVECTOR</span>  <span class="n">data</span><span class="p">;</span>          <span class="cm">/* Union with pointer to actual matrix of the chosen type */</span>
     <span class="kt">char</span>               <span class="o">**</span><span class="n">text</span><span class="p">;</span>          <span class="cm">/* Pointer to optional array of strings [NULL] */</span>
     <span class="kt">char</span>               <span class="o">**</span><span class="n">header</span><span class="p">;</span>        <span class="cm">/* Array with all Vector header records, if any) */</span>
     <span class="kt">char</span> <span class="n">command</span><span class="p">[</span><span class="n">GMT_GRID_COMMAND_LEN320</span><span class="p">];</span> <span class="cm">/* name of generating command */</span>
@@ -3943,12 +3949,12 @@ by the <a class="reference internal" href="#struct-univector"><span class="std s
 <code class="docutils literal notranslate"><span class="pre">data</span></code> that points to an array of <code class="docutils literal notranslate"><span class="pre">n_columns</span></code> individual vectors.  The
 <code class="docutils literal notranslate"><span class="pre">type</span></code> array indicates the memory type of each vector.  Each vector is represented
 by the <a class="reference internal" href="#struct-univector"><span class="std std-ref">GMT_UNIVECTOR</span></a> union which can accommodate any data type.</p>
-<div class="highlight-c notranslate" id="struct-vector"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">GMT_VECTOR</span> <span class="p">{</span>
+<div class="highlight-c notranslate" id="struct-vector"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_VECTOR</span> <span class="p">{</span>
     <span class="kt">uint64_t</span>             <span class="n">n_columns</span><span class="p">;</span>     <span class="cm">/* Number of vectors */</span>
     <span class="kt">uint64_t</span>             <span class="n">n_rows</span><span class="p">;</span>        <span class="cm">/* Number of rows in each vector */</span>
     <span class="k">enum</span> <span class="n">GMT_enum_reg</span>    <span class="n">registration</span><span class="p">;</span>  <span class="cm">/* 0 for gridline and 1 for pixel registration */</span>
     <span class="k">enum</span> <span class="n">GMT_enum_type</span>  <span class="o">*</span><span class="n">type</span><span class="p">;</span>          <span class="cm">/* Array with data type for each vector */</span>
-    <span class="k">union</span> <span class="n">GMT_UNIVECTOR</span> <span class="o">*</span><span class="n">data</span><span class="p">;</span>          <span class="cm">/* Array with unions for each column */</span>
+    <span class="k">union</span> <span class="nc">GMT_UNIVECTOR</span> <span class="o">*</span><span class="n">data</span><span class="p">;</span>          <span class="cm">/* Array with unions for each column */</span>
     <span class="kt">double</span>               <span class="n">range</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>      <span class="cm">/* The min and max limits on t-range (or 0,0) */</span>
     <span class="kt">char</span>               <span class="o">**</span><span class="n">text</span><span class="p">;</span>          <span class="cm">/* Pointer to optional array of strings [NULL] */</span>
     <span class="kt">char</span>               <span class="o">**</span><span class="n">header</span><span class="p">;</span>        <span class="cm">/* Array with all Vector header records, if any) */</span>
@@ -3962,7 +3968,7 @@ by the <a class="reference internal" href="#struct-univector"><span class="std s
 </pre></div>
 </div>
 <p>The full definition of the <code class="docutils literal notranslate"><span class="pre">GMT_UNIVECTOR</span></code> union that holds a pointer to any array or matrix type:</p>
-<div class="highlight-c notranslate" id="struct-univector"><div class="highlight"><pre><span></span><span class="k">union</span> <span class="n">GMT_UNIVECTOR</span> <span class="p">{</span>
+<div class="highlight-c notranslate" id="struct-univector"><div class="highlight"><pre><span></span><span class="k">union</span> <span class="nc">GMT_UNIVECTOR</span> <span class="p">{</span>
     <span class="kt">uint8_t</span>  <span class="o">*</span><span class="n">uc1</span><span class="p">;</span>       <span class="cm">/* Pointer for unsigned 1-byte array */</span>
     <span class="kt">int8_t</span>   <span class="o">*</span><span class="n">sc1</span><span class="p">;</span>       <span class="cm">/* Pointer for signed 1-byte array */</span>
     <span class="kt">uint16_t</span> <span class="o">*</span><span class="n">ui2</span><span class="p">;</span>       <span class="cm">/* Pointer for unsigned 2-byte array */</span>
@@ -4131,7 +4137,7 @@ own threads.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Aug 28, 2020.
+        Last updated on Sep 19, 2020.
       </span>
 
     </p>

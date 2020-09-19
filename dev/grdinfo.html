@@ -42,7 +42,13 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="grdinterpolate" href="grdinterpolate.html" />
-    <link rel="prev" title="grdimage" href="grdimage.html" /> 
+    <link rel="prev" title="grdimage" href="grdimage.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -220,7 +226,7 @@
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt grdinfo</strong> <em>grdfiles</em> [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong>[<strong>n</strong>|<strong>t</strong>] ]
 [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<em>xoff</em>[/<em>yoff</em>]][<strong>+i</strong>] ]
-[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<strong>x</strong>|<strong>y</strong>][<strong>+h</strong>|<strong>H</strong>|<strong>l</strong>|<strong>L</strong>] ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<strong>x</strong>|<strong>y</strong>][<strong>+l</strong>|<strong>L</strong>|<strong>u</strong>|<strong>U</strong>] ]
 [ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong> ]
 [ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong>[<em>dx</em>[/<em>dy</em>]|<strong>b</strong>|<strong>i</strong>|<strong>r</strong>] ]
 [ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong>[<strong>0</strong>|<strong>1</strong>|<strong>2</strong>|<strong>p</strong>|<strong>a</strong>] ] [ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong> ]
@@ -280,8 +286,8 @@ region string appended as trailing text.</p>
 </dd>
 </dl>
 <dl class="simple" id="e">
-<dt><strong>-E</strong>[<strong>x</strong>|<strong>y</strong>][<strong>+h</strong>|<strong>H</strong>|<strong>l</strong>|<strong>L</strong>]</dt><dd><p>Report the extreme values found on a per column (<strong>-Ex</strong>) or per
-row (<strong>-Ey</strong>) basis.  By default, we look for the global maxima (<strong>+h</strong>|<strong>H</strong>)
+<dt><strong>-E</strong>[<strong>x</strong>|<strong>y</strong>][<strong>+l</strong>|<strong>L</strong>|<strong>u</strong>|<strong>U</strong>]</dt><dd><p>Report the extreme values found on a per column (<strong>-Ex</strong>) or per
+row (<strong>-Ey</strong>) basis.  By default, we look for the global maxima (<strong>+u</strong>|<strong>U</strong>)
 for each column.  Append <strong>+l</strong>|<strong>L</strong> to look for minima instead.
 Upper case <strong>+L</strong> means we find the minimum of the positive values only, while
 upper case <strong>+U</strong> means we find the maximum of the negative values only [use all values].
@@ -426,7 +432,7 @@ data as 1- or 2-byte integers. <a class="reference internal" href="gmt.html#grd-
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Aug 28, 2020.
+        Last updated on Sep 19, 2020.
       </span>
 
     </p>

@@ -227,7 +227,7 @@
 <p><strong>gmt mapproject</strong> [ <em>tables</em> ] <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em>
 <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
 [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><strong>b</strong>|<strong>B</strong>|<strong>f</strong>|<strong>F</strong>|<strong>o</strong>|<strong>O</strong>[<em>lon0</em>/<em>lat0</em>][<strong>+v</strong>] ]
-[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong>[<em>dx</em>/<em>dy</em>] ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong>[<em>dx</em>/<em>dy</em>][<strong>+m</strong>] ]
 [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><strong>c</strong>|<strong>i</strong>|<strong>p</strong> ]
 [ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<em>datum</em>] ] [ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<em>unit</em>] ]
 [ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong>[<em>lon0</em>/<em>lat0</em>][<strong>+a</strong>][<strong>+i</strong>][<strong>+u</strong><em>unit</em>][<strong>+v</strong>] ]
@@ -313,14 +313,16 @@ See <a class="reference internal" href="#output-order">Output Order</a> for how 
 </dd>
 </dl>
 <dl class="simple" id="c">
-<dt><strong>-C</strong>[<em>dx</em>/<em>dy</em>]</dt><dd><p>Set center of projected coordinates to be at map projection center
+<dt><strong>-C</strong>[<em>dx</em>/<em>dy</em>][<strong>+m</strong>]</dt><dd><p>Set center of projected coordinates to be at map projection center
 [Default is lower left corner]. Optionally, add offsets in the
 projected units to be added (or subtracted when <strong>-I</strong> is set) to
 (from) the projected coordinates, such as false eastings and
 northings for particular projection zones [0/0]. The unit used for
 the offsets is the plot distance unit in effect (see
 <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a>) unless <strong>-F</strong> is used, in which case the
-offsets are in meters.</p>
+offsets are in meters.  Alternatively, for the Mercator projection
+only, append <strong>+m</strong> to set the origin of the projected <em>y</em> coordinates
+to coincide with the standard parallel [Equator].</p>
 </dd>
 </dl>
 <dl class="simple" id="d">
@@ -708,7 +710,7 @@ North-Holland Publ., ISBN: 0 444 86149 1.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Aug 29, 2020.
+        Last updated on Sep 02, 2020.
       </span>
 
     </p>

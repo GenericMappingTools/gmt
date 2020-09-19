@@ -42,7 +42,13 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="grdmask" href="grdmask.html" />
-    <link rel="prev" title="grdinterpolate" href="grdinterpolate.html" /> 
+    <link rel="prev" title="grdinterpolate" href="grdinterpolate.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -422,6 +428,15 @@ using splines by default and thus may yield artifacts in your map.
 We recommend you use <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> <strong>-nn</strong> to instead use a nearest
 neighbor interpolation for such cases.</p>
 </div>
+<div class="section" id="global-landmask-grids">
+<h2>Global Landmask Grids<a class="headerlink" href="#global-landmask-grids" title="Permalink to this headline">¶</a></h2>
+<p>Before you make your own masks, be aware that the GMT data server offers
+global landmask files in multiple grid resolutions.  These can be accessed
+using the remote file names &#64;earth_mask_<em>rr</em><em>u</em>[_<em>reg</em>], where
+<em>rr</em><em>u</em> and the optional <em>reg</em> indicate the resolution and registration
+that you desire.  See <a class="reference internal" href="datasets/remote-data.html#earth-mask"><span class="std std-ref">Global Earth Mask Grids</span></a> for more
+information on the availability of resolutions.</p>
+</div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>To set all nodes on land to NaN, and nodes over water to 1, using the
@@ -492,7 +507,7 @@ WDBII. See <a class="reference internal" href="datasets/gshhg.html"><span class=
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Aug 28, 2020.
+        Last updated on Sep 19, 2020.
       </span>
 
     </p>

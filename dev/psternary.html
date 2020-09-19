@@ -42,7 +42,13 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="pstext" href="pstext.html" />
-    <link rel="prev" title="pssolar" href="pssolar.html" /> 
+    <link rel="prev" title="pssolar" href="pssolar.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -322,9 +328,9 @@ whose coordinates are strictly inside the map border only].</p>
 </dd>
 </dl>
 <dl id="s">
-<dt><strong>-S</strong>[<em>symbol</em>][<em>size</em>]</dt><dd><p>Plot individual symbols.
-If present, <em>size</em> is symbol size in the unit set in
-<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> (unless <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> is appended). If the symbol
+<dt><strong>-S</strong>[<em>symbol</em>][<em>size</em>]</dt><dd><p>Plot individual symbols in a ternary diagram.
+If present, <em>size</em> is symbol size in the unit set by
+<a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> (unless <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> is appended). If the symbol
 code (see below) is not given it will be read from the last column in
 the input data; this cannot be used in conjunction with binary input.
 Optionally, append <strong>c</strong>, <strong>i</strong>, or
@@ -336,109 +342,91 @@ used for the symbol size or append the units to the sizes in the file.
 If symbol sizes are expected via the third data column then you may convert
 those values to suitable symbol sizes via the <strong>-i</strong> mechanism. The general
 input expectations are:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>*x y* <span class="o">[</span> *z* <span class="o">]</span> <span class="o">[</span> *size* <span class="o">]</span> <span class="o">[</span> *symbol-parameters* <span class="o">]</span> <span class="o">[</span> *symbol* <span class="o">]</span>
-</pre></div>
-</div>
-<p>where the optional <em>z</em> is required when <strong>-C</strong> is used, the optional
-<em>size</em> is required when no symbol size is specified, and the trailing
-text with the symbol code is required when symbol code is not specified
-on the command line.  The <em>symbol-parameters</em> may vary in numbers; see
-specifics below.</p>
+<p><em>coordinates</em> [ <em>value</em> ] [ <em>parameters</em> ] [ <em>symbol</em> ]</p>
+<p>where <em>coordinates</em> is two or three columns specifying the location of a point,
+the optional <em>value</em> is required when <strong>-C</strong> is used to control color, the optional
+<em>parameters</em> is required when no symbol size is specified, and the trailing
+text with leading <em>symbol</em> code is required when the symbol code is not specified
+on the command line.  <strong>Note</strong>: <em>parameters</em> may represent more than one <em>size</em>
+column as some symbols require several parameters to be defined (e.g., a circle
+just needs one column, a rectangle needs two dimensions, while an ellipse needs an
+orientation and two dimensions, and so on); see specifics below.  When there is only
+a single parameter we will refer to it as <em>size</em>.</p>
 <p>The uppercase symbols <strong>A</strong>, <strong>C</strong>, <strong>D</strong>, <strong>G</strong>, <strong>H</strong>, <strong>I</strong>, <strong>N</strong>,
 <strong>S</strong>, <strong>T</strong> are normalized to have the same area as a circle with
-diameter <em>size</em>, while the size of the corresponding lowercase symbols
+diameter <em>size</em>, while the <em>size</em> of the corresponding lowercase symbols
 refers to the diameter of a circumscribed circle.</p>
 <p>You can change symbols by adding the required <strong>-S</strong> option to any of
-your multisegment headers.</p>
+your multi-segment headers.</p>
 <p>Choose between these symbol codes:</p>
 <dl class="simple">
-<dt><strong>-S-</strong></dt><dd><p>x-dash (-). <em>size</em> is the length of a short horizontal (x-dir) line segment.</p>
+<dt><strong>-S-</strong><em>size</em></dt><dd><p>x-dash (-). <em>size</em> is the length of a short horizontal (x-dir) line segment.</p>
 </dd>
-<dt><strong>-S+</strong></dt><dd><p>plus (+). <em>size</em> is diameter of circumscribing circle.</p>
+<dt><strong>-S+</strong><em>size</em></dt><dd><p>plus (+). <em>size</em> is diameter of circumscribing circle.</p>
 </dd>
-<dt><strong>-Sa</strong></dt><dd><p>st<strong>a</strong>r. <em>size</em> is diameter of circumscribing circle.</p>
+<dt><strong>-Sa</strong><em>size</em></dt><dd><p>st<strong>a</strong>r. <em>size</em> is diameter of circumscribing circle.</p>
 </dd>
-<dt><strong>-Sb</strong>[<em>size</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>|<strong>u</strong>]][<strong>+b</strong>[<em>base</em>]]</dt><dd><p>Vertical <strong>b</strong>ar extending from <em>base</em> to y. The <em>size</em> is bar width.
-Append <strong>u</strong> if <em>size</em> is in x-units [Default is plot-distance units].
-By default, <em>base</em> = 0. Append <strong>+b</strong>[<em>base</em>] to change this
-value. If <em>base</em> is not appended then we read it from the last input
-data column.  Use <strong>+B</strong>[<em>base</em>] if the bar height is measured relative
-to <em>base</em> [Relative to origin].</p>
+<dt><strong>-Sc</strong><em>size</em></dt><dd><p><strong>c</strong>ircle. <em>size</em> is diameter of circle.</p>
 </dd>
-<dt><strong>-SB</strong>[<em>size</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>|<strong>u</strong>]][<strong>+b</strong>[<em>base</em>]]</dt><dd><p>Horizontal <strong>b</strong>ar extending from <em>base</em> to x. The <em>size</em> is bar width.
-Append <strong>u</strong> if <em>size</em> is in y-units [Default is plot-distance units].
-By default, <em>base</em> = 0. Append <strong>+b</strong>[<em>base</em>] to change this
-value. If <em>base</em> is not appended then we read it from the last input
-data column.  Use <strong>+B</strong>[<em>base</em>] if the bar length is measured relative
-to <em>base</em> [Relative to origin].</p>
+<dt><strong>-Sd</strong><em>size</em></dt><dd><p><strong>d</strong>iamond. <em>size</em> is diameter of circumscribing circle.</p>
 </dd>
-<dt><strong>-Sc</strong></dt><dd><p><strong>c</strong>ircle. <em>size</em> is diameter of circle.</p>
+<dt><strong>-Se</strong><em>direction</em>/<em>major_axis</em>/<em>minor_axis</em></dt><dd><p><strong>e</strong>llipse. If not given, then <em>direction</em> (in degrees counter-clockwise from horizontal),
+<em>major_axis</em>, and <em>minor_axis</em> must be found after the location [and <em>value</em>] columns.
+If only a single <em>size</em> is given then we plot a degenerate ellipse (circle) with given diameter.</p>
 </dd>
-<dt><strong>-Sd</strong></dt><dd><p><strong>d</strong>iamond. <em>size</em> is diameter of circumscribing circle.</p>
+<dt><strong>-Sg</strong><em>size</em></dt><dd><p>octa<strong>g</strong>on. <em>size</em> is diameter of circumscribing circle.</p>
 </dd>
-<dt><strong>-Se</strong></dt><dd><p><strong>e</strong>llipse. Direction (in degrees counter-clockwise from horizontal),
-major_axis, and minor_axis must be found in columns 3, 4, and 5.</p>
+<dt><strong>-Sh</strong><em>size</em></dt><dd><p><strong>h</strong>exagon. <em>size</em> is diameter of circumscribing circle.</p>
 </dd>
-<dt><strong>-Sg</strong></dt><dd><p>octa<strong>g</strong>on. <em>size</em> is diameter of circumscribing circle.</p>
+<dt><strong>-Si</strong><em>size</em></dt><dd><p><strong>i</strong>nverted triangle. <em>size</em> is diameter of circumscribing circle.</p>
 </dd>
-<dt><strong>-Sh</strong></dt><dd><p><strong>h</strong>exagon. <em>size</em> is diameter of circumscribing circle.</p>
+<dt><strong>-Sj</strong><em>direction</em>/<em>width</em>/<em>height</em></dt><dd><p>Rotated rectangle. If not given, then <em>direction</em> (in degrees counter-clockwise from
+horizontal), <em>width</em>, and <em>height</em> must be found after the location [and <em>value</em>] columns.
+If only a single <em>size</em> is given then we plot a degenerate rectangle (square) with given size.</p>
 </dd>
-<dt><strong>-Si</strong></dt><dd><p><strong>i</strong>nverted triangle. <em>size</em> is diameter of circumscribing circle.</p>
+<dt><strong>-Sk</strong><em>name</em>/<em>size</em></dt><dd><p><strong>k</strong>ustom symbol. We will look for a symbol definition file called <em>name</em>.def in
+(1) the current directory, (2) in ~/.gmt or (3) in <strong>$GMT_SHAREDIR</strong>/custom.
+The symbol defined in the definition file is of normalized unit size by default;
+the appended <em>size</em> will scale the symbol accordingly. Users may create their own
+custom *.def files; see <a class="reference internal" href="cookbook/custom-symbols.html#custom-symbols"><span class="std std-ref">Custom Symbols</span></a>.
+Alternatively, you can supply an EPS file instead of a *.def file and
+we will scale and place that graphic as a symbol.</p>
 </dd>
-<dt><strong>-Sj</strong></dt><dd><p>Rotated rectangle. Direction (in degrees counter-clockwise from
-horizontal), x-dimension, and y-dimension must be found in columns 3, 4, and 5.</p>
-</dd>
-<dt><strong>-Sk</strong></dt><dd><p><strong>k</strong>ustom symbol. Append <em>name</em>/<em>size</em>, and we will look for a
-definition file called <em>name</em>.def in (1) the current
-directory or (2) in ~/.gmt or (3) in
-<strong>$GMT_SHAREDIR</strong>/custom. The symbol as defined in that file is of size
-1.0 by default; the appended <em>size</em> will scale symbol accordingly. Users
-may add their own custom *.def files; see CUSTOM SYMBOLS below.</p>
-</dd>
-<dt><strong>-Sl</strong></dt><dd><p><strong>l</strong>etter or text string (less than 256 characters). Give size, and
+<dt><strong>-Sl</strong><em>size</em><strong>+t</strong><em>string</em>[<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>]</dt><dd><p><strong>l</strong>etter or text string (less than 256 characters). Give size, and
 append <strong>+t</strong><em>string</em> after the size. Note that the size is only approximate;
 no individual scaling is done for different characters. Remember to
 escape special characters like *. Optionally, you may append <strong>+f</strong><em>font</em>
 to select a particular font [Default is <a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a>] and
 <strong>+j</strong><em>justify</em> to change justification [CM].</p>
 </dd>
-<dt><strong>-Sn</strong></dt><dd><p>pe<strong>n</strong>tagon. <em>size</em> is diameter of circumscribing circle.</p>
+<dt><strong>-Sn</strong><em>size</em></dt><dd><p>pe<strong>n</strong>tagon. <em>size</em> is diameter of circumscribing circle.</p>
 </dd>
 <dt><strong>-Sp</strong></dt><dd><p><strong>p</strong>oint. No size needs to be specified (1 pixel is used).</p>
 </dd>
-<dt><strong>-Sr</strong></dt><dd><p><strong>r</strong>ectangle. No size needs to be specified, but the x- and
-y-dimensions must be found in columns 3 and 4.</p>
+<dt><strong>-Sr</strong><em>width</em>/<em>height</em></dt><dd><p><strong>r</strong>ectangle. If <em>width</em>/<em>height</em> are not given, then these
+dimensions must be found after the location [and <em>value</em>] columns.  Alternatively, append <strong>+s</strong>
+and then the diagonal corner coordinates are expected after the location [and <em>value</em>] columns instead.</p>
 </dd>
-<dt><strong>-SR</strong></dt><dd><p><strong>R</strong>ounded rectangle. No size needs to be specified, but the x-
-and y-dimensions and corner radius must be found in columns 3, 4, and 5.</p>
+<dt><strong>-SR</strong><em>width</em>/<em>height</em>/<em>radius</em></dt><dd><p><strong>R</strong>ounded rectangle. If <em>width</em>/<em>height</em>/<em>radius</em> are not given, then the two
+dimensions and corner radius must be found after the location [and <em>value</em>] columns.</p>
 </dd>
-<dt><strong>-Ss</strong></dt><dd><p><strong>s</strong>quare. <em>size</em> is diameter of circumscribing circle.</p>
+<dt><strong>-Ss</strong><em>size</em></dt><dd><p><strong>s</strong>quare. <em>size</em> is diameter of circumscribing circle.</p>
 </dd>
-<dt><strong>-St</strong></dt><dd><p><strong>t</strong>riangle. <em>size</em> is diameter of circumscribing circle.</p>
+<dt><strong>-St</strong><em>size</em></dt><dd><p><strong>t</strong>riangle. <em>size</em> is diameter of circumscribing circle.</p>
 </dd>
-<dt><strong>-Sw</strong></dt><dd><p>pie <strong>w</strong>edge. Start and stop directions (in degrees
-counter-clockwise from horizontal) for pie slice must be found in
-columns 3 and 4.  Append /<em>inner</em> to select a separate inner diameter [0].
+<dt><strong>-Sw</strong>[<em>outer</em>[/<em>startdir</em>/<em>stopdir</em>]][<strong>+i</strong>[<em>inner</em>]]</dt><dd><p>Pie <strong>w</strong>edge. Give the outer diameter <em>outer</em>, <em>startdir</em> and <em>stopdir</em>.
+These are directions (in degrees counter-clockwise from horizontal) for wedge.
+Parameters not appended are read from file after the location [and <em>value</em>] columns.
+Append <strong>+i</strong> and append a nonzero inner diameter <em>inner</em> or it will be read last [0].
 Append <strong>+a</strong>[<em>dr</em>] to draw the arc line (at inner and outer diameter);
 if <em>dr</em> is appended then we draw all arc lines separated radially by <em>dr</em>.
 Append <strong>+r</strong>[<em>da</em>] to draw radial lines (at start and stop directions)
 if <em>da</em> is appended then we draw all radial lines separated angularly by <em>da</em>.
 These spider-web lines are drawn using the current pen unless <strong>+p</strong><em>pen</em> is added.</p>
 </dd>
-<dt><strong>-SW</strong></dt><dd><p>Same as <strong>-Sw</strong>, except azimuths (in degrees east of north) should
-be given instead of the two directions. The azimuths will be mapped
-into angles based on the chosen map projection (<strong>-Sw</strong> leaves the
-directions unchanged).
-Append /<em>inner</em> to select a separate inner diameter [0].
-Append <strong>+a</strong>[<em>dr</em>] to draw the arc line (at inner and outer diameter);
-if <em>dr</em> is appended then we draw all arc lines separated radially by <em>dr</em>.
-Append <strong>+r</strong>[<em>da</em>] to draw radial lines (at start and stop directions)
-if <em>da</em> is appended then we draw all radial lines separated angularly by <em>da</em>.
-These spider-web lines are drawn using the current pen unless <strong>+p</strong><em>pen</em> is added.</p>
+<dt><strong>-Sx</strong><em>size</em></dt><dd><p>cross (x). <em>size</em> is diameter of circumscribing circle.</p>
 </dd>
-<dt><strong>-Sx</strong></dt><dd><p>cross (x). <em>size</em> is diameter of circumscribing circle.</p>
-</dd>
-<dt><strong>-Sy</strong></dt><dd><p>y-dash (|). <em>size</em> is the length of a short vertical (y-dir) line segment.</p>
+<dt><strong>-Sy</strong><em>size</em></dt><dd><p>y-dash (|). <em>size</em> is the length of a short vertical (y-dir) line segment.</p>
 </dd>
 </dl>
 </dd>
@@ -583,7 +571,7 @@ gmt psternary @ternary.txt -R0/100/0/100/0/100 -JX6i -P -Sc0.1c -Ct.cpt -LWater/
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Aug 28, 2020.
+        Last updated on Sep 19, 2020.
       </span>
 
     </p>

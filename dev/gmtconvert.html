@@ -42,7 +42,13 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="gmtdefaults" href="gmtdefaults.html" />
-    <link rel="prev" title="gmtconnect" href="gmtconnect.html" /> 
+    <link rel="prev" title="gmtconnect" href="gmtconnect.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -229,7 +235,7 @@
 [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>col</em>[<strong>+a</strong>|<strong>d</strong>] ]
 [ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong>[<strong>~</strong>]<em>selection</em>]
 [ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong>[<strong>~</strong>]<em>“search string”</em> | <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] ]
-[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong>[<strong>h</strong>|<strong>d</strong>] ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong>[<strong>h</strong>][<strong>d</strong>[[<strong>~</strong>]<em>selection</em>]] ]
 [ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<strong>+n</strong>] ]
 [ <strong>-a</strong><a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">flags</span></a> ]
@@ -389,9 +395,18 @@ To give a single pattern starting with +f, escape it with a backslash.</p>
 </dd>
 </dl>
 <dl class="simple" id="t">
-<dt><strong>-T</strong>[<strong>h</strong>|<strong>d</strong>]</dt><dd><p>Suppress the writing of certain records on output.  Append <strong>h</strong> to
-suppress segment headers [Default] or <strong>d</strong> to suppress duplicate
-data records.  Use <strong>-Thd</strong> to suppress both types of records.</p>
+<dt><strong>-T</strong>[<strong>h</strong>][<strong>d</strong>[[<strong>~</strong>]<em>selection</em>]]</dt><dd><p>Suppress the writing of certain records on output.  Append <strong>h</strong> to
+suppress segment headers [Default], and/or <strong>d</strong> to suppress duplicate
+data records.  Use <strong>-Thd</strong> to suppress both types of records.  By default,
+all columns must be identical across the two records to skip the record.
+ALternatively, append a column <em>selection</em> to only use those columns
+in the comparisons instead.  The <em>selection</em> syntax is
+<em>range</em>[,<em>range</em>,…] where each <em>range</em> of items is either a single
+column <em>number</em> or a range with stepped increments given via <em>start</em>[:<em>step</em>:]:<em>stop</em>
+(<em>step</em> is optional and defaults to 1). A leading <strong>~</strong> will
+invert the selection and select all columns but the ones listed. To add the
+trailing text to the comparison as well, add the column <em>t</em> to the list.
+If no numerical columns are specified, just <em>t</em>, then we only consider trailing text.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
@@ -601,7 +616,7 @@ where we reset the origin of the sequential numbering from 0 to 5000, try:</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Aug 28, 2020.
+        Last updated on Sep 19, 2020.
       </span>
 
     </p>

@@ -40,7 +40,7 @@ Description
 -----------
 
 **grd2cpt** reads one or more grid files and writes a static color palette
-(CPT) file. In classic mode we write the CMT to standard output, while under
+(CPT) file. In classic mode we write the CPT to standard output, while under
 modern mode we simply save the CPT as the current session CPT (but see **-H**).
 The CPT is based on an existing dynamic
 master CPT of your choice, and the mapping from data value to
@@ -224,6 +224,7 @@ Optional Arguments
     only applies if **-E** selects CDF output.
 .. include:: explain_-bo.rst_
 
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_help.rst_

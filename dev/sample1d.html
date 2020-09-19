@@ -42,7 +42,13 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="solar" href="solar.html" />
-    <link rel="prev" title="rose" href="rose.html" /> 
+    <link rel="prev" title="rose" href="rose.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -219,7 +225,7 @@
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt sample1d</strong> [ <em>table</em> ]
-[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><strong>f</strong>|<strong>p</strong>|<strong>m</strong>|<strong>r</strong>|<strong>R</strong>[<strong>+l</strong>] ]
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><strong>f</strong>|<strong>p</strong>|<strong>m</strong>|<strong>r</strong>|<strong>R</strong>[<strong>+d</strong>][<strong>+l</strong>] ]
 [ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><strong>l</strong>|<strong>a</strong>|<strong>c</strong>|<strong>n</strong>|<strong>s</strong><em>p</em>[<strong>+d1</strong>|<strong>2</strong>] ]
 [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>col</em> ]
 [ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong>[<em>min/max</em>/]<em>inc</em>[<strong>+a</strong>|<strong>n</strong>] |<a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>file</em>|<em>list</em> ]
@@ -267,7 +273,7 @@ provided, <strong>sample1d</strong> reads from standard input.</p>
 </dd>
 </dl>
 <dl class="simple" id="a">
-<dt><strong>-A</strong><strong>f</strong>|<strong>p</strong>|<strong>m</strong>|<strong>r</strong>|<strong>R</strong></dt><dd><p>For track resampling (if <strong>-T</strong>…<em>unit</em> is set) we can select how
+<dt><strong>-A</strong><strong>f</strong>|<strong>p</strong>|<strong>m</strong>|<strong>r</strong>|<strong>R</strong>[<strong>+d</strong>][<strong>+l</strong>]</dt><dd><p>For track resampling (if <strong>-T</strong>…<em>unit</em> is set) we can select how
 this is to be performed. Append <strong>f</strong> to keep original points, but
 add intermediate points if needed; note this selection does not
 necessarily yield equidistant points [Default], <strong>m</strong> as <strong>f</strong>, but
@@ -276,6 +282,8 @@ first follow meridian (along y) then parallel (along x), <strong>p</strong> as
 <strong>r</strong> to resample at equidistant locations; input points are not
 necessarily included in the output, and <strong>R</strong> as <strong>r</strong>, but adjust
 given spacing to fit the track length exactly. Finally, append
+<strong>+d</strong> to delete duplicate input records (identified by having
+no change in the time column, and
 <strong>+l</strong> if distances should be measured along rhumb lines (loxodromes).</p>
 </dd>
 </dl>
@@ -588,7 +596,7 @@ included, use</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Aug 28, 2020.
+        Last updated on Sep 19, 2020.
       </span>
 
     </p>

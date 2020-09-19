@@ -214,6 +214,7 @@ Optional Arguments
 **-Z**
     Force a continuous CPT [Default is discontinuous].
 
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_help.rst_

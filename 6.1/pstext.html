@@ -555,6 +555,17 @@ This only applies to text inside a script or that otherwise is processed
 by DOS. Data files that are opened and read by the module do not need
 such duplication.</p>
 </div>
+<div class="section" id="composite-characters">
+<h2>Composite Characters<a class="headerlink" href="#composite-characters" title="Permalink to this headline">¶</a></h2>
+<p>If the two characters that are to be combined come from different
+fonts (say, Symbol and Times), then it is allowed for the <em>second</em>
+character (but not the first) to be surrounded by escape codes to
+temporarily change the font for that character.  For instance, the
+sequence “&#64;!\227&#64;~\145&#64;~” will print the epsilon character (octal code
+\145 from the Symbol font) with time-derivative indicated by the
+over-printed dot (octal code \227 from the current font, assuming the
+ISOLatin1 character set).</p>
+</div>
 <div class="section" id="limitations">
 <h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h2>
 <p>In paragraph mode, the presence of composite characters and other escape
@@ -610,7 +621,7 @@ trailing text.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Aug 29, 2020.
+        Last updated on Sep 02, 2020.
       </span>
 
     </p>

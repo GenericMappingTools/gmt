@@ -35,7 +35,7 @@ Description
 xyz-triplets in ASCII [or binary] format to standard output. Modify the
 precision of the ASCII output format by editing the
 :term:`FORMAT_FLOAT_OUT` parameter in your :doc:`gmt.conf` file or use
-**-**\ **-D_FORMAT**\ =\ *format* on the command line, or choose binary
+**--FORMAT_FLOAT_OUT**\ =\ *format* on the command line, or choose binary
 output using single or double precision storage. As an option you may
 output z-values without the (x,y) coordinates; see **-Z** below.
 

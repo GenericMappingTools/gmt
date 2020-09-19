@@ -42,7 +42,13 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="events" href="events.html" />
-    <link rel="prev" title="docs" href="docs.html" /> 
+    <link rel="prev" title="docs" href="docs.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -251,8 +257,11 @@ any module-specific option (but not the GMT common options), then exits.</p>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>To close the current modern session and finalize any plots requested, we use:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt end
+<p>We first create a modern mode session using <strong>begin</strong>, do plotting, and
+close the current modern session and finalize any plots requested:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin
+gmt basemap -R0/10/0/10 -JX10c -Baf
+gmt end
 </pre></div>
 </div>
 </div>
@@ -296,7 +305,7 @@ you can set the environmental parameter <strong>GMT_END_SHOW</strong> to off.</p
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Aug 28, 2020.
+        Last updated on Sep 19, 2020.
       </span>
 
     </p>
