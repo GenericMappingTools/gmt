@@ -7557,11 +7557,11 @@ void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
 	gmt_message (GMT, "\t-%c %s\n", option, string);
 	gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
-	gmt_message (GMT, "\t   Set scale length with +w<length> and (for geo projection) append a unit from %s [km].\n", GMT_LEN_UNITS2_DISPLAY);
+	gmt_message (GMT, "\t   Set scale length with +w<length> and (for geographic projection) append a unit from %s [km].\n", GMT_LEN_UNITS2_DISPLAY);
 	gmt_message (GMT, "\t   Several modifiers are optional:\n");
-	gmt_message (GMT, "\t   Use +c to control where on the map the scale should apply [Default is at scale placement].\n");
-	gmt_message (GMT, "\t   Use +c with no arguments to select the center of the map as scale origin.\n");
-	gmt_message (GMT, "\t   Use +c<slat> (with central longitude) or +c<slon>/<slat> to specify scale origin for geographic projections.\n");
+	gmt_message (GMT, "\t   Use +c to control where on a geographic map the map scale should apply [Default is at scale bar placement].\n");
+	gmt_message (GMT, "\t   Use +c with no arguments to select the center of the map as map scale origin.\n");
+	gmt_message (GMT, "\t   Use +c<slat> (with central longitude) or +c<slon>/<slat> to specify map scale origin.\n");
 	gmt_message (GMT, "\t   Add +f to draw a \"fancy\" scale [Default is plain].\n");
 	gmt_message (GMT, "\t   By default, the scale label equals the distance unit name and is placed on top [+at].  Use the +l<label>\n");
 	gmt_message (GMT, "\t   and +a<align> mechanisms to specify another label and placement (t,b,l,r).  For the fancy scale,\n");

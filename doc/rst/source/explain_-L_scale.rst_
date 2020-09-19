@@ -6,12 +6,12 @@
 
     Use **+w** to set scale *length* in km, or append unit from
     **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.
-    The **+c** modifier is use to control where on the map the scale applies.
+    The **+c** modifier is use to control where on a geographic map the scale applies.
     Map scale is calculated for latitude *slat* (optionally supply longitude
     *slon* for oblique projections [Default is central meridian]).
     If **+c** is not given we default to the location of the *refpoint*.
     If **+c** is given with no arguments then we select the scale origin
-    at the middle of the map.
+    to be the middle of the map.
     Change the label alignment with **+a**\ *align* (choose among
     **l**\ (eft), **r**\ (ight), **t**\ (op), and **b**\ (ottom)).
     Append **+f** to get a "fancy" scale [Default is plain].
@@ -24,9 +24,9 @@
     label (append **+l**\ *label*).
     Select **+u** to append the unit to all distance annotations along the
     scale (for the plain scale, **+u** will instead select the unit to be
-    appended to the distance length). Cartesian projections: Origin **+c** is
-    not allowed, **+f** is not allowed, and no units should be specified in **+w**.
-    You must set any Cartesian data units via **+l**.
+    appended to the distance length). Cartesian projections: Modifiers **+c** and
+    **+f** are not allowed, and no units should be appended in **+w**.
+    You ca indicate any Cartesian data units via the label in **+l**.
     For a vertical rather than horizontal Cartesian scale, append **+v**.
     **Note**: Use :term:`FONT_LABEL` to change the label font and
     :term:`FONT_ANNOT_PRIMARY`
