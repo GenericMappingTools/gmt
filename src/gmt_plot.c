@@ -5900,6 +5900,8 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 
 	if (!ms->plot) return GMT_OK;
 
+	gmt_set_refpoint (GMT, ms->refpoint);	/* Finalize reference point plot coordinates, if needed */
+
 	if (gmt_M_is_cartesian (GMT, GMT_IN))
 		bar_length_km = ms->length;	/* Just as is */
 	else {
@@ -5909,9 +5911,11 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 			return GMT_PARSE_ERROR;
 		}
 		bar_length_km = 0.001 * GMT->current.proj.m_per_unit[unit] * ms->length;	/* Now in km */
+		if (ms->origin_mode == GMT_SCALE_ORIGIN_PLACE)	/* Pick the lon/lat of the scale placement as map scale origin */
+			gmt_xy_to_geo (GMT, &ms->origin[GMT_X], &ms->origin[GMT_Y], ms->refpoint->x, ms->refpoint->y);
+		else if (ms->origin_mode == GMT_SCALE_ORIGIN_MIDDLE)	/* Pick middle of map as map scale origin */
+			gmt_xy_to_geo (GMT, &ms->origin[GMT_X], &ms->origin[GMT_Y], 0.5 * GMT->current.map.width, 0.5 * GMT->current.map.height);
 	}
-
-	gmt_set_refpoint (GMT, ms->refpoint);	/* Finalize reference point plot coordinates, if needed */
 
 	/* We will determine the scale at the point ms->origin[GMT_X], ms->origin[GMT_Y] */
 	if (gmt_M_is_dnan (ms->origin[GMT_X])) ms->origin[GMT_X] = GMT->current.proj.central_meridian;
@@ -6086,6 +6090,7 @@ void gmt_draw_vertical_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 	int form, just = PSL_ML;
 
 	gmt_set_refpoint (GMT, ms->refpoint);	/* Finalize reference point plot coordinates, if needed */
+	/* The ms->origin_mode checks only kick in for geographic plots */
 	if (ms->origin_mode == GMT_SCALE_ORIGIN_PLACE)	/* Pick the lon/lat of the scale placement as map scale origin */
 		gmt_xy_to_geo (GMT, &ms->origin[GMT_X], &ms->origin[GMT_Y], ms->refpoint->x, ms->refpoint->y);
 	else if (ms->origin_mode == GMT_SCALE_ORIGIN_MIDDLE)	/* Pick middle of map as map scale origin */

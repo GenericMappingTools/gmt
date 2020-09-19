@@ -12854,7 +12854,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 
 	/* Required modifier is +w */
 
-	ms->origin[GMT_X] = ms->origin[GMT_Y] = GMT->session.d_NaN;	/* One or both may need to set after gmt_map_setup is called */
+	if (gmt_M_is_geographic (GMT, GMT_IN)) ms->origin[GMT_X] = ms->origin[GMT_Y] = GMT->session.d_NaN;	/* One or both may need to set after gmt_map_setup is called */
 	if (gmt_get_modifier (ms->refpoint->args, 'c', string)) {	/* Specific scale origin */
 		ms->origin_mode = GMT_SCALE_ORIGIN_GIVEN;	/* Presumably we are specifying the actual origin lat/lon */
 		if (gmt_M_is_cartesian (GMT, GMT_IN))	/* No use */
