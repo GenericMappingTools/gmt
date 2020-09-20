@@ -303,17 +303,21 @@ parameters for all selected map features].</p>
 </dd>
 </dl>
 <dl id="l">
-<dt><strong>-L</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+c</strong>[<em>slon</em>/]<em>slat</em><strong>+w</strong><em>length</em>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>][<strong>+a</strong><em>align</em>][<strong>+f</strong>][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>label</em>]][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+u</strong>][<strong>+v</strong>]</dt><dd><p>Draw a simple map scale centered on the reference point specified
+<dt><strong>-L</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>length</em>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>][<strong>+a</strong><em>align</em>][<strong>+c</strong>[[<em>slon</em>/]<em>slat</em>]][<strong>+f</strong>][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>label</em>]][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+u</strong>][<strong>+v</strong>]</dt><dd><p>Draw a simple map scale centered on the reference point specified
 using one of four coordinate systems:</p>
 <p>(1) Append <strong>g</strong><em>lon</em>/<em>lat</em> for map (user) coordinates, (2)  <strong>j</strong><em>code</em> or <strong>J</strong><em>code</em> for setting
 the <em>refpoint</em> via a 2-char justification code that refers to the (invisible) projected map bounding box,
 (3) <strong>n</strong><em>xn</em>/<em>yn</em> for normalized (0-1) bounding box coordinates, or (4) <strong>x</strong><em>x</em>/<em>y</em> for plot coordinates
 (inches, cm, points, append unit).  All but <strong>x</strong> requires both <strong>-R</strong> and <strong>-J</strong> to be specified.
 You can offset the reference point via <strong>+o</strong><em>dx</em>/<em>dy</em> in the direction implied by <em>code</em> or <strong>+j</strong><em>justify</em>.</p>
-<p>Scale is calculated for latitude <em>slat</em>
-(optionally supply longitude <em>slon</em> for oblique projections [Default
-is central meridian]), <em>length</em> is in km, or append unit from
+<p>Use <strong>+w</strong> to set scale <em>length</em> in km, or append unit from
 <strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>.
+The <strong>+c</strong> modifier is use to control where on a geographic map the scale applies.
+Map scale is calculated for latitude <em>slat</em> (optionally supply longitude
+<em>slon</em> for oblique projections [Default is central meridian]).
+If <strong>+c</strong> is not given we default to the location of the <em>refpoint</em>.
+If <strong>+c</strong> is given with no arguments then we select the scale origin
+to be the middle of the map.
 Change the label alignment with <strong>+a</strong><em>align</em> (choose among
 <strong>l</strong>(eft), <strong>r</strong>(ight), <strong>t</strong>(op), and <strong>b</strong>(ottom)).
 Append <strong>+f</strong> to get a “fancy” scale [Default is plain].
@@ -326,9 +330,9 @@ justified on top of the scale [t]. Change this by giving your own
 label (append <strong>+l</strong><em>label</em>).
 Select <strong>+u</strong> to append the unit to all distance annotations along the
 scale (for the plain scale, <strong>+u</strong> will instead select the unit to be
-appended to the distance length). Cartesian projections: Origin <strong>+c</strong> is
-not required, <strong>+f</strong> is not allowed, and no units should be specified in <strong>+w</strong>.
-You must set any Cartesian data units via <strong>+l</strong>.
+appended to the distance length). Cartesian projections: Modifiers <strong>+c</strong> and
+<strong>+f</strong> are not allowed, and no units should be appended in <strong>+w</strong>.
+You ca indicate any Cartesian data units via the label in <strong>+l</strong>.
 For a vertical rather than horizontal Cartesian scale, append <strong>+v</strong>.
 <strong>Note</strong>: Use <a class="reference internal" href="gmt.conf.html#term-FONT_LABEL"><span class="xref std std-term">FONT_LABEL</span></a> to change the label font and
 <a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a>
@@ -889,7 +893,7 @@ However, it is fairly simple for most applications (see examples).</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 19, 2020.
+        Last updated on Sep 20, 2020.
       </span>
 
     </p>
