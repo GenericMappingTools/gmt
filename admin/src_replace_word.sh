@@ -22,7 +22,7 @@ TMPDIR=${TMPDIR:-/tmp}
 # 1. Find all source files with word $1 in them
 find -E src \
 	-regex '.*\.(c|h|in)' \
-	-exec grep -H $1 {} \; | \
+	-exec grep -H "$1" {} \; | \
 	awk -F: '{print $1}' | sort -u > ${TMPDIR}/$$.tmp.lis
 
 # 2. Update the files and replace $1 by $2

@@ -615,6 +615,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		/* Was both -R -J given? */
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Option -J: Requires -R as well!\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && Ctrl->F.mode == SUBPLOT_FIGURE, "Option -J: Requires -Fs to determine subplot height!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.reset_h && !GMT->common.J.active && !GMT->common.R.active[RSET], "Option -Fs: Requires -R -J to determine subplot height if specified as zero!\n");
 		if (GMT->common.J.active) {	/* Compute map height from -R -J */
 			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) n_errors++;
 			for (j = 0; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = GMT->current.map.height;
@@ -733,7 +734,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 
 	/* When gmt subplot begin is called the gmt.history file for the figure or session may have a record of -R -J -X -Y
 	 * settings.  Once the subplot begin starts we may or may not be given -R -J -X -Y arguments.  If not, then we do not
-	 * want old history settings to leak into the subplot panels.  The past history is read during sessino creation in
+	 * want old history settings to leak into the subplot panels.  The past history is read during session creation in
 	 * GMT_Create_Session so at this point it is already stored in memory.  Hence we need to reset all of that before we
 	 * parse the common and specific arguments to this module */
 
@@ -791,7 +792,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 
 		/* Determine if the subplot itself is an overlay of an existing plot */
 		sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
-		if (!access (file, F_OK)) {	/* Plot file already exists, so enter overlay mode if -X -Y nare ot set */
+		if (!access (file, F_OK)) {	/* Plot file already exists, so enter overlay mode if -X -Y are not set */
 			if (GMT->common.X.mode == 'a' && GMT->common.Y.mode == 'a')
 				xymode = 'a';
 			else {
@@ -836,7 +837,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		fluff[GMT_Y] += (Ctrl->N.dim[GMT_Y] - 1) * (Ctrl->M.margin[YLO] + Ctrl->M.margin[YHI]);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After correcting for inside subplot margins: fluff = {%g, %g}\n", fluff[GMT_X], fluff[GMT_Y]);
 
-		/* ROW SETTINGS:  Limit tickmarks to 1 or 2 W/E axes per row or per subplot */
+		/* ROW SETTINGS:  Limit tick-marks to 1 or 2 W/E axes per row or per subplot */
 		/* Note: Usually, we will tick both the west and east side of a subplot.  With -SR in effect
 		 * we will have selected either the left, right, or both end sides (i.e., the two outer subplots).
 		 * However, this can be overridden by selecting "l" and/or "r" in the general -B string which controls
@@ -918,6 +919,14 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		/* Plottable area: */
 		width  = Ctrl->F.dim[GMT_X];
 		height = Ctrl->F.dim[GMT_Y];
+		if (height <= 0.0) {
+			GMT_Report (API, GMT_MSG_ERROR, "Subplot: The height of the overall subplot cannot be zero\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (width <= 0.0) {
+			GMT_Report (API, GMT_MSG_ERROR, "Subplot: The width of the overall subplot cannot be zero\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
 		y_heading = height + y_header_off + Ctrl->M.margin[YHI];
 		//y_heading = height + y_header_off;
 		if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {	/* Lots of debug calculations and reporting here */

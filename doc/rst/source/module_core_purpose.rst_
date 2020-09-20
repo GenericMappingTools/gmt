@@ -10,7 +10,7 @@
 
 .. |blockmode_purpose| replace:: Block average (x,y,z) data tables by mode estimation
 
-.. |clear_purpose| replace:: Delete current default settings, or the cache, data or sessions directories
+.. |clear_purpose| replace:: Delete current default settings, or the cache, data, geography or sessions directories
 
 .. |dimfilter_purpose| replace:: Directional filtering of grids in the space domain
 
@@ -25,6 +25,8 @@
 .. |fitcircle_purpose| replace:: Find mean position and great [or small] circle fit to points on sphere
 
 .. |gmt2kml_purpose| replace:: Convert GMT data table to Google Earth KML file
+
+.. |gmtbinstats_purpose| replace:: Bin data and determine statistics per bin
 
 .. |gmtconnect_purpose| replace:: Connect individual lines whose end points match within tolerance
 

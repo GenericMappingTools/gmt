@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Illustrate the two different volume-flux curves
 ps=GMT_seamount_flux.ps
 gmt set FONT_ANNOT_PRIMARY 14p

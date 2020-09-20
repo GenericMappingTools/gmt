@@ -192,8 +192,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 			case 'G':	/* Set canvas color */
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
-					GMT->current.map.frame.paint = true;
-					if (gmt_getfill (GMT, opt->arg, &GMT->current.map.frame.fill)) {
+					GMT->current.map.frame.paint[GMT_Z] = true;
+					if (gmt_getfill (GMT, opt->arg, &GMT->current.map.frame.fill[GMT_Z])) {
 						gmt_fill_syntax (GMT, 'G', NULL, " ");
 						n_errors++;
 					}

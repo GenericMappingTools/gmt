@@ -1,0 +1,126 @@
+**-S**\ [*symbol*][*size*]
+    Plot individual symbols in a ternary diagram.
+    If present, *size* is symbol size in the unit set by
+    :term:`PROJ_LENGTH_UNIT` (unless **c**, **i**, or **p** is appended). If the symbol
+    code (see below) is not given it will be read from the last column in
+    the input data; this cannot be used in conjunction with binary input.
+    Optionally, append **c**, **i**, or
+    **p** to indicate that the size information in the input data is in
+    units of cm, inch, or point, respectively [Default is
+    :term:`PROJ_LENGTH_UNIT`]. **Note**: If you provide *both* size and symbol via the
+    input file you must use :term:`PROJ_LENGTH_UNIT` to indicate the unit
+    used for the symbol size or append the units to the sizes in the file.
+    If symbol sizes are expected via the third data column then you may convert
+    those values to suitable symbol sizes via the **-i** mechanism. The general
+    input expectations are:
+
+    *coordinates* [ *value* ] [ *parameters* ] [ *symbol* ]
+
+    where *coordinates* is two or three columns specifying the location of a point,
+    the optional *value* is required when **-C** is used to control color, the optional
+    *parameters* is required when no symbol size is specified, and the trailing
+    text with leading *symbol* code is required when the symbol code is not specified
+    on the command line.  **Note**: *parameters* may represent more than one *size*
+    column as some symbols require several parameters to be defined (e.g., a circle
+    just needs one column, a rectangle needs two dimensions, while an ellipse needs an
+    orientation and two dimensions, and so on); see specifics below.  When there is only
+    a single parameter we will refer to it as *size*.
+
+    The uppercase symbols **A**, **C**, **D**, **G**, **H**, **I**, **N**,
+    **S**, **T** are normalized to have the same area as a circle with
+    diameter *size*, while the *size* of the corresponding lowercase symbols
+    refers to the diameter of a circumscribed circle.
+
+    You can change symbols by adding the required **-S** option to any of
+    your multi-segment headers.
+
+    Choose between these symbol codes:
+
+    **-S-**\ *size*
+        x-dash (-). *size* is the length of a short horizontal (x-dir) line segment.
+
+    **-S+**\ *size*
+        plus (+). *size* is diameter of circumscribing circle.
+
+    **-Sa**\ *size*
+        st\ **a**\ r. *size* is diameter of circumscribing circle.
+
+    **-Sc**\ *size*
+        **c**\ ircle. *size* is diameter of circle.
+
+    **-Sd**\ *size*
+        **d**\ iamond. *size* is diameter of circumscribing circle.
+
+    **-Se**\ *direction*/*major_axis*/*minor_axis*
+        **e**\ llipse. If not given, then *direction* (in degrees counter-clockwise from horizontal),
+        *major_axis*, and *minor_axis* must be found after the location [and *value*] columns.
+        If only a single *size* is given then we plot a degenerate ellipse (circle) with given diameter.
+
+    **-Sg**\ *size*
+        octa\ **g**\ on. *size* is diameter of circumscribing circle.
+
+    **-Sh**\ *size*
+        **h**\ exagon. *size* is diameter of circumscribing circle.
+
+    **-Si**\ *size*
+        **i**\ nverted triangle. *size* is diameter of circumscribing circle.
+
+    **-Sj**\ *direction*/*width*/*height*
+        Rotated rectangle. If not given, then *direction* (in degrees counter-clockwise from
+        horizontal), *width*, and *height* must be found after the location [and *value*] columns.
+        If only a single *size* is given then we plot a degenerate rectangle (square) with given size.
+
+    **-Sk**\ *name*\ /\ *size*
+        **k**\ ustom symbol. We will look for a symbol definition file called *name*\ .def in
+        (1) the current directory, (2) in ~/.gmt or (3) in **$GMT_SHAREDIR**/custom.
+        The symbol defined in the definition file is of normalized unit size by default;
+        the appended *size* will scale the symbol accordingly. Users may create their own
+        custom \*.def files; see :ref:`Custom Symbols <Custom_symbols>`.
+        Alternatively, you can supply an EPS file instead of a \*.def file and
+        we will scale and place that graphic as a symbol.
+
+    **-Sl**\ *size*\ **+t**\ *string*\ [**+f**\ *font*][**+j**\ *justify*]
+        **l**\ etter or text string (less than 256 characters). Give size, and
+        append **+t**\ *string* after the size. Note that the size is only approximate;
+        no individual scaling is done for different characters. Remember to
+        escape special characters like \*. Optionally, you may append **+f**\ *font*
+        to select a particular font [Default is :term:`FONT_ANNOT_PRIMARY`] and
+        **+j**\ *justify* to change justification [CM].
+
+    **-Sn**\ *size*
+        pe\ **n**\ tagon. *size* is diameter of circumscribing circle.
+
+    **-Sp**
+        **p**\ oint. No size needs to be specified (1 pixel is used).
+
+    **-Sr**\ *width*/*height*
+        **r**\ ectangle. If *width*/*height* are not given, then these
+        dimensions must be found after the location [and *value*] columns.  Alternatively, append **+s**
+        and then the diagonal corner coordinates are expected after the location [and *value*] columns instead.
+
+    **-SR**\ *width*/*height*/*radius*
+        **R**\ ounded rectangle. If *width*/*height*/*radius* are not given, then the two
+        dimensions and corner radius must be found after the location [and *value*] columns.
+
+    **-Ss**\ *size*
+        **s**\ quare. *size* is diameter of circumscribing circle.
+
+    **-St**\ *size*
+        **t**\ riangle. *size* is diameter of circumscribing circle.
+
+    **-Sw**\ [*outer*\ [/*startdir*/*stopdir*]][**+i**\ [*inner*]]
+        Pie **w**\ edge. Give the outer diameter *outer*, *startdir* and *stopdir*.
+        These are directions (in degrees counter-clockwise from horizontal) for wedge.
+        Parameters not appended are read from file after the location [and *value*] columns.
+        Append **+i** and append a nonzero inner diameter *inner* or it will be read last [0].
+        Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
+        if *dr* is appended then we draw all arc lines separated radially by *dr*.
+        Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
+        if *da* is appended then we draw all radial lines separated angularly by *da*.
+        These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
+
+    **-Sx**\ *size*
+        cross (x). *size* is diameter of circumscribing circle.
+
+    **-Sy**\ *size*
+        y-dash (\|). *size* is the length of a short vertical (y-dir) line segment.

@@ -508,7 +508,8 @@ EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 	}
 	else {	/* Got a rotation file with multiple rotations in total reconstruction format */
 		double t_max = 0.0;
-		n_stages = spotter_init (GMT, Ctrl->E.rot.file, &p, 0, true, Ctrl->E.rot.invert, &t_max);
+		if ((n_stages = spotter_init (GMT, Ctrl->E.rot.file, &p, 0, true, Ctrl->E.rot.invert, &t_max)) < 0)
+			Return (-n_stages);
 		gmt_set_segmentheader (GMT, GMT_OUT, true);
 	}
 

@@ -199,7 +199,7 @@ struct GMT_GEO_IO {			/* For geographic output and plotting */
 	unsigned int range;		/* 0 for 0/360, 1 for -360/0, 2 for -180/+180 */
 	unsigned int wesn;		/* 1 if we want sign encoded with suffix W, E, S, N, 2 if also want space before letter */
 	int order[3];			/* The relative order of degree, minute, seconds in form (-ve if unused) */
-	bool decimal;			/* true if we want to use the D_FORMAT for decimal degrees only */
+	bool decimal;			/* true if we want to use the FORMAT_FLOAT_OUT for decimal degrees only */
 	bool no_sign;			/* true if we want absolute values (plot only) */
 	char x_format[GMT_LEN64];	/* Actual C format used to plot/output longitude */
 	char y_format[GMT_LEN64];	/* Actual C format used to plot/output latitude */

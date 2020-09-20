@@ -3348,7 +3348,7 @@ GMT_LOCAL int gmtmath_MADW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	wmed = gmt_median_weighted (GMT, pair, k);
 	/* 3. Compute the absolute deviations from this median */
 	for (row = 0; row < k; row++) pair[row].value = (gmt_grdfloat)fabs (pair[row].value - wmed);
-	/* 4. Find the weighted median absolue deviation */
+	/* 4. Find the weighted median absolute deviation */
 	wmad = gmt_median_weighted (GMT, pair, k);
 	gmt_M_free (GMT, pair);
 

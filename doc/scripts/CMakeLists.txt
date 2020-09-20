@@ -68,15 +68,16 @@ add_custom_target (_docs_html_scripts_fig DEPENDS ${_scripts_png} ${_scripts_pdf
 add_depend_to_target (docs_depends _docs_html_scripts_fig _docs_scripts_verbatim)
 
 # run tests
-file (GLOB _scripts_tests RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*.sh")
+file (GLOB _scripts_tests RELATIVE ${CMAKE_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*.sh")
 # GMT_-U.sh always fails
-list (REMOVE_ITEM _scripts_tests GMT_-U.sh GMT_encoding.sh gen_data_App_O.sh gen_data_dummy.sh)
+foreach (skip_test GMT_-U.sh GMT_encoding.sh gen_data_App_O.sh gen_data_dummy.sh)
+	list (REMOVE_ITEM _scripts_tests doc/scripts/${skip_test})
+endforeach()
+
 if (DO_TESTS AND BASH)
-	# this file takes care of setting up the test environment
-	configure_file (gmtest.in gmtest @ONLY)
 	foreach (_job ${_scripts_tests})
 		add_test (NAME ${_job}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			COMMAND ${BASH} gmtest ${_job})
+			COMMAND ${BASH} ${CMAKE_BINARY_DIR}/test/gmtest ${_job})
 	endforeach (_job)
 endif (DO_TESTS AND BASH)

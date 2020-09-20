@@ -40,7 +40,7 @@ Description
 -----------
 
 **makecpt** is a module that will help you make static color palette tables
-(CPTs). In classic mode we write the CMT to standard output, while under
+(CPTs). In classic mode we write the CPT to standard output, while under
 modern mode we simply save the CPT as the current session CPT (but see **-H**).
 You define an equidistant set of contour intervals or pass
 your own z-table or list, and create a new CPT based on an existing master (dynamic)
@@ -215,6 +215,7 @@ Optional Arguments
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-di.rst_
 
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
