@@ -154,7 +154,22 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *C) {	/* De
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int64_t pshistogram_get_bin (struct GMT_ARRAY *T, double x, int64_t last_bin) {
+GMT_LOCAL int64_t pshistogram_get_constant_bin (struct GMT_ARRAY *T, double x, int64_t dummy) {
+	/* Find the bin for this value of x when all bins have constant width.
+	 * If x falls outside our range then we return -1 or n
+	 * The left boundary array index == bin index. */
+	int64_t bin;
+	gmt_M_unused (dummy);
+	if (x < T->min)
+		bin = -1;
+	else if (x > T->max)
+		bin = T->n;
+	else
+		bin = (int64_t)floor ((x - T->min) / T->inc);
+	return bin;
+}
+
+GMT_LOCAL int64_t pshistogram_get_variable_bin (struct GMT_ARRAY *T, double x, int64_t last_bin) {
 	/* Find the bin for this value of x.  If x falls outside our range then
 	 * we return -1 or n.  The left boundary array index == bin index. */
 	int64_t bin = last_bin;
@@ -170,10 +185,13 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 	double w, b0, b1, count_sum;
 	uint64_t ibox, i;
 	int64_t sbox, last_box = 0, hi_bin = F->T->n - 2;
+	int64_t (*pshistogram_get_bin) (struct GMT_ARRAY *, double, int64_t);	
 
+	gmt_M_tic (GMT);
 	F->n_boxes = F->T->n - 1;	/* One less than the bin boundaries */
 	F->boxh = gmt_M_memory (GMT, NULL, F->n_boxes, double);
 	F->n_counted = 0;
+	pshistogram_get_bin = (F->T->var_inc) ? &pshistogram_get_variable_bin : &pshistogram_get_constant_bin;
 
 	/* First fill boxes with counts  */
 
@@ -248,6 +266,8 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 	}
 	else
 		F->yy1 = 0.0;
+
+	gmt_M_toc (GMT, "After filling bin array");
 
 	return (0);
 }
@@ -409,8 +429,8 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 	return (area);
 }
 
-GMT_LOCAL int pshistogram_get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, double *stats) {
-	/* Returns stats[] = L2, L1, LMS location, L2, L1, LMS scale  */
+GMT_LOCAL int pshistogram_get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, bool selected[], double *stats) {
+	/* Returns stats[] = L2, L1, LMS location, L2, L1, LMS scale as requested */
 
 	uint64_t i, j;
 	unsigned int n_multiples = 0;
@@ -418,35 +438,39 @@ GMT_LOCAL int pshistogram_get_loc_scl (struct GMT_CTRL *GMT, double *data, uint6
 
 	if (n < 3) return (-1);
 
-	gmt_sort_array (GMT, data, n, GMT_DOUBLE);
+	gmt_M_tic (GMT);	/* Initialize elapsed time */
 
-	/* Get median */
-	j = n/2;
-	stats[1] = (n%2) ? data[j] : (0.5 * (data[j] + data[j-1]));
+	if (selected[PSHISTOGRAM_L1] || selected[PSHISTOGRAM_LMS])	/* Must sort array */
+		gmt_sort_array (GMT, data, n, GMT_DOUBLE);
 
-	/* Get mode */
+	if (selected[PSHISTOGRAM_L1]) {	/* Get median */
+		j = n/2;
+		stats[1] = (n%2) ? data[j] : (0.5 * (data[j] + data[j-1]));
+		/* Get MAD for L1 */
+		gmt_getmad (GMT, data, n, stats[1], &stats[4]);
+	}
 
-	gmt_mode (GMT, data, n, j, 0, 0, &n_multiples, &stats[2]);
-	if (n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "The histogram has multiple (%d) modes (peaks)\n", n_multiples);
-
-	/* Get MAD for L1 */
-
-	gmt_getmad (GMT, data, n, stats[1], &stats[4]);
-
-	/* Get LMSscale for mode */
-
-	gmt_getmad (GMT, data, n, stats[2], &stats[5]);
+	if (selected[PSHISTOGRAM_LMS]) {	/* Get mode */
+		gmt_mode (GMT, data, n, j, 0, 0, &n_multiples, &stats[2]);
+		if (n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "The histogram has multiple (%d) modes (peaks)\n", n_multiples);
+		/* Get LMSscale for mode */
+		gmt_getmad (GMT, data, n, stats[2], &stats[5]);
+	}
 
 	/* Calculate mean and stdev in two passes to minimize risk of overflow */
 
-	stats[0] = stats[3] = 0.0;
-	for (i = 0; i < n; i++) stats[0] += data[i];	/* Sum up the data */
-	stats[0] /= n;	/* This is the mean value */
-	for (i = 0; i < n; i++) {
-		dx = data[i] - stats[0];
-		stats[3] += (dx * dx);
+	if (selected[PSHISTOGRAM_L2]) {	/* Get L2 statistics */
+		stats[0] = stats[3] = 0.0;
+		for (i = 0; i < n; i++) stats[0] += data[i];	/* Sum up the data */
+		stats[0] /= n;	/* This is the mean value */
+		for (i = 0; i < n; i++) {
+			dx = data[i] - stats[0];
+			stats[3] += (dx * dx);
+		}
+		stats[3] = sqrt (stats[3] / (n - 1));
 	}
-	stats[3] = sqrt (stats[3] / (n - 1));
+
+	gmt_M_toc (GMT, "After pshistogram_get_loc_scl");	/* Report elapsed time */
 
 	return (0);
 }
@@ -841,6 +865,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	n = 0;
 	x_min = DBL_MAX;	x_max = -DBL_MAX;
 
+	gmt_M_tic (GMT);
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
@@ -883,6 +908,8 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		Return (API->error);	/* Disables further data input */
 	}
 
+	gmt_M_toc (GMT, "Finished reading data");
+
 	if (n == 0) {
 		GMT_Report (API, GMT_MSG_ERROR, "Fatal error, read only 0 points.\n");
 		gmt_M_free (GMT, data);
@@ -893,26 +920,34 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " points read\n", n);
 
 	data = gmt_M_memory (GMT, data, n, double);
-	if (F.weights) {	/* Must use a copy since get_loc_scale sorts the array and that does not work if we have weights */
-		double *tmp = gmt_M_memory (GMT, NULL, n, double);
-		gmt_M_memcpy (tmp, data, n, double);
-		weights = gmt_M_memory (GMT, weights, n, double);
-		pshistogram_get_loc_scl (GMT, tmp, n, stats);
-		gmt_M_free (GMT, tmp);
-	}
-	else
-		pshistogram_get_loc_scl (GMT, data, n, stats);
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
-		sprintf (format, "Extreme values of the data :\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_INFORMATION, format, data[0], data[n-1]);
-		sprintf (format, "Locations: L2, L1, LMS; Scales: L2, L1, LMS\t%s\t%s\t%s\t%s\t%s\t%s\n",
-		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
-		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_INFORMATION, format, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION) || Ctrl->N.active) {	/* Must do work on the array for statistics */
+		bool mmm[3];
+		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION))
+			mmm[PSHISTOGRAM_L2] = mmm[PSHISTOGRAM_L1] = mmm[PSHISTOGRAM_LMS] = true;	/* Need to know mean, median, mode plus deviations */
+		else
+			gmt_M_memcpy (mmm, Ctrl->N.selected, 3, bool);
+		if (F.weights) {	/* Must use a copy since get_loc_scale sorts the array and that does not work if we have weights */
+			double *tmp = gmt_M_memory (GMT, NULL, n, double);
+			gmt_M_memcpy (tmp, data, n, double);
+			weights = gmt_M_memory (GMT, weights, n, double);
+			pshistogram_get_loc_scl (GMT, tmp, n, mmm, stats);
+			gmt_M_free (GMT, tmp);
+		}
+		else
+			pshistogram_get_loc_scl (GMT, data, n, mmm, stats);
+
+		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
+			sprintf (format, "Extreme values of the data :\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+			GMT_Report (API, GMT_MSG_INFORMATION, format, data[0], data[n-1]);
+			sprintf (format, "Locations: L2, L1, LMS; Scales: L2, L1, LMS\t%s\t%s\t%s\t%s\t%s\t%s\n",
+			         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+			         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+			GMT_Report (API, GMT_MSG_INFORMATION, format, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
+		}
 	}
 
-	if (F.wesn[XHI] == F.wesn[XLO]) {	/* Set automatic x range [ and tickmarks] when -R -T missing */
+	if (F.wesn[XHI] == F.wesn[XLO]) {	/* Set automatic x range [and tickmarks] when -R -T missing */
 		if (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval == 0.0) {
 			tmp = pow (10.0, floor (d_log10 (GMT, x_max-x_min)));
 			if (((x_max-x_min) / tmp) < 3.0) tmp *= 0.5;

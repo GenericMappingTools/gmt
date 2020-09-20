@@ -12852,16 +12852,15 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 
 	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "acfjlouwv", GMT_MSG_ERROR)) return (1);
 
-	/* Required modifiers +c, +w */
+	/* Required modifier is +w */
 
-	if (gmt_get_modifier (ms->refpoint->args, 'c', string)) {
-		if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* No use */
+	if (gmt_M_is_geographic (GMT, GMT_IN)) ms->origin[GMT_X] = ms->origin[GMT_Y] = GMT->session.d_NaN;	/* One or both may need to set after gmt_map_setup is called */
+	if (gmt_get_modifier (ms->refpoint->args, 'c', string)) {	/* Specific scale origin */
+		ms->origin_mode = GMT_SCALE_ORIGIN_GIVEN;	/* Presumably we are specifying the actual origin lat/lon */
+		if (gmt_M_is_cartesian (GMT, GMT_IN))	/* No use */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Not allowed for Cartesian projections\n", option);
-		}
-		else if (string[0] == '\0') {	/* Got nutin' */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  No scale [<longitude>/]<latitude> argument given to +c modifier\n", option);
-			error++;
-		}
+		else if (string[0] == '\0')	/* No argument means pick map center */
+			ms->origin_mode = GMT_SCALE_ORIGIN_MIDDLE;
 		else if (strchr (string, '/')) {	/* Got both lon and lat for scale */
 			if ((n = gmt_get_pair (GMT, string, GMT_PAIR_COORD, ms->origin)) < 2) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Failed to parse scale <longitude>/<latitude> for +c modifier\n", option);
@@ -12877,17 +12876,14 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Failed to parse scale latitude for +c modifier\n", option);
 				error++;
 			}
-			ms->origin[GMT_X] = GMT->session.d_NaN;	/* Must be set after gmt_map_setup is called */
 		}
-		if (fabs (ms->origin[GMT_Y]) > 90.0) {
+		if (ms->origin_mode == GMT_SCALE_ORIGIN_GIVEN && fabs (ms->origin[GMT_Y]) > 90.0) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Scale latitude is out of range for +c modifier\n", option);
 			error++;
 		}
 	}
-	else if ((flag & GMT_SCALE_MAP) && gmt_M_is_geographic (GMT, GMT_IN) && !vertical) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Scale origin modifier +c[<lon>/]/<lat> is required\n", option);
-		error++;
-	}
+	else	/* Pick the same location for scale origin as the placement of the scale */
+		ms->origin_mode = GMT_SCALE_ORIGIN_PLACE;
 
 	if (gmt_get_modifier (ms->refpoint->args, 'w', string)) {	/* Get bar length */
 		if (string[0] == '\0') {	/* Got nutin' */
@@ -16751,6 +16747,20 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	return GMT_NOERROR;
 }
 
+GMT_LOCAL bool gmtsupport_var_inc (double *x, uint64_t n) {
+	/* Determine if spacing in the array is variable or constant */
+	bool fixed = true;	/* Start with assumption of fixed increments */
+	uint64_t k;
+	double fix_inc;
+	if (n <= 2) return false;	/* Strange, but a single point or pair do not imply variable increment for sure */
+	fix_inc = x[1] - x[0];
+	for (k = 2; fixed && k < n; k++) {
+		if (!doubleAlmostEqual (fabs (x[k] - x[k-1]), fix_inc))
+			fixed = false;	/* Not equidistant */
+	}
+	return (!fixed);
+}
+
 unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARRAY *T, double *min, double *max) {
 	/* If min and max are not NULL then will override what T->min,max says */
 	char unit = GMT->current.setting.time_system.unit;
@@ -16786,12 +16796,14 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		T->array = gmt_M_memory (GMT, NULL, T->n, double);
 		gmt_M_memcpy (T->array, D->table[0]->segment[0]->data[GMT_X], T->n, double);
 		GMT_Destroy_Data (GMT->parent, &D);
+		T->var_inc = gmtsupport_var_inc (T->array, T->n);
 		return GMT_NOERROR;
 	}
 
 	if (T->list) {	/* Got a list, parse and make array */
 		if ((T->array = gmt_list_to_array (GMT, T->list, gmt_M_type (GMT, GMT_IN, T->col), &(T->n))) == NULL)
 			return GMT_PARSE_ERROR;
+		T->var_inc = gmtsupport_var_inc (T->array, T->n);
 		return GMT_NOERROR;
 	}
 
@@ -16874,6 +16886,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Your min/max/inc arguments resulted in no items\n", option);
 		return (GMT_PARSE_ERROR);
 	}
+	T->var_inc = gmtsupport_var_inc (T->array, T->n);
 	return (GMT_NOERROR);
 }
 

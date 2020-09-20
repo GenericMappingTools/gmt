@@ -98,21 +98,34 @@
   /k2 k1 1 add def
   /char1 PSL_word k1 get def
   /char2 PSL_word k2 get def
+  /flag2 PSL_flag k2 get def
   /w1 char1 stringwidth pop def
+  flag2 64 and 64 eq {  % We have a font change before the 2nd composite character
+    /fn2 PSL_fnt k2 get def  % Get the other font array number
+    fz PSL_fontname fn2 get Y  % Set font and size for the 2nd composite character
+  } if
   /w2 char2 stringwidth pop def
   /delta w1 w2 sub 2 div PSL_scale mul def
   delta 0.0 gt {
     /dx1 0 def
     /dx2 delta def
   }
-  { /dx1 delta neg def
+  {
+    /dx1 delta neg def
     /dx2 0 def
   } ifelse
   dx1 0 G currentpoint
-  pr_char 0 char1 PSL_show M
-  delta 0 G
-  pr_char 0 char2 ashow
-  dx2 0 G
+  flag2 64 and 64 eq {  % Must switch back to 1st composite character font and set it
+   /fn1 PSL_fnt k1 get def  % Get initial font
+    fz PSL_fontname fn1 get Y  % Set font and size
+  } if
+  pr_char 0 char1 PSL_show M  % Place first character
+  delta 0 G  % Adjust relative x to position for overprinting
+  flag2 64 and 64 eq {  % Get 2nd font again
+    fz PSL_fontname fn2 get Y  % Set font and size
+  } if
+  pr_char 0 char2 ashow  % Place 2nd character
+  dx2 0 G  % Adjust relative x to position after this composite glyph
 }!
 
 % Determine how much to expand text and also justify left/center/right

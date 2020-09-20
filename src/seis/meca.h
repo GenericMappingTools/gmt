@@ -16,20 +16,6 @@
 
 #define EPSIL 0.0001
 
-#ifndef true
-#define true 1
-#endif
-#ifndef false
-#define false 0
-#endif
-
-#ifndef M_PI_4
-#define M_PI_4          0.78539816339744830962
-#endif
-#ifndef M_PI_2
-#define M_PI_2          1.57079632679489661923
-#endif
-
 #define squared(x) ((x) * (x))
 
 struct AXIS {
