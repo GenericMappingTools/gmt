@@ -661,6 +661,7 @@ GMT_LOCAL void grdimage_grd_gray_no_intensity (struct GMT_CTRL *GMT, struct GRDI
 	int srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	uint64_t byte, kk, node;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	gmt_M_unused (Ctrl);
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> gray image with no illumination.\n");
 #ifdef _OPENMP
@@ -709,6 +710,7 @@ GMT_LOCAL void grdimage_grd_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 	int srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	uint64_t byte, kk, node;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	gmt_M_unused (Ctrl);
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 #ifdef _OPENMP
@@ -757,6 +759,7 @@ GMT_LOCAL void grdimage_grd_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 	int srow, scol, k;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	uint64_t byte, kk, node;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	gmt_M_unused (Ctrl);
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 #ifdef _OPENMP
@@ -779,6 +782,7 @@ GMT_LOCAL void grdimage_grd_color_no_intensity_CM (struct GMT_CTRL *GMT, struct 
 	int srow, scol, k, index;
 	uint64_t byte, kk, node;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	gmt_M_unused (Ctrl);
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
@@ -898,6 +902,7 @@ GMT_LOCAL void grdimage_img_gray_no_intensity (struct GMT_CTRL *GMT, struct GRDI
 	int srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	gmt_M_unused (Ctrl);
 	uint64_t byte, kk, node;
+	gmt_M_unused (GMT);
 
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk,scol,node) shared(GMT,Conf,Ctrl,image)
@@ -1037,13 +1042,13 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool nothing_inside = false, use_intensity_grid = false, got_data_tiles = false, rgb_cube_scan;
 	bool has_content, mem_G = false, mem_I = false, mem_D = false, got_z_grid = true;
 	unsigned int grid_registration = GMT_GRID_NODE_REG, try, row, col, mixed = 0;
-	uint64_t node, k, kk, byte, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
+	uint64_t node, k, kk, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
 	int error = 0, ret_val = GMT_NOERROR, ftype = GMT_NOTSET;
 
 	char *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"}, cmd[GMT_LEN256] = {""}, data_grd[GMT_VF_LEN] = {""};
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL;
 
-	double dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	double dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0;
 	double img_wesn[4], img_inc[2] = {1.0, 1.0};    /* Image increments & min/max for writing images or external interfaces */
 	double *NaN_rgb = NULL, red[4] = {1.0, 0.0, 0.0, 0.0}, black[4] = {0.0, 0.0, 0.0, 0.0}, wesn[4] = {0.0, 0.0, 0.0, 0.0};
 	double *Ix = NULL, *Iy = NULL;	/* Pointers to hold on to read-only x/y image arrays */
