@@ -122,6 +122,7 @@ struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays
 	bool reverse;	/* true if we want to reverse the array to give high to low on output */
 	bool round;	/* true if we want to adjust increment to ensure min/max range is a multiple of inc */
 	bool exact_inc;	/* true if we want the increment to be exact and to adjust min/max instead */
+	bool var_inc;	/* true if the resulting array has variable spacing */
 	bool logarithmic;	/* true if inc = 1,2,3 and we want logarithmic scale */
 	bool logarithmic2;	/* true if inc = integer and we want log2 scale */
 	bool delay[2];	/* true if min and/or max shall be set from data set extremes after read [false] */

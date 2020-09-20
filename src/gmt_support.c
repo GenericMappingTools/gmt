@@ -16747,6 +16747,20 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	return GMT_NOERROR;
 }
 
+GMT_LOCAL bool gmtsupport_var_inc (double *x, uint64_t n) {
+	/* Determine if spacing in the array is variable or constant */
+	bool fixed = true;	/* Start with assumption of fixed increments */
+	uint64_t k;
+	double fix_inc;
+	if (n <= 2) return false;	/* Strange, but a single point or pair do not imply variable increment for sure */
+	fix_inc = x[1] - x[0];
+	for (k = 2; fixed && k < n; k++) {
+		if (!doubleAlmostEqual (fabs (x[k] - x[k-1]), fix_inc))
+			fixed = false;	/* Not equidistant */
+	}
+	return (!fixed);
+}
+
 unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARRAY *T, double *min, double *max) {
 	/* If min and max are not NULL then will override what T->min,max says */
 	char unit = GMT->current.setting.time_system.unit;
@@ -16782,12 +16796,14 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		T->array = gmt_M_memory (GMT, NULL, T->n, double);
 		gmt_M_memcpy (T->array, D->table[0]->segment[0]->data[GMT_X], T->n, double);
 		GMT_Destroy_Data (GMT->parent, &D);
+		T->var_inc = gmtsupport_var_inc (T->array, T->n);
 		return GMT_NOERROR;
 	}
 
 	if (T->list) {	/* Got a list, parse and make array */
 		if ((T->array = gmt_list_to_array (GMT, T->list, gmt_M_type (GMT, GMT_IN, T->col), &(T->n))) == NULL)
 			return GMT_PARSE_ERROR;
+		T->var_inc = gmtsupport_var_inc (T->array, T->n);
 		return GMT_NOERROR;
 	}
 
@@ -16870,6 +16886,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Your min/max/inc arguments resulted in no items\n", option);
 		return (GMT_PARSE_ERROR);
 	}
+	T->var_inc = gmtsupport_var_inc (T->array, T->n);
 	return (GMT_NOERROR);
 }
 
