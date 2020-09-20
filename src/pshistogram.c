@@ -165,7 +165,7 @@ GMT_LOCAL int64_t pshistogram_get_constant_bin (struct GMT_ARRAY *T, double x, i
 	else if (x > T->max)
 		bin = T->n;
 	else
-		bin = (x - T->min) / T->inc;
+		bin = (int64_t)floor ((x - T->min) / T->inc);
 	return bin;
 }
 
