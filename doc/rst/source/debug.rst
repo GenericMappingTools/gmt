@@ -185,7 +185,7 @@ done you can proceed to installing the master GMT.jl:
 Debug GMT/MEX in Xcode on macOS
 -------------------------------
 
-**IN PROGRESS**. Because GMT/MEX involves compiling C and MEX code we have a separate Xcode project for GMT/MEX.
+**IN PROGRESS, WILL CHANGE**. Because GMT/MEX involves compiling C and MEX code we have a separate Xcode project for GMT/MEX.
 It obviously links with the GMT development libraries but here we start Xcode and place a stop point
 in gmtmex.c.  Usually this is helpful so we can step through the gmtmex_parser.c library which is
 handling the interface between Matlab data structures and GMT containers.  It also relies on the
