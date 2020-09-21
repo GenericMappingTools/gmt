@@ -125,44 +125,63 @@ Applications).  Xcode may change as versions change; the images below is for Xco
 Debug PyGMT in Xcode on macOS
 ------------------------------
 
-Install PyGMT following the official instructions:
+Install PyGMT following the official instructions (if you already have the dev version then you may just
+need to cd into your pygmt dir and call git pull):
 
-#. Add conda-forge channel
-   conda config --prepend channels conda-forge
-   **Note**: The next step is different from the PyGMT official instructions, because we want to use the GMT dev version
-   conda create --name pygmt python=3.8 pip numpy pandas xarray netcdf4 packaging
+#. Add conda-forge channel::
 
-#. Activate the pygmt environment
-   conda activate pygmt
+    conda config --prepend channels conda-forge
+    **Note**: The next step is different from the PyGMT official instructions, because we want to use the GMT dev version
+    conda create --name pygmt python=3.8 pip numpy pandas xarray netcdf4 packaging
 
-#. Install Pygmt in editable/development mode
-   cd pygmt
-   make install
+#. Activate the PyGMT environment::
 
-#. Compile GMT using Xcode
-   Tell PyGMT where to find the GMT library by setting the environmental variable GMT_LIBRARY_PATH
-   export GMT_LIBRARY_PATH=~/Gits/gmt/gmt/build/xcode/src/Debug
+    conda activate pygmt
 
-#. Open Xcode
-   Run a python console, attach the process id in Xcode, and run PyGMT codes in the Python console.
-   Set a stop point in Xcode, say in GMT_Call_Module or GMT_Create_Session and Xcode will stop at the breakpoint.
+#. Install Pygmt in editable/development mode::
+
+    cd pygmt
+    make install
+
+#. Compile GMT using Xcode (see `Xcode on macOS`_), the let $GMT_LIBRARY_PATH be set to the full path that contains the src/Debug
+   directory created by xcodebuild so that PyGMT can find it.
+
+#. Open Xcode, select scheme "gmt", navigate to gmt_api.c in the source listing, and set a stop point in the editor,
+   say in *GMT_Call_Module* or *GMT_Create_Session* and Xcode will stop at the breakpoint when it is reached.
+
+#. Run a python console, attach the process id in Xcode, and run PyGMT codes in the Python console. Execution should
+   stop at your stop point after the first GMT library call takes place from your python script. You are now in Xcode
+   and can follow strategies outlined above (`Xcode on macOS`_).
+
 
 Debug GMT.jl in Xcode on macOS
 ------------------------------
 
+**IN PROGRESS**
+
 Debug GMT/MEX in Xcode on macOS
 -------------------------------
 
-Because GMT/MEX involves compiling C and MEX code we have a separate Xcode project for GMT/MEX.
+**IN PROGRESS**. Because GMT/MEX involves compiling C and MEX code we have a separate Xcode project for GMT/MEX.
 It obviously links with the GMT development libraries but here we start Xcode and place a stop point
 in gmtmex.c.  Usually this is helpful so we can step through the gmtmex_parser.c library which is
 handling the interface between Matlab data structures and GMT containers.  It also relies on the
 GMT_Encode_Options API function to fill in implicit sources and destinations by examining Matlab's
 left and right side number of specified arguments.  Thus it is quite different from how things are
-done in PyGMT and GMT.jl.  To debug GMT/MEX you must:
+done in PyGMT and GMT.jl.  For macOS and Linux there are Makefiles to help do the steps, while for
+Windows there is a src/compile_mex.bat file.  To debug GMT/MEX you must:
+
+#. Set an environmental variable ${MATLAB} to point to the Matlab app (e.g., /Applications/MATLAB_R2019a.app).
 
 #. Checkout gmtmex from the repo, configure for Matlab, and build for Xcode.
+   git clone https://github.com/GenericMappingTools/gmtmex.git
+   cd gmtmex
    autoconf
-   configure --enable-matlab=dir --enable-debug --with-gmt-config=path
-   cd src
-   xcodebuild 
+   configure --enable-matlab --enable-debug --with-gmt-config=path-to-gmt-config-script
+   
+#. Make and make install
+   make install
+
+#. Start MATLAB (I usually do this without the java and display):
+   $MATLAB/bin/matlab -nojvm
+
