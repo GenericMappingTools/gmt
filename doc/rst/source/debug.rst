@@ -161,10 +161,10 @@ Debug GMT.jl in Xcode on macOS
 First install Julia from your distribution if you have not done so already (e.g., via brew or port).  Once that is
 done you can proceed to installing the master GMT.jl:
 
-#. Compile GMT using Xcode (see `Xcode on macOS`_), then let $GMT_LIBRARY_PATH point to the full path that contains the src/Debug
+#. Compile GMT using Xcode (see `Xcode on macOS`_), then let $GMT_LIBRARY point to the full path to the libgmt.* file in the src/Debug
    directory created by xcodebuild so that GMT.jl can find the GMT library.
 
-#. Type julia in a terminal to get a Julia console, and in that console, type::
+#. Type julia in a terminal to get a Julia console, and in that console, update to latest GMT.jl master version by typing::
 
     ]
     add GMT#master
@@ -173,11 +173,6 @@ done you can proceed to installing the master GMT.jl:
 
 #. Open Xcode, select scheme "gmt", navigate to gmt_api.c in the source listing, and set a stop point in the editor,
    say in *GMT_Call_Module* or *GMT_Create_Session* and Xcode will stop at the breakpoint when it is reached.
-
-#. Ensure we use the Xcode-built GMT library::
-
-    using Libdl
-    push!(Libdl.DL_LOAD_PATH, "$GMT_LIBRARY_PATH")
 
 #. Attach the Julia process id or name in Xcode (menu item Debug->Attach to Process by PID or Name), and run GMT.jl
    codes in the Julia console. Execution should
