@@ -149,7 +149,8 @@ need to cd into your pygmt dir and call git pull):
 #. Open Xcode, select scheme "gmt", navigate to gmt_api.c in the source listing, and set a stop point in the editor,
    say in *GMT_Call_Module* or *GMT_Create_Session* and Xcode will stop at the breakpoint when it is reached.
 
-#. Type python in the terminal to get a python console, attach the process id in Xcode, and run PyGMT codes in the Python console. Execution should
+#. Type python in the terminal to get a python console, attach the process id or name to Xcode (menu item Debug->Attach to Process by PID or Name),
+   and run PyGMT codes in the Python console. Execution should
    stop at your stop point after the first GMT library call takes place from your python script. You are now in Xcode
    and can follow strategies outlined above (`Xcode on macOS`_).
 
@@ -178,7 +179,8 @@ done you can proceed to installing the master GMT.jl:
     using Libdl
     push!(Libdl.DL_LOAD_PATH, "$GMT_LIBRARY_PATH")
 
-#. Attach the Julia process id in Xcode, and run GMT.jl codes in the Julia console. Execution should
+#. Attach the Julia process id or name in Xcode (menu item Debug->Attach to Process by PID or Name), and run GMT.jl
+   codes in the Julia console. Execution should
    stop at your stop point after the first GMT library call takes place from your Julia script. You are now in Xcode
    and can follow strategies outlined above (`Xcode on macOS`_).
 
