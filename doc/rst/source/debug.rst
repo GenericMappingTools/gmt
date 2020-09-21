@@ -143,8 +143,8 @@ need to cd into your pygmt dir and call git pull):
     cd pygmt
     make install
 
-#. Compile GMT using Xcode (see `Xcode on macOS`_), the let $GMT_LIBRARY_PATH be set to the full path that contains the src/Debug
-   directory created by xcodebuild so that PyGMT can find it.
+#. Compile GMT using Xcode (see `Xcode on macOS`_), then let $GMT_LIBRARY_PATH point to the full path that contains the src/Debug
+   directory created by xcodebuild so that PyGMT can find the GMT library.
 
 #. Open Xcode, select scheme "gmt", navigate to gmt_api.c in the source listing, and set a stop point in the editor,
    say in *GMT_Call_Module* or *GMT_Create_Session* and Xcode will stop at the breakpoint when it is reached.
@@ -157,16 +157,18 @@ need to cd into your pygmt dir and call git pull):
 Debug GMT.jl in Xcode on macOS
 ------------------------------
 
-First install Julia from your distribution if you have not done so already (, e.g. via brew or port).  Once that is
+First install Julia from your distribution if you have not done so already (e.g., via brew or port).  Once that is
 done you can proceed to installing the master GMT.jl:
 
-#. Compile GMT using Xcode (see `Xcode on macOS`_), the let $GMT_LIBRARY_PATH be set to the full path that contains the src/Debug
-   directory created by xcodebuild so that GMT.jl can find it.
+#. Compile GMT using Xcode (see `Xcode on macOS`_), then let $GMT_LIBRARY_PATH point to the full path that contains the src/Debug
+   directory created by xcodebuild so that GMT.jl can find the GMT library.
 
-#. Type julia in terminal to get a Julia console, and in the console, type::
+#. Type julia in a terminal to get a Julia console, and in that console, type::
 
     ]
     add GMT#master
+
+#. When done, end package install mode by hitting backspace.
 
 #. Open Xcode, select scheme "gmt", navigate to gmt_api.c in the source listing, and set a stop point in the editor,
    say in *GMT_Call_Module* or *GMT_Create_Session* and Xcode will stop at the breakpoint when it is reached.
