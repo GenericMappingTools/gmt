@@ -183,30 +183,3 @@ done you can proceed to installing the master GMT.jl:
    codes in the Julia console. Execution should
    stop at your stop point after the first GMT library call takes place from your Julia script. You are now in Xcode
    and can follow strategies outlined above (`Xcode on macOS`_).
-
-Debug GMT/MEX in Xcode on macOS
--------------------------------
-
-**IN PROGRESS, WILL CHANGE**. Because GMT/MEX involves compiling C and MEX code we have a separate Xcode project for GMT/MEX.
-It obviously links with the GMT development libraries but here we start Xcode and place a stop point
-in gmtmex.c.  Usually this is helpful so we can step through the gmtmex_parser.c library which is
-handling the interface between Matlab data structures and GMT containers.  It also relies on the
-GMT_Encode_Options API function to fill in implicit sources and destinations by examining Matlab's
-left and right side number of specified arguments.  Thus it is quite different from how things are
-done in PyGMT and GMT.jl.  For macOS and Linux there are Makefiles to help do the steps, while for
-Windows there is a src/compile_mex.bat file.  To debug GMT/MEX you must:
-
-#. Set an environmental variable ${MATLAB} to point to the Matlab app (e.g., /Applications/MATLAB_R2019a.app).
-
-#. Checkout gmtmex from the repo, configure for Matlab, and build for Xcode.
-   git clone https://github.com/GenericMappingTools/gmtmex.git
-   cd gmtmex
-   autoconf
-   configure --enable-matlab --enable-debug --with-gmt-config=path-to-gmt-config-script
-   
-#. Make and make install
-   make install
-
-#. Start MATLAB (I usually do this without the java and display):
-   $MATLAB/bin/matlab -nojvm
-
