@@ -149,7 +149,7 @@ need to cd into your pygmt dir and call git pull):
 #. Open Xcode, select scheme "gmt", navigate to gmt_api.c in the source listing, and set a stop point in the editor,
    say in *GMT_Call_Module* or *GMT_Create_Session* and Xcode will stop at the breakpoint when it is reached.
 
-#. Run a python console, attach the process id in Xcode, and run PyGMT codes in the Python console. Execution should
+#. Type python in the terminal to get a python console, attach the process id in Xcode, and run PyGMT codes in the Python console. Execution should
    stop at your stop point after the first GMT library call takes place from your python script. You are now in Xcode
    and can follow strategies outlined above (`Xcode on macOS`_).
 
@@ -157,7 +157,28 @@ need to cd into your pygmt dir and call git pull):
 Debug GMT.jl in Xcode on macOS
 ------------------------------
 
-**IN PROGRESS**
+First install Julia from your distribution if you have not done so already (, e.g. via brew or port).  Once that is
+done you can proceed to installing the master GMT.jl:
+
+#. Compile GMT using Xcode (see `Xcode on macOS`_), the let $GMT_LIBRARY_PATH be set to the full path that contains the src/Debug
+   directory created by xcodebuild so that GMT.jl can find it.
+
+#. Type julia in terminal to get a Julia console, and in the console, type::
+
+    ]
+    add GMT#master
+
+#. Open Xcode, select scheme "gmt", navigate to gmt_api.c in the source listing, and set a stop point in the editor,
+   say in *GMT_Call_Module* or *GMT_Create_Session* and Xcode will stop at the breakpoint when it is reached.
+
+#. Ensure we use the Xcode-built GMT library::
+
+    using Libdl
+    push!(Libdl.DL_LOAD_PATH, "$GMT_LIBRARY_PATH")
+
+#. Attach the Julia process id in Xcode, and run GMT.jl codes in the Julia console. Execution should
+   stop at your stop point after the first GMT library call takes place from your Julia script. You are now in Xcode
+   and can follow strategies outlined above (`Xcode on macOS`_).
 
 Debug GMT/MEX in Xcode on macOS
 -------------------------------
