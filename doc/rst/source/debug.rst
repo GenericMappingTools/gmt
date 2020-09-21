@@ -9,7 +9,9 @@ an issue.  Often there is a bit of detective work involved to find out where a m
 crashes and then step carefully through that section, examining variables etc., to learn
 why something fails.  This process depends on the particular debug tool one uses.  This page
 will explain the steps a developer must take to build gmt so it is suitable for your debug
-tool and how to use that tool.
+tool and how to use that tool.  **Note**: If the offending script is coming from PyGMT,
+GMT.jl, or GMT/MEX there are instructions below on how to connect your debugger to that
+process and have you land in the debugger when the script is run.
 
 Xcode on macOS
 --------------
@@ -119,3 +121,48 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    .. figure:: /_images/xcode-8.*
       :width: 100%
       :align: center
+
+Debug PyGMT in Xcode on macOS
+------------------------------
+
+Install PyGMT following the official instructions:
+
+#. Add conda-forge channel
+   conda config --prepend channels conda-forge
+   **Note**: The next step is different from the PyGMT official instructions, because we want to use the GMT dev version
+   conda create --name pygmt python=3.8 pip numpy pandas xarray netcdf4 packaging
+
+#. Activate the pygmt environment
+   conda activate pygmt
+
+#. Install Pygmt in editable/development mode
+   cd pygmt
+   make install
+
+#. Compile GMT using Xcode
+   Tell PyGMT where to find the GMT library by setting the environmental variable GMT_LIBRARY_PATH
+   export GMT_LIBRARY_PATH=~/Gits/gmt/gmt/build/xcode/src/Debug
+
+#. Open Xcode
+   Run a python console, attach the process id in Xcode, and run PyGMT codes in the Python console.
+   Set a stop point in Xcode, say in GMT_Call_Module or GMT_Create_Session and Xcode will stop at the breakpoint.
+
+Debug GMT.jl in Xcode on macOS
+------------------------------
+
+Debug GMT/MEX in Xcode on macOS
+-------------------------------
+
+Because GMT/MEX involves compiling C and MEX code we have a separate Xcode project for GMT/MEX.
+It obviously links with the GMT development libraries but here we start Xcode and place a stop point
+in gmtmex.c.  Usually this is helpful so we can step through the gmtmex_parser.c library which is
+handling the interface between Matlab data structures and GMT containers.  It also relies on the
+GMT_Encode_Options API function to fill in implicit sources and destinations by examining Matlab's
+left and right side number of specified arguments.  Thus it is quite different from how things are
+done in PyGMT and GMT.jl.  To debug GMT/MEX you must:
+
+#. Checkout gmtmex from the repo, configure for Matlab, and build for Xcode.
+   autoconf
+   configure --enable-matlab=dir --enable-debug --with-gmt-config=path
+   cd src
+   xcodebuild 
