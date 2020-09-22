@@ -26,12 +26,12 @@
 #
 
 set (SUPPL_NAME gmtmex)
-set (SUPPL_PROGS_SRCS gmtmex.c gmtmex_parser.c)
 set (SUPPL_HEADERS gmtmex.h)
-set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS})
+set (SUPPL_LIB_SRCS gmtmex_parser.c)
 set (SUPPL_EXAMPLE_FILES README.gmtmex)
 
 # install gmt/mex external function interface and driver shell script
-install (PROGRAMS gmt.m gmtmex.${MEX_EXT}
+# install (PROGRAMS gmt.m gmtmex.${MEX_EXT}
+install (PROGRAMS gmt.m
 	DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
