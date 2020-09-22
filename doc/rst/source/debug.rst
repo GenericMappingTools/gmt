@@ -125,7 +125,7 @@ Applications).  Xcode may change as versions change; the images below is for Xco
 Debug PyGMT in Xcode on macOS
 ------------------------------
 
-Install PyGMT following the official instructions (if you already have the dev version then you may just
+**Note**: Tested with Xcode 12.0.  Install PyGMT following the official instructions (if you already have the dev version then you may just
 need to cd into your pygmt dir and call git pull):
 
 #. Add conda-forge channel::
@@ -158,7 +158,7 @@ need to cd into your pygmt dir and call git pull):
 Debug GMT.jl in Xcode on macOS
 ------------------------------
 
-First install Julia from your distribution if you have not done so already (e.g., via brew or port).  Once that is
+**Note**: Tested with Xcode 11.7. First install Julia from your distribution if you have not done so already (e.g., via brew or port).  Once that is
 done you can proceed to installing the master GMT.jl:
 
 #. Compile GMT using Xcode (see `Xcode on macOS`_), then let $GMT_LIBRARY point to the full path to the libgmt.* file in the src/Debug
