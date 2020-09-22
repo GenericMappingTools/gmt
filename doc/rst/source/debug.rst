@@ -128,20 +128,19 @@ Debug PyGMT in Xcode on macOS
 **Note**: Tested with Xcode 12.0.  Install PyGMT following the official instructions at https://www.pygmt.org/dev/install.
 If you already have the dev version then you may just need to `cd` into your pygmt dir and call git pull:
 
-#. Add conda-forge channel::
+#. Add conda-forge channel and activate virtual environment (optional)::
 
     conda config --prepend channels conda-forge
     **Note**: The next step is different from the PyGMT official instructions, because we want to use the GMT dev version
     conda create --name pygmt python=3.8 pip numpy pandas xarray netcdf4 packaging
 
-#. Activate the PyGMT environment::
-
+    # Activate the PyGMT environment
     conda activate pygmt
 
 #. Install Pygmt in editable/development mode::
 
     cd pygmt
-    make install
+    pip install --editable .
 
 #. Compile GMT using Xcode (see `Xcode on macOS`_), then let $GMT_LIBRARY_PATH point to the full path that contains the src/Debug
    directory created by xcodebuild so that PyGMT can find the GMT library.
