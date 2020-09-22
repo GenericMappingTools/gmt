@@ -57,6 +57,9 @@
 #set (GMT_EXCLUDE_BLAS TRUE)
 #set (GMT_EXCLUDE_ZLIB TRUE)
 
+# Include special gmtmex supplement for the GMT/MEX toolbox [which requires MATLAB]
+#set (GMT_BUILD_GMTMEX TRUE)
+
 # ============================================================================
 # Advanced configuration begins here.  Usually it is not necessary to edit any
 # settings below.  You should know what you are doing if you do though.  Note:
@@ -246,6 +249,27 @@
 #else (HAVE_OPENMP)
 #	set (CMAKE_C_FLAGS_RELEASE "-ggdb3 -O2 -Wuninitialized")  # check uninitialized variables
 #endif (HAVE_OPENMP)
+
+#
+# Building the GMT/MEX Toolbox
+#
+# Please export an environmental variable MATLAB that points to your Matlab application
+
+if (GMT_BUILD_GMTMEX)
+	set (SUPPL_EXTRA_DIRS ${SUPPL_EXTRA_DIRS} gmtmex)
+	if (APPLE)
+		set (MATLAB "$ENV{MATLAB}")
+		set (MEX_EXT "mexmaci64")
+		set (MATLAB_MEX maci64")
+		set (MATLAB_FLAGS="-g")
+		add_definitions(-DGMT_MATLAB)
+		#set (MEX_BLD "xcrun clang -undefined error -arch x86_64 -bundle -DGMT_MATLAB ${MATLAB_FLAGS})
+		set (MEX_INC "-I${MATLAB}/extern/include")
+		set (MEX_LIB "-L${MATLAB}/bin/${MATLAB_MEX} -lmx -lmex")
+		include_directories (${MEX_INC})
+		list (APPEND GMT_OPTIONAL_LIBRARIES ${MEX_LIB})
+	endif (APPLE)
+endif (GMT_BUILD_GMTMEX)
 
 #
 # System specific tweaks
