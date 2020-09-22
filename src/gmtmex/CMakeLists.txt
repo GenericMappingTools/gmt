@@ -27,7 +27,7 @@
 
 set (SUPPL_NAME gmtmex)
 set (SUPPL_PROGS_SRCS gmtmex.c gmtmex_parser.c)
-set (SUPPL_HEADERS gmtmex_parser.h)
+set (SUPPL_HEADERS gmtmex.h)
 set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS})
 set (SUPPL_EXAMPLE_FILES README.gmtmex)
 
