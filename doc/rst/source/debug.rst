@@ -125,8 +125,8 @@ Applications).  Xcode may change as versions change; the images below is for Xco
 Debug PyGMT in Xcode on macOS
 ------------------------------
 
-**Note**: Tested with Xcode 12.0.  Install PyGMT following the official instructions (if you already have the dev version then you may just
-need to cd into your pygmt dir and call git pull):
+**Note**: Tested with Xcode 12.0.  Install PyGMT following the official instructions at https://www.pygmt.org/dev/install.
+If you already have the dev version then you may just need to `cd` into your pygmt dir and call git pull:
 
 #. Add conda-forge channel::
 
