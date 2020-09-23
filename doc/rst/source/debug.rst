@@ -137,7 +137,7 @@ If you already have the dev version then you may just need to `cd` into your pyg
     # Activate the PyGMT environment
     conda activate pygmt
 
-#. Install Pygmt in editable/development mode::
+#. Install PyGMT in editable/development mode::
 
     cd pygmt
     pip install --editable .
