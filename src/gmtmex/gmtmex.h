@@ -32,8 +32,8 @@
 #define GMTMEX_GMT_MINOR_VERSION	1
 #define GMTMEX_GMT_PATCH_VERSION	0
 
-#include "gmt.h"
-#include "gmt_version.h"
+#include "../gmt.h"
+#include "../gmt_version.h"
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>

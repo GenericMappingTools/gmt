@@ -27,11 +27,20 @@
 
 set (SUPPL_NAME gmtmex)
 set (SUPPL_HEADERS gmtmex.h)
-set (SUPPL_LIB_SRCS gmtmex_parser.c)
+#set (SUPPL_LIB_SRCS gmtmex_parser.c)
+set (GMT_LIB_SRCS ${GMT_LIB_SRCS} gmtmex_parser.c)
 set (SUPPL_EXAMPLE_FILES README.gmtmex)
+
+# Add the standalone mexFunction
+add_executable (gmtmex gmtmex.c)
+#target_link_libraries (gmtmex gmtlib ${GMT_SUPPL_LIB_NAME})
+target_link_libraries (gmtmex gmtlib)
+# Rename gmt target to prevent version clash
+set_target_properties (gmtmex PROPERTIES OUTPUT_NAME gmtmex.${MEX_EXT})
 
 # install gmt/mex external function interface and driver shell script
 # install (PROGRAMS gmt.m gmtmex.${MEX_EXT}
 install (PROGRAMS gmt.m
 	DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
+
