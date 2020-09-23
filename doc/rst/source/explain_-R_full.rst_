@@ -29,9 +29,7 @@
     **-I** is used to create the corresponding region.
     Alternatively, specify the name of an existing grid file and the
     **-R** settings (and grid spacing and registration, if applicable) are copied from
-    the grid. When **-R** is used without any further arguments, the
-    values from the last use of **-R** in a previous GMT command
-    will be used.
+    the grid.
     For calendar time coordinates you may either give (a) relative time
     (relative to the selected :term:`TIME_EPOCH` and in the selected
     :term:`TIME_UNIT`; append **t** to **-JX**\|\ **x**), or (b) absolute
@@ -51,6 +49,9 @@
     converted to the corresponding geographic (longitude, latitude)
     coordinates for the lower left and upper right corners. This form is
     convenient when you want to specify a region directly in the
-    projected units (e.g., UTM meters).  For Cartesian data in radians you
+    projected units (e.g., UTM meters).  This modifier also applies if you give
+    the region via a grid file.  **Note**: For the UTM, TM and Stereographic projections
+    we will guess the units in your grid to be meter if the domain exceeds the range of geographical
+    longitude and latitude.  For Cartesian data in radians you
     can also use [±][*s*]\ **pi**\ [*f*], for optional integer
     scales *s* and fractions *f*.
