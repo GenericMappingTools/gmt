@@ -8155,7 +8155,16 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		if (d) d[0] = '\0';
 	}
 
-	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[L|C|R][B|M|T]<x0>/<y0>/<n_columns>/<n_rows> or -R[g|d]w/e/s/n[/z0/z1][r] */
+	/* Parse the -R option.  Full syntax:
+	 * -R<west/east/south/north>
+	 * -R<LLx/LLy/URx/URy>+r
+	 * -R<xmin/xmax/ymin/ymax>[+u<unit>]
+	 * -R<grdfile>[+u<unit>]
+	 * -Rg|d as global shorthand for 0/360/-90/90 or -180/180/-90/90
+	 * -R[L|C|R][B|M|T]<x0>/<y0>/<n_columns>/<n_rows>
+	 * -R[g|d]w/e/s/n[/z0/z1][+r]
+	 */
+
 	length = strlen (item) - 1;
 	n_slash = gmt_count_char (GMT, item, '/');
 	got_r = (strstr (item, "+r") != NULL);
@@ -8224,6 +8233,14 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		return (GMT_NOERROR);
 	}
 	ptr = item;	/* To avoid compiler warning that item cannot be NULL */
+	if ((c = strstr (item, "+u"))) {	/* Got +u<unit> appended to something */
+		c[0] = '\0';	/* Chop off all modifiers so range can be determined */
+		r_unit = c[2];	/* The data unit */
+		if (gmt_M_is_linear (GMT))	/* Just scale up the values */
+			scale_coord = true;
+		else
+			inv_project = true;	/* Flag here that we already now we want to invert these units to degrees */
+	}
 	if (!gmt_M_file_is_memory (ptr) && ptr[0] == '@') {	/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, item, 0);
 	}
@@ -8236,15 +8253,17 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			if (gmt_M_is_Npole (G->header->wesn[YHI])) G->header->wesn[YHI] = +90.0;
 			if (gmt_M_is_Spole (G->header->wesn[YLO])) G->header->wesn[YLO] = -90.0;
 		}
-		if ((GMT->current.proj.projection_GMT == GMT_UTM || GMT->current.proj.projection_GMT == GMT_TM || GMT->current.proj.projection_GMT == GMT_STEREO)) {	/* Perhaps we got an [U]TM or stereographic grid? */
+		/* If we did not see +u<unit> yet above, we do allow +ue to be implicit for TM. UTM, and STEREO which often use meter grids */
+		if (!inv_project && (GMT->current.proj.projection_GMT == GMT_UTM || GMT->current.proj.projection_GMT == GMT_TM || GMT->current.proj.projection_GMT == GMT_STEREO)) {	/* Perhaps we got an [U]TM or stereographic grid? */
 			if (fabs (G->header->wesn[XLO]) > 360.0 || fabs (G->header->wesn[XHI]) > 360.0 \
 			  || fabs (G->header->wesn[YLO]) > 90.0 || fabs (G->header->wesn[YHI]) > 90.0) {	/* Yes we probably did, but cannot be sure */
 				inv_project = true;
 				r_unit = 'e';	/* Must specify the "missing" leading e for meter */
-				snprintf (string, GMT_BUFSIZ, "%.16g/%.16g/%.16g/%.16g", G->header->wesn[XLO], G->header->wesn[XHI], G->header->wesn[YLO], G->header->wesn[YHI]);
 			}
 		}
-		if (!inv_project) {	/* Got grid with degrees or regular Cartesian */
+		if (inv_project)	/* Either set explicitly via +u or implicitly via us */
+			snprintf (string, GMT_BUFSIZ, "%.16g/%.16g/%.16g/%.16g", G->header->wesn[XLO], G->header->wesn[XHI], G->header->wesn[YLO], G->header->wesn[YHI]);
+		else {	/* Got grid with degrees or regular Cartesian */
 			struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 			gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
 			if (GMT->common.R.active[ISET] == false) gmt_M_memcpy (GMT->common.R.inc, G->header->inc, 2, double);	/* Do not override settings given via -I */
@@ -8270,6 +8289,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 				return (GMT->parent->error);
 			return (GMT_NOERROR);
 		}
+		if (c) c[0] = '+';	/* Restore */
 	}
 	else if ((item[0] == 'g' || item[0] == 'd') && n_slash == 3) {	/* Here we have a region appended to -Rd|g */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Got global region (%s)\n", item);
@@ -8298,16 +8318,6 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		gmt_set_geographic (GMT, GMT_IN);
 		return (GMT_NOERROR);
 	}
-	else if ((c = strstr (item, "+u"))) {	/* Got +u<unit> */
-		c[0] = '\0';	/* Chop off all modifiers so range can be determined */
-		strncpy (string, item, GMT_BUFSIZ-1);
-		r_unit = c[2];	/* The data unit */
-		c[0] = '+';	/* Restore */
-		if (gmt_M_is_linear (GMT))	/* Just scale up the values */
-			scale_coord = true;
-		else
-			inv_project = true;
-	}
 	else if (strchr (GMT_LEN_UNITS2, item[0])) {	/* Obsolete: Specified min/max in projected distance units */
 		strncpy (string, &item[1], GMT_BUFSIZ-1);
 		r_unit = item[0];	/* The leading unit */
@@ -8322,7 +8332,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		int n_rect_read;
 		strncpy (string, item, GMT_BUFSIZ-1);	/* Try to read these as 4 limits in meters */
 		n_rect_read = sscanf (string, "%lg/%lg/%lg/%lg", &rect[XLO], &rect[XHI], &rect[YLO], &rect[YHI]);
-		if (n_rect_read == 4 && (fabs (rect[XLO]) > 360.0 || fabs (rect[XHI]) > 360.0 || fabs (rect[YLO]) > 90.0 || fabs (rect[YHI]) > 90.0)) {	/* Oh, yeah... */
+		if (!inv_project && n_rect_read == 4 && (fabs (rect[XLO]) > 360.0 || fabs (rect[XHI]) > 360.0 || fabs (rect[YLO]) > 90.0 || fabs (rect[YHI]) > 90.0)) {	/* Oh, yeah... */
 			inv_project = true;
 			r_unit = 'e';	/* Must specify the "missing" leading e for meter */
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "For a UTM or TM projection, your region %s is too large to be in degrees and thus assumed to be in meters\n", string);
