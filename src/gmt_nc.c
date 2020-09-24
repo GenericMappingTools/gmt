@@ -762,7 +762,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			}
 			else {	/* Data seems OK; determine registration and set dummy from data coordinates */
 				dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
-				if ((fabs(dummy[1] - dummy[0]) / fabs(xy[header->n_rows-1] - min) - 1.0 > 0.5 / (header->n_rows - 1)) && header->registration == GMT_GRID_NODE_REG)
+				if ((fabs(dummy[1] - dummy[0]) / fabs(xy[header->n_rows-1] - xy[0]) - 1.0 > 0.5 / (header->n_rows - 1)) && header->registration == GMT_GRID_NODE_REG)
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Guessing of registration in conflict between x and y, using %s\n", regtype[header->registration]);
 			}
 		}
