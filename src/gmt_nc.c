@@ -642,7 +642,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			if (fabs (dummy[0] - min) > threshold || fabs (dummy[1] - max) > threshold) {
 				if (gmtnc_not_obviously_global (dummy)) {
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "The x-coordinates and range attribute are in conflict; must rely on coordinates only\n");
-					dummy[0] = min, dummy[1] = max;
+					dummy[0] = xy[0], dummy[1] = xy[header->n_columns-1];
 					has_range = false;	/* Since useless information */
 					/* For registration, we have to assume that the actual range is an integer multiple of increment.
 					 * If so, then if the coordinates are off by 0.5*dx then we assume we have pixel registration */
@@ -663,8 +663,8 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 				}
 			}
 			else {	/* Data seems OK; determine registration */
-				dummy[0] = min, dummy[1] = max;
-				if (set_reg && (fabs(dummy[1] - dummy[0]) / fabs(max - min) - 1.0 > 0.5 / (header->n_columns - 1)))
+				dummy[0] = xy[0], dummy[1] = xy[header->n_columns-1];
+				if (set_reg && (fabs(dummy[1] - dummy[0]) / fabs(xy[header->n_columns-1] - xy[0]) - 1.0 > 0.5 / (header->n_columns - 1)))
 					registration = header->registration = GMT_GRID_PIXEL_REG;
 			}
 		}
@@ -736,7 +736,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			if (fabs (dummy[0] - min) > threshold || fabs (dummy[1] - max) > threshold) {
 				if (gmtnc_not_obviously_polar (dummy)) {
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "The y-coordinates and range attribute are in conflict; must rely on coordinates only\n");
-					dummy[0] = min, dummy[1] = max;
+					dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
 					has_range = false;	/* Since useless information */
 					/* Registration was set using x values, so here we just check that we get the same result.
 					 * If the coordinates are off by 0.5*dy then we assume we have pixel registration */
@@ -761,8 +761,8 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 				}
 			}
 			else {	/* Data seems OK; determine registration and set dummy from data coordinates */
-				dummy[0] = min, dummy[1] = max;
-				if ((fabs(dummy[1] - dummy[0]) / fabs(max - min) - 1.0 > 0.5 / (header->n_rows - 1)) && header->registration == GMT_GRID_NODE_REG)
+				dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
+				if ((fabs(dummy[1] - dummy[0]) / fabs(xy[header->n_rows-1] - min) - 1.0 > 0.5 / (header->n_rows - 1)) && header->registration == GMT_GRID_NODE_REG)
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Guessing of registration in conflict between x and y, using %s\n", regtype[header->registration]);
 			}
 		}
