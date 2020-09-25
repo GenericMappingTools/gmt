@@ -256,14 +256,12 @@
 # Please export an environmental variable MATLAB that points to your Matlab application
 
 if (GMT_BUILD_GMTMEX)
-	set (SUPPL_EXTRA_DIRS ${SUPPL_EXTRA_DIRS} gmtmex)
 	if (APPLE)
 		set (MATLAB "$ENV{MATLAB}")
 		set (MEX_EXT "mexmaci64")
 		set (MATLAB_MEX "maci64")
 		set (MATLAB_FLAGS="-g")
 		add_definitions(-DGMT_MATLAB)
-		#set (MEX_BLD "xcrun clang -undefined error -arch x86_64 -bundle -DGMT_MATLAB ${MATLAB_FLAGS}")
 		set (MEX_INC "${MATLAB}/extern/include")
 		set (MEX_LIB "${MATLAB}/bin/${MATLAB_MEX}/libmex.dylib")
 		set (MX_LIB "${MATLAB}/bin/${MATLAB_MEX}/libmx.dylib")

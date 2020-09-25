@@ -372,6 +372,10 @@ set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h PSL_Standard+.h
 
 set (GMT_MBSYSTEM_SRCS gmt_mbsystem_glue.c)
 
+if (GMT_BUILD_GMTMEX)
+	set (GMT_GMTMEX_SRCS gmtmex/gmtmex_parser.c gmtmex/gmtmex.c gmtmex/gmtmex.h)
+endif (GMT_BUILD_GMTMEX)
+
 # libgmt
 set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	gmt_common_runpath.h gmt_common_sighandler.c gmt_common_string.h clear.c begin.c
@@ -398,7 +402,7 @@ set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_glue.c
 	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
 	kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h
-	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS})
+	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS} ${GMT_GMTMEX_SRCS})
 
 # source codes for testing API
 if (DO_API_TESTS)
@@ -561,6 +565,20 @@ endforeach (_gmt_prog)
 
 # Rename gmt target to prevent version clash
 set_target_properties (gmt PROPERTIES OUTPUT_NAME gmt${GMT_INSTALL_NAME_SUFFIX})
+
+if (GMT_BUILD_GMTMEX)
+	# Just need to add a symbolic link with the right name to libgmt
+	set( gmtmex_link   ${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/gmtmex.${MEX_EXT})
+	set( gmtmex_target ${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/${LIB_PREFIX}gmt.${GMT_LIB_SOVERSION}.${CMAKE_SHARED_LIBRARY_SUFFIX})
+	add_custom_command ( OUTPUT ${gmtmex_link} POST_BUILD
+		COMMAND ln -s ${gmtmex_target} ${gmtmex_link}
+		DEPENDS install ${gmtmex_target} 
+		COMMENT "Generating gmtmex symbolic link")
+	# Install the driver script
+	install (PROGRAMS gmtmex/gmt.m
+		DESTINATION ${GMT_BINDIR}
+		COMPONENT Runtime)
+endif (GMT_BUILD_GMTMEX)
 
 # psldemo
 add_executable (psldemo psldemo.h psldemo.c)
