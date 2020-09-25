@@ -192,6 +192,7 @@ in the input.  It is best that the user ensures that this is the case.  GMT has 
 such as :doc:`blockmean` and others, to combine close points into single entries.
 Also, **sphdistance** has a **-D** option to determine and exclude duplicates, but
 it is a very brute-force yet exact comparision that is very slow for large data sets.
+Detection of duplicates in the STRIPACK library will exit the module.
 
 See Also
 --------
