@@ -12,7 +12,9 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt sphinterpolate** [ *table* ] |-G|\ *grdfile*
+**gmt sphinterpolate** [ *table* ]
+|-G|\ *grdfile*
+[ |-D| ]
 [ |SYN_OPT-I| ]
 [ |-Q|\ *mode*\ [*options*] ]
 [ |SYN_OPT-R| ]
@@ -54,6 +56,12 @@ Optional Arguments
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
+
+.. _-D:
+
+**-D**
+    Used to skip duplicate points since the algorithm cannot handle them.
+    [Default assumes there are no duplicates].
 
 .. _-I:
 

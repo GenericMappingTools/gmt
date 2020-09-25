@@ -439,7 +439,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -T is selected we print arc lengths instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with the binary output option.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Skip repeated input vertex at the end of a closed segment.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Delete any duplicate points [Default assumes there are no duplicates].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set distance unit arc (d)egree, m(e)ter, (f)oot, (k)m, (M)ile, (n)autical mile, or s(u)rvey foot [e].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Output filename for Delaunay or Voronoi polygon information [Store in output segment headers].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Delaunay: output is the node triplets and area (i, j, k, area).\n");

@@ -12,8 +12,10 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt sphdistance** [ *table* ] |-G|\ *grdfile*
+**gmt sphdistance** [ *table* ]
+|-G|\ *grdfile*
 [ |-C| ]
+[ |-D| ]
 [ |-E|\ **d**\|\ **n**\|\ **z**\ [*dist*] ]
 [ |SYN_OPT-I| ]
 [ |-L|\ *unit* ]
@@ -69,6 +71,12 @@ Optional Arguments
     (geographic or Cartesian 3-D vectors) at any given time, translating
     from one form to the other when necessary [Default keeps both arrays
     in memory]. Not applicable with **-Q**.
+
+.. _-D:
+
+**-D**
+    Used to skip duplicate points since the algorithm cannot handle them.
+    [Default assumes there are no duplicates].
 
 .. _-E:
 

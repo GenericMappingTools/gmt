@@ -12,9 +12,16 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt sphtriangulate** [ *table* ] [ |-A| ] [ |-C| ] [ |-D| ]
-[ |-L|\ *unit* ] [ |-N|\ *file* ] [ |-Q|\ **d**\|\ **v** ]
-[ |-T| ] [ |SYN_OPT-V| ]
+**gmt sphtriangulate**
+[ *table* ]
+[ |-A| ]
+[ |-C| ]
+[ |-D| ]
+[ |-L|\ *unit* ]
+[ |-N|\ *file* ]
+[ |-Q|\ **d**\|\ **v** ]
+[ |-T| ]
+[ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]

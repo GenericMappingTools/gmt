@@ -44,6 +44,9 @@
 #define THIS_MODULE_OPTIONS "-:RVbdehiqrs" GMT_OPT("F")
 
 struct SPHINTERPOLATE_CTRL {
+	struct SPHINTERPOLATE_D {	/* -D for variable tension */
+		bool active;
+	} D;
 	struct SPHINTERPOLATE_G {	/* -G<grdfile> */
 		bool active;
 		char *file;
@@ -92,7 +95,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "\t==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s [-D]\n", name, GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][<args>] [%s] [-T] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -104,6 +107,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Delete any duplicate points [Default assumes there are no duplicates].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Compute tension factors to achieve the following [Default is no tension]:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   p: Piecewise linear interpolation ; no tension [Default]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   l: Smooth interpolation with local gradient estimates.\n");
@@ -146,6 +150,9 @@ static int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, struct
 
 			/* Processes program-specific parameters */
 
+			case 'D':
+				Ctrl->D.active = true;
+				break;
 			case 'G':
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
@@ -286,27 +293,30 @@ EXTERN_MSC int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 
 		gmt_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);	/* Get unit vector */
 		xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];	ww[n] = in[GMT_Z];
-		/* Check for duplicates */
-		skip = false;
-		for (i = 0; !skip && i < n; i++) {
-			double c = xx[i] * xx[n] + yy[i] * yy[n] + zz[i] * zz[n];
-			if (doubleAlmostEqual (c, 1.0)) {	/* Duplicates will give a dot product of 1 */
-				if (doubleAlmostEqualZero (ww[n], ww[i])) {
-					GMT_Report (API, GMT_MSG_WARNING,
-					            "Data constraint %" PRIu64 " is identical to %" PRIu64 " and will be skipped\n", n_read, i);
-					skip = true;
-					n_skip++;
-				}
-				else {
-					GMT_Report (API, GMT_MSG_ERROR,
-					            "Data constraint %" PRIu64 " and %" PRIu64 " occupy the same location but differ"
-					            " in observation (%.12g vs %.12g)\n", n_read, i, ww[n], ww[i]);
-					n_duplicates++;
+		if (Ctrl->D.active) {	/* Check for duplicates */
+			skip = false;
+			for (i = 0; !skip && i < n; i++) {
+				double c = xx[i] * xx[n] + yy[i] * yy[n] + zz[i] * zz[n];
+				if (doubleAlmostEqual (c, 1.0)) {	/* Duplicates will give a dot product of 1 */
+					if (doubleAlmostEqualZero (ww[n], ww[i])) {
+						GMT_Report (API, GMT_MSG_WARNING,
+						            "Data constraint %" PRIu64 " is identical to %" PRIu64 " and will be skipped\n", n_read, i);
+						skip = true;
+						n_skip++;
+					}
+					else {
+						GMT_Report (API, GMT_MSG_ERROR,
+						            "Data constraint %" PRIu64 " and %" PRIu64 " occupy the same location but differ"
+						            " in observation (%.12g vs %.12g)\n", n_read, i, ww[n], ww[i]);
+						n_duplicates++;
+					}
 				}
 			}
+			n_read++;
+			if (skip) continue;	/* Current point was a duplicate of a previous point */
 		}
-		n_read++;
-		if (skip) continue;	/* Current point was a duplicate of a previous point */
+		else
+			n_read++;
 
 		if (Ctrl->Z.active) {
 			if (ww[n] < w_min) w_min = ww[n];
