@@ -81,11 +81,10 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 
 	/* Create the triangulation. Main output is (list, lptr, lend) */
 
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Call STRIPACK TRMESH subroutine...");
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Call STRIPACK TRMESH subroutine\n");
 	trmesh_ (&n, x, y, z, list, lptr, lend, &lnew, iwk, &iwk[n], ds, &ierror);
 	gmt_M_free (GMT, ds);
 	gmt_M_free (GMT, iwk);
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "OK\n");
 
 	if (ierror == -2) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "STRIPACK: Failure in TRMESH. The first 3 nodes are collinear.\n");
@@ -114,9 +113,8 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 
 	n_alloc = 2 * (n - 2);
 	T->D.tri = gmt_M_memory (GMT, NULL, TRI_NROW*n_alloc, int64_t);
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Call STRIPACK TRLIST subroutine...");
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Call STRIPACK TRLIST subroutine\n");
 	trlist_ (&n, list, lptr, lend, &nrow, &n_out, T->D.tri, &ierror);
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "OK\n");
 	T->D.n = n_out;
 
 	if (ierror) {
@@ -141,9 +139,8 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 		T->V.listc = gmt_M_memory (GMT, NULL, n_alloc, int64_t);
 		lbtri = gmt_M_memory (GMT, NULL, 6*n, int64_t);
 
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Call STRIPACK CRLIST subroutine...");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Call STRIPACK CRLIST subroutine\n");
 		crlist_ (&n, &n, x, y, z, list, lend, lptr, &lnew, lbtri, T->V.listc, &n_out, xc, yc, zc, rc, &ierror);
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "OK\n");
 		T->V.n = n_out;
 		gmt_M_free (GMT, lbtri);
 		gmt_M_free (GMT, rc);

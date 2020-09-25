@@ -12,7 +12,9 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt sphinterpolate** [ *table* ] |-G|\ *grdfile*
+**gmt sphinterpolate** [ *table* ]
+|-G|\ *grdfile*
+[ |-D| ]
 [ |SYN_OPT-I| ]
 [ |-Q|\ *mode*\ [*options*] ]
 [ |SYN_OPT-R| ]
@@ -54,6 +56,12 @@ Optional Arguments
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
+
+.. _-D:
+
+**-D**
+    Used to skip duplicate points since the algorithm cannot handle them.
+    [Default assumes there are no duplicates].
 
 .. _-I:
 
@@ -145,6 +153,16 @@ To interpolate the points in the file testdata.txt on a global 1x1
 degree grid with no tension, use::
 
     gmt sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
+
+Notes
+-----
+
+The STRIPACK algorithm and implementation expect that there are no duplicate points
+in the input.  It is best that the user ensures that this is the case.  GMT has tools,
+such as :doc:`blockmean` and others, to combine close points into single entries.
+Also, **sphinterpolate** has a **-D** option to determine and exclude duplicates, but
+it is a very brute-force yet exact comparision that is very slow for large data sets.
+Detection of duplicates in the STRIPACK library will exit the module.
 
 See Also
 --------
