@@ -450,7 +450,15 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 		if (!Ctrl->C.active) gmt_M_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
 		gmt_M_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 
-		if (n_dup) GMT_Report (API, GMT_MSG_WARNING, "Skipped %" PRIu64 " duplicate points in segments\n", n_dup);
+		if (Ctrl->D.active) {	/* Report */
+			if (n_dup)
+				GMT_Report (API, GMT_MSG_WARNING, "Skipped %" PRIu64 " duplicate points in segments\n", n_dup);
+			else
+				GMT_Report (API, GMT_MSG_INFORMATION, "No duplicate points found in the segments\n");
+		}
+		else
+			GMT_Report (API, GMT_MSG_INFORMATION, "No duplicate check performed [-D was not activated]\n");
+
 		GMT_Report (API, GMT_MSG_INFORMATION, "Do Voronoi construction using %" PRIu64 " points\n", n);
 
 		T.mode = VORONOI;

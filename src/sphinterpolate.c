@@ -337,6 +337,10 @@ EXTERN_MSC int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		}
 		Return (API->error);
 	}
+	if (Ctrl->D.active)	/* Report */
+		GMT_Report (API, GMT_MSG_INFORMATION, "No duplicate points found in the input data\n");
+	else
+		GMT_Report (API, GMT_MSG_INFORMATION, "No duplicate check performed [-D was not activated]\n");
 
 	n_alloc = n;
 	gmt_M_malloc4 (GMT, xx, yy, zz, ww, 0, &n_alloc, double);
