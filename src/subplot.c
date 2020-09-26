@@ -64,7 +64,7 @@
 #define THIS_MODULE_PURPOSE	"Manage modern mode figure subplot configuration and selection"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"JRVXY"
+#define THIS_MODULE_OPTIONS	"-JRVXY"
 
 /* Control structure for subplot */
 
