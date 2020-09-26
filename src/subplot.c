@@ -760,6 +760,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		uint64_t seg;
 		double x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
 		double *cx = NULL, *cy = NULL, *px = NULL, *py = NULL, y_heading, fluff[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, GMT_LETTER_HEIGHT = 0.736;
+		double master_scale = (GMT->current.setting.map_frame_type == GMT_IS_INSIDE) ? 0.0 : 1.0;	/* THe 0 helps wipe any dimensions outside the panel to zero */
 		char **Bx = NULL, **By = NULL, *cmd = NULL, axes[3] = {""}, Bopt[GMT_LEN256] = {""};
 		char vfile[GMT_VF_LEN] = {""}, xymode = 'r';
 		bool add_annot, no_frame = false;
@@ -786,10 +787,10 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Subplot information file exists from incomplete command and will be deleted: %s\n", file);
 			gmt_remove_file (API->GMT, file);
 		}
-		/* Compute dimensions such as ticks and distance from tick to top of annotation etc */
-		tick_height   = MAX(0,GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]);	/* Allow for axis ticks */
-		annot_height  = (GMT_LETTER_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]);	/* Allow for space between axis and annotations */
-		label_height  = (GMT_LETTER_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset);
+		/* Compute dimensions such as ticks and distance from tick to top of annotation etc for outside annotticks.  If map_frame_type is inside then 0 */
+		tick_height   = master_scale * MAX(0,GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]);	/* Allow for axis ticks */
+		annot_height  = master_scale * (GMT_LETTER_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]);	/* Allow for space between axis and annotations */
+		label_height  = master_scale * (GMT_LETTER_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset);
 		title_height = (GMT_LETTER_HEIGHT * GMT->current.setting.font_title.size / PSL_POINTS_PER_INCH) + GMT->current.setting.map_title_offset;
 		y_header_off = GMT->current.setting.map_heading_offset;
 		if (Ctrl->In.no_B) tick_height = annot_height = 0.0;	/* No tick or annotations on subplot frames */
