@@ -44,8 +44,11 @@
 #define THIS_MODULE_OPTIONS "-:RVbdehiqrs" GMT_OPT("F")
 
 struct SPHINTERPOLATE_CTRL {
-	struct SPHINTERPOLATE_D {	/* -D for variable tension */
+	struct SPHINTERPOLATE_D {	/* -D for duplicate checking */
 		bool active;
+		bool full;
+		unsigned int mode;	/* 0 is full slow search, 1 is for specific east longitude */
+		double east;	/* We will skip data with this exact longitude if -D<east> is given */
 	} D;
 	struct SPHINTERPOLATE_G {	/* -G<grdfile> */
 		bool active;
@@ -95,7 +98,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "\t==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s [-D]\n", name, GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s [-D[<east>]]\n", name, GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][<args>] [%s] [-T] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -107,7 +110,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Delete any duplicate points [Default assumes there are no duplicates].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Delete exact duplicate points [Default assumes there are no duplicates].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append <east> to exclude points with this particular longitude as repeating west.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Compute tension factors to achieve the following [Default is no tension]:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   p: Piecewise linear interpolation ; no tension [Default]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   l: Smooth interpolation with local gradient estimates.\n");
@@ -152,6 +156,12 @@ static int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, struct
 
 			case 'D':
 				Ctrl->D.active = true;
+				if (opt->arg[0]) {	/* Limited to east-duplicates */
+					Ctrl->D.mode = 1;
+					n_errors += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf_arg (GMT, opt->arg, GMT_IS_LON, false, &Ctrl->D.east), opt->arg);
+				}
+				else	/* Do full search for duplicates */
+					Ctrl->D.full = true;
 				break;
 			case 'G':
 				Ctrl->G.active = true;
@@ -214,12 +224,12 @@ static int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, struct
 
 EXTERN_MSC int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	unsigned int row, col;
-	int error = 0;
+	int error = GMT_NOERROR;
 
-	bool skip;
+	bool skip, got_N_pole = false, got_S_pole = false;
 
 	size_t n_alloc = 0;
-	uint64_t i, n = 0, ij, ij_f, n_read = 0, n_skip = 0, n_duplicates = 0;
+	uint64_t i, n = 0, ij, ij_f, n_read = 0, n_skip = 0, n_duplicates = 0, n_skip_S = 0, n_skip_N = 0, n_skip_E = 0;
 
 	double w_min, w_max, sf = 1.0, X[3];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *ww = NULL, *surfd = NULL, *in = NULL;
@@ -291,9 +301,34 @@ EXTERN_MSC int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
 
+		/* Note: We always check for and exclude repeated N or S pole points.  Depending on -D we may exclude a east = west+360 point or do a full duplicate search */
+		if (doubleAlmostEqual (in[GMT_Y], 90)) {	/* North pole point */
+			if (got_N_pole) {
+				n_skip_N++;
+				n_read++;
+				continue;
+			}
+			got_N_pole = true;
+			in[GMT_X] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+		}
+		else if (doubleAlmostEqual (in[GMT_Y], -90)) {	/* South pole point */
+			if (got_S_pole) {
+				n_skip_S++;
+				n_read++;
+				continue;
+			}
+			got_S_pole = true;
+			in[GMT_X] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+		}
+		else if (Ctrl->D.mode && doubleAlmostEqual (in[GMT_X], Ctrl->D.east)) {	/* Repeated east point */
+			n_skip_E++;
+			n_read++;
+			continue;
+		}
+		/* Here we passed the basic duplicate point test */
 		gmt_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);	/* Get unit vector */
 		xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];	ww[n] = in[GMT_Z];
-		if (Ctrl->D.active) {	/* Check for duplicates */
+		if (Ctrl->D.full) {	/* Run full check for duplicates */
 			skip = false;
 			for (i = 0; !skip && i < n; i++) {
 				double c = xx[i] * xx[n] + yy[i] * yy[n] + zz[i] * zz[n];
@@ -324,20 +359,22 @@ EXTERN_MSC int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		}
 		if (++n == n_alloc) gmt_M_malloc4 (GMT, xx, yy, zz, ww, n, &n_alloc, double);
 	} while (true);
-	if (n_skip) GMT_Report (API, GMT_MSG_WARNING, "Skipped %" PRIu64 " data constraints as duplicates\n", n_skip);
+	if (n_skip_N) GMT_Report (API, GMT_MSG_WARNING, "Skipped %" PRIu64 " North pole duplicates\n", n_skip_N);
+	if (n_skip_S) GMT_Report (API, GMT_MSG_WARNING, "Skipped %" PRIu64 " South pole duplicates\n", n_skip_S);
+	if (n_skip_E) GMT_Report (API, GMT_MSG_WARNING, "Skipped %" PRIu64 " East longitude duplicates\n", n_skip_E);
+	if (n_skip) GMT_Report (API, GMT_MSG_WARNING, "Skipped %" PRIu64 " data constraints as duplicates via -D check\n", n_skip);
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR || n_duplicates) {	/* Disables further data input */
-		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
-		gmt_M_free (GMT, zz);	gmt_M_free (GMT, ww);
 		if (n_duplicates) {
 			GMT_Report (API, GMT_MSG_ERROR,
 			            "Found %" PRIu64 " data constraint duplicates with different observation values\n", n_duplicates);
 			GMT_Report (API, GMT_MSG_ERROR,
 			            "You must reconcile duplicates before running sphinterpolate\n");
 		}
-		Return (API->error);
+		error = API->error;
+		goto free_up;
 	}
-	if (Ctrl->D.active)	/* Report */
+	if (Ctrl->D.full)	/* Report a null-result since we would already have exited above */
 		GMT_Report (API, GMT_MSG_INFORMATION, "No duplicate points found in the input data\n");
 	else
 		GMT_Report (API, GMT_MSG_INFORMATION, "No duplicate check performed [-D was not activated]\n");
@@ -357,43 +394,51 @@ EXTERN_MSC int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
 		                         GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
-		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
-		gmt_M_free (GMT, zz);	gmt_M_free (GMT, ww);
-		Return (API->error);
+		error = API->error;
+		goto free_up;
 	}
+
 	GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate output grid\n");
 	surfd = gmt_M_memory (GMT, NULL, Grid->header->nm, double);
 
 	/* Do the interpolation */
 
-	if (gmt_ssrfpack_grid (GMT, xx, yy, zz, ww, n, Ctrl->Q.mode, Ctrl->Q.value, Ctrl->T.active, Grid->header, surfd))
-		Return (GMT_RUNTIME_ERROR);
-
-	gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
-	gmt_M_free (GMT, zz);	gmt_M_free (GMT, ww);
+	if (gmt_ssrfpack_grid (GMT, xx, yy, zz, ww, n, Ctrl->Q.mode, Ctrl->Q.value, Ctrl->T.active, Grid->header, surfd)) {
+		error = GMT_RUNTIME_ERROR;
+		goto free_up;
+	}
 
 	/* Convert the doubles to gmt_grdfloat and unto the Fortran transpose order */
 
 	sf = (w_max - w_min);
 	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
-		gmt_M_free (GMT, surfd);
-		Return (API->error);
+		error = API->error;
+		goto free_up;
 	}
 	gmt_M_grd_loop (GMT, Grid, row, col, ij) {
 		ij_f = (uint64_t)col * (uint64_t)Grid->header->n_rows + (uint64_t)row;	/* Fortran index */
 		Grid->data[ij] = (gmt_grdfloat)surfd[ij_f];	/* ij is GMT C index */
 		if (Ctrl->Z.active) Grid->data[ij] *= (gmt_grdfloat)sf;
 	}
-	gmt_M_free (GMT, surfd);
 
 	/* Write solution */
 
-	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
+		error = API->error;
+		goto free_up;
+	}
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
-		Return (API->error);
+		error = API->error;
+		goto free_up;
 	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Gridding completed\n");
 
-	Return (GMT_NOERROR);
+free_up:	/* Free memory and return */
+
+	gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+	gmt_M_free (GMT, zz);	gmt_M_free (GMT, ww);
+	gmt_M_free (GMT, surfd);
+
+	Return (error);
 }
