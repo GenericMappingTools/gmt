@@ -110,8 +110,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Delete exact duplicate points [Default assumes there are no duplicates].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Delete exact duplicate points [Default deletes no duplicates except at poles].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append <east> to exclude points with this particular longitude as repeating west.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [-D with no arg does a full comprehensive duplicate check - this may be very slow].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Compute tension factors to achieve the following [Default is no tension]:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   p: Piecewise linear interpolation ; no tension [Default]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   l: Smooth interpolation with local gradient estimates.\n");
