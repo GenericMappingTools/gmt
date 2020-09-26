@@ -1109,6 +1109,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		fprintf (fp, "# ORIGIN: %g %g\n", off[GMT_X], off[GMT_Y]);
 		fprintf (fp, "# DIMENSION: %g %g\n", width, height);
 		fprintf (fp, "# PARALLEL: %d\n", Ctrl->S[GMT_Y].parallel);
+		fprintf (fp, "# INSIDE: %d\n", (GMT->current.setting.map_frame_type == GMT_IS_INSIDE) ? 1 : 0);
 		if (Ctrl->C.active) {	/* Got common gaps setting */
 			gmt_M_memcpy (GMT->current.plot.panel.gap, Ctrl->C.gap, 4, double);
 			fprintf (fp, "# GAPS: %g %g %g %g\n", Ctrl->C.gap[XLO], Ctrl->C.gap[XHI], Ctrl->C.gap[YLO], Ctrl->C.gap[YHI]);
