@@ -12939,6 +12939,8 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 				sscanf (&line[13], "%lg %lg", &P->dim[GMT_X], &P->dim[GMT_Y]);
 			else if (!strncmp (line, "# PARALLEL:", 11U))
 				P->parallel = atoi (&line[12]);
+			else if (!strncmp (line, "# INSIDE:", 9U))
+				P->inside = atoi (&line[10]);
 			else if (!strncmp (line, "# DIRECTION:", 12U))
 				sscanf (&line[13], "%d %d", &P->dir[GMT_X], &P->dir[GMT_Y]);
 			else if (!strncmp (line, "# GAPS:", 7U))
@@ -14086,6 +14088,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					else if ((opt = GMT_Make_Option (API, 'B', "0")) == NULL) return NULL;	/* Add -B0 to just draw frame */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 					GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker added -B frame option with arg %s\n", arg);
+				}
+				if (P->inside) {	/* Ensure we get inside ticks/annots */
+					GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker added --MAP_FRAME_TYPE=inside\n");
+					if ((opt = GMT_Make_Option (API, '-', "MAP_FRAME_TYPE=inside")) == NULL) return NULL;
+					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				}
 				if (!x_set) {	/* Did not specify x-axis setting either via -Bx or -B so do that now */
 					snprintf (arg, GMT_LEN256, "x%s", P->Bxannot);	/* Start with the x tick,annot,grid choices */
