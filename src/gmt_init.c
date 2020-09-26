@@ -12941,7 +12941,7 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 				P->parallel = atoi (&line[12]);
 			else if (!strncmp (line, "# INSIDE:", 9U))
 				P->inside = atoi (&line[10]);
-			else if (!strncmp (line, "# DIRECTION:", 1U))
+			else if (!strncmp (line, "# DIRECTION:", 12U))
 				sscanf (&line[13], "%d %d", &P->dir[GMT_X], &P->dir[GMT_Y]);
 			else if (!strncmp (line, "# GAPS:", 7U))
 				sscanf (&line[8], "%lg %lg %lg %lg", &P->gap[XLO], &P->gap[XHI], &P->gap[YLO], &P->gap[YHI]);
