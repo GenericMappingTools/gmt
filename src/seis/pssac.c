@@ -627,6 +627,7 @@ EXTERN_MSC int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level fun
 
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+ 	gmt_map_gridlines (GMT);	/* Lay down gridlines */
 
 	gmt_setpen (GMT, &current_pen);
 

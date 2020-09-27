@@ -623,7 +623,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
-	gmt_map_basemap (GMT);	/* Plot basemap if requested */
+ 	gmt_map_gridlines (GMT);	/* Lay down gridlines */
 
 	if (fp_symbols) { /* Here we have event symbols to plot as an overlay via a call to plot */
 		fclose (fp_symbols);	/* First close the file so symbol output is flushed */
@@ -664,6 +664,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 
 	/* Finalize plot and we are done */
 
+	gmt_map_basemap (GMT);	/* Plot basemap if requested */
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 

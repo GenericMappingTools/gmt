@@ -5497,6 +5497,36 @@ GMT_LOCAL void gmtplot_check_primary_secondary (struct GMT_CTRL *GMT) {
 	}
 }
 
+
+void gmt_map_gridlines (struct GMT_CTRL *GMT) {
+	double w, e, s, n;
+	struct PSL_CTRL *PSL= GMT->PSL;
+
+	if (GMT->current.map.frame.gridline_plotted) return;	/* Already plotted */
+	if (!GMT->common.B.active[GMT_PRIMARY] && !GMT->common.B.active[GMT_SECONDARY]) return;	/* No frame annotation/ticks/gridlines specified */
+
+	if (GMT->common.B.active[GMT_PRIMARY] && GMT->common.B.active[GMT_SECONDARY]) {
+		/* Make sure primary intervals are < than secondary intervals, otherwise we swap them */
+		gmtplot_check_primary_secondary (GMT);
+	}
+
+	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
+
+	PSL_comment (PSL, "Start of gridlines - if any\n");
+
+	PSL_setdash (PSL, NULL, 0);	/* To ensure no dashed pens are set prior */
+
+	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Temporary swap to trick justify machinery */
+
+	gmtplot_map_gridlines (GMT, PSL, w, e, s, n);	/* At most only one of these three would kick in */
+	gmtplot_map_gridcross (GMT, PSL, w, e, s, n);
+	gmtplot_map_gridticks (GMT, PSL, w, e, s, n);
+
+	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Undo temporary swap */
+
+	GMT->current.map.frame.gridline_plotted = true;	/* Since gmt_map_gridlines is called in gmt_map_basemap we flag if we already have done this step */
+}
+
 void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	unsigned int side;
 	bool clip_on = false;
@@ -5532,9 +5562,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 		clip_on = true;
 	}
 
-	gmtplot_map_gridlines (GMT, PSL, w, e, s, n);	/* At most only one of these three would kick in */
-	gmtplot_map_gridcross (GMT, PSL, w, e, s, n);
-	gmtplot_map_gridticks (GMT, PSL, w, e, s, n);
+	gmt_map_gridlines (GMT);	/* Draw gridlines/ticks if not already called directly (e.g., plot, plot3d) */
 
 	gmtplot_map_tickmarks (GMT, PSL, w, e, s, n);
 
@@ -5563,6 +5591,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	}
 
 	PSL_setcolor (PSL, GMT->current.setting.map_default_pen.rgb, PSL_IS_STROKE);
+	GMT->current.map.frame.gridline_plotted = false;	/* Undo at end in case of multi processes */
 }
 
 GMT_LOCAL bool gmtplot_z_axis_side (struct GMT_CTRL *GMT, unsigned int axis, unsigned int quadrant) {

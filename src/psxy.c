@@ -1103,14 +1103,13 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+ 	gmt_map_gridlines (GMT);	/* Lay down gridlines */
 	if (Ctrl->T.active) {	/* Honor canvas fill and box draw */
 		gmt_map_basemap (GMT);
 		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
 		Return (GMT_NOERROR);
 	}
-
-	gmt_map_basemap (GMT);	/* Lay down any gridlines before symbols */
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (gmt_contlabel_prep (GMT, &S.G, NULL)) Return (GMT_RUNTIME_ERROR);	/* Needed after map_setup */
@@ -2356,6 +2355,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	PSL_setdash (PSL, NULL, 0);
 	GMT->current.map.is_world = old_is_world;
 	if (geovector) PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
+
+	gmt_map_basemap (GMT);
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 

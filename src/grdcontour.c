@@ -1393,6 +1393,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+ 		gmt_map_gridlines (GMT);	/* Lay down gridlines */
 		if (Ctrl->contour.delay) gmt_map_basemap (GMT);	/* Must do -B here before clipping makes it not doable */
 		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 

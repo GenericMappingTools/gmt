@@ -483,6 +483,7 @@ EXTERN_MSC int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+ 	gmt_map_gridlines (GMT);	/* Lay down gridlines */
 
 	Ctrl->Z.scale = 1.0 / Ctrl->Z.scale;	/* Since we were requesting the reciprocal */
 

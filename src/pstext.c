@@ -813,6 +813,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+ 	gmt_map_gridlines (GMT);	/* Lay down gridlines */
 
 	if (Ctrl->G.mode) gmt_map_basemap (GMT);	/* Must lay down basemap before text clipping is activated, otherwise we do it at the end */
 

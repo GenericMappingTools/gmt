@@ -640,6 +640,7 @@ EXTERN_MSC int GMT_mgd77track (void *V_API, int mode, void *args) {
 	}
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+ 	gmt_map_gridlines (GMT);	/* Lay down gridlines */
 
 	gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	gmt_setpen (GMT, &Ctrl->W.pen);

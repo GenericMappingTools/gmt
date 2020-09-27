@@ -1104,6 +1104,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+ 		gmt_map_gridlines (GMT);	/* Lay down gridlines */
 		if (Ctrl->contour.delay) gmt_map_basemap (GMT);	/* If delayed clipping the basemap must be done before clipping */
 		if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 		Ctrl->contour.line_pen = Ctrl->W.pen[PEN_CONT];
