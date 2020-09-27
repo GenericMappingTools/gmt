@@ -432,7 +432,7 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 GMT_LOCAL int pshistogram_get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, bool selected[], double *stats) {
 	/* Returns stats[] = L2, L1, LMS location, L2, L1, LMS scale as requested */
 
-	uint64_t i, j;
+	uint64_t i, j = n / 2;
 	unsigned int n_multiples = 0;
 	double dx;
 
@@ -444,7 +444,6 @@ GMT_LOCAL int pshistogram_get_loc_scl (struct GMT_CTRL *GMT, double *data, uint6
 		gmt_sort_array (GMT, data, n, GMT_DOUBLE);
 
 	if (selected[PSHISTOGRAM_L1]) {	/* Get median */
-		j = n/2;
 		stats[1] = (n%2) ? data[j] : (0.5 * (data[j] + data[j-1]));
 		/* Get MAD for L1 */
 		gmt_getmad (GMT, data, n, stats[1], &stats[4]);
