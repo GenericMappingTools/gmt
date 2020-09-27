@@ -804,6 +804,23 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 		gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
 		gmt_setfill (GMT, &no_fill, 1);
 		PSL_plotsymbol (PSL, 0.0, 0.0, dim, symbol);
+		/* Lay down gridlines before histogram */
+		gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
+		off = max_radius * Ctrl->S.scale;
+		n_alpha = (GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval > 0.0) ? irint (total_arc / GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval) : -1;
+		for (k = 0; k <= n_alpha; k++) {
+			angle = k * GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval;
+			sincosd (angle, &s, &c);
+			x = max_radius * Ctrl->S.scale * c;
+			y = max_radius * Ctrl->S.scale * s;
+			PSL_plotsegment (PSL, 0.0, 0.0, x, y);
+		}
+
+		if (GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval > 0.0) {
+			n_bins = urint (max_radius / GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval);
+			for (bin = 1; bin <= n_bins; bin++)
+				PSL_plotarc (PSL, 0.0, 0.0, bin * GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval * Ctrl->S.scale, 0.0, total_arc, PSL_MOVE|PSL_STROKE);
+		}
 	}
 
 	gmt_setpen (GMT, &Ctrl->W.pen[0]);
@@ -1052,7 +1069,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 		Ctrl->L.n = strdup (GMT->current.language.cardinal_name[0][3]);
 	}
 	if ((GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) && !GMT->current.map.frame.no_frame) {
-
+#if 0
 		gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 		off = max_radius * Ctrl->S.scale;
 		n_alpha = (GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval > 0.0) ? irint (total_arc / GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval) : -1;
@@ -1069,6 +1086,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 			for (bin = 1; bin <= n_bins; bin++)
 				PSL_plotarc (PSL, 0.0, 0.0, bin * GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval * Ctrl->S.scale, 0.0, total_arc, PSL_MOVE|PSL_STROKE);
 		}
+#endif
 		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 		y = lsize + 6.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY];
 		form = gmt_setfont (GMT, &GMT->current.setting.font_title);

@@ -917,7 +917,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			switch (opt->option) {
 				case 'A' : case 'D': case 'F': case 'G': case 'K': case 'L': case 'Q': case 'T': case 'U': case 'W': case 'Z':	/* Only for grdcontour */
 					strcat (cmd2, string); break;
-				case 'B':	/* Must worry about spaces*/
+				case 'B':	/* Must worry about spaces */
 					if (strchr (opt->arg, ' ') || strchr (opt->arg, '\t')) {	/* Must place all string arguments in quotes */
 						char dup_string[GMT_LEN128] = {""};
 						grdcontour_embed_quotes (opt->arg, dup_string);
@@ -977,7 +977,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 						strcat (cmd1, string);	strcat (cmd2, string);
 					}
 					break;
-				default:	/* These arguments go into both commands (may be -p -n etc) */
+				default:	/* These arguments go into both commands (may be -p -n, --, etc) */
 					strcat (cmd1, string);	strcat (cmd2, string);
 					break;
 			}

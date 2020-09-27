@@ -771,8 +771,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	gmt_plane_perspective (GMT, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
-
-	gmt_map_basemap (GMT);
+ 	gmt_map_gridlines (GMT);	/* Lay down gridlines */
 
 	gmt_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
 #ifdef DEBUG
@@ -1977,6 +1976,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	}
 
 	if (clip_set && !S.G.delay) gmt_map_clip_off (GMT);	/* We delay map clip off if text clipping was chosen via -Sq<args:+e */
+
+	gmt_map_basemap (GMT);
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 

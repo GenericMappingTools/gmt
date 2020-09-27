@@ -873,8 +873,6 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 			n_edges = Grid->header->n_rows * (urint (ceil (Grid->header->n_columns / 16.0)));
 			edge = gmt_M_memory (GMT, NULL, n_edges, unsigned int);
 
-			if (make_plot) gmt_map_basemap (GMT);
-
 			GMT_Report (API, GMT_MSG_INFORMATION, "Tracing the clip path\n");
 
 			section = 0;
@@ -960,10 +958,12 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 					gmt_M_free (GMT, yp);
 				}
 			}
-			gmt_map_basemap (GMT);
 		}
 
-		if (make_plot) gmt_plane_perspective (GMT, -1, 0.0);
+		if (make_plot) {
+			gmt_map_basemap (GMT);
+			gmt_plane_perspective (GMT, -1, 0.0);
+		}
 
 		gmt_M_free (GMT, grd);
 		if (GMT_Destroy_Data (API, &Grid) != GMT_NOERROR) {
