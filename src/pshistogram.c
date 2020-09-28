@@ -278,29 +278,81 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 	return (0);
 }
 
+GMT_LOCAL double pshistogram_set_xy_array (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct PSHISTOGRAM_INFO *F, uint64_t ibox, double *x, double *y, double *px, double *py) {
+	/* Compute the x- and y-coordinates for this bar given bin ibox and return polygon coordinates via px, py.
+	 * We also return the mid-value of the bar for CPT lookup purposes. */
+	unsigned int i;
+	double xval, dx, off, xx, yy;
+
+	x[0] = F->T->array[ibox];
+	x[1] = F->T->array[ibox+1];
+	dx = x[1] - x[0];	/* This box width */
+	if (x[0] < F->wesn[XLO]) x[0] = F->wesn[XLO];
+	if (x[1] > F->wesn[XHI]) x[1] = F->wesn[XHI];
+	xval = 0.5 * (x[0] + x[1]);	/* Used for cpt lookup */
+	x[2] = x[1];
+	x[3] = x[0];
+	y[0] = y[1] = F->wesn[YLO];
+	if (F->hist_type == PSHISTOGRAM_LOG_COUNTS)
+		y[2] = d_log1p (GMT, F->boxh[ibox]);
+	else if (F->hist_type == PSHISTOGRAM_LOG10_COUNTS)
+		y[2] = d_log101p (GMT, F->boxh[ibox]);
+	else if (F->hist_type == PSHISTOGRAM_FREQ_PCT)
+		y[2] = (100.0 * F->boxh[ibox]) / F->sum_w;
+	else if (F->hist_type == PSHISTOGRAM_LOG_FREQ_PCT)
+		y[2] = d_log1p (GMT, 100.0 * F->boxh[ibox] / F->sum_w );
+	else if (F->hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)
+		y[2] = d_log101p (GMT, 100.0 * F->boxh[ibox] / F->sum_w );
+	else
+		y[2] = F->boxh[ibox];
+	y[3] = y[2];
+	if (Ctrl->E.active) {	/* Adjust histogram plot width [and possibly shift positions] if they are given in data units */
+		if (!Ctrl->E.w_is_dim) {	/* Must adjust this bins x-coords to have the given x-width instead */
+			/* dx is current width in x-units, shift/center to use the new width */
+			off = (dx - Ctrl->E.width) / 2.0;	/* Adjustment to center the new narrower bin */
+			x[0] += off;	x[3] += off;
+			x[1] -= off;	x[2] -= off;
+		}
+		if (Ctrl->E.do_offset && !Ctrl->E.o_is_dim) {	/* Must adjust this bins x-coords for this x-shift */
+			for (i = 0; i < 4; i++) x[i] += Ctrl->E.off;
+		}
+	}
+	/* Now convert locations to plot coordinates */
+	for (i = 0; i < 4; i++) {
+		gmt_geo_to_xy (GMT, px[i], py[i], &xx, &yy);
+		px[i] = xx;	py[i] = yy;
+	}
+	dx = px[1] - px[0];	/* Update bar width, now in plot units */
+	if (Ctrl->E.active) {	/* Adjust histogram plot width and possibly shift position if they are given in plot units (c|i|p)*/
+		if (Ctrl->E.w_is_dim) {	/* Must adjust this bins x-coords to have this x-width instead */
+			/* dx is current width in plot-units, shift/center to use the new width */
+			off = (dx - Ctrl->E.width) / 2.0;	/* Adjustment to center the new narrower bin */
+			px[0] += off;	px[3] += off;
+			px[1] -= off;	px[2] -= off;
+		}
+		if (Ctrl->E.do_offset && Ctrl->E.o_is_dim) {	/* Must adjust this bins x-coords for this shift */
+			for (i = 0; i < 4; i++) px[i] += Ctrl->E.off;
+		}
+	}
+	return (xval);
+}
+
 GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct PSHISTOGRAM_CTRL *Ctrl, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, struct PSHISTOGRAM_D *D) {
-	int i, k = 0, index, fmode = 0, label_justify;
+	int k = 0, index, fmode = 0, label_justify;
 	uint64_t ibox;
 	char label[GMT_LEN64] = {""};
-	bool first = true, stairs, flip_to_y, draw_outline, cpt;
-	double area = 0.0, rgb[4], x[4], y[4], dx, off, xx, yy, xval, label_angle = 0.0, *px = NULL, *py = NULL;
+	bool first = true, stairs = Ctrl->S.active, flip_to_y = Ctrl->A.active, draw_outline = Ctrl->W.active, cpt = Ctrl->C.active;
+	double area = 0.0, rgb[4], x[4], y[4], bin_width, xval, label_angle = 0.0, *px = NULL, *py = NULL;
 	double plot_x = 0.0, plot_y = 0.0, *xpol = NULL, *ypol = NULL;
 	struct GMT_FILL *f = NULL;
 	struct GMT_PEN *pen = &Ctrl->W.pen;
 	struct GMT_FILL *fill = &Ctrl->G.fill;
 
-	stairs = Ctrl->S.active;
-	flip_to_y = Ctrl->A.active;
-	draw_outline = Ctrl->W.active;
-	cpt = Ctrl->C.active;
-
-	if (draw_outline) gmt_setpen (GMT, pen);
-
-	if (flip_to_y) {
+	if (flip_to_y) {	/* Trick by cross-referencing x with y for horizontal bars */
 		px = y;
 		py = x;
 	}
-	else {
+	else {	/* Normal vertical bars */
 		px = x;
 		py = y;
 	}
@@ -309,72 +361,31 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 		xpol = gmt_M_memory (GMT, NULL, 2*(F->n_boxes+1), double);
 		ypol = gmt_M_memory (GMT, NULL, 2*(F->n_boxes+1), double);
 	}
+
+	if (draw_outline) gmt_setpen (GMT, pen);
+	if (!cpt)	/* Just set fill once since constant for all bars */
+		gmt_setfill (GMT, fill, draw_outline);
+
 	/* First lay down the bars or curve */
 	for (ibox = 0; ibox < F->n_boxes; ibox++) {
 		if (stairs || F->boxh[ibox]) {
-			x[0] = F->T->array[ibox];
-			x[1] = F->T->array[ibox+1];
-			dx = x[1] - x[0];	/* This box width */
-			if (x[0] < F->wesn[XLO]) x[0] = F->wesn[XLO];
-			if (x[1] > F->wesn[XHI]) x[1] = F->wesn[XHI];
-			xval = 0.5 * (x[0] + x[1]);	/* Used for cpt lookup */
-			x[2] = x[1];
-			x[3] = x[0];
-			y[0] = y[1] = F->wesn[YLO];
-			if (F->hist_type == PSHISTOGRAM_LOG_COUNTS)
-				y[2] = d_log1p (GMT, F->boxh[ibox]);
-			else if (F->hist_type == PSHISTOGRAM_LOG10_COUNTS)
-				y[2] = d_log101p (GMT, F->boxh[ibox]);
-			else if (F->hist_type == PSHISTOGRAM_FREQ_PCT)
-				y[2] = (100.0 * F->boxh[ibox]) / F->sum_w;
-			else if (F->hist_type == PSHISTOGRAM_LOG_FREQ_PCT)
-				y[2] = d_log1p (GMT, 100.0 * F->boxh[ibox] / F->sum_w );
-			else if (F->hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)
-				y[2] = d_log101p (GMT, 100.0 * F->boxh[ibox] / F->sum_w );
-			else
-				y[2] = F->boxh[ibox];
-			y[3] = y[2];
+			bin_width = F->T->array[ibox+1] - F->T->array[ibox];
 			if (F->cumulative)
 				area = F->boxh[ibox];	/* Just pick up the final bin as it has the entire sum */
-			else
-				area += dx * F->boxh[ibox];
+			else	/* Add up as we go along */
+				area += bin_width * F->boxh[ibox];
+			xval = pshistogram_set_xy_array (GMT, Ctrl, F, ibox, x, y, px, py);	/* Get polygon coordinates for this bar in plot units */
 
-			if (Ctrl->E.active) {	/* Adjust histogram plot width and possibly shift position if they are in the data units */
-				if (!Ctrl->E.w_is_dim) {	/* Must adjust this bins x-coords to have this x-width */
-					/* dx is current width in x-units, shift/center to use the new width */
-					off = (dx - Ctrl->E.width) / 2.0;	/* Adjustment to center the new narrower bin */
-					x[0] += off;	x[3] += off;
-					x[1] -= off;	x[2] -= off;
-				}
-				if (Ctrl->E.do_offset && !Ctrl->E.o_is_dim) {	/* Must adjust this bins x-coords for this shift */
-					for (i = 0; i < 4; i++) x[i] += Ctrl->E.off;
-				}
-			}
-			/* Now convert locations to plot coordinates */
-			for (i = 0; i < 4; i++) {
-				gmt_geo_to_xy (GMT, px[i], py[i], &xx, &yy);
-				px[i] = xx;	py[i] = yy;
-			}
-			if (Ctrl->E.active) {	/* Adjust histogram plot width and possibly shift position if they are in plot units */
-				if (Ctrl->E.w_is_dim) {	/* Must adjust this bins x-coords to have this x-width */
-					/* dx is current width in x-units, shift/center to use the new width */
-					off = ((px[1] - px[0]) - Ctrl->E.width) / 2.0;	/* Adjustment to center the new narrower bin */
-					px[0] += off;	px[3] += off;
-					px[1] -= off;	px[2] -= off;
-				}
-				if (Ctrl->E.do_offset && Ctrl->E.o_is_dim) {	/* Must adjust this bins x-coords for this shift */
-					for (i = 0; i < 4; i++) px[i] += Ctrl->E.off;
-				}
-			}
-			if (stairs) {
-				if (first) {
+			if (stairs) {	/* Need to build up the full cumulative polygon one step at the time */
+				if (first) {	/* Initialization of start point */
 					first = false;
 					xpol[k] = px[0];	ypol[k++] = py[0];
 				}
 				xpol[k] = px[3];	ypol[k++] = py[3];
 				xpol[k] = px[2];	ypol[k++] = py[2];
+				/* The final polygon will be plotted after the loop */
 			}
-			else if (cpt) {
+			else if (cpt) {	/* Each bar will have a unique color based on its value */
 				index = gmt_get_rgb_from_z (GMT, P, xval, rgb);
 				f = gmt_M_get_cptslice_pattern (P,index);
 				if (f)	/* Pattern */
@@ -383,22 +394,13 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 					PSL_setfill (PSL, rgb, draw_outline);
 				PSL_plotpolygon (PSL, px, py, 4);
 			}
-			else {
-				gmt_setfill (GMT, fill, draw_outline);
+			else
 				PSL_plotpolygon (PSL, px, py, 4);
-			}
 		}
 	}
-	if (stairs && F->n_boxes) {
+	if (stairs && F->n_boxes) {	/* Finalize cumulative polygon and plot it */
 		xpol[k] = px[1];	ypol[k++] = py[1];
-		if (fill) {
-			gmt_setfill (GMT, fill, 0);
-			PSL_plotpolygon (PSL, xpol, ypol, k);
-		}
-		if (draw_outline) {
-			gmt_setfill (GMT, NULL, 1);
-			PSL_plotpolygon (PSL, xpol, ypol, k);
-		}
+		PSL_plotpolygon (PSL, xpol, ypol, k);
 		gmt_M_free (GMT, xpol);
 		gmt_M_free (GMT, ypol);
 	}
@@ -418,32 +420,7 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 		}
 		for (ibox = 0; ibox < F->n_boxes; ibox++) {
 			if (stairs || F->boxh[ibox] > 0.0) {
-				x[0] = F->T->array[ibox];
-				x[1] = F->T->array[ibox+1];
-				if (x[0] < F->wesn[XLO]) x[0] = F->wesn[XLO];
-				if (x[1] > F->wesn[XHI]) x[1] = F->wesn[XHI];
-				x[2] = x[1];
-				x[3] = x[0];
-				y[0] = y[1] = F->wesn[YLO];
-				if (F->hist_type == PSHISTOGRAM_LOG_COUNTS)
-					y[2] = d_log1p (GMT, F->boxh[ibox]);
-				else if (F->hist_type == PSHISTOGRAM_LOG10_COUNTS)
-					y[2] = d_log101p (GMT, F->boxh[ibox]);
-				else if (F->hist_type == PSHISTOGRAM_FREQ_PCT)
-					y[2] = (100.0 * F->boxh[ibox]) / F->sum_w;
-				else if (F->hist_type == PSHISTOGRAM_LOG_FREQ_PCT)
-					y[2] = d_log1p (GMT, 100.0 * F->boxh[ibox] / F->sum_w );
-				else if (F->hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)
-					y[2] = d_log101p (GMT, 100.0 * F->boxh[ibox] / F->sum_w );
-				else
-					y[2] = F->boxh[ibox];
-				y[3] = y[2];
-
-				for (i = 0; i < 4; i++) {
-					gmt_geo_to_xy (GMT, px[i], py[i], &xx, &yy);
-					px[i] = xx;	py[i] = yy;
-				}
-
+				(void)pshistogram_set_xy_array (GMT, Ctrl, F, ibox, x, y, px, py);	/* Get polygon coordinates for this bar in plot units */
 				/* Place label */
 				if (flip_to_y) {
 					plot_y = 0.5 * (py[0] + py[1]);
