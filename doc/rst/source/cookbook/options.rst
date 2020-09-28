@@ -278,7 +278,7 @@ Map frame and axes annotations: The **-B** option
 
 This is potentially the most complicated option in GMT,
 but most examples of its usage are actually quite simple. We distinguish
-between to sets of information: Frame settings and Axes parameters.  These
+between two sets of information: Frame settings and Axes parameters.  These
 are set separately by their own **-B** invocations; hence multiple **-B**
 specifications may be specified. The frame settings covers things such
 as which axes should be plotted, canvas fill, plot title, and what type
