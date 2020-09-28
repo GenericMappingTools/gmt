@@ -293,6 +293,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		else {	/* Default to go to next subplot */
 			Ctrl->In.row = 0;
 			Ctrl->In.next = true;
+			if (opt) opt = opt->previous;	/* Since we will advance below */
 		}
 		Ctrl->In.mode = SUBPLOT_SET;
 	}
