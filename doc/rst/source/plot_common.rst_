@@ -94,7 +94,9 @@ Optional Arguments
     used we can control how the look-up color is applied to our symbol.
     Append **+cf** to use it to fill the symbol, while **+cl** will just
     set the error pen color and turn off symbol fill.  Giving **+c** will
-    set both color items.
+    set both color items.  **Note**: The error bars are placed behind symbols
+    except for the large vertical and horizontal bar symbols (**-Sb**\|\ **B**)
+    where they are plotted on top to avoid the lower bounds to be obscured.
 
 .. _-F:
 
