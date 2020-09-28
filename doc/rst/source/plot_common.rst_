@@ -96,7 +96,7 @@ Optional Arguments
     set the error pen color and turn off symbol fill.  Giving **+c** will
     set both color items.  **Note**: The error bars are placed behind symbols
     except for the large vertical and horizontal bar symbols (**-Sb**\|\ **B**)
-    where they are plotted on top to avoid the lower bounds to be obscured.
+    where they are plotted on top to avoid the lower bounds being obscured.
 
 .. _-F:
 
