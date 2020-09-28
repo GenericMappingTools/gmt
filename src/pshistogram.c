@@ -30,7 +30,7 @@
 #define THIS_MODULE_PURPOSE	"Calculate and plot histograms"
 #define THIS_MODULE_KEYS	"<D{,CC(,>X},>D),>DI"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhilpqstxy" GMT_OPT("Ec")
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhilpqstxy" GMT_OPT("c")
 
 /* Note: The NEEDS must be JR.  Although pshistogram can create a region from data, it
  * does so indirectly by building the histogram and setting the ymin/ymax that way, NOT by
@@ -56,6 +56,12 @@ struct PSHISTOGRAM_CTRL {
 		struct GMT_FONT font;
 		double offset;
 	} D;
+	struct PSHISTOGRAM_E {	/* -E<width>[u][+o<off>[u]] */
+		bool active;
+		bool do_offset, w_is_dim, o_is_dim;
+		double width;
+		double off;
+	} E;
 	struct PSHISTOGRAM_F {	/* -F */
 		bool active;
 	} F;
@@ -272,14 +278,21 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 	return (0);
 }
 
-GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, bool stairs, bool flip_to_y, bool draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, bool cpt, struct PSHISTOGRAM_D *D) {
+GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct PSHISTOGRAM_CTRL *Ctrl, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, struct PSHISTOGRAM_D *D) {
 	int i, k = 0, index, fmode = 0, label_justify;
 	uint64_t ibox;
 	char label[GMT_LEN64] = {""};
-	bool first = true;
-	double area = 0.0, rgb[4], x[4], y[4], dx, xx, yy, xval, label_angle = 0.0, *px = NULL, *py = NULL;
+	bool first = true, stairs, flip_to_y, draw_outline, cpt;
+	double area = 0.0, rgb[4], x[4], y[4], dx, off, xx, yy, xval, label_angle = 0.0, *px = NULL, *py = NULL;
 	double plot_x = 0.0, plot_y = 0.0, *xpol = NULL, *ypol = NULL;
 	struct GMT_FILL *f = NULL;
+	struct GMT_PEN *pen = &Ctrl->W.pen;
+	struct GMT_FILL *fill = &Ctrl->G.fill;
+
+	stairs = Ctrl->S.active;
+	flip_to_y = Ctrl->A.active;
+	draw_outline = Ctrl->W.active;
+	cpt = Ctrl->C.active;
 
 	if (draw_outline) gmt_setpen (GMT, pen);
 
@@ -326,11 +339,33 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 			else
 				area += dx * F->boxh[ibox];
 
+			if (Ctrl->E.active) {	/* Adjust histogram plot width and possibly shift position if they are in the data units */
+				if (!Ctrl->E.w_is_dim) {	/* Must adjust this bins x-coords to have this x-width */
+					/* dx is current width in x-units, shift/center to use the new width */
+					off = (dx - Ctrl->E.width) / 2.0;	/* Adjustment to center the new narrower bin */
+					x[0] += off;	x[3] += off;
+					x[1] -= off;	x[2] -= off;
+				}
+				if (Ctrl->E.do_offset && !Ctrl->E.o_is_dim) {	/* Must adjust this bins x-coords for this shift */
+					for (i = 0; i < 4; i++) x[i] += Ctrl->E.off;
+				}
+			}
+			/* Now convert locations to plot coordinates */
 			for (i = 0; i < 4; i++) {
 				gmt_geo_to_xy (GMT, px[i], py[i], &xx, &yy);
 				px[i] = xx;	py[i] = yy;
 			}
-
+			if (Ctrl->E.active) {	/* Adjust histogram plot width and possibly shift position if they are in plot units */
+				if (Ctrl->E.w_is_dim) {	/* Must adjust this bins x-coords to have this x-width */
+					/* dx is current width in x-units, shift/center to use the new width */
+					off = ((px[1] - px[0]) - Ctrl->E.width) / 2.0;	/* Adjustment to center the new narrower bin */
+					px[0] += off;	px[3] += off;
+					px[1] -= off;	px[2] -= off;
+				}
+				if (Ctrl->E.do_offset && Ctrl->E.o_is_dim) {	/* Must adjust this bins x-coords for this shift */
+					for (i = 0; i < 4; i++) px[i] += Ctrl->E.off;
+				}
+			}
 			if (stairs) {
 				if (first) {
 					first = false;
@@ -510,7 +545,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s -T[<min>/<max>/]<inc>[+n] [-A] [%s] [-C<cpt>] [-D[+b][+f<font>][+o<off>][+r]]\n", name, GMT_Jx_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F] [-G<fill>] [-I[o|O]] %s[-Ll|h|b] [-N[<mode>][+p<pen>]] %s%s[-Q[r]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E<width>[+o<offset>]] [-F] [-G<fill>] [-I[o|O]] %s[-Ll|h|b] [-N[<mode>][+p<pen>]] %s%s[-Q[r]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s]\n\t[%s] [-W<pen>] [%s] [%s] [-Z[0-5][+w]]\n", GMT_Rx_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", API->c_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -532,6 +567,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   +f<font> sets the label font [FONT_ANNOT_PRIMARY]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +o sets the offset <off> between bar and label [6p]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +r rotates the label to be vertical [horizontal]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Use custom bar <width> and optionally <offset>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   By default, the bar width is implicitly set via -T and the offset is zero.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append desired bar width in data units, or append a valid unit (%s) for a fixed width.\n", GMT_DIM_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Via +o, add an offset in data units, or append a valid unit (%s) for a fixed offset [0].\n", GMT_DIM_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t-F The bin boundaries given should be considered bin centers instead.\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Select color/pattern for columns.");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Inquire about min/max x and y.  No plotting is done.\n");
@@ -575,6 +614,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 
 	unsigned int n_errors = 0, n_files = 0, mode = 0, pos = 0;
 	int sval;
+	size_t L;
 	char *c = NULL, *l_arg = NULL, *t_arg = NULL, *w_arg = NULL, p[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -622,6 +662,30 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					}
 				}
+				break;
+			case 'E':	/* Alternative histogram bar width */
+				Ctrl->E.active = true;
+				if ((c = strstr (opt->arg, "+o"))) {	/* Asking for offset */
+					Ctrl->E.do_offset = true;
+					L = strlen (c);
+					if (strchr (GMT_DIM_UNITS, c[L-1])) {	/* In plot-dimension unit */
+						Ctrl->E.off = gmt_M_to_inch (GMT, &c[2]);
+						Ctrl->E.o_is_dim = true;
+					}
+					else
+						Ctrl->E.off = atof (&c[2]);	/* In data units */
+					c[0] = '\0';	/* Chop off the modifier */
+				}
+				if (opt->arg[0]) {	/* Gave a different bar width */
+					L = strlen (opt->arg);
+					if (strchr (GMT_DIM_UNITS, opt->arg[L-1])) {	/* In plot-dimension unit */
+						Ctrl->E.width = gmt_M_to_inch (GMT, opt->arg);
+						Ctrl->E.w_is_dim = true;
+					}
+					else
+						Ctrl->E.width = atof (opt->arg);	/* In data units */
+				}
+				if (c) c[0] = '+';	/* Restore the modifier */
 				break;
 			case 'F':
 				Ctrl->F.active = true;
@@ -762,6 +826,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->T.T.vartime, "Option -F: Cannot be used with variable time bin widths\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Option -T: Must specify bin width\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->E.active, "Option -S: Cannot be used with -E\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->I.active && !gmt_M_is_linear (GMT), "Option -J: Only linear projection supported.\n");
 
 	/* Now must specify either fill color with -G or outline pen with -W */
@@ -1195,7 +1260,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	if (Ctrl->D.just == 0) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
-	area = pshistogram_plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->W.active, &Ctrl->W.pen, &Ctrl->G.fill, Ctrl->C.active, &Ctrl->D);
+	area = pshistogram_plot_boxes (GMT, PSL, Ctrl, P, &F, &Ctrl->D);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Area under histogram is %g\n", area);
 
 	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we use 101 points to do so */
