@@ -353,11 +353,11 @@ EXTERN_MSC int GMT_kml2gmt (void *V_API, int mode, void *args) {
 		n_features++;
 	}
 	if (fp != stdin) fclose (fp);
+	gmt_M_free (GMT, Out);
+	gmt_M_free (GMT, line);
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
-	gmt_M_free (GMT, Out);
-	gmt_M_free (GMT, line);
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Found %u features with selected geometry\n", n_features);
 

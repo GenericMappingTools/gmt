@@ -1774,6 +1774,8 @@ int64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *
 		}
 		if (line[0] != '>') {	/* Trouble */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No segment header found [line %" PRIu64 "]\n", rec_no);
+			x2sys_free_list (GMT, trk_list, n_tracks);
+			x2sys_free_list (GMT, ignore, n_ignore);
 			return (-GMT_RUNTIME_ERROR);
 		}
 		n_items = sscanf (&line[2], "%s %d %s %d %s %s", trk[0], &year[0], trk[1], &year[1], info[0], info[1]);

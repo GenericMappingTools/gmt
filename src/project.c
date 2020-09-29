@@ -943,6 +943,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 		/* Now output generated track */
 
 		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)P.n_outputs, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			gmt_M_free (GMT, p_data);
 			gmt_M_free (GMT, Out);
 			if (Ctrl->Z.active) gmt_M_str_free (z_header);
 			Return (error);
