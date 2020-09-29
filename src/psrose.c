@@ -758,7 +758,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	if (!Ctrl->S.normalize) Ctrl->S.scale /= max_radius;
 
 	/* Must redo any automatically set intervals via -Bag is junk, so the wesn passed to gmt_map_setup had no angles, we must rerun them */ 
-	/* The factor of 2 is a bit ad-hoc but yields graticules that are more squa8e than otherwise */
+	/* The factor of 2 is a bit ad-hoc but yields graticules that are more square than otherwise */
 	f = (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].generated) ? 1.0 : 2.0;
 	GMT->common.R.wesn[XLO] = -f*max_radius;	GMT->common.R.wesn[XHI] = f*max_radius;
 	GMT->common.R.wesn[YLO] = 0.0;				GMT->common.R.wesn[YHI] = 360.0;
