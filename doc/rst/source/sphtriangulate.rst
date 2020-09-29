@@ -12,9 +12,16 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt sphtriangulate** [ *table* ] [ |-A| ] [ |-C| ] [ |-D| ]
-[ |-L|\ *unit* ] [ |-N|\ *file* ] [ |-Q|\ **d**\|\ **v** ]
-[ |-T| ] [ |SYN_OPT-V| ]
+**gmt sphtriangulate**
+[ *table* ]
+[ |-A| ]
+[ |-C| ]
+[ |-D| ]
+[ |-L|\ *unit* ]
+[ |-N|\ *file* ]
+[ |-Q|\ **d**\|\ **v** ]
+[ |-T| ]
+[ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -166,6 +173,16 @@ in the header record, try
    ::
 
     gmt sphtriangulate globalnodes.txt -Qd -A > global_tri.txt
+
+Notes
+-----
+
+The STRIPACK algorithm and implementation expect that there are no duplicate points
+in the input.  It is best that the user ensures that this is the case.  GMT has tools,
+such as :doc:`blockmean` and others, to combine close points into single entries.
+Also, **sphtriangulate** has a **-D** option to determine and exclude duplicates, but
+it is a very brute-force yet exact comparision that is very slow for large data sets.
+Detection of duplicates in the STRIPACK library will exit the module.
 
 See Also
 --------

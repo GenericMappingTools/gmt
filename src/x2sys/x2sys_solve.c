@@ -29,8 +29,6 @@
  *
  */
 
-/* #define DEBUGX */	/* Uncomment for testing */
-
 #include "gmt_dev.h"
 #include "mgd77/mgd77.h"
 #include "x2sys.h"
@@ -155,7 +153,6 @@ GMT_LOCAL double x2syssolve_basis_siny2 (double **P, unsigned int which, uint64_
 GMT_LOCAL double x2syssolve_basis_z (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on value c*f = c*z : z */
 	return (P[COL_Z1+which][row]);
 }
-
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_SOLVE_CTRL *C;
@@ -282,7 +279,6 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GM
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
-
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
@@ -596,6 +592,7 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	normalize = (Ctrl->E.mode == F_IS_DRIFT_T || Ctrl->E.mode == F_IS_DRIFT_D);	/* Only when the linear drift term is in effect */
 	if (normalize) {	/* For numerical stability, normalize distances or times to fall in 0-1 range */
+		char *type = (Ctrl->E.mode == F_IS_DRIFT_T) ? "times" : "distances";
 		min_extent = DBL_MAX;	max_extent = -DBL_MAX;
 		j = (Ctrl->E.mode == F_IS_DRIFT_T) ? COL_T1 : COL_D1;	/* Which variable we are working on */
 		for (k = 0; k < n_COE; k++) {
@@ -606,6 +603,7 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		}
 		range = max_extent - min_extent;
 		for (k = 0; k < n_COE; k++) for (i = 0; i < 2; i++) data[j+i][k] /= range;	/* Get normalized time or distance */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Normalized all %s by dividing with the maximum range = %g\n", type, range);
 	}
 
 	/* Estimate old weighted mean and std.dev */
@@ -711,7 +709,7 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 				}
 			}
 			else
-				GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " tracks form a single connected cluster\n", n);
+				GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " tracks form a single connected cluster\n", n_tracks);
 		}
 	}
 
@@ -759,12 +757,15 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Matrix equation N * a = b: (N = %" PRIu64 " x %" PRIu64 ")\n", m, m);
 
-#ifdef DEBUGX
-	for (i = 0; i < m; i++) {
-		for (j = 0; j < m; j++) GMT_Message (API, GMT_TIME_NONE, "%8.2f\t", N[i*m+j]);
-		GMT_Message (API, GMT_TIME_NONE, "\t%8.2f\n", b[i]);
+	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {
+		char format1[GMT_LEN64] = {""}, format2[GMT_LEN64] = {""};
+		sprintf (format1, "%s\t", GMT->current.setting.format_float_out);
+		sprintf (format2, "\t%s\n", GMT->current.setting.format_float_out);
+		for (i = 0; i < m; i++) {
+			for (j = 0; j < m; j++) GMT_Message (API, GMT_TIME_NONE, format1, N[i*m+j]);
+			GMT_Message (API, GMT_TIME_NONE, format2, b[i]);
+		}
 	}
-#endif
 
 	/* Get LS solution */
 
@@ -798,9 +799,7 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 			Sx += (data[COL_WW][k] * e_k);
 			Sxx += (data[COL_WW][k] * e_k * e_k);
 		}
-#ifdef DEBUGX
-		GMT_Message (API, GMT_TIME_NONE, "COE # %d: Before: %g After: %g\n", k, data[COL_COE][k], e_k);
-#endif
+		GMT_Report (API, GMT_MSG_DEBUG, "COE # %d: Before: %g After: %g\n", k, data[COL_COE][k], e_k);
 	}
 	if (Ctrl->W.unweighted_stats) Sw = (double)n_COE;
 	new_mean = Sx / Sw;

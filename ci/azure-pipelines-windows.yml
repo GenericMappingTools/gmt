@@ -7,7 +7,7 @@ steps:
 # To rebuild the cache, you have to change the date in the key list
 - task: Cache@2
   inputs:
-    key: $(Agent.OS) | vcpkg | 20200422
+    key: $(Agent.OS) | vcpkg | 20200905
     path: $(VCPKG_INSTALLATION_ROOT)/installed/
     cacheHitVar: CACHE_VCPKG_RESTORED
   displayName: Cache vcpkg libraries
@@ -18,13 +18,14 @@ steps:
     cd ${VCPKG_INSTALLATION_ROOT}
     git fetch --tags
     git tag
-    git checkout tags/2020.04
+    git checkout tags/2020.07
+    # bootstrap-vcpkg.bat
     # By default, vcpkg builds both release and debug configurations.
     # Set VCPKG_BUILD_TYPE to build release only to save half time
     echo 'set (VCPKG_BUILD_TYPE release)' >> ${VCPKG_INSTALLATION_ROOT}/triplets/${WIN_PLATFORM}.cmake
     cat ${VCPKG_INSTALLATION_ROOT}/triplets/${WIN_PLATFORM}.cmake
     # install libraries
-    vcpkg install netcdf-c gdal pcre fftw3[core,threads] clapack openblas --triplet ${WIN_PLATFORM}
+    vcpkg install netcdf-c gdal pcre2 fftw3[core,threads] clapack openblas --triplet ${WIN_PLATFORM}
   displayName: Install dependencies via vcpkg
   env:
     WIN_PLATFORM: "x64-windows"
@@ -46,7 +47,7 @@ steps:
 - bash: |
     set -x -e
     choco install ninja
-    choco install ghostscript
+    choco install ghostscript --version 9.50
   displayName: Install dependencies via chocolatey
 
 - bash: |

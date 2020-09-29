@@ -49,9 +49,6 @@
 
     var url = window.location.href,
         new_url = patch_url(url, selected);
-    console.log("OK");
-    console.log(new_url);
-    console.log(url);
 
     if (new_url != url) {
       // check beforehand if url exists, else redirect to version's start page

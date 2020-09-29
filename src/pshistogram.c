@@ -30,7 +30,7 @@
 #define THIS_MODULE_PURPOSE	"Calculate and plot histograms"
 #define THIS_MODULE_KEYS	"<D{,CC(,>X},>D),>DI"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhipqstxy" GMT_OPT("Ec")
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhilpqstxy" GMT_OPT("c")
 
 /* Note: The NEEDS must be JR.  Although pshistogram can create a region from data, it
  * does so indirectly by building the histogram and setting the ymin/ymax that way, NOT by
@@ -56,6 +56,12 @@ struct PSHISTOGRAM_CTRL {
 		struct GMT_FONT font;
 		double offset;
 	} D;
+	struct PSHISTOGRAM_E {	/* -E<width>[u][+o<off>[u]] */
+		bool active;
+		bool do_offset, w_is_dim, o_is_dim;
+		double width;
+		double off;
+	} E;
 	struct PSHISTOGRAM_F {	/* -F */
 		bool active;
 	} F;
@@ -154,7 +160,22 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *C) {	/* De
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int64_t pshistogram_get_bin (struct GMT_ARRAY *T, double x, int64_t last_bin) {
+GMT_LOCAL int64_t pshistogram_get_constant_bin (struct GMT_ARRAY *T, double x, int64_t dummy) {
+	/* Find the bin for this value of x when all bins have constant width.
+	 * If x falls outside our range then we return -1 or n
+	 * The left boundary array index == bin index. */
+	int64_t bin;
+	gmt_M_unused (dummy);
+	if (x < T->min)
+		bin = -1;
+	else if (x > T->max)
+		bin = T->n;
+	else
+		bin = (int64_t)floor ((x - T->min) / T->inc);
+	return bin;
+}
+
+GMT_LOCAL int64_t pshistogram_get_variable_bin (struct GMT_ARRAY *T, double x, int64_t last_bin) {
 	/* Find the bin for this value of x.  If x falls outside our range then
 	 * we return -1 or n.  The left boundary array index == bin index. */
 	int64_t bin = last_bin;
@@ -170,10 +191,13 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 	double w, b0, b1, count_sum;
 	uint64_t ibox, i;
 	int64_t sbox, last_box = 0, hi_bin = F->T->n - 2;
+	int64_t (*pshistogram_get_bin) (struct GMT_ARRAY *, double, int64_t);	
 
+	gmt_M_tic (GMT);
 	F->n_boxes = F->T->n - 1;	/* One less than the bin boundaries */
 	F->boxh = gmt_M_memory (GMT, NULL, F->n_boxes, double);
 	F->n_counted = 0;
+	pshistogram_get_bin = (F->T->var_inc) ? &pshistogram_get_variable_bin : &pshistogram_get_constant_bin;
 
 	/* First fill boxes with counts  */
 
@@ -249,25 +273,86 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 	else
 		F->yy1 = 0.0;
 
+	gmt_M_toc (GMT, "After filling bin array");
+
 	return (0);
 }
 
-GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, bool stairs, bool flip_to_y, bool draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, bool cpt, struct PSHISTOGRAM_D *D) {
-	int i, k = 0, index, fmode = 0, label_justify;
+GMT_LOCAL double pshistogram_set_xy_array (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct PSHISTOGRAM_INFO *F, uint64_t ibox, double *x, double *y, double *px, double *py) {
+	/* Compute the x- and y-coordinates for this bar given bin ibox and return polygon coordinates via px, py.
+	 * We also return the mid-value of the bar for CPT lookup purposes. */
+	unsigned int i;
+	double xval, dx, off, xx, yy;
+
+	x[0] = F->T->array[ibox];
+	x[1] = F->T->array[ibox+1];
+	dx = x[1] - x[0];	/* This box width */
+	if (x[0] < F->wesn[XLO]) x[0] = F->wesn[XLO];
+	if (x[1] > F->wesn[XHI]) x[1] = F->wesn[XHI];
+	xval = 0.5 * (x[0] + x[1]);	/* Used for cpt lookup */
+	x[2] = x[1];
+	x[3] = x[0];
+	y[0] = y[1] = F->wesn[YLO];
+	if (F->hist_type == PSHISTOGRAM_LOG_COUNTS)
+		y[2] = d_log1p (GMT, F->boxh[ibox]);
+	else if (F->hist_type == PSHISTOGRAM_LOG10_COUNTS)
+		y[2] = d_log101p (GMT, F->boxh[ibox]);
+	else if (F->hist_type == PSHISTOGRAM_FREQ_PCT)
+		y[2] = (100.0 * F->boxh[ibox]) / F->sum_w;
+	else if (F->hist_type == PSHISTOGRAM_LOG_FREQ_PCT)
+		y[2] = d_log1p (GMT, 100.0 * F->boxh[ibox] / F->sum_w );
+	else if (F->hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)
+		y[2] = d_log101p (GMT, 100.0 * F->boxh[ibox] / F->sum_w );
+	else
+		y[2] = F->boxh[ibox];
+	y[3] = y[2];
+	if (Ctrl->E.active) {	/* Adjust histogram plot width [and possibly shift positions] if they are given in data units */
+		if (!Ctrl->E.w_is_dim) {	/* Must adjust this bins x-coords to have the given x-width instead */
+			/* dx is current width in x-units, shift/center to use the new width */
+			off = (dx - Ctrl->E.width) / 2.0;	/* Adjustment to center the new narrower bin */
+			x[0] += off;	x[3] += off;
+			x[1] -= off;	x[2] -= off;
+		}
+		if (Ctrl->E.do_offset && !Ctrl->E.o_is_dim) {	/* Must adjust this bins x-coords for this x-shift */
+			for (i = 0; i < 4; i++) x[i] += Ctrl->E.off;
+		}
+	}
+	/* Now convert locations to plot coordinates */
+	for (i = 0; i < 4; i++) {
+		gmt_geo_to_xy (GMT, px[i], py[i], &xx, &yy);
+		px[i] = xx;	py[i] = yy;
+	}
+	dx = px[1] - px[0];	/* Update bar width, now in plot units */
+	if (Ctrl->E.active) {	/* Adjust histogram plot width and possibly shift position if they are given in plot units (c|i|p)*/
+		if (Ctrl->E.w_is_dim) {	/* Must adjust this bins x-coords to have this x-width instead */
+			/* dx is current width in plot-units, shift/center to use the new width */
+			off = (dx - Ctrl->E.width) / 2.0;	/* Adjustment to center the new narrower bin */
+			px[0] += off;	px[3] += off;
+			px[1] -= off;	px[2] -= off;
+		}
+		if (Ctrl->E.do_offset && Ctrl->E.o_is_dim) {	/* Must adjust this bins x-coords for this shift */
+			for (i = 0; i < 4; i++) px[i] += Ctrl->E.off;
+		}
+	}
+	return (xval);
+}
+
+GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct PSHISTOGRAM_CTRL *Ctrl, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, struct PSHISTOGRAM_D *D) {
+	int k = 0, index, fmode = 0, label_justify;
 	uint64_t ibox;
 	char label[GMT_LEN64] = {""};
-	bool first = true;
-	double area = 0.0, rgb[4], x[4], y[4], dx, xx, yy, xval, label_angle = 0.0, *px = NULL, *py = NULL;
+	bool first = true, stairs = Ctrl->S.active, flip_to_y = Ctrl->A.active, draw_outline = Ctrl->W.active, cpt = Ctrl->C.active;
+	double area = 0.0, rgb[4], x[4], y[4], bin_width, xval, label_angle = 0.0, *px = NULL, *py = NULL;
 	double plot_x = 0.0, plot_y = 0.0, *xpol = NULL, *ypol = NULL;
 	struct GMT_FILL *f = NULL;
+	struct GMT_PEN *pen = &Ctrl->W.pen;
+	struct GMT_FILL *fill = &Ctrl->G.fill;
 
-	if (draw_outline) gmt_setpen (GMT, pen);
-
-	if (flip_to_y) {
+	if (flip_to_y) {	/* Trick by cross-referencing x with y for horizontal bars */
 		px = y;
 		py = x;
 	}
-	else {
+	else {	/* Normal vertical bars */
 		px = x;
 		py = y;
 	}
@@ -276,50 +361,31 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 		xpol = gmt_M_memory (GMT, NULL, 2*(F->n_boxes+1), double);
 		ypol = gmt_M_memory (GMT, NULL, 2*(F->n_boxes+1), double);
 	}
+
+	if (draw_outline) gmt_setpen (GMT, pen);
+	if (!cpt)	/* Just set fill once since constant for all bars */
+		gmt_setfill (GMT, fill, draw_outline);
+
 	/* First lay down the bars or curve */
 	for (ibox = 0; ibox < F->n_boxes; ibox++) {
 		if (stairs || F->boxh[ibox]) {
-			x[0] = F->T->array[ibox];
-			x[1] = F->T->array[ibox+1];
-			dx = x[1] - x[0];	/* This box width */
-			if (x[0] < F->wesn[XLO]) x[0] = F->wesn[XLO];
-			if (x[1] > F->wesn[XHI]) x[1] = F->wesn[XHI];
-			xval = 0.5 * (x[0] + x[1]);	/* Used for cpt lookup */
-			x[2] = x[1];
-			x[3] = x[0];
-			y[0] = y[1] = F->wesn[YLO];
-			if (F->hist_type == PSHISTOGRAM_LOG_COUNTS)
-				y[2] = d_log1p (GMT, F->boxh[ibox]);
-			else if (F->hist_type == PSHISTOGRAM_LOG10_COUNTS)
-				y[2] = d_log101p (GMT, F->boxh[ibox]);
-			else if (F->hist_type == PSHISTOGRAM_FREQ_PCT)
-				y[2] = (100.0 * F->boxh[ibox]) / F->sum_w;
-			else if (F->hist_type == PSHISTOGRAM_LOG_FREQ_PCT)
-				y[2] = d_log1p (GMT, 100.0 * F->boxh[ibox] / F->sum_w );
-			else if (F->hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)
-				y[2] = d_log101p (GMT, 100.0 * F->boxh[ibox] / F->sum_w );
-			else
-				y[2] = F->boxh[ibox];
-			y[3] = y[2];
+			bin_width = F->T->array[ibox+1] - F->T->array[ibox];
 			if (F->cumulative)
 				area = F->boxh[ibox];	/* Just pick up the final bin as it has the entire sum */
-			else
-				area += dx * F->boxh[ibox];
+			else	/* Add up as we go along */
+				area += bin_width * F->boxh[ibox];
+			xval = pshistogram_set_xy_array (GMT, Ctrl, F, ibox, x, y, px, py);	/* Get polygon coordinates for this bar in plot units */
 
-			for (i = 0; i < 4; i++) {
-				gmt_geo_to_xy (GMT, px[i], py[i], &xx, &yy);
-				px[i] = xx;	py[i] = yy;
-			}
-
-			if (stairs) {
-				if (first) {
+			if (stairs) {	/* Need to build up the full cumulative polygon one step at the time */
+				if (first) {	/* Initialization of start point */
 					first = false;
 					xpol[k] = px[0];	ypol[k++] = py[0];
 				}
 				xpol[k] = px[3];	ypol[k++] = py[3];
 				xpol[k] = px[2];	ypol[k++] = py[2];
+				/* The final polygon will be plotted after the loop */
 			}
-			else if (cpt) {
+			else if (cpt) {	/* Each bar will have a unique color based on its value */
 				index = gmt_get_rgb_from_z (GMT, P, xval, rgb);
 				f = gmt_M_get_cptslice_pattern (P,index);
 				if (f)	/* Pattern */
@@ -328,22 +394,13 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 					PSL_setfill (PSL, rgb, draw_outline);
 				PSL_plotpolygon (PSL, px, py, 4);
 			}
-			else {
-				gmt_setfill (GMT, fill, draw_outline);
+			else
 				PSL_plotpolygon (PSL, px, py, 4);
-			}
 		}
 	}
-	if (stairs && F->n_boxes) {
+	if (stairs && F->n_boxes) {	/* Finalize cumulative polygon and plot it */
 		xpol[k] = px[1];	ypol[k++] = py[1];
-		if (fill) {
-			gmt_setfill (GMT, fill, 0);
-			PSL_plotpolygon (PSL, xpol, ypol, k);
-		}
-		if (draw_outline) {
-			gmt_setfill (GMT, NULL, 1);
-			PSL_plotpolygon (PSL, xpol, ypol, k);
-		}
+		PSL_plotpolygon (PSL, xpol, ypol, k);
 		gmt_M_free (GMT, xpol);
 		gmt_M_free (GMT, ypol);
 	}
@@ -363,32 +420,7 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 		}
 		for (ibox = 0; ibox < F->n_boxes; ibox++) {
 			if (stairs || F->boxh[ibox] > 0.0) {
-				x[0] = F->T->array[ibox];
-				x[1] = F->T->array[ibox+1];
-				if (x[0] < F->wesn[XLO]) x[0] = F->wesn[XLO];
-				if (x[1] > F->wesn[XHI]) x[1] = F->wesn[XHI];
-				x[2] = x[1];
-				x[3] = x[0];
-				y[0] = y[1] = F->wesn[YLO];
-				if (F->hist_type == PSHISTOGRAM_LOG_COUNTS)
-					y[2] = d_log1p (GMT, F->boxh[ibox]);
-				else if (F->hist_type == PSHISTOGRAM_LOG10_COUNTS)
-					y[2] = d_log101p (GMT, F->boxh[ibox]);
-				else if (F->hist_type == PSHISTOGRAM_FREQ_PCT)
-					y[2] = (100.0 * F->boxh[ibox]) / F->sum_w;
-				else if (F->hist_type == PSHISTOGRAM_LOG_FREQ_PCT)
-					y[2] = d_log1p (GMT, 100.0 * F->boxh[ibox] / F->sum_w );
-				else if (F->hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)
-					y[2] = d_log101p (GMT, 100.0 * F->boxh[ibox] / F->sum_w );
-				else
-					y[2] = F->boxh[ibox];
-				y[3] = y[2];
-
-				for (i = 0; i < 4; i++) {
-					gmt_geo_to_xy (GMT, px[i], py[i], &xx, &yy);
-					px[i] = xx;	py[i] = yy;
-				}
-
+				(void)pshistogram_set_xy_array (GMT, Ctrl, F, ibox, x, y, px, py);	/* Get polygon coordinates for this bar in plot units */
 				/* Place label */
 				if (flip_to_y) {
 					plot_y = 0.5 * (py[0] + py[1]);
@@ -409,44 +441,47 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 	return (area);
 }
 
-GMT_LOCAL int pshistogram_get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, double *stats) {
-	/* Returns stats[] = L2, L1, LMS location, L2, L1, LMS scale  */
+GMT_LOCAL int pshistogram_get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, bool selected[], double *stats) {
+	/* Returns stats[] = L2, L1, LMS location, L2, L1, LMS scale as requested */
 
-	uint64_t i, j;
+	uint64_t i, j = n / 2;
 	unsigned int n_multiples = 0;
 	double dx;
 
 	if (n < 3) return (-1);
 
-	gmt_sort_array (GMT, data, n, GMT_DOUBLE);
+	gmt_M_tic (GMT);	/* Initialize elapsed time */
 
-	/* Get median */
-	j = n/2;
-	stats[1] = (n%2) ? data[j] : (0.5 * (data[j] + data[j-1]));
+	if (selected[PSHISTOGRAM_L1] || selected[PSHISTOGRAM_LMS])	/* Must sort array */
+		gmt_sort_array (GMT, data, n, GMT_DOUBLE);
 
-	/* Get mode */
+	if (selected[PSHISTOGRAM_L1]) {	/* Get median */
+		stats[1] = (n%2) ? data[j] : (0.5 * (data[j] + data[j-1]));
+		/* Get MAD for L1 */
+		gmt_getmad (GMT, data, n, stats[1], &stats[4]);
+	}
 
-	gmt_mode (GMT, data, n, j, 0, 0, &n_multiples, &stats[2]);
-	if (n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "The histogram has multiple (%d) modes (peaks)\n", n_multiples);
-
-	/* Get MAD for L1 */
-
-	gmt_getmad (GMT, data, n, stats[1], &stats[4]);
-
-	/* Get LMSscale for mode */
-
-	gmt_getmad (GMT, data, n, stats[2], &stats[5]);
+	if (selected[PSHISTOGRAM_LMS]) {	/* Get mode */
+		gmt_mode (GMT, data, n, j, 0, 0, &n_multiples, &stats[2]);
+		if (n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "The histogram has multiple (%d) modes (peaks)\n", n_multiples);
+		/* Get LMSscale for mode */
+		gmt_getmad (GMT, data, n, stats[2], &stats[5]);
+	}
 
 	/* Calculate mean and stdev in two passes to minimize risk of overflow */
 
-	stats[0] = stats[3] = 0.0;
-	for (i = 0; i < n; i++) stats[0] += data[i];	/* Sum up the data */
-	stats[0] /= n;	/* This is the mean value */
-	for (i = 0; i < n; i++) {
-		dx = data[i] - stats[0];
-		stats[3] += (dx * dx);
+	if (selected[PSHISTOGRAM_L2]) {	/* Get L2 statistics */
+		stats[0] = stats[3] = 0.0;
+		for (i = 0; i < n; i++) stats[0] += data[i];	/* Sum up the data */
+		stats[0] /= n;	/* This is the mean value */
+		for (i = 0; i < n; i++) {
+			dx = data[i] - stats[0];
+			stats[3] += (dx * dx);
+		}
+		stats[3] = sqrt (stats[3] / (n - 1));
 	}
-	stats[3] = sqrt (stats[3] / (n - 1));
+
+	gmt_M_toc (GMT, "After pshistogram_get_loc_scl");	/* Report elapsed time */
 
 	return (0);
 }
@@ -487,7 +522,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s -T[<min>/<max>/]<inc>[+n] [-A] [%s] [-C<cpt>] [-D[+b][+f<font>][+o<off>][+r]]\n", name, GMT_Jx_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F] [-G<fill>] [-I[o|O]] %s[-Ll|h|b] [-N[<mode>][+p<pen>]] %s%s[-Q[r]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E<width>[+o<offset>]] [-F] [-G<fill>] [-I[o|O]] %s[-Ll|h|b] [-N[<mode>][+p<pen>]] %s%s[-Q[r]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s]\n\t[%s] [-W<pen>] [%s] [%s] [-Z[0-5][+w]]\n", GMT_Rx_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", API->c_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -509,6 +544,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   +f<font> sets the label font [FONT_ANNOT_PRIMARY]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +o sets the offset <off> between bar and label [6p]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +r rotates the label to be vertical [horizontal]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Use custom bar <width> and optionally <offset>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   By default, the bar width is implicitly set via -T and the offset is zero.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append desired bar width in data units, or append a valid unit (%s) for a fixed width.\n", GMT_DIM_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Via +o, add an offset in data units, or append a valid unit (%s) for a fixed offset [0].\n", GMT_DIM_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t-F The bin boundaries given should be considered bin centers instead.\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Select color/pattern for columns.");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Inquire about min/max x and y.  No plotting is done.\n");
@@ -537,7 +576,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   4 - Log10 (1+counts).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   5 - Log10 (1+frequency percent).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to use bin weights in 2nd column rather than counts.\n");
-	GMT_Option (API, "bi2,c,di,e,f,h,i,p,qi,s,t,.");
+	GMT_Option (API, "bi2,c,di,e,f,h,i,l,p,qi,s,t,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -552,6 +591,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 
 	unsigned int n_errors = 0, n_files = 0, mode = 0, pos = 0;
 	int sval;
+	size_t L;
 	char *c = NULL, *l_arg = NULL, *t_arg = NULL, *w_arg = NULL, p[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -599,6 +639,30 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					}
 				}
+				break;
+			case 'E':	/* Alternative histogram bar width */
+				Ctrl->E.active = true;
+				if ((c = strstr (opt->arg, "+o"))) {	/* Asking for offset */
+					Ctrl->E.do_offset = true;
+					L = strlen (c);
+					if (strchr (GMT_DIM_UNITS, c[L-1])) {	/* In plot-dimension unit */
+						Ctrl->E.off = gmt_M_to_inch (GMT, &c[2]);
+						Ctrl->E.o_is_dim = true;
+					}
+					else
+						Ctrl->E.off = atof (&c[2]);	/* In data units */
+					c[0] = '\0';	/* Chop off the modifier */
+				}
+				if (opt->arg[0]) {	/* Gave a different bar width */
+					L = strlen (opt->arg);
+					if (strchr (GMT_DIM_UNITS, opt->arg[L-1])) {	/* In plot-dimension unit */
+						Ctrl->E.width = gmt_M_to_inch (GMT, opt->arg);
+						Ctrl->E.w_is_dim = true;
+					}
+					else
+						Ctrl->E.width = atof (opt->arg);	/* In data units */
+				}
+				if (c) c[0] = '+';	/* Restore the modifier */
 				break;
 			case 'F':
 				Ctrl->F.active = true;
@@ -739,6 +803,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->T.T.vartime, "Option -F: Cannot be used with variable time bin widths\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Option -T: Must specify bin width\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->E.active, "Option -S: Cannot be used with -E\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->I.active && !gmt_M_is_linear (GMT), "Option -J: Only linear projection supported.\n");
 
 	/* Now must specify either fill color with -G or outline pen with -W */
@@ -841,6 +906,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	n = 0;
 	x_min = DBL_MAX;	x_max = -DBL_MAX;
 
+	gmt_M_tic (GMT);
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
@@ -883,6 +949,8 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		Return (API->error);	/* Disables further data input */
 	}
 
+	gmt_M_toc (GMT, "Finished reading data");
+
 	if (n == 0) {
 		GMT_Report (API, GMT_MSG_ERROR, "Fatal error, read only 0 points.\n");
 		gmt_M_free (GMT, data);
@@ -893,26 +961,34 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " points read\n", n);
 
 	data = gmt_M_memory (GMT, data, n, double);
-	if (F.weights) {	/* Must use a copy since get_loc_scale sorts the array and that does not work if we have weights */
-		double *tmp = gmt_M_memory (GMT, NULL, n, double);
-		gmt_M_memcpy (tmp, data, n, double);
-		weights = gmt_M_memory (GMT, weights, n, double);
-		pshistogram_get_loc_scl (GMT, tmp, n, stats);
-		gmt_M_free (GMT, tmp);
-	}
-	else
-		pshistogram_get_loc_scl (GMT, data, n, stats);
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
-		sprintf (format, "Extreme values of the data :\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_INFORMATION, format, data[0], data[n-1]);
-		sprintf (format, "Locations: L2, L1, LMS; Scales: L2, L1, LMS\t%s\t%s\t%s\t%s\t%s\t%s\n",
-		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
-		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_INFORMATION, format, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION) || Ctrl->N.active) {	/* Must do work on the array for statistics */
+		bool mmm[3];
+		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION))
+			mmm[PSHISTOGRAM_L2] = mmm[PSHISTOGRAM_L1] = mmm[PSHISTOGRAM_LMS] = true;	/* Need to know mean, median, mode plus deviations */
+		else
+			gmt_M_memcpy (mmm, Ctrl->N.selected, 3, bool);
+		if (F.weights) {	/* Must use a copy since get_loc_scale sorts the array and that does not work if we have weights */
+			double *tmp = gmt_M_memory (GMT, NULL, n, double);
+			gmt_M_memcpy (tmp, data, n, double);
+			weights = gmt_M_memory (GMT, weights, n, double);
+			pshistogram_get_loc_scl (GMT, tmp, n, mmm, stats);
+			gmt_M_free (GMT, tmp);
+		}
+		else
+			pshistogram_get_loc_scl (GMT, data, n, mmm, stats);
+
+		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
+			sprintf (format, "Extreme values of the data :\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+			GMT_Report (API, GMT_MSG_INFORMATION, format, data[0], data[n-1]);
+			sprintf (format, "Locations: L2, L1, LMS; Scales: L2, L1, LMS\t%s\t%s\t%s\t%s\t%s\t%s\n",
+			         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+			         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+			GMT_Report (API, GMT_MSG_INFORMATION, format, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
+		}
 	}
 
-	if (F.wesn[XHI] == F.wesn[XLO]) {	/* Set automatic x range [ and tickmarks] when -R -T missing */
+	if (F.wesn[XHI] == F.wesn[XLO]) {	/* Set automatic x range [and tickmarks] when -R -T missing */
 		if (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval == 0.0) {
 			tmp = pow (10.0, floor (d_log10 (GMT, x_max-x_min)));
 			if (((x_max-x_min) / tmp) < 3.0) tmp *= 0.5;
@@ -929,6 +1005,25 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		}
 		Ctrl->T.T.min = F.T->inc * floor (F.wesn[XLO] / F.T->inc);
 		Ctrl->T.T.max = F.T->inc * ceil  (F.wesn[XHI] / F.T->inc);
+	}
+
+	if (GMT->common.l.active) {	/* Add auto-legend entry */
+		/* Always plot a 3:2 width:height rectangle, possibly via user sizing, using fill and pen */
+		struct GMT_SYMBOL S;
+		gmt_M_memset (&S, 1U, struct GMT_SYMBOL);
+		S.symbol = PSL_RECT;
+		if (GMT->common.l.item.size == 0.0) {	/* Select default width given by annotation height scaled by actual fractional height times 1.5 */
+			S.size_y = GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+			S.size_x = 1.5 * S.size_y;	/* Width to height ratio is 3:2 */
+		}
+		else {	/* Use given size as rectangle width */
+			S.size_x = GMT->common.l.item.size;
+			if (GMT->common.l.item.size2 > 0.0)	/* Gave both width and height */
+				S.size_y = GMT->common.l.item.size2;
+			else
+				S.size_y = S.size_x / 1.5;	/* Width to height ratio is 3:2 */
+		}
+		gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
 	}
 
 	/* Set up bin boundaries array */
@@ -1142,7 +1237,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	if (Ctrl->D.just == 0) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
-	area = pshistogram_plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->W.active, &Ctrl->W.pen, &Ctrl->G.fill, Ctrl->C.active, &Ctrl->D);
+	area = pshistogram_plot_boxes (GMT, PSL, Ctrl, P, &F, &Ctrl->D);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Area under histogram is %g\n", area);
 
 	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we use 101 points to do so */

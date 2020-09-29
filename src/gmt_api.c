@@ -1014,7 +1014,7 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 		API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
 		GMT_Report (API, GMT_MSG_DEBUG, "Loading core GMT shared library: %s\n", API->lib[0].path);
 		if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Failure while loading core GMT shared library: %s\n", dlerror());
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while loading core GMT shared library (%s): %s\n", API->lib[0].path, dlerror());
 			return -GMT_RUNTIME_ERROR;
 		}
 		dlerror (); /* Clear any existing error */
@@ -7895,6 +7895,9 @@ GMT_LOCAL bool gmtapi_is_passable (struct GMTAPI_DATA_OBJECT *S_obj, unsigned in
 	return true; /* True to its word, otherwise we fall through and read the data */
 }
 
+/* Simple macro to tell us if this file (which we know is a memory file when called) is an output file */
+#define gmtapi_M_is_output(file) (file[GMTAPI_OBJECT_DIR_START] == 'O')
+
 /*! . */
 void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], const char *infile, void *data) {
 	/* Function to read data files directly into program memory as a set (not record-by-record).
@@ -7919,6 +7922,8 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	API = gmtapi_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 	just_get_data = (gmt_M_file_is_memory (input));	/* A regular GMT resource passed via memory */
+	if (just_get_data && gmtapi_M_is_output (input))	/* A virtual output file created elsewhere, retrieve and we are done */
+		return (GMT_Read_VirtualFile (API, input));
 	reset = (mode & GMT_IO_RESET);	/* We want to reset resource as unread after reading it */
 	if (reset) mode -= GMT_IO_RESET;
 	module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we reading a resource that should be considered a module input? */
@@ -7957,10 +7962,12 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			if ((in_ID = GMT_Register_IO (API, family|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, geometry, GMT_IN, NULL, filelist[k])) == GMT_NOTSET) {
 				GMT_Report (API, GMT_MSG_ERROR, "GMT_Read_Data: Could not register file for input: \n", filelist[k]);
 				gmt_M_str_free (input);
+				gmt_free_list (API->GMT, filelist, n_files);	/* Free the file list */
 				return_null (API, API->error);
 			}
 			if ((item = gmtlib_validate_id (API, family, in_ID, GMT_IN, GMTAPI_MODULE_INPUT)) == GMT_NOTSET) {
 				gmt_M_str_free (input);
+				gmt_free_list (API->GMT, filelist, n_files);	/* Free the file list */
 				return_null (API, API->error);	/* Some internal error... */
 			}
 			API->object[item]->selected = true;
@@ -13936,7 +13943,7 @@ int64_t gmt_eliminate_duplicates (struct GMTAPI_CTRL *API, struct GMT_DATASET *D
 	 * If no change then we skip the duplicate records.  No segment will be eliminated since first record always survives.
 	 * Including the trailing text in the comparison is optional and requires setting of the text flag to true. */
 	bool may_be_duplicate;	/* Initially true, gets set to false if we fail any of the one or more tests */
-	uint64_t tbl, seg, row, last_row, k, n_dup_seg, n_dup = 0, n_match = ncols + text;
+	uint64_t tbl, seg, row, last_row, k, n_dup_seg, n_dup = 0;
 	int64_t n_skip;	/* Number of consecutive duplicate rows */
 	unsigned int mode;
 	struct GMT_DATASEGMENT *S = NULL;

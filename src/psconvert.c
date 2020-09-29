@@ -1449,7 +1449,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	char **ps_names = NULL;
 	char ps_file[PATH_MAX] = "", no_U_file[PATH_MAX] = "", clean_PS_file[PATH_MAX] = "", tmp_file[PATH_MAX] = "",
 	     out_file[PATH_MAX] = "", BB_file[PATH_MAX] = "", resolution[GMT_LEN128] = "";
-	char *line = NULL, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""},
+	char *line = NULL, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""}, GSstring[GMT_LEN64] = {""},
 	     cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""}, *quiet = NULL;
 	char *gs_BB = NULL, *proj4_cmd = NULL;
 	char *device[N_GS_DEVICES] = {"", "pdfwrite", "svg", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha",
@@ -1496,7 +1496,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	struct { int major, minor; } gsVersion = {0, 0};
+	struct { int major, minor, patch; } gsVersion = {0, 0, 0};
 	struct GMT_POSTSCRIPT *PS = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -1522,17 +1522,16 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	/* Test if Ghostscript can be executed (version query) */
-	if (gmt_check_executable (GMT, Ctrl->G.file, "--version", NULL, cmd)) {	/* Found Ghostscript */
-		int n = sscanf (cmd, "%d.%d", &gsVersion.major, &gsVersion.minor);
-		if (n != 2) {
+	if (gmt_check_executable (GMT, Ctrl->G.file, "--version", NULL, GSstring)) {	/* Found Ghostscript */
+		int n = sscanf (GSstring, "%d.%d.%d", &gsVersion.major, &gsVersion.minor, &gsVersion.patch);
+		if (n < 2) {
 			/* command execution failed or cannot parse response */
-			GMT_Report (API, GMT_MSG_ERROR, "Failed to parse response to Ghostscript version query [n = %d %d %d].\n",
-			            n, gsVersion.major, gsVersion.minor);
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to parse response [%s] to Ghostscript version query [n = %d major = %d minor = %d patch = %d].\n",
+			            GSstring, n, gsVersion.major, gsVersion.minor, gsVersion.patch);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		else {
-			GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript version: %d.%d\n", gsVersion.major, gsVersion.minor);
-		}
+		else
+			GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript version: %s\n", GSstring);
 	}
 	else {	/* Failure to open Ghostscript */
 		GMT_Report (API, GMT_MSG_ERROR, "Cannot execute Ghostscript (%s).\n", Ctrl->G.file);
@@ -1540,8 +1539,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->T.device == GS_DEV_SVG && (gsVersion.major > 9 || (gsVersion.major == 9 && gsVersion.minor >= 16))) {
-		GMT_Report (API, GMT_MSG_ERROR, "Your Ghostscript version (%d.%d) no longer supports the SVG device.\n",
-		            gsVersion.major, gsVersion.minor);
+		GMT_Report (API, GMT_MSG_ERROR, "Your Ghostscript version (%s) no longer supports the SVG device.\n", GSstring);
 		GMT_Report (API, GMT_MSG_ERROR, "We recommend converting to PDF and then installing the pdf2svg package.\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -2308,7 +2306,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 
 		if (has_transparency && gsVersion.major == 9 && (gsVersion.minor == 51 || gsVersion.minor == 52))
-				GMT_Report (API, GMT_MSG_WARNING, "Input file has transparency but your gs version 9.%d has a bug preventing it - please downgrade to 9.50\n", gsVersion.minor);
+				GMT_Report (API, GMT_MSG_WARNING, "Input file has transparency but your gs version %s has a bug preventing it - please downgrade to 9.50\n", GSstring);
 		if (transparency && Ctrl->T.device != GS_DEV_PDF)	/* Must reset to PDF settings since we have transparency */
 				gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
 
@@ -2717,14 +2715,12 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 	   and http://juknull.wordpress.com/tag/regenumkeyex-example */
 
 	HKEY hkey;              /* Handle to registry key */
-	char data[GMT_LEN256] = {""}, ver[GMT_LEN8] = {""}, *ptr;
+	char data[GMT_LEN256] = {""}, ver[GMT_LEN16] = {""}, *ptr;
 	char key[32] = "SOFTWARE\\GPL Ghostscript\\";
-	unsigned long datalen = GMT_LEN256;
+	unsigned long datalen = GMT_LEN256, verlen = GMT_LEN16;
 	unsigned long datatype;
 	long RegO, rc = 0;
-	int n = 0;
 	bool bits64 = true;
-	float maxVersion = 0;		/* In case more than one GS, hold the number of the highest version */
 
 	/* Before of all rest, check if we have a ghost in GMT/bin */
 	sprintf (data, "%s/gswin64c.exe", API->GMT->init.runtime_bindir);
@@ -2752,21 +2748,13 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 		return (GMT_RUNTIME_ERROR);
 	}
 
-	while (rc != ERROR_NO_MORE_ITEMS) {
-		rc  = RegEnumKeyEx (hkey, n++, data, &datalen, 0, NULL, NULL, NULL);
-		datalen = GMT_LEN256; /* reset to buffer length (including terminating \0) */
-		if (rc == ERROR_SUCCESS)
-			maxVersion = MAX(maxVersion, strtof(data, NULL));	/* If more than one GS, keep highest version number */
-	}
-
-	RegCloseKey(hkey);
-
-	if (maxVersion == 0) {
-		GMT_Report (API, GMT_MSG_ERROR, "Unknown version reported in registry\n");
+	if ((rc = RegEnumKeyEx (hkey, 0, ver, &verlen, 0, NULL, NULL, NULL)) != ERROR_SUCCESS) {
+		GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript not found in registry. Fallback to PATH.\n");
+		RegCloseKey(hkey);
 		return (GMT_RUNTIME_ERROR);
 	}
 
-	sprintf(ver, "%.2f", maxVersion);
+	RegCloseKey(hkey);
 	strcat(key, ver);
 
 	/* Open the HKLM key, key, from which we wish to get data.
@@ -2783,7 +2771,7 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
 #endif
 	if (RegO != ERROR_SUCCESS) {
-		GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript not found in registry. Fallback to PATH.\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript not found in registry (2). Fallback to PATH.\n");
 		return (GMT_RUNTIME_ERROR);
 	}
 

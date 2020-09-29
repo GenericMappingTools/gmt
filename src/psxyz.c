@@ -216,20 +216,20 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      For multi-band columns append +z<nbands>; then <nbands> z-values will\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      be read from file instead of just 1.  Use +Z if dz increments are given instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Multiband columns requires -C with one color per band (0, 1, ...).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Ellipses: Direction, major, and minor axis must be in columns 4-6.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Ellipses: If not given, we read direction, major, and minor axis from columns 4-6.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SE rather than -Se is selected, %s will expect azimuth, and\n", mod_name);
 	GMT_Message (API, GMT_TIME_NONE, "\t     axes [in km], and convert azimuths based on map projection.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use -SE- for a degenerate ellipse (circle) with only diameter in km given.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     in column 4, or append a fixed diameter in km to -SE- instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     in column 4, or append a fixed diameter in km to -SE instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to the axes [Default is k].\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t     For a linear projection we scale the axes by the map scale.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Rotatable Rectangle: Direction, x- and y-dimensions in columns 4-6.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     For a linear projection and -SE we scale the axes by the map scale.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Rotatable Rectangle: If not given, we read direction, width and height from columns 4-6.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SJ rather than -Sj is selected, %s will expect azimuth, and\n", mod_name);
 	GMT_Message (API, GMT_TIME_NONE, "\t     dimensions [in km] and convert azimuths based on map projection.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use -SJ- for a degenerate rectangle (square w/no rotation) with only one dimension given\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     in column 4, or append a fixed dimension to -SJ- instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     in column 4, or append a fixed dimension to -SJ instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to the dimensions [Default is k].\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t     For a linear projection we scale dimensions by the map scale.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     For a linear projection and -SJ we scale dimensions by the map scale.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Fronts: Give <tickgap>[/<ticklen>][+l|r][+<type>][+o<offset>][+p[<pen>]].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If <tickgap> is negative it means the number of gaps instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If <tickgap> has leading + then <tickgap> is used exactly [adjusted to fit line length].\n");
@@ -259,8 +259,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_cont_syntax (API->GMT, 7, 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t     <labelinfo> controls the label attributes.  Choose from\n");
 	gmt_label_syntax (API->GMT, 7, 1);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Rectangles: x- and y-dimensions must be in columns 4-5.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Rounded rectangles: x- and y-dimensions and corner radius must be in columns 3-5.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Rectangles: If not given, the x- and y-dimensions must be in columns 4-5.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Rounded rectangles: If not given, the x- and y-dimensions and corner radius must be in columns 3-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Vectors: Direction and length must be in columns 4-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SV rather than -Sv is use, %s will expect azimuth and\n", mod_name);
 	GMT_Message (API, GMT_TIME_NONE, "\t     length and convert azimuths based on the chosen map projection.\n");
@@ -589,7 +589,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	bool default_outline, outline_active, save_u = false, geovector = false, can_update_headpen = true;
 	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol = 0, tcol = 0;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
-	unsigned int col, bcol, ex1, ex2, ex3, change = 0, n_needed, n_z = 0;
+	unsigned int bcol, ex1, ex2, ex3, change = 0, n_needed, n_z = 0;
 	int error = GMT_NOERROR;
 
 	uint64_t i, n, n_total_read = 0;
@@ -847,7 +847,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
 		bool periodic = false, delayed_unit_scaling[2] = {false, false};
-		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, last_time;
+		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, last_time, col;
 		double in2[7] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
 		double xpos[2], width, d;
 		struct GMT_RECORD *In = NULL;
@@ -873,7 +873,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		GMT->current.map.is_world = !(S.symbol == PSL_ELLIPSE && S.convert_angles);
 		if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0)
 			gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
-		else if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && S.convert_angles) {
+		else if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && S.convert_angles && !S.par_set) {
 			if (S.n_required == 1)  {
 				gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
 				p_in = in2;
@@ -926,7 +926,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (get_rgb)
 				GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for variable symbol color. Option -l ignored.\n");
 			else if (S.read_size && gmt_M_is_zero (GMT->common.l.item.size))
-				GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for variable symbol size unless +s<size> is used. Option -l ignored.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for variable symbol size unless +S<size> is used. Option -l ignored.\n");
 			else {
 				/* For specified symbol, size, color we can do an auto-legend entry under modern mode */
 				gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
@@ -1098,7 +1098,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				data[n].flag = S.accumulate;
 			}
 
-			if (S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) {	/* Ellipses or rectangles */
+			if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && !S.par_set) {	/* Ellipses or rectangles */
 				if (S.n_required == 0)	/* Degenerate ellipse or rectangle, Got diameter via S.size_x */
 					in2[ex2] = in2[ex3] = S.size_x;	/* Duplicate diameter as major and minor axes */
 				else if (S.n_required == 1)	/* Degenerate ellipse or rectangle, expect single diameter via input */
@@ -1159,57 +1159,66 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					data[n].dim[2] = (gmt_M_is_dnan (S.base)) ? 0.0 : gmt_z_to_zz (GMT, S.base);
 					break;
 				case PSL_RNDRECT:
-					if (gmt_M_is_dnan (in[ex3])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle corner radius = NaN near line %d. Skipped\n", n_total_read);
-						continue;
+					if (S.n_required == 3) {	/* Got radius from input file */
+						if (gmt_M_is_dnan (in[ex3])) {
+							GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle corner radius = NaN near line %d. Skipped\n", n_total_read);
+							continue;
+						}
+						data[n].dim[2] = in[ex3];	/* radius */
 					}
-					data[n].dim[2] = in[ex3];	/* radius */
+					else
+						data[n].dim[2] = S.factor;;	/* radius */
 					/* Intentionally fall through - to do the rest under regular rectangle */
 				case PSL_RECT:
-					if (gmt_M_is_dnan (in[ex1])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle width = NaN near line %d. Skipped\n", n_total_read);
-						continue;
+					if (S.n_required == 2) {	/* Got dimensions from input file */
+						if (gmt_M_is_dnan (in[ex1])) {
+							GMT_Report (API, GMT_MSG_WARNING, "Rectangle width = NaN near line %d. Skipped\n", n_total_read);
+							continue;
+						}
+						data[n].dim[0] = in[ex1];
+						if (gmt_M_is_dnan (in[ex2])) {
+							GMT_Report (API, GMT_MSG_WARNING, "Rectangle height = NaN near line %d. Skipped\n", n_total_read);
+							continue;
+						}
+						data[n].dim[1] = in[ex2];	/* y-dim */
 					}
-					if (gmt_M_is_dnan (in[ex2])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle height = NaN near line %d. Skipped\n", n_total_read);
-						continue;
-					}
-					data[n].dim[0] = in[ex1];	/* x-dim */
-					data[n].dim[1] = in[ex2];	/* y-dim */
 					break;
 				case PSL_ELLIPSE:
 				case PSL_ROTRECT:
-					if (gmt_M_is_dnan (p_in[ex1])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle angle = NaN near line %d. Skipped\n", n_total_read);
-						continue;
+					if (S.par_set) {	/* Given on command line */
+						data[n].dim[0] = S.factor;	/* The angle/azimuth */
+						data[n].dim[1] = S.size_x;
+						data[n].dim[2] = S.size_y;
 					}
-					if (gmt_M_is_dnan (p_in[ex2])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle width or major axis = NaN near line %d. Skipped\n", n_total_read);
-						continue;
-					}
-					if (gmt_M_is_dnan (p_in[ex3])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle height or minor axis = NaN near line %d. Skipped\n", n_total_read);
-						continue;
-					}
-					if (!S.convert_angles) {	/* Got axes in current plot units, change to inches */
+					else {	/* Get parameters from file */
+						if (gmt_M_is_dnan (p_in[ex1])) {
+							GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle angle = NaN near line %d. Skipped\n", n_total_read);
+							continue;
+						}
+						if (gmt_M_is_dnan (p_in[ex2])) {
+							GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle width or major axis = NaN near line %d. Skipped\n", n_total_read);
+							continue;
+						}
+						if (gmt_M_is_dnan (p_in[ex3])) {
+							GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle height or minor axis = NaN near line %d. Skipped\n", n_total_read);
+							continue;
+						}
 						data[n].dim[0] = p_in[ex1];	/* direction */
 						data[n].dim[1] = p_in[ex2];
 						data[n].dim[2] = p_in[ex3];
-						gmt_flip_angle_d (GMT, &data[n].dim[0]);
 					}
-					else if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
-						data[n].dim[0] = 90.0 - p_in[ex1];	/* Cartesian azimuth */
-						data[n].dim[1] = p_in[ex2] * GMT->current.proj.scale[GMT_X];
-						data[n].dim[2] = p_in[ex3] * GMT->current.proj.scale[GMT_Y];
-						gmt_flip_angle_d (GMT, &data[n].dim[0]);
-					}
-					else {				/* Got axis in km */
-						data[n].dim[0] = p_in[ex1];	/* Azimuth will be forwarded to gmt_geo_rectangle/ellipse */
-						data[n].dim[1] = p_in[ex2];
-						data[n].dim[2] = p_in[ex3];
-						data[n].x = in[GMT_X];	/* Revert to longitude and latitude */
-						data[n].y = in[GMT_Y];
-						data[n].flag |= 2;	/* Signals to use GMT_geo_* routine */
+					gmt_flip_angle_d (GMT, &data[n].dim[0]);
+					if (S.convert_angles) {		/* Got axis in km */
+						if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Got axes in user units, change to inches via Cartesian scales */
+							data[n].dim[1] *= GMT->current.proj.scale[GMT_X];
+							data[n].dim[2] *= GMT->current.proj.scale[GMT_Y];
+							data[n].dim[0] = 90.0 - data[n].dim[0];
+						}
+						else {	/* Fully geographic */
+							data[n].flag |= 2;	/* Signals to use GMT_geo_* routine */
+							data[n].x = in[GMT_X];	/* Revert to longitude and latitude */
+							data[n].y = in[GMT_Y];
+						}
 					}
 					break;
 				case GMT_SYMBOL_TEXT:
@@ -1329,26 +1338,52 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					data[n].dim[12] = s * data[n].h.width;	/* Possibly shrunk head pen width */
 					break;
 				case PSL_WEDGE:
-					if (gmt_M_is_dnan (in[ex1+S.read_size])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Wedge start angle = NaN near line %d. Skipped\n", n_total_read);
-						continue;
+					col = ex1+S.read_size;
+					if (S.w_get_do) {	/* Must read from file */
+						if (gmt_M_is_dnan (in[col])) {
+							GMT_Report (API, GMT_MSG_WARNING, "Wedge outer diameter = NaN near line %d. Skipped\n", n_total_read);
+								continue;
+						}
+						data[n].dim[0] = in[col++];
 					}
-					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Wedge stop angle = NaN near line %d. Skipped\n", n_total_read);
-						continue;
+					else	/* Set during -S parsing */
+						data[n].dim[0] = S.w_radius;
+					if (S.w_get_a) {	/* Must read from file */
+						if (gmt_M_is_dnan (in[col])) {
+							GMT_Report (API, GMT_MSG_WARNING, "Wedge start angle = NaN near line %d. Skipped\n", n_total_read);
+								continue;
+						}
+						data[n].dim[1] = in[col++];
+						if (gmt_M_is_dnan (in[col])) {
+							GMT_Report (API, GMT_MSG_WARNING, "Wedge stop angle = NaN near line %d. Skipped\n", n_total_read);
+								continue;
+						}
+						data[n].dim[2] = in[col++];
 					}
-					if (!S.convert_angles) {
-						data[n].dim[1] = in[ex1+S.read_size];			/* Start direction in degrees */
-						data[n].dim[2] = in[ex2+S.read_size];			/* Stop direction in degrees */
+					else {	/* Angles were set during -S parsing */
+						data[n].dim[1] = S.size_x;
+						data[n].dim[2] = S.size_y;
 					}
-					else if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Got azimuths instead */
-						data[n].dim[1] = 90.0 - in[ex1+S.read_size];		/* Start direction in degrees */
-						data[n].dim[2] = 90.0 - in[ex2+S.read_size];		/* Stop direction in degrees */
+					if (S.w_get_di) {	/* Must read from file else it was set during -S parsing */
+						if (gmt_M_is_dnan (in[col])) {
+							GMT_Report (API, GMT_MSG_WARNING, "Wedge inner diameter = NaN near line %d. Skipped\n", n_total_read);
+							continue;
+						}
+						S.w_radius_i = in[col];
 					}
-					else {
-						data[n].dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
-						data[n].dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex2+S.read_size]);
+					if (S.convert_angles) {
+						if (gmt_M_is_cartesian (GMT, GMT_IN)) {
+							/* Note that the direction of the arc gets swapped when converting from azimuth */
+							data[n].dim[2] = 90.0 - data[n].dim[2];
+							data[n].dim[1] = 90.0 - data[n].dim[1];
+						}
+						else {
+							data[n].dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, data[n].dim[2]);
+							data[n].dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, data[n].dim[1]);
+						}
+						gmt_M_double_swap (data[n].dim[1], data[n].dim[2]);	/* Must switch the order of the angles */
 					}
+					/* Load up the rest of the settings */
 					data[n].dim[3] = S.w_type;
 					data[n].dim[4] = S.w_radius_i;
 					data[n].dim[5] = S.w_dr;	/* In case there is a request for radially spaced arcs */
@@ -1577,9 +1612,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							gmt_xy_to_geo (GMT, &dx, &dy, data[i].y, data[i].y);	/* Just recycle dx, dy here */
 							gmt_geo_wedge (GMT, dx, dy, data[n].dim[4], S.w_radius, data[n].dim[5], data[i].dim[1], data[i].dim[2], data[n].dim[6], status, fill_active || get_rgb, outline_active);
 						}
-						else {
+						else
 							PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_WEDGE);
-						}
 						break;
 					case GMT_SYMBOL_ZDASH:
 						gmt_xyz_to_xy (GMT, xpos[item], data[i].y, data[i].z, &x_1, &y_1);
