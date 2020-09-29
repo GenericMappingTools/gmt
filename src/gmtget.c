@@ -178,7 +178,7 @@ EXTERN_MSC void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
 
 EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 	int error = GMT_NOERROR;
-	char *datasets = NULL, *c = NULL, file[GMT_LEN64] = {""};
+	char *datasets = NULL, *c = NULL, file[PATH_MAX] = {""};
 
 	struct GMTGET_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
