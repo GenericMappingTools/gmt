@@ -17249,9 +17249,9 @@ void gmt_cpt_interval_modifier (struct GMT_CTRL *GMT, char **arg, double *interv
 	/* Here we have a +i<dz> string in c */
 	*interval = atof (&c[2]);
 	c[0] = '\0';	c++;	/* Chop off and move one char to the right */
-	strcpy (new_arg, file);	/* Everything up to start of +i */
-	while (*c && *c != '+') c++;	/* Wind to next modifier or reach end of string */
-	if (*c) strcat (new_arg, c);	/* Append other modifiers given after +i */
+	strncpy (new_arg, file, PATH_MAX-1);        /* Everything up to start of +i */
+	while (*c && *c != '+') c++;                /* Wind to next modifier or reach end of string */
+	if (*c) strncat (new_arg, c, PATH_MAX-1);   /* Append other modifiers given after +i */
 	gmt_M_str_free (*arg);
 	*arg = strdup (new_arg);
 }
@@ -17465,7 +17465,7 @@ int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int 
 		}
 		if ((p = strstr (line, prefix))) {
 			/* Got a MOVIE_ or BATCH_ variable here. Check if it is missing the token */
-			strcpy (record, start);
+			strncpy (record, start, GMT_LEN256-1);
 			prev = p - 1;	/* Get previous character */
 			if (prev >= start && prev[0] == '{') prev--, p--;	/* Found {prefix} */
 			if (prev < start || prev[0] != var_token[mode]) {	/* Start of line or the previous char is not the token */

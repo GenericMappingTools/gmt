@@ -681,8 +681,10 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	z = gmt_M_memory (GMT, NULL, s->n_fields, double *);
 	for (i = 0; i < s->n_fields; i++) z[i] = gmt_M_memory (GMT, NULL, n_alloc, double);
 	p->ms_rec = gmt_M_memory (GMT, NULL, n_alloc, uint64_t);
-	if ((error = x2sys_skip_header (GMT, fp, s)))
+	if ((error = x2sys_skip_header (GMT, fp, s))) {
+		gmt_M_free (GMT, rec);
 		return error;
+	}
 	p->n_segments = 0;	/* So that first increment sets it to 0 */
 	j = 0;
 	while (!x2sys_read_record (GMT, fp, rec, s, G)) {	/* Gets the next data record */
