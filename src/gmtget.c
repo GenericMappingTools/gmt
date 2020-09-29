@@ -261,7 +261,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 						n = 1;
 					}
 					message[0] = '\0';
-					sprintf (message, "%s\t%s\t%s\t%s\t%u\t%s", planet, group, dataset, size, n, API->remote_info[k].remark);
+					snprintf (message, GMT_LEN256-1, "%s\t%s\t%s\t%s\t%u\t%s", planet, group, dataset, size, n, API->remote_info[k].remark);
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 				else {
