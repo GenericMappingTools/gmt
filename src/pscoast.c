@@ -545,16 +545,20 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 		}
 		record[j] = '\0';
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+			gmt_M_free (GMT, Rec);
 			return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
+			gmt_M_free (GMT, Rec);
 			return (API->error);
 		}
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_TEXT) != GMT_NOERROR) {	/* Sets output geometry */
+			gmt_M_free (GMT, Rec);
 			return (API->error);
 		}
 		GMT_Put_Record (API, GMT_WRITE_DATA, Rec);	/* Write text record to output destination */
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+			gmt_M_free (GMT, Rec);
 			return (API->error);
 		}
 		GMT->current.io.geo.range = range;	/* Reset to what it was */

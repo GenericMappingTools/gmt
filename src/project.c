@@ -943,6 +943,9 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 		/* Now output generated track */
 
 		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)P.n_outputs, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			gmt_M_free (GMT, p_data);
+			gmt_M_free (GMT, Out);
+			if (Ctrl->Z.active) gmt_M_str_free (z_header);
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers data output failed */
@@ -950,17 +953,23 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 				gmt_M_str_free (p_data[rec].t);	gmt_M_free (GMT, p_data[rec].z);
 			}
 			gmt_M_free (GMT, p_data);
+			gmt_M_free (GMT, Out);
+			if (Ctrl->Z.active) gmt_M_str_free (z_header);
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Failed to enable data output and set access mode */
 			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_LINE) != GMT_NOERROR) {	/* Sets output geometry */
 				gmt_M_free (GMT, p_data);
+				gmt_M_free (GMT, Out);
+				if (Ctrl->Z.active) gmt_M_str_free (z_header);
 				Return (API->error);
 			}
 			for (rec = 0; rec < P.n_used; rec++) {
 				gmt_M_str_free (p_data[rec].t);	gmt_M_free (GMT, p_data[rec].z);
 			}
 			gmt_M_free (GMT, p_data);
+			gmt_M_free (GMT, Out);
+			if (Ctrl->Z.active) gmt_M_str_free (z_header);
 			Return (API->error);
 		}
 

@@ -675,6 +675,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, yy);
 				gmt_M_free (GMT, azimuth);
 				gmt_M_free (GMT, length);
+				gmt_M_free (GMT, Rec);
 				Return (error);
 			}
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
@@ -683,6 +684,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, yy);
 				gmt_M_free (GMT, azimuth);
 				gmt_M_free (GMT, length);
+				gmt_M_free (GMT, Rec);
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
@@ -691,6 +693,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, yy);
 				gmt_M_free (GMT, azimuth);
 				gmt_M_free (GMT, length);
+				gmt_M_free (GMT, Rec);
 				Return (API->error);	/* Enables data output and sets access mode */
 			}
 			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
@@ -699,6 +702,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, yy);
 				gmt_M_free (GMT, azimuth);
 				gmt_M_free (GMT, length);
+				gmt_M_free (GMT, Rec);
 				Return (API->error);
 			}
 			sprintf (format, "n\tmean_az\tmean_r\tmean_resultant_length\tmax\tscaled_mean_r\tlinear_length_sum");
