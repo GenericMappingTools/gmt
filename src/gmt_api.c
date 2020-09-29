@@ -7962,10 +7962,12 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			if ((in_ID = GMT_Register_IO (API, family|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, geometry, GMT_IN, NULL, filelist[k])) == GMT_NOTSET) {
 				GMT_Report (API, GMT_MSG_ERROR, "GMT_Read_Data: Could not register file for input: \n", filelist[k]);
 				gmt_M_str_free (input);
+				gmt_free_list (API->GMT, filelist, n_files);	/* Free the file list */
 				return_null (API, API->error);
 			}
 			if ((item = gmtlib_validate_id (API, family, in_ID, GMT_IN, GMTAPI_MODULE_INPUT)) == GMT_NOTSET) {
 				gmt_M_str_free (input);
+				gmt_free_list (API->GMT, filelist, n_files);	/* Free the file list */
 				return_null (API, API->error);	/* Some internal error... */
 			}
 			API->object[item]->selected = true;

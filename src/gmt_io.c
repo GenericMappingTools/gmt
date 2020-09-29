@@ -4995,7 +4995,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	unsigned int d, pos;
 	int t_data;
 	size_t L;
-	bool found;
+	bool found = false;
 	char *udir[4] = {GMT->session.USERDIR, GMT->session.DATADIR, GMT->session.CACHEDIR, NULL}, dir[PATH_MAX];
 	char path_separator[2] = {',', '\0'}, serverdir[PATH_MAX] = {""};
 #ifdef HAVE_DIRENT_H_
