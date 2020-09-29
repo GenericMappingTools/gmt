@@ -1014,7 +1014,7 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 		API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
 		GMT_Report (API, GMT_MSG_DEBUG, "Loading core GMT shared library: %s\n", API->lib[0].path);
 		if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Failure while loading core GMT shared library: %s\n", dlerror());
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while loading core GMT shared library (%s): %s\n", API->lib[0].path, dlerror());
 			return -GMT_RUNTIME_ERROR;
 		}
 		dlerror (); /* Clear any existing error */
