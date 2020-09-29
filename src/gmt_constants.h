@@ -158,6 +158,17 @@ enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 	GMT_CSH_MODE,			/* Write C-shell script */
 	GMT_DOS_MODE};			/* Write DOS script */
 
+/*! Various mode for basemap order */
+enum GMT_enum_basemap {
+	GMT_BASEMAP_BEFORE			= 0,
+	GMT_BASEMAP_AFTER			= 1,
+	GMT_BASEMAP_FRAME_BEFORE	= 0,
+	GMT_BASEMAP_FRAME_AFTER		= 1,
+	GMT_BASEMAP_GRID_BEFORE		= 0,
+	GMT_BASEMAP_GRID_AFTER		= 2,
+	GMT_BASEMAP_ANNOT_BEFORE	= 0,
+	GMT_BASEMAP_ANNOT_AFTER		= 4};
+
 /* Since -I is not a global option but we almost use it as such, we define the long-option for it here.
  * Modules that need it in their module_kw[] array can just add it to their list. */
 #define GMT_INCREMENT_KW { '/', 'I', "increment", "", "", "e,n", "exact,number" }

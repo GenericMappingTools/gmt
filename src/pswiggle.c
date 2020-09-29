@@ -482,8 +482,9 @@ EXTERN_MSC int GMT_pswiggle (void *V_API, int mode, void *args) {
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
- 	gmt_map_gridlines (GMT);	/* Lay down gridlines before wiggles */
+	gmt_map_basemap (GMT);
 
 	Ctrl->Z.scale = 1.0 / Ctrl->Z.scale;	/* Since we were requesting the reciprocal */
 

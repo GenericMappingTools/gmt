@@ -1082,6 +1082,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		if (make_plot) {
 			if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 			gmt_map_basemap (GMT);
 			gmt_plane_perspective (GMT, -1, 0.0);
@@ -1154,6 +1155,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		if (make_plot) {
 			if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 			gmt_map_basemap (GMT);
 			gmt_plane_perspective (GMT, -1, 0.0);
@@ -1392,9 +1394,9 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		if (Ctrl->contour.delay) GMT->current.ps.nclip = +2;	/* Signal that this program initiates clipping that will outlive this process */
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_set_basemap_orders (GMT, Ctrl->contour.delay ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
- 		gmt_map_gridlines (GMT);	/* Lay down gridlines */
-		if (Ctrl->contour.delay) gmt_map_basemap (GMT);	/* Must do -B here before clipping makes it not doable */
+		gmt_map_basemap (GMT);
 		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 		if (GMT->common.l.active) {	/* Add one or two contour entries to the auto-legend entry under modern mode; examine which pen & label we place */
@@ -1606,10 +1608,9 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 		gmt_contlabel_plot (GMT, &Ctrl->contour);
 
-		if (!Ctrl->contour.delay) {
+		if (!Ctrl->contour.delay)
 			gmt_map_clip_off (GMT);
-			gmt_map_basemap (GMT);
-		}
+		gmt_map_basemap (GMT);
 
 		gmt_plane_perspective (GMT, -1, 0.0);
 

@@ -1102,8 +1102,9 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL)
 		Return (GMT_RUNTIME_ERROR);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_set_basemap_orders (GMT, Ctrl->N.active ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
- 	gmt_map_gridlines (GMT);	/* Lay down gridlines */
+ 	gmt_map_basemap (GMT);	/* Lay down gridlines */
 	if (Ctrl->T.active) {	/* Honor canvas fill and box draw */
 		gmt_map_basemap (GMT);
 		gmt_plane_perspective (GMT, -1, 0.0);

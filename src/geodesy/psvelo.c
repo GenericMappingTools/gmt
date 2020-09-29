@@ -847,9 +847,10 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	gmt_set_basemap_orders (GMT, Ctrl->N.active ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
- 	gmt_map_gridlines (GMT);	/* Lay down gridlines */
+	gmt_map_basemap (GMT);	/* Basemap before data */
 
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	gmt_setpen (GMT, &Ctrl->W.pen);
@@ -1054,7 +1055,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 
 	PSL_setdash (PSL, NULL, 0);
 
-	gmt_map_basemap (GMT);
+	gmt_map_basemap (GMT);	/* Basemap after data */
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 

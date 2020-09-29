@@ -255,6 +255,7 @@ EXTERN_MSC int GMT_psclip (void *V_API, int mode, void *args) {
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	if (Ctrl->C.active) psclip_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 	gmt_map_basemap (GMT);
 
@@ -338,6 +339,7 @@ EXTERN_MSC int GMT_psclip (void *V_API, int mode, void *args) {
 		PSL_beginclipping (PSL, NULL, NULL, 0, GMT->session.no_rgb, 2 + first + eo_flag);
 	}
 
+	gmt_map_basemap (GMT);
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 

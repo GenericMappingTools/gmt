@@ -884,6 +884,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 			if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {
 				gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+				gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 				gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 				gmt_map_basemap (GMT); /* Basemap needed */
 				gmt_plane_perspective (GMT, -1, 0.0);
@@ -895,7 +896,9 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		}
 
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_set_basemap_orders (GMT, clipping ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+		gmt_map_basemap (GMT);
 	}
 
 	for (i = 0; i < 5; i++) if (fill[i].use_pattern) fill_in_use = true;
@@ -905,8 +908,6 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		clobber_background = true;
 		recursive = false;
 	}
-
-	if (clipping) gmt_map_basemap (GMT);
 
 	if (GMT->current.proj.projection_GMT == GMT_AZ_EQDIST && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_180_range (GMT->common.R.wesn[YHI], GMT->common.R.wesn[YLO])) {
 		int status[2] = {0, 0};

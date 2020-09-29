@@ -622,6 +622,7 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 		gmt_map_basemap (GMT);	/* Draw basemap if requested */
 		GMT->common.J.active = false;
@@ -668,6 +669,7 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
  	if (Ctrl->F.active)	/* Draw frame outlines */
 		gmt_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->F.panel->width, Ctrl->D.refpoint->y + 0.5 * Ctrl->F.panel->height, 2U, Ctrl->F.panel);
 
+	gmt_map_basemap (GMT);	/* Draw basemap if requested */
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 	gmt_M_str_free (file);

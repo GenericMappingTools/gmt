@@ -812,10 +812,12 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	if (Ctrl->G.mode)
+		gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
+	else
+		gmt_set_basemap_orders (GMT, Ctrl->N.active ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
- 	gmt_map_gridlines (GMT);	/* Lay down gridlines */
-
-	if (Ctrl->G.mode) gmt_map_basemap (GMT);	/* Must lay down basemap before text clipping is activated, otherwise we do it at the end */
+	gmt_map_basemap (GMT);
 
 	if (!(Ctrl->N.active || Ctrl->Z.active)) {
 		gmt_BB_clip_on (GMT, GMT->session.no_rgb, 3);
@@ -896,7 +898,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 
 		if (clip_set)
 			gmt_map_clip_off (GMT);
-		if (!Ctrl->G.mode) gmt_map_basemap (GMT);	/* Normally we do basemap at the end, except when clipping (-Gc|C) interferes */
+		gmt_map_basemap (GMT);
 		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
 		gmt_M_str_free (use_text);
@@ -1364,7 +1366,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	GMT->current.map.is_world = old_is_world;
 	GMT->current.io.scan_separators = GMT_TOKEN_SEPARATORS;		/* Reset */
 
-	if (!Ctrl->G.mode) gmt_map_basemap (GMT);	/* Normally we do basemap at the end, except when clipping (-Gc|C) interferes */
+	gmt_map_basemap (GMT);
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 

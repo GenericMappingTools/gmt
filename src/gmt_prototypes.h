@@ -246,7 +246,7 @@ EXTERN_MSC void gmt_geo_rectangle (struct GMT_CTRL *GMT, double lon, double lat,
 EXTERN_MSC unsigned int gmt_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_PEN *pen, struct GMT_SYMBOL *S);
 EXTERN_MSC void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, struct GMT_FRONTLINE *f);
 EXTERN_MSC void gmt_map_basemap (struct GMT_CTRL *GMT);
-EXTERN_MSC void gmt_map_gridlines (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmt_set_basemap_orders (struct GMT_CTRL *GMT, unsigned int frame, unsigned int grid, unsigned int annot);
 EXTERN_MSC void gmt_map_clip_off (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_map_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag);
 EXTERN_MSC void gmt_BB_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag);

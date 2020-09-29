@@ -688,6 +688,8 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.active) {	/* Just undo previous polygon clip-path */
 		PSL_endclipping (PSL, 1);
+		gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
+		GMT->current.map.frame.order = GMT_BASEMAP_AFTER;	/* Move to next order */
 		gmt_map_basemap (GMT);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Clipping off!\n");
 	}
@@ -704,8 +706,9 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 
 		if (make_plot) {
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, Ctrl->T.active ? GMT_BASEMAP_GRID_AFTER : GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
- 			gmt_map_gridlines (GMT);	/* Lay down gridlines */
+			gmt_map_basemap (GMT);
 		}
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate memory, read and process data file\n");

@@ -530,6 +530,8 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	unsigned int horizontal;	/* 1 is S/N annotations should be parallel to axes, 2 if forced */
 	unsigned int side[5];		/* Which sides (0-3 in plane; 4 = z) to plot. 2 is annot/draw, 1 is draw, 0 is not */
 	unsigned int z_axis[4];		/* Which axes to use for the 3-D z-axis [auto] */
+	unsigned int order;			/* 0: We are plotting before data, 1 we are plotting after data have been plotted */
+	unsigned int basemap_flag;	/* Bit flag determining if frame, gridlines, and annotations+ticks are plotted before or after data */
 	double internal_arg;		/* Internal annotation latitude or longitude location set via +i<val> */
 };
 
