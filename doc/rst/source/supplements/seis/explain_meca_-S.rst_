@@ -61,7 +61,7 @@
 
     **12**,\ **13**:
     longitude, latitude at which to place beachball if **-C** is used (optional).
-    Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+    Using 0,0 in columns 12 and 13 will plot the beach ball at the longitude,
     latitude given in columns 1 and 2. The **-:** option will interchange the order of
     columns (1,2) and (12,13).
 
@@ -91,7 +91,7 @@
 
     **11**,\ **12**:
     longitude, latitude at which to place beachball if **-C** is used (optional).
-    Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+    Using 0,0 in columns 11 and 12 will plot the beach ball at the longitude,
     latitude given in columns 1 and 2. The **-:** option will interchange the order of
     columns (1,2) and (11,12).
 
@@ -122,7 +122,7 @@
 
     **9**,\ **10**:
     longitude, latitude at which to place beachball if **-C** is used (optional).
-    Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+    Using 0,0 in columns 9 and 10 will plot the beach ball at the longitude,
     latitude given in columns 1 and 2. The **-:** option will interchange the order of
     columns (1,2) and (9,10).
 
@@ -150,7 +150,7 @@
 
     **14**,\ **15**:
     longitude, latitude at which to place beachball if **-C** is used (optional).
-    Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+    Using 0,0 in columns 14 and 15 will plot the beach ball at the longitude,
     latitude given in columns 1 and 2. The **-:** option will interchange the order of
     columns (1,2) and (14,15).
 
