@@ -1345,7 +1345,10 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 	/* Because we are doing single-precision, we cannot subtract incrementally but must start with the
 	 * original grid values and subtract the current contour value. */
 
- 	if ((G_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) Return (GMT_RUNTIME_ERROR); /* Original copy of grid used for contouring */
+	if ((G_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) {
+		gmt_M_free (GMT, cont);
+		Return (GMT_RUNTIME_ERROR); /* Original copy of grid used for contouring */
+	}
 	n_edges = G->header->n_rows * (urint (ceil (G->header->n_columns / 16.0)));
 	edge = gmt_M_memory (GMT, NULL, n_edges, unsigned int);	/* Bit flags used to keep track of contours */
 
@@ -1564,17 +1567,21 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 		if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			gmt_M_free (GMT, n_seg_alloc);
+			gmt_M_free (GMT, n_seg);
 			Return (error);
 		}
 		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = gmt_M_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_DATASEGMENT *);
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, Ctrl->D.file, D) != GMT_NOERROR) {
-			Return (API->error);
-		}
-		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
+			gmt_M_free (GMT, n_seg_alloc);
+			gmt_M_free (GMT, n_seg);
 			Return (API->error);
 		}
 		gmt_M_free (GMT, n_seg_alloc);
 		gmt_M_free (GMT, n_seg);
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
+			Return (API->error);
+		}
 	}
 
 	if (data_is_time) {	/* Undo earlier swapparoo */
@@ -1618,7 +1625,11 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->contour.save_labels) {	/* Close file with the contour label locations (lon, lat, angle, label) */
-		if ((error = gmt_contlabel_save_end (GMT, &Ctrl->contour)) != 0) Return (error);
+		if ((error = gmt_contlabel_save_end (GMT, &Ctrl->contour)) != 0) {
+			gmt_M_free (GMT, edge);
+			gmt_M_free (GMT, cont);
+			Return (error);
+		}
 	}
 
 	if (make_plot || Ctrl->contour.save_labels) gmt_contlabel_free (GMT, &Ctrl->contour);

@@ -17449,6 +17449,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg, char *parfile) {
 			snprintf (file, PATH_MAX, "%s/gmt.movie%ss", API->gwf_dir, F_name[k]);
 			if ((fpM[k] = fopen (file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Cannot create file %s\n", file);
+				fclose (fp);
 				return GMT_ERROR_ON_FOPEN;
 			}
 			fprintf (fpM[k], "# movie %s information file\n", F_name[k]);

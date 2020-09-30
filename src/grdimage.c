@@ -1176,6 +1176,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		/* Read in the the entire image that is to be mapped */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate memory and read image file %s\n", Ctrl->In.file);
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_IMAGE_NO_INDEX, NULL, Ctrl->In.file, NULL)) == NULL) {
+			gmt_M_free (GMT, Conf);
 			Return (API->error);
 		}
 		grid_registration = I->header->registration;	/* This is presumably pixel registration since it is an image */
@@ -1223,6 +1224,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (!got_data_tiles) {	/* Only avoid this step if we already read a data tile bunch earlier under the I.derive == true section above */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read header from file %s\n", Ctrl->In.file);
 			if ((Grid_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+				gmt_M_free (GMT, Conf);	/* Done with the configuration structure */
 				Return (API->error);
 			}
 			if ((API->error = gmt_img_sanitycheck (GMT, Grid_orig->header))) {	/* Used map projection on a Mercator (i.e., already a Cartesian) grid */
@@ -1527,6 +1529,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file);
 			if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max, Ctrl->C.dz)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
+				gmt_free_header (API->GMT, &header_G);
+				gmt_free_header (API->GMT, &header_I);
 				Return (API->error);	/* Well, that did not go so well... */
 			}
 			if (cpt) gmt_M_str_free (cpt);
@@ -1583,6 +1587,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 		if ((Out = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL) {	/* Yikes, must bail */
 			if (Ctrl->Q.active) gmt_M_free (GMT, rgb_used);
+			gmt_free_header (API->GMT, &header_G);
+			gmt_free_header (API->GMT, &header_I);
 			Return (API->error);	/* Well, no luck with that allocation */
 		}
 

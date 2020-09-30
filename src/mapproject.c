@@ -996,23 +996,27 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			break;
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+			gmt_M_free (GMT, Out);
 			Return (API->error);
 		}
 		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_output, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			gmt_M_free (GMT, Out);
 			Return (error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+			gmt_M_free (GMT, Out);
 			Return (API->error);
 		}
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+			gmt_M_free (GMT, Out);
 			Return (API->error);
 		}
 		Out->data = w_out;
 		GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
+		gmt_M_free (GMT, Out);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
-		gmt_M_free (GMT, Out);
 		Return (GMT_NOERROR);
 	}
 
