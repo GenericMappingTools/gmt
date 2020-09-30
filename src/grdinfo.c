@@ -1168,6 +1168,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	}
 
 	if (delay && GMT_Destroy_Data (API, &G) != GMT_NOERROR) {	/* Delayed destroy due to -D+n */
+		gmt_M_free (GMT, Out);
 		Return (API->error);
 	}
 
@@ -1177,11 +1178,11 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		gmt_M_str_free (projStr);
 	}
 
+	gmt_M_free (GMT, Out);
+
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
-
-	gmt_M_free (GMT, Out);
 
 	Return (GMT_NOERROR);
 }

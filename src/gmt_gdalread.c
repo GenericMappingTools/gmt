@@ -835,6 +835,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	if (error) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread failed to extract a Sub-region\n");
+		gmt_M_free (GMT, whichBands);
 		return (-1);
 	}
 
