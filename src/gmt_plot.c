@@ -5617,7 +5617,8 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 	if (GMT->current.proj.three_D && GMT->current.map.frame.drawz) GMT->current.map.frame.plotted_header = false;	/* Now we can plot the title [if selected via -B+t] */
 
-	gmt_vertical_axis (GMT, GMT->current.plot.mode_3D);
+	if ((GMT->current.map.frame.order == GMT_BASEMAP_BEFORE && (GMT->current.plot.mode_3D & 1)) || (GMT->current.map.frame.order == GMT_BASEMAP_AFTER && (GMT->current.plot.mode_3D & 2)))
+		gmt_vertical_axis (GMT, GMT->current.plot.mode_3D);
 
 	PSL_comment (PSL, "End of basemap (placed %s the plot contents)\n", order[GMT->current.map.frame.order]);
 

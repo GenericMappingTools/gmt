@@ -1179,7 +1179,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	PSL_setformat (PSL, 3);
 
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-	gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_BEFORE);
+	gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 	gmt_map_basemap (GMT);
 	if (GMT->current.proj.z_pars[0] == 0.0) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);

@@ -706,7 +706,7 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 
 		if (make_plot) {
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-			gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, Ctrl->T.active ? GMT_BASEMAP_GRID_AFTER : GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
+			gmt_set_basemap_orders (GMT, Ctrl->T.active ? GMT_BASEMAP_FRAME_AFTER : GMT_BASEMAP_FRAME_BEFORE, Ctrl->T.active ? GMT_BASEMAP_GRID_AFTER : GMT_BASEMAP_GRID_BEFORE, Ctrl->T.active ? GMT_BASEMAP_ANNOT_AFTER : GMT_BASEMAP_ANNOT_BEFORE);
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 			gmt_map_basemap (GMT);
 		}
