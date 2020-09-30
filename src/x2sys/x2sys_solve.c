@@ -759,8 +759,8 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {
 		char format1[GMT_LEN64] = {""}, format2[GMT_LEN64] = {""};
-		sprintf (format1, "%s\t", GMT->current.setting.format_float_out);
-		sprintf (format2, "\t%s\n", GMT->current.setting.format_float_out);
+		snprintf (format1, GMT_LEN64-1, "%s\t", GMT->current.setting.format_float_out);
+		snprintf (format2, GMT_LEN64-1, "\t%s\n", GMT->current.setting.format_float_out);
 		for (i = 0; i < m; i++) {
 			for (j = 0; j < m; j++) GMT_Message (API, GMT_TIME_NONE, format1, N[i*m+j]);
 			GMT_Message (API, GMT_TIME_NONE, format2, b[i]);
