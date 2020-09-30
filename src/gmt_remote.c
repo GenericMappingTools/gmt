@@ -1021,6 +1021,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Remote file %s exists locally as %s\n", clean_file, local_path);
 		remote_path[0] = '\0';	/* No need to get from elsewhere */
+		if (clean_file)	gmt_M_str_free (clean_file);
 		return GMT_NOERROR;
 
 not_local:	/* Get here if we failed to find a remote file already on disk */
@@ -1084,6 +1085,7 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 				break;
 		}
 		if (jp2_file) gmt_M_str_free (jp2_file);
+		if (clean_file)	gmt_M_str_free (clean_file);
 		GMT_Report (API, GMT_MSG_DEBUG, "Get remote file %s and write to %s\n", remote_path, local_path);
 
 		return GMT_NOERROR;

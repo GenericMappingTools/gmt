@@ -614,6 +614,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		}
 		if (In->data == NULL) {
 			gmt_quit_bad_record (API, In);
+			gmt_M_free (GMT, X);	gmt_M_free (GMT, u);	gmt_M_free (GMT, v);
 			Return (API->error);
 		}
 

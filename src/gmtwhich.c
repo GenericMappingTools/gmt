@@ -287,10 +287,11 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "File %s not found!\n", &file[first]);
 		}
 	}
+
+	gmt_M_free (GMT, Out);
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 
-	gmt_M_free (GMT, Out);
 	Return (GMT_NOERROR);
 }
