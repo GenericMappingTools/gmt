@@ -335,13 +335,17 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	/* Initialize system via the tag */
 
-	if (x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &S, &B, &GMT->current.io), Ctrl->T.TAG))
+	if (x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &S, &B, &GMT->current.io), Ctrl->T.TAG)) {
+		x2sys_end (GMT, S);
 		Return (GMT_RUNTIME_ERROR);
+	}
 
 	/* Verify that the chosen column is known to the system */
 
-	if (Ctrl->C.col && x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, S), "-C"))
+	if (Ctrl->C.col && x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, S), "-C")) {
+		x2sys_end (GMT, S);
 		Return (GMT_RUNTIME_ERROR);
+	}
 	if (S->n_out_columns != 1) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -C must specify a single column name\n");
 		x2sys_end (GMT, S);
@@ -760,7 +764,7 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {
 		char format1[GMT_LEN64] = {""}, format2[GMT_LEN64] = {""};
 		snprintf (format1, GMT_LEN64-1, "%s\t", GMT->current.setting.format_float_out);
-		snprintf (format2, GMT_LEN64-1, "\t%s\n", GMT->current.setting.format_float_out);
+		snprintf (format2, GMT_LEN64-2, "\t%s\n", GMT->current.setting.format_float_out);
 		for (i = 0; i < m; i++) {
 			for (j = 0; j < m; j++) GMT_Message (API, GMT_TIME_NONE, format1, N[i*m+j]);
 			GMT_Message (API, GMT_TIME_NONE, format2, b[i]);

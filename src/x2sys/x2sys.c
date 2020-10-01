@@ -914,7 +914,7 @@ int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, s
 
 	S = MGD77_Create_Dataset (GMT);	/* Get data structure w/header */
 
-	strcpy (file, fname);
+	strncpy (file, fname, GMT_LEN32-1);
 	if (gmt_file_is_cache (GMT->parent, file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
 		first = gmt_download_file_if_not_found (GMT, file, 0);

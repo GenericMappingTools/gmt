@@ -315,8 +315,10 @@ EXTERN_MSC int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
-		if ((error = x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, Ctrl->C.col, NULL, NULL, &CORR)))
+		if ((error = x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, Ctrl->C.col, NULL, NULL, &CORR))) {
+			gmt_M_free (GMT, R);	gmt_M_free (GMT, trk_name);
 			Return (error);
+		}
 	}
 
 	Tsum = Tsum2 = 0.0;
@@ -355,18 +357,15 @@ EXTERN_MSC int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	/* Time to issue output */
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
-		gmt_M_free (GMT, R);
-		gmt_M_free (GMT, trk_name);
+		gmt_M_free (GMT, R);	gmt_M_free (GMT, trk_name);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
-		gmt_M_free (GMT, R);
-		gmt_M_free (GMT, trk_name);
+		gmt_M_free (GMT, R);	gmt_M_free (GMT, trk_name);
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
-		gmt_M_free (GMT, R);
-		gmt_M_free (GMT, trk_name);
+		gmt_M_free (GMT, R);	gmt_M_free (GMT, trk_name);
 		Return (API->error);
 	}
 	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */

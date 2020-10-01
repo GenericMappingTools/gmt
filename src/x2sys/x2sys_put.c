@@ -246,8 +246,10 @@ EXTERN_MSC int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 	/* Open TAG file and set the operational parameters */
 
-	if (x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG))
+	if (x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG)) {
+		gmt_fclose (GMT, fp);
 		Return (GMT_RUNTIME_ERROR);
+	}
 
 	for (i = max_flag = 0, bit = 1; i < s->n_fields; i++, bit <<= 1) max_flag |= bit;
 
@@ -255,19 +257,27 @@ EXTERN_MSC int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 	/* Read existing track-information from <ID>_tracks.d file */
 
-	 if (x2sys_err_fail (GMT, x2sys_bix_read_tracks (GMT, s, &B, 0, &last_id), ""))
+	 if (x2sys_err_fail (GMT, x2sys_bix_read_tracks (GMT, s, &B, 0, &last_id), "")) {
+		x2sys_end (GMT, s);
+		gmt_fclose (GMT, fp);
 		Return (GMT_RUNTIME_ERROR);
+	 }
 	 last_id--;	/* Since last_id as returned is the number of IDs */
 
 	/* Read geographical track-info from <ID>_index.b file */
 
-	if (x2sys_err_fail (GMT, x2sys_bix_read_index (GMT, s, &B, Ctrl->S.active), ""))
+	if (x2sys_err_fail (GMT, x2sys_bix_read_index (GMT, s, &B, Ctrl->S.active), "")) {
+		x2sys_end (GMT, s);
+		gmt_fclose (GMT, fp);
 		Return (GMT_RUNTIME_ERROR);
+	}
 
 	/* Ok, now we can start reading new info */
 
 	if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Read error in 2nd line of track binindex file\n");
+		x2sys_end (GMT, s);
+		gmt_fclose (GMT, fp);
 		Return (GMT_DATA_READ_ERROR);
 	}
 	while (line[0] == '>') {	/* Next segment */

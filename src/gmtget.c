@@ -216,14 +216,20 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 
 			if (Ctrl->Q.active) {	/* Must activate data output machinery for a DATASET with no numerical columns */
 				Out = gmt_new_record (GMT, NULL, message);
-				if ((error = GMT_Set_Columns (API, GMT_OUT, 0, GMT_COL_FIX)) != GMT_NOERROR) Return (API->error);
+				if ((error = GMT_Set_Columns (API, GMT_OUT, 0, GMT_COL_FIX)) != GMT_NOERROR) {
+					gmt_M_free (GMT, Out);
+					Return (API->error);
+				}
 				if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
+					gmt_M_free (GMT, Out);
 					Return (API->error);
 				}
 				if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
+					gmt_M_free (GMT, Out);
 					Return (API->error);
 				}
 				if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+					gmt_M_free (GMT, Out);
 					Return (API->error);
 				}
 			}

@@ -225,6 +225,7 @@ EXTERN_MSC int GMT_mgd77header (void *V_API, int mode, void *args) {
 	if (n_paths <= 0) {
 		GMT_Report (API, GMT_MSG_ERROR, "No cruises given\n");
 		if (fp) gmt_fclose (GMT, fp);
+		MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 		Return (GMT_NO_INPUT);
 	}
 
@@ -244,6 +245,8 @@ EXTERN_MSC int GMT_mgd77header (void *V_API, int mode, void *args) {
 
 		if (MGD77_Read_File_nohdr (GMT, list[argno], &M, D)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading data for cruise %s\n", list[argno]);
+			MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File */
+			MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 			Return (GMT_DATA_READ_ERROR);
 		}
 
@@ -377,6 +380,8 @@ EXTERN_MSC int GMT_mgd77header (void *V_API, int mode, void *args) {
 
 		if (gmt_M_is_dnan(tmin) || gmt_M_is_dnan(tmax)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Abort: cruise %s no time records\n", M.NGDC_id);
+			MGD77_Free_Dataset (GMT, &D);
+			MGD77_Close_File (GMT, &M);
 			Return (GMT_DATA_READ_ERROR);
 		}
 		MGD77_Close_File (GMT, &M);

@@ -983,6 +983,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 						break;
 					case GMT_REFPOINT_NOTSET:
 						GMT_Report (API, GMT_MSG_INFORMATION, "No reference point set!\n");
+						gmt_M_free (GMT, Out);
 						Return (GMT_RUNTIME_ERROR);
 						break;
 				}
@@ -1103,15 +1104,18 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (Ctrl->L.active) {
 		/* Initialize the i/o for doing table reading */
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
+			gmt_M_free (GMT, Out);
 			Return (API->error);
 		}
 
 		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -L files */
 		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL) {
+			gmt_M_free (GMT, Out);
 			Return (API->error);
 		}
 		if (Lin->n_columns < 2) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)Lin->n_columns);
+			gmt_M_free (GMT, Out);
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
@@ -1167,6 +1171,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
+		gmt_M_free (GMT, Out);
 		Return (API->error);
 	}
 

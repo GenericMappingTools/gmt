@@ -187,6 +187,7 @@ EXTERN_MSC int GMT_mgd77path (void *V_API, int mode, void *args) {
 
 	if (error <= 0) {
 		GMT_Report (API, GMT_MSG_ERROR, "No cruises found\n");
+		MGD77_Path_Free (GMT, n_paths, list);
 		Return (GMT_NO_INPUT);
 	}
 	n_paths = (uint64_t)error;
