@@ -2550,7 +2550,9 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
 
 	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
 
-	PSL_comment (PSL, "Start of map frame\n");
+	PSL_comment (PSL, "Start of map frame\n0 A [] 0 B\n");	/* Also ensure full reset to black solid pen color */
+	gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
+	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 
 	switch (GMT->current.proj.projection_GMT) {
 		case GMT_LINEAR:
@@ -5584,7 +5586,6 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	PSL_comment (PSL, "Start of basemap (placed %s the plot contents)\n", order[GMT->current.map.frame.order]);
 
 	PSL_setdash (PSL, NULL, 0);	/* To ensure no dashed pens are set prior */
-	gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
 
 	if (GMT->current.proj.three_D && GMT->current.map.frame.drawz) GMT->current.map.frame.plotted_header = true;	/* Just so it is not plotted by gmtplot_map_boundary first */
 
