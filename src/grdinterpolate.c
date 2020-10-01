@@ -210,7 +210,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 						break;
 				}
 				if (opt->arg[1] == '+') Ctrl->F.type = (opt->arg[2] - '0');	/* Want first or second derivative */
-				strcpy (Ctrl->F.spline, opt->arg);	/* Keep track of what was given since it may need to be passed verbatim to other modules */
+				strncpy (Ctrl->F.spline, opt->arg, GMT_LEN8-1);	/* Keep track of what was given since it may need to be passed verbatim to other modules */
 				break;
 			case 'G':	/* Output file or name template */
 				if (n_files++ > 0) { n_errors++; continue; }

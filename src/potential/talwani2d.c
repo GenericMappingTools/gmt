@@ -647,6 +647,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 		}
 		if (In->data == NULL) {
 			gmt_quit_bad_record (API, In);
+			gmt_M_free (GMT, body);		gmt_M_free (GMT, x);	gmt_M_free (GMT, z);
 			Return (API->error);
 		}
 

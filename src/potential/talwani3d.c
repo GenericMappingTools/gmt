@@ -856,11 +856,12 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 		}
 		if (first_slice) {	/* Did not have the required header record */
 			GMT_Report (API, GMT_MSG_ERROR, "No segment header with depth [and optional densithy contrast] - must quit\n");
-			gmt_M_free (GMT, cake);
+			gmt_M_free (GMT, cake);		gmt_M_free (GMT, x);	gmt_M_free (GMT, y);
 			Return (API->error);
 		}
 		if (In->data == NULL) {
 			gmt_quit_bad_record (API, In);
+			gmt_M_free (GMT, cake);		gmt_M_free (GMT, x);	gmt_M_free (GMT, y);
 			Return (API->error);
 		}
 
@@ -931,28 +932,26 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 		/* Must register Ctrl->G.file first since we are going to writing rec-by-rec */
 		if (Ctrl->G.active) {
 			int out_ID;
-			if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMT_NOTSET)
+			if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMT_NOTSET) {
+				gmt_M_free (GMT, depths);	gmt_M_free (GMT, Rec);
 				Return (API->error);
+			}
 			wmode = GMT_ADD_EXISTING;
 		}
 		if ((error = GMT_Set_Columns (API, GMT_OUT, 4, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-			gmt_M_free (GMT, depths);
-			gmt_M_free (GMT, Rec);
+			gmt_M_free (GMT, depths);	gmt_M_free (GMT, Rec);
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, wmode, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
-			gmt_M_free (GMT, depths);
-			gmt_M_free (GMT, Rec);
+			gmt_M_free (GMT, depths);	gmt_M_free (GMT, Rec);
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
-			gmt_M_free (GMT, depths);
-			gmt_M_free (GMT, Rec);
+			gmt_M_free (GMT, depths);	gmt_M_free (GMT, Rec);
 			Return (API->error);
 		}
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
-			gmt_M_free (GMT, depths);
-			gmt_M_free (GMT, Rec);
+			gmt_M_free (GMT, depths);	gmt_M_free (GMT, Rec);
 			Return (API->error);
 		}
 		if (D->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);
