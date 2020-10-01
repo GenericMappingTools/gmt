@@ -7962,7 +7962,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	just_get_data = (gmt_M_file_is_memory (input));     /* A regular GMT resource passed via memory */
 	if (just_get_data && gmtapi_M_is_output (input)) {  /* A virtual output file created elsewhere, retrieve and we are done */
 		gmt_M_str_free (input);
-		return (GMT_Read_VirtualFile (API, input));
+		return (GMT_Read_VirtualFile (API, infile));
 	}
 	reset = (mode & GMT_IO_RESET);	/* We want to reset resource as unread after reading it */
 	if (reset) mode -= GMT_IO_RESET;
