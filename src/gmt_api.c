@@ -7960,10 +7960,9 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	API = gmtapi_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 	just_get_data = (gmt_M_file_is_memory (input));     /* A regular GMT resource passed via memory */
-	if (just_get_data && gmtapi_M_is_output (input)) {  /* A virtual output file created elsewhere, retrieve and we are done */
-		gmt_M_str_free (input);
+	if (just_get_data && gmtapi_M_is_output (input))    /* A virtual output file created elsewhere, retrieve and we are done */
 		return (GMT_Read_VirtualFile (API, input));
-	}
+
 	reset = (mode & GMT_IO_RESET);	/* We want to reset resource as unread after reading it */
 	if (reset) mode -= GMT_IO_RESET;
 	module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we reading a resource that should be considered a module input? */
