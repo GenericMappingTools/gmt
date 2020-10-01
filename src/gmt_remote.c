@@ -168,7 +168,7 @@ GMT_LOCAL int gmtremote_remove_item (struct GMTAPI_CTRL *API, char *path, bool d
 #ifdef _WIN32
 		char *t = gmt_strrep (path, "/", "\\");	/* DOS rmdir needs paths with back-slashes */
 		strcpy (del_cmd, "rmdir /s /q ");
-		strcat (del_cmd, t);
+		strncat (del_cmd, t, PATH_MAX-1);
 		gmt_M_str_free (t);
 #else
 		sprintf (del_cmd, "rm -rf %s", path);
@@ -419,7 +419,7 @@ GMT_LOCAL void gmtremote_display_attribution (struct GMTAPI_CTRL *API, int key, 
 		if ((c = strrchr (API->GMT->session.DATASERVER, '/')))	/* Found last slash in http:// */
 			strcpy (name, ++c);
 		else /* Just in case */
-			strcpy (name, API->GMT->session.DATASERVER);
+			strncpy (name, API->GMT->session.DATASERVER, GMT_LEN128-1);
 		if ((c = strchr (name, '.'))) c[0] = '\0';	/* Chop off stuff after the initial name */
 		gmt_str_toupper (name);
 		GMT_Report (API, GMT_MSG_NOTICE, "Remote data courtesy of GMT data server %s [%s]\n\n", name, API->GMT->session.DATASERVER);

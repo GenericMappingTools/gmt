@@ -5204,7 +5204,7 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 		first = gmt_download_file_if_not_found (GMT, filename, 0);
 
 	if ((cleanfile = gmt_get_filename (GMT->parent, &filename[first], "honsuU")) == NULL) return (-1);	/* Likely not a valid filename */
-	strcpy (file, cleanfile);
+	strncpy (file, cleanfile, PATH_MAX-1);
 	gmt_M_str_free (cleanfile);
 	if (mode == W_OK)
 		return (access (file, mode));	/* When writing, only look in current directory */

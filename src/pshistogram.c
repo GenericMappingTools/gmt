@@ -921,6 +921,8 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 		if (In->data == NULL) {
 			gmt_quit_bad_record (API, In);
+			gmt_M_free (GMT, data);
+			if (F.weights) gmt_M_free (GMT, weights);
 			Return (API->error);
 		}
 

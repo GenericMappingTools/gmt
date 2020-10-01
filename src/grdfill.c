@@ -641,9 +641,10 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 			free(RG_orig_hist);
 			Return (API->error);
 		}
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR)
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 			free(RG_orig_hist);
 			Return (API->error);
+		}
 	}
 	else {
 		GMT_Report (API, GMT_MSG_WARNING, "No holes detected in grid - grid was not updated\n");

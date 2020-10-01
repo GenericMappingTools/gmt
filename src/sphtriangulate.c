@@ -598,9 +598,8 @@ EXTERN_MSC int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
-				gmt_M_free (GMT, lon);	gmt_M_free (GMT, lat);
-				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
-				gmt_M_free (GMT,  zz);
+				gmt_M_free (GMT, lon);	gmt_M_free (GMT, lat);	gmt_M_free (GMT, xx);
+				gmt_M_free (GMT, yy);	gmt_M_free (GMT,  zz);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
@@ -612,6 +611,8 @@ EXTERN_MSC int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 
 		if (In->data == NULL) {
 			gmt_quit_bad_record (API, In);
+			gmt_M_free (GMT, lon);	gmt_M_free (GMT, lat);	gmt_M_free (GMT, xx);
+			gmt_M_free (GMT, yy);	gmt_M_free (GMT,  zz);
 			Return (API->error);
 		}
 

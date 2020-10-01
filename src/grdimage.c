@@ -668,7 +668,7 @@ GMT_LOCAL void grdimage_grd_gray_no_intensity (struct GMT_CTRL *GMT, struct GRDI
 #pragma omp parallel for private(srow,byte,kk,scol,node,rgb) shared(GMT,Conf,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = srow * Conf->n_columns;
+		byte = (uint64_t)srow * Conf->n_columns;
 		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node = kk + Conf->actual_col[scol];	/* Current grid node */
@@ -689,7 +689,7 @@ GMT_LOCAL void grdimage_grd_gray_with_intensity (struct GMT_CTRL *GMT, struct GR
 #pragma omp parallel for private(srow,byte,kk,scol,node,index,rgb) shared(GMT,Conf,Ctrl,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = srow * Conf->n_columns;
+		byte = (uint64_t)srow * Conf->n_columns;
 		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node = kk + Conf->actual_col[scol];	/* Current grid node */
@@ -717,7 +717,7 @@ GMT_LOCAL void grdimage_grd_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 #pragma omp parallel for private(srow,byte,kk,scol,node,rgb) shared(GMT,Conf,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = srow * Conf->n_columns;
+		byte = (uint64_t)srow * Conf->n_columns;
 		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node = kk + Conf->actual_col[scol];	/* Current grid node */
@@ -738,7 +738,7 @@ GMT_LOCAL void grdimage_grd_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 #pragma omp parallel for private(srow,byte,kk,scol,node,index,rgb) shared(GMT,Conf,Ctrl,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = srow * Conf->n_columns;
+		byte = (uint64_t)srow * Conf->n_columns;
 		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node = kk + Conf->actual_col[scol];	/* Current grid node */
@@ -766,7 +766,7 @@ GMT_LOCAL void grdimage_grd_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 #pragma omp parallel for private(srow,byte,kk,k,scol,node,rgb) shared(GMT,Conf,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = Conf->colormask_offset + 3 * srow * Conf->n_columns;
+		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;
 		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node = kk + Conf->actual_col[scol];	/* Current grid node */
@@ -786,7 +786,7 @@ GMT_LOCAL void grdimage_grd_color_no_intensity_CM (struct GMT_CTRL *GMT, struct 
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = Conf->colormask_offset + 3 * srow * Conf->n_columns;
+		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;
 		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node = kk + Conf->actual_col[scol];	/* Current grid node */
@@ -811,7 +811,7 @@ GMT_LOCAL void grdimage_grd_color_with_intensity (struct GMT_CTRL *GMT, struct G
 #pragma omp parallel for private(srow,byte,kk,k,scol,node,index,rgb) shared(GMT,Conf,Ctrl,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = Conf->colormask_offset + 3 * srow * Conf->n_columns;
+		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;
 		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node = kk + Conf->actual_col[scol];	/* Current grid node */
@@ -840,7 +840,7 @@ GMT_LOCAL void grdimage_grd_color_with_intensity_CM (struct GMT_CTRL *GMT, struc
 	for (k = 0; k < 3; k++) n_rgb[k] = gmt_M_u255 (rgb[k]);
 
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = Conf->colormask_offset + 3 * srow * Conf->n_columns;
+		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;
 		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node = kk + Conf->actual_col[scol];	/* Current grid node */
@@ -881,7 +881,7 @@ GMT_LOCAL void grdimage_img_gray_with_intensity (struct GMT_CTRL *GMT, struct GR
 #pragma omp parallel for private(srow,byte,kk,scol,node,rgb) shared(GMT,Conf,Ctrl,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
-		byte = srow * Conf->n_columns;
+		byte = (uint64_t)srow * Conf->n_columns;
 		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node = kk + Conf->actual_col[scol];	/* Start of current pixel node */
@@ -908,7 +908,7 @@ GMT_LOCAL void grdimage_img_gray_no_intensity (struct GMT_CTRL *GMT, struct GRDI
 #pragma omp parallel for private(srow,byte,kk,scol,node) shared(GMT,Conf,Ctrl,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
-		byte = srow * Conf->n_columns;
+		byte = (uint64_t)srow * Conf->n_columns;
 		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node = kk + Conf->actual_col[scol];	/* Start of current pixel node */
@@ -929,7 +929,7 @@ GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 #pragma omp parallel for private(srow,byte,kk,k,scol,node,rgb) shared(GMT,Conf,Ctrl,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
-		byte = srow * Conf->n_columns;
+		byte = (uint64_t)srow * Conf->n_columns;
 		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node = kk + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
@@ -960,7 +960,7 @@ GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 #pragma omp parallel for private(srow,byte,kk,k,scol,node,rgb) shared(GMT,Conf,Ctrl,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
-		byte = srow * Conf->n_columns;
+		byte = (uint64_t)srow * Conf->n_columns;
 		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node = kk + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
@@ -985,7 +985,7 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 #pragma omp parallel for private(srow,byte,kk,k,scol,node,rgb) shared(GMT,Conf,Ctrl,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
-		byte = Conf->colormask_offset + 3 * srow * Conf->n_columns;
+		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;
 		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node = kk + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
@@ -1009,7 +1009,7 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 #pragma omp parallel for private(srow,byte,kk,k,scol,node,rgb) shared(GMT,Conf,Ctrl,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
-		byte = Conf->colormask_offset + 3 * srow * Conf->n_columns;
+		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;
 		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node = kk + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
@@ -1121,10 +1121,14 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			 * happen _before_ we auto-derive intensities via grdgradient so that there is an input data grid */
 
 			if (Ctrl->I.file == NULL && gmt_file_is_tiled_list (API, Ctrl->In.file, NULL, NULL, NULL)) {	/* Must read and stitch the data tiles first */
-				if ((Grid_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, API->tile_wesn, Ctrl->In.file, NULL)) == NULL)	/* Get stitched grid */
+				if ((Grid_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, API->tile_wesn, Ctrl->In.file, NULL)) == NULL) {	/* Get stitched grid */
+					gmt_M_free (GMT, Conf);
 					Return (API->error);
-				if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, Grid_orig, data_grd))
+				}
+				if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, Grid_orig, data_grd)) {
+					gmt_M_free (GMT, Conf);
 					Return (API->error);
+				}
 				got_data_tiles = true;
 			}
 		}
@@ -1132,6 +1136,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			mem_I = gmt_M_file_is_memory (Ctrl->I.file);	/* Remember if the intensity grid was passed as a memory grid */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read intensity grid header from file %s\n", Ctrl->I.file);
 			if ((Intens_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
+				gmt_M_free (GMT, Conf);
 				Return (API->error);
 			}
 		}
