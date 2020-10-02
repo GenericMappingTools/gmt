@@ -5643,16 +5643,19 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 }
 
 void gmt_set_basemap_orders (struct GMT_CTRL *GMT, unsigned int frame, unsigned int grid, unsigned int annot) {
-	/* Helper function to full out the basemap flags for this module based on its peculiarities and settings */
+	/* Helper function to fill out the basemap flags for the calling module based on its peculiarities and initial settings */
 	/* First apply some general over-ruling depending on 3-D and inside annotations */
 	if (GMT->current.proj.three_D) {
-		frame = GMT_BASEMAP_FRAME_BEFORE;	/* In true 3-D plots we must lay down the x-y frame first regardless of desire to at end */
+		frame = GMT_BASEMAP_FRAME_BEFORE;	/* In true 3-D plots we must lay down the x-y frame first regardless of desire to place it at the end */
 		annot = GMT_BASEMAP_ANNOT_BEFORE;
-		grid = GMT_BASEMAP_GRID_BEFORE;
+		grid  = GMT_BASEMAP_GRID_BEFORE;
 	}
-	else if (GMT->current.setting.map_frame_type == GMT_IS_INSIDE)	/* Must do it at end since inside the map */
+	else if (GMT->current.setting.map_frame_type == GMT_IS_INSIDE)	/* Must do annotations and ticks at end since inside the map */
 		annot = GMT_BASEMAP_ANNOT_AFTER;
 
+		/* Finally, since ticks overprint the frame we make sure annot/ticks are never done before the frame */
+	if (annot == GMT_BASEMAP_ANNOT_BEFORE && frame == GMT_BASEMAP_FRAME_AFTER)
+		annot = GMT_BASEMAP_ANNOT_AFTER;
 	GMT->current.map.frame.basemap_flag = frame + grid + annot;
 }
 
