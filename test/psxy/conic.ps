@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from pscoast
+%%Title: GMT v6.2.0_8ff822b-dirty_2020.10.02 [64-bit] Document from pscoast
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:52:12 2018
+%%CreationDate: Fri Oct  2 13:25:01 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -651,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -662,8 +658,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -673,12 +670,12 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt pscoast -R0/360/30/70 -JL180/50/40/60/6i -Gred -Dc -B30g30 -P -K
-%@PROJ: lcc 0.00000000 360.00000000 30.00000000 70.00000000 -7471460.233 7471460.233 -2227005.151 10850019.011 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=180 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%GMTBoundingBox: 72 72 432 378.057
+%@PROJ: lcc 0.00000000 360.00000000 30.00000000 70.00000000 -7471460.233 7471460.233 -2227005.151 10850019.011 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=180 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: 72 72 432 378.056916691
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1684 4854 M
 -1 24 D
 10 -25 D
@@ -8032,10 +8029,10 @@ N 6849 5150 M 75 36 D S
 N 4906 4223 M -75 -35 D S
 N 5980 6301 M 55 62 D S
 N 4557 4686 M -55 -63 D S
-N 5971 6291 M 84 -1 D S
-N 1229 6291 M -84 0 D S
-N 5971 6291 M 84 0 D S
-N 1229 6291 M -84 -1 D S
+N 1220 6301 M 62 55 D S
+N 5980 6301 M -62 55 D S
+N 2280 5098 M 62 55 D S
+N 4920 5098 M -62 55 D S
 83 W
 1 A
 N 1251 6328 M 1060 -1202 D S
@@ -8043,81 +8040,81 @@ N 5949 6328 M -1060 -1202 D S
 0 A
 N 2311 5126 M 363 -412 D S
 N 4889 5126 M -363 -412 D S
-N 3600 3600 3642 131.388 154.49 arc S
-N 3600 3600 1406 131.388 154.49 arc S
+N 3600 3600 3642 131.387532716 154.489610596 arc S
+N 3600 3600 1406 131.387532716 154.489610596 arc S
 1 A
-N 3600 3600 3642 154.49 177.592 arc S
-N 3600 3600 1406 154.49 177.592 arc S
+N 3600 3600 3642 154.489610596 177.591688477 arc S
+N 3600 3600 1406 154.489610596 177.591688477 arc S
 0 A
-N 3600 3600 3642 177.592 200.694 arc S
-N 3600 3600 1406 177.592 200.694 arc S
+N 3600 3600 3642 177.591688477 200.693766358 arc S
+N 3600 3600 1406 177.591688477 200.693766358 arc S
 1 A
-N 3600 3600 3642 -159.306 -136.204 arc S
-N 3600 3600 1406 -159.306 -136.204 arc S
+N 3600 3600 3642 -159.306233642 -136.204155761 arc S
+N 3600 3600 1406 -159.306233642 -136.204155761 arc S
 0 A
-N 3600 3600 3642 -136.204 -113.102 arc S
-N 3600 3600 1406 -136.204 -113.102 arc S
+N 3600 3600 3642 -136.204155761 -113.102077881 arc S
+N 3600 3600 1406 -136.204155761 -113.102077881 arc S
 1 A
-N 3600 3600 3642 -113.102 -90 arc S
-N 3600 3600 1406 -113.102 -90 arc S
+N 3600 3600 3642 -113.102077881 -90 arc S
+N 3600 3600 1406 -113.102077881 -90 arc S
 0 A
-N 3600 3600 3642 -90 -66.8979 arc S
-N 3600 3600 1406 -90 -66.8979 arc S
+N 3600 3600 3642 -90 -66.8979221193 arc S
+N 3600 3600 1406 -90 -66.8979221193 arc S
 1 A
-N 3600 3600 3642 -66.8979 -43.7958 arc S
-N 3600 3600 1406 -66.8979 -43.7958 arc S
+N 3600 3600 3642 -66.8979221193 -43.7958442385 arc S
+N 3600 3600 1406 -66.8979221193 -43.7958442385 arc S
 0 A
-N 3600 3600 3642 -43.7958 -20.6938 arc S
-N 3600 3600 1406 -43.7958 -20.6938 arc S
+N 3600 3600 3642 -43.7958442385 -20.6937663578 arc S
+N 3600 3600 1406 -43.7958442385 -20.6937663578 arc S
 1 A
-N 3600 3600 3642 -20.6938 2.40831 arc S
-N 3600 3600 1406 -20.6938 2.40831 arc S
+N 3600 3600 3642 -20.6937663578 2.40831152294 arc S
+N 3600 3600 1406 -20.6937663578 2.40831152294 arc S
 0 A
-N 3600 3600 3642 2.40831 25.5104 arc S
-N 3600 3600 1406 2.40831 25.5104 arc S
+N 3600 3600 3642 2.40831152294 25.5103894037 arc S
+N 3600 3600 1406 2.40831152294 25.5103894037 arc S
 1 A
-N 3600 3600 3642 25.5104 48.6125 arc S
-N 3600 3600 1406 25.5104 48.6125 arc S
+N 3600 3600 3642 25.5103894037 48.6124672844 arc S
+N 3600 3600 1406 25.5103894037 48.6124672844 arc S
 0 A
 8 W
-N 3600 3600 3600 130.061 409.939 arc S
-N 3600 3600 3683 130.091 409.909 arc S
+N 3600 3600 3600 130.061248004 409.938751996 arc S
+N 3600 3600 3683 130.091254302 409.908745698 arc S
 N 6035 6363 M -1533 -1740 D S
 N 5973 6419 M -1534 -1740 D S
-N 3600 3600 1447 128.089 411.911 arc S
-N 3600 3600 1364 127.887 412.113 arc S
+N 3600 3600 1447 128.088950102 411.911049898 arc S
+N 3600 3600 1364 127.887446175 412.112553825 arc S
 N 2698 4623 M -1533 1740 D S
 N 2761 4679 M -1534 1740 D S
 1110 6426 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-V 41.4 R (0è) bc Z U
-2753 4561 M V 41.4 R (0è) tc Z U
-201 5222 M V 64.5 R (30è) bc Z U
-2444 4152 M V 64.5 R (30è) tc Z U
--163 3758 M V 87.6 R (60è) bc Z U
-2320 3654 M V 87.6 R (60è) tc Z U
-76 2269 M V -69.3 R (90è) tc Z U
-2402 3147 M V -69.3 R (90è) bc Z U
-881 993 M V -46.2 R (120è) tc Z U
-2675 2714 M V -46.2 R (120è) bc Z U
-2122 135 M V -23.1 R (150è) tc Z U
-3097 2422 M V -23.1 R (150è) bc Z U
+V 41.3875327156 R (0è) bc Z U
+2753 4561 M V 41.3875327156 R (0è) tc Z U
+201 5222 M V 64.4896105963 R (30è) bc Z U
+2444 4152 M V 64.4896105963 R (30è) tc Z U
+-163 3758 M V 87.5916884771 R (60è) bc Z U
+2320 3654 M V 87.5916884771 R (60è) tc Z U
+76 2269 M V -69.3062336422 R (90è) tc Z U
+2402 3147 M V -69.3062336422 R (90è) bc Z U
+881 993 M V -46.2041557615 R (120è) tc Z U
+2675 2714 M V -46.2041557615 R (120è) bc Z U
+2122 135 M V -23.1020778807 R (150è) tc Z U
+3097 2422 M V -23.1020778807 R (150è) bc Z U
 3600 -167 M (180è) tc Z
 3600 2319 M (180è) bc Z
-5078 135 M V 23.1 R (î150è) tc Z U
-4103 2422 M V 23.1 R (î150è) bc Z U
-6319 993 M V 46.2 R (î120è) tc Z U
-4525 2714 M V 46.2 R (î120è) bc Z U
-7124 2269 M V 69.3 R (î90è) tc Z U
-4798 3147 M V 69.3 R (î90è) bc Z U
-7363 3758 M V -87.6 R (î60è) bc Z U
-4880 3654 M V -87.6 R (î60è) tc Z U
-6999 5222 M V -64.5 R (î30è) bc Z U
-4756 4152 M V -64.5 R (î30è) tc Z U
-1387 6302 M V 0.241 R (30è) ml Z U
-5813 6302 M V -0.241 R (30è) mr Z U
-2446 5099 M V 0.241 R (60è) ml Z U
-4754 5099 M V -0.241 R (60è) mr Z U
+5078 135 M V 23.1020778807 R (î150è) tc Z U
+4103 2422 M V 23.1020778807 R (î150è) bc Z U
+6319 993 M V 46.2041557615 R (î120è) tc Z U
+4525 2714 M V 46.2041557615 R (î120è) bc Z U
+7124 2269 M V 69.3062336422 R (î90è) tc Z U
+4798 3147 M V 69.3062336422 R (î90è) bc Z U
+7363 3758 M V -87.5916884771 R (î60è) bc Z U
+4880 3654 M V -87.5916884771 R (î60è) tc Z U
+6999 5222 M V -64.4896105963 R (î30è) bc Z U
+4756 4152 M V -64.4896105963 R (î30è) tc Z U
+1345 6411 M V 41.3875327156 R (30è) ml Z U
+5855 6411 M V -41.3875327156 R (30è) mr Z U
+2405 5209 M V 41.3875327156 R (60è) ml Z U
+4795 5209 M V -41.3875327156 R (60è) mr Z U
 %%EndObject
 0 A
 FQ
@@ -8126,11 +8123,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R0/360/30/70 -JL180/50/40/60/6i -O -W2p
-%@PROJ: lcc 0.00000000 360.00000000 30.00000000 70.00000000 -7471460.233 7471460.233 -2227005.151 10850019.011 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=180 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: lcc 0.00000000 360.00000000 30.00000000 70.00000000 -7471460.233 7471460.233 -2227005.151 10850019.011 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=180 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 1220 6301 M
 -67 -61 D
@@ -8407,6 +8404,281 @@ clipsave
 P
 PSL_clip N
 33 W
+clipsave
+1220 6301 M
+-67 -61 D
+-66 -62 D
+-127 -130 D
+-81 -90 D
+-77 -93 D
+-75 -95 D
+-54 -73 D
+-85 -125 D
+-65 -102 D
+-75 -131 D
+-71 -134 D
+-52 -109 D
+-71 -167 D
+-53 -142 D
+-47 -144 D
+-33 -116 D
+-29 -117 D
+-31 -148 D
+-29 -179 D
+-17 -151 D
+-9 -120 D
+-6 -151 D
+1 -152 D
+9 -181 D
+11 -120 D
+11 -90 D
+29 -179 D
+31 -148 D
+37 -147 D
+43 -145 D
+39 -114 D
+54 -142 D
+73 -166 D
+53 -109 D
+42 -80 D
+59 -105 D
+79 -129 D
+50 -76 D
+88 -123 D
+55 -72 D
+76 -94 D
+79 -92 D
+82 -89 D
+129 -127 D
+112 -102 D
+93 -77 D
+95 -75 D
+98 -71 D
+100 -68 D
+103 -65 D
+104 -61 D
+160 -85 D
+109 -52 D
+167 -71 D
+142 -53 D
+144 -47 D
+116 -33 D
+117 -29 D
+148 -31 D
+180 -29 D
+150 -17 D
+120 -9 D
+121 -5 D
+121 -1 D
+121 3 D
+121 7 D
+120 11 D
+90 11 D
+180 29 D
+177 38 D
+146 38 D
+116 35 D
+115 39 D
+141 54 D
+139 60 D
+136 66 D
+133 71 D
+130 77 D
+102 66 D
+99 68 D
+98 72 D
+118 95 D
+91 79 D
+89 83 D
+107 106 D
+102 112 D
+78 92 D
+94 119 D
+71 97 D
+35 50 D
+82 127 D
+77 130 D
+85 160 D
+64 137 D
+59 139 D
+53 142 D
+47 144 D
+33 116 D
+36 147 D
+29 148 D
+24 150 D
+17 150 D
+9 121 D
+6 151 D
+-1 151 D
+-7 151 D
+-13 150 D
+-11 91 D
+-29 179 D
+-31 148 D
+-37 146 D
+-34 116 D
+-38 115 D
+-53 142 D
+-71 167 D
+-66 136 D
+-71 133 D
+-61 105 D
+-82 127 D
+-68 100 D
+-91 121 D
+-76 94 D
+-79 91 D
+-83 89 D
+-85 86 D
+-110 103 D
+-23 20 D
+-1423 -1615 D
+45 -41 D
+8 -9 D
+35 -34 D
+65 -73 D
+60 -76 D
+48 -70 D
+44 -73 D
+39 -76 D
+26 -55 D
+27 -67 D
+28 -81 D
+26 -94 D
+17 -83 D
+11 -72 D
+10 -109 D
+1 -122 D
+-8 -109 D
+-12 -84 D
+-11 -60 D
+-20 -82 D
+-29 -93 D
+-31 -80 D
+-24 -55 D
+-33 -66 D
+-29 -53 D
+-39 -62 D
+-41 -60 D
+-68 -86 D
+-57 -63 D
+-52 -51 D
+-64 -57 D
+-47 -38 D
+-39 -29 D
+-30 -21 D
+-30 -20 D
+-21 -13 D
+-21 -12 D
+-21 -13 D
+-21 -11 D
+-21 -12 D
+-22 -11 D
+-22 -11 D
+-22 -11 D
+-11 -5 D
+-11 -5 D
+-11 -5 D
+-11 -4 D
+-11 -5 D
+-11 -5 D
+-12 -4 D
+-11 -5 D
+-11 -4 D
+-12 -4 D
+-11 -4 D
+-12 -5 D
+-11 -3 D
+-12 -4 D
+-11 -4 D
+-12 -4 D
+-12 -3 D
+-11 -4 D
+-12 -3 D
+-12 -3 D
+-11 -4 D
+-12 -3 D
+-12 -3 D
+-12 -3 D
+-12 -2 D
+-11 -3 D
+-12 -3 D
+-12 -2 D
+-12 -3 D
+-12 -2 D
+-12 -2 D
+-12 -2 D
+-12 -2 D
+-12 -2 D
+-12 -2 D
+-12 -1 D
+-12 -2 D
+-12 -1 D
+-12 -2 D
+-12 -1 D
+-12 -1 D
+-13 -1 D
+-12 -1 D
+-12 -1 D
+-12 -1 D
+-12 -1 D
+-12 0 D
+-12 -1 D
+-13 0 D
+-12 0 D
+-12 0 D
+-12 0 D
+-12 0 D
+-12 0 D
+-12 0 D
+-61 3 D
+-85 8 D
+-96 15 D
+-95 22 D
+-81 25 D
+-35 12 D
+-57 21 D
+-66 29 D
+-66 33 D
+-42 23 D
+-73 45 D
+-60 41 D
+-86 68 D
+-63 57 D
+-51 52 D
+-57 64 D
+-60 76 D
+-48 70 D
+-44 73 D
+-39 76 D
+-26 55 D
+-27 68 D
+-17 45 D
+-31 105 D
+-21 95 D
+-13 84 D
+-10 109 D
+-1 122 D
+8 109 D
+12 84 D
+11 60 D
+17 71 D
+25 81 D
+12 35 D
+21 57 D
+29 66 D
+33 66 D
+23 42 D
+45 73 D
+41 60 D
+68 86 D
+57 63 D
+35 34 D
+8 9 D
+45 41 D
+P
+PSL_clip N
 1319 4688 M
 47 51 D
 31 35 D
@@ -8425,10 +8697,12 @@ PSL_clip N
 10 -6 D
 S
 PSL_cliprestore
+PSL_cliprestore
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U

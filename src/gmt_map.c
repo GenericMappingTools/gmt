@@ -9049,6 +9049,22 @@ unsigned int gmtlib_map_latcross (struct GMT_CTRL *GMT, double lat, double west,
 	double lon, lon_old, this_x, this_y, last_x, last_y, xlon[2], xlat[2], gap;
 	struct GMT_XINGS *X = NULL;
 
+	if (gmt_M_is_conical (GMT) && gmt_M_360_range (west, east)) {	/* Special case since 360 longitudes do not corm a circle but a pacman shape */
+		X = gmt_M_memory (GMT, NULL, 1U, struct GMT_XINGS);
+		X[0].nx = 2;	/* Will cut both east and west repeated boundaries */
+		/* Do west boundary */
+		gmt_geo_to_xy (GMT, west, lat, &X[0].xx[0], &X[0].yy[0]);
+		X[0].angle[0] = gmtmap_get_angle (GMT, west, GMT->common.R.wesn[YLO], west, GMT->common.R.wesn[YHI]) + 90.0;	/* Get angle of west boundary and add 90 */
+		X[0].sides[0] = W_SIDE;
+		/* Do east boundary */
+		gmt_geo_to_xy (GMT, east, lat, &X[0].xx[1], &X[0].yy[1]);
+		X[0].angle[1] = gmtmap_get_angle (GMT, east, GMT->common.R.wesn[YLO], east, GMT->common.R.wesn[YHI]) - 90.0;	/* Get angle of east boundary and subtract 90 */
+		X[0].sides[1] = E_SIDE;
+		*xings = X;
+		return 1;	/* Done here, returning array with single GMT_XINGS structure holding two crossings */
+	}
+
+	/* Remaining (general) cases */
 
 	X = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_XINGS);
 
