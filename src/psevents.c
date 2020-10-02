@@ -305,10 +305,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 
-			case 'N':		/* Do not skip points outside border */
+			case 'N':		/* Do not skip points outside border and don't clip labels */
 				Ctrl->N.active = true;
 				if (!(opt->arg[0] == '\0' || strchr ("rc", opt->arg[0]))) {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -N: Unrecognized argument %s\n", opt->arg);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -N: Unrecognized argument %s\n", opt->arg);
 					n_errors++;
 				}
 				sprintf (txt, " -N%s", opt->arg);	/* Create option to pass to plot/text */
