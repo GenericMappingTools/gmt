@@ -2370,7 +2370,10 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 			GMT->current.proj.projection_GMT == GMT_CYL_EQDIST || GMT->current.proj.projection_GMT == GMT_MILLER || GMT->current.proj.projection_GMT == GMT_LINEAR);
 		proj_B = (GMT->current.proj.projection_GMT == GMT_HAMMER || GMT->current.proj.projection_GMT == GMT_MOLLWEIDE ||
 			GMT->current.proj.projection_GMT == GMT_SINUSOIDAL);
-		annot_0_and_360 = (is_world_save && (proj_A || (!full_lat_range && proj_B)));
+		if (gmt_M_is_conical (GMT) && gmt_M_360_range (w, e))	/* Special case since 360 longitudes do not corm a circle but a pacman shape */
+			annot_0_and_360 = true;
+		else
+			annot_0_and_360 = (is_world_save && (proj_A || (!full_lat_range && proj_B)));
 	}
 	else
 		dx[0] = dx[1] = 0.0;
