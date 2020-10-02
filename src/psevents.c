@@ -311,8 +311,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -N: Unrecognized argument %s\n", opt->arg);
 					n_errors++;
 				}
-				sprintf (txt, " -N%s", opt->arg);	/* Create option to pass to plot/text */
-				Ctrl->N.arg = strdup (txt);
+				else {	/* Create option to pass to plot/text */
+					snprintf (txt, GMT_LEN128, " -N%s", opt->arg);
+					Ctrl->N.arg = strdup (txt);
+				}
 				break;
 			case 'Q':	/* Save events file for posterity */
 				Ctrl->Q.active = true;
