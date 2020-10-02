@@ -833,9 +833,10 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Ctrl->C.dist_mode = GMT_GREATCIRCLE;
 			}
 			if (Ctrl->A.loxo) GMT->current.map.loxodrome = true, Ctrl->C.dist_mode = 1 + GMT_LOXODROME;
-			if (gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.dist_mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+			if (gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.dist_mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) {
 				gmt_M_free (GMT, GC);	gmt_M_free (GMT, value);
 				Return (GMT_NOT_A_VALID_TYPE);
+			}
 		}
 
 		/* Expand with dist,az columns (mode = 2) (and possibly make space for more) and optionally resample */
