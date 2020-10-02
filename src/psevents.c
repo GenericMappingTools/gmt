@@ -88,6 +88,10 @@ struct PSEVENTS_CTRL {
 		bool active[3];
 		double value[3][2];
 	} M;
+	struct PSEVENTS_N {	/* -N[r|c] */
+		bool active;
+		char *arg;	/* We will pass this to psxy */
+	} N;
 	struct PSEVENTS_Q {	/* 	-Q<prefix> */
 		bool active;
 		char *file;
@@ -122,6 +126,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *C) {	/* Deall
 	gmt_M_str_free (C->D.string);
 	gmt_M_str_free (C->F.string);
 	gmt_M_str_free (C->G.color);
+	gmt_M_str_free (C->N.arg);
 	gmt_M_str_free (C->Q.file);
 	gmt_M_str_free (C->S.symbol);
 	gmt_M_str_free (C->W.pen);
@@ -134,7 +139,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -S<symbol>[<size>]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T<now> [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]] [-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] [-G<color>] [-L[t|<length>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Mi|s|t<val1>[+c<val2]] [-Q<prefix>] [-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Mi|s|t<val1>[+c<val2]] [-N[c|r]] [-Q<prefix>] [-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -173,6 +178,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set finite length of events, otherwise we assume they are all infinite.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no arg we read lengths from file; append t for reading end times instead.\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify a fixed symbol color [no fill].");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border [clipping is on].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nr to turn off clipping and plot repeating symbols for periodic maps.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nc to retain clipping but turn off plotting of repeating symbols for periodic maps.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will clip or skip symbols that fall outside and plot repeating symbols].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Append i for intensity, s for size, or t for transparency; repeatable.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append value to use during rise, plateau, or decay phases.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to set a separate terminal value for the coda [no coda].\n");
@@ -296,6 +305,17 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 
+			case 'N':		/* Do not skip points outside border and don't clip labels */
+				Ctrl->N.active = true;
+				if (!(opt->arg[0] == '\0' || strchr ("rc", opt->arg[0]))) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -N: Unrecognized argument %s\n", opt->arg);
+					n_errors++;
+				}
+				else {	/* Create option to pass to plot/text */
+					snprintf (txt, GMT_LEN128, " -N%s", opt->arg);
+					Ctrl->N.arg = strdup (txt);
+				}
+				break;
 			case 'Q':	/* Save events file for posterity */
 				Ctrl->Q.active = true;
 				if (opt->arg[0]) Ctrl->Q.file = strdup (opt->arg);
@@ -634,6 +654,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 		if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file);}
 		if (Ctrl->G.active) {strcat (cmd, " -G"); strcat (cmd, Ctrl->G.color);}
 		if (Ctrl->W.pen) {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.pen);}
+		if (Ctrl->N.active) strcat (cmd, Ctrl->N.arg);
 		GMT_Report (API, GMT_MSG_DEBUG, "cmd: gmt plot %s\n", cmd);
 
 		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Plot the symbols */
@@ -652,6 +673,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 		sprintf (cmd, "%s -R -J -O -K -t --GMT_HISTORY=readonly", tmp_file_labels);
 		if (Ctrl->D.active) {strcat (cmd, " -D"); strcat (cmd, Ctrl->D.string);}
 		if (Ctrl->F.active) {strcat (cmd, " -F"); strcat (cmd, Ctrl->F.string);}
+		if (Ctrl->N.active) strcat (cmd, " -N");
 		GMT_Report (API, GMT_MSG_DEBUG, "cmd: gmt pstext %s\n", cmd);
 
 		if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Plot the labels */
