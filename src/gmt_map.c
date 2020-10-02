@@ -9049,7 +9049,7 @@ unsigned int gmtlib_map_latcross (struct GMT_CTRL *GMT, double lat, double west,
 	double lon, lon_old, this_x, this_y, last_x, last_y, xlon[2], xlat[2], gap;
 	struct GMT_XINGS *X = NULL;
 
-	if (gmt_M_is_conical (GMT) && gmt_M_360_range (west, east)) {	/* Special case since 360 longitudes do not corm a circle but a pacman shape */
+	if (gmt_M_is_conical (GMT) && gmt_M_360_range (west, east)) {	/* Special case since 360 longitudes do not form a circle but a pacman shape */
 		X = gmt_M_memory (GMT, NULL, 1U, struct GMT_XINGS);
 		X[0].nx = 2;	/* Will cut both east and west repeated boundaries */
 		/* Do west boundary */
