@@ -8447,6 +8447,10 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 				"Option -R: Mix W and E longitudes in region setting, adjusted to [%g %g]\n", p[0], p[1]);
 		}
+		if (gmt_M_is_conical (GMT) && gmt_M_360_range (p[0], p[1]) && !doubleAlmostEqualZero (0.5 * (p[0] + p[1]), GMT->current.proj.pars[0])) {
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Conical projections with full 360 longitude range require the projection central longitude to be at the mid-point\n");
+			error++;
+		}
 #if 0	/* This causes too much trouble: Better to annoy the person wishing this to work vs annoy all those who made an honest error.  We cannot be mind-readers here so we insist on e > w */
 		else if (p[0] > p[1]) {	/* Arrange so geographic region always has w < e */
 			if (GMT->current.io.geo.range == GMT_IS_M180_TO_P180_RANGE) p[0] -= 360.0; else p[1] += 360.0;
