@@ -50,7 +50,9 @@ enum Psevent {	/* Misc. named array indices */
 	PSEVENTS_INFINITE = 0,
 	PSEVENTS_FIXED_DURATION = 1,
 	PSEVENTS_VAR_DURATION = 2,
-	PSEVENTS_VAR_ENDTIME = 3
+	PSEVENTS_VAR_ENDTIME = 3,
+	PSEVENTS_LINE_REC = 0,
+	PSEVENTS_LINE_SEG = 1
 };
 
 #define PSEVENTS_MODS "dfloOpr"
@@ -58,6 +60,10 @@ enum Psevent {	/* Misc. named array indices */
 /* Control structure for psevents */
 
 struct PSEVENTS_CTRL {
+	struct PSEVENTS_A {	/* 	-Ap|s */
+		bool active;
+		unsigned int mode;
+	} A;
 	struct PSEVENTS_C {	/* 	-C<cpt> */
 		bool active;
 		char *file;
@@ -151,6 +157,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Record format: lon lat [z] [size] time [length|time2].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Select plotting of lines or polygons when no -S is given.  Choose input mode:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append r to read records for lines with time in column 3\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to read segments for lines or polygons with time via segment header -Tstring\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Give <cpt> and obtain symbol color via z-value in 3rd data column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Add <add_x>,<add_y> to the event text origin AFTER projecting with -J [0/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dj to move text origin away from point (direction determined by text's justification).\n");
@@ -212,6 +221,18 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				break;
 
 			/* Processes program-specific parameters */
+
+			case 'A':	/* Plotting lines or polygons, how are they given */
+				Ctrl->A.active = true;
+				switch (opt->arg[0]) {
+					case 'r':	Ctrl->A.mode = PSEVENTS_LINE_REC; break;
+					case 's':	Ctrl->A.mode = PSEVENTS_LINE_SEG; break;
+					default:
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Specify -Ar|s\n");
+						n_errors++;
+						break;
+				}
+				break;
 
 			case 'C':	/* Set a cpt for converting z column to color */
 				Ctrl->C.active = true;
@@ -418,17 +439,20 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 
 EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	char tmp_file_symbols[PATH_MAX] = {""}, tmp_file_labels[PATH_MAX] = {""}, cmd[BUFSIZ] = {""};
+	char t_string[GMT_LEN128] = {""};
 
 	bool do_coda, finite_duration;
 
 	int error;
+
+	enum gmt_col_enum time_type;
 
 	unsigned int n_cols_needed = 3, s_in = 2, t_in = 2, d_in = 3, s_col = 2, i_col = 3, t_col = 4;
 
 	uint64_t n_total_read = 0, n_symbols_plotted = 0, n_labels_plotted = 0;
 
 	double out[6] = {0, 0, 0, 0, 0, 0}, t_end = DBL_MAX, *in = NULL;
-	double t_event, t_rise, t_plateau, t_decay, t_fade, x, size;
+	double t_event, t_rise, t_plateau, t_decay, t_fade, x, size, t_event_seg, t_end_seg;
 
 	FILE *fp_symbols = NULL, *fp_labels = NULL;
 
@@ -460,10 +484,18 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 	/* Now we are ready to take on some input values */
 
-	/* We read as points. */
-	if (Ctrl->C.active) n_cols_needed++;	/* Must allow for z in input */
-	if (Ctrl->S.mode) n_cols_needed++;	/* Must allow for size in input */
-	if (Ctrl->L.mode == PSEVENTS_VAR_DURATION || Ctrl->L.mode == PSEVENTS_VAR_ENDTIME) n_cols_needed++;	/* Must allow for length/time in input */
+	if (Ctrl->S.active) {	/* We read as points */
+		if (Ctrl->C.active) n_cols_needed++;	/* Must allow for z in input */
+		if (Ctrl->S.mode) n_cols_needed++;	/* Must allow for size in input */
+		if (Ctrl->L.mode == PSEVENTS_VAR_DURATION || Ctrl->L.mode == PSEVENTS_VAR_ENDTIME) n_cols_needed++;	/* Must allow for length/time in input */
+	}
+	else {	/* We read lines or polygons */
+		n_cols_needed = 2;
+		if (Ctrl->A.mode == PSEVENTS_LINE_REC) {
+			n_cols_needed++;	/* For event time */
+			if (Ctrl->L.mode == PSEVENTS_VAR_DURATION || Ctrl->L.mode == PSEVENTS_VAR_ENDTIME) n_cols_needed++;	/* Must allow for length/time in input */
+		}
+	}
 	GMT_Set_Columns (API, GMT_IN, n_cols_needed, GMT_COL_FIX);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
@@ -478,6 +510,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	/* Determine if there is a coda phase where symbols remain visible after the event ends: */
 	do_coda = (Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2] > 0.0 || !gmt_M_is_zero (Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2]) || Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] < 100.0);
 	finite_duration = (Ctrl->L.mode != PSEVENTS_INFINITE);
+	time_type = gmt_M_type (GMT, GMT_IN, t_in);
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -488,6 +521,23 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			}
 			else if (gmt_M_rec_is_eof (GMT)) 	/* Reached end of file */
 				break;
+			else if (gmt_M_rec_is_segment_header (GMT) && Ctrl->A.active) {	/* Process and echo any segment headers for lines and polygons */
+				if (gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-T", t_string)) {	/* Found -Targs */
+					if (Ctrl->L.mode == PSEVENTS_FIXED_DURATION) {	/* Just get event time */
+						gmt_scanf_arg (GMT, t_string, time_type, false, &t_event_seg);
+					}
+					else {	/* Get both event time and end time */
+						char start[GMT_LEN64] = {""}, stop[GMT_LEN64] = {""};
+						sscanf (t_string, "%s,%s", start, stop);
+						gmt_scanf_arg (GMT, start, time_type, false, &t_event_seg);
+						gmt_scanf_arg (GMT, stop,  time_type, false, &t_end_seg);
+					}
+				}
+				if (!GMT->current.io.segment_header[0])		/* No header contents */
+					fprintf (fp_symbols, "%c\n", GMT->current.setting.io_seg_marker[GMT_OUT]);
+				else
+					fprintf (fp_symbols, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], GMT->current.io.segment_header);
+			}
 			else if (gmt_M_rec_is_any_header (GMT)) {	/* Skip all types of headers */
 				/* Do nothing */
 			}
@@ -502,6 +552,12 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 		in = In->data;	/* The numerical part */
 		n_total_read++;	/* Successfully read an input record */
+
+		if (Ctrl->A.mode == PSEVENTS_LINE_SEG) {	/* Assign new segment start/end times for lines/polygons */
+			in[t_in] = t_event_seg;	/* Current segment event start time */
+			if (Ctrl->L.mode == PSEVENTS_VAR_ENDTIME)	/* Only show the event as stable until its end time */
+				in[d_in] = t_end_seg;
+		}
 
 		if (Ctrl->E.active[PSEVENTS_SYMBOL]) {	/* Plot event symbols */
 			t_end = DBL_MAX;	/* Infinite duration until overridden below */
