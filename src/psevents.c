@@ -557,7 +557,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 		if (Ctrl->A.mode == PSEVENTS_LINE_SEG) {	/* Assign new segment start/end times for lines/polygons */
 			in[t_in] = t_event_seg;	/* Current segment event start time */
-			if (Ctrl->L.mode == PSEVENTS_VAR_ENDTIME)	/* Only show the event as stable until its end time */
+			if (Ctrl->L.mode == PSEVENTS_VAR_ENDTIME)	/* Set segment end time */
 				in[d_in] = t_end_seg;
 		}
 
@@ -629,7 +629,6 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 				out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2];
 			}
 			if (out_segment) {	/* Write segment header for lines and polygons only */
-				char new_header[GMT_LEN256] = {""};
 				fprintf (fp_symbols, "%c -t%g %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], out[t_col], GMT->current.io.segment_header);
 				out_segment = false;	/* Wait for next */
 			}
@@ -714,7 +713,10 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 		fclose (fp_symbols);	/* First close the file so symbol output is flushed */
 		/* Build plot command with fixed options and those that depend on -C -G -W.
 		 * We must set symbol unit as inch since we are passing sizes in inches directly (dimensions are in inches internally in GMT).  */
-		sprintf (cmd, "%s -R -J -O -K -I -t -S%s --GMT_HISTORY=readonly --PROJ_LENGTH_UNIT=%s", tmp_file_symbols, Ctrl->S.symbol, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+		if (Ctrl->A.active)
+			sprintf (cmd, "%s -R -J -O -K--GMT_HISTORY=readonly", tmp_file_symbols);
+		else
+			sprintf (cmd, "%s -R -J -O -K -I -t -S%s --GMT_HISTORY=readonly --PROJ_LENGTH_UNIT=%s", tmp_file_symbols, Ctrl->S.symbol, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 		if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file);}
 		if (Ctrl->G.active) {strcat (cmd, " -G"); strcat (cmd, Ctrl->G.color);}
 		if (Ctrl->W.pen) {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.pen);}
