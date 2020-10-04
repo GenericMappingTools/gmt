@@ -5513,7 +5513,7 @@ GMT_LOCAL void gmtplot_check_primary_secondary (struct GMT_CTRL *GMT) {
 }
 
 
-void gmtplot_map_griditems (struct GMT_CTRL *GMT) {
+GMT_LOCAL void gmtplot_map_griditems (struct GMT_CTRL *GMT) {
 	double w, e, s, n;
 	struct PSL_CTRL *PSL= GMT->PSL;
 
@@ -5543,7 +5543,19 @@ void gmtplot_map_griditems (struct GMT_CTRL *GMT) {
 	GMT->current.map.frame.gridline_plotted = true;	/* Since gmt_map_gridlines is called in gmt_map_basemap we flag if we already have done this step */
 }
 
-void gmt_map_tick_annot (struct GMT_CTRL *GMT) {
+GMT_LOCAL void gmtplot_map_tick_marks (struct GMT_CTRL *GMT) {
+	double w, e, s, n;
+	struct PSL_CTRL *PSL= GMT->PSL;
+
+	if (GMT->current.map.frame.order == GMT_BASEMAP_BEFORE && GMT->current.map.frame.basemap_flag & GMT_BASEMAP_ANNOT_AFTER) return;	/* Wrong order */
+	if (GMT->current.map.frame.order == GMT_BASEMAP_AFTER  && !(GMT->current.map.frame.basemap_flag & GMT_BASEMAP_ANNOT_AFTER)) return;	/* Wrong order */
+
+	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
+
+	gmtplot_map_tickmarks (GMT, PSL, w, e, s, n);
+}
+
+GMT_LOCAL void gmtplot_map_annotations (struct GMT_CTRL *GMT) {
 	double w, e, s, n;
 	struct PSL_CTRL *PSL= GMT->PSL;
 
@@ -5606,11 +5618,17 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 	/* 2. Next is map frame, if requested in the current order */
 
-	gmtplot_map_boundary (GMT);	/* This sets frame.side[] = true|false so must come before map_annotate */
+	if (GMT->current.setting.map_frame_type != GMT_IS_PLAIN)	/* Lay down fancy before ticks */
+		gmtplot_map_boundary (GMT);	/* This sets frame.side[] = true|false so must come before map_annotate */
 
 	/* 3. Last is annotations and tick marks */
 	
-	gmt_map_tick_annot (GMT);
+	gmtplot_map_tick_marks (GMT);
+
+	if (GMT->current.setting.map_frame_type == GMT_IS_PLAIN)	/* Lay down plain after ticks */
+		gmtplot_map_boundary (GMT);	/* This sets frame.side[] = true|false so must come before map_annotate */
+
+	gmtplot_map_annotations (GMT);
 
 	if (clip_on) gmt_map_clip_off (GMT);
 
@@ -5657,8 +5675,14 @@ void gmt_set_basemap_orders (struct GMT_CTRL *GMT, unsigned int frame, unsigned 
 		annot = GMT_BASEMAP_ANNOT_AFTER;
 
 		/* Finally, since ticks overprint the frame we make sure annot/ticks are never done before the frame */
-	if (annot == GMT_BASEMAP_ANNOT_BEFORE && frame == GMT_BASEMAP_FRAME_AFTER)
-		annot = GMT_BASEMAP_ANNOT_AFTER;
+	if (GMT->current.setting.map_frame_type == GMT_IS_PLAIN) {	/* Ticks must be done before frame */
+		if (annot == GMT_BASEMAP_ANNOT_AFTER && frame == GMT_BASEMAP_FRAME_BEFORE)
+			annot = GMT_BASEMAP_ANNOT_BEFORE;
+	}
+	else {	/* Fancy maps need ticks on top */
+		if (annot == GMT_BASEMAP_ANNOT_BEFORE && frame == GMT_BASEMAP_FRAME_AFTER)
+			annot = GMT_BASEMAP_ANNOT_AFTER;
+	}
 	GMT->current.map.frame.basemap_flag = frame + grid + annot;
 }
 
