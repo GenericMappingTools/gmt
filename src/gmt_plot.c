@@ -5571,14 +5571,17 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	/* This function is usually called twice by modules: Once before data-plotting starts and
 	 * once after all data-plotting has ended.  This is because different modules have different
 	 * needs related to visibility and order of items. Each call will consult a bitflag that determines
-	 * if a particular aspect should be plotted this time.  The three items are
+	 * if a particular aspect should be plotted this time.  The three items are:
+	 *
 	 * 1. The base frame (fancy or plain). Flag 0 means plot before data, 1 means after data
 	 * 2. The grid lines or grid ticks. Flag 0 means plot before data, 2 means after data
 	 * 3. Frame annotations and tick marks. Flag 0 means plot before data, 4 means after data
+	 *
 	 * In addition, your -B selections may not actually include all of those choices, of course.
 	 */
+
 	unsigned int side;
-	bool clip_on = false, do_frame = true;
+	bool clip_on = false;
 	char *order[2] = {"before", "after"};
 	struct PSL_CTRL *PSL= GMT->PSL;
 
@@ -5609,23 +5612,20 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 		clip_on = true;
 	}
 
-	/* 1. Lowest plot level is to place grid lines, ticks, crosses, if they are requested and expected at the current order. */
+	/* 1. Lowest plot level is to place grid lines, ticks, crosses, if they are requested and expected at the current order.
+	 *    For some modules, gridlines are placed on top of the data (polygons, land-masses). */
 
-	gmtplot_map_griditems (GMT);	/* Draw gridlines/ticks if not already called directly (e.g., plot, plot3d) */
+	gmtplot_map_griditems (GMT);
 
-	/* 2. Next is map frame, if requested in the current order */
-
-	if (GMT->current.setting.map_frame_type != GMT_IS_PLAIN && GMT->common.B.active[GMT_PRIMARY] != GMT->common.B.active[GMT_SECONDARY]) {	/* Lay down fancy before ticks */
-		gmtplot_map_boundary (GMT);	/* This sets frame.side[] = true|false so must come before map_annotate */
-		do_frame = false;
-	}
-
-	/* 3. Last is annotations and tick marks */
+	/* 2. Next is tick marks */
 	
 	gmtplot_map_tick_marks (GMT);
 
-	if (do_frame)	/* Lay down plain after ticks */
-		gmtplot_map_boundary (GMT);	/* This sets frame.side[] = true|false so must come before map_annotate */
+	/* 3. Next is map frame */
+
+	gmtplot_map_boundary (GMT);	/* This sets frame.side[] = true|false so MUST come before gmtplot_map_annotations */
+
+	/* 4. End with annotations, if requested in the current order */
 
 	gmtplot_map_annotations (GMT);
 
