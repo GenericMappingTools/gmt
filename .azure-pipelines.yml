@@ -206,7 +206,7 @@ jobs:
 ########################################################################################
 - job:
   displayName: 'Windows | Test'
-  # condition: eq(variables['Build.Reason'], 'Schedule')
+  condition: eq(variables['Build.Reason'], 'Schedule')
   timeoutInMinutes: 180
 
   pool:
