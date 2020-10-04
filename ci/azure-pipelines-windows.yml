@@ -12,6 +12,12 @@ steps:
     cacheHitVar: CACHE_VCPKG_RESTORED
   displayName: Cache vcpkg libraries
 
+# Strawberry Perl provides pkg-config, which breaks other things
+- script: |
+    rmdir C:\strawberry /s /q
+  continueOnError: true
+  displayName: Remove Strawberry Perl
+
 - bash: |
     set -x -e
     # Update vcpkg and checkout specific tag
