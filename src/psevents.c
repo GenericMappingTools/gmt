@@ -51,8 +51,8 @@ enum Psevent {	/* Misc. named array indices */
 	PSEVENTS_FIXED_DURATION = 1,
 	PSEVENTS_VAR_DURATION = 2,
 	PSEVENTS_VAR_ENDTIME = 3,
-	PSEVENTS_LINE_REC = 0,
-	PSEVENTS_LINE_SEG = 1
+	PSEVENTS_LINE_REC = 1,
+	PSEVENTS_LINE_SEG = 2
 };
 
 #define PSEVENTS_MODS "dfloOpr"
@@ -158,7 +158,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Record format: lon lat [z] [size] time [length|time2].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Select plotting of lines or polygons when no -S is given.  Choose input mode:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append r to read records for lines with time in column 3\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append r to read records for lines with time in column 3.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to read segments for lines or polygons with time via segment header -Tstring\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Give <cpt> and obtain symbol color via z-value in 3rd data column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Add <add_x>,<add_y> to the event text origin AFTER projecting with -J [0/0].\n");
@@ -419,6 +419,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_col;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_col, "Binary input data (-bi) must have at least %u columns.\n", n_col);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Cannot specify both -C and -G.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == PSEVENTS_LINE_REC && Ctrl->G.active, "Option -G: Cannot be used with lines (-Ar).\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == PSEVENTS_LINE_REC && Ctrl->C.active, "Option -C: Cannot be used with lines (-Ar).\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.string == NULL, "Option -D: No argument given\n");
 	n_errors += gmt_M_check_condition (GMT, !gmt_M_is_zero (Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_DECAY]), "Option -Et: No decay phase for labels.\n");
 	n_errors += gmt_M_check_condition (GMT, !gmt_M_is_zero (Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_PLATEAU]), "Option -Et: No plateau phase for labels.\n");
@@ -441,7 +443,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	char tmp_file_symbols[PATH_MAX] = {""}, tmp_file_labels[PATH_MAX] = {""}, cmd[BUFSIZ] = {""};
 	char string[GMT_LEN128] = {""};
 
-	bool do_coda, finite_duration;
+	bool do_coda, finite_duration, out_segment = false;
 
 	int error;
 
@@ -536,10 +538,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 				if (Ctrl->C.active && gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-Z", string)) {	/* Found required -Z<val> */
 					gmt_scanf_arg (GMT, string, GMT_FLOAT, false, &z_val);
 				}
-				if (!GMT->current.io.segment_header[0])		/* No header contents */
-					fprintf (fp_symbols, "%c\n", GMT->current.setting.io_seg_marker[GMT_OUT]);
-				else
-					fprintf (fp_symbols, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], GMT->current.io.segment_header);
+				out_segment = true;	/* Time to echo out a segment header */
 			}
 			else if (gmt_M_rec_is_any_header (GMT)) {	/* Skip all types of headers */
 				/* Do nothing */
@@ -629,7 +628,14 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 				out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2];
 				out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2];
 			}
-			if (Ctrl->C.active)	/* Need to pass on the z-value for cpt lookup in plot */
+			if (out_segment) {	/* Write segment header for lines and polygons only */
+				char new_header[GMT_LEN256] = {""};
+				fprintf (fp_symbols, "%c -t%g %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], out[t_col], GMT->current.io.segment_header);
+				out_segment = false;	/* Wait for next */
+			}
+			if (Ctrl->A.active)	/* Just the line coordinates */
+				fprintf (fp_symbols, "%.16g\t%.16g\n", out[GMT_X], out[GMT_Y]);
+			else if (Ctrl->C.active)	/* Need to pass on the z-value for cpt lookup in plot */
 				fprintf (fp_symbols, "%.16g\t%.16g\t%.16g\t%g\t%g\t%g\n", out[GMT_X], out[GMT_Y], out[GMT_Z], out[s_col], out[i_col], out[t_col]);
 			else
 				fprintf (fp_symbols, "%.16g\t%.16g\t%g\t%g\t%g\n", out[GMT_X], out[GMT_Y], out[s_col], out[i_col], out[t_col]);
