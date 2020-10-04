@@ -5564,11 +5564,8 @@ GMT_LOCAL void gmtplot_map_annotations (struct GMT_CTRL *GMT) {
 
 	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
 
-	gmtplot_map_tickmarks (GMT, PSL, w, e, s, n);
-
 	gmtplot_map_annotate (GMT, PSL, w, e, s, n);
 }
-
 
 void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	/* This function is usually called twice by modules: Once before data-plotting starts and
@@ -5581,7 +5578,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	 * In addition, your -B selections may not actually include all of those choices, of course.
 	 */
 	unsigned int side;
-	bool clip_on = false;
+	bool clip_on = false, do_frame = true;
 	char *order[2] = {"before", "after"};
 	struct PSL_CTRL *PSL= GMT->PSL;
 
@@ -5618,14 +5615,16 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 	/* 2. Next is map frame, if requested in the current order */
 
-	if (GMT->current.setting.map_frame_type != GMT_IS_PLAIN)	/* Lay down fancy before ticks */
+	if (GMT->current.setting.map_frame_type != GMT_IS_PLAIN && GMT->common.B.active[GMT_PRIMARY] != GMT->common.B.active[GMT_SECONDARY]) {	/* Lay down fancy before ticks */
 		gmtplot_map_boundary (GMT);	/* This sets frame.side[] = true|false so must come before map_annotate */
+		do_frame = false;
+	}
 
 	/* 3. Last is annotations and tick marks */
 	
 	gmtplot_map_tick_marks (GMT);
 
-	if (GMT->current.setting.map_frame_type == GMT_IS_PLAIN)	/* Lay down plain after ticks */
+	if (do_frame)	/* Lay down plain after ticks */
 		gmtplot_map_boundary (GMT);	/* This sets frame.side[] = true|false so must come before map_annotate */
 
 	gmtplot_map_annotations (GMT);
