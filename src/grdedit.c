@@ -294,6 +294,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 	}
 
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, Ctrl->G.active ? GMT_CONTAINER_AND_DATA : GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+		free(projstring);
 		Return (API->error);
 	}
 	grid_was_read = Ctrl->G.active;
@@ -302,11 +303,13 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 	if ((G->header->type == GMT_GRID_IS_SF || G->header->type == GMT_GRID_IS_SD) && Ctrl->T.active) {
 		GMT_Report (API, GMT_MSG_ERROR, "Toggling registrations not possible for Surfer grid formats\n");
 		GMT_Report (API, GMT_MSG_ERROR, "(Use grdconvert to convert to GMT default format and work on that file)\n");
+		free(projstring);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (Ctrl->S.active && !gmt_grd_is_global (GMT, G->header)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Shift only allowed for global grids\n");
+		free(projstring);
 		Return (GMT_RUNTIME_ERROR);
 	}
 

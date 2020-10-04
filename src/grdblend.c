@@ -947,7 +947,10 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 		gmt_M_memset (z, Grid->header->n_columns, gmt_grdfloat);	/* Start from scratch */
 
 		status = grdblend_sync_input_rows (GMT, row, blend, n_blend, Grid->header->xy_off);	/* Wind each input file to current record and read each of the overlapping rows */
-		if (status) Return (status);
+		if (status) {
+			gmt_M_free (GMT, z);
+			Return (status);
+		}
 
 		for (col = 0; col < Grid->header->n_columns; col++) {	/* For each output node on the current row */
 

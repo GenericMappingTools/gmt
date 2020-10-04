@@ -8447,6 +8447,10 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 				"Option -R: Mix W and E longitudes in region setting, adjusted to [%g %g]\n", p[0], p[1]);
 		}
+		if (gmt_M_is_conical (GMT) && gmt_M_360_range (p[0], p[1]) && !doubleAlmostEqualZero (0.5 * (p[0] + p[1]), GMT->current.proj.pars[0])) {
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Conical projections with full 360 longitude range require the projection central longitude to be at the mid-point\n");
+			error++;
+		}
 #if 0	/* This causes too much trouble: Better to annoy the person wishing this to work vs annoy all those who made an honest error.  We cannot be mind-readers here so we insist on e > w */
 		else if (p[0] > p[1]) {	/* Arrange so geographic region always has w < e */
 			if (GMT->current.io.geo.range == GMT_IS_M180_TO_P180_RANGE) p[0] -= 360.0; else p[1] += 360.0;
@@ -9448,7 +9452,7 @@ GMT_LOCAL char * gmtinit_print_map_annot_oblique (struct GMT_CTRL *GMT, unsigned
 	unsigned int bit, k, first = 1;
 
 	if ((val & 1) == 0) {	/* separate and anywhere are mutually exclusive */
-		strcpy (string, map_annot_oblique_item[0]);
+		strncpy (string, map_annot_oblique_item[0], GMT_LEN128-1);
 		first = 0;
 	}
 	for (k = 1; k < N_MAP_ANNOT_OBLIQUE_ITEMS; k++) {
@@ -9802,7 +9806,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.map_degree_symbol = gmt_none;
 			else
 				error = true;
-			error = gmtlib_plot_C_format (GMT);	/* Update format statement since degree symbol may have changed */
+			error += gmtlib_plot_C_format (GMT);	/* Update format statement since degree symbol may have changed */
 			break;
 		case GMTCASE_BASEMAP_AXES:
 			GMT_COMPAT_TRANSLATE ("MAP_FRAME_AXES");
@@ -13621,7 +13625,7 @@ GMT_LOCAL bool gmtinit_build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_O
 			arg[len++] = c[k++];
 	}
 	else if (!slash && c[1])	/* More arguments after initial scale, probably -JPa?/angle */
-		strcat (arg, &c[1]);
+		strncat (arg, &c[1], GMT_LEN128-1);
 	if (slash && (c2 = strchr (&c[1], '?'))) {	/* Must place a Y-scale instead of the 2nd ? mark */
 		strcat (arg, "/");	/* Add the slash divider */
 		strcat (arg, sclY);	/* Append the y scale/height */
@@ -16055,19 +16059,19 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					code[0] = item[q]; code[1] = (item[q]) ? item[q+1] : '\0';
 					if (c) c[0] = '+';	/* Restore modifiers */
 					if (code[0] == '\0') {	/* Default is -Baf if nothing given */
-						if (q) args[0] = item[0]; strcat (args, "af");	if (c) strcat (args, c);
+						if (q) args[0] = item[0]; strcat (args, "af");	if (c) strncat (args, c, GMT_LEN256-1);
 					}
 					else if (code[0] == 'x' && code[1] == '\0') {	/* If indicating x we do -Bxaf */
-						if (q) args[0] = item[0]; strcat (args, "xaf");	if (c) strcat (args, c);
+						if (q) args[0] = item[0]; strcat (args, "xaf");	if (c) strncat (args, c, GMT_LEN256-1);
 					}
 					else if (code[0] == 'y' && code[1] == '\0') {	/* If indicating y we do -Byaf */
-						if (q) args[0] = item[0]; strcat (args, "yaf");	if (c) strcat (args, c);
+						if (q) args[0] = item[0]; strcat (args, "yaf");	if (c) strncat (args, c, GMT_LEN256-1);
 					}
 					else if (code[0] == 'z' && code[1] == '\0') {	/* If indicating z we do -Bzaf */
-						if (q) args[0] = item[0]; strcat (args, "zaf");	if (c) strcat (args, c);
+						if (q) args[0] = item[0]; strcat (args, "zaf");	if (c) strncat (args, c, GMT_LEN256-1);
 					}
 					else	/* Keep what we got */
-						strcpy (args, item);
+						strncpy (args, item, GMT_LEN256-1);
 					error = gmtlib_parse_B_option (GMT, args);
 				}
 				else
@@ -17226,7 +17230,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the format */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
 						strcat (cmd, option);
-						if (p[0] == 'D') strcpy (dir, &p[1]);	/* Needed in show */
+						if (p[0] == 'D') strncpy (dir, &p[1], GMT_LEN1024-1);	/* Needed in show */
 					}
 				}
 				if (not_PS && auto_size && !gmtinit_A_was_given (fig[k].options))	/* Must always add -A if not PostScript unless when media size is given, unless crop is off via +n */
@@ -17449,6 +17453,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg, char *parfile) {
 			snprintf (file, PATH_MAX, "%s/gmt.movie%ss", API->gwf_dir, F_name[k]);
 			if ((fpM[k] = fopen (file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Cannot create file %s\n", file);
+				fclose (fp);
 				return GMT_ERROR_ON_FOPEN;
 			}
 			fprintf (fpM[k], "# movie %s information file\n", F_name[k]);
@@ -18026,7 +18031,7 @@ int gmt_report_usage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options, unsig
 }
 
 void gmtlib_reparse_i_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
-	char text[GMT_LEN8] = {""}, token[GMT_BUFSIZ] = {""};
+	char text[GMT_LEN8] = {""}, token[PATH_MAX] = {""};
 	bool o_trailing = GMT->current.io.trailing_text[GMT_OUT];	/* Since -i parsing below will wipe any -o setting that excludes trailing text */
 	size_t k;
 	if (n_columns == 0) return;	/* Cannot update the string */
@@ -18034,7 +18039,7 @@ void gmtlib_reparse_i_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
 	strncpy (token, GMT->common.i.string, k+1);	/* Get duplicate, this ends with - or : */
 	sprintf (text, "%d", (int)n_columns-1);
 	strcat (token, text);	/* Add explicit last column to include */
-	if (GMT->common.i.string[k+1] == ',') strcat (token, &GMT->common.i.string[k+1]);	/* Probably trailing text selections */
+	if (GMT->common.i.string[k+1] == ',') strncat (token, &GMT->common.i.string[k+1],PATH_MAX-1);	/* Probably trailing text selections */
 	GMT->common.i.active = false;	/* So we can parse again */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reparse -i%s\n", token);
 	gmt_parse_common_options (GMT, "i", 'i', token);	/* Re-parse updated -i */
@@ -18042,7 +18047,7 @@ void gmtlib_reparse_i_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
 }
 
 void gmtlib_reparse_o_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
-	char text[GMT_LEN8] = {""}, token[GMT_BUFSIZ] = {""};
+	char text[GMT_LEN8] = {""}, token[PATH_MAX] = {""};
 	size_t k;
 	if (n_columns == 0) {
 		GMT->current.io.output = gmtlib_ascii_output_trailing_text;	/* Just print trailing text */
@@ -18052,7 +18057,7 @@ void gmtlib_reparse_o_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
 	strncpy (token, GMT->common.o.string, k+1);	/* Get duplicate, this ends with - or : */
 	sprintf (text, "%d", (int)n_columns-1);
 	strcat (token, text);	/* Add explicit last column to include */
-	if (GMT->common.o.string[k+1] == ',') strcat (token, &GMT->common.o.string[k+1]);	/* Probably trailing text selections */
+	if (GMT->common.o.string[k+1] == ',') strncat (token, &GMT->common.o.string[k+1],PATH_MAX-1);	/* Probably trailing text selections */
 	GMT->common.o.active = false;	/* So we can parse again */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reparse -o%s\n", token);
 	gmt_parse_common_options (GMT, "o", 'o', token);	/* Re-parse updated -o */

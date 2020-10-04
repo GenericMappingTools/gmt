@@ -279,7 +279,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		Ctrl->In.mode = SUBPLOT_END;
 	else if (!strncmp (opt->arg, "set", 3U)) {	/* Explicitly called set row,col or set index */
 		opt = opt->next;	/* The row,col part */
-		if (opt) {	/* There is an argument */
+		if (opt && opt->option == GMT_OPT_INFILE) {	/* There is an argument without a leading -? option (thus flagged as input file) */
 			if (isdigit (opt->arg[0]) && (n = sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col)) < 1) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse row,col: %s\n", opt->arg);
 				return GMT_PARSE_ERROR;
@@ -293,6 +293,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		else {	/* Default to go to next subplot */
 			Ctrl->In.row = 0;
 			Ctrl->In.next = true;
+			if (opt) opt = opt->previous;	/* Since we will advance below */
 		}
 		Ctrl->In.mode = SUBPLOT_SET;
 	}

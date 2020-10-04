@@ -285,8 +285,13 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	X = gmt_M_memory (GMT, NULL, nx_alloc, struct X2SYS_BINLIST_BINCROSS);
 
 	if (Ctrl->D.active) {
-		if (gmt_init_distaz (GMT, s->unit[X2SYS_DIST_SELECTION][0], s->dist_flag, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+		if (gmt_init_distaz (GMT, s->unit[X2SYS_DIST_SELECTION][0], s->dist_flag, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) {
+			gmt_M_free (GMT, X);
+			if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
+			x2sys_free_list (GMT, trk_name, n_tracks);
+			x2sys_end (GMT, s);
 			Return (GMT_NOT_A_VALID_TYPE);
+		}
 		dist_bin = gmt_M_memory (GMT, NULL, B.nm_bin, double);
 	}
 
@@ -350,6 +355,9 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 			int signed_flag = s->dist_flag;
 			gmt_M_memset (dist_bin, B.nm_bin, double);
 			if ((dist_km = gmt_dist_array_2 (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -signed_flag)) == NULL) {
+				x2sys_free_list (GMT, trk_name, n_tracks);
+				gmt_M_free (GMT, X);
+				gmt_M_free (GMT, Out);
 				error = gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
 				Return (error);
 			}
@@ -361,8 +369,11 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		for (row = 0; row < p.n_rows; row++) {
 			if (x2sysbinlist_outside (data[s->x_col][row], data[s->y_col][row], &B, s->geographic)) continue;
 			if (x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, data[s->x_col][row], data[s->y_col][row], &this_bin_col,
-			                                          &this_bin_row, &B, &this_bin_index), ""))
+			                                          &this_bin_row, &B, &this_bin_index), "")) {
+				x2sys_free_list (GMT, trk_name, n_tracks);
+				gmt_M_free (GMT, Out);
 				Return (GMT_RUNTIME_ERROR);
+			}
 
 
 			/* While this may be the same bin as the last bin, the data available may have changed so we keep

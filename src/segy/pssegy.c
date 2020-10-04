@@ -535,6 +535,7 @@ EXTERN_MSC int GMT_pssegy (void *V_API, int mode, void *args) {
 		Return (GMT_PROJECTION_ERROR);
 	}
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
+		if (Ctrl->T.active) gmt_M_free (GMT, tracelist);
 		if (fpi != stdin) fclose (fpi);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -581,6 +582,7 @@ EXTERN_MSC int GMT_pssegy (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
 		GMT_Report (API, GMT_MSG_ERROR, "Number of samples per trace unknown\n");
+		if (Ctrl->T.active) gmt_M_free (GMT, tracelist);
 		if (fpi != stdin) fclose (fpi);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -599,6 +601,7 @@ EXTERN_MSC int GMT_pssegy (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->Q.value[Y_ID]) { /* still no sample interval at this point is a problem! */
 		GMT_Report (API, GMT_MSG_ERROR, "No sample interval in reel header\n");
+		if (Ctrl->T.active) gmt_M_free (GMT, tracelist);
 		Return (GMT_RUNTIME_ERROR);
 	}
 

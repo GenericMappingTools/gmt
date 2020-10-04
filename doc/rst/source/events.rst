@@ -22,6 +22,7 @@ Synopsis
 [ |-G|\ *color* ]
 [ |-L|\ [*length*\|\ **t**] ]
 [ |-M|\ **i**\|\ **s**\|\ **t**\ [*val1*]\ [**+c**\ *val2*] ]
+[ |-N|\ [**c**\|\ **r**] ]
 [ |-Q|\ *prefix* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]

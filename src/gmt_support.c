@@ -8000,7 +8000,7 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Save current CPT file to %s !\n", file);
 }
 
-char * gmt_get_current_item (struct GMT_CTRL *GMT, const char *item, bool strict) {
+char *gmt_get_current_item (struct GMT_CTRL *GMT, const char *item, bool strict) {
 	/* If modern and a current item file exists, allocate a string with its name and return, else NULL.
 	 * Currently, item can be cpt.
 	 * if strict is true the file must be available for the current item, otherwise we may look up the hierarchical chain */
@@ -8022,7 +8022,7 @@ char * gmt_get_current_item (struct GMT_CTRL *GMT, const char *item, bool strict
 
 	if (inset) {	/* See if an inset item exists */
 		snprintf (path, PATH_MAX, "%s/gmt.inset.%s", GMT->parent->gwf_dir, item);
-		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+		if (!file && !access (path, R_OK)) file = strdup (path);	/* Yes, found it */
 		if (strict && file == NULL) goto FOUND_NOTHING;
 	}
 	if (!file && (subplot & GMT_SUBPLOT_ACTIVE)) {	/* Nothing yet, see if subplot has one */
@@ -14939,7 +14939,7 @@ void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct GMT_MA
 }
 
 /*! . */
-struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char *mfile) {
+struct GMT_OPTION *gmt_substitute_macros (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char *mfile) {
 	unsigned int n_macros, kk;
 	int k;
 	struct GMT_MATH_MACRO *M = NULL;
@@ -14956,7 +14956,10 @@ struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, struct GMT_OPTI
 			/* Add in the replacement commands from the macro */
 			for (kk = 0; kk < M[k].n_arg; kk++) {
 				ptr = GMT_Make_Option (API, GMT_OPT_INFILE, M[k].arg[kk]);
-				if ((list = GMT_Append_Option (API, ptr, list)) == NULL) return (NULL);
+				if ((list = GMT_Append_Option (API, ptr, list)) == NULL) {
+					gmt_free_macros (GMT, n_macros, &M);
+					return (NULL);
+				}
 				if (ptr->arg[0] == '-' && (isalpha (ptr->arg[1]) || ptr->arg[1] == '-')) {
 					ptr->option = ptr->arg[1];	/* Change from "file" to an option */
 					gmt_strlshift (ptr->arg, 2U);	/* Remove the leading -? part */
@@ -14967,7 +14970,10 @@ struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, struct GMT_OPTI
 		else
 			ptr = GMT_Make_Option (API, opt->option, opt->arg);
 
-		if (ptr == NULL || (list = GMT_Append_Option (API, ptr, list)) == NULL) return (NULL);
+		if (ptr == NULL || (list = GMT_Append_Option (API, ptr, list)) == NULL) {
+			gmt_free_macros (GMT, n_macros, &M);
+			return (NULL);
+		}
 	}
 	gmt_free_macros (GMT, n_macros, &M);
 
@@ -16942,7 +16948,7 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 		strncpy (cmd, program, PATH_MAX-1);
 	if (arg) {	/* Append the command argument */
 		strcat (cmd, " ");
-		strcat (cmd, arg);
+		strncat (cmd, arg, PATH_MAX-1);
 	}
 	/* Finally, append redirection of errors */
 #ifdef WIN32
@@ -17021,6 +17027,7 @@ struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, cha
 			nc = sscanf (S->text[row], "%c %s %s", &cont[c].type, txt, pen);
 			if (strchr ("AaCc", cont[c].type) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Not a recognized contour type: %c\n", cont[c].type);
+				gmt_M_free (GMT, cont);
 				return (NULL);
 			}
 			if (S->n_columns == 2) {	/* Both value and angle given as part of new syntax */
@@ -17046,6 +17053,7 @@ struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, cha
 				if (gmt_getpen (GMT, pen, &cont[c].pen)) {	/* Bad pen syntax */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse %s as a proper pen specification - aborting\n", pen);
 					gmt_pen_syntax (GMT, 'C', NULL, " ", 0);
+					gmt_M_free (GMT, cont);
 					return (NULL);
 				}
 				cont[c].penset = true;
@@ -17249,9 +17257,9 @@ void gmt_cpt_interval_modifier (struct GMT_CTRL *GMT, char **arg, double *interv
 	/* Here we have a +i<dz> string in c */
 	*interval = atof (&c[2]);
 	c[0] = '\0';	c++;	/* Chop off and move one char to the right */
-	strcpy (new_arg, file);	/* Everything up to start of +i */
-	while (*c && *c != '+') c++;	/* Wind to next modifier or reach end of string */
-	if (*c) strcat (new_arg, c);	/* Append other modifiers given after +i */
+	strncpy (new_arg, file, PATH_MAX-1);        /* Everything up to start of +i */
+	while (*c && *c != '+') c++;                /* Wind to next modifier or reach end of string */
+	if (*c) strncat (new_arg, c, PATH_MAX-1);   /* Append other modifiers given after +i */
 	gmt_M_str_free (*arg);
 	*arg = strdup (new_arg);
 }
@@ -17355,10 +17363,10 @@ char *gmt_get_strwithtab (const char *txt) {
 	char dummy[GMT_LEN128] = {""};
 	if (!strcmp (txt, "\\t")) {
 		char new[2] = {'\t', 0};	/* The tab character in a string */
-		strcpy (dummy, gmt_strrep (txt, "\\t", new));
+		strncpy (dummy, gmt_strrep (txt, "\\t", new), GMT_LEN128-1);
 	}
 	else
-		strcpy (dummy, txt);
+		strncpy (dummy, txt, GMT_LEN128-1);
 	return strdup (dummy);
 }
 
@@ -17465,7 +17473,7 @@ int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int 
 		}
 		if ((p = strstr (line, prefix))) {
 			/* Got a MOVIE_ or BATCH_ variable here. Check if it is missing the token */
-			strcpy (record, start);
+			strncpy (record, start, GMT_LEN256-1);
 			prev = p - 1;	/* Get previous character */
 			if (prev >= start && prev[0] == '{') prev--, p--;	/* Found {prefix} */
 			if (prev < start || prev[0] != var_token[mode]) {	/* Start of line or the previous char is not the token */

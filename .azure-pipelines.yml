@@ -241,13 +241,14 @@ jobs:
         containerImage: ubuntu:16.04
       Ubuntu1804:   # CMake 3.10.2 + GNU 7.4.0
         containerImage: ubuntu:18.04
+      Ubuntu2004:   # CMake 3.16.3 + GNU 9.3.0
+        containerImage: ubuntu:20.04
       Debian9:      # CMake 3.7.2 + GNU 6.3.0
         containerImage: debian:stretch
       Debian10:     # CMake 3.13.4 + GNU 8.3.0
         containerImage: debian:buster
       DebianSid:    # CMake 3.16.3 + GNU 10.1.0
         containerImage: debian:sid
-
 
   container:
     image: $[ variables['containerImage'] ]
@@ -258,6 +259,7 @@ jobs:
   steps:
   - script: |
       /tmp/docker exec -t -u 0 ci-container \
-      sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
+      sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::='--force-confold' -y install sudo tzdata"
+      # Need to install tzdata for Ubuntu 20.04 docker image
     displayName: Set up sudo
   - template: ci/azure-pipelines-linux.yml

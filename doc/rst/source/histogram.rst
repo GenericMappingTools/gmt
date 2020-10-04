@@ -18,6 +18,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**] ]
+[ |-E|\ *width*\ [**+o**\ *offset*] ]
 [ |-F| ]
 [ |-G|\ *fill* ] [ |-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |-I|\ [**o**\|\ **O**] ]
