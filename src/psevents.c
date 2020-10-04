@@ -28,7 +28,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"psevents"
 #define THIS_MODULE_MODERN_NAME	"events"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Plot event symbols and labels for a moment in time"
+#define THIS_MODULE_PURPOSE	"Plot event symbols, lines, polygons and labels for a moment in time"
 #define THIS_MODULE_KEYS	"<D{,CC(,>X}"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS	"-:>BJKOPRUVXYabdefhipq"
@@ -60,7 +60,7 @@ enum Psevent {	/* Misc. named array indices */
 /* Control structure for psevents */
 
 struct PSEVENTS_CTRL {
-	struct PSEVENTS_A {	/* 	-Ap|s */
+	struct PSEVENTS_A {	/* 	-Ar|s */
 		bool active;
 		unsigned int mode;
 	} A;
@@ -143,7 +143,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -S<symbol>[<size>]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t-T<now> [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]] [-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T<now> [-Ar|s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]] [-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] [-G<color>] [-L[t|<length>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Mi|s|t<val1>[+c<val2]] [-N[c|r]] [-Q<prefix>] [-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
@@ -152,14 +152,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "J-Z,R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Append symbol code and optionally <size>.  If no size we read it from the data file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify the time for preparing events.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Record format: lon lat [z] [size] time [length|time2].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Select plotting of lines or polygons when no -S is given.  Choose input mode:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append r to read records for lines with time in column 3.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to read segments for lines or polygons with time via segment header -Tstring\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to read whole segments (lines or polygons) with time via segment header -Tstring\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Give <cpt> and obtain symbol color via z-value in 3rd data column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Add <add_x>,<add_y> to the event text origin AFTER projecting with -J [0/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dj to move text origin away from point (direction determined by text's justification).\n");
@@ -196,6 +195,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to set a separate terminal value for the coda [no coda].\n");
 	GMT_Option (API, "K,O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Save intermediate events symbol and labels files; append file prefix [temporary files deleted].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Append symbol code and optionally <size>.  If no size we read it from the data file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default plots lines or polygons; see -A for further instructions.\n");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set symbol outline pen attributes [Default pen is %s]:", 0);
 	GMT_Option (API, "V,bi2,c,di,e,f,h,i,p,qi,:,.");
 
@@ -418,6 +419,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	}
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_col;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_col, "Binary input data (-bi) must have at least %u columns.\n", n_col);
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.active && Ctrl->S.active), "Must specify either -A or -S.\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->A.active || Ctrl->S.active), "Must specify either -A or -S.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Cannot specify both -C and -G.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == PSEVENTS_LINE_REC && Ctrl->G.active, "Option -G: Cannot be used with lines (-Ar).\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == PSEVENTS_LINE_REC && Ctrl->C.active, "Option -C: Cannot be used with lines (-Ar).\n");
@@ -441,20 +444,20 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 
 EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	char tmp_file_symbols[PATH_MAX] = {""}, tmp_file_labels[PATH_MAX] = {""}, cmd[BUFSIZ] = {""};
-	char string[GMT_LEN128] = {""};
+	char string[GMT_LEN128] = {""}, format[GMT_LEN128];
 
 	bool do_coda, finite_duration, out_segment = false;
 
 	int error;
 
-	enum gmt_col_enum time_type;
+	enum gmt_col_enum time_type, end_type;
 
 	unsigned int n_cols_needed = 3, s_in = 2, t_in = 2, d_in = 3, s_col = 2, i_col = 3, t_col = 4;
 
 	uint64_t n_total_read = 0, n_symbols_plotted = 0, n_labels_plotted = 0;
 
 	double out[6] = {0, 0, 0, 0, 0, 0}, t_end = DBL_MAX, *in = NULL;
-	double t_event, t_rise, t_plateau, t_decay, t_fade, x, size, t_event_seg, t_end_seg, z_val;
+	double t_event, t_rise, t_plateau, t_decay, t_fade, x, size, t_event_seg, t_end_seg;
 
 	FILE *fp_symbols = NULL, *fp_labels = NULL;
 
@@ -513,6 +516,11 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	do_coda = (Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2] > 0.0 || !gmt_M_is_zero (Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2]) || Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] < 100.0);
 	finite_duration = (Ctrl->L.mode != PSEVENTS_INFINITE);
 	time_type = gmt_M_type (GMT, GMT_IN, t_in);
+	end_type = (Ctrl->L.mode == PSEVENTS_VAR_ENDTIME) ? time_type : GMT_IS_FLOAT;
+	if (time_type == GMT_IS_ABSTIME)
+		snprintf (format, GMT_LEN128, "%%s,%%s");
+	else
+		snprintf (format, GMT_LEN128, "%%s/%%s");
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -528,15 +536,18 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 					if (Ctrl->L.mode == PSEVENTS_FIXED_DURATION) {	/* Just get event time */
 						gmt_scanf_arg (GMT, string, time_type, false, &t_event_seg);
 					}
-					else {	/* Get both event time and end time */
+					else {	/* Get both event time and end time (or duration) */
 						char start[GMT_LEN64] = {""}, stop[GMT_LEN64] = {""};
-						sscanf (string, "%s,%s", start, stop);
+						sscanf (string, format, start, stop);
 						gmt_scanf_arg (GMT, start, time_type, false, &t_event_seg);
-						gmt_scanf_arg (GMT, stop,  time_type, false, &t_end_seg);
+						gmt_scanf_arg (GMT, stop,  end_type, false, &t_end_seg);
 					}
 				}
-				if (Ctrl->C.active && gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-Z", string)) {	/* Found required -Z<val> */
-					gmt_scanf_arg (GMT, string, GMT_FLOAT, false, &z_val);
+				else {	/* We require the -Tstring option in the header */
+					GMT_Report (API, GMT_MSG_ERROR, "Segment header missing required -Ttime option!\n");
+					if (fp_labels) fclose (fp_labels);
+					if (fp_symbols) fclose (fp_symbols);
+					Return (GMT_RUNTIME_ERROR);
 				}
 				out_segment = true;	/* Time to echo out a segment header */
 			}
@@ -557,7 +568,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 		if (Ctrl->A.mode == PSEVENTS_LINE_SEG) {	/* Assign new segment start/end times for lines/polygons */
 			in[t_in] = t_event_seg;	/* Current segment event start time */
-			if (Ctrl->L.mode == PSEVENTS_VAR_ENDTIME)	/* Set segment end time */
+			if (Ctrl->L.mode != PSEVENTS_FIXED_DURATION)	/* Set segment end time or duration */
 				in[d_in] = t_end_seg;
 		}
 
