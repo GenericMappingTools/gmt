@@ -29,18 +29,6 @@ Required Arguments
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
-.. _-S:
-
-**-S**\ *symbol*\ [*size*]
-    Specify the symbol to use for the event.  Optionally, append symbol *size* with unit from
-    (**c**\|\ **i**\|\ **p**\ ).  If no *size* is given then we read an event-specific size
-    from the data file's third column (fourth if **-C** is used). **Note**: Not all the symbols that
-    are available in :doc:`psxy` can be used here.  At the moment we only support the basic
-    symbols and custom symbols; bars, vectors, ellipses, fronts, decorated and quoted lines cannot
-    be specified.  Symbols sizes read from a data file will be assumed to be in the unit controlled
-    by :term:`PROJ_LENGTH_UNIT` unless they have **c**, **i**, or **p** appended.  If you are only
-    plotting labels then **-S** is not required.
-
 .. _-T:
 
 **-T**\ *now*
@@ -53,6 +41,16 @@ Optional Arguments
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
+
+.. _-A:
+
+**-A**\ **r**\|\ **s**
+    When no **-S** is given we expect to read lines or polygons.  Two different forms for input are
+    considered and specified via **-A**\ : (1) Choose **-Ar** if your input data is *x, t, time* and
+    we should plot the portion of that line given the current time (*now*) and the event duration, or
+    (2) use **-As** to expect to read each complete segment (i.e., a polygon) from a multisegment file
+    and get a common time via a **-T**\ *string* in the segment header.  If **-L**\ [**t**] is set then
+    *string* must be either *begin*/*length\|\ end* or *begin*,*length\|\ end* (if *begin* is absolute time).
 
 .. _-B:
 
@@ -141,6 +139,19 @@ Optional Arguments
 **-Q**\ *prefix*
     Save the intermediate event symbols and labels to permanent files instead of removing them when done.
     Files will be named *prefix*\ _symbols.txt and *prefix*\ _labels.txt.
+
+.. _-S:
+
+**-S**\ *symbol*\ [*size*]
+    Specify the symbol to use for the event [Default plots lines or polygons; see **-A**].
+    Optionally, append symbol *size* with unit from
+    (**c**\|\ **i**\|\ **p**\ ).  If no *size* is given then we read an event-specific size
+    from the data file's third column (fourth if **-C** is used). **Note**: Not all the symbols that
+    are available in :doc:`psxy` can be used here.  At the moment we only support the basic
+    symbols and custom symbols; bars, vectors, ellipses, fronts, decorated and quoted lines cannot
+    be specified.  Symbols sizes read from a data file will be assumed to be in the unit controlled
+    by :term:`PROJ_LENGTH_UNIT` unless they have **c**, **i**, or **p** appended.  If you are only
+    plotting labels then **-S** is not required.
 
 .. _-U:
 
