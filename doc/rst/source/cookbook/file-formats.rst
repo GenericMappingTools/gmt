@@ -88,7 +88,7 @@ columns as are needed by the program, starting with the first
 variables are to be read, append the suffix
 **?**\ *var1*\ **/**\ *var2*\ **/**\ *...* to the netCDF file name or
 add the option **-bic**\ *var1*\ **/**\ *var2*\ **/**\ *...*, where
-*var1*, *var2*, etc.are the names of the variables to be processed. The
+*var1*, *var2*, etc. are the names of the variables to be processed. The
 latter option is particularly practical when more than one file is read:
 the **-bic** option will apply to all files. Currently, GMT only
 reads, but does not write, netCDF tabular data.
