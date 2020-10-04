@@ -439,7 +439,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 
 EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	char tmp_file_symbols[PATH_MAX] = {""}, tmp_file_labels[PATH_MAX] = {""}, cmd[BUFSIZ] = {""};
-	char t_string[GMT_LEN128] = {""};
+	char string[GMT_LEN128] = {""};
 
 	bool do_coda, finite_duration;
 
@@ -452,7 +452,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	uint64_t n_total_read = 0, n_symbols_plotted = 0, n_labels_plotted = 0;
 
 	double out[6] = {0, 0, 0, 0, 0, 0}, t_end = DBL_MAX, *in = NULL;
-	double t_event, t_rise, t_plateau, t_decay, t_fade, x, size, t_event_seg, t_end_seg;
+	double t_event, t_rise, t_plateau, t_decay, t_fade, x, size, t_event_seg, t_end_seg, z_val;
 
 	FILE *fp_symbols = NULL, *fp_labels = NULL;
 
@@ -522,16 +522,19 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			else if (gmt_M_rec_is_eof (GMT)) 	/* Reached end of file */
 				break;
 			else if (gmt_M_rec_is_segment_header (GMT) && Ctrl->A.active) {	/* Process and echo any segment headers for lines and polygons */
-				if (gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-T", t_string)) {	/* Found -Targs */
+				if (gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-T", string)) {	/* Found required -Targs */
 					if (Ctrl->L.mode == PSEVENTS_FIXED_DURATION) {	/* Just get event time */
-						gmt_scanf_arg (GMT, t_string, time_type, false, &t_event_seg);
+						gmt_scanf_arg (GMT, string, time_type, false, &t_event_seg);
 					}
 					else {	/* Get both event time and end time */
 						char start[GMT_LEN64] = {""}, stop[GMT_LEN64] = {""};
-						sscanf (t_string, "%s,%s", start, stop);
+						sscanf (string, "%s,%s", start, stop);
 						gmt_scanf_arg (GMT, start, time_type, false, &t_event_seg);
 						gmt_scanf_arg (GMT, stop,  time_type, false, &t_end_seg);
 					}
+				}
+				if (Ctrl->C.active && gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-Z", string)) {	/* Found required -Z<val> */
+					gmt_scanf_arg (GMT, string, GMT_FLOAT, false, &z_val);
 				}
 				if (!GMT->current.io.segment_header[0])		/* No header contents */
 					fprintf (fp_symbols, "%c\n", GMT->current.setting.io_seg_marker[GMT_OUT]);
