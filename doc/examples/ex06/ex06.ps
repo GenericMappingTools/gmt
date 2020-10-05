@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 595 842
 %%HiResBoundingBox: 0 0 595.0000 842.0000
-%%Title: GMT v6.1.0_9ee9cff_2020.02.16 [64-bit] Document from psxy
+%%Title: GMT v6.2.0_bec0f3a_2020.10.04 [64-bit] Document from plot
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Feb 16 18:07:07 2020
+%%CreationDate: Sun Oct  4 21:36:32 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -661,12 +661,12 @@ FQ
 O0
 1200 1200 TM
 % PostScript produced by:
-%@GMT: gmt psxy -R0/5.90551/0/8.39713 -Jx1i -T -Xr1i -Yr1i --GMT_HISTORY=false
+%@GMT: gmt plot -R0/5.90551/0/8.39713 -Jx1i -T -Xr1i -Yr1i --GMT_HISTORY=readonly
 %@PROJ: xy 0.00000000 5.90551000 0.00000000 8.39713000 0.000 5.906 0.000 8.397 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 %%EndObject
 PSL_plot_completion /PSL_plot_completion {} def
 0 A
@@ -674,12 +674,12 @@ FQ
 O0
 0 5825 TM
 % PostScript produced by:
-%@GMT: gmt pshistogram '-Bxaf+lTopography (m)' '-Byaf+lFrequency+u %' -BWSne+tHistograms+glightblue @v3206_06.txt -R-6000/0/0/30 -Gorange -W1p -Z1 -T250 -Xa0i -Ya4.8538i -JX15c
+%@GMT: gmt histogram '-Bxaf+lTopography (m)' '-Byaf+lFrequency+u %' -BWSne+tHistograms+glightblue /Users/pwessel/.gmt/cache/v3206_06.txt -R-6000/0/0/30 -Gorange -W1p -Z1 -T250 -Xa0i -Ya4.8538i -JX15c
 %@PROJ: xy -6000.00000000 0.00000000 0.00000000 30.00000000 -6000.000 0.000 0.000 30.000 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 /PSL_plot_completion {
 V
 0 5825 T
@@ -726,6 +726,7 @@ O1
 -296 0 0 46 296 0 3 6791 0 SP
 PSL_cliprestore
 25 W
+/PSL_slant_y 0 def
 2 setlinecap
 N 0 4252 M 0 -4252 D S
 /PSL_A0_y 83 def
@@ -736,8 +737,8 @@ N 0 1417 M -83 0 D S
 N 0 2835 M -83 0 D S
 N 0 4252 M -83 0 D S
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 200 F0
 (0 %) sw mx
 (10 %) sw mx
@@ -807,8 +808,8 @@ N 3543 0 M 0 -83 D S
 N 4724 0 M 0 -83 D S
 N 5906 0 M 0 -83 D S
 N 7087 0 M 0 -83 D S
-/PSL_AH0 0
 /MM {neg M} def
+/PSL_AH0 0
 200 F0
 (-6000) sh mx
 (-5000) sh mx
@@ -903,7 +904,7 @@ N 6850 0 M 0 42 D S
 0 -4252 T
 0 setlinecap
 /PSL_H_y PSL_L_y PSL_LH add 233 add def
-3543 4252 PSL_H_y add M
+3543 4252 PSL_H_y add PSL_slant_y add M
 400 F0
 (Histograms) bc Z
 %%EndObject
@@ -914,12 +915,12 @@ FQ
 O0
 1417 0 TM
 % PostScript produced by:
-%@GMT: gmt psrose @fractures_06.txt -: -A10r -S -Gorange -R0/1/0/360 -Bg -BWENS+glightblue -W1p -JX3.5433i -Xa0i -Ya0i
+%@GMT: gmt rose /Users/pwessel/.gmt/cache/fractures_06.txt -: -A10r -S -Gorange -R0/1/0/360 -Bg -BWENS+glightblue -W1p -JX3.5433i -Xa0i -Ya0i
 %@PROJ: xy -1.77165000 1.77165000 -1.77165000 1.77165000 -1.772 1.772 -1.772 1.772 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 /PSL_plot_completion {
 V
 1417 0 T
@@ -931,12 +932,28 @@ U
 2126 2126 T
 {0.678 0.847 0.902 C} FS
 2126 0 0 Sc
-25 W
-FQ
-O1
-2126 0 0 Sc
+4 W
+N 0 0 M 2126 0 D S
+N 0 0 M 1841 1063 D S
+N 0 0 M 1063 1841 D S
+N 0 0 M 0 2126 D S
+N 0 0 M -1063 1841 D S
+N 0 0 M -1841 1063 D S
+N 0 0 M -2126 0 D S
+N 0 0 M -1841 -1063 D S
+N 0 0 M -1063 -1841 D S
+N 0 0 M 0 -2126 D S
+N 0 0 M 1063 -1841 D S
+N 0 0 M 1841 -1063 D S
+N 0 0 M 2126 0 D S
+N 0 0 425 0 360 arc S
+N 0 0 850 0 360 arc S
+N 0 0 1276 0 360 arc S
+N 0 0 1701 0 360 arc S
+N 0 0 2126 0 360 arc S
 17 W
 {1 0.647 0 C} FS
+O1
 59 677 M
 161 142 D
 320 340 D
@@ -974,39 +991,26 @@ O1
 105 67 D
 137 -132 D
 FO
-4 W
-N 0 0 M 2126 0 D S
-N 0 0 M 1841 1063 D S
-N 0 0 M 1063 1841 D S
-N 0 0 M 0 2126 D S
-N 0 0 M -1063 1841 D S
-N 0 0 M -1841 1063 D S
-N 0 0 M -2126 0 D S
-N 0 0 M -1841 -1063 D S
-N 0 0 M -1063 -1841 D S
-N 0 0 M 0 -2126 D S
-N 0 0 M 1063 -1841 D S
-N 0 0 M 1841 -1063 D S
-N 0 0 M 2126 0 D S
-N 0 0 425 0 360 arc S
-N 0 0 850 0 360 arc S
-N 0 0 1276 0 360 arc S
-N 0 0 1701 0 360 arc S
-N 0 0 2126 0 360 arc S
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 0 2826 M 400 F0
 () bc Z
 0 -2293 M 267 F0
 (South) tc Z
-N 2126 -2126 M -425 0 D S
-N 2126 -2126 M 0 83 D S
-N 1701 -2126 M 0 83 D S
+8 W
+2126 -2043 M
+0 -83 D
+-425 0 D
+0 83 D
+S
 1913 -2209 M 200 F0
 (0.2) tc Z
 2293 0 M 267 F0
 (East) ml Z
 -2293 0 M (West) mr Z
 0 2293 M (North) bc Z
+25 W
+FQ
+2126 0 0 Sc
 -2126 -2126 T
 %%EndObject
 -1417 0 TM
