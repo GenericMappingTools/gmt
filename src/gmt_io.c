@@ -7116,7 +7116,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	if (!header || !header[0]) return (0);
 
 	if (gmt_parse_segment_item (GMT, header, "-t", line)) {	/* Found a potential -t option for transparency */
-		transparency = atof (line);
+		transparency = atof (line) * 0.01;
 		got_transparency = true;	/* Must apply to any fill and pen settings */
 	}
 	if (gmt_parse_segment_item (GMT, header, "-G", line)) {	/* Found a potential -G option */
@@ -7134,7 +7134,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 		}
 		else if (!gmt_getfill (GMT, line, &test_fill)) {	/* Successfully processed a -G<fill> option */
 			*fill = test_fill;
-			if (got_transparency) fill->rgb[4] = transparency;
+			if (got_transparency) fill->rgb[3] = transparency;
 			*use_fill = true;
 			change = 1;
 			processed++;	/* Processed one option */
@@ -7144,7 +7144,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	if (P && gmt_parse_segment_item (GMT, header, "-Z", line)) {	/* Found a potential -Z option to set symbol r/g/b via cpt-lookup */
 		if(!strncmp (line, "NaN", 3U))	{	/* Got -ZNaN */
 			gmt_get_fill_from_z (GMT, P, GMT->session.d_NaN, fill);
-			if (got_transparency) fill->rgb[4] = transparency;
+			if (got_transparency) fill->rgb[3] = transparency;
 			*use_fill = true;
 			change |= 2;
 			processed++;	/* Processed one option */
@@ -7154,7 +7154,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 				gmt_get_fill_from_key (GMT, P, line, fill);
 			else if (sscanf (line, "%lg", &z) == 1)
 				gmt_get_fill_from_z (GMT, P, z, fill);
-			if (got_transparency) fill->rgb[4] = transparency;
+			if (got_transparency) fill->rgb[3] = transparency;
 			*use_fill = true;
 			change |= 2;
 			processed++;	/* Processed one option */
@@ -7177,7 +7177,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 		}
 		else if (!gmt_getpen (GMT, line, &test_pen)) {
 			*pen = test_pen;
-			if (got_transparency) pen->rgb[4] = transparency;
+			if (got_transparency) pen->rgb[3] = transparency;
 			*use_pen = true;
 			change |= 4;
 		}
