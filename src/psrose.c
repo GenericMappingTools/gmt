@@ -795,19 +795,9 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 		if (half_only) PSL_endclipping (PSL, 1);		/* Reduce polygon clipping by one level */
 	}
 	if (GMT->common.B.active[0] && !GMT->current.map.frame.no_frame ) {	/* Draw frame */
-		int symbol = (half_only) ? PSL_WEDGE : PSL_CIRCLE, n_alpha, n_radii;
+		int n_alpha, n_radii;
 		double dim[PSL_MAX_DIMS];
-		struct GMT_FILL no_fill;
 
-		gmt_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
-		gmt_M_memset (dim, PSL_MAX_DIMS, double);
-		dim[0] = (half_only) ? 0.5 * diameter : diameter;
-		dim[1] = 0.0;
-		dim[2] = (half_only) ? 180.0 : 360.0;
-		dim[7] = 2;	/* Do draw line */
-		gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
-		gmt_setfill (GMT, &no_fill, 1);
-		PSL_plotsymbol (PSL, 0.0, 0.0, dim, symbol);
 		/* Lay down gridlines before histogram */
 		gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 		off = max_radius * Ctrl->S.scale;
@@ -1131,9 +1121,14 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 				form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 				PSL_plottext (PSL, 0.0, -off - 2.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY], GMT->current.setting.font_label.size, Ctrl->L.s, 0.0, PSL_TC, form);
 				if (!Ctrl->F.active && GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval > 0.0) {	/* Draw scale bar but only if x-grid interval is set */
-					PSL_plotsegment (PSL, off, -off, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -off);
-					PSL_plotsegment (PSL, off, -off, off, GMT->current.setting.map_tick_length[0] - off);
-					PSL_plotsegment (PSL, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -off, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, GMT->current.setting.map_tick_length[0] - off);
+					double xp[4], yp[4];
+					xp[0] = xp[1] = off;	xp[2] = xp[3] = (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale;
+					yp[0] = yp[3] = GMT->current.setting.map_tick_length[0] - off; yp[1] = yp[2] = -off;
+					gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
+					PSL_plotline (PSL, xp, yp, 4, PSL_MOVE|PSL_STROKE);
+					//PSL_plotsegment (PSL, off, -off, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -off);
+					//PSL_plotsegment (PSL, off, -off, off, GMT->current.setting.map_tick_length[0] - off);
+					//PSL_plotsegment (PSL, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -off, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, GMT->current.setting.map_tick_length[0] - off);
 					if (GMT->current.map.frame.axis[GMT_X].label[0]) {
 						strcat (format, " %s");
 						sprintf (text, format, GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval, GMT->current.map.frame.axis[GMT_X].label);
@@ -1153,6 +1148,22 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 			PSL_plottext (PSL, 0.0, off + 2.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY], GMT->current.setting.font_label.size, Ctrl->L.n, 0.0, PSL_BC, form);
 			PSL_setcolor (PSL, GMT->current.setting.map_default_pen.rgb, PSL_IS_STROKE);
 		}
+	}
+
+	if (GMT->common.B.active[0] && !GMT->current.map.frame.no_frame ) {	/* Finally draw frame */
+		int symbol = (half_only) ? PSL_WEDGE : PSL_CIRCLE;
+		double dim[PSL_MAX_DIMS];
+		struct GMT_FILL no_fill;
+
+		gmt_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
+		gmt_M_memset (dim, PSL_MAX_DIMS, double);
+		dim[0] = (half_only) ? 0.5 * diameter : diameter;
+		dim[1] = 0.0;
+		dim[2] = (half_only) ? 180.0 : 360.0;
+		dim[7] = 2;	/* Do draw line */
+		gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
+		gmt_setfill (GMT, &no_fill, 1);
+		PSL_plotsymbol (PSL, 0.0, 0.0, dim, symbol);
 	}
 
 	gmt_plane_perspective (GMT, -1, 0.0);
