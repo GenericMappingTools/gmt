@@ -8629,7 +8629,7 @@ double gmtmap_lat_swap_quick (struct GMT_CTRL *GMT, double lat, double c[]) {
 }
 
 /*! . */
-double gmt_lat_swap (struct GMT_CTRL *GMT, double lat, unsigned int itype) {
+double gmt_lat_swap (struct GMT_CTRL *GMT, double lat, int itype) {
 	/* Return latitude, in degrees, given latitude, in degrees, based on itype */
 
 	double delta, cos2phi, sin2phi;
