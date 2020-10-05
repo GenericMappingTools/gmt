@@ -2554,7 +2554,8 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
 
 	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
 
-	PSL_comment (PSL, "Start of map frame\n0 A [] 0 B\n");	/* Also ensure full reset to black solid pen color */
+	PSL_comment (PSL, "Start of map frame\n");
+	PSL_command (PSL, "0 A [] 0 B\n");	/* Also ensure full reset to black solid pen color */
 	gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 
