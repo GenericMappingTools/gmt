@@ -784,7 +784,7 @@ Projection Parameters
     **PROJ_AUX_LATITUDE**
         Only applies when geodesics are approximated by great circle
         distances on an equivalent sphere. Select from authalic, geocentric,
-        conformal, meridional, parametric, or none [authalic]. When not none
+        conformal, meridional, parametric, or none (i.e., geodetic) [authalic]. When not none
         we convert any latitude used in the great circle calculation to the
         chosen auxiliary latitude before doing the distance calculation. See
         also :term:`PROJ_MEAN_RADIUS`.
