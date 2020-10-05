@@ -566,7 +566,7 @@ EXTERN_MSC bool gmt_near_lines (struct GMT_CTRL *GMT, double lon, double lat, st
 EXTERN_MSC bool gmt_near_a_line (struct GMT_CTRL *GMT, double lon, double lat, uint64_t seg, struct GMT_DATASEGMENT *S, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near);
 EXTERN_MSC bool gmt_near_a_point (struct GMT_CTRL *GMT, double x, double y, struct GMT_DATATABLE *T, double dist);
 EXTERN_MSC double gmt_great_circle_dist_meter (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1);
-EXTERN_MSC double gmt_lat_swap (struct GMT_CTRL *GMT, double lat, unsigned int itype);
+EXTERN_MSC double gmt_lat_swap (struct GMT_CTRL *GMT, double lat, int itype);
 EXTERN_MSC double gmt_mindist_to_point (struct GMT_CTRL *GMT, double lon, double lat, struct GMT_DATATABLE *T, uint64_t *id);
 EXTERN_MSC bool gmt_UTMzone_to_wesn (struct GMT_CTRL *GMT, unsigned int zone_x, char zone_y, int hemi, double wesn[]);
 EXTERN_MSC void gmt_ECEF_forward (struct GMT_CTRL *GMT, double in[], double out[]);
