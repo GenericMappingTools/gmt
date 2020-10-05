@@ -36,4 +36,4 @@ gmt psrose data.txt -i1,0 -A20r -JX3i -R -Bxa10g10 -O -K -Bya10g10 -B+t"Rose Dia
 gmt psrose data.txt -i2,0 -A20r -JX3i -R -O -K -W1p -Ggreen >> $ps
 gmt psrose data.txt -i3,0 -A20r -JX3i -R -O -K -W1p -Gblue >> $ps
 gmt psrose data.txt -i4,0 -A20r -JX3i -R -O -K -W1p -Gwhite >> $ps
-echo "4 2 Bins are not centered" | gmt pstext -R0/6/0/3 -Jx1i -O+f18p+jLM -N >> $ps
+echo "4 2 Bins are not centered" | gmt pstext -R0/6/0/3 -Jx1i -O -F+f18p+jLM -N >> $ps
