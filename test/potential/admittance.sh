@@ -38,11 +38,11 @@ gmt gravfft z.nc+uk faa_total.nc+uk -N+d -Iwkt -Ff -Z12000 -T12000/2800/3300/100
 gmt grdfft z.nc+uk faa_total.nc+uk  -N+d -Er+wk -h+c > adm.txt
 
 # coherence in red, admittance in blue, theoretical admittance in thick lightgray
-gmt psxy adm.txt -i0,15,16 -R8/512/0/1 -JX-6il/2.75i -O -K -Bxa2g3+u" km" -Byaf+l"Coherence" -BWSn -Sc0.05i \
-	-Gred -Ey+w0.2c+p0.5p,red -X-3.25i -Y3.5i --FONT_LABEL=16p,Helvetica,red >> $ps
+gmt psxy adm.txt -i0,15,16 -R8/512/0/1 -JX-6il/2.75i -O -K -Sc0.05i \
+	-Gred -Ey+w0.2c+p0.5p,red -Bxg3 -X-3.25i -Y3.5i >> $ps
 gmt psxy adm.txt -i0,15 -R -J -O -K -W0.5p,red >> $ps
-gmt psxy adm.txt -R8/512/0/70 -J -O -Bxa2g3 -Byaf+l"Admittance (mGal/km)" -BE -Sc0.05i -Ey+w0.2c+p0.5p,blue \
-	-Gblue -K -i0,11+s1000,12+s1000  --FONT_LABEL=16p,Helvetica,blue >> $ps
+gmt psxy adm.txt -R8/512/0/70 -J -O-Sc0.05i -Ey+w0.2c+p0.5p,blue -Gblue -K -i0,11+s1000,12+s1000 >> $ps
 gmt psxy adm.txt -R -J -O -K  -W0.5p,blue -i0,11+s1000 >> $ps
 gmt psxy adm_t.txt -R -J -O -K -W0.5p,green -i0,3+s1000 >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt psbasemap -R -K -O -K -Bxa2+u" km" -Byaf+l"Coherence" -BWSn --FONT_LABEL=16p,Helvetica,red >> $ps
+gmt psbasemap -R -K -O -Bxa2 -Byaf+l"Admittance (mGal/km)" -BE --FONT_LABEL=16p,Helvetica,blue >> $ps

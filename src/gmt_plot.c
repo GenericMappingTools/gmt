@@ -5673,15 +5673,9 @@ void gmt_set_basemap_orders (struct GMT_CTRL *GMT, unsigned int frame, unsigned 
 	else if (GMT->current.setting.map_frame_type == GMT_IS_INSIDE)	/* Must do annotations and ticks at end since inside the map */
 		annot = GMT_BASEMAP_ANNOT_AFTER;
 
-		/* Finally, since ticks overprint the frame we make sure annot/ticks are never done before the frame */
-	if (GMT->current.setting.map_frame_type == GMT_IS_PLAIN) {	/* Ticks must be done before frame */
-		if (annot == GMT_BASEMAP_ANNOT_AFTER && frame == GMT_BASEMAP_FRAME_BEFORE)
-			annot = GMT_BASEMAP_ANNOT_BEFORE;
-	}
-	else {	/* Fancy maps need ticks on top */
-		if (annot == GMT_BASEMAP_ANNOT_BEFORE && frame == GMT_BASEMAP_FRAME_AFTER)
-			annot = GMT_BASEMAP_ANNOT_AFTER;
-	}
+		/* Finally, since ticks overprint on top of the frame we make sure annot/ticks are never done after the frame */
+	if (annot == GMT_BASEMAP_ANNOT_AFTER && frame == GMT_BASEMAP_FRAME_BEFORE)
+		annot = GMT_BASEMAP_ANNOT_BEFORE;
 	GMT->current.map.frame.basemap_flag = frame + grid + annot;
 }
 

@@ -10,9 +10,9 @@ ps=regress_2.ps
 
 function plot_one {	# 5 args are: -E -N axes -X -Y
 	gmt regress data -Fxm $1 $2 -T2.85/5.25/0.1 > tmp
-	gmt psxy -R -J -Bxafg -Byafg -B$3 -O -K $4 $5 data -Sc0.05i -Gblue
+	gmt psxy -R -J -O -K -Bxafg -Byafg -B$3 $4 $5 tmp -W1p,red
+	gmt psxy -R -J -O -K $4 $5 data -Sc0.05i -Gblue -N
 	gmt psxy -R -J -O -K $4 $5 giants -Sc0.1i -W0.25p -N
-	gmt psxy -R -W1p,red -J -O -K $4 $5 tmp -W1p
 }
 # Allow outliers to be included in the analysis:
 file=$(gmt which -G @hertzsprung-russell.txt)
