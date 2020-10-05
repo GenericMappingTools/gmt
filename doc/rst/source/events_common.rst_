@@ -47,12 +47,13 @@ Optional Arguments
 **-A**\ **r**\|\ **s**
     When no **-S** is given we expect to read lines or polygons.  Two different forms for input are
     considered and specified via **-A**\ : (1) Choose **-Ar** if your input data are *lines*, the data
-    format is given as *x, t, time*, and the "event" is the portion of that line limited by the current
-    time (*now*) and event duration (via **-L**), or (2) choose **-As** to expect to read each complete
-    segment (i.e., a polygon or line) from a multisegment file and get a common time via a required
-    **-T**\ *string* specified in the segment header.  Here, the entire polygon is the "event" if inside
-    the limits of current time (*now*) and event duration.  If **-L**\ [**t**] is set then *string* must be
-    either *begin*/*length\|\ end* or *begin*,*length\|\ end* (if *begin* is absolute time).  **Note**:
+    format is given as *x, y, time*, and the "event" is the portion of that line limited by the current
+    time (*now*), event duration and rise/fade periods (via **-L** and **-Es**), or (2) choose **-As**
+    to expect to read each complete segment (i.e., a polygon or line with just *x, y*) from a multisegment
+    file and get a common time for each segment via a required **-T**\ *string* specified in the segment
+    header.  Here, the entire polygon is the "event" if inside the limits of current time (*now*), event
+    duration and rise/fade periods.  If **-L**\ [**t**] is set then the *string* must be either
+    *begin*/*length\|\ end* or *begin*,*length\|\ end* (if *begin* is absolute time).  **Note**:
     Neither lines nor polygons allow for any labels to be placed.
 
 .. _-B:
@@ -62,7 +63,8 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *cpt*
-    Use the *cpt* to convert *z* values given in the optional third column to assign symbol colors.
+    Use the *cpt* to convert *z* values given in the optional third column to assign symbol or polygon colors.
+    Not allowed if **-Ar** is used.
 
 .. _-D:
 
@@ -90,7 +92,7 @@ Optional Arguments
     restricted to **-Et** and specifies an alternative duration (visibility) of the text [same duration as symbol].
     Furthermore, the **+p** and **+d** periods do not apply to text labels.  **Note 2**: The **-Et** option is
     required if you wish to plot labels [plot symbols only].  **Note 3**: For lines or polygons the the **+p**
-    and **+d** periods do not apply.
+    and **+d** periods do not apply., and for lines none of the modifiers apply.
 
 .. _-F:
 
@@ -107,7 +109,7 @@ Optional Arguments
 .. _-G:
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
-    Set constant shade or color for all symbols.
+    Set constant shade or color for all symbols or polygons.
 
 .. include:: explain_-Jz.rst_
 
@@ -117,7 +119,8 @@ Optional Arguments
     Specify the length (i.e., duration) of the event.  Append a *length* if all events have the same length,
     append **t** if end-times instead of lengths are given in the file after the *time* column,
     or leave blank if lengths can be read from the input file after the *time* column.  If **-L** is not
-    given we assume events have an infinite duration.
+    given we assume events have an infinite duration. See **-A** for how duration is handled for lines and
+    polygons.
 
 .. _-M:
 
@@ -125,7 +128,7 @@ Optional Arguments
     Modify the initial **i**\ ntensity, **s**\ ize magnification, or **t**\ ransparency of the symbol during
     the *rise* interval [1, 1, and 100, respectively].  Repeatable for the different attributes.
     Optionally, for finite-duration events you may append **+c** to set the corresponding terminal value
-    during the coda [0, 0, 100, respectively].
+    during the coda [0, 0, 100, respectively].  Polygons can only use **-Mt**.
 
 .. _-N:
 

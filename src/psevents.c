@@ -158,7 +158,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Record format: lon lat [z] [size] time [length|time2].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Select plotting of lines or polygons when no -S is given.  Choose input mode:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append r to read records for lines with time in column 3.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to read whole segments (lines or polygons) with time via segment header -Tstring\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to read whole segments (lines or polygons) with no time column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Time is set via segment header -T<start>, -T<start>,<end>, or -T<start>,<duration (see -L).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Give <cpt> and obtain symbol color via z-value in 3rd data column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Add <add_x>,<add_y> to the event text origin AFTER projecting with -J [0/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dj to move text origin away from point (direction determined by text's justification).\n");
@@ -253,9 +254,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				}
 				Ctrl->E.active[id] = true;
 				if (gmt_validate_modifiers (GMT, &opt->arg[k], 'E', PSEVENTS_MODS, GMT_MSG_ERROR)) n_errors++;
-				if ((c = gmt_first_modifier (GMT, &opt->arg[k], PSEVENTS_MODS)) == NULL) {	/* This should not happen given the above check, but Coverity prefers it */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: No modifiers given?\n");
-					n_errors++;
+				if ((c = gmt_first_modifier (GMT, &opt->arg[k], PSEVENTS_MODS)) == NULL) {	/* Just sticking to the event range */
 					break;
 				}
 				pos = 0;	txt[0] = 0;
@@ -529,23 +528,32 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			else if (gmt_M_rec_is_eof (GMT)) 	/* Reached end of file */
 				break;
 			else if (gmt_M_rec_is_segment_header (GMT) && Ctrl->A.active) {	/* Process and echo any segment headers for lines and polygons */
-				if (gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-T", string)) {	/* Found required -Targs */
-					if (Ctrl->L.mode == PSEVENTS_FIXED_DURATION) {	/* Just get event time */
-						gmt_scanf_arg (GMT, string, time_type, false, &t_event_seg);
+				if (Ctrl->A.mode == PSEVENTS_LINE_SEG) {	/* We require the -Tstring option in the header for segments */
+					if (gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-T", string)) {	/* Found required -Targs */
+						if (Ctrl->L.mode == PSEVENTS_FIXED_DURATION) {	/* Just get event time */
+							gmt_scanf_arg (GMT, string, time_type, false, &t_event_seg);
+						}
+						else {	/* Get both event time and end time (or duration) */
+							char start[GMT_LEN64] = {""}, stop[GMT_LEN64] = {""};
+							if ((c = strchr (string, ','))) c[0] = ' ';
+							else if ((c = strchr (string, '/'))) c[0] = ' ';
+							else {
+								GMT_Report (API, GMT_MSG_ERROR, "Segment header missing required -T<time>,<end|duration> or -T<time>/<end|duration> option!\n");
+								if (fp_labels) fclose (fp_labels);
+								if (fp_symbols) fclose (fp_symbols);
+								Return (GMT_RUNTIME_ERROR);
+							}
+							sscanf (string, "%s %s", start, stop);
+							gmt_scanf_arg (GMT, start, time_type, false, &t_event_seg);
+							gmt_scanf_arg (GMT, stop,  end_type,  false, &t_end_seg);
+						}
 					}
-					else {	/* Get both event time and end time (or duration) */
-						char start[GMT_LEN64] = {""}, stop[GMT_LEN64] = {""};
-						if ((c = strchr (string, find))) c[0] = ' ';
-						sscanf (string, "%s %s", start, stop);
-						gmt_scanf_arg (GMT, start, time_type, false, &t_event_seg);
-						gmt_scanf_arg (GMT, stop,  end_type, false, &t_end_seg);
+					else {	/* We require the -Tstring option in the header for segments */
+						GMT_Report (API, GMT_MSG_ERROR, "Segment header missing required -Ttime option!\n");
+						if (fp_labels) fclose (fp_labels);
+						if (fp_symbols) fclose (fp_symbols);
+						Return (GMT_RUNTIME_ERROR);
 					}
-				}
-				else {	/* We require the -Tstring option in the header */
-					GMT_Report (API, GMT_MSG_ERROR, "Segment header missing required -Ttime option!\n");
-					if (fp_labels) fclose (fp_labels);
-					if (fp_symbols) fclose (fp_symbols);
-					Return (GMT_RUNTIME_ERROR);
 				}
 				/* build output segment header: Pass any -Z<val>, -G<fill> -W<pen> as given, but if no -G, -W and command line has them we add them.
 				 * We do this because -t<transparency> will also be added and this is how the -G -W colors will acquire transparency in psxy */
@@ -636,7 +644,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 				out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1];
 				out[t_col] = 0.0;	/* No transparency during plateau phase */
 			}
-			else if (Ctrl->T.now < t_decay) {	/* We are withn the decay phase */
+			else if (Ctrl->T.now < t_decay) {	/* We are within the decay phase */
 				x = pow ((t_decay - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY], 2.0);	/* Quadratic function that goes from 1 to 0 */
 				out[s_col] = size * (Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] * x + (1.0 - x));	/* Reduction of size down to the nominal size */
 				out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] * x;	/* Reduction of intensity down to 0 */
@@ -658,6 +666,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 				out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2];
 			}
 			if (out_segment) {	/* Write segment header for lines and polygons only */
+				if (gmt_M_is_dnan (out[t_col])) out[t_col] = 0.0;	/* Probably division by zero when no fade or rise time */
 				fprintf (fp_symbols, "%c -t%g %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], out[t_col], header);
 				out_segment = false;	/* Wait for next segment header */
 			}
