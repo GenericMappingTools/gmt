@@ -3624,8 +3624,10 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 			break;
 	}
 
-	GMT->current.map.frame.draw = true;
-	if (axis == 'z') GMT->current.map.frame.drawz = true;
+	if (axis == 'z')
+		GMT->current.map.frame.drawz = true;
+	else
+		GMT->current.map.frame.draw = true;
 
 	return (GMT_NOERROR);
 }
