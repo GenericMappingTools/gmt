@@ -4263,7 +4263,8 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		if (no == GMT_Z) GMT->current.map.frame.drawz = true;
 		if (!text[0]) continue;	 	/* Skip any empty format string */
 		if (text[0] == '0' && !text[1]) {	 /* Understand format '0' to mean "no annotation, ticks, or gridlines" */
-			GMT->current.map.frame.draw = GMT->current.map.frame.drawz = true;	/* But we do wish to draw the frame */
+			//GMT->current.map.frame.draw = GMT->current.map.frame.drawz = true;	/* But we do wish to draw the frame */
+			GMT->current.map.frame.draw = true;	/* But we do wish to draw the frame */
 			GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Since checkerboard without intervals look stupid */
 			continue;
 		}
