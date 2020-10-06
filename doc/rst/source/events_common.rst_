@@ -155,7 +155,7 @@ Optional Arguments
     Optionally, append symbol *size* with unit from
     (**c**\|\ **i**\|\ **p**\ ).  If no *size* is given then we read an event-specific size
     from the data file's third column (fourth if **-C** is used). **Note**: Not all the symbols that
-    are available in :doc:`psxy` can be used here.  At the moment we only support the basic
+    are available in :doc:`plot` can be used here.  At the moment we only support the basic
     symbols and custom symbols; bars, vectors, ellipses, fronts, decorated and quoted lines cannot
     be specified.  Symbols sizes read from a data file will be assumed to be in the unit controlled
     by :term:`PROJ_LENGTH_UNIT` unless they have **c**, **i**, or **p** appended.  If you are only
