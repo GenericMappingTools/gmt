@@ -53,7 +53,8 @@ Optional Arguments
     file and get a common time for each segment via a required **-T**\ *string* specified in the segment
     header.  Here, the entire polygon is the "event" if inside the limits of current time (*now*), event
     duration and rise/fade periods.  If **-L**\ [**t**] is set then the *string* must be either
-    *begin*/*length\|\ end* or *begin*,*length\|\ end* (if *begin* is absolute time).  **Note**:
+    *begin*/*length\|\ end* or *begin*,*length\|\ end* (if *begin* is absolute time).  Use a comma to
+    separate absolute time specifications, otherwise a slash is adequate. **Note**:
     Neither lines nor polygons allow for any labels to be placed.
 
 .. _-B:

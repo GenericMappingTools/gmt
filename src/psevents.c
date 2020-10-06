@@ -186,6 +186,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     +z[<fmt>] will use formatted input z values (requires -C) via format <fmt> [FORMAT_FLOAT_MAP].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set finite length of events, otherwise we assume they are all infinite.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no arg we read lengths from file; append t for reading end times instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -L0 is given the event only lasts one frame.\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify a fixed symbol fill [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border [clipping is on].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nr to turn off clipping and plot repeating symbols for periodic maps.\n");
@@ -302,6 +303,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					Ctrl->L.length = atof (opt->arg);
 					Ctrl->L.mode = PSEVENTS_FIXED_DURATION;
 					n_col = 3;
+					if (gmt_M_is_zero (Ctrl->L.length)) Ctrl->L.length = GMT_CONV8_LIMIT;	/* Let -L0 be -L<tiny> */
 				}
 				else	/* Get individual event lengths from column in file */
 					Ctrl->L.mode = PSEVENTS_VAR_DURATION;
@@ -635,6 +637,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			size = (Ctrl->S.mode) ? in[s_in] : Ctrl->S.size;	/* Fixed or variable nominal symbol size */
 			if (Ctrl->T.now < t_event) {	/* We are within the rise phase */
 				x = pow ((Ctrl->T.now - t_rise)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_RISE], 2.0);	/* Quadratic function that goes from 0 to 1 */
+				if (gmt_M_is_dnan (x)) x = 0.0;	/* Probably division by zero */
 				out[s_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] * x * size;	/* Magnification of amplitude */
 				out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] * x;		/* Magnification of intensity */
 				out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] * (1.0-x);	/* Magnification of opacity */
@@ -646,6 +649,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			}
 			else if (Ctrl->T.now < t_decay) {	/* We are within the decay phase */
 				x = pow ((t_decay - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY], 2.0);	/* Quadratic function that goes from 1 to 0 */
+				if (gmt_M_is_dnan (x)) x = 0.0;	/* Probably division by zero */
 				out[s_col] = size * (Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] * x + (1.0 - x));	/* Reduction of size down to the nominal size */
 				out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] * x;	/* Reduction of intensity down to 0 */
 				out[t_col] = 0.0;
@@ -656,6 +660,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			}
 			else if (finite_duration && Ctrl->T.now <= t_fade) {	/* We are within the fade phase */
 				x = pow ((t_fade - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE], 2.0);	/* Quadratic function that goes from 1 to 0 */
+				if (gmt_M_is_dnan (x)) x = 0.0;	/* Probably division by zero */
 				out[s_col] = size * (x + (1.0 - x) * Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2]);	/* Reduction of size down to coda size */
 				out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2] * (1.0 - x);		/* Reduction of intensity down to coda intensity */
 				out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] * (1.0 - x);		/* Increase of transparency up to code transparency */
@@ -666,7 +671,6 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 				out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2];
 			}
 			if (out_segment) {	/* Write segment header for lines and polygons only */
-				if (gmt_M_is_dnan (out[t_col])) out[t_col] = 0.0;	/* Probably division by zero when no fade or rise time */
 				fprintf (fp_symbols, "%c -t%g %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], out[t_col], header);
 				out_segment = false;	/* Wait for next segment header */
 			}

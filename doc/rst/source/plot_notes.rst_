@@ -22,6 +22,8 @@ Segment header records may contain one of more of the following options:
     Obtain fill via cpt lookup using z-value *zval*
 **-Z**\ *NaN*
     Get the NaN color from the CPT
+**-t**\ *transparency*
+    Obtain transparency and apply it to fill and pen colors.
 
 Custom Symbols
 --------------
