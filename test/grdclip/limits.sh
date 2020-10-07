@@ -16,5 +16,4 @@ gmt grdclip tmp.nc -Sa7/NaN -Sb0/-6 -Gout.nc
 gmt grd2xyz out.nc | gmt psxy -R$Rp -J -Sc0.15c -W0.25p -Ct.cpt -O -K -B10f5 -BWsne -Y3.5i >> $ps
 # Set values between 0 and 5 to NaN
 gmt grdclip tmp.nc -Si0/5/NaN -Gout.nc
-gmt grd2xyz out.nc | gmt psxy -R$Rp -J -Sc0.15c -W0.25p -Ct.cpt -O -K -B10f5 -BWsne -Y3.5i >> $ps
-gmt psxy -R$Rp -J -T -O >> $ps
+gmt grd2xyz out.nc | gmt psxy -R$Rp -J -Sc0.15c -W0.25p -Ct.cpt -O -B10f5 -BWsne -Y3.5i >> $ps

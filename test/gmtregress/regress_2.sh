@@ -40,5 +40,4 @@ plot_one -Ey -Nr wesN+tLMS -Xa5.4i -Ya7.75i >> $ps
 echo 2.85 5.1 REDUCED MAJOR AXIS | gmt pstext -R -J -O -K -F+jTC+a90 -N -Dj0.2i -Xa5.4i -Ya1i >> $ps
 echo 2.85 5.1 ORTHOGONAL | gmt pstext -R -J -O -K -F+jTC+a90 -N -Dj0.2i -Xa5.4i -Ya3.25i >> $ps
 echo 2.85 5.1 X ON Y | gmt pstext -R -J -O -K -F+jTC+a90 -N -Dj0.2i -Xa5.4i -Ya5.5i >> $ps
-echo 2.85 5.1 Y ON X | gmt pstext -R -J -O -K -F+jTC+a90 -N -Dj0.2i -Xa5.4i -Ya7.75i >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo 2.85 5.1 Y ON X | gmt pstext -R -J -O -F+jTC+a90 -N -Dj0.2i -Xa5.4i -Ya7.75i >> $ps

@@ -44,6 +44,4 @@ gmt grd2xyz t.nc -s | gmt psxy -R -J -O -K -Ss0.02i -Gcyan -N >> $ps
 gmt grd2xyz t.nc -s+r | gmt psxy -R -J -O -K -Ss0.02i -Gorange -N >> $ps
 gmt grdcontour t.nc -J -O -K -A10 -C5 -Gd2i >> $ps
 echo 145 78 0 3000 3000 | gmt psxy -R -J -O -K -SE -W1p,blue >> $ps
-echo 145 78 | gmt psxy -R -J -O -K -Sx0.1i -W1p >> $ps
-
-gmt psxy -R -J -O -T >> $ps
+echo 145 78 | gmt psxy -R -J -O -Sx0.1i -W1p >> $ps

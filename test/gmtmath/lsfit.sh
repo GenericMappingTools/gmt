@@ -44,5 +44,4 @@ gmt math -A@sinusoiddata.txt+e+r -N4/1 -C0 1 ADD -C1,2 T ADD 2 DIV 2 MUL PI MUL 
 gmt psxy -R0/2/-3/4 -J -O -Baf @sinusoiddata.txt -Sc0.15c -Gblue -K -Y5i >> $ps
 gmt psxy -R -J -O -K sinusoidfit_lsq.txt -W2p -i0,2 >> $ps
 gmt psxy -R -J -O -K sinusoidfit_svd.txt -Sc2p -Gred -i0,2 >> $ps
-gmt pstext -R -J -O -K -F+f12p+jRB+cRB+t"Fit y(x) = a + b*cos(6@~p@~x - c) + @~e@~(x) = a + b@-1@-*cos(6@~p@~x) + b@-2@-*sin(6@~p@~x) + @~e@~(x)" -Dj0.2i >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt pstext -R -J -O -F+f12p+jRB+cRB+t"Fit y(x) = a + b*cos(6@~p@~x - c) + @~e@~(x) = a + b@-1@-*cos(6@~p@~x) + b@-2@-*sin(6@~p@~x) + @~e@~(x)" -Dj0.2i >> $ps

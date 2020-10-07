@@ -20,5 +20,4 @@ gmt filter1d -Fm100 -E -N0 noise.txt | gmt psxy -R-500/500/-300/300 -J -O -K -W2
 # Median with -E then Gaussian
 gmt psxy -R -J -O -T -K -Y-2.5i >> $ps
 cat tmp.eps >> $ps
-gmt filter1d -Fm100 -E -N0 noise.txt | gmt filter1d -Fg100 -E -N0 | gmt psxy -R-500/500/-300/300 -J -O -K -W2p,blue >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt filter1d -Fm100 -E -N0 noise.txt | gmt filter1d -Fg100 -E -N0 | gmt psxy -R-500/500/-300/300 -J -O -W2p,blue >> $ps
