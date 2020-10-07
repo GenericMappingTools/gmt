@@ -12,4 +12,4 @@ gmt pssac seis.sac -R -J -B$B -BWsen -W1p -K -O -Y4c >> $ps
 gmt pssac seis.sac -R -J -B$B -BWsen -Wblue -K -O -Y4c >> $ps
 gmt pssac seis.sac -R -J -B$B -BWsen -W. -K -O -Y4c >> $ps
 gmt pssac seis.sac -R -J -B$B -BWsen -K -O -Y4c >> $ps
-gmt psxy -R -J -T -K -O >> $ps
+gmt psxy -R -J -T -O >> $ps
