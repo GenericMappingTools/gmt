@@ -10,5 +10,4 @@ split -l 11 t.txt piece
 gmt psxy t.txt -R-5/5/-5/5 -JX3i -P -W1p -Gorange -B2g1 -BWSne -Y5i -K > $ps
 gmt psxy piece?? -R -J -O -W1p -B2g1 -BWSne -X3.5i -K >> $ps
 gmt connect piece?? -T0.6 | gmt psxy -R -J -O -W1p -Gorange -B2g1 -BWSne -X-3.5i -Y-3.5i -K >> $ps
-gmt connect piece?? -T60k -fg | gmt psxy -R -JM3i -O -W1p -Gred -B2g1 -BWSne -X3.5i -K >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt connect piece?? -T60k -fg | gmt psxy -R -JM3i -O -W1p -Gred -B2g1 -BWSne -X3.5i >> $ps

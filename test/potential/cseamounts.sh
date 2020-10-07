@@ -54,6 +54,4 @@ echo "141 -1950 CARTESIAN" | gmt pstext -R -J -O -K -F+jCM+f12p >> $ps
 # Add Geographic crossections
 gmt psxy -R0/313/-3100/-1900 -JX3i/2.5i -O -K -W1p -i2,3 geo_circ.trk -Bafg1000 -BwsNe -X3.5i >> $ps
 gmt psxy -R -J -O -K -W1p,- -i2,3 geo_ellipse.trk >> $ps
-echo "141 -1950 GEOGRAPHIC" | gmt pstext -R -J -O -K -F+jCM+f12p >> $ps
-# Finalize plot
-gmt psxy -R -J -O -T >> $ps
+echo "141 -1950 GEOGRAPHIC" | gmt pstext -R -J -O -F+jCM+f12p >> $ps

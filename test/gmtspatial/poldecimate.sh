@@ -15,5 +15,4 @@ echo "90 60 N = 2000" | gmt pstext -R -J -O -K -N -F+f12+jLM -Dj0.25i >> $ps
 gmt psxy -R -J -O -K $DATA -Sc0.05i -Bafg -BWsne -Gdarkseagreen1 -Y5i >> $ps
 gmt psxy -R -J -O -K results.txt -Sc0.05i -Gred >> $ps
 N=$(wc -l results.txt | awk '{printf "%d\n", $1}')
-echo "90 60 N = $N" | gmt pstext -R -J -O -K -N -F+f12+jLM -Dj0.25i >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo "90 60 N = $N" | gmt pstext -R -J -O -N -F+f12+jLM -Dj0.25i >> $ps

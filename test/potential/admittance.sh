@@ -44,5 +44,4 @@ gmt psxy adm.txt -i0,15 -R -J -O -K -W0.5p,red >> $ps
 gmt psxy adm.txt -R8/512/0/70 -J -O -Bxa2g3 -Byaf+l"Admittance (mGal/km)" -BE -Sc0.05i -Ey+w0.2c+p0.5p,blue \
 	-Gblue -K -i0,11+s1000,12+s1000  --FONT_LABEL=16p,Helvetica,blue >> $ps
 gmt psxy adm.txt -R -J -O -K  -W0.5p,blue -i0,11+s1000 >> $ps
-gmt psxy adm_t.txt -R -J -O -K -W0.5p,green -i0,3+s1000 >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt psxy adm_t.txt -R -J -O -W0.5p,green -i0,3+s1000 >> $ps

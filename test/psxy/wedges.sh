@@ -19,5 +19,4 @@ echo 0 0 30 100  | gmt psxy -R -J -O -K -SW4000k -Gred -W2p >> $ps
 echo 0 0 -30 -100  | gmt psxy -R -J -O -K -SW3000n -Gblue -W2p >> $ps
 echo 50 -30 -50 -110  | gmt psxy -R -J -O -K -SW30d+a+p2p -Gcyan >> $ps
 echo -50 -30 50 110  | gmt psxy -R -J -O -K -SW30d+r+p2p -Gorange >> $ps
-echo -10 80 -60 240  | gmt psxy -R -J -O -K -SW20d -W2p -Gyellow >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo -10 80 -60 240  | gmt psxy -R -J -O -SW20d -W2p -Gyellow >> $ps

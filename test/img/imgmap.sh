@@ -18,5 +18,4 @@ gmt grdimage img_g1.nc -Jm -Ct.cpt -O -K -Ba -BWSne -Y3.25i >> $ps
 # Get resampled geo grid with a domain exactly matching the requested -R
 gmt img2grd $IMG -R180/200/-5/5 -T1 -S1 -Gimg_g2.nc -E
 # Now we can plot this geographic grid using any projection, here Mercator
-gmt grdimage img_g2.nc -Jm -Ct.cpt -O -K -Ba -BWSne -Y3.25i >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt grdimage img_g2.nc -Jm -Ct.cpt -O -Ba -BWSne -Y3.25i >> $ps

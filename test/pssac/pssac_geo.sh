@@ -24,6 +24,4 @@ gmt psxy station.list -J -R -St0.4c -Gblack -i1,2 -K -O >> $ps
 
 # upper right
 gmt pssac station.list -J -R -BWSen -B$Bx -B$By -M0.5i -Si0.0025c -Q -G+gblue -W -K -O -X13c >> $ps
-gmt psxy station.list -J -R -St0.4c -Gblack -i1,2 -K -O >> $ps
-
-gmt psxy -J -R -T -O >> $ps
+gmt psxy station.list -J -R -St0.4c -Gblack -i1,2 -O >> $ps
