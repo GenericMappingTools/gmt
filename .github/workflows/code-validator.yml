@@ -47,7 +47,7 @@ jobs:
       - name: Check execute permission of bash scripts
         run: |
           error=0
-          echo "Following bash scripts may don't execute permission:"
+          echo "Following bash scripts may not have execute permission:"
           # exclude share/tools/gmt_functions.sh
           for file in $(find . -name "*.sh" ! -path "./share/tools/gmt_functions.sh"); do
             if [[ ! -x "$file" ]]; then
