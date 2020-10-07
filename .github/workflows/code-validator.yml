@@ -43,3 +43,16 @@ jobs:
           current_year=$(date +%Y)
           gmt_version_year=$(grep GMT_VERSION_YEAR cmake/ConfigDefault.cmake | awk -F'"' '{print $2}')
           if [ "$current_year" != "$gmt_version_year" ]; then exit 1; fi
+
+      - name: Check execute permission of bash scripts
+        run: |
+          error=0
+          echo "Following bash scripts may not have execute permission:"
+          # exclude share/tools/gmt_functions.sh
+          for file in $(find . -name "*.sh" ! -path "./share/tools/gmt_functions.sh"); do
+            if [[ ! -x "$file" ]]; then
+              ((++error))
+              echo "$error: $file"
+            fi
+          done
+          exit $error
