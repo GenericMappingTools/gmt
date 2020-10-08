@@ -2424,7 +2424,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		if (GMT->current.setting.run_mode == GMT_MODERN) {
 			if (Ctrl->T.ps) {	/* Under modern mode we can also save the PS file by renaming it */
-			        *out_file = '\0'; /* truncate string to build new output file */
+			        out_file[0] = '\0'; /* truncate string to build new output file */
 				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 				strcat (out_file, Ctrl->F.file);
 				strcat (out_file, ".ps");
