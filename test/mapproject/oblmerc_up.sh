@@ -68,5 +68,4 @@ $LL_lon $LL_lat RB LL
 $UR_lon $UR_lat TL UR
 EOF
 gmt psbasemap -R$LL_x/$LL_y/$UR_x/${UR_y}r -Jx$scale_km -O -K -Bafg -BNE --MAP_GRID_PEN_PRIMARY=0.25p,. >> $ps
-echo "0 9.5 az = $az_x" | gmt pstext -R0/8/0/10 -Jx1i -O -K -F+f24p+jTL >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo "0 9.5 az = $az_x" | gmt pstext -R0/8/0/10 -Jx1i -O -F+f24p+jTL >> $ps

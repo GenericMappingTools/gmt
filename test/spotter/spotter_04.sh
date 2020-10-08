@@ -47,6 +47,4 @@ gmt psxy -R -J -O -K P.txt -W1p >> $ps
 gmt psxy -R -J -O -K R.txt -W1p >> $ps
 echo 0 53 | gmt psxy -R -J -O -K -Sc0.25i -Gred -N -W0.25p >> $ps
 echo 0 53 | gmt psxy -R -J -O -K -Sc0.1i -Gblack -N >> $ps
-echo 0 53 0.5i -90 -30 | gmt psxy -R -J -O -K -Sm0.15i+e -Gblack -N -W1p >> $ps
-gmt psxy -R -J -O -T >> $ps
-
+echo 0 53 0.5i -90 -30 | gmt psxy -R -J -O -Sm0.15i+e -Gblack -N -W1p >> $ps
