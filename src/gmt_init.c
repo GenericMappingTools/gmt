@@ -3827,7 +3827,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 		}
 
 		if (out3[0] == '\0') continue;	/* No intervals */
-		if (i < GMT_Z) GMT->current.map.frame.set = true;	/* Got here so we are setting x/y intervals */
+		GMT->current.map.frame.set[i] = true;	/* Got here so we are setting x/y/z intervals */
 
 		/* Parse the annotation/tick info string */
 		if (out3[0] == 'c')
@@ -4374,7 +4374,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		/* Now parse the annotation/tick info string */
 
 		if (orig_string[0] == '\0') continue;	/* Got nothing */
-		if (no < GMT_Z) GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
+		GMT->current.map.frame.set[no] = true;	/* Got here so we are setting intervals */
 		if (strstr (orig_string, "pi")) GMT->current.map.frame.axis[no].substitute_pi = true;	/* Use pi in formatting labels */
 
 		gmt_M_memset (string, GMT_BUFSIZ, char);
@@ -16058,7 +16058,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				default:  GMT->common.B.active[GMT_PRIMARY] = true; break;
 			}
 			if (!error) {
-				if (GMT->current.setting.run_mode == GMT_MODERN && (!GMT->current.map.frame.set || item[q] == 'z')) {
+				if (GMT->current.setting.run_mode == GMT_MODERN && (!GMT->current.map.frame.set[GMT_X] || !GMT->current.map.frame.set[GMT_Y] || (GMT->common.J.zactive && !GMT->current.map.frame.set[GMT_Z]))) {
 					char code[2], args[GMT_LEN256] = {""}, *c = strchr (item, '+');	/* Start of modifiers, if any */
 					if (item[q] && strstr (item, "+f")) GMT->current.plot.calclock.geo.wesn = 1;	/* Got +f, so enable W|E|S|N suffices */
 					if (c && strchr ("aflLsSu", c[1]))	/* We got the ones suitable for axes that we can chop off */

@@ -570,7 +570,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, n_files > 0, "No input files are allowed\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.set, "Option -L: Cannot be used if -B option sets increments.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.set[GMT_X], "Option -L: Cannot be used if -B option sets increments.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.dpi <= 0.0, "Option -N: The dpi must be > 0.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "Option -Z: No file given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK), "Option -Z: Cannot access file %s\n", Ctrl->Z.file);

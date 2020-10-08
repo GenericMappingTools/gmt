@@ -513,7 +513,7 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	struct GMT_PEN pen;		/* Pen for the 3-D back wall outlines */
 	bool plotted_header;		/* true if header has been plotted */
 	bool init;			/* true if -B was used at all */
-	bool set;			/* true if -B was used to set any increments */
+	bool set[3];		/* true if -B was used to set any x,y,z increments */
 	bool draw;			/* true if -B<int> was used, even -B0, as sign to draw axes */
 	bool drawz;			/* true if -B<int> was used, even -Bz0, as sign to draw z axes */
 	bool paint[3];			/* true if -B +x[<fill>], +y[<fill>], +g<fill> was used */
