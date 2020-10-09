@@ -798,6 +798,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 #endif
 
 	if (clip_set) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
+	gmt_plane_perspective (GMT, -1, 0.0);
 
 	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
 	if (S.symbol == GMT_SYMBOL_TEXT) gmt_setfont (GMT, &S.font);		/* Set the required font */
@@ -1987,6 +1988,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	if (clip_set && !S.G.delay) gmt_map_clip_off (GMT);	/* We delay map clip off if text clipping was chosen via -Sq<args:+e */
 
+	gmt_plane_perspective (GMT, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
 	gmt_map_basemap (GMT);	/* Plot basemap last if not 3-D */
 	if (GMT->current.proj.three_D)
 		gmt_vertical_axis (GMT, 2);	/* Draw foreground axis */
@@ -1997,7 +1999,6 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	PSL_setdash (PSL, NULL, 0);
 	if (geovector) PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
-	gmt_vertical_axis (GMT, 2);	/* Draw foreground axis */
 	GMT->current.map.is_world = old_is_world;
 
 	gmt_symbol_free (GMT, &S);

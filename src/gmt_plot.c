@@ -5666,7 +5666,8 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 void gmt_set_basemap_orders (struct GMT_CTRL *GMT, unsigned int frame, unsigned int grid, unsigned int annot) {
 	/* Helper function to fill out the basemap flags for the calling module based on its peculiarities and initial settings */
 	/* First apply some general over-ruling depending on 3-D and inside annotations */
-	if (GMT->current.proj.three_D) {
+	static char *place[2] = {"below", "above"};
+	if (GMT->current.proj.three_D && GMT->common.J.zactive) {
 		frame = GMT_BASEMAP_FRAME_BEFORE;	/* In true 3-D plots we must lay down the x-y frame first regardless of desire to place it at the end */
 		annot = GMT_BASEMAP_ANNOT_BEFORE;
 		grid  = GMT_BASEMAP_GRID_BEFORE;
@@ -5678,6 +5679,7 @@ void gmt_set_basemap_orders (struct GMT_CTRL *GMT, unsigned int frame, unsigned 
 	if (annot == GMT_BASEMAP_ANNOT_AFTER && frame == GMT_BASEMAP_FRAME_BEFORE)
 		annot = GMT_BASEMAP_ANNOT_BEFORE;
 	GMT->current.map.frame.basemap_flag = frame + grid + annot;
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Basemap order: Frame = %s  Grid = %s  Tick/ANot = %s\n", place[frame], place[grid/2], place[annot/4]);
 }
 
 GMT_LOCAL bool gmtplot_z_axis_side (struct GMT_CTRL *GMT, unsigned int axis, unsigned int quadrant) {
