@@ -1431,7 +1431,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						continue;
 				}
 			}
-			if (S.symbol == PSL_ELLIPSE && S.convert_angles) may_intrude_inside = true;
+			if (S.symbol == PSL_ELLIPSE && S.convert_angles) may_intrude_inside = true;	/* Always assume we may extend outside border */
 
 			if (QR_symbol) {
 				if (Ctrl->G.active)	/* Change color of QR code */
