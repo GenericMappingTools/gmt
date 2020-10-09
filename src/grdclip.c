@@ -171,11 +171,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT_OP
 					}
 					else
 						Ctrl->S.above = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (txt);
-
-					if (!isnan(Ctrl->S.above) && Ctrl->S.above < Ctrl->S.high) {
-						GMT_Report (API, GMT_MSG_ERROR, "Option -Sb: <above> cannot be lesser then <high>\n");
-						n_errors++;
-					}
 					break;
 				case 'b':
 					Ctrl->S.mode |= GRDCLIP_BELOW;
@@ -190,11 +185,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT_OP
 					}
 					else
 						Ctrl->S.below = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (txt);
-
-					if (!isnan(Ctrl->S.below) && Ctrl->S.below > Ctrl->S.low) {
-						GMT_Report (API, GMT_MSG_ERROR, "Option -Sb: <below> cannot be greater then <low>\n");
-						n_errors++;
-					}
 					break;
 				case 'i':
 					n_to_expect = 3;	/* Since only two for -Sr */
@@ -217,13 +207,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT_OP
 						}
 						else
 							Ctrl->S.class[n_class].between = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (txt);
-
-						if (!isnan(Ctrl->S.class[n_class].between) &&
-						    !(Ctrl->S.class[n_class].low <= Ctrl->S.class[n_class].between &&
-							  Ctrl->S.class[n_class].high >= Ctrl->S.class[n_class].between)) {
-							GMT_Report (API, GMT_MSG_ERROR, "Option -Si: <between> is not between <low> and <high>\n");
-							n_errors++;
-						}
 					}
 					else {
 #ifdef DOUBLE_PRECISION_GRID
