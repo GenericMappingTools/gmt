@@ -1705,6 +1705,10 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			else
 				GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for selected feature. Option -l ignored.\n");
 		}
+		if ((!Ctrl->G.active || !Ctrl->C.active || Zin) && !Ctrl->W.active) {	/* If not a polygon and no outline we force default outline */
+			gmt_setpen (GMT, &current_pen);
+			outline_active = 1;
+		}
 
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER) gmt_extract_label (GMT, &D->table[tbl]->header[0][1], S.G.label, NULL);	/* Set first header as potential label */

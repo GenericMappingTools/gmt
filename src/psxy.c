@@ -2027,10 +2027,6 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			else
 				GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for selected feature. Option -l ignored.\n");
 		}
-		if (!polygon && !Ctrl->W.active) {	/* If not a polygon and no outline we force default outline */
-			gmt_setpen (GMT, &current_pen);
-			outline_active = 1;
-		}
 		if (Ctrl->W.cpt_effect && Ctrl->W.pen.cptmode & 2) polygon = true;
 		if (Ctrl->G.set_color) polygon = true;
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
