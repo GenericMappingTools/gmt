@@ -197,6 +197,10 @@ the rotated grid to a new file, run::
     gmt grdedit oblique.nc -El -Goblique_rot.nc
 
 
+To ensure that the grid depths.nc only has positive longitude values, run::
+
+    gmt grdedit depths.nc -L+p
+
 The grid bad.nc has latitude as x-coordinates an longitude as y-coordinates.
 We can exchange the two dimension by running::
 
