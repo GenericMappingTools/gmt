@@ -21,21 +21,21 @@ jobs:
         run: |
           cd src/
           bash gmt_make_PSL_strings.sh
-          if [ $(git ls-files -m) ]; then git --no-pager diff HEAD; exit 1; fi
+          if [[ $(git ls-files -m) ]]; then git --no-pager diff HEAD; exit 1; fi
           cd ..
 
       - name: Check gmt_enum_dict.h
         run: |
           cd src/
           bash gmt_make_enum_dicts.sh
-          if [ $(git ls-files -m) ]; then git --no-pager diff HEAD; exit 1; fi
+          if [[ $(git ls-files -m) ]]; then git --no-pager diff HEAD; exit 1; fi
           cd ..
 
       - name: Check module purposes
         run: |
           cd src/
           bash gmt_make_module_purpose.sh
-          if [ $(git ls-files -m) ]; then git --no-pager diff HEAD; exit 1; fi
+          if [[ $(git ls-files -m) ]]; then git --no-pager diff HEAD; exit 1; fi
           cd ..
 
       - name: Check GMT version year
