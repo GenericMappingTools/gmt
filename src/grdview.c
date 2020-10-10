@@ -2058,9 +2058,11 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		}
 	}
 
+	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_map_basemap (GMT);	/* Plot basemap last if not 3-D */
 	if (GMT->current.proj.three_D)
 		gmt_vertical_axis (GMT, 2);	/* Draw foreground axis */
+	gmt_plane_perspective (GMT, -1, 0.0);
 
 	gmt_plotend (GMT);
 
