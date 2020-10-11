@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt mapproject** [ *tables* ] |-J|\ *parameters*
+**gmt mapproject** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-R|
 [ |-A|\ **b**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**] ]
 [ |-C|\ [*dx*/*dy*][**+m**] ]
@@ -69,6 +69,9 @@ along lines can all be computed by using one or more of the options
 Required Arguments
 ------------------
 
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
+
 .. _-J:
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
@@ -84,9 +87,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
 
 .. _-A:
 

@@ -51,6 +51,11 @@ supplied].
 Required Arguments
 ------------------
 
+*table*
+    3 [or 4, see **-W**] column ASCII file(s) [or binary, see
+    **-bi**] holding (x,y,z[,w]) data values. If
+    no file is specified, **nearneighbor** will read from standard input.
+
 .. _-G:
 
 **-G**\ *out_grdfile*
@@ -87,11 +92,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-*table*
-    3 [or 4, see **-W**] column ASCII file(s) [or binary, see
-    **-bi**] holding (x,y,z[,w]) data values. If
-    no file is specified, **nearneighbor** will read from standard input.
 
 .. _-E:
 
