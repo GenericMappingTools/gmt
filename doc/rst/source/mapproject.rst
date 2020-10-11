@@ -101,7 +101,9 @@ Optional Arguments
     is given then we compute the azimuth (or back-azimuth) from the
     previous point.  Alternatively, append **+v** to obtain a
     *variable* 2nd point (*lon0*/*lat0*) via columns 3-4 in the input file.
-    See `Output Order`_ for how **-A** affects the output record.
+    See `Output Order`_ for how **-A** affects the output record.  If **-R**
+    and **-J*** are given the we project the coordinates first and then
+    compute Cartesian angles instead.
 
 .. _-C:
 
@@ -150,7 +152,8 @@ Optional Arguments
     for available units and how distances are computed [great circle using authalic
     radius]), including **c** (Cartesian distance using input coordinates) or **C**
     (Cartesian distance using projected coordinates). The **C** unit
-    requires **-R** and **-J** to be set. If no fixed point is given
+    requires **-R** and **-J** to be set and all output coordinates will be
+    reported as projected. If no fixed point is given
     we calculate *accumulated* distances whereas if a fixed point is given
     we calculate *incremental* distances.  You can override these defaults
     by adding **+a** for accumulated or **+i** for incremental distances.
