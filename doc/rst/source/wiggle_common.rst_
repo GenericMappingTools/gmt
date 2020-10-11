@@ -16,6 +16,9 @@ the positive or the negative wiggle (or both) may be shaded.
 Required Arguments
 ------------------
 
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
+
 .. _-J:
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
@@ -38,9 +41,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
 
 .. _-A:
 
