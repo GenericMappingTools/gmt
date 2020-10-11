@@ -879,8 +879,9 @@ GMT_LOCAL void gmtplot_fancy_frame_straightlat_checkers (struct GMT_CTRL *GMT, s
 }
 
 GMT_LOCAL void gmtplot_fancy_frame_straight_outline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lonA, double latA, double lonB, double latB, unsigned int side, bool secondary_too) {
-	unsigned int k, kn = 1;
+	unsigned int k, kn = 1, axis;
 	double scale = 1.0, x[2], y[2], angle, s, c, dx, dy, Ldx, Ldy;
+	struct GMT_PLOT_AXIS_ITEM *T = NULL;
 
 	if (!GMT->current.map.frame.side[side]) return;	/* Do not draw this frame side */
 
@@ -888,6 +889,9 @@ GMT_LOCAL void gmtplot_fancy_frame_straight_outline (struct GMT_CTRL *GMT, struc
 		scale = 0.5;
 		++kn;
 	}
+	axis = side & 2;	/* Gives 0 for GMT_X and 1 for GMT_Y */
+	T = &GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_UPPER];
+	if (!T->active) return;
 
 	gmt_geo_to_xy (GMT, lonA, latA, &x[0], &y[0]);
 	gmt_geo_to_xy (GMT, lonB, latB, &x[1], &y[1]);
@@ -944,8 +948,9 @@ GMT_LOCAL void gmtplot_fancy_frame_curved_outline (struct GMT_CTRL *GMT, struct 
 }
 
 GMT_LOCAL void gmtplot_rounded_framecorners (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, bool secondary_too) {
-	unsigned int k, kn;
+	unsigned int k, kn, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
 	double x1, y1, x2, y2, anglew, anglee, x, y, width;
+	struct GMT_PLOT_AXIS_ITEM *Tx = NULL, *Ty = NULL;
 
 	if (GMT->current.setting.map_frame_type != GMT_IS_ROUNDED) return;	/* Only do this if rounded corners are requested */
 
@@ -960,6 +965,9 @@ GMT_LOCAL void gmtplot_rounded_framecorners (struct GMT_CTRL *GMT, struct PSL_CT
 	width = ((secondary_too) ? 0.5 : 1.0) * fabs (GMT->current.setting.map_frame_width);
 	kn = (secondary_too) ? 2 : 1;
 	for (k = 0; k < kn; k++) {
+		Tx = &GMT->current.map.frame.axis[GMT_X].item[item[k]];
+		Ty = &GMT->current.map.frame.axis[GMT_Y].item[item[k]];
+		if (!(Tx->active && Ty->active)) continue;
 		if (GMT->current.map.frame.side[S_SIDE] && GMT->current.map.frame.side[E_SIDE]) {
 			gmt_geo_to_xy (GMT, e, s, &x, &y);
 			PSL_plotarc (PSL, x, y, (k+1)*width, 180.0+anglee, 270.0+anglee, PSL_MOVE|PSL_STROKE);
