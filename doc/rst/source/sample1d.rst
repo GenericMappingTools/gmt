@@ -81,7 +81,7 @@ Optional Arguments
 
 .. _-F:
 
-**-Fl**\|\ **a**\|\ **c**\|\ **n**\ **s**\ *p*\ [**+d1**\|\ **2**]
+**-Fl**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**]
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), **n** (no interpolation: nearest point), or **s**
     (smoothing cubic spline; append fit parameter *p*) [Default
