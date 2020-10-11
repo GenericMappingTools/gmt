@@ -1733,7 +1733,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				if (Zin != NULL) {
 					double rgb[4];
 					(void)gmt_get_rgb_from_z (GMT, P, z_for_cpt[seg], rgb);
-					if (Ctrl->G.set_color) {	/* To be used in polygon or symbol outline */
+					if (Ctrl->W.set_color) {	/* To be used in polygon outline */
 						gmt_M_rgb_copy (current_pen.rgb, rgb);
 						gmt_setpen (GMT, &current_pen);
 					}
