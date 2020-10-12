@@ -796,7 +796,6 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	}
 	if (GMT->common.B.active[0] && !GMT->current.map.frame.no_frame ) {	/* Draw frame */
 		int n_alpha, n_radii;
-		double dim[PSL_MAX_DIMS];
 
 		/* Lay down gridlines before histogram */
 		gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
