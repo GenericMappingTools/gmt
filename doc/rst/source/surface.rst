@@ -72,6 +72,9 @@ boundary conditions in the longitude direction.
 Required Arguments
 ------------------
 
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
+
 .. _-G:
 
 **-G**\ *outputfile.nc*
@@ -89,9 +92,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
 
 .. _-A:
 
