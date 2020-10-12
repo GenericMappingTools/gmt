@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt gmtbinstats** [ *table* ] |-G|\ *out_grdfile*
+**gmt gmtbinstats** [ *table* ] |-G|\ *outgrid*
 |SYN_OPT-I|
 |-C|\ **a**\|\ **d**\|\ **g**\|\ **i**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **r**\|\ **s**\|\ **u**\|\ **U**\|\ **z**
 |SYN_OPT-R|
@@ -74,7 +74,7 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *out_grdfile*
+**-G**\ *outgrid*
     Give the name of the output grid file.
 
 .. _-I:

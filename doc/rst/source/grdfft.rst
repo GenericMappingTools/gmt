@@ -46,7 +46,7 @@ Required Arguments
 *ingrid*
     2-D binary grid file to be operated on. (See GRID FILE FORMATS
     below). For cross-spectral operations, also give the second grid
-    file *ingrd2*.
+    file *ingrid2*.
 **-G**\ *outfile*
     Specify the name of the output grid file or the 1-D spectrum table
     (see **-E**). (See GRID FILE FORMATS below).
