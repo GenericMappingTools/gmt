@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdsample** *in_grdfile* |-G|\ *out_grdfile*
+**gmt grdsample** *ingrid* |-G|\ *outgrid*
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
 [ |-T| ]
@@ -46,12 +46,12 @@ have the same registration as the input grid.
 Required Arguments
 ------------------
 
-*in_grdfile*
+*ingrid*
     The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)
 
 .. _-G:
 
-**-G**\ *out_grdfile*
+**-G**\ *outgrid*
     The name of the output grid file. (See GRID FILE FORMAT below.)
 
 Optional Arguments
