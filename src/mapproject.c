@@ -227,7 +227,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -G[+u<unit>]+v to obtain distance increments via variable <lon0> <lat0> points from input columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a to force accumulated distances, +i to force incremental distances, or both to get both distances.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give unit as arc (d)egree, m(e)ter, (f)oot, (k)m, arc (m)inute, (M)ile, (n)autical mile, s(u)rvey foot,\n\t   arc (s)econd, or (c)artesian [e].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Unit C means Cartesian distances in %s after projecting the input coordinates to plot coordinates (requires -R, -J).\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Unit C means Cartesian distances in %s after projecting the input coordinates to plot coordinates (requires -R, -J).\n",
+			API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Inverse mode, i.e., get lon/lat from x/y input. [Default is lon/lat -> x/y].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Calculate minimum distances to specified line(s) in the file <table>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +u<unit> as arc (d)egree, m(e)ter, (f)oot, (k)m, arc (m)inute, (M)ile, (n)autical mile, s(u)rvey foot, arc (s)econd, or (c)artesian [e].\n");
@@ -733,8 +734,6 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 	/* Must have -J */
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && (Ctrl->G.mode || Ctrl->L.active) && Ctrl->G.unit == 'C',
 	                                   "Must specify -J option with selected form of -G or -L when unit is C\n");
-	//n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && Ctrl->G.active && Ctrl->G.unit != 'C',
-	//                                   "Cannot specify -J option with selected form of -G\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && Ctrl->L.active && Ctrl->L.unit != 'C',
 	                                   "Cannot specify -J option with selected form of -L\n");
 	if (!GMT->common.R.active[RSET] && GMT->current.proj.projection_GMT == GMT_UTM && Ctrl->C.active) {	/* Set default UTM region from zone info */
