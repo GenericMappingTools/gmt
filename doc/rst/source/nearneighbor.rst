@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt nearneighbor** [ *table* ] |-G|\ *out_grdfile*
+**gmt nearneighbor** [ *table* ] |-G|\ *outgrid*
 |SYN_OPT-I|
 |-N|\ *sectors*\ [**+m**\ *min_sectors*] | \ **n**
 |SYN_OPT-R|
@@ -58,7 +58,7 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *out_grdfile*
+**-G**\ *outgrid*
     Give the name of the output grid file.
 
 .. _-I:
