@@ -50,6 +50,11 @@ see **surface**, **greenspline**, **nearneighbor**, or **triangulate**.
 Required Arguments
 ------------------
 
+*table*
+    One or more ASCII [or binary, see **-bi**]
+    files holding z or (x,y,z) values. The xyz triplets do not have to
+    be sorted. One-column z tables must be sorted and the **-Z** must be set.
+
 .. _-G:
 
 **-G**\ *grdfile*
@@ -67,11 +72,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-*table*
-    One or more ASCII [or binary, see **-bi**]
-    files holding z or (x,y,z) values. The xyz triplets do not have to
-    be sorted. One-column z tables must be sorted and the **-Z** must be set.
 
 .. _-A:
 

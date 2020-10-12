@@ -53,15 +53,13 @@ the read phase by using the **-i** option.
 Required Arguments
 ------------------
 
-None
-
-Optional Arguments
-------------------
-
 .. |Add_intables| replace:: The first two columns are expected to contain the required *x* and *y* data.  Depending on
    your **-W** and **-E** settings we may expect an additional 1-3 columns with error estimates
    of one of both of the data coordinates, and even their correlation (see **-W** for details).
 .. include:: explain_intables.rst_
+
+Optional Arguments
+------------------
 
 .. _-A:
 

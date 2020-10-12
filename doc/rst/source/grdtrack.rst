@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdtrack** [ *trackfile* ] |-G|\ *grd1* |-G|\ *grd2* ...
+**gmt grdtrack** [ *table* ] |-G|\ *grd1* |-G|\ *grd2* ...
 [ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
 [ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **+v**][**l**\|\ **r**] ]
 [ |-D|\ *dfile* ]
@@ -61,6 +61,11 @@ edge is zero) unless the grid is automatically recognized as periodic.)
 Required Arguments
 ------------------
 
+*table*
+    This is an ASCII (or binary, see **-bi**)
+    file where the first 2 columns hold the (x,y) positions where the
+    user wants to sample the 2-D data set.
+
 .. _-G:
 
 **-G**\ *gridfile*
@@ -81,11 +86,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-*trackfile*
-    This is an ASCII (or binary, see **-bi**)
-    file where the first 2 columns hold the (x,y) positions where the
-    user wants to sample the 2-D data set.
 
 .. _-A:
 

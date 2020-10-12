@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt nearneighbor** [ *table* ] |-G|\ *out_grdfile*
+**gmt nearneighbor** [ *table* ] |-G|\ *outgrid*
 |SYN_OPT-I|
 |-N|\ *sectors*\ [**+m**\ *min_sectors*] | \ **n**
 |SYN_OPT-R|
@@ -51,9 +51,14 @@ supplied].
 Required Arguments
 ------------------
 
+*table*
+    3 [or 4, see **-W**] column ASCII file(s) [or binary, see
+    **-bi**] holding (x,y,z[,w]) data values. If
+    no file is specified, **nearneighbor** will read from standard input.
+
 .. _-G:
 
-**-G**\ *out_grdfile*
+**-G**\ *outgrid*
     Give the name of the output grid file.
 
 .. _-I:
@@ -87,11 +92,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-*table*
-    3 [or 4, see **-W**] column ASCII file(s) [or binary, see
-    **-bi**] holding (x,y,z[,w]) data values. If
-    no file is specified, **nearneighbor** will read from standard input.
 
 .. _-E:
 
