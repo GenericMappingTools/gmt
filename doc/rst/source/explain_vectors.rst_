@@ -7,9 +7,9 @@ Vector Attributes
 
     Vector attributes are controlled by options and modifiers.  We will refer to
     this figure and the labels therein when introducing the corresponding modifiers.
-    All vectors require you specify the begin point :math:`x_b, y_b` and typically
-    direction *d* and length *L*, but for map projections we usually specify the
-    azimuth :math:`\alpha` instead.
+    All vectors require you to specify the **b**\ egin point :math:`x_b, y_b` and
+    the **e**\ nd point :math:`x_e, y_e`, or alternatively the direction *d* and length
+    *L*, while for map projections we usually specify the azimuth :math:`\alpha` instead.
 
 Several modifiers may be appended to vector-producing options for
 specifying the placement of vector heads, their shapes, and the
@@ -95,7 +95,7 @@ Finally, Cartesian vectors may take these modifiers:
 from the vector stem (a line).  In GMT4, the entire vector was a polygon and it could only
 be a straight Cartesian vector. Yes, the old GMT4 vector shape remains accessible if
 you specify a vector (**-Sv**\|\ **V**) using the GMT4 syntax, explained here: *size*, if present, will
-be interpreted as *arrowwidth/headlength/headwidth* [Default is 0.075c/0.3c/0.25c (or
+be interpreted as :math:`t_w/h_l/h_w` or *tailwidth/headlength/halfheadwidth* [Default is 0.075c/0.3c/0.25c (or
 0.03i/0.12i/0.1i)]. By default, arrow attributes remain invariant to the length of the
 arrow. To have the size of the vector scale down with decreasing size, append **+n**\ *norm*,
 where vectors shorter than *norm* will have their attributes scaled by *length*/*norm*.
@@ -103,3 +103,14 @@ To center the vector on the balance point, use **-Svb**; to align point with the
 use **-Svh**; to align point with the vector tail, use **-Svt** [Default]. To give the
 head point’s coordinates instead of direction and length, use **-Svs**. Upper case
 **B**, **H**, **T**, **S** will draw a double-headed vector [Default is single head].
+
+.. figure:: /_images/GMT_vector4.*
+    :width: 600 px
+    :align: center
+
+    A GMT 4 vector has no separate pen for the stem -- it is all part of a Cartesian polygon.
+    You may optionally fill and draw its outline.  The modifiers listed above generally do
+    not apply.  **Note**: While the *tailwidth* (:math:`t_w`) and *headlength* (:math:`h_l`)
+    parameters are given as indicated, the *halfheadwidth* (:math:`h_w`) is oddly given as the half-
+    width in GMT 4 so we retain that convention here (but have clarified the documentation).
+
