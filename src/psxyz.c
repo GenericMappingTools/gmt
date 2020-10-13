@@ -587,7 +587,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	bool polygon, penset_OK = true, not_line, old_is_world;
 	bool get_rgb = false, read_symbol, clip_set = false, fill_active, rgb_from_z = false, QR_symbol = false;
 	bool default_outline, outline_active, save_u = false, geovector = false, can_update_headpen = true;
-	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol = 0, tcol = 0;
+	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol = 0, tcol = 0, grid_order, frame_order;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
 	unsigned int bcol, ex1, ex2, ex3, change = 0, n_needed, n_z = 0;
 	int error = GMT_NOERROR;
@@ -763,6 +763,22 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		}
 	}
 
+	if (GMT->current.proj.z_pars[0] == 0.0) {	/* Only consider clipping if there is no z scaling */
+		if ((gmt_M_is_conical(GMT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))) {	/* Must turn clipping on for 360-range conical */
+			/* Special case of 360-range conical (which is periodic but do not touch at w=e) so we must clip to ensure nothing is plotted in the gap between west and east border */
+			clip_set = true;
+			frame_order = (Ctrl->N.active) ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER;
+		}
+		else if (Ctrl->N.mode == PSXYZ_CLIP_REPEAT || Ctrl->N.mode == PSXYZ_CLIP_NO_REPEAT) {	/* Only set clip if plotting symbols and -N not used */
+			clip_set = true;
+			frame_order = GMT_BASEMAP_FRAME_AFTER;
+		}
+		else
+			frame_order = (Ctrl->N.active) ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER;
+	}
+	else
+		frame_order = GMT_BASEMAP_FRAME_BEFORE;
+
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	if (Ctrl->T.active) {
 		gmt_plotend (GMT);
@@ -770,9 +786,10 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	}
 
 	gmt_plane_perspective (GMT, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
+	grid_order = (polygon) ? GMT_BASEMAP_GRID_AFTER : GMT_BASEMAP_GRID_BEFORE;
+	gmt_set_basemap_orders (GMT, frame_order, grid_order, GMT_BASEMAP_ANNOT_BEFORE);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
-
-	gmt_map_basemap (GMT);
+ 	gmt_map_basemap (GMT);	/* Lay down gridlines */
 
 	gmt_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
 #ifdef DEBUG
@@ -780,15 +797,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 #endif
 
-	if (GMT->current.proj.z_pars[0] == 0.0) {	/* Only consider clipping if there is no z scaling */
-		if ((gmt_M_is_conical(GMT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))) {	/* Must turn clipping on for 360-range conical */
-			/* Special case of 360-range conical (which is periodic but do not touch at w=e) so we must clip to ensure nothing is plotted in the gap between west and east border */
-			clip_set = true;
-		}
-		else if (Ctrl->N.mode == PSXYZ_CLIP_REPEAT || Ctrl->N.mode == PSXYZ_CLIP_NO_REPEAT)	/* Only set clip if plotting symbols and -N not used */
-			clip_set = true;
-	}
 	if (clip_set) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
+	gmt_plane_perspective (GMT, -1, 0.0);
 
 	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
 	if (S.symbol == GMT_SYMBOL_TEXT) gmt_setfont (GMT, &S.font);		/* Set the required font */
@@ -1978,13 +1988,17 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	if (clip_set && !S.G.delay) gmt_map_clip_off (GMT);	/* We delay map clip off if text clipping was chosen via -Sq<args:+e */
 
+	gmt_plane_perspective (GMT, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
+	gmt_map_basemap (GMT);	/* Plot basemap last if not 3-D */
+	if (GMT->current.proj.three_D)
+		gmt_vertical_axis (GMT, 2);	/* Draw foreground axis */
+		
 	gmt_plane_perspective (GMT, -1, 0.0);
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, -DX, -DY, 0.0, PSL_FWD);	/* Shift plot a bit */
 
 	PSL_setdash (PSL, NULL, 0);
 	if (geovector) PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
-	gmt_vertical_axis (GMT, 2);	/* Draw foreground axis */
 	GMT->current.map.is_world = old_is_world;
 
 	gmt_symbol_free (GMT, &S);

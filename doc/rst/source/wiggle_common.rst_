@@ -76,7 +76,8 @@ Optional Arguments
     **-DJ** is used to place a scale outside the map frame while **-Dj** is used to place it inside the frame.
     Move scale label to the left side with **+al** [Default is to the right of the scale].
     Append **+l** to set the *z* unit label that is used in the scale label [no unit].
-    The :term:`FONT_ANNOT_PRIMARY` is used for the font setting.
+    The :term:`FONT_ANNOT_PRIMARY` is used for the font setting, while :term:`MAP_TICK_PEN_PRIMARY`
+    is used to draw the scale bar.
 
 .. _-F:
 

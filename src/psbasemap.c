@@ -305,6 +305,7 @@ EXTERN_MSC int GMT_psbasemap (void *V_API, int mode, void *args) {
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
@@ -320,6 +321,8 @@ EXTERN_MSC int GMT_psbasemap (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->T.active) gmt_draw_map_rose (GMT, &Ctrl->T.rose);
 	if (Ctrl->D.active) gmt_draw_map_inset (GMT, &Ctrl->D.inset, false);
+
+	gmt_map_basemap (GMT);	/* Plot base map */
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 

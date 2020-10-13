@@ -749,6 +749,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+	gmt_set_basemap_orders (GMT, (Ctrl->N.active && strchr (Ctrl->N.arg, 'r')) ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_AFTER);
 	gmt_map_basemap (GMT);	/* Plot basemap if requested */
 
 	if (fp_symbols) { /* Here we have event symbols to plot as an overlay via a call to plot */
@@ -799,6 +800,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 
 	/* Finalize plot and we are done */
 
+	gmt_map_basemap (GMT);	/* Plot basemap if requested */
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 

@@ -917,7 +917,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			switch (opt->option) {
 				case 'A' : case 'D': case 'F': case 'G': case 'K': case 'L': case 'Q': case 'T': case 'U': case 'W': case 'Z':	/* Only for grdcontour */
 					strcat (cmd2, string); break;
-				case 'B':	/* Must worry about spaces*/
+				case 'B':	/* Must worry about spaces */
 					if (strchr (opt->arg, ' ') || strchr (opt->arg, '\t')) {	/* Must place all string arguments in quotes */
 						char dup_string[GMT_LEN128] = {""};
 						grdcontour_embed_quotes (opt->arg, dup_string);
@@ -977,7 +977,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 						strcat (cmd1, string);	strcat (cmd2, string);
 					}
 					break;
-				default:	/* These arguments go into both commands (may be -p -n etc) */
+				default:	/* These arguments go into both commands (may be -p -n, --, etc) */
 					strcat (cmd1, string);	strcat (cmd2, string);
 					break;
 			}
@@ -1082,6 +1082,8 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		if (make_plot) {
 			if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
+			GMT->current.map.frame.order = GMT_BASEMAP_AFTER;	/* Move to last order since only calling gmt_map_basemap once */
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 			gmt_map_basemap (GMT);
 			gmt_plane_perspective (GMT, -1, 0.0);
@@ -1151,9 +1153,11 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if (make_plot) {
+		if (make_plot) {	/* Place empty plot according to -B settings */
 			if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
+			GMT->current.map.frame.order = GMT_BASEMAP_AFTER;	/* Move to last order since only calling gmt_map_basemap once */
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 			gmt_map_basemap (GMT);
 			gmt_plane_perspective (GMT, -1, 0.0);
@@ -1296,9 +1300,11 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 #endif
 	if (n_contours == 0) {	/* No contours within range of data */
 		GMT_Report (API, GMT_MSG_WARNING, "No contours found\n");
-		if (make_plot) {
+		if (make_plot) {	/* Place empty map depending on -B */
 			if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
+			GMT->current.map.frame.order = GMT_BASEMAP_AFTER;	/* Move to last order since only calling gmt_map_basemap once */
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 			gmt_map_basemap (GMT);
 			gmt_plane_perspective (GMT, -1, 0.0);
@@ -1391,12 +1397,13 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (rgb, 4, double);
 
-	if (make_plot) {
+	if (make_plot) {	/* Here we have contours to plot and possibly canvas/basemap plotting to do */
 		if (Ctrl->contour.delay) GMT->current.ps.nclip = +2;	/* Signal that this program initiates clipping that will outlive this process */
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_set_basemap_orders (GMT, Ctrl->contour.delay ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
-		if (Ctrl->contour.delay) gmt_map_basemap (GMT);	/* Must do -B here before clipping makes it not doable */
+		gmt_map_basemap (GMT);
 		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 		if (GMT->common.l.active) {	/* Add one or two contour entries to the auto-legend entry under modern mode; examine which pen & label we place */
@@ -1612,10 +1619,9 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 		gmt_contlabel_plot (GMT, &Ctrl->contour);
 
-		if (!Ctrl->contour.delay) {
+		if (!Ctrl->contour.delay)
 			gmt_map_clip_off (GMT);
-			gmt_map_basemap (GMT);
-		}
+		gmt_map_basemap (GMT);
 
 		gmt_plane_perspective (GMT, -1, 0.0);
 

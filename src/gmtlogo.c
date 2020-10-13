@@ -214,8 +214,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the GMT logo.", 0);
 	GMT_Option (API, "J-Z,K,O,P,R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Control text label plotted beneath the logo:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append l to plot text label [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to plot URL for GMT.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append l to plot \"The Generic Mapping Tools\" [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to plot the URL for GMT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append n to skip label entirely.\n");
 	GMT_Option (API, "U,V");
 	GMT_Option (API, "X,c,f,t,.");
@@ -409,10 +409,10 @@ EXTERN_MSC int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	sprintf (cmd, "-T -Rd -JI0/%gi -N -O -K -X%gi -Y%gi %s", scale * 1.55, scale * 0.225, y, pars);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Calling psclip with args %s\n", cmd);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
-	sprintf (cmd, "-Rd -JI0/%gi -S%s -G%s -A35000+l -Dc -O -K %s --GMT_HISTORY=readonly", scale * 1.55, c_water, c_land, pars);
+	sprintf (cmd, "-Rd -JI0/%gi -Bxg45 -Byg30 -S%s -G%s -A35000+l -Dc -O -K %s --GMT_HISTORY=readonly", scale * 1.55, c_water, c_land, pars);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Calling pscoast with args %s\n", cmd);
 	GMT_Call_Module (API, "pscoast", GMT_MODULE_CMD, cmd);
-	sprintf (cmd, "-Rd -JI0/%gi -C -O -K -Bxg45 -Byg30  %s --MAP_POLAR_CAP=none --GMT_HISTORY=readonly", scale * 1.55, pars);
+	sprintf (cmd, "-Rd -JI0/%gi -C -O -K  %s --MAP_POLAR_CAP=none --GMT_HISTORY=readonly", scale * 1.55, pars);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Calling psclip with args %s\n", cmd);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
 

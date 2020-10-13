@@ -523,12 +523,15 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	bool set_both;			/* true if -B argument applies to both x and y axes */
 	bool obl_grid;			/* true if +o was given to draw oblique gridlines */
 	bool draw_wall;			/* true if +w was given to draw backwall outline */
+	bool gridline_plotted;	/* true if we already have plotted the gridlines or gridticks */
 	unsigned int draw_box;			/* 0 = no 3-D frame. 1 if 3-D Z-box is desired [default], 2 if no -Z box lines covering up the plot */
 	unsigned int internal_annot;	/* 1 (longitude) or 2 (latitude or radius) if +i was given to draw internal annotations */
 	unsigned int set_frame[2];	/* 1 if a -B<WESNframe> setting was given */
 	unsigned int horizontal;	/* 1 is S/N annotations should be parallel to axes, 2 if forced */
 	unsigned int side[5];		/* Which sides (0-3 in plane; 4 = z) to plot. 2 is annot/draw, 1 is draw, 0 is not */
 	unsigned int z_axis[4];		/* Which axes to use for the 3-D z-axis [auto] */
+	unsigned int order;			/* 0: We are plotting before data, 1 we are plotting after data have been plotted */
+	unsigned int basemap_flag;	/* Bit flag determining if frame, gridlines, and annotations+ticks are plotted before or after data */
 	double internal_arg;		/* Internal annotation latitude or longitude location set via +i<val> */
 };
 

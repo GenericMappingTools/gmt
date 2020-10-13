@@ -822,6 +822,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+	gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 	gmt_map_basemap (GMT);	/* Plot basemap if requested */
 
 	if (GMT->current.map.frame.draw && b_cpt)	/* Two conflicting -B settings, reset main -B since we just finished the frame */
@@ -1873,6 +1874,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	PSL_setorigin (PSL, -x_orig, -y_orig, 0.0, PSL_INV);	/* Reset */
 	Ctrl->D.refpoint->x = x_orig;	Ctrl->D.refpoint->y = y_orig;
 
+	gmt_map_basemap (GMT);	/* Plot basemap if requested */
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_M_memcpy (PSL->internal.origin, xy_mode, 2, char);
 	gmt_M_memcpy (PSL->internal.offset, xy_offset, 2, double);

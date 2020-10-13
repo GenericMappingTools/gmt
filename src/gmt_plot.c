@@ -879,8 +879,9 @@ GMT_LOCAL void gmtplot_fancy_frame_straightlat_checkers (struct GMT_CTRL *GMT, s
 }
 
 GMT_LOCAL void gmtplot_fancy_frame_straight_outline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lonA, double latA, double lonB, double latB, unsigned int side, bool secondary_too) {
-	unsigned int k, kn = 1;
+	unsigned int k, kn = 1, axis;
 	double scale = 1.0, x[2], y[2], angle, s, c, dx, dy, Ldx, Ldy;
+	struct GMT_PLOT_AXIS_ITEM *T = NULL;
 
 	if (!GMT->current.map.frame.side[side]) return;	/* Do not draw this frame side */
 
@@ -888,6 +889,9 @@ GMT_LOCAL void gmtplot_fancy_frame_straight_outline (struct GMT_CTRL *GMT, struc
 		scale = 0.5;
 		++kn;
 	}
+	axis = side & 2;	/* Gives 0 for GMT_X and 1 for GMT_Y */
+	T = &GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_UPPER];
+	if (!T->active) return;
 
 	gmt_geo_to_xy (GMT, lonA, latA, &x[0], &y[0]);
 	gmt_geo_to_xy (GMT, lonB, latB, &x[1], &y[1]);
@@ -944,8 +948,9 @@ GMT_LOCAL void gmtplot_fancy_frame_curved_outline (struct GMT_CTRL *GMT, struct 
 }
 
 GMT_LOCAL void gmtplot_rounded_framecorners (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, bool secondary_too) {
-	unsigned int k, kn;
+	unsigned int k, kn, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
 	double x1, y1, x2, y2, anglew, anglee, x, y, width;
+	struct GMT_PLOT_AXIS_ITEM *Tx = NULL, *Ty = NULL;
 
 	if (GMT->current.setting.map_frame_type != GMT_IS_ROUNDED) return;	/* Only do this if rounded corners are requested */
 
@@ -960,6 +965,9 @@ GMT_LOCAL void gmtplot_rounded_framecorners (struct GMT_CTRL *GMT, struct PSL_CT
 	width = ((secondary_too) ? 0.5 : 1.0) * fabs (GMT->current.setting.map_frame_width);
 	kn = (secondary_too) ? 2 : 1;
 	for (k = 0; k < kn; k++) {
+		Tx = &GMT->current.map.frame.axis[GMT_X].item[item[k]];
+		Ty = &GMT->current.map.frame.axis[GMT_Y].item[item[k]];
+		if (!(Tx->active && Ty->active)) continue;
 		if (GMT->current.map.frame.side[S_SIDE] && GMT->current.map.frame.side[E_SIDE]) {
 			gmt_geo_to_xy (GMT, e, s, &x, &y);
 			PSL_plotarc (PSL, x, y, (k+1)*width, 180.0+anglee, 270.0+anglee, PSL_MOVE|PSL_STROKE);
@@ -2542,11 +2550,22 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 }
 
-GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
+GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
+	double w, e, s, n;
+	struct PSL_CTRL *PSL= GMT->PSL;
+
 	if (!GMT->current.map.frame.draw && GMT->current.proj.projection_GMT != GMT_LINEAR) return;	/* We have a separate check in linear_map_boundary */
 	if (GMT->current.map.frame.no_frame) return;	/* Specifically did not want frame */
 
-	PSL_comment (PSL, "Map boundaries\n");
+	if (GMT->current.map.frame.order == GMT_BASEMAP_BEFORE && GMT->current.map.frame.basemap_flag & GMT_BASEMAP_FRAME_AFTER) return;	/* Wrong order */
+	if (GMT->current.map.frame.order == GMT_BASEMAP_AFTER  && !(GMT->current.map.frame.basemap_flag & GMT_BASEMAP_FRAME_AFTER)) return;	/* Wrong order */
+
+	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
+
+	PSL_comment (PSL, "Start of map frame\n");
+	PSL_command (PSL, "0 A [] 0 B\n");	/* Also ensure full reset to black solid pen color */
+	gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
+	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 
 	switch (GMT->current.proj.projection_GMT) {
 		case GMT_LINEAR:
@@ -2603,6 +2622,7 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 			gmtplot_basic_map_boundary (GMT, PSL, w, e, s, n);
 			break;
 	}
+	PSL_comment (PSL, "End of map frame\n");
 }
 
 /* gmt_map_basemap will create a basemap for the given area.
@@ -5501,11 +5521,80 @@ GMT_LOCAL void gmtplot_check_primary_secondary (struct GMT_CTRL *GMT) {
 	}
 }
 
-void gmt_map_basemap (struct GMT_CTRL *GMT) {
-	unsigned int side;
-	bool clip_on = false;
+
+GMT_LOCAL void gmtplot_map_griditems (struct GMT_CTRL *GMT) {
 	double w, e, s, n;
 	struct PSL_CTRL *PSL= GMT->PSL;
+
+	if (GMT->current.map.frame.gridline_plotted) return;	/* Already plotted */
+	if (GMT->current.map.frame.order == GMT_BASEMAP_BEFORE && GMT->current.map.frame.basemap_flag & GMT_BASEMAP_GRID_AFTER) return;	/* Wrong order */
+	if (GMT->current.map.frame.order == GMT_BASEMAP_AFTER  && !(GMT->current.map.frame.basemap_flag & GMT_BASEMAP_GRID_AFTER)) return;	/* Wrong order */
+
+	if (GMT->common.B.active[GMT_PRIMARY] && GMT->common.B.active[GMT_SECONDARY]) {
+		/* Make sure primary intervals are < than secondary intervals, otherwise we swap them */
+		gmtplot_check_primary_secondary (GMT);
+	}
+
+	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
+
+	PSL_comment (PSL, "Start of gridlines - if any\n");
+
+	PSL_setdash (PSL, NULL, 0);	/* To ensure no dashed pens are set prior */
+
+	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Temporary swap to trick justify machinery */
+
+	gmtplot_map_gridlines (GMT, PSL, w, e, s, n);	/* At most only one of these three would kick in */
+	gmtplot_map_gridcross (GMT, PSL, w, e, s, n);
+	gmtplot_map_gridticks (GMT, PSL, w, e, s, n);
+
+	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Undo temporary swap */
+
+	GMT->current.map.frame.gridline_plotted = true;	/* Since gmt_map_gridlines is called in gmt_map_basemap we flag if we already have done this step */
+}
+
+GMT_LOCAL void gmtplot_map_tick_marks (struct GMT_CTRL *GMT) {
+	double w, e, s, n;
+	struct PSL_CTRL *PSL= GMT->PSL;
+
+	if (GMT->current.map.frame.order == GMT_BASEMAP_BEFORE && GMT->current.map.frame.basemap_flag & GMT_BASEMAP_ANNOT_AFTER) return;	/* Wrong order */
+	if (GMT->current.map.frame.order == GMT_BASEMAP_AFTER  && !(GMT->current.map.frame.basemap_flag & GMT_BASEMAP_ANNOT_AFTER)) return;	/* Wrong order */
+
+	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
+
+	gmtplot_map_tickmarks (GMT, PSL, w, e, s, n);
+}
+
+GMT_LOCAL void gmtplot_map_annotations (struct GMT_CTRL *GMT) {
+	double w, e, s, n;
+	struct PSL_CTRL *PSL= GMT->PSL;
+
+	if (GMT->current.map.frame.order == GMT_BASEMAP_BEFORE && GMT->current.map.frame.basemap_flag & GMT_BASEMAP_ANNOT_AFTER) return;	/* Wrong order */
+	if (GMT->current.map.frame.order == GMT_BASEMAP_AFTER  && !(GMT->current.map.frame.basemap_flag & GMT_BASEMAP_ANNOT_AFTER)) return;	/* Wrong order */
+
+	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
+
+	gmtplot_map_annotate (GMT, PSL, w, e, s, n);
+}
+
+void gmt_map_basemap (struct GMT_CTRL *GMT) {
+	/* This function is usually called twice by modules: Once before data-plotting starts and
+	 * once after all data-plotting has ended.  This is because different modules have different
+	 * needs related to visibility and order of items. Each call will consult a bitflag that determines
+	 * if a particular aspect should be plotted this time.  The three items are:
+	 *
+	 * 1. The base frame (fancy or plain). Flag 0 means plot before data, 1 means after data
+	 * 2. The grid lines or grid ticks. Flag 0 means plot before data, 2 means after data
+	 * 3. Frame annotations and tick marks. Flag 0 means plot before data, 4 means after data
+	 *
+	 * In addition, your -B selections may not actually include all of those choices, of course.
+	 */
+
+	unsigned int side;
+	bool clip_on = false;
+	char *order[2] = {"before", "after"};
+	struct PSL_CTRL *PSL= GMT->PSL;
+
+	/* 0. Determine if we need to be here and set a few parameters */
 
 	if (!GMT->common.B.active[GMT_PRIMARY] && !GMT->common.B.active[GMT_SECONDARY]) return;	/* No frame annotation/ticks/gridlines specified */
 
@@ -5514,16 +5603,12 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 		gmtplot_check_primary_secondary (GMT);
 	}
 
-	gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
-
-	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
-
 	if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_LON_HORIZONTAL) GMT->current.map.frame.horizontal = 2;
 	if (GMT->current.map.frame.horizontal == 2) GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_LON_HORIZONTAL;
 	if (GMT->current.setting.map_frame_type & GMT_IS_GRAPH && gmt_M_is_geographic (GMT, GMT_IN)) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY && !gmtplot_is_fancy_boundary(GMT)) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 
-	PSL_comment (PSL, "Start of basemap\n");
+	PSL_comment (PSL, "Start of basemap (placed %s the plot contents)\n", order[GMT->current.map.frame.order]);
 
 	PSL_setdash (PSL, NULL, 0);	/* To ensure no dashed pens are set prior */
 
@@ -5536,27 +5621,37 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 		clip_on = true;
 	}
 
-	gmtplot_map_gridlines (GMT, PSL, w, e, s, n);	/* At most only one of these three would kick in */
-	gmtplot_map_gridcross (GMT, PSL, w, e, s, n);
-	gmtplot_map_gridticks (GMT, PSL, w, e, s, n);
+	/* 1. Lowest plot level is to place grid lines, ticks, crosses, if they are requested and expected at the current order.
+	 *    For some modules, gridlines are placed on top of the data (polygons, land-masses). */
 
-	gmtplot_map_tickmarks (GMT, PSL, w, e, s, n);
+	gmtplot_map_griditems (GMT);
 
-	gmtplot_map_boundary (GMT, PSL, w, e, s, n);	/* This sets frame.side[] = true|false so must come before map_annotate */
+	/* 2. Next is tick marks */
+	
+	gmtplot_map_tick_marks (GMT);
 
-	gmtplot_map_annotate (GMT, PSL, w, e, s, n);
+	/* 3. Next is map frame */
 
-	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Undo temporary swap */
+	gmtplot_map_boundary (GMT);	/* This sets frame.side[] = true|false so MUST come before gmtplot_map_annotations */
+
+	/* 4. End with annotations, if requested in the current order */
+
+	gmtplot_map_annotations (GMT);
 
 	if (clip_on) gmt_map_clip_off (GMT);
 
 	PSL_setdash (PSL, NULL, 0);
 
+	/* 4. Undo various temporary changes */
+
+	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Undo temporary swap */
+
 	if (GMT->current.proj.three_D && GMT->current.map.frame.drawz) GMT->current.map.frame.plotted_header = false;	/* Now we can plot the title [if selected via -B+t] */
 
-	gmt_vertical_axis (GMT, GMT->current.plot.mode_3D);
+	if ((GMT->current.map.frame.order == GMT_BASEMAP_BEFORE && (GMT->current.plot.mode_3D & 1)) || (GMT->current.map.frame.order == GMT_BASEMAP_AFTER && (GMT->current.plot.mode_3D & 2)))
+		gmt_vertical_axis (GMT, GMT->current.plot.mode_3D);
 
-	PSL_comment (PSL, "End of basemap\n");
+	PSL_comment (PSL, "End of basemap (placed %s the plot contents)\n", order[GMT->current.map.frame.order]);
 
 	for (side = 0; side < 4; side++) {	/* Reset annotation crowdedness arrays */
 		if (GMT_n_annotations[side]) {
@@ -5567,6 +5662,32 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	}
 
 	PSL_setcolor (PSL, GMT->current.setting.map_default_pen.rgb, PSL_IS_STROKE);
+
+	if (GMT->current.map.frame.order == GMT_BASEMAP_AFTER) {	/* Undo at end in case of multi processes */
+		GMT->current.map.frame.gridline_plotted = false;
+		GMT->current.map.frame.basemap_flag = GMT_BASEMAP_BEFORE;
+	}
+	else
+		GMT->current.map.frame.order = GMT_BASEMAP_AFTER;	/* Move to next order */
+}
+
+void gmt_set_basemap_orders (struct GMT_CTRL *GMT, unsigned int frame, unsigned int grid, unsigned int annot) {
+	/* Helper function to fill out the basemap flags for the calling module based on its peculiarities and initial settings */
+	/* First apply some general over-ruling depending on 3-D and inside annotations */
+	static char *place[2] = {"below", "above"};
+	if (GMT->current.proj.three_D && GMT->common.J.zactive) {
+		frame = GMT_BASEMAP_FRAME_BEFORE;	/* In true 3-D plots we must lay down the x-y frame first regardless of desire to place it at the end */
+		annot = GMT_BASEMAP_ANNOT_BEFORE;
+		grid  = GMT_BASEMAP_GRID_BEFORE;
+	}
+	else if (GMT->current.setting.map_frame_type == GMT_IS_INSIDE)	/* Must do annotations and ticks at end since inside the map */
+		annot = GMT_BASEMAP_ANNOT_AFTER;
+
+		/* Finally, since ticks overprint on top of the frame we make sure annot/ticks are never done after the frame */
+	if (annot == GMT_BASEMAP_ANNOT_AFTER && frame == GMT_BASEMAP_FRAME_BEFORE)
+		annot = GMT_BASEMAP_ANNOT_BEFORE;
+	GMT->current.map.frame.basemap_flag = frame + grid + annot;
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Basemap order: Frame = %s  Grid = %s  Tick/ANot = %s\n", place[frame], place[grid/2], place[annot/4]);
 }
 
 GMT_LOCAL bool gmtplot_z_axis_side (struct GMT_CTRL *GMT, unsigned int axis, unsigned int quadrant) {

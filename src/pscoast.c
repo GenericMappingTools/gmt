@@ -875,7 +875,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		}
 		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	}
-	else {
+	else {	/* Setting up for plotting */
 		if (Ctrl->Q.active)
 			GMT->current.ps.nclip = -1;	/* Signal that this program terminates polygon clipping that initiated prior to this process */
 		else if (clipping)
@@ -886,9 +886,10 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.active) {  /* Just undo previous clip-path */
 			PSL_endclipping (PSL, 1);
 
-			if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {
+			if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Clipping ended, so optionally place basemap */
 				gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-				gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+				gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
+				GMT->current.map.frame.order = GMT_BASEMAP_AFTER;	/* Move to last order since only calling gmt_map_basemap once */
 				gmt_map_basemap (GMT); /* Basemap needed */
 				gmt_plane_perspective (GMT, -1, 0.0);
 			}
@@ -897,9 +898,11 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 			Return (GMT_NOERROR);
 		}
-
+		/* Here we are starting a new coastline plot or overlay */
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_set_basemap_orders (GMT, clipping ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_BEFORE);
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+		gmt_map_basemap (GMT);
 	}
 
 	for (i = 0; i < 5; i++) if (fill[i].use_pattern) fill_in_use = true;
@@ -909,8 +912,6 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		clobber_background = true;
 		recursive = false;
 	}
-
-	if (clipping) gmt_map_basemap (GMT);
 
 	if (GMT->current.proj.projection_GMT == GMT_AZ_EQDIST && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_180_range (GMT->common.R.wesn[YHI], GMT->common.R.wesn[YLO])) {
 		int status[2] = {0, 0};
@@ -1299,7 +1300,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		gmt_br_cleanup (GMT, &b);
 	}
 
-	if (!Ctrl->M.active) {
+	if (!Ctrl->M.active) {	/* Wrap of the plotting codes */
 		if (clip_to_extend_lines) gmt_map_clip_off (GMT);
 		if (GMT->current.map.frame.init) {
 			GMT->current.map.is_world = world_map_save;
