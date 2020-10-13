@@ -111,6 +111,7 @@ head point’s coordinates instead of direction and length, use **-Svs**. Upper 
     A GMT 4 vector has no separate pen for the stem -- it is all part of a Cartesian polygon.
     You may optionally fill and draw its outline.  The modifiers listed above generally do
     not apply.  **Note**: While the *tailwidth* (:math:`t_w`) and *headlength* (:math:`h_l`)
-    parameters are given as indicated, the *halfheadwidth* (:math:`h_w`) is oddly given as the half-
-    width in GMT 4 so we retain that convention here (but have clarified the documentation).
+    parameters are given as indicated, the *halfheadwidth* (:math:`h_w`) is oddly given as the
+    half-width in GMT 4 so we retain that convention here (but have updated the documentation;
+    blue lines indicate these three parameters).
 
