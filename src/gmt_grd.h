@@ -183,6 +183,8 @@ enum gmt_enum_wesnids {
 #define gmt_M_grd_equal_xy_inc(C,G) (fabs (1.0 - G->header->inc[GMT_X] / G->header->inc[GMT_Y]) < 1.0e-6)
 /*! GMT_grd_same_dim is true if two grids have the exact same dimensions and registrations */
 #define gmt_M_grd_same_shape(C,G1,G2) (G1->header->n_columns == G2->header->n_columns && G1->header->n_rows == G2->header->n_rows && G1->header->registration == G2->header->registration)
+/*! gmt_M_grd_same_pad is true if two grids have the exact same pad */
+#define gmt_M_grd_same_pad(C,G1,G2) (G1->header->pad[XLO] == G2->header->pad[XLO] && G1->header->pad[XHI] == G2->header->pad[XHI] && G1->header->pad[YLO] == G2->header->pad[YLO] && G1->header->pad[YHI] == G2->header->pad[YHI])
 /*! gmt_M_y_is_outside is true if y is outside the given range */
 #define gmt_M_y_is_outside(C,y,bottom,top) ((gmt_M_is_dnan(y) || (y) < bottom || (y) > top) ? true : false)
 
