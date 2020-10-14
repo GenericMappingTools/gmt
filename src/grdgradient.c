@@ -402,8 +402,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	bool bad, new_grid = false, separate = false;
 	int p[4], mx, error = 0;
-	unsigned int row, col, n;
-	uint64_t ij, ij0, index, n_used = 0;
+	unsigned int row, col, n, orig_pad[4];
+	uint64_t ij, ij0, n_used = 0;
 
 	char format[GMT_BUFSIZ] = {""}, buffer[GMT_GRID_REMARK_LEN160] = {""};
 
@@ -414,7 +414,7 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	double k_ads = 0.0, diffuse, spec, r_min = DBL_MAX, r_max = -DBL_MAX, scale, sin_Az[2] = {0.0, 0.0};
 	double def_offset = 0.0, def_sigma = 0.0;
 
-	struct GMT_GRID *Surf = NULL, *Slope = NULL, *Out = NULL, *A = NULL;
+	struct GMT_GRID *In = NULL, *Slope = NULL, *Grid = NULL, *A = NULL;
 	struct GRDGRADIENT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -520,59 +520,60 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 
 	if (GMT->common.R.active[RSET]) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
-	if ((Surf = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
+	if ((In = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (gmt_M_is_subset (GMT, Surf->header, wesn)) {	/* Subset requested; make sure wesn matches header spacing */
-		if ((error = gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, Surf->header), "")))
+	if (gmt_M_is_subset (GMT, In->header, wesn)) {	/* Subset requested; make sure wesn matches header spacing */
+		if ((error = gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, In->header), "")))
 			Return (error);
 	}
-	gmt_grd_init (GMT, Surf->header, options, true);
+	gmt_grd_init (GMT, In->header, options, true);
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, Surf) == NULL) {	/* Get subset */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, In) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
 
 	if (Ctrl->A.mode == GRDGRADIENT_VAR) {	/* IGiven 2 grids, make sure they are co-registered and has same size, registration, etc. */
-		if (Surf->header->registration != A->header->registration) {
+		if (In->header->registration != A->header->registration) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input and azimuth grids have different registrations!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (!gmt_M_grd_same_shape (GMT, Surf, A)) {
+		if (!gmt_M_grd_same_shape (GMT, In, A)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input and azimuth grids have different dimensions\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (!gmt_M_grd_same_region (GMT, Surf, A)) {
+		if (!gmt_M_grd_same_region (GMT, In, A)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input and azimuth grids have different regions\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (!gmt_M_grd_same_inc (GMT, Surf, A)) {
+		if (!gmt_M_grd_same_inc (GMT, In, A)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input and azimuth grids have different intervals\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 
-	if (Ctrl->S.active) {	/* Want slope grid */
-		if ((Slope = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Surf)) == NULL) Return (API->error);
-	}
 #ifdef OPENMP
 #if 0
 	separate = true;	/* Cannot use input grid to hold output grid when doing things in parallel */
 #endif
 #endif
-	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, separate, 1, Surf, &Out);	/* true if input is a read-only array */
+	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, separate, 1, In, &Grid);	/* true if input is a read-only array */
 
-	/* If new_grid is true then Out points to a duplicate of Surf but will have a single boundary row,column.
-	 * If new_grid is false then Out simply points to Surf which presumably has two boundary row,column padding.
-	 * In either case, the algorithm below assumes there is at least one extra row column in Out */
+	/* If new_grid is true then Grid points to a duplicate of In but will have a single boundary row,column.
+	 * If new_grid is false then Grid simply points to In which presumably has two boundary row,column padding.
+	 * In either case, the algorithm below assumes there is at least one extra row column in Grid */
+
+	if (Ctrl->S.active) {	/* Want slope grid, ensure same padding as Grid */
+		if ((Slope = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Grid)) == NULL) Return (API->error);
+	}
 
 	if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Flat-Earth approximation */
-		dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd ((Surf->header->wesn[YHI] + Surf->header->wesn[YLO]) / 2.0);
-		dy_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_Y];
+		dx_grid = GMT->current.proj.DIST_M_PR_DEG * Grid->header->inc[GMT_X] * cosd ((Grid->header->wesn[YHI] + Grid->header->wesn[YLO]) / 2.0);
+		dy_grid = GMT->current.proj.DIST_M_PR_DEG * Grid->header->inc[GMT_Y];
 	}
 	else {	/* Cartesian */
-		dx_grid = Surf->header->inc[GMT_X];
-		dy_grid = Surf->header->inc[GMT_Y];
+		dx_grid = Grid->header->inc[GMT_X];
+		dy_grid = Grid->header->inc[GMT_Y];
 	}
 	one = (Ctrl->D.active) ? +1.0 : -1.0;	/* With -D we want positive grad direction, not negative as for shading (-A, -E) */
 	x_factor_set = one / (2.0 * dx_grid);
@@ -590,15 +591,15 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 		y_factor *= cos (Ctrl->A.azimuth[0]);
 	}
 
-	/* Index offset of 4-star points relative to current node in Out */
-	mx = Out->header->mx;	/* Need a signed mx for p[3] in line below */
+	/* Index offset of 4-star points relative to current node in Grid */
+	mx = Grid->header->mx;	/* Need a signed mx for p[3] in line below */
 	p[0] = 1;	p[1] = -1;	p[2] = mx;	p[3] = -mx;
 
 	min_gradient = DBL_MAX;	max_gradient = -DBL_MAX;	ave_gradient = 0.0;
 	if (Ctrl->E.mode == 3) {
-		lim_x = Surf->header->wesn[XHI] - Surf->header->wesn[XLO];
-		lim_y = Surf->header->wesn[YHI] - Surf->header->wesn[YLO];
-		lim_z = Surf->header->z_max - Surf->header->z_min;
+		lim_x = Grid->header->wesn[XHI] - Grid->header->wesn[XLO];
+		lim_y = Grid->header->wesn[YHI] - Grid->header->wesn[YLO];
+		lim_z = Grid->header->z_max - Grid->header->z_min;
 		scale = MAX (lim_z, MAX (lim_x, lim_y));
 		lim_x /= scale;	lim_y /= scale;		lim_z /= scale;
 		dx_grid /= lim_x;	dy_grid /= lim_y;
@@ -608,14 +609,14 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 #if 0	/* Not active since we have no way to do min/max via OpenMP in C.  So rethink this part */
 #ifdef _OPENMP
 #pragma omp parallel for private(row,ij0,lat,dx_grid,col,ij,n,bad,index,dzdx,dzdy,dzdx2,dzdy2,dzds1,dzds2,output,azim,norm_z,mag,diffuse,spec) \
-	shared(Surf,GMT,Ctrl,x_factor_set,x_factor2_set,sin_Az,new_grid,Out,Slope,y_factor,y_factor2,p0,q0,p0q0_cte,k_ads,s) \
+	shared(In,GMT,Ctrl,x_factor_set,x_factor2_set,sin_Az,new_grid,Grid,Slope,y_factor,y_factor2,p0,q0,p0q0_cte,k_ads,s) \
 	reduction(+:ave_gradient)
 #endif
 #endif
-	for (row = 0, ij0 = 0ULL; row < Out->header->n_rows; row++) {	/* ij0 is the index in a non-padded grid */
+	for (row = 0, ij0 = 0ULL; row < Grid->header->n_rows; row++) {	/* ij0 is the index in a non-padded grid */
 		if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Evaluate latitude-dependent factors */
-			lat = gmt_M_grd_row_to_y (GMT, row, Out->header);
-			dx_grid = GMT->current.proj.DIST_M_PR_DEG * Out->header->inc[GMT_X] * cosd (lat);
+			lat = gmt_M_grd_row_to_y (GMT, row, Grid->header);
+			dx_grid = GMT->current.proj.DIST_M_PR_DEG * Grid->header->inc[GMT_X] * cosd (lat);
 			if (dx_grid > 0.0) x_factor = x_factor_set = one / (2.0 * dx_grid);	/* Use previous value at the poles */
 			if (Ctrl->A.mode == GRDGRADIENT_FIX) {
 				if (Ctrl->A.two) x_factor2 = x_factor * sin_Az[1];
@@ -626,12 +627,11 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 			x_factor = x_factor_set;
 			if (Ctrl->A.mode == GRDGRADIENT_FIX && Ctrl->A.two) x_factor2 = x_factor2_set;
 		}
-		for (col = 0; col < Out->header->n_columns; col++, ij0++) {
-			ij = gmt_M_ijp (Out->header, row, col);	/* Index into padded grid */
-			for (n = 0, bad = false; !bad && n < 4; n++) if (gmt_M_is_fnan (Out->data[ij+p[n]])) bad = true;
+		for (col = 0; col < Grid->header->n_columns; col++, ij0++) {
+			ij = gmt_M_ijp (Grid->header, row, col);	/* Index into padded grid (with at least 1 row/col padding) */
+			for (n = 0, bad = false; !bad && n < 4; n++) if (gmt_M_is_fnan (Grid->data[ij+p[n]])) bad = true;
 			if (bad) {	/* One of the 4-star corners = NaN; assign NaN answer and skip to next node */
-				index = (new_grid) ? ij : ij0;
-				Out->data[index] = GMT->session.f_NaN;
+				Grid->data[ij0] = GMT->session.f_NaN;
 				if (Ctrl->S.active) Slope->data[ij] = GMT->session.f_NaN;
 				continue;
 			}
@@ -642,11 +642,11 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 			}
 
 			/* We can now evaluate the central finite differences */
-			dzdx = (Out->data[ij+1] - Out->data[ij-1]) * x_factor;
-			dzdy = (Out->data[ij-Out->header->mx] - Out->data[ij+Out->header->mx]) * y_factor;
+			dzdx = (Grid->data[ij+1] - Grid->data[ij-1]) * x_factor;
+			dzdy = (Grid->data[ij-Grid->header->mx] - Grid->data[ij+Grid->header->mx]) * y_factor;
 			if (Ctrl->A.two) {
-				dzdx2 = (Out->data[ij+1] - Out->data[ij-1]) * x_factor2;
-				dzdy2 = (Out->data[ij-Out->header->mx] - Out->data[ij+Out->header->mx]) * y_factor2;
+				dzdx2 = (Grid->data[ij+1] - Grid->data[ij-1]) * x_factor2;
+				dzdy2 = (Grid->data[ij-Grid->header->mx] - Grid->data[ij+Grid->header->mx]) * y_factor2;
 			}
 
 			/* Write output to unused NW corner */
@@ -696,38 +696,37 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 				r_min = MIN (r_min, output);
 				r_max = MAX (r_max, output);
 			}
-			index = (new_grid) ? ij : ij0;
-			Out->data[index] = (gmt_grdfloat)output;
+			Grid->data[ij0] = (gmt_grdfloat)output;
 			n_used++;
 		}
 	}
 
-	if (!new_grid)	{	/* We got away with using the input grid by ignoring the pad.  Now we must put the pad back in */
-		gmt_M_memset (Out->header->pad, 4, int);	/* Must set pad to zero first otherwise we cannot add the pad in */
-		Out->header->mx = Out->header->n_columns;	Out->header->my = Out->header->n_rows;	/* Since there is no pad */
-		gmt_grd_pad_on (GMT, Out, GMT->current.io.pad);	/* Now reinstate the pad */
-	}
+	/* Now deal with the fact that the result is unpadded in a padded array */
+	gmt_M_memcpy (orig_pad, Grid->header->pad, 4, unsigned int);	/* This can be either 1/1/1/1/ or 2/2/2/2, depending on circumstances */
+	Grid->header->mx = Grid->header->n_columns;	Grid->header->my = Grid->header->n_rows;	/* Since there is no pad as far as the computed grid is concerned */
+	gmt_M_memset (Grid->header->pad, 4, int);	/* Must set pad to zero first otherwise we cannot add the pad back in */
+	gmt_grd_pad_on (GMT, Grid, orig_pad);	/* Now reinstate the original pad */
 
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Data is geographic */
 		double sum;
 		/* If the N or S poles are included then we only want a single estimate at these repeating points */
-		if (Out->header->wesn[YLO] == -90.0 && Out->header->registration == GMT_GRID_NODE_REG) {	/* Average all the multiple N pole estimates */
-			for (col = 0, ij = gmt_M_ijp (Out->header, 0, 0), sum = 0.0; col < Out->header->n_columns; col++, ij++) sum += Out->data[ij];
-			sum /= Out->header->n_columns;	/* Average gradient */
-			for (col = 0, ij = gmt_M_ijp (Out->header, 0, 0); col < Out->header->n_columns; col++, ij++) Out->data[ij] = (gmt_grdfloat)sum;
+		if (Grid->header->wesn[YLO] == -90.0 && Grid->header->registration == GMT_GRID_NODE_REG) {	/* Average all the multiple N pole estimates */
+			for (col = 0, ij = gmt_M_ijp (Grid->header, 0, 0), sum = 0.0; col < Grid->header->n_columns; col++, ij++) sum += Grid->data[ij];
+			sum /= Grid->header->n_columns;	/* Average gradient */
+			for (col = 0, ij = gmt_M_ijp (Grid->header, 0, 0); col < Grid->header->n_columns; col++, ij++) Grid->data[ij] = (gmt_grdfloat)sum;
 		}
-		if (Out->header->wesn[YLO] == -90.0 && Out->header->registration == GMT_GRID_NODE_REG) {	/* Average all the multiple S pole estimates */
-			for (col = 0, ij = gmt_M_ijp (Out->header, Out->header->n_rows - 1, 0), sum = 0.0; col < Out->header->n_columns; col++, ij++) sum += Out->data[ij];
-			sum /= Out->header->n_columns;	/* Average gradient */
-			for (col = 0, ij = gmt_M_ijp (Out->header, Out->header->n_rows - 1, 0); col < Out->header->n_columns; col++, ij++) Out->data[ij] = (gmt_grdfloat)sum;
+		if (Grid->header->wesn[YLO] == -90.0 && Grid->header->registration == GMT_GRID_NODE_REG) {	/* Average all the multiple S pole estimates */
+			for (col = 0, ij = gmt_M_ijp (Grid->header, Grid->header->n_rows - 1, 0), sum = 0.0; col < Grid->header->n_columns; col++, ij++) sum += Grid->data[ij];
+			sum /= Grid->header->n_columns;	/* Average gradient */
+			for (col = 0, ij = gmt_M_ijp (Grid->header, Grid->header->n_rows - 1, 0); col < Grid->header->n_columns; col++, ij++) Grid->data[ij] = (gmt_grdfloat)sum;
 		}
 	}
 
 	if (Ctrl->E.active) {	/* data must be scaled to the [-1,1] interval, but we'll do it into [-.95, .95] to not get too bright */
 		scale = 1.0 / (r_max - r_min);
-		gmt_M_grd_loop (GMT, Out, row, col, ij) {
-			if (gmt_M_is_fnan (Out->data[ij])) continue;
-			Out->data[ij] = (gmt_grdfloat)((-1.0 + 2.0 * ((Out->data[ij] - r_min) * scale)) * 0.95);
+		gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			if (gmt_M_is_fnan (Grid->data[ij])) continue;
+			Grid->data[ij] = (gmt_grdfloat)((-1.0 + 2.0 * ((Grid->data[ij] - r_min) * scale)) * 0.95);
 		}
 	}
 
@@ -744,54 +743,54 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 					denom = 1.0 / Ctrl->N.sigma;
 				else {
 					denom = 0.0;
-					gmt_M_grd_loop (GMT, Out, row, col, ij) {
-						if (!gmt_M_is_fnan (Out->data[ij])) denom += pow (Out->data[ij] - ave_gradient, 2.0);
+					gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+						if (!gmt_M_is_fnan (Grid->data[ij])) denom += pow (Grid->data[ij] - ave_gradient, 2.0);
 					}
 					denom = sqrt ((n_used - 1) / denom);
 					Ctrl->N.sigma = 1.0 / denom;
 				}
 				rpi = 2.0 * Ctrl->N.norm / M_PI;
-				gmt_M_grd_loop (GMT, Out, row, col, ij) {
-					if (!gmt_M_is_fnan (Out->data[ij])) Out->data[ij] = (gmt_grdfloat)(rpi * atan ((Out->data[ij] - ave_gradient) * denom) + Ctrl->N.ambient);
+				gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+					if (!gmt_M_is_fnan (Grid->data[ij])) Grid->data[ij] = (gmt_grdfloat)(rpi * atan ((Grid->data[ij] - ave_gradient) * denom) + Ctrl->N.ambient);
 				}
-				Out->header->z_max = rpi * atan ((max_gradient - ave_gradient) * denom) + Ctrl->N.ambient;
-				Out->header->z_min = rpi * atan ((min_gradient - ave_gradient) * denom) + Ctrl->N.ambient;
+				Grid->header->z_max = rpi * atan ((max_gradient - ave_gradient) * denom) + Ctrl->N.ambient;
+				Grid->header->z_min = rpi * atan ((min_gradient - ave_gradient) * denom) + Ctrl->N.ambient;
 			}
 			else if (Ctrl->N.mode == 2) {	/* Exp transformation */
 				if (!Ctrl->N.set[2]) {
 					Ctrl->N.sigma = 0.0;
-					gmt_M_grd_loop (GMT, Out, row, col, ij) {
+					gmt_M_grd_loop (GMT, Grid, row, col, ij) {
 #ifdef DOUBLE_PRECISION_GRID
-						if (!gmt_M_is_fnan (Out->data[ij])) Ctrl->N.sigma += fabs (Out->data[ij]);
+						if (!gmt_M_is_fnan (Grid->data[ij])) Ctrl->N.sigma += fabs (Grid->data[ij]);
 #else
-						if (!gmt_M_is_fnan (Out->data[ij])) Ctrl->N.sigma += fabsf (Out->data[ij]);
+						if (!gmt_M_is_fnan (Grid->data[ij])) Ctrl->N.sigma += fabsf (Grid->data[ij]);
 #endif
 					}
 					Ctrl->N.sigma = M_SQRT2 * Ctrl->N.sigma / n_used;
 				}
 				denom = M_SQRT2 / Ctrl->N.sigma;
-				gmt_M_grd_loop (GMT, Out, row, col, ij) {
-					if (gmt_M_is_fnan (Out->data[ij])) continue;
-					if (Out->data[ij] < ave_gradient) {
-						Out->data[ij] = (gmt_grdfloat)(-Ctrl->N.norm * (1.0 - exp ( (Out->data[ij] - ave_gradient) * denom)) + Ctrl->N.ambient);
+				gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+					if (gmt_M_is_fnan (Grid->data[ij])) continue;
+					if (Grid->data[ij] < ave_gradient) {
+						Grid->data[ij] = (gmt_grdfloat)(-Ctrl->N.norm * (1.0 - exp ( (Grid->data[ij] - ave_gradient) * denom)) + Ctrl->N.ambient);
 					}
 					else {
-						Out->data[ij] = (gmt_grdfloat)( Ctrl->N.norm * (1.0 - exp (-(Out->data[ij] - ave_gradient) * denom)) + Ctrl->N.ambient);
+						Grid->data[ij] = (gmt_grdfloat)( Ctrl->N.norm * (1.0 - exp (-(Grid->data[ij] - ave_gradient) * denom)) + Ctrl->N.ambient);
 					}
 				}
-				Out->header->z_max =  Ctrl->N.norm * (1.0 - exp (-(max_gradient - ave_gradient) * denom)) + Ctrl->N.ambient;
-				Out->header->z_min = -Ctrl->N.norm * (1.0 - exp ( (min_gradient - ave_gradient) * denom)) + Ctrl->N.ambient;
+				Grid->header->z_max =  Ctrl->N.norm * (1.0 - exp (-(max_gradient - ave_gradient) * denom)) + Ctrl->N.ambient;
+				Grid->header->z_min = -Ctrl->N.norm * (1.0 - exp ( (min_gradient - ave_gradient) * denom)) + Ctrl->N.ambient;
 			}
 			else {	/* Linear transformation */
 				if ((max_gradient - ave_gradient) > (ave_gradient - min_gradient))
 					denom = Ctrl->N.norm / (max_gradient - ave_gradient);
 				else
 					denom = Ctrl->N.norm / (ave_gradient - min_gradient);
-				gmt_M_grd_loop (GMT, Out, row, col, ij) {
-					if (!gmt_M_is_fnan (Out->data[ij])) Out->data[ij] = (gmt_grdfloat)((Out->data[ij] - ave_gradient) * denom) + Ctrl->N.ambient;
+				gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+					if (!gmt_M_is_fnan (Grid->data[ij])) Grid->data[ij] = (gmt_grdfloat)((Grid->data[ij] - ave_gradient) * denom) + Ctrl->N.ambient;
 				}
-				Out->header->z_max = (max_gradient - ave_gradient) * denom + Ctrl->N.ambient;
-				Out->header->z_min = (min_gradient - ave_gradient) * denom + Ctrl->N.ambient;
+				Grid->header->z_max = (max_gradient - ave_gradient) * denom + Ctrl->N.ambient;
+				Grid->header->z_min = (min_gradient - ave_gradient) * denom + Ctrl->N.ambient;
 			}
 		}
 	}
@@ -819,9 +818,9 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 				strcpy (buffer, "Directions of grad (z) [uphill direction]");
 		}
 
-		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) Return (API->error);
-		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, buffer, Out)) Return (API->error);
-		if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Out) != GMT_NOERROR) {
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, buffer, Grid)) Return (API->error);
+		if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 			Return (API->error);
 		}
 
