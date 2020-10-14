@@ -111,7 +111,6 @@ struct GRDIMAGE_CONF {
 	int n_columns, n_rows;		/* Signed dimensions for use in OpenMP loops */
 	uint64_t nm;				/* Number of pixels in the image */
 	struct GMT_PALETTE *P;		/* Pointer to the active palette [NULL if image] */
-	struct GMT_GRID_HEADER *H;	/* Pointer to the active header */
 	struct GMT_GRID *Grid;		/* Pointer to the active grid [NULL if image] */
 	struct GMT_GRID *Intens;	/* Pointer to the active intensity grid [NULL if no intensity] */
 	struct GMT_IMAGE *Image;	/* Pointer to the active image [NUYLL if grid] */
@@ -656,23 +655,36 @@ GMT_LOCAL void grdimage_blackwhite_PS_image (struct GMT_CTRL *GMT, struct GRDIMA
 	gmt_M_free (GMT, bitimage);	/* Done with the B/W image array */
 }
 
+/* Here lies specific loop functions over grids and optional intensities etc.  Because the two data sets (when intensities are involved)
+ * may very well have different padding, we must compute two node counters in some cases. When that is the case we always set these:
+ * H_s:    Pointer to the header of the SOURCE grid or image
+ * H_i:    Pointer to the header of the INTENSITY grid
+ * kk_s:   Start index for current row of the SOURCE grid or image
+ * kk_i:   Start index for current row of the intensity grid (sometimes not needed when we compute node_i directly)
+ * node_s: The current node of the SOURCE grid or image
+ * node_i: THe current node of the INTENSITY grid
+ *
+ * In the cases without intensity we simply use H_s, kk_s, and node_s for consistency.
+ */
+
 GMT_LOCAL void grdimage_grd_gray_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) grid, 2) grayscale, 3) no intensity */
 	int srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t byte, kk, node;
+	uint64_t byte, kk_s, node_s;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
 	gmt_M_unused (Ctrl);
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> gray image with no illumination.\n");
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,scol,node,rgb) shared(GMT,Conf,image)
+#pragma omp parallel for private(srow,byte,kk_s,scol,node_s,rgb) shared(GMT,Conf,H_s,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = (uint64_t)srow * Conf->n_columns;
-		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		byte = (uint64_t)srow * Conf->n_columns;	/* Start of output gray image row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this data row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
-			node = kk + Conf->actual_col[scol];	/* Current grid node */
-			(void)gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node], rgb);
+			node_s = kk_s + Conf->actual_col[scol];	/* Current grid node */
+			(void)gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node_s], rgb);
 			image[byte++] = gmt_M_u255 (rgb[0]);	/* Color table only has grays, just use r since r = g = b here */
 		}
 	}
@@ -681,22 +693,28 @@ GMT_LOCAL void grdimage_grd_gray_no_intensity (struct GMT_CTRL *GMT, struct GRDI
 GMT_LOCAL void grdimage_grd_gray_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) grid, 2) grayscale, 3) with intensity */
 	int srow, scol, index;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t byte, kk, node;
+	uint64_t byte, kk_s, kk_i, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
+	struct GMT_GRID_HEADER *H_i = Conf->Intens->header;	/* Pointer to the active intensity header */
+	bool different = !(gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));	/* True of they differ in padding */
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> gray image with illumination.\n");
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,scol,node,index,rgb) shared(GMT,Conf,Ctrl,image)
+#pragma omp parallel for private(srow,byte,kk_s,kk_i,scol,node_s,node_i,index,rgb) shared(GMT,Conf,Ctrl,different,H_s,H_i,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = (uint64_t)srow * Conf->n_columns;
-		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		byte = (uint64_t)srow * Conf->n_columns;	/* Start of output gray image row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start node of this row in the data grid */
+		kk_i = (different) ? gmt_M_ijpgi (H_i, Conf->actual_row[srow], 0) : kk_s;	/* Start node of same row in the intensity grid */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
-			node = kk + Conf->actual_col[scol];	/* Current grid node */
-			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node], rgb);
+			node_s = kk_s + Conf->actual_col[scol];	/* Current grid node */
+			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node_s], rgb);
 			if (index != GRDIMAGE_NAN_INDEX) {	/* Add in the effect of illumination */
-				if (Conf->int_mode)	/* Intensity value comes from a co-registered grid */
-					gmt_illuminate (GMT, Conf->Intens->data[node], rgb);
+				if (Conf->int_mode) {	/* Intensity value comes from a co-registered grid */
+					node_i = kk_i + Conf->actual_col[scol];	/* Current intensity node */
+					gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);
+				}
 				else	/* A constant (ambient) intensity was given via -I */
 					gmt_illuminate (GMT, Ctrl->I.value, rgb);
 			}
@@ -708,20 +726,21 @@ GMT_LOCAL void grdimage_grd_gray_with_intensity (struct GMT_CTRL *GMT, struct GR
 GMT_LOCAL void grdimage_grd_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) grid, 2) color -> gray via YIQ, 3) no intensity */
 	int srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t byte, kk, node;
+	uint64_t byte, kk_s, node_s;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
 	gmt_M_unused (Ctrl);
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,scol,node,rgb) shared(GMT,Conf,image)
+#pragma omp parallel for private(srow,byte,kk_s,scol,node_s,rgb) shared(GMT,Conf,H_s,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = (uint64_t)srow * Conf->n_columns;
-		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		byte = (uint64_t)srow * Conf->n_columns;	/* Start of output gray image row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this row in the data grid */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
-			node = kk + Conf->actual_col[scol];	/* Current grid node */
-			(void)gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node], rgb);
+			node_s = kk_s + Conf->actual_col[scol];	/* Current grid node */
+			(void)gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node_s], rgb);
 			image[byte++] = gmt_M_u255 (gmt_M_yiq (rgb));
 		}
 	}
@@ -730,22 +749,28 @@ GMT_LOCAL void grdimage_grd_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 GMT_LOCAL void grdimage_grd_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) grid, 2) color -> gray via YIQ, 3) no intensity */
 	int srow, scol, index;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t byte, kk, node;
+	uint64_t byte, kk_s, kk_i, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
+	struct GMT_GRID_HEADER *H_i = Conf->Intens->header;	/* Pointer to the active intensity header */
+	bool different = !(gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));	/* True of they differ in padding */
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,scol,node,index,rgb) shared(GMT,Conf,Ctrl,image)
+#pragma omp parallel for private(srow,byte,kk_s,kk_i,scol,node_s,node_i,index,rgb) shared(GMT,Conf,Ctrl,different,H_s,H_i,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = (uint64_t)srow * Conf->n_columns;
-		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		byte = (uint64_t)srow * Conf->n_columns;	/* Start of output gray image row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		kk_i = (different) ? gmt_M_ijpgi (H_i, Conf->actual_row[srow], 0) : kk_s;	/* Start pixel of this row in the intensity grid */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
-			node = kk + Conf->actual_col[scol];	/* Current grid node */
-			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node], rgb);
+			node_s = kk_s + Conf->actual_col[scol];	/* Current data grid node */
+			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node_s], rgb);
 			if (index != GRDIMAGE_NAN_INDEX) {	/* Deal with illumination */
-				if (Conf->int_mode)	/* Intensity value comes from the grid */
-					gmt_illuminate (GMT, Conf->Intens->data[node], rgb);
+				if (Conf->int_mode) {	/* Intensity value comes from the grid */
+					node_i = kk_i + Conf->actual_col[scol];	/* Current intensity grid node */
+					gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);
+				}
 				else	/* A constant (ambient) intensity was given via -I */
 					gmt_illuminate (GMT, Ctrl->I.value, rgb);
 			}
@@ -757,20 +782,21 @@ GMT_LOCAL void grdimage_grd_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 GMT_LOCAL void grdimage_grd_color_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) grid, 2) color, 3) no intensity */
 	int srow, scol, k;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t byte, kk, node;
+	uint64_t byte, kk_s, node_s;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
 	gmt_M_unused (Ctrl);
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,k,scol,node,rgb) shared(GMT,Conf,image)
+#pragma omp parallel for private(srow,byte,kk_s,k,scol,node_s,rgb) shared(GMT,Conf,H_s,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;
-		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;	/* Start of output color image row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
-			node = kk + Conf->actual_col[scol];	/* Current grid node */
-			(void)gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node], rgb);
+			node_s = kk_s + Conf->actual_col[scol];	/* Current grid node */
+			(void)gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node_s], rgb);
 			for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);
 		}
 	}
@@ -780,17 +806,18 @@ GMT_LOCAL void grdimage_grd_color_no_intensity_CM (struct GMT_CTRL *GMT, struct 
 	/* Function that fills out the image in the special case of 1) grid, 2) color, 3) no intensity */
 	unsigned char i_rgb[3];
 	int srow, scol, k, index;
-	uint64_t byte, kk, node;
+	uint64_t byte, kk_s, node_s;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
 	gmt_M_unused (Ctrl);
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;
-		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;	/* Start of output color image row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
-			node = kk + Conf->actual_col[scol];	/* Current grid node */
-			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node], rgb);
+			node_s = kk_s + Conf->actual_col[scol];	/* Current grid node */
+			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node_s], rgb);
 			for (k = 0; k < 3; k++) image[byte++] = i_rgb[k] = gmt_M_u255 (rgb[k]);
 			if (index != GRDIMAGE_NAN_INDEX) {	/* Deal with illumination */
 				index = (i_rgb[0]*256 + i_rgb[1])*256 + i_rgb[2];	/* The index into the cube for the selected NaN color */
@@ -803,22 +830,28 @@ GMT_LOCAL void grdimage_grd_color_no_intensity_CM (struct GMT_CTRL *GMT, struct 
 GMT_LOCAL void grdimage_grd_color_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) grid, 2) color, 3) no intensity */
 	int srow, scol, index, k;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t byte, kk, node;
+	uint64_t byte, kk_s, kk_i, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
+	struct GMT_GRID_HEADER *H_i = Conf->Intens->header;	/* Pointer to the active intensity header */
+	bool different = !(gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));	/* True of they differ in padding */
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,k,scol,node,index,rgb) shared(GMT,Conf,Ctrl,image)
+#pragma omp parallel for private(srow,byte,kk_s,kk_i,k,scol,node_s,node_i,index,rgb) shared(GMT,Conf,Ctrl,different,H_s,H_i,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;
-		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;	/* Start of output color image row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this data row */
+		kk_i = (different) ? gmt_M_ijpgi (H_i, Conf->actual_row[srow], 0) : kk_s;	/* Start pixel of this row in the intensity grid */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
-			node = kk + Conf->actual_col[scol];	/* Current grid node */
-			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node], rgb);
+			node_s = kk_s + Conf->actual_col[scol];	/* Current grid node */
+			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node_s], rgb);
 			if (index != GRDIMAGE_NAN_INDEX) {	/* Deal with illumination */
-				if (Conf->int_mode)	/* Intensity value comes from the grid */
-					gmt_illuminate (GMT, Conf->Intens->data[node], rgb);
+				if (Conf->int_mode) {	/* Intensity value comes from the grid */
+					node_i = kk_i + Conf->actual_col[scol];	/* Current intensity node */
+					gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);
+				}
 				else	/* A constant (ambient) intensity was given via -I */
 					gmt_illuminate (GMT, Ctrl->I.value, rgb);
 			}
@@ -831,8 +864,11 @@ GMT_LOCAL void grdimage_grd_color_with_intensity_CM (struct GMT_CTRL *GMT, struc
 	/* Function that fills out the image in the special case of 1) grid, 2) color, 3) no intensity */
 	unsigned char i_rgb[3], n_rgb[3];
 	int srow, scol, index, k;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t byte, kk, node;
+	uint64_t byte, kk_s, kk_i, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
+	struct GMT_GRID_HEADER *H_i = Conf->Intens->header;	/* Pointer to the active intensity header */
+	bool different = !(gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 	/* Determine NaN rgb 0-255 triple ones */
@@ -840,17 +876,20 @@ GMT_LOCAL void grdimage_grd_color_with_intensity_CM (struct GMT_CTRL *GMT, struc
 	for (k = 0; k < 3; k++) n_rgb[k] = gmt_M_u255 (rgb[k]);
 
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines */
-		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;
-		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;	/* Start of output color image row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this data row */
+		kk_i = (different) ? gmt_M_ijpgi (H_i, Conf->actual_row[srow], 0) : kk_s;	/* Start pixel of this row in the intensity grid */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
-			node = kk + Conf->actual_col[scol];	/* Current grid node */
-			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node], rgb);
+			node_s = kk_s + Conf->actual_col[scol];	/* Current grid node */
+			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node_s], rgb);
 			if (index == GRDIMAGE_NAN_INDEX) {	 /* Nan color */
 				for (k = 0; k < 3; k++) image[byte++] = n_rgb[k];
 			}
 			else {	/* Deal with illumination for non-NaN nodes */
-				if (Conf->int_mode)	/* Intensity value comes from the grid */
-					gmt_illuminate (GMT, Conf->Intens->data[node], rgb);
+				if (Conf->int_mode) {	/* Intensity value comes from the grid */
+					node_i = kk_i + Conf->actual_col[scol];	/* Current intensity node */
+					gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);
+				}
 				else	/* A constant (ambient) intensity was given via -I */
 					gmt_illuminate (GMT, Ctrl->I.value, rgb);
 				for (k = 0; k < 3; k++) i_rgb[k] = image[byte++] = gmt_M_u255 (rgb[k]);
@@ -874,21 +913,23 @@ GMT_LOCAL void grdimage_img_set_transparency (struct GMT_CTRL *GMT, unsigned cha
 GMT_LOCAL void grdimage_img_gray_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) gray, 3) with intensity */
 	int srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t byte, kk, node;
+	uint64_t byte, kk_s, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active image header */
+	struct GMT_GRID_HEADER *H_i = Conf->Intens->header;	/* Pointer to the active intensity header */
 
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,scol,node,rgb) shared(GMT,Conf,Ctrl,image)
+#pragma omp parallel for private(srow,byte,kk_s,scol,node_s,node_i,rgb) shared(GMT,Conf,Ctrl,H_s,H_i,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
-		byte = (uint64_t)srow * Conf->n_columns;
-		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		byte = (uint64_t)srow * Conf->n_columns;	/* Start of output gray image row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this image row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
-			node = kk + Conf->actual_col[scol];	/* Start of current pixel node */
-			rgb[0] = rgb[1] = rgb[2] = gmt_M_is255 (Conf->Image->data[node++]);
+			node_s = kk_s + Conf->actual_col[scol];	/* Start of current pixel node */
+			rgb[0] = rgb[1] = rgb[2] = gmt_M_is255 (Conf->Image->data[node_s++]);
 			if (Conf->int_mode) {	/* Intensity value comes from the grid, so update node */
-				node = gmt_M_ijp (Conf->Intens->header, Conf->actual_row[srow], Conf->actual_col[scol]);
-				gmt_illuminate (GMT, Conf->Intens->data[node], rgb);	/* Apply illumination to this color */
+				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
+				gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
 			}
 			else	/* A constant (ambient) intensity was given via -I */
 				gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
@@ -901,18 +942,19 @@ GMT_LOCAL void grdimage_img_gray_no_intensity (struct GMT_CTRL *GMT, struct GRDI
 	/* Function that fills out the image in the special case of 1) image, 2) gray, 3) no intensity */
 	int srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	gmt_M_unused (Ctrl);
-	uint64_t byte, kk, node;
+	uint64_t byte, kk_s, node_s;
+	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
 	gmt_M_unused (GMT);
 
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,scol,node) shared(GMT,Conf,Ctrl,image)
+#pragma omp parallel for private(srow,byte,kk_s,scol,node_s) shared(GMT,Conf,Ctrl,H_s,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
 		byte = (uint64_t)srow * Conf->n_columns;
-		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this image row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
-			node = kk + Conf->actual_col[scol];	/* Start of current pixel node */
-			image[byte++] = Conf->Image->data[node];
+			node_s = kk_s + Conf->actual_col[scol];	/* Start of current pixel node */
+			image[byte++] = Conf->Image->data[node_s];
 		}
 	}
 }
@@ -922,23 +964,25 @@ GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 	bool transparency = (Conf->Image->header->n_bands == 4);
 	int srow, scol, k;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	unsigned n_bands = Conf->Image->header->n_bands;
-	uint64_t byte, kk, node;
+	uint64_t byte, kk_s, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active image header */
+	struct GMT_GRID_HEADER *H_i = Conf->Intens->header;	/* Pointer to the active intensity header */
 
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,k,scol,node,rgb) shared(GMT,Conf,Ctrl,image)
+#pragma omp parallel for private(srow,byte,kk_s,k,scol,node_s,node_i,rgb) shared(GMT,Conf,Ctrl,H_s,H_i,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
-		byte = (uint64_t)srow * Conf->n_columns;
-		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		byte = (uint64_t)srow * Conf->n_columns;	/* Start of output gray image row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this image row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
-			node = kk + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
-			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node++]);
-			if (transparency && Conf->Image->data[node] < 255)	/* Dealing with an image with transparency values less than 255 */
-				grdimage_img_set_transparency (GMT, Conf->Image->data[node], rgb);
+			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
+			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
+			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
+				grdimage_img_set_transparency (GMT, Conf->Image->data[node_s], rgb);
 			if (Conf->int_mode) {	/* Intensity value comes from the grid, so update node */
-				node = gmt_M_ijp (Conf->Intens->header, Conf->actual_row[srow], Conf->actual_col[scol]);
-				gmt_illuminate (GMT, Conf->Intens->data[node], rgb);	/* Apply illumination to this color */
+				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
+				gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
 			}
 			else	/* A constant (ambient) intensity was given via -I */
 				gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
@@ -952,21 +996,22 @@ GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 	bool transparency = (Conf->Image->header->n_bands == 4);
 	int srow, scol, k;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	unsigned n_bands = Conf->Image->header->n_bands;
-	uint64_t byte, kk, node;
+	uint64_t byte, kk_s, node_s;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
 	gmt_M_unused (Ctrl);
 
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,k,scol,node,rgb) shared(GMT,Conf,Ctrl,image)
+#pragma omp parallel for private(srow,byte,kk_s,k,scol,node_s,rgb) shared(GMT,Conf,Ctrl,H_s,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
-		byte = (uint64_t)srow * Conf->n_columns;
-		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		byte = (uint64_t)srow * Conf->n_columns;	/* Start of output gray image row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
-			node = kk + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
-			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node++]);
-			if (transparency && Conf->Image->data[node] < 255)	/* Dealing with an image with transparency values less than 255 */
-				grdimage_img_set_transparency (GMT, Conf->Image->data[node], rgb);
+			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
+			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
+			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
+				grdimage_img_set_transparency (GMT, Conf->Image->data[node_s], rgb);
 			image[byte++] = gmt_M_u255 (gmt_M_yiq (rgb));
 		}
 	}
@@ -977,21 +1022,22 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 	bool transparency = (Conf->Image->header->n_bands == 4);
 	int srow, scol, k;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	unsigned n_bands = Conf->Image->header->n_bands;
-	uint64_t byte, kk, node;
+	uint64_t byte, kk_s, node_s;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
 	gmt_M_unused (Ctrl);
 
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,k,scol,node,rgb) shared(GMT,Conf,Ctrl,image)
+#pragma omp parallel for private(srow,byte,kk_s,k,scol,node_s,rgb) shared(GMT,Conf,Ctrl,H_s,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
-		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;
-		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;	/* Start of output color image row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
-			node = kk + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
-			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node++]);
-			if (transparency && Conf->Image->data[node] < 255)	/* Dealing with an image with transparency values less than 255 */
-				grdimage_img_set_transparency (GMT, Conf->Image->data[node], rgb);
+			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
+			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
+			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
+				grdimage_img_set_transparency (GMT, Conf->Image->data[node_s], rgb);
 			for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
 		}
 	}
@@ -1002,23 +1048,25 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 	bool transparency = (Conf->Image->header->n_bands == 4);
 	int srow, scol, k;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	unsigned n_bands = Conf->Image->header->n_bands;
-	uint64_t byte, kk, node;
+	uint64_t byte, kk_s, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active image header */
+	struct GMT_GRID_HEADER *H_i = Conf->Intens->header;	/* Pointer to the active intensity header */
 
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,byte,kk,k,scol,node,rgb) shared(GMT,Conf,Ctrl,image)
+#pragma omp parallel for private(srow,byte,kk_s,k,scol,node_s,node_i,rgb) shared(GMT,Conf,Ctrl,H_s,H_i,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
-		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;
-		kk = gmt_M_ijpgi (Conf->H, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;	/* Start of output color image row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this image row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
-			node = kk + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
-			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node++]);
-			if (transparency && Conf->Image->data[node] < 255)	/* Dealing with an image with transparency values less than 255 */
-				grdimage_img_set_transparency (GMT, Conf->Image->data[node], rgb);
+			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current input pixel node */
+			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
+			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
+				grdimage_img_set_transparency (GMT, Conf->Image->data[node_s], rgb);
 			if (Conf->int_mode) {	/* Intensity value comes from the grid, so update node */
-				node = gmt_M_ijp (Conf->Intens->header, Conf->actual_row[srow], Conf->actual_col[scol]);
-				gmt_illuminate (GMT, Conf->Intens->data[node], rgb);	/* Apply illumination to this color */
+				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
+				gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
 			}
 			else	/* A constant (ambient) intensity was given via -I */
 				gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
@@ -1522,7 +1570,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	Conf->Grid      = Grid_proj;
 	Conf->Image     = Img_proj;
 	Conf->Intens    = Intens_proj;
-	Conf->H         = header_work;
 	Conf->n_columns = header_work->n_columns;
 	Conf->n_rows    = header_work->n_rows;
 	Conf->int_mode  = use_intensity_grid;
