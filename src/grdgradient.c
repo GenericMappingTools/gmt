@@ -562,6 +562,10 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 #endif
 	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, separate, 1, Surf, &Out);	/* true if input is a read-only array */
 
+	/* If new_grid is true then Out points to a duplicate of Surf but will have a single boundary row,column.
+	 * If new_grid is false then Out simply points to Surf which presumably has two boundary row,column padding.
+	 * In either case, the algorithm below assumes there is at least one extra row column in Out */
+
 	if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Flat-Earth approximation */
 		dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd ((Surf->header->wesn[YHI] + Surf->header->wesn[YLO]) / 2.0);
 		dy_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_Y];
@@ -586,8 +590,8 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 		y_factor *= cos (Ctrl->A.azimuth[0]);
 	}
 
-	/* Index offset of 4-star points relative to current node */
-	mx = Surf->header->mx;	/* Need a signed mx for p[3] in line below */
+	/* Index offset of 4-star points relative to current node in Out */
+	mx = Out->header->mx;	/* Need a signed mx for p[3] in line below */
 	p[0] = 1;	p[1] = -1;	p[2] = mx;	p[3] = -mx;
 
 	min_gradient = DBL_MAX;	max_gradient = -DBL_MAX;	ave_gradient = 0.0;
@@ -608,10 +612,10 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	reduction(+:ave_gradient)
 #endif
 #endif
-	for (row = 0, ij0 = 0ULL; row < Surf->header->n_rows; row++) {	/* ij0 is the index in a non-padded grid */
+	for (row = 0, ij0 = 0ULL; row < Out->header->n_rows; row++) {	/* ij0 is the index in a non-padded grid */
 		if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Evaluate latitude-dependent factors */
-			lat = gmt_M_grd_row_to_y (GMT, row, Surf->header);
-			dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd (lat);
+			lat = gmt_M_grd_row_to_y (GMT, row, Out->header);
+			dx_grid = GMT->current.proj.DIST_M_PR_DEG * Out->header->inc[GMT_X] * cosd (lat);
 			if (dx_grid > 0.0) x_factor = x_factor_set = one / (2.0 * dx_grid);	/* Use previous value at the poles */
 			if (Ctrl->A.mode == GRDGRADIENT_FIX) {
 				if (Ctrl->A.two) x_factor2 = x_factor * sin_Az[1];
@@ -622,9 +626,9 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 			x_factor = x_factor_set;
 			if (Ctrl->A.mode == GRDGRADIENT_FIX && Ctrl->A.two) x_factor2 = x_factor2_set;
 		}
-		for (col = 0; col < Surf->header->n_columns; col++, ij0++) {
-			ij = gmt_M_ijp (Surf->header, row, col);	/* Index into padded grid */
-			for (n = 0, bad = false; !bad && n < 4; n++) if (gmt_M_is_fnan (Surf->data[ij+p[n]])) bad = true;
+		for (col = 0; col < Out->header->n_columns; col++, ij0++) {
+			ij = gmt_M_ijp (Out->header, row, col);	/* Index into padded grid */
+			for (n = 0, bad = false; !bad && n < 4; n++) if (gmt_M_is_fnan (Out->data[ij+p[n]])) bad = true;
 			if (bad) {	/* One of the 4-star corners = NaN; assign NaN answer and skip to next node */
 				index = (new_grid) ? ij : ij0;
 				Out->data[index] = GMT->session.f_NaN;
@@ -638,11 +642,11 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 			}
 
 			/* We can now evaluate the central finite differences */
-			dzdx = (Surf->data[ij+1] - Surf->data[ij-1]) * x_factor;
-			dzdy = (Surf->data[ij-Surf->header->mx] - Surf->data[ij+Surf->header->mx]) * y_factor;
+			dzdx = (Out->data[ij+1] - Out->data[ij-1]) * x_factor;
+			dzdy = (Out->data[ij-Out->header->mx] - Out->data[ij+Out->header->mx]) * y_factor;
 			if (Ctrl->A.two) {
-				dzdx2 = (Surf->data[ij+1] - Surf->data[ij-1]) * x_factor2;
-				dzdy2 = (Surf->data[ij-Surf->header->mx] - Surf->data[ij+Surf->header->mx]) * y_factor2;
+				dzdx2 = (Out->data[ij+1] - Out->data[ij-1]) * x_factor2;
+				dzdy2 = (Out->data[ij-Out->header->mx] - Out->data[ij+Out->header->mx]) * y_factor2;
 			}
 
 			/* Write output to unused NW corner */
