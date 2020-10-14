@@ -557,7 +557,7 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	separate = true;	/* Cannot use input grid to hold output grid when doing things in parallel */
 #endif
 #endif
-	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, separate, 1, In, &Grid);	/* true if input is a read-only array */
+	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, separate, 2, In, &Grid);	/* true if input is a read-only array */
 
 	/* If new_grid is true then Grid points to a duplicate of In but will have a single boundary row,column.
 	 * If new_grid is false then Grid simply points to In which presumably has two boundary row,column padding.
