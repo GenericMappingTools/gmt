@@ -8143,6 +8143,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Must handle any internal history regarding increments and registration */
 		/* Here, item may be of the form <region>[+I<incs>][+G[P|G][B|T]] if -R was given to a non-plotting module */
+		GMT->common.R.dimension = 2;	/* Since we know it is a grid */
 		if ((c = strstr (item, "+G")) != NULL) {	/* Got grid registration */
 			GMT->common.R.active[GSET] = true;
 			GMT->common.R.registration = strchr(&c[2], 'P') != NULL || strchr(&c[2], 'p') != NULL ? GMT_GRID_PIXEL_REG : GMT_GRID_NODE_REG;
