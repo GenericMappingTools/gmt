@@ -1351,35 +1351,36 @@ GMT_LOCAL void gmtplot_theta_r_map_boundary (struct GMT_CTRL *GMT, struct PSL_CT
 		if (doubleAlmostEqual (n, GMT->current.proj.flip_radius) && gmt_M_is_zero (GMT->current.proj.radial_offset))
 			GMT->current.map.frame.side[N_SIDE] = GMT_AXIS_NONE;	/* No donuts, please */
 	}
-	else {	/* No flip, so s is inside circle. Check if s is zero and there is not offset */
+	else {	/* No flip, so s is inside circle. Check if s is zero and there is not an offset */
 		if (gmt_M_is_zero (s) && gmt_M_is_zero (GMT->current.proj.radial_offset))
 			GMT->current.map.frame.side[S_SIDE] = GMT_AXIS_NONE;		/* No donuts, please */
 	}
-	if (gmt_M_360_range (w, e) || doubleAlmostEqualZero (e, w)) {	/* Draw a full 360 circle so no E/W sides can be drawn */
+	if (gmt_M_360_range (w, e) || doubleAlmostEqualZero (e, w)) {	/* Draw a full 360 circle so no E/W sides will be drawn */
 		GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[W_SIDE] = GMT_AXIS_NONE;
 		circles = true;
 	}
-	nr = GMT->current.map.n_lon_nodes;	/* Points needed to draw full circle */
+
+	nr = GMT->current.map.n_lon_nodes;	/* Points needed to draw a full circle */
 	n_max_path = 2 * (nr + 2);	/* Max length of boundary */
 	while (n_max_path > GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);	/* Ensure we have enough plot memory */
 	da = fabs (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / (nr - 1);	/* Steps in azimuth along the curved boundary */
-	if (GMT->current.map.frame.side[N_SIDE] & GMT_AXIS_DRAW) {	/* Must draw the N circular boundary from W (XLO) to E (XHI) */
+	if (GMT->current.map.frame.side[N_SIDE] & GMT_AXIS_DRAW) {	/* Must draw the N circular boundary from W (XLO) to E (XHI), all at YHI */
 		for (i = 0; i < nr; i++, k++) {
 			a = GMT->common.R.wesn[XLO] + i * da;
 			gmt_geo_to_xy (GMT, a, GMT->common.R.wesn[YHI], &GMT->current.plot.x[k], &GMT->current.plot.y[k]);
 		}
-		if (circles) {	/* Nothing to connect to, so plot this circle as is */
+		if (circles) {	/* Nothing to connect to, so plot this circle we have as is */
 			PSL_plotline (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)nr, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
-			k = 0;	/* Start all over if another circle is needed */
+			k = 0;	/* Start all over in case another circle is needed */
 		}
 	}
-	/* Now at E (XHI, YHI).  If we need to add radial E boundary then add it now to the array, ending at XHI, YLO */
+	/* Now at E (XHI, YHI).  If we need to add a radial E boundary then add it now to the array, ending at XHI, YLO */
 	if (GMT->current.map.frame.side[E_SIDE] & GMT_AXIS_DRAW) {
 		gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &GMT->current.plot.x[k], &GMT->current.plot.y[k]);	k++;
 		gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], &GMT->current.plot.x[k], &GMT->current.plot.y[k]);	k++;
 	}
-	/* Now at XHI, YLO.  Do we hook in the other partial circle? */
-	if (GMT->current.map.frame.side[S_SIDE] & GMT_AXIS_DRAW) {	/* Must draw the S circular boundary from E (XHI) backwards to W (XLO) */
+	/* Now at E (XHI, YLO).  Do we hook in the other partial circle? */
+	if (GMT->current.map.frame.side[S_SIDE] & GMT_AXIS_DRAW) {	/* Must draw the S circular boundary from E (XHI) backwards to W (XLO), all at YLO */
 		for (i = 0; i < nr; i++, k++) {
 			a = GMT->common.R.wesn[XHI] - i * da;
 			gmt_geo_to_xy (GMT, a, GMT->common.R.wesn[YLO], &GMT->current.plot.x[k], &GMT->current.plot.y[k]);
@@ -1389,7 +1390,7 @@ GMT_LOCAL void gmtplot_theta_r_map_boundary (struct GMT_CTRL *GMT, struct PSL_CT
 			k = 0;	/* Start all over */
 		}
 	}
-	/* Now at W (XLO, YLO).  If need to add radial W boundary add it now to the array, ending at XLO, YHI where we started */
+	/* Now at W (XLO, YLO).  If need to add a radial W boundary add it now to the array, ending at XLO, YHI (where we started) */
 	if (GMT->current.map.frame.side[W_SIDE] & GMT_AXIS_DRAW) {
 		gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &GMT->current.plot.x[k], &GMT->current.plot.y[k]);	k++;
 		gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YHI], &GMT->current.plot.x[k], &GMT->current.plot.y[k]);	k++;
