@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 #
+# Run GMT tests
 #
-# Functions to be used with test scripts
-
-# Print the shell script name and purpose and fill out to 72 characters
-# and make sure to use US GMT system defaults
 
 test -z "$1" && exit 1
 
@@ -12,12 +9,18 @@ test -z "$1" && exit 1
 script_name="$1"
 script_dir=$(dirname "${script_name}")
 local_script=$(basename "${script_name}")
-script="@GMT_SOURCE_DIR@/test/${script_name}"
-src="@GMT_SOURCE_DIR@/test/${script_dir}"
+script="@GMT_SOURCE_DIR@/${script_name}"
+src="@GMT_SOURCE_DIR@/${script_dir}"
+
 # Is it a modern mode script?
 modern=$(grep "gmt begin" "$script" -c)
+
 # Is it a script that is known to fail?
-known2fail=$(grep "GMT_KNOWN_FAILURE" "$script" -c)
+if [ "@GMT_ENABLE_KNOWN2FAIL@" = "ON" ]; then
+	known2fail=$(grep "GMT_KNOWN_FAILURE" "$script" -c)
+else
+	known2fail=0
+fi
 # Any script override of GRAPHICSMAGICK_RMS?  Must be a comment line of the format
 # GRAPHICSMAGICK_RMS = <custom-limit>
 GRAPHICSMAGICK_RMS=$(grep "GRAPHICSMAGICK_RMS" "$script" | awk '{print $4}')
@@ -86,7 +89,12 @@ for apiprog in \
     testapi_imageshading \
     testapi_matrix_as_grid \
     testapi_vector_strings \
-    testapi_vector_plot
+    testapi_vector_plot \
+    testapi_vector_io \
+    testapi_matrix_io \
+    testapi_matrix_360 \
+    testapi_matrix_360_ref \
+    testapi_grid2matrix
 do
     eval "${apiprog}() { valgrind_wrapper \"@GMT_BINARY_DIR@/src/${apiprog}\" \"\$@\"; }"
 done
@@ -212,7 +220,7 @@ trap 'on_err "${BASH_SOURCE}" "${LINENO}"' ERR SIGSEGV SIGTRAP SIGBUS
 
 # Create a temporary directory exec_dir in the build dir
 # and run remainder of this GMT script there
-exec_dir="@CMAKE_CURRENT_BINARY_DIR@/${script_name%.sh}"
+exec_dir="@CMAKE_BINARY_DIR@/${script_name%.sh}"
 rm -rf "$exec_dir"
 mkdir -p "$exec_dir"
 cd "$exec_dir"
@@ -236,14 +244,24 @@ export GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 export HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
 export HAVE_OPENMP="@HAVE_OPENMP@"
 export HAVE_GLIB_GTHREAD="@HAVE_GLIB_GTHREAD@"
+# Font lookup path for Ghostscript (invoked from gm compare and psconvert)
+export GS_FONTPATH="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 # Disable gmt end show from displaying plots
 export GMT_END_SHOW=off
 # Start with proper GMT defaults
-gmt set -Du
-# Modern mode needs a stable PPID but ctest messes that up when pipes are used
+# Use different settings for three groups of tests
+if [[ $script_name == doc/examples/* ]]; then
+	gmt set -Ds GMT_GRAPHICS_FORMAT ps
+elif [[ $script_name == doc/scripts/* ]]; then
+  gmt set -Du PS_CHAR_ENCODING ISOLatin1+ GMT_GRAPHICS_FORMAT ps
+else
+	gmt set -Du GMT_GRAPHICS_FORMAT ps
+fi
+# Modern mode needs a stable PPID but ctest messes that up when pipes are used.
+# Because classic scripts also look to see what mode they are we set this for all.
+export GMT_SESSION_NAME=\$\$
+echo "Set GMT_SESSION_NAME = \$GMT_SESSION_NAME"
 if [ ${modern} -gt 0 ]; then
-	export GMT_SESSION_NAME=\$\$
-	echo "Set GMT_SESSION_NAME = \$GMT_SESSION_NAME"
 	script_mode=M
 fi
 # Now run the script

@@ -4,7 +4,7 @@
 #	[skip srtm which is just a special version of dem2]
 #
 # Use the knowledge that we need 3 pages.
-# 44 original GMT 5 CPTs and the last page has 24 scientific colormaps
+# 44 original GMT 5 CPTs and the last page has 28 scientific colormaps
 # from Fabio [www.fabiocrameri.ch/visualisation]
 
 GMT_SHAREDIR=$(gmt --show-sharedir)
@@ -16,8 +16,10 @@ batlow
 berlin
 bilbao
 broc
+brocO
 buda
 cork
+corkO
 davos
 devon
 grayC
@@ -30,10 +32,12 @@ nuuk
 oleron
 oslo
 roma
+romaO
 tofino
 tokyo
 turku
 vik
+vikO
 EOF
 
 n=$(cat tt.lis | wc -l)
@@ -59,10 +63,10 @@ do
 	gmt makecpt -H -C$left -T-1/1/0.25 > tt.left2.cpt
 	gmt makecpt -H -C$right -T-1/1 > tt.right.cpt
 	gmt makecpt -H -C$right -T-1/1/0.25 > tt.right2.cpt
-	gmt colorbar -Dx1.55i/${y}i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
-	gmt colorbar -Dx4.50i/${y}i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
-	gmt colorbar -Dx1.55i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
-	gmt colorbar -Dx4.50i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
+	gmt colorbar -Dx1.55i/${y}i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
+	gmt colorbar -Dx4.50i/${y}i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
+	gmt colorbar -Dx1.55i/${y2}i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
+	gmt colorbar -Dx4.50i/${y2}i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 	gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC <<- END
 	1.55 $y ${left}
 	4.50 $y ${right}

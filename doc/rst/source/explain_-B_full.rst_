@@ -3,22 +3,24 @@
 **-B**\ [**p**\|\ **s**]\ *parameters*
     Set map Frame and Axes parameters. The Frame parameters are specified by
 
-    **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*]
+    **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
 
-    where *axes* selects which axes to plot. By default, all 4 map boundaries
+    where *axes* selects which axes to plot. By default, all four map boundaries
     (or plot axes) are plotted (named **W**, **E**, **S**, **N**). To customize,
     append the codes for those you want (e.g., **WSn**). Upper case means plot
     and annotate while lower case just plots and ticks the specified axes.
     To *just* draw an axis without annotation and ticks you can use the **l**\ (eft),
-    **r**\ (ight), **b**\ (ottom), **t**\ (opt) and (for 3-D) **u**\ (p) codes. If a 3-D basemap
-    is selected with **-p** and **-Jz**, append **Z**, **z**, or **u** to control the
-    appearance of the vertical axis. By default a single vertical axes will be
-    plotted at the most suitable map corner. Override the default by appending
+    **r**\ (ight), **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes.
+    If a 3-D basemap is selected with **-p** and **-Jz**, append **Z**, **z**, or
+    **u** to control the appearance of the vertical axis. By default a single vertical
+    axes will be plotted at the most suitable map corner. Override the default by appending
     any combination of corner ids **1234**, where **1** represents the lower left
-    corner and the order goes counter-clockwise. Append **+b** to draw the outline of the 3-D
-    cube defined by **-R**; this modifier is also needed to display gridlines in
-    the x-z, y-z planes. Note that for 3-D views the title, if given, will be
-    suppressed. You can paint the interior of the canvas with **+g**\ *fill*.
+    corner and the order goes counter-clockwise.  Use **+w** to draw the outlines of
+    the x-z and y-z planes [no outline] and optionally append the *pen* to use
+    [:term:`MAP_GRID_PEN_PRIMARY`]. Alternatively, append **+b** to also draw the front lines
+    of the 3-D cube defined by **-R**. You can paint the interior of the canvas with
+    **+g**\ *fill* (this also sets fill for the two back-walls in 3-D).
+    Use **+x**, **+y**, and **+z** to control the painting of planes *yz*, *xz* and *xy*, respectively [Default is no fill]. 
     Use **+i** to annotate an internal meridian or parallel when the axis that normally
     would be drawn and annotated does not exist (e.g., azimuthal map with 360-degree range
     has no latitude axis, and a global Hammer map has no longitude axis); optionally append the parallel or meridian [0].
@@ -62,8 +64,8 @@
     will plot slanted annotations; *angle* is measured with respect to the horizontal
     and must be in the -90 <= *angle* <= 90 range only.  Also, **+an** is a shorthand
     for normal (i.e., **+a**\ 90) and **+ap** for parallel (i.e., **+a**\ 0) annotations
-    [Default].  For the y-axis, arbitrary angles are not allowed but **+an** and **+ap**
-    specify annotations normal [Default] and parallel to the axis, respectively.  Note that
+    [Default].  For the y- and z-axes, arbitrary angles are not allowed but **+an** and **+ap**
+    specify annotations normal [Default] and parallel to the axis, respectively. Note that
     these defaults can be changed via :term:`MAP_ANNOT_ORTHO`. Geographic axes can
     take **+f** which will give fancy annotations with W|E|S|N suffices encoding the sign.
 

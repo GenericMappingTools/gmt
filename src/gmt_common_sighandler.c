@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/ucontext.h>
 #include <sys/resource.h>
@@ -194,7 +195,11 @@ void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
 		return;
 	}
 	else {
+#ifdef HAVE_STRSIGNAL
+		fprintf (stderr, "ERROR: Caught signal number %d (%s) at\n", sig_num, strsignal(sig_num));
+#else
 		fprintf (stderr, "ERROR: Caught signal number %d (%s) at\n", sig_num, sys_siglist[sig_num]);
+#endif
 		backtrace_symbols_fd (array, 2, STDERR_FILENO); /* print function with faulting instruction */
 		size = backtrace (array, 50); /* get void*'s for all entries on the stack */
 		fprintf (stderr, "Stack backtrace:\n");

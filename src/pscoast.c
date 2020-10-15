@@ -149,8 +149,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C->A.info.high = GSHHS_MAX_LEVEL;			/* Include all GSHHS levels */
 	C->D.set = 'l';						/* Low-resolution coastline data */
-	if (GMT->current.map.frame.paint)	/* Default Ocean color = Frame background color */
-		C->S.fill = GMT->current.map.frame.fill;
+	if (GMT->current.map.frame.paint[GMT_Z])	/* Default Ocean color = Frame background color */
+		C->S.fill = GMT->current.map.frame.fill[GMT_Z];
 	else
 		gmt_init_fill (GMT, &C->S.fill, 1.0, 1.0, 1.0);		/* Default Ocean color = white */
 	C->C.fill[LAKE] = C->C.fill[RIVER] = C->S.fill;		/* Default Lake/Riverlake color = Ocean color */
@@ -545,16 +545,20 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 		}
 		record[j] = '\0';
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+			gmt_M_free (GMT, Rec);
 			return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
+			gmt_M_free (GMT, Rec);
 			return (API->error);
 		}
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_TEXT) != GMT_NOERROR) {	/* Sets output geometry */
+			gmt_M_free (GMT, Rec);
 			return (API->error);
 		}
 		GMT_Put_Record (API, GMT_WRITE_DATA, Rec);	/* Write text record to output destination */
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+			gmt_M_free (GMT, Rec);
 			return (API->error);
 		}
 		GMT->current.io.geo.range = range;	/* Reset to what it was */
@@ -757,11 +761,11 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (GMT->current.setting.run_mode == GMT_MODERN && !Ctrl->D.active)
 		Ctrl->D.set = 'a';	/* Auto-select resolution under modern mode if -D not given */
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
-	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
-	fill[0] = (Ctrl->S.active) ? Ctrl->S.fill : no_fill;
-	fill[1] = fill[3] = (Ctrl->G.active) ? Ctrl->G.fill : no_fill;
-	fill[2] = fill[4] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : fill[0];
-	fill[5] = (Ctrl->C.active) ? Ctrl->C.fill[RIVER] : fill[2];
+	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set, true);
+	fill[0] = (Ctrl->S.active) ? Ctrl->S.fill : no_fill;	/* Ocean fill */
+	fill[1] = fill[3] = (Ctrl->G.active) ? Ctrl->G.fill : no_fill;	/* Continent and islands in lakes fill */
+	fill[2] = fill[4] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : fill[0];	/* Lakes and ponds-in-islands-in-lakes fill */
+	fill[5] = (Ctrl->C.active) ? Ctrl->C.fill[RIVER] : fill[2];		/* River-lake fill */
 	need_coast_base = (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->W.active);
 	if (Ctrl->Q.active) need_coast_base = false;	/* Since we just end clipping */
 	if (Ctrl->G.active && Ctrl->S.active) {	/* Must check if any of then are transparent */
@@ -771,8 +775,8 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 			clobber_background = false;
 			GMT_Report (API, GMT_MSG_DEBUG, "Do double recursive painting due to transparency option for land or ocean\n");
 		}
-		else	/* OK to paint ocean first then overlay land */
-			clobber_background = true;
+		else	/* OK to paint ocean first then overlay land unless lakes have a different fill */
+			clobber_background = (!Ctrl->C.active || gmt_same_fill (GMT, &(Ctrl->C.fill[LAKE]), &(Ctrl->S.fill))) ? true : false;
 	}
 	recursive = (double_recursive || (Ctrl->G.active != (Ctrl->S.active || Ctrl->C.active)) || clipping);
 	paint_polygons = (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active);
@@ -871,7 +875,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		}
 		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	}
-	else {
+	else {	/* Setting up for plotting */
 		if (Ctrl->Q.active)
 			GMT->current.ps.nclip = -1;	/* Signal that this program terminates polygon clipping that initiated prior to this process */
 		else if (clipping)
@@ -882,9 +886,10 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.active) {  /* Just undo previous clip-path */
 			PSL_endclipping (PSL, 1);
 
-			if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {
+			if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Clipping ended, so optionally place basemap */
 				gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-				gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+				gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
+				GMT->current.map.frame.order = GMT_BASEMAP_AFTER;	/* Move to last order since only calling gmt_map_basemap once */
 				gmt_map_basemap (GMT); /* Basemap needed */
 				gmt_plane_perspective (GMT, -1, 0.0);
 			}
@@ -893,9 +898,11 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 			Return (GMT_NOERROR);
 		}
-
+		/* Here we are starting a new coastline plot or overlay */
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_set_basemap_orders (GMT, clipping ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_BEFORE);
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+		gmt_map_basemap (GMT);
 	}
 
 	for (i = 0; i < 5; i++) if (fill[i].use_pattern) fill_in_use = true;
@@ -905,8 +912,6 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		clobber_background = true;
 		recursive = false;
 	}
-
-	if (clipping) gmt_map_basemap (GMT);
 
 	if (GMT->current.proj.projection_GMT == GMT_AZ_EQDIST && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_180_range (GMT->common.R.wesn[YHI], GMT->common.R.wesn[YLO])) {
 		int status[2] = {0, 0};
@@ -932,8 +937,8 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		clobber_background = true;
 		recursive = false;
 		if (!Ctrl->S.active) {	/* Since we are painting wet areas we must now reset them to white */
-			if (GMT->current.map.frame.paint)	/* Let ocean color match cancas fill color */
-				fill[0] = GMT->current.map.frame.fill;
+			if (GMT->current.map.frame.paint[GMT_Z])	/* Let ocean color match cancas fill color */
+				fill[0] = GMT->current.map.frame.fill[GMT_Z];
 			else
 				gmt_init_fill (GMT, &fill[0], 1.0, 1.0, 1.0);	/* Default Ocean color = white */
 		}
@@ -1295,7 +1300,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		gmt_br_cleanup (GMT, &b);
 	}
 
-	if (!Ctrl->M.active) {
+	if (!Ctrl->M.active) {	/* Wrap of the plotting codes */
 		if (clip_to_extend_lines) gmt_map_clip_off (GMT);
 		if (GMT->current.map.frame.init) {
 			GMT->current.map.is_world = world_map_save;

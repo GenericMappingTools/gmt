@@ -41,8 +41,11 @@ Optional Arguments
 Examples
 --------
 
-To close the current modern session and finalize any plots requested, we use::
+We first create a modern mode session using **begin**, do plotting, and
+close the current modern session and finalize any plots requested::
 
+    gmt begin
+    gmt basemap -R0/10/0/10 -JX10c -Baf
     gmt end
 
 Disable display

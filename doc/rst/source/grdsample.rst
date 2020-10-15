@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdsample** *in_grdfile* |-G|\ *out_grdfile*
+**gmt grdsample** *ingrid* |-G|\ *outgrid*
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
 [ |-T| ]
@@ -46,12 +46,12 @@ have the same registration as the input grid.
 Required Arguments
 ------------------
 
-*in_grdfile*
+*ingrid*
     The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)
 
 .. _-G:
 
-**-G**\ *out_grdfile*
+**-G**\ *outgrid*
     The name of the output grid file. (See GRID FILE FORMAT below.)
 
 Optional Arguments
@@ -71,6 +71,7 @@ Optional Arguments
 **-T**
     Translate between grid and pixel registration; if the input is
     grid-registered, the output will be pixel-registered and vice-versa.
+    This is a *destructive* grid change; see :ref:`Switching registrations <Switch_Registrations>`.
 
 .. _-V:
 
@@ -147,3 +148,11 @@ See Also
 :doc:`grdfilter`,
 :doc:`greenspline`,
 :doc:`surface`
+
+
+References
+----------
+
+Marks, K. M., and W. H. F. Smith, 2007, Some remarks on resolving seamounts in satellite gravity,
+*Geophys. Res. Lett., 34 (L03307)*, http://doi.org/10.1029/2006GL028857.
+

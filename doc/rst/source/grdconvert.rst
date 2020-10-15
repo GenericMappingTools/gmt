@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdconvert** *ingrdfile* |-G|\ *outgrdfile*
+**gmt grdconvert** *ingrid* |-G|\ *outgrid*
 [ |-N| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -32,7 +32,7 @@ be written and to specify scaling, translation, and NaN-value.
 Required Arguments
 ------------------
 
-*ingrdfile*\ [=id[**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]]
+*ingrid*\ [=id[**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]]
     The grid file to be read. Append format =\ *id* code if not a
     standard COARDS-compliant netCDF grid file. If =\ *id* is set (see
     below), you may optionally append any of **+s**\ *scale*, **+o**\ *offset*,
@@ -51,7 +51,7 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outgrdfile*\ [=id[**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]][*:driver*\ [/*datatype*]]]
+**-G**\ *outgrid*\ [=id[**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]][*:driver*\ [/*datatype*]]]
     The grid file to be written. Append format =\ *id* code if not a
     standard COARDS-compliant netCDF grid file. If =\ *id* is set (see
     below), you may optionally append  any of **+s**\ *scale*,
@@ -128,11 +128,11 @@ format is conform the COARDS conventions. GMT versions prior to 4.1
 produced netCDF files that did not conform to these conventions.
 Although these files are still supported, their use is deprecated. To
 write other than floating point COARDS-compliant netCDF files, append
-the =\ *id* suffix to the filename *outgrdfile*.
+the =\ *id* suffix to the filename *outgrid*.
 
 When reading files, **grdconvert** and other GMT programs will try
 to automatically recognize the type of the input grid file. If this
-fails you may append the =\ *id* suffix to the filename *ingrdfile*.
+fails you may append the =\ *id* suffix to the filename *ingrid*.
 
 +----------+---------------------------------------------------------------+
 | ID       | Explanation                                                   |
@@ -201,7 +201,7 @@ without loss of data range or significance. For more details, see
 
 By default, GMT programs will read the first 2-dimensional grid
 contained in a COARDS-compliant netCDF file. Alternatively, use
-*ingrdfile*\ **?**\ *varname* (ahead of any optional suffix **=**\ *id*)
+*ingrid*\ **?**\ *varname* (ahead of any optional suffix **=**\ *id*)
 to specify the requested variable *varname*. Since **?** has special
 meaning as a wildcard, escape this meaning by placing the full filename
 and suffix between quotes.
@@ -211,7 +211,7 @@ and suffix between quotes.
 To extract one *layer* or *level* from a 3-dimensional grid stored in a
 COARDS-compliant netCDF file, append both the name of the variable and
 the index associated with the layer (starting at zero) in the form:
-*ingrdfile*\ **?**\ *varname*\ **[**\ *layer*\ **]**. Alternatively,
+*ingrid*\ **?**\ *varname*\ **[**\ *layer*\ **]**. Alternatively,
 specify the value associated with that layer using parentheses in stead
 of brackets:
 *ingridfile*\ **?**\ *varname*\ **(**\ *layer*\ **)**.

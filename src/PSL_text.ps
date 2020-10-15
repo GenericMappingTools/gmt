@@ -1,32 +1,33 @@
 %-----------------------------------------------------------------------------
 %-	P. Wessel, version 1
-%-	Text justification for paragraphs.
-%-	Kept as separate file until stable.
+%-	Text justification for paragraphs. Invented via PostScript docs a long time ago.
+%-	Kept as separate file because it is easier to edit and see the logic here.
 %-	Knows about flush l,c,r and justified.
-%-	Knows about all GMT @ escapes, composites,
+%-	Knows about all GMT @ escapes, composites (but not in paragraph mode)
 %-	and underlining. No hyphenation.  1 page only.
-%- NOTE: No longer used as replaced by static string in PSL_strings.h.
-%- 	 We keep the file in the repository as it may be simpler to see
+%- NOTE: No longer used as is, as replaced by static string in PSL_strings.h.
+%- 	 We keep the file in the repository as it may be simpler to edit and see
 %-	 the logic in this file than in the static string.
 %-----------------------------------------------------------------------------
 
-/PSL_setfont {	% Set Font, size, and color if needed
+/PSL_setfont {	% Set Font, size, and color (if needed)
+  % Expects two arguments: Word flag and word index
   /f exch def % Gets word flag from stack
   /k1 exch def % Gets word index from stack
   /fz PSL_size k1 get def	% Get font size
-  /fn PSL_fnt k1 get def	% Get font
-  fn PSL_lastfn eq fz PSL_lastfz eq and not {
+  /fn PSL_fnt k1 get def	% Get font number
+  fn PSL_lastfn eq fz PSL_lastfz eq and not { % If fonts or sizes differ we must update
     fz PSL_fontname fn get Y	% Set font and size
     /PSL_lastfn fn def
     /PSL_lastfz fz def
   } if
-  /fc PSL_color k1 get def
-  fc PSL_lastfc ne {
+  /fc PSL_color k1 get def  % Get color
+  fc PSL_lastfc ne {  % Not the same, must update color
     /PSL_c fc 3 mul def
     0 1 2 {PSL_c add PSL_rgb exch get} for C	% Get and set color
     /PSL_lastfc fc def
   } if
-  f 32 and 32 eq { % Underline
+  f 32 and 32 eq { % Turn underline on before plotting text
     /PSL_UL fz 0.075 mul def
     fz 0.025 mul W
     /PSL_show {PSL_ushow} def
@@ -37,10 +38,11 @@
 }!
 
 /PSL_setfont2 {	% Only set font and size
+  % Expects two arguments: Word flag and word index
   /f exch def % Gets word flag from stack
   /k1 exch def % Gets word index from stack
   /fz PSL_size k1 get def	% Get font size
-  /fn PSL_fnt k1 get def	% Get font
+  /fn PSL_fnt k1 get def	% Get font number
   fn PSL_lastfn eq fz PSL_lastfz eq and not {
     fz PSL_fontname fn get Y	% Set font and size
     /PSL_lastfn fn def
@@ -48,13 +50,13 @@
   } if
 }!
 
-/PSL_wordheight {	% Gets word from stack, and calculates any adjustment to box height
+/PSL_wordheight {	% Gets word from stack, then calculates any adjustment to box height
   0 0 M false charpath flattenpath pathbbox /up exch def pop /down exch def pop newpath
   down PSL_ymin lt {/PSL_ymin down def} if
   up PSL_ymax gt {/PSL_ymax up def} if
 }!
 
-/PSL_ushow {
+/PSL_ushow {  % Related to underline showing text
   currentpoint /y0 exch def /x0 exch def
   ashow
   currentpoint pop /x1 exch def
@@ -65,24 +67,25 @@
 % Set font, size, and color.  Adjust baseline if needed. Place space and word
 
 /PSL_placeword {
-  /k exch def % Gets word index from stack
+  % Expects one argument: the word index from stack
+  /k exch def % Gets word index
   /flag PSL_flag k get def
   k flag PSL_setfont
   /sshow {ashow} def
-  PSL_col 0 eq {		% First word on a line
+  PSL_col 0 eq {		% First word on a new line
     /PSL_t 0 def			% 0 spaces before this word
-    flag 4 and 4 eq {	% Must skip one TAB
+    flag 4 and 4 eq {	% Flag says we must skip one TAB (here 4 spaces)
       pr_char 0 (    ) ashow
     } if
   }
-  {				% Need to find spaces before this word
-    /f PSL_flag k 1 sub get def	% f is flag for previous word
+  { % Need to find spaces before this word
+    /f PSL_flag k 1 sub get def	% f is the flag for previous word
     /PSL_t f 3 and def		% PSL_t is index into PSL_spaces and PSL_spacewidths for previous word
     f 32 and 32 eq flag 32 and 32 eq and {/sshow {PSL_ushow} def} if
   } ifelse
   /thisword_bshift PSL_bshift k get def	% The baseline shift
   thisword_bshift 0.0 ne {0 thisword_bshift G} if	% Shift baseline
-  flag 8 and 8 eq {	% First composite char
+  flag 8 and 8 eq {	% First composite char (flagged with 8)
     pr_char 0 PSL_spaces PSL_t get sshow
     k PSL_composite
   } if
@@ -94,25 +97,39 @@
 }!
 
 /PSL_composite {	% Place a composite character
+  % Expects a word index from the stack
   /k1 exch def % Get word index from stack
-  /k2 k1 1 add def
-  /char1 PSL_word k1 get def
-  /char2 PSL_word k2 get def
-  /w1 char1 stringwidth pop def
-  /w2 char2 stringwidth pop def
-  /delta w1 w2 sub 2 div PSL_scale mul def
+  /k2 k1 1 add def  % Index to the 2nd composite character
+  /char1 PSL_word k1 get def  % First character
+  /char2 PSL_word k2 get def  % Second character
+  /flag2 PSL_flag k2 get def  % Second character flag
+  /w1 char1 stringwidth pop def % Width of first character
+  flag2 64 and 64 eq {  % Here, 64 means we have a font change before the 2nd composite character
+    /fn2 PSL_fnt k2 get def  % Get the other font array number
+    fz PSL_fontname fn2 get Y  % Set font and size for the 2nd composite character
+  } if
+  /w2 char2 stringwidth pop def % Width of second character
+  /delta w1 w2 sub 2 div PSL_scale mul def  % Adjust and center based on w1, w2
   delta 0.0 gt {
     /dx1 0 def
     /dx2 delta def
   }
-  { /dx1 delta neg def
+  {
+    /dx1 delta neg def
     /dx2 0 def
   } ifelse
   dx1 0 G currentpoint
-  pr_char 0 char1 PSL_show M
-  delta 0 G
-  pr_char 0 char2 ashow
-  dx2 0 G
+  flag2 64 and 64 eq {  % Must switch back to first composite character font and set it
+   /fn1 PSL_fnt k1 get def  % Get initial font
+    fz PSL_fontname fn1 get Y  % Set font and size
+  } if
+  pr_char 0 char1 PSL_show M  % Place first character
+  delta 0 G  % Adjust relative x to position for overprinting
+  flag2 64 and 64 eq {  % Get 2nd font again
+    fz PSL_fontname fn2 get Y  % Set font and size
+  } if
+  pr_char 0 char2 ashow  % Place 2nd character
+  dx2 0 G  % Adjust relative x to position after this composite glyph
 }!
 
 % Determine how much to expand text and also justify left/center/right
@@ -130,7 +147,7 @@
   /PSL_col 0 def
 }!
 
-% Calculate text paragraph height:
+% Calculate text paragraph height or place it:
 
 /PSL_textjustifier {
   /PSL_mode exch def	% From stack. 0 -> calculate height, no text is placed, 1 -> place text
@@ -151,14 +168,14 @@
   /line 0 def
   /ncomp 0 def
   /comp_width 0 def
-  0 1 PSL_n1 {		% Loop over all the words
+  0 1 PSL_n1 {		% Loop over all the words in the array
     /i exch def		% The current loop index
-    /thisflag PSL_flag i get def					% # of space chars to follow this word
-    i 0 eq {
+    /thisflag PSL_flag i get def	% Number of space chars to follow this word
+    i 0 eq {  % At the first word
       /PSL_t 0 def
       /lastflag 0 def
     }
-    { /lastflag PSL_flag i 1 sub get def
+    { /lastflag PSL_flag i 1 sub get def  % Can get the previous flag
       /PSL_t lastflag 3 and def
     } ifelse
     % PSL_t is index into PSL_spaces and PSL_spacewidths
@@ -192,9 +209,9 @@
     }
     { % Must process current line and move to next
       1 PSL_mode eq {		% Write out the first word on this line
-	% Determine how much to expand text and also justify left/center/right
+        % Determine how much to expand text and also justify left/center/right
         start PSL_expand
-	start PSL_placeword
+        start PSL_placeword
       }
       {PSL_word start get PSL_wordheight
       } ifelse

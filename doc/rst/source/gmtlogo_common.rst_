@@ -7,6 +7,13 @@ This module plots the GMT logo on a map. By default, the GMT logo is 144 points 
 positioned relative to the current plot origin. Use various options to change this and to place a
 transparent or opaque rectangular map panel behind the GMT logo.
 
+.. figure:: /_images/GMT_coverlogo.*
+   :width: 200 px
+   :align: center
+
+   Standard presentation of the GMT logo.
+
+
 Required Arguments
 ------------------
 

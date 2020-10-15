@@ -162,6 +162,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPT
 	                                 "Option -Q: Requires -D\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->N.active,
 	                                 "Option -Q: -N will be ignored\n");
+	if (Ctrl->D.active && Ctrl->D.dir && !(!strcmp (Ctrl->D.dir, "all") || !strcmp (Ctrl->D.dir, "cache") || !strncmp (Ctrl->D.dir, "data", 4U))) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -D: Requires arguments all, cache, data[=<planet>] or data=<datasetlist>\n");
+		n_errors++;
+	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -174,7 +178,7 @@ EXTERN_MSC void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
 
 EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 	int error = GMT_NOERROR;
-	char *datasets = NULL, *c = NULL, file[GMT_LEN64] = {""};
+	char *datasets = NULL, *c = NULL, file[PATH_MAX] = {""};
 
 	struct GMTGET_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -208,16 +212,24 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 			double world[4] = {-180.0, +180.0, -90.0, +90.0};
 			struct GMT_RECORD *Out = NULL;
 
+			gmt_refresh_server (API);	/* Refresh hash and info tables as needed since we need to know what is there */
+
 			if (Ctrl->Q.active) {	/* Must activate data output machinery for a DATASET with no numerical columns */
 				Out = gmt_new_record (GMT, NULL, message);
-				if ((error = GMT_Set_Columns (API, GMT_OUT, 0, GMT_COL_FIX)) != GMT_NOERROR) Return (API->error);
+				if ((error = GMT_Set_Columns (API, GMT_OUT, 0, GMT_COL_FIX)) != GMT_NOERROR) {
+					gmt_M_free (GMT, Out);
+					Return (API->error);
+				}
 				if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
+					gmt_M_free (GMT, Out);
 					Return (API->error);
 				}
 				if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
+					gmt_M_free (GMT, Out);
 					Return (API->error);
 				}
 				if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+					gmt_M_free (GMT, Out);
 					Return (API->error);
 				}
 			}
@@ -255,7 +267,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 						n = 1;
 					}
 					message[0] = '\0';
-					sprintf (message, "%s\t%s\t%s\t%s\t%u\t%s", planet, group, dataset, size, n, API->remote_info[k].remark);
+					snprintf (message, GMT_LEN256-1, "%s\t%s\t%s\t%s\t%u\t%s", planet, group, dataset, size, n, API->remote_info[k].remark);
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 				else {

@@ -99,9 +99,10 @@ GMT may be linked with these libraries (* means optional):
 [Perl Compatible Regular Expressions (PCRE*)](https://www.pcre.org),
 [Fastest Fourier Transform in the West (FFTW*)](http://www.fftw.org),
 [Linear Algebra Package (LAPACK*)](http://www.netlib.org/lapack/),
-[Basic Linear Algebra Subprograms (BLAS*)](http://www.netlib.org/blas/), and
+[Basic Linear Algebra Subprograms (BLAS*)](http://www.netlib.org/blas/),
+[GLIB*](https://developer.gnome.org/glib/), and
 [ZLIB*](https://www.zlib.net). GMT may call these executables:
-GDAL (ogr2ogr, gdal_info), [Ghostscript](https://www.ghostscript.com),
+GDAL (ogr2ogr, gdal_translate), [Ghostscript](https://www.ghostscript.com),
 [FFmpeg](https://www.ffmpeg.org),
 [xdg-open](https://www.freedesktop.org/wiki/Software/xdg-utils/), and
 [GraphicsMagick](http://www.graphicsmagick.org).

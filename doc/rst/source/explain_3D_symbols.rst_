@@ -1,0 +1,31 @@
+    All the previous symbols are 2-D and are plotted in the *x*-*y* plane only.
+    We complement these with a few truly 3-D symbols:
+
+    .. figure:: /_images/GMT_base_symbols3D.*
+        :width: 600 px
+        :align: center
+
+        Both the cube and column symbols are 3-D, and can have their colors
+        modulated based on the view point (lower case **u** and **o**) or be
+        of uniform color (upper case **U** and **O**).
+
+    **-So**\ *size*\ [**c**\|\ **i**\|\ **p**\|\ **u**][**+b**\ \|\ **B**\ [*base*]]
+        c\ **o**\ lumn (3-D) extending from *base* to *z*.  The *size* sets base width
+        (Use *xsize/ysize* if not the same).  Append **u** if *size* is in the users' x-units
+        [Default is plot-distance units].  If no *size* is given we expect both *xsize*
+        and *ysize* as two extra data columns.  By default, *base* = 0.  Append
+        **+b**\ *base* to change this value.  If *base* is not appended then we read it
+        from the last input data column.  Use **+B**\ [*base*] if the column height
+        is measured relative to *base* [Relative to origin].
+        The facet colors will be modified to simulate shading.  Use **-SO** to disable 3-D illumination.
+        Normally a single *z* value is considered.  For multi-band columns, append
+        **+z**\ *nbands* (and provide *nbands* *z*-columns via the input; these must be monotonically
+        increasing up the column) or append **+Z**\ *nbands* (and expect *nbands* of *dz* increments
+        in data columns that must be summed to yield actual *z* values).  The multi-band column symbol
+        requires **-C** and will use the band number (0, 1, *nbands*\ -1) to assign the band color.
+
+    **-Su**\ *size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]
+        c\ **u**\ be (3-D).  The *size* sets length of all sides. Append
+        **u** if *size* is in x-units [Default is plot-distance units].
+        The facet colors will be modified to simulate shading.
+        Use **-SU** to disable 3-D illumination.

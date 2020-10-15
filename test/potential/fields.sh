@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Compute FAA, VGG, and geoid over synthetic seamount
+# Compute FAA, VGG, and geoid over synthetic conical seamount
 ps=fields.ps
 order=2
 dx=1
@@ -23,11 +23,11 @@ function Ugly {
 
 # 2 panels of topo and grav, with top profile of admittance & coherence
 # NOT FINISHED
-# 1. Create a bathymetry data set with one circular truncated seamount
+# 1. Create a bathymetry data set with one circular truncated conical seamount
 #    as in Fig 3. of Marks & Smith, 2007 [GRL], with R_base = 35 km,
 # R_top = 10 km, height = 3751 m, depth = -5084 m, density d_rho = 2800-1030
 # = 1670 kg/m^3, so the flattening is 10/25 = 0.4.
-echo "0	0	25	3751" | gmt grdseamount -R-256/256/-256/256 -I$dx -r -C -Gsmt.nc -F0.4 -Z-5084
+echo "0	0	25	3751" | gmt grdseamount -R-256/256/-256/256 -I$dx -r -Cc -Gsmt.nc -F0.4 -Z-5084
 # BL Plot the bathymetry
 gmt makecpt -Crainbow -T-5100/-1000 > t.cpt
 gmt grdimage smt.nc -R-100/100/-100/100 -JX3i -P -Bag -BWSne -Ct.cpt -K > $ps
@@ -89,5 +89,4 @@ echo "100 250 FAA" | gmt pstext -R -J -O -K -F+jTR+f12p,Helvetica,red -Dj0.1i/0.
 gmt psxy -R-100/100/-50/250 -JX3i/2.5i -O -K -W1p,blue -i0,3 vgg.trk -Bafg1000 -BwsN -X3.5i >> $ps
 echo "-100 250 VGG" | gmt pstext -R -J -O -K -F+jTL+f12p,Helvetica,blue -Dj0.1i >> $ps
 gmt psxy -R-100/100/0/4 -J -O -K -W1p,orange -i0,3 geoid.trk -Baf -BE >> $ps
-echo "100 4 GEOID" | gmt pstext -R -J -O -K -F+jTR+f12p,Helvetica,orange -Dj0.1i >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo "100 4 GEOID" | gmt pstext -R -J -O -F+jTR+f12p,Helvetica,orange -Dj0.1i >> $ps

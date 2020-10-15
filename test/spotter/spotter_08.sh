@@ -28,5 +28,4 @@ gmt makecpt -Crainbow -T0/8 > t.cpt
 gmt psxy -R -J -O -K outline_*.txt -W1p -Cs.cpt -L >> $ps
 gmt grdimage -R -J -Q out_10.4.nc -Ct.cpt -O -K >> $ps
 gmt grdimage -R -J -Q out_58.6.nc -Ct.cpt -O -K >> $ps
-gmt grdimage -R -J -Q out_130.0.nc -Ct.cpt -O -K >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt grdimage -R -J -Q out_130.0.nc -Ct.cpt -O >> $ps

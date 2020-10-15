@@ -45,5 +45,4 @@ gmt psxy -R -JM -O -K -ST0.1i -Gcyan -W0.5p suiko.txt >> $ps
 # Task 7: [OK]
 gmt backtracker loihi.txt -Df -Lb -ED2012x.txt | gmt psxy -R -J -O -K -W0.5p,- >> $ps
 # Task 8: [OK]
-gmt backtracker end_of_flow.txt -Db -Lf200 -ED2012x.txt | gmt psxy -R -J -O -K -W0.5p,. >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt backtracker end_of_flow.txt -Db -Lf200 -ED2012x.txt | gmt psxy -R -J -O -W0.5p,. >> $ps

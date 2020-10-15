@@ -28,7 +28,7 @@
 #define THIS_MODULE_MODERN_NAME	"solar"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot day-light terminators and other sunlight parameters"
-#define THIS_MODULE_KEYS	">X},>DI,>DM@ID),MD)"
+#define THIS_MODULE_KEYS	">X},>DI,>DM"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbpto" GMT_OPT("c")
 
@@ -558,7 +558,9 @@ EXTERN_MSC int GMT_pssolar (void *V_API, int mode, void *args) {
 		}
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_set_basemap_orders (GMT, Ctrl->N.active ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, Ctrl->N.active ? GMT_BASEMAP_ANNOT_BEFORE : GMT_BASEMAP_ANNOT_AFTER);
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+		gmt_map_basemap (GMT);
 		if (Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
 
 		for (n = 0; n < 4; n++) {	/* Loop over the number of requested terminators */

@@ -55,5 +55,4 @@ while read file t t2 color; do
 	gmt grdtrack t.txt -Gtmp.nc > b.txt
 	gmt psxy -R -J -O -K -W0.5p,${color} b.txt -i0,2 >> $ps
 done < flist.txt
-echo -200 -40 FAA | gmt pstext -R -J -O -K -F+f18p+jLB -Dj0.1i >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo -200 -40 FAA | gmt pstext -R -J -O -F+f18p+jLB -Dj0.1i >> $ps

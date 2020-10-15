@@ -34,10 +34,10 @@
 #define GMT_RESOURCES_H
 
 #ifdef DOUBLE_PRECISION_GRID
-/* Build GMT using double-precicion for grids.  Untested and caveat emptor */
+/* Build GMT using double-precision for grids.  Untested and caveat emptor */
 typedef double gmt_grdfloat;
 #else
-/* GMT default is single-precicion grids */
+/* GMT default is single-precision grids */
 typedef float gmt_grdfloat;
 #endif
 
@@ -52,7 +52,7 @@ typedef float gmt_grdfloat;
  * is no guarantee that the "private" members cannot change over time.
  */
 
-/*! Session modes for GMT_Create_Session */
+/*! Session modes for GMT_Create_Session. Do NOT change first 4 as affects GMT.jl */
 enum GMT_enum_session {
 	GMT_SESSION_NORMAL    = 0,	/* Typical mode to GMT_Create_Session */
 	GMT_SESSION_NOEXIT    = 1,	/* Call return and not exit when error */
@@ -60,10 +60,7 @@ enum GMT_enum_session {
 	GMT_SESSION_COLMAJOR  = 4,	/* External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format] */
 	GMT_SESSION_LOGERRORS = 8,	/* External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format] */
 	GMT_SESSION_RUNMODE   = 16,	/* If set enable GMT's modern runmode. [Classic] */
-	GMT_SESSION_BEGIN     = 32,	/* Begin a new session. [Sets modern mode] */
-	GMT_SESSION_END       = 64,	/* End a session. [Ends modern mode] */
-	GMT_SESSION_CLEAR     = 128,	/* Clear session files/directories */
-	GMT_SESSION_FIGURE    = 256	/* Add a figure to the session queue. [Modern mode only] */
+	GMT_SESSION_NOHISTORY = 32	/* Do not use gmt.history at all [Let modules decide] */
 };
 
 /*! Logging settings */
@@ -120,8 +117,8 @@ enum GMT_enum_method {
 	GMT_IS_FILE	 =    0,	/* Entity is a filename */
 	GMT_IS_STREAM	 =    1,	/* Entity is an open stream */
 	GMT_IS_FDESC	 =    2,	/* Entity is an open file descriptor */
-	GMT_IS_DUPLICATE =    3,	/* Entity is a memory location that should be duplicated */
-	GMT_IS_REFERENCE =    4,	/* Entity is a memory location that should be referenced */
+	GMT_IS_DUPLICATE =   16,	/* Entity is a memory location that should be duplicated */
+	GMT_IS_REFERENCE =   32,	/* Entity is a memory location that should be referenced */
 	GMT_IS_OUTPUT	 = 1024		/* When creating a resource as a container for output */
 };
 
@@ -179,10 +176,12 @@ enum GMT_enum_apierr {
 };
 
 enum GMT_enum_module {
-	GMT_MODULE_USAGE		= -7,	/* What GMT_Call_Module returns if told to print usage only */
-	GMT_MODULE_SYNOPSIS		= -6,	/* What GMT_Call_Module returns if told to print synopsis only */
-	GMT_MODULE_CLASSIC		= -5,	/* mode for GMT_Call_Module to print list of all classic modules */
-	GMT_MODULE_LIST			= -4,	/* mode for GMT_Call_Module to print list of all modern modules */
+	GMT_MODULE_USAGE		= -9,	/* What GMT_Call_Module returns if told to print usage only */
+	GMT_MODULE_SYNOPSIS		= -8,	/* What GMT_Call_Module returns if told to print synopsis only */
+	GMT_MODULE_CLASSIC		= -7,	/* mode for GMT_Call_Module to print list of all classic modules */
+	GMT_MODULE_LIST			= -6,	/* mode for GMT_Call_Module to print list of all modern modules */
+	GMT_MODULE_CLASSIC_CORE	= -5,	/* mode for GMT_Call_Module to print list of all classic modules (core only) */
+	GMT_MODULE_LIST_CORE	= -4,	/* mode for GMT_Call_Module to print list of all modern modules (core only) */
 	GMT_MODULE_EXIST		= -3,	/* mode for GMT_Call_Module to return 0 if it exists */
 	GMT_MODULE_PURPOSE		= -2,	/* mode for GMT_Call_Module to print purpose of module, or all modules */
 	GMT_MODULE_OPT			= -1,	/* Gave linked list of option structures to GMT_Call_Module */
@@ -472,7 +471,7 @@ enum GMT_enum_geometry {
 	GMT_IS_PLP	= 7U,	/* Could be any one of POINT, LINE, POLY */
 	GMT_IS_SURFACE	= 8U,
 	GMT_IS_NONE	= 16U,	/* Non-geographical items like color palettes */
-	GMT_IS_TEXT	= 32U	/* Text strings which triggers ascii text reading */
+	GMT_IS_TEXT	= 32U	/* Text strings which triggers ASCII text reading */
 };
 
 /* These are two polygon modes */
@@ -486,8 +485,8 @@ enum GMT_enum_columns {
 	GMT_COL_FIX = 0,		/* Specify fixed numerical columns to read, anything beyond is considered trailing text */
 	GMT_COL_ADD = 1,		/* Add to current number of columns */
 	GMT_COL_SUB = 2,		/* Subtract from current number of columns */
-	GMT_COL_VAR = 3,		/* Input ascii records have variable number of columns */
-	GMT_COL_FIX_NO_TEXT = 4		/* Specify fixed numerical columns to read, skip anyt trailing text */
+	GMT_COL_VAR = 3,		/* Input ASCII records have variable number of columns */
+	GMT_COL_FIX_NO_TEXT = 4		/* Specify fixed numerical columns to read, skip any trailing text */
 };
 
 /* Return codes for GMT_Get_Record: */

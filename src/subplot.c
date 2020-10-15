@@ -64,7 +64,7 @@
 #define THIS_MODULE_PURPOSE	"Manage modern mode figure subplot configuration and selection"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"JRVXY"
+#define THIS_MODULE_OPTIONS	"-JRVXY"
 
 /* Control structure for subplot */
 
@@ -279,7 +279,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		Ctrl->In.mode = SUBPLOT_END;
 	else if (!strncmp (opt->arg, "set", 3U)) {	/* Explicitly called set row,col or set index */
 		opt = opt->next;	/* The row,col part */
-		if (opt) {	/* There is an argument */
+		if (opt && opt->option == GMT_OPT_INFILE) {	/* There is an argument without a leading -? option (thus flagged as input file) */
 			if (isdigit (opt->arg[0]) && (n = sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col)) < 1) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse row,col: %s\n", opt->arg);
 				return GMT_PARSE_ERROR;
@@ -293,6 +293,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		else {	/* Default to go to next subplot */
 			Ctrl->In.row = 0;
 			Ctrl->In.next = true;
+			if (opt) opt = opt->previous;	/* Since we will advance below */
 		}
 		Ctrl->In.mode = SUBPLOT_SET;
 	}
@@ -615,6 +616,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		/* Was both -R -J given? */
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Option -J: Requires -R as well!\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && Ctrl->F.mode == SUBPLOT_FIGURE, "Option -J: Requires -Fs to determine subplot height!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.reset_h && !GMT->common.J.active && !GMT->common.R.active[RSET], "Option -Fs: Requires -R -J to determine subplot height if specified as zero!\n");
 		if (GMT->common.J.active) {	/* Compute map height from -R -J */
 			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) n_errors++;
 			for (j = 0; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = GMT->current.map.height;
@@ -640,10 +642,10 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					Ctrl->S[GMT_X].extra = strdup (c);
 					c[0] = '\0';	/* Chop off for now */
 				}
-				for (k = px = 0; k < 6; k++) /* Build up x-axis args from seletion */
+				for (k = px = 0; k < 6; k++) /* Build up x-axis args from selection */
 					if (strchr (Bframe->arg, Bx_items[k])) Ctrl->S[GMT_X].axes[px++] = Bx_items[k];
 				if (Ctrl->S[GMT_X].axes[0] && Ctrl->S[GMT_X].active) gmt_str_tolower (Ctrl->S[GMT_X].axes);	/* Used to control the non-annotated axes */
-				for (k = py = 0; k < 6; k++)/* Build up y-axis args from seletion */
+				for (k = py = 0; k < 6; k++)/* Build up y-axis args from selection */
 					if (strchr (Bframe->arg, By_items[k])) Ctrl->S[GMT_Y].axes[py++] = By_items[k];
 				if (Ctrl->S[GMT_Y].axes[0] && Ctrl->S[GMT_Y].active) gmt_str_tolower (Ctrl->S[GMT_Y].axes);	/* Used to control the non-annotated axes */
 				if (c) c[0] = '+';	/* Restore modifiers */
@@ -694,15 +696,15 @@ void subplot_wipe_history_and_settings (struct GMTAPI_CTRL *API) {
 	gmtlib_get_graphics_item (API, &fig, &subplot, panel, &inset);	/* Determine the natural history level */
 	if (subplot && (P = gmt_subplot_info (API, fig))) {
 		for (row = 0; row < P->nrows; row++) for (col = 0; col < P->ncolumns; col++) {
-			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_HISTORY_FILE, fig, row, col);		
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_HISTORY_FILE, fig, row, col);
 			gmt_remove_file (API->GMT, file);
-			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_SETTINGS_FILE, fig, row, col);		
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_SETTINGS_FILE, fig, row, col);
 			gmt_remove_file (API->GMT, file);
 		}
 	}
-	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_HISTORY_FILE, fig);		
-	gmt_remove_file (API->GMT, file);	
-	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_SETTINGS_FILE, fig);		
+	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_HISTORY_FILE, fig);
+	gmt_remove_file (API->GMT, file);
+	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_SETTINGS_FILE, fig);
 	gmt_remove_file (API->GMT, file);
 }
 
@@ -733,7 +735,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 
 	/* When gmt subplot begin is called the gmt.history file for the figure or session may have a record of -R -J -X -Y
 	 * settings.  Once the subplot begin starts we may or may not be given -R -J -X -Y arguments.  If not, then we do not
-	 * want old history settings to leak into the subplot panels.  The past history is read during sessino creation in
+	 * want old history settings to leak into the subplot panels.  The past history is read during session creation in
 	 * GMT_Create_Session so at this point it is already stored in memory.  Hence we need to reset all of that before we
 	 * parse the common and specific arguments to this module */
 
@@ -759,6 +761,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		uint64_t seg;
 		double x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
 		double *cx = NULL, *cy = NULL, *px = NULL, *py = NULL, y_heading, fluff[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, GMT_LETTER_HEIGHT = 0.736;
+		double master_scale = (GMT->current.setting.map_frame_type == GMT_IS_INSIDE) ? 0.0 : 1.0;	/* THe 0 helps wipe any dimensions outside the panel to zero */
 		char **Bx = NULL, **By = NULL, *cmd = NULL, axes[3] = {""}, Bopt[GMT_LEN256] = {""};
 		char vfile[GMT_VF_LEN] = {""}, xymode = 'r';
 		bool add_annot, no_frame = false;
@@ -766,7 +769,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 
 		/* Determine if the subplot itself is an overlay of an existing plot */
 		sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
-		if (!access (file, F_OK)) {	/* Plot file already exists, so enter overlay mode if -X -Y nare ot set */
+		if (!access (file, F_OK)) {	/* Plot file already exists, so enter overlay mode if -X -Y are not set */
 			if (GMT->common.X.mode == 'a' && GMT->common.Y.mode == 'a')
 				xymode = 'a';
 			else {
@@ -782,14 +785,13 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		if (xymode == 'a') gmt_M_memcpy (off, GMT->current.setting.map_origin, 2, double);
 		sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
 		if (!access (file, F_OK))	{	/* Subplot information file already exists, two begin subplot commands? */
-			GMT_Report (API, GMT_MSG_ERROR, "Subplot information file already exists: %s\n", file);
-			GMT_Report (API, GMT_MSG_ERROR, "Please run 'gmt clear sessions' (or equivalent if from Julia, Matlab, Python, etc...) to solve this issue.\n");
-			Return (GMT_RUNTIME_ERROR);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Subplot information file exists from incomplete command and will be deleted: %s\n", file);
+			gmt_remove_file (API->GMT, file);
 		}
-		/* COmpute dimensions such as ticks and distance from tick to top of annotation etc */
-		tick_height   = MAX(0,GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]);	/* Allow for axis ticks */
-		annot_height  = (GMT_LETTER_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]);	/* Allow for space between axis and annotations */
-		label_height  = (GMT_LETTER_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset);
+		/* Compute dimensions such as ticks and distance from tick to top of annotation etc for outside annotticks.  If map_frame_type is inside then 0 */
+		tick_height   = master_scale * MAX(0,GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]);	/* Allow for axis ticks */
+		annot_height  = master_scale * (GMT_LETTER_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]);	/* Allow for space between axis and annotations */
+		label_height  = master_scale * (GMT_LETTER_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset);
 		title_height = (GMT_LETTER_HEIGHT * GMT->current.setting.font_title.size / PSL_POINTS_PER_INCH) + GMT->current.setting.map_title_offset;
 		y_header_off = GMT->current.setting.map_heading_offset;
 		if (Ctrl->In.no_B) tick_height = annot_height = 0.0;	/* No tick or annotations on subplot frames */
@@ -812,7 +814,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		fluff[GMT_Y] += (Ctrl->N.dim[GMT_Y] - 1) * (Ctrl->M.margin[YLO] + Ctrl->M.margin[YHI]);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After correcting for inside subplot margins: fluff = {%g, %g}\n", fluff[GMT_X], fluff[GMT_Y]);
 
-		/* ROW SETTINGS:  Limit tickmarks to 1 or 2 W/E axes per row or per subplot */
+		/* ROW SETTINGS:  Limit tick-marks to 1 or 2 W/E axes per row or per subplot */
 		/* Note: Usually, we will tick both the west and east side of a subplot.  With -SR in effect
 		 * we will have selected either the left, right, or both end sides (i.e., the two outer subplots).
 		 * However, this can be overridden by selecting "l" and/or "r" in the general -B string which controls
@@ -897,6 +899,14 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		/* Plottable area: */
 		width  = Ctrl->F.dim[GMT_X];
 		height = Ctrl->F.dim[GMT_Y];
+		if (height <= 0.0) {
+			GMT_Report (API, GMT_MSG_ERROR, "Subplot: The height of the overall subplot cannot be zero\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (width <= 0.0) {
+			GMT_Report (API, GMT_MSG_ERROR, "Subplot: The width of the overall subplot cannot be zero\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
 		y_heading = height + y_header_off + Ctrl->M.margin[YHI];
 		//y_heading = height + y_header_off;
 		if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {	/* Lots of debug calculations and reporting here */
@@ -1101,6 +1111,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		fprintf (fp, "# ORIGIN: %g %g\n", off[GMT_X], off[GMT_Y]);
 		fprintf (fp, "# DIMENSION: %g %g\n", width, height);
 		fprintf (fp, "# PARALLEL: %d\n", Ctrl->S[GMT_Y].parallel);
+		fprintf (fp, "# INSIDE: %d\n", (GMT->current.setting.map_frame_type == GMT_IS_INSIDE) ? 1 : 0);
 		if (Ctrl->C.active) {	/* Got common gaps setting */
 			gmt_M_memcpy (GMT->current.plot.panel.gap, Ctrl->C.gap, 4, double);
 			fprintf (fp, "# GAPS: %g %g %g %g\n", Ctrl->C.gap[XLO], Ctrl->C.gap[XHI], Ctrl->C.gap[YLO], Ctrl->C.gap[YHI]);
@@ -1207,7 +1218,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN|GMT_IS_REFERENCE, T, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			sprintf (command, "-R0/%g/0/%g -Jx1i -N -F+jBC+f%s %s -X%c%gi -Y%c%gi --GMT_HISTORY=false",
+			sprintf (command, "-R0/%g/0/%g -Jx1i -N -F+jBC+f%s %s -X%c%gi -Y%c%gi --GMT_HISTORY=readonly",
 				width, height, gmt_putfont (GMT, &GMT->current.setting.font_heading), vfile, xymode, GMT->current.setting.map_origin[GMT_X]-Ctrl->F.clearance[GMT_X], xymode, GMT->current.setting.map_origin[GMT_Y]-Ctrl->F.clearance[GMT_Y]);
 			if (Bopt[0] == ' ') strcat (command, Bopt);	/* The -B was set above, so include it in the command */
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for text: %s\n", command);
@@ -1217,7 +1228,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 				Return (API->error);
 		}
 		else {	/* plot is required, since nothing is plotted (except for possibly the canvas fill/outline) */
-			sprintf (command, "-R0/%g/0/%g -Jx1i -T -X%c%gi -Y%c%gi --GMT_HISTORY=false", width, height, xymode, GMT->current.setting.map_origin[GMT_X]-Ctrl->F.clearance[GMT_X], xymode, GMT->current.setting.map_origin[GMT_Y]-Ctrl->F.clearance[GMT_Y]);
+			sprintf (command, "-R0/%g/0/%g -Jx1i -T -X%c%gi -Y%c%gi --GMT_HISTORY=readonly", width, height, xymode, GMT->current.setting.map_origin[GMT_X]-Ctrl->F.clearance[GMT_X], xymode, GMT->current.setting.map_origin[GMT_Y]-Ctrl->F.clearance[GMT_Y]);
 			if (Bopt[0]) strcat (command, Bopt);	/* The -B was set above, so include it in the command */
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for : %s\n", command);
 			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
@@ -1226,7 +1237,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		if (fabs (Ctrl->F.clearance[GMT_X]) > 0.0 || fabs (Ctrl->F.clearance[GMT_Y]) > 0.0) {	/* Must reset origin */
 			width  -= 2.0 * Ctrl->F.clearance[GMT_X];
 			height -= 2.0 * Ctrl->F.clearance[GMT_Y];
-			sprintf (command, "-R0/%g/0/%g -Jx1i -T -X%c%gi -Y%c%gi --GMT_HISTORY=false", width, height, 'r', Ctrl->F.clearance[GMT_X], 'r', Ctrl->F.clearance[GMT_Y]);
+			sprintf (command, "-R0/%g/0/%g -Jx1i -T -X%c%gi -Y%c%gi --GMT_HISTORY=readonly", width, height, 'r', Ctrl->F.clearance[GMT_X], 'r', Ctrl->F.clearance[GMT_Y]);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot: %s\n", command);
 			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
 				Return (API->error);
@@ -1235,7 +1246,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, L, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			sprintf (command, "-R0/%g/0/%g -Jx1i -W%s %s --GMT_HISTORY=false", Ctrl->F.dim[GMT_X] + GMT->current.setting.map_origin[GMT_X], Ctrl->F.dim[GMT_Y] + GMT->current.setting.map_origin[GMT_Y], Ctrl->F.Lpen, vfile);
+			sprintf (command, "-R0/%g/0/%g -Jx1i -W%s %s --GMT_HISTORY=readonly", Ctrl->F.dim[GMT_X] + GMT->current.setting.map_origin[GMT_X], Ctrl->F.dim[GMT_Y] + GMT->current.setting.map_origin[GMT_Y], Ctrl->F.Lpen, vfile);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot: %s\n", command);
 			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
 				Return (API->error);
@@ -1246,7 +1257,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			sprintf (command, "0/%g/0/%g", Ctrl->F.dim[GMT_X] + GMT->current.setting.map_origin[GMT_X], Ctrl->F.dim[GMT_Y] + GMT->current.setting.map_origin[GMT_Y]);	/* Save page region */
 			GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_TEXT, command, D);
 			gmt_set_tableheader (API->GMT, GMT_OUT, true);	/* So header is written */
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, 0, NULL, file, D) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_NORMAL, NULL, file, D) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			gmt_set_tableheader (API->GMT, GMT_OUT, save);	/* Restore the state of affairs */
@@ -1354,13 +1365,13 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		/* Check if we should draw debug lines */
 		sprintf (file, "%s/gmt.subplotdebug.%d", API->gwf_dir, fig);
 		if (!access (file, R_OK)) {	/* Yes, must draw debug lines on top */
-			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, 0, NULL, file, NULL)) == NULL) {
+			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
 				Return (API->error);
 			}
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN|GMT_IS_REFERENCE, D, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			sprintf (command, "-R%s -Jx1i %s -L -Wfaint,red -Xa0i -Ya0i --GMT_HISTORY=false", D->table[0]->header[0], vfile);
+			sprintf (command, "-R%s -Jx1i %s -L -Wfaint,red -Xa0i -Ya0i --GMT_HISTORY=readonly", D->table[0]->header[0], vfile);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot to draw debug lines: %s\n", command);
 			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
 				Return (API->error);

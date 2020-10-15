@@ -18,6 +18,4 @@ gmt grdcut tmp.nc -R10/20/10/20 -Gt.nc
 gmt grdmath t.nc 0 MUL 10 ADD = t.nc
 gmt grd2xyz t.nc > tmp
 gmt grdedit tmp.nc -Ntmp
-gmt grd2xyz tmp.nc | gmt psxy -R$Rp -JX4i -Ss0.2c -Ct.cpt -O -K -B10f5 -BWSne -Y4.5i >> $ps
-gmt psxy -R$Rp -J -O -T >> $ps
-
+gmt grd2xyz tmp.nc | gmt psxy -R$Rp -JX4i -Ss0.2c -Ct.cpt -O -B10f5 -BWSne -Y4.5i >> $ps

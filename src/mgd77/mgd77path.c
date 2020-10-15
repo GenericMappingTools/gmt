@@ -144,7 +144,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct GMT_
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_mgd77path (void *V_API, int mode, void *args) {
-	uint64_t n_cruises = 0, i, n_paths;
+	uint64_t n_cruises = 0, i, n_paths = 0;
 	int error = 0;
 
 	char path[PATH_MAX] = {""}, **list = NULL;
@@ -187,6 +187,7 @@ EXTERN_MSC int GMT_mgd77path (void *V_API, int mode, void *args) {
 
 	if (error <= 0) {
 		GMT_Report (API, GMT_MSG_ERROR, "No cruises found\n");
+		MGD77_Path_Free (GMT, n_paths, list);
 		Return (GMT_NO_INPUT);
 	}
 	n_paths = (uint64_t)error;

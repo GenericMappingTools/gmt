@@ -731,7 +731,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 		gmt_set_column (GMT, GMT_OUT, GMT_Y, (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LAT);
 		gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
 	}
-	else {	/* Decode and set the various output column types */
+	else if (!Ctrl->N.active) {	/* Decode and set the various output column types in the geographic case */
 		for (col = 0; col < P.n_outputs; col++) {
 			switch (P.output_choice[col]) {
 				case 0: case 4: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LON);		break;
@@ -943,6 +943,9 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 		/* Now output generated track */
 
 		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)P.n_outputs, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			gmt_M_free (GMT, p_data);
+			gmt_M_free (GMT, Out);
+			if (Ctrl->Z.active) gmt_M_str_free (z_header);
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers data output failed */
@@ -950,17 +953,23 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 				gmt_M_str_free (p_data[rec].t);	gmt_M_free (GMT, p_data[rec].z);
 			}
 			gmt_M_free (GMT, p_data);
+			gmt_M_free (GMT, Out);
+			if (Ctrl->Z.active) gmt_M_str_free (z_header);
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Failed to enable data output and set access mode */
 			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_LINE) != GMT_NOERROR) {	/* Sets output geometry */
 				gmt_M_free (GMT, p_data);
+				gmt_M_free (GMT, Out);
+				if (Ctrl->Z.active) gmt_M_str_free (z_header);
 				Return (API->error);
 			}
 			for (rec = 0; rec < P.n_used; rec++) {
 				gmt_M_str_free (p_data[rec].t);	gmt_M_free (GMT, p_data[rec].z);
 			}
 			gmt_M_free (GMT, p_data);
+			gmt_M_free (GMT, Out);
+			if (Ctrl->Z.active) gmt_M_str_free (z_header);
 			Return (API->error);
 		}
 
@@ -1042,11 +1051,13 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 						P.want_z_output = z_set_auto = false;
 						for (col = 3; col < P.n_outputs; col++) P.output_choice[col-1] = P.output_choice[col];	/* Shuffle pqrs to the left */
 						P.n_outputs--;
-						for (col = 0; col < P.n_outputs; col++) {
-							switch (P.output_choice[col]) {
-								case 0: case 4: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LON);	break;
-								case 1: case 5: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LAT);	break;
-								default: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_FLOAT);	break;
+						if (!Ctrl->N.active) {
+							for (col = 0; col < P.n_outputs; col++) {
+								switch (P.output_choice[col]) {
+									case 0: case 4: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LON);	break;
+									case 1: case 5: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LAT);	break;
+									default: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_FLOAT);	break;
+								}
 							}
 						}
 					}
@@ -1060,7 +1071,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 					gmt_M_free (GMT, p_data);
 					Return (GMT_RUNTIME_ERROR);
 				}
-				else {	/* Must update col types since # of z values will need to be considered */
+				else if (!Ctrl->N.active) {	/* Must update col types since # of z values will need to be considered */
 					unsigned int k, kk;
 					P.n_z = n_cols - 2;
 					for (col = kk = 0; col < P.n_outputs; col++, kk++) {
@@ -1131,16 +1142,17 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
-		Return (API->error);
-	}
-
-	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
 
 	for (rec = 0; rec < P.n_used; rec++) {
 		gmt_M_str_free (p_data[rec].t);
 		gmt_M_free (GMT, p_data[rec].z);
 	}
+
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+		Return (API->error);
+	}
+
+	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
 
 	gmt_M_free (GMT, p_data);
 

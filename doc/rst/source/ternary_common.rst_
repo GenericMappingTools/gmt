@@ -16,11 +16,11 @@ Required Arguments
 
 Either **-M** (for dumping data) or **-R** and **-J** must be selected.
 
-Optional Arguments
-------------------
-
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
+
+Optional Arguments
+------------------
 
 .. _-B:
 
@@ -82,7 +82,7 @@ Optional Arguments
 
 .. _-S:
 
-.. include:: explain_symbols_only.rst_
+.. include:: explain_symbols_ternary.rst_
 
 .. _-U:
 

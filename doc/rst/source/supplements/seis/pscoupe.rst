@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt pscoupe** [ *files* ] |-J|\ *parameters*
+**gmt pscoupe** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-R| |-A|\ *parameters*
 |-S|\ *<format><scale>*\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]

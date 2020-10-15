@@ -7,7 +7,7 @@ steps:
 # To rebuild the cache, you have to change the date in the key list
 - task: Cache@2
   inputs:
-    key: $(Agent.OS) | vcpkg | 20200422
+    key: $(Agent.OS) | vcpkg | 20200905
     path: $(VCPKG_INSTALLATION_ROOT)/installed/
     cacheHitVar: CACHE_VCPKG_RESTORED
   displayName: Cache vcpkg libraries
@@ -18,13 +18,14 @@ steps:
     cd ${VCPKG_INSTALLATION_ROOT}
     git fetch --tags
     git tag
-    git checkout tags/2020.04
+    git checkout tags/2020.07
+    # bootstrap-vcpkg.bat
     # By default, vcpkg builds both release and debug configurations.
     # Set VCPKG_BUILD_TYPE to build release only to save half time
     echo 'set (VCPKG_BUILD_TYPE release)' >> ${VCPKG_INSTALLATION_ROOT}/triplets/${WIN_PLATFORM}.cmake
     cat ${VCPKG_INSTALLATION_ROOT}/triplets/${WIN_PLATFORM}.cmake
     # install libraries
-    vcpkg install netcdf-c gdal pcre fftw3[core,threads] clapack openblas --triplet ${WIN_PLATFORM}
+    vcpkg install netcdf-c gdal pcre2 fftw3[core,threads] clapack openblas --triplet ${WIN_PLATFORM}
   displayName: Install dependencies via vcpkg
   env:
     WIN_PLATFORM: "x64-windows"
@@ -46,7 +47,7 @@ steps:
 - bash: |
     set -x -e
     choco install ninja
-    choco install ghostscript
+    choco install ghostscript --version 9.50
   displayName: Install dependencies via chocolatey
 
 - bash: |
@@ -105,7 +106,7 @@ steps:
 # Cache the ${HOME}/.gmt directory, for docs and testing
 - task: Cache@2
   inputs:
-    key: cachedata | 20200607
+    key: cachedata | 20200820-3
     path: $(HOMEPATH)/.gmt
     cacheHitVar: CACHE_CACHEDATA_RESTORED
   displayName: Cache GMT remote data for testing
@@ -135,20 +136,14 @@ steps:
     gmt defaults -Vd
     gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
     gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
-    gmt grdimage @earth_relief_01d -JH10c -Baf -pdf map
+    gmt grdimage @earth_relief_01d -JH10c -Baf -Vd -pdf map
     gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
   displayName: Check a few simple commands
 
-# Download remote files, if not already cached
+# Download remote files, if not already cached [Windows agents always fail]
 - bash: |
     set -x -e
-    gmt get -Dcache
-    gmt which -Ga @earth_relief_30m @earth_relief_20m @earth_relief_15m \
-        @earth_relief_10m @earth_relief_10m_g @earth_relief_06m \
-        @earth_relief_05m_g @earth_relief_05m @earth_relief_04m \
-        @earth_relief_02m @earth_relief_01m
-    gmt which -Ga @earth_day_01d @earth_day_20m
-    gmt which -Ga @earth_night_20m
+    exit 1
   displayName: Download remote data
   condition: ne(variables['CACHE_CACHEDATA_RESTORED'], true)
 

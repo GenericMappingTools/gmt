@@ -94,7 +94,7 @@ may be specified in one of five ways, two of which are shown in Figure
    possibly the grid registration (see
    Section `Grid registration: The -r option`_).
 
-#. **-R**\ *code1,code2,...*\ [**+r**\|\ **R**\ [*incs*]]. This indirectly supplies
+#. **-R**\ *code1,code2,...*\ [**+e**\|\ **r**\|\ **R**\ [*incs*]]. This indirectly supplies
    the region by consulting the DCW (Digital Chart of the World) database and derives
    the bounding regions for one or more countries given by the codes.
    Simply append one or more comma-separated countries using the two-character
@@ -106,7 +106,8 @@ may be specified in one of five ways, two of which are shown in Figure
    the polygon(s): Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
    final region boundaries to be multiples of these steps [default is no adjustment].
    Alternatively, use **+R** to extend the region outward by adding these increments
-   instead [default is no extension].  As an example, **-R**\ *FR*\ **+r**\ 1 will select
+   instead, or **+e** which is like **+r** but it ensures that the bounding box extends
+   by at least 0.25 times the increment [no extension]. As an example, **-R**\ *FR*\ **+r**\ 1 will select
    the national bounding box of France rounded to nearest integer degree.
 
 #. **-R**\ *code*\ *x0*/*y0*/*nx*/*ny*.  This method can be used when creating
@@ -277,7 +278,7 @@ Map frame and axes annotations: The **-B** option
 
 This is potentially the most complicated option in GMT,
 but most examples of its usage are actually quite simple. We distinguish
-between to sets of information: Frame settings and Axes parameters.  These
+between two sets of information: Frame settings and Axes parameters.  These
 are set separately by their own **-B** invocations; hence multiple **-B**
 specifications may be specified. The frame settings covers things such
 as which axes should be plotted, canvas fill, plot title, and what type
@@ -286,23 +287,27 @@ tick, and gridline intervals, axes labels, and annotation units.
 
 The Frame settings are specified by
 
--  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*]
+-  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
 
 Here, the optional *axes* dictates which of the axes should be drawn
-and possibly annotated.  By default, all 4 map boundaries (or plot axes)
+and possibly annotated.  By default, all four map boundaries (or plot axes)
 are plotted (denoted **W**, **E**, **S**, **N**). To change this selection,
 append the codes for those you want (e.g., **WSn**). In this example,
 the lower case **n** denotes to draw the axis and (major and minor) tick
 marks on the "northern" (top) edge of the plot. The upper case **WS** will
 annotate the "western" and "southern" axes with numerals and plot the
 any axis labels in addition to draw axis/tick-marks.  For 3-D plots you can
-also specify **Z** or **z**.  By default a single vertical axes will then be
+also specify **Z** or **z**.  To *just* draw an axis without annotation and
+ticks you can use the **l**\ (eft), **r**\ (ight), **b**\ (ottom), **t**\ (op)
+and (for 3-D) **u**\ (p) codes. By default, a single vertical axes will then be
 plotted at the most suitable map corner.  You can override this by appending
 any combination of corner ids **1234**, where **1** represents the lower left
-corner and the order goes counter-clockwise.  Append **+b** to draw the outline
-of the 3-D box defined by **-R**; this modifier is also needed to display
-gridlines in the x–z, y–z planes.  You may paint the
-map canvas by appending the **+g**\ *fill* modifier [Default is no fill].
+corner and the order goes counter-clockwise.  Use **+w** to draw the outlines of
+the x-z and y-z planes [no outlines] and optionally append the *pen* to use
+[:term:`MAP_GRID_PEN_PRIMARY`]. Alternatively, append **+b** to also draw the front lines
+of the 3-D cube defined by **-R**.  You can paint the interior of the canvas with
+**+g**\ *fill* (this also sets fill for the two back-walls in 3-D).
+Use **+x**, **+y**, and **+z** to control the painting of planes *yz*, *xz* and *xy*, respectively [Default is no fill].
 Use **+i** to annotate an internal meridian or parallel when the axis that normally
 would be drawn and annotated does not exist (e.g., azimuthal map with 360-degree range
 has no latitude axis, and a global Hammer map has no longitude axis);
@@ -386,7 +391,7 @@ major and minor ticks and the grid lines, by not specifying the *stride*
 value. For example, **-Bafg** will select all three spacings
 automatically for both axes. In case of longitude–latitude plots, this
 will keep the spacing the same on both axes. You can also use
-**-Bafg/afg** to auto-select them separately. Also note that given the
+**-Bxafg -Byafg** to auto-select them separately. Also note that given the
 myriad ways of specifying time-axis annotations, the automatic selections
 may have to be overridden with manual settings to active exactly what you need.
 
@@ -1147,7 +1152,7 @@ the label string that goes with the current symbol or line, you can select
 from a series of modifiers that mirror the effect of control codes normally
 added to the *specfile* by hand.  For instance, a simple plot with two
 symbols can obtain a legend by using this option and modifiers and is shown
-in Figure :ref:`Auto Legend <auto_legend>`::
+in Figure :ref:`Auto Legend <auto_legend>`:
 
 .. literalinclude:: /_verbatim/GMT_autolegend.txt
 
@@ -1312,6 +1317,34 @@ spacing by
 Thus, given the same region (**-R**) and grid spacing, the
 pixel-registered grids have one less column and one less row than the
 gridline-registered grids; here we find nx = ny = 3.
+
+Switching registrations
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _Switch_Registrations:
+
+GMT offer ways to convert a pixel-registered grid to a gridline-registered grid.
+One way is to simply adjust the region of the grid by half the grid-spacing and
+toggle the registration in :doc:`/grdedit` **-T**.  This is a *non-destructive* way to convert the grid,
+but it does change the domain which may not be desirable depending on application.
+The other is to *resample* the grid at the other set of nodes via :doc:`/grdsample` **-T**.
+This approach leaves the region exactly the same but is *destructive* due to the loss
+of the higher data frequencies, as shown in Figure :ref:`Registration resampling <Grid_grid2pix>`.
+
+.. _Grid_grid2pix:
+
+.. figure:: /_images/GMT_grid2pix.*
+   :width: 500 px
+   :align: center
+
+   a) Cross-section of a grid along the *x*-axis for a constant value of *y*, showing just the Nyquist
+   *x*-component (heavy line) at its grid nodes (red circles).  Resampling this component half-way
+   between nodes (vertical lines) will always give zero (red triangles), hence this signal is lost,
+   unlike long wavelength components (thin line), which can be interpolated (blue triangles).
+   Intermediate wavelengths will experience attenuated amplitudes as well. b) Transfer function for
+   resampling data from a pixel-registered to a gridline-registered grid format illustrates the loss
+   of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
+   function of wavenumber :math:`k_j` [Marks and Smith, 2007].
 
 .. _option_-s:
 

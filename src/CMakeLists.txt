@@ -142,6 +142,7 @@ include_directories (${NETCDF_INCLUDE_DIR})
 find_package (CURL REQUIRED)
 include_directories (${CURL_INCLUDE_DIRS})
 list (APPEND GMT_OPTIONAL_LIBRARIES ${CURL_LIBRARIES})
+set (CURL_LIBRARY ${CURL_LIBRARIES} CACHE INTERNAL "")
 
 if (NOT DEFINED GMT_EXCLUDE_GDAL)
 	find_package (GDAL)
@@ -151,6 +152,15 @@ if (GDAL_FOUND)
 	include_directories (${GDAL_INCLUDE_DIR})
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${GDAL_LIBRARIES})
 endif (GDAL_FOUND)
+
+if (NOT DEFINED GMT_EXCLUDE_GEOS)
+	find_package (GEOS)
+endif (NOT DEFINED GMT_EXCLUDE_GEOS)
+if (GEOS_FOUND OR GEOS_LIBRARY)			# Because it fails to find GEOS on Win so I rely on ConfigUser.cmake settings
+	set (HAVE_GEOS TRUE CACHE INTERNAL "System has GEOS")
+	include_directories (${GEOS_INCLUDE_DIR})
+	list (APPEND GMT_OPTIONAL_LIBRARIES ${GEOS_LIBRARY})
+endif (GEOS_FOUND OR GEOS_LIBRARY)
 
 if (NOT DEFINED GMT_EXCLUDE_PCRE)
 	find_package (PCRE)
@@ -242,6 +252,7 @@ if (ZLIB_FOUND)
 	set (HAVE_ZLIB TRUE CACHE INTERNAL "System has ZLIB")
 	include_directories (${ZLIB_INCLUDE_DIRS})
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${ZLIB_LIBRARY})
+	set (ZLIB_LIBRARY ${ZLIB_LIBRARY} CACHE INTERNAL "")
 endif (ZLIB_FOUND)
 
 if (APPLE)
@@ -275,7 +286,7 @@ if (GLIB_FOUND AND GMT_USE_THREADS)
 	set (HAVE_GLIB_GTHREAD TRUE CACHE INTERNAL "System has GLIB component gthread")
 	include_directories (${GLIB_INCLUDE_DIRS})
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${GLIB_LIBRARIES})
-	set (GMT_CONFIG_GTHREAD_MESSAGE "enabled"
+	set (GMT_CONFIG_GTHREAD_MESSAGE "enabled (${GLIB_VERSION})"
 		CACHE INTERNAL "GTHREAD config message")
 endif (GLIB_FOUND AND GMT_USE_THREADS)
 if (GLIB_FOUND AND NOT GMT_USE_THREADS)
@@ -292,22 +303,10 @@ endif (GMT_USE_THREADS AND NOT GLIB_FOUND)
 
 
 ##
-##	Find GSHHG and DCW data needed by GMT
-##
-# Examples and tests depend on Shorelines
+##	Find pre-downloaded/pre-installed GSHHG and DCW data
+##  Will be automatically downloaded to user directory if not found during installing
 find_package (GSHHG)
-if (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
-	message (FATAL_ERROR "Cannot proceed without GSHHG Shorelines. "
-		"Need to either set GSHHG_ROOT or disable tests.")
-endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
-
-# Examples and tests depend on DCW
 find_package (DCW)
-if (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
-	message (FATAL_ERROR "Cannot proceed without DCW polygons. "
-		"Need to either set DCW_ROOT or disable tests."
-		"Obtain dcw-gmt-<version>.tar.gz from ftp://ftp.soest.hawaii.edu/gmt and make DCW_ROOT variable point to the directory where you unarchived the files")
-endif (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 
 
 ##
@@ -351,7 +350,7 @@ set (GMT_COMPAT_MODULES minmax gmtdp gmtstitch grdreformat ps2raster originator 
 
 # gmt core modules
 set (GMT_PROGS_SRCS batch.c blockmean.c blockmedian.c blockmode.c dimfilter.c docs.c filter1d.c
-	fitcircle.c gmt2kml.c gmtconnect.c gmtconvert.c gmtdefaults.c gmtget.c gmtinfo.c gmtlogo.c
+	fitcircle.c gmt2kml.c  gmtbinstats.c gmtconnect.c gmtconvert.c gmtdefaults.c gmtget.c gmtinfo.c gmtlogo.c
 	gmtmath.c gmtselect.c gmtsimplify.c gmtspatial.c gmtregress.c gmtset.c gmtvector.c gmtwhich.c
 	grd2cpt.c grd2kml.c grd2xyz.c grdblend.c grdclip.c grdcontour.c grdconvert.c grdcut.c grdedit.c
 	grdfft.c grdfill.c grdfilter.c grdgdal.c grdgradient.c grdhisteq.c grdimage.c grdinfo.c

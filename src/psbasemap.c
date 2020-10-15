@@ -31,7 +31,7 @@
 #define THIS_MODULE_MODERN_NAME	"basemap"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot base maps and frames"
-#define THIS_MODULE_KEYS	">X},>DA@AD)"
+#define THIS_MODULE_KEYS	">X},>DA"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfptxy" GMT_OPT("EZc")
 
@@ -192,8 +192,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 			case 'G':	/* Set canvas color */
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
-					GMT->current.map.frame.paint = true;
-					if (gmt_getfill (GMT, opt->arg, &GMT->current.map.frame.fill)) {
+					GMT->current.map.frame.paint[GMT_Z] = true;
+					if (gmt_getfill (GMT, opt->arg, &GMT->current.map.frame.fill[GMT_Z])) {
 						gmt_fill_syntax (GMT, 'G', NULL, " ");
 						n_errors++;
 					}
@@ -305,6 +305,7 @@ EXTERN_MSC int GMT_psbasemap (void *V_API, int mode, void *args) {
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
@@ -320,6 +321,8 @@ EXTERN_MSC int GMT_psbasemap (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->T.active) gmt_draw_map_rose (GMT, &Ctrl->T.rose);
 	if (Ctrl->D.active) gmt_draw_map_inset (GMT, &Ctrl->D.inset, false);
+
+	gmt_map_basemap (GMT);	/* Plot base map */
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 

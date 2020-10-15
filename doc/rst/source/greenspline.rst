@@ -65,15 +65,13 @@ when evaluating the output.
 Required Arguments
 ------------------
 
-None.
-
-Optional Arguments
-------------------
-
 *table*
     The name of one or more ASCII [or binary, see
     **-bi**] files holding the **x**, *w* data
     points. If no file is given then we read standard input instead.
+
+Optional Arguments
+------------------
 
 .. _-A:
 
@@ -115,7 +113,7 @@ Optional Arguments
     one per eigenvalue, and thus require a file name template with a C-format
     integer specification to be given via **-G**.  The **+m** modifier will
     write the contributions to the grid for each eigenvalue, while **+M**
-    will instead produce the cumulative sum of these contributions. 
+    will instead produce the cumulative sum of these contributions.
 
 .. _-D:
 

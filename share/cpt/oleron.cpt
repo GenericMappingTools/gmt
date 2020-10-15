@@ -1,13 +1,14 @@
 #
-# perceptually uniform topography colormap, by Fabio Crameri [H=0,C=RGB]
+# Perceptually uniform topography colormap, by Fabio Crameri [H,C=RGB]
 #
 #	www.fabiocrameri.ch/visualisation
 #
 # License: Creative Commons Attribution 4.0 International License
 # Copyright (c) 2018, Fabio Crameri All rights reserved.
 # Crameri, F., (2018). Scientific colour-maps. Zenodo. http://doi.org/10.5281/zenodo.1243862
+# This is Scientific Colour Maps version 6.0.4
 # Note: Original file converted to GMT version >= 5 CPT format.
-# Note: Range changed from 0-1 to -1/+1 to place hard hinge at zero.
+# Note: Range changed from 0-1 to -1/+1 to place hinge at zero.
 #
 #----------------------------------------------------------
 # COLOR_MODEL = RGB
@@ -139,10 +140,8 @@
 -0.035294	224/237/254	-0.027450	226/238/254
 -0.027450	226/238/254	-0.019608	227/240/254
 -0.019608	227/240/254	-0.011764	228/241/255
--0.011764	228/241/255	-0.003922	230/242/255
--0.003922	230/242/255	0		230/242/255
-0		26/76/0	0.003922	26/76/0
-0.003922	26/76/0	0.011764	29/77/0
+-0.011764	228/241/255	0.0			230/242/255
+0.0			26/76/0	0.011764	29/77/0
 0.011764	29/77/0	0.019608	31/78/0
 0.019608	31/78/0	0.027450	34/79/0
 0.027450	34/79/0	0.035294	37/79/0

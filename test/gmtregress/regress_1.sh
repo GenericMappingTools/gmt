@@ -38,5 +38,4 @@ echo 90 0.5 REDUCED MAJOR AXIS | gmt pstext -R -J -O -K -F+jTC+a90 -N -Dj0.2i -X
 echo 90 0.5 ORTHOGONAL | gmt pstext -R -J -O -K -F+jTC+a90 -N -Dj0.2i -Xa5.7i -Ya3.25i >> $ps
 echo 90 0.5 X ON Y | gmt pstext -R -J -O -K -F+jTC+a90 -N -Dj0.2i -Xa5.7i -Ya5.5i >> $ps
 echo 90 0.5 Y ON X | gmt pstext -R -J -O -K -F+jTC+a90 -N -Dj0.2i -Xa5.7i -Ya7.75i >> $ps
-echo -90 0.001 MISFIT | gmt pstext -R -J -O -K -F+jBC+a90 -N -Dj0.5i -Xa1.1i -Ya5.5i >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo -90 0.001 MISFIT | gmt pstext -R -J -O -F+jBC+a90 -N -Dj0.5i -Xa1.1i -Ya5.5i >> $ps

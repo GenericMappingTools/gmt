@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
+%%Title: GMT v6.2.0_bec0f3a_2020.10.04 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 27 12:16:26 2019
+%%CreationDate: Sun Oct  4 21:38:25 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -646,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -657,8 +658,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -668,13 +670,12 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -Baf '-B+tRed ellipse should repeat at west boundary' -R-280/80/-70/70 -JM6i -P -K -W3p,blue -Gred -Sei
-%@PROJ: merc -280.00000000 80.00000000 -70.00000000 70.00000000 -20037508.343 20037508.343 -11028513.631 11028513.631 +proj=merc +lon_0=-100 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%GMTBoundingBox: 72 72 432 237.77
+%@PROJ: merc -280.00000000 80.00000000 -70.00000000 70.00000000 -20037508.343 20037508.343 -11028513.631 11028513.631 +proj=merc +lon_0=-100 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: 72 72 432 237.769976539
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 8 W
 N 800 0 M 0 -83 D S
 N 800 3963 M 0 83 D S
@@ -700,6 +701,49 @@ N 7200 3484 M 83 0 D S
 N 0 3484 M -83 0 D S
 N 7200 3484 M 83 0 D S
 N 0 3484 M -83 0 D S
+/PSL_H_y 400 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(100è) sh add def
+3600 3963 PSL_H_y add M
+400 F0
+(Red ellipse should repeat at west boundary) bc Z
+800 -167 M 200 F0
+(120è) tc Z
+800 4129 M (120è) bc Z
+2000 -167 M (î180è) tc Z
+2000 4129 M (î180è) bc Z
+3200 -167 M (î120è) tc Z
+3200 4129 M (î120è) bc Z
+4400 -167 M (î60è) tc Z
+4400 4129 M (î60è) bc Z
+5600 -167 M (0è) tc Z
+5600 4129 M (0è) bc Z
+6800 -167 M (60è) tc Z
+6800 4129 M (60è) bc Z
+-167 479 M (î60è) mr Z
+7367 479 M (î60è) ml Z
+-167 1981 M (0è) mr Z
+7367 1981 M (0è) ml Z
+-167 3484 M (60è) mr Z
+7367 3484 M (60è) ml Z
+clipsave
+0 0 M
+7200 0 D
+0 3963 D
+-7200 0 D
+P
+PSL_clip N
+50 W
+0 0 1 C
+V
+{1 0 0 C} FS
+O1
+1800 900 30 6600 1981 Se
+1800 900 30 -600 1981 Se
+U
+PSL_cliprestore
+25 W
+0 A
 83 W
 1 A
 N -42 0 M 0 479 D S
@@ -816,47 +860,6 @@ N 7283 3963 M -7366 0 D S
 N 7283 4046 M -7366 0 D S
 N 0 4046 M 0 -4129 D S
 N -83 4046 M 0 -4129 D S
-/PSL_H_y 400 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(100è) sh add def
-3600 3963 PSL_H_y add M
-400 F0
-(Red ellipse should repeat at west boundary) bc Z
-800 -167 M 200 F0
-(120è) tc Z
-800 4129 M (120è) bc Z
-2000 -167 M (î180è) tc Z
-2000 4129 M (î180è) bc Z
-3200 -167 M (î120è) tc Z
-3200 4129 M (î120è) bc Z
-4400 -167 M (î60è) tc Z
-4400 4129 M (î60è) bc Z
-5600 -167 M (0è) tc Z
-5600 4129 M (0è) bc Z
-6800 -167 M (60è) tc Z
-6800 4129 M (60è) bc Z
--167 479 M (î60è) mr Z
-7367 479 M (î60è) ml Z
--167 1981 M (0è) mr Z
-7367 1981 M (0è) ml Z
--167 3484 M (60è) mr Z
-7367 3484 M (60è) ml Z
-clipsave
-0 0 M
-7200 0 D
-0 3963 D
--7200 0 D
-P
-PSL_clip N
-50 W
-0 0 1 C
-V
-{1 0 0 C} FS
-O1
-1800 900 30 6600 1981 Se
-1800 900 30 -600 1981 Se
-U
-PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -865,11 +868,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R-280/80/-70/70 -JM6i -O -W2p,white -Ggreen -Sei
-%@PROJ: merc -280.00000000 80.00000000 -70.00000000 70.00000000 -20037508.343 20037508.343 -11028513.631 11028513.631 +proj=merc +lon_0=-100 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc -280.00000000 80.00000000 -70.00000000 70.00000000 -20037508.343 20037508.343 -11028513.631 11028513.631 +proj=merc +lon_0=-100 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -889,7 +892,8 @@ PSL_cliprestore
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U

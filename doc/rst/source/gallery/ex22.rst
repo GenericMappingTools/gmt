@@ -1,6 +1,6 @@
 .. _example_22:
 
-(22) World-wide seismicity the last 7 days
+(22) World-wide seismicity the last month
 ------------------------------------------
 
 The next example uses the command-line tool **curl** to obtain a data
@@ -28,7 +28,7 @@ giving the URL where these and similar data can be obtained.
    :width: 500 px
    :align: center
 
-   World-wide seismicity the last 7 days.
+   World-wide seismicity the last month.
 
 Footnote
 ~~~~~~~~

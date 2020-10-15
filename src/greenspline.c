@@ -1574,6 +1574,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 		if (In->data == NULL) {
 			gmt_quit_bad_record (API, In);
+			for (p = 0; p < n; p++) gmt_M_free (GMT, X[p]);
+			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			Return (API->error);
 		}
 
@@ -1864,7 +1866,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			Return (API->error);
 		}
-		(void)gmt_set_outgrid (GMT, Ctrl->T.file, false, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
+		(void)gmt_set_outgrid (GMT, Ctrl->T.file, false, 0, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
 		n_ok = Grid->header->nm;
 		gmt_M_grd_loop (GMT, Grid, row, col, ij) if (gmt_M_is_fnan (Grid->data[ij])) n_ok--;
 		Z.nz = 1;

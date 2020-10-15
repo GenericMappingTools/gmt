@@ -14,7 +14,7 @@ Synopsis
 
 **gmt select** [ *table* ]
 [ |SYN_OPT-Area| ]
-[ |-C|\ *pointfile*\ **+d**\ *dist* ]
+[ |-C|\ *pointfile*\ \|\ *lon*/*lat*\ **+d**\ *dist* ]
 [ |-D|\ *resolution*\ [**+f**] ]
 [ |-E|\ [**fn**] ]
 [ |-F|\ *polygonfile* ]
@@ -56,13 +56,11 @@ information is used then you must supply **-fg** to tell **select** that your da
 Required Arguments
 ------------------
 
-None
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
 
 .. _-A:
 
@@ -71,12 +69,14 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *pointfile*\ **+d**\ *dist*
+**-C**\ *pointfile*\ \|\ *lon*/*lat*\ **+d**\ *dist*
     Pass all records whose location is within *dist* of any of the
     points in the ASCII file *pointfile*. If *dist* is zero then the 3rd
     column of *pointfile* must have each point's individual radius of
-    influence. Distances are Cartesian and in user units; specify
-    **-fg** to indicate spherical distances and append a distance unit
+    influence. . If you only have a single point then you can specify
+    *lon*/*lat* instead of *pointfile*.  Distances are Cartesian and in
+    user units; specify **-fg** to indicate spherical distances and
+    append a distance unit, even if the distance specified is 0.
     (see `Units`_). Alternatively, if **-R** and **-J** are used then
     geographic coordinates are projected to map coordinates (in cm,
     inch, or points, as determined by :term:`PROJ_LENGTH_UNIT`) before

@@ -38,7 +38,7 @@ Description
 -----------
 
 **splitxyz** reads a series of (x,y[,z]) records [or optionally
-(x,y,z,d,h); see **-S** option] from standard input [or *xyz[dh]file*]
+(x,y[,z],d,h); see **-S** option] from standard input [or *xy[z][dh]file*]
 and splits this into separate lists of (x,y[,z]) series, such that each
 series has a nearly constant azimuth through the x,y plane. There are
 options to choose only those series which have a certain orientation, to
@@ -50,11 +50,6 @@ divide a large x,y[,z] dataset into segments.
 Required Arguments
 ------------------
 
-none.
-
-Optional Arguments
-------------------
-
 *table*
     One or more ASCII [or binary, see **-bi**]
     files with 2, 3, or 5 columns holding (x,y,[z[,d,h]])
@@ -62,6 +57,9 @@ Optional Arguments
     non-decreasing, specify the **-S** option; default expects (x,y,z)
     only. If no files are specified, **splitxyz** will read from
     standard input.
+
+Optional Arguments
+------------------
 
 .. _-A:
 

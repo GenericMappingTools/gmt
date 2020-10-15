@@ -37,6 +37,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     filter1d
     fitcircle
     gmt2kml
+    gmtbinstats
     gmtconnect
     gmtconvert
     gmtdefaults
@@ -192,6 +193,7 @@ Core Modules
     - :doc:`filter1d`
     - :doc:`fitcircle`
     - :doc:`gmt2kml`
+    - :doc:`gmtbinstats`
     - :doc:`gmtconnect`
     - :doc:`gmtconvert`
     - :doc:`gmtdefaults`
@@ -488,6 +490,8 @@ Mathematical operations on tables or grids
 Convert or extract subsets of data
 ----------------------------------
 
++-----------------------+-----------------------+
+| :doc:`gmtbinstats`    | |gmtbinstats_purpose| |
 +-----------------------+-----------------------+
 | :doc:`gmtconnect`     | |gmtconnect_purpose|  |
 +-----------------------+-----------------------+

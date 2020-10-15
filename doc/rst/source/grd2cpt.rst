@@ -14,7 +14,7 @@ Synopsis
 
 **gmt grd2cpt** *grid* [ |-A|\ *transparency*\ [**+a**] ]
 [ |-C|\ *cpt* ] [ |-D|\ [**i**] ]
-[ |-E|\ [*nlevels*] ]
+[ |-E|\ [*nlevels*][**+c**][**+f**\ *file*] ]
 [ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**] ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
@@ -29,6 +29,9 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**] ]
 [ |-Z| ]
+[ |SYN_OPT-bo| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-o| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -37,7 +40,7 @@ Description
 -----------
 
 **grd2cpt** reads one or more grid files and writes a static color palette
-(CPT) file. In classic mode we write the CMT to standard output, while under
+(CPT) file. In classic mode we write the CPT to standard output, while under
 modern mode we simply save the CPT as the current session CPT (but see **-H**).
 The CPT is based on an existing dynamic
 master CPT of your choice, and the mapping from data value to
@@ -104,10 +107,14 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [*nlevels*]
+**-E**\ [*nlevels*][**+c**][**+f**\ *file*]
     Create a linear color table by using the grid z-range as the new
     limits in the CPT.  Alternatively, append *nlevels* and we will
-    resample the color table into *nlevels* equidistant slices.
+    resample the color table into *nlevels* equidistant slices. As an
+    option, append **+c** to estimate the cumulative density function
+    of the data and assign color levels accordingly.  if **+c** is used
+    the you may optionally append **+f** to save the CDF to *file*;
+    see **-bo** and **-o** for output formatting.
 
 .. _-F:
 
@@ -213,7 +220,16 @@ Optional Arguments
 **-Z**
     Force a continuous CPT [Default is discontinuous].
 
+.. |Add_-bo| replace:: [Default is 2]. This option
+    only applies if **-E** selects CDF output.
+.. include:: explain_-bo.rst_
+
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
+
 .. include:: explain_help.rst_
+
+.. include:: explain_-ocols.rst_
 
 .. include:: explain_grd_inout_short.rst_
 
@@ -268,6 +284,14 @@ file relief, run
    ::
 
     gmt grd2cpt mydata.nc -Crelief -L0/10000 -T0/200/20 > mydata.cpt
+
+To determine the empirical cumulative density function of a grid and
+create a CPT that would give equal area to each color in the image,
+and save the CDF to file as well. try::
+
+   gmt grd2cpt @earth_relief_10m -E11+c+fcdf.txt > cdf.cpt
+
+Here, cdf.txt would be the cumulative hypsometric curve for the Earth.
 
 .. include:: cpt_notes.rst_
 

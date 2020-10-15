@@ -53,6 +53,12 @@ enum gmt_enum_panel {
 	GMT_PANEL_OUTLINE	= 16
 };
 
+enum gmt_enum_scale_orig {
+	GMT_SCALE_ORIGIN_GIVEN = 0,
+	GMT_SCALE_ORIGIN_PLACE = 1,
+	GMT_SCALE_ORIGIN_MIDDLE = 2
+};
+
 /*! Definition of structure used for holding information about a reference point */
 struct GMT_REFPOINT {	/* Used to hold items relevant for a reference point */
 	double x;		/* X position of reference point */
@@ -113,6 +119,7 @@ struct GMT_MAP_PANEL {
 	double off[2];			/* Offset for background shaded rectangle (+s) */
 	double gap;			/* Space between main and secondary frame */
 	struct GMT_PEN pen1, pen2;	/* Pen for main and secondary frame outline */
+	struct GMT_PEN debug_pen;	/* Pen for debug lines */
 	struct GMT_FILL fill;		/* Frame fill */
 	struct GMT_FILL sfill;		/* Background shade */
 	bool clearance;			/* Used by pslegend since it has the -C option as well */
@@ -150,6 +157,7 @@ struct GMT_MAP_SCALE {
 	bool vertical;		/* Want a Cartesian vertical scale (i.e., for y-data) */
 	bool zdata;		/* z-data vertical scale (i.e., for z-data in pswiggle) */
 	int justify;		/* Justification of anchor point */
+	int origin_mode;	/* 0 gave scale origin, 1 select same as placement point, 2 use mid-plot location for scale origin */
 	char measure;		/* The unit, i.e., e|f|k|M|n|u */
 	char alignment;		/* Placement of label: t(op), b(ottom), l(eft), r(ight) */
 	char label[GMT_LEN128];	/* Alternative user-specified label */

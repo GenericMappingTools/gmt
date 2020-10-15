@@ -474,7 +474,7 @@ GMT_LOCAL void grdinfo_smart_increments (struct GMT_CTRL *GMT, double inc[], uns
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
-	int error = 0;
+	int error = 0, k_data;
 	unsigned int n_grds = 0, n_cols = 0, col, i_status, gtype, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
 	bool subset, delay, num_report;
 
@@ -576,6 +576,8 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (opt->option != '<') continue;	/* We are only processing filenames here */
 
 		gmt_set_cartesian (GMT, GMT_IN);	/* Reset since we may get a bunch of files, some geo, some not */
+		if ((k_data = gmt_remote_dataset_id (API, opt->arg)) != GMT_NOTSET || (k_data = gmt_get_tile_id (API, opt->arg)) != GMT_NOTSET)
+			gmt_set_geographic (GMT, GMT_IN);	/* Since this will be returned as a memory grid */
 
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {
 			Return (API->error);
@@ -1166,6 +1168,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	}
 
 	if (delay && GMT_Destroy_Data (API, &G) != GMT_NOERROR) {	/* Delayed destroy due to -D+n */
+		gmt_M_free (GMT, Out);
 		Return (API->error);
 	}
 
@@ -1175,11 +1178,11 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		gmt_M_str_free (projStr);
 	}
 
+	gmt_M_free (GMT, Out);
+
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
-
-	gmt_M_free (GMT, Out);
 
 	Return (GMT_NOERROR);
 }

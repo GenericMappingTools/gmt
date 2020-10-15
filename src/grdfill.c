@@ -258,7 +258,7 @@ GMT_LOCAL int grdfill_do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G
 		sprintf (method, "c");
 	sprintf (args, "%s -G%s -S%s -R%.16g/%.16g/%.16g/%.16g -I%.16g/%.16g -D%d", input, output, method, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], mode);
 	if (G->header->registration == GMT_GRID_PIXEL_REG) strcat (args, " -r");
-	strcat (args, " --GMT_HISTORY=false");
+	strcat (args, " --GMT_HISTORY=readonly");
    	/* Run the greenspline module */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Calling greenspline with args %s\n", args);
   	if (GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args)) {
@@ -632,14 +632,19 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 
 	if (Ctrl->L.active) {
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+			free(RG_orig_hist);
 			Return (API->error);
 		}
 	}
 	else if (hole_number) {	/* Must write the revised grid if there were any holes*/
-		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid))
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
+			free(RG_orig_hist);
 			Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR)
+		}
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+			free(RG_orig_hist);
 			Return (API->error);
+		}
 	}
 	else {
 		GMT_Report (API, GMT_MSG_WARNING, "No holes detected in grid - grid was not updated\n");

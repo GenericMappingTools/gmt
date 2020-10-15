@@ -67,6 +67,7 @@ struct GMT_LEGEND_ITEM {	/* Information about one item in a legend */
 	int just;			/* Legend placement [TR] */
 	char code;			/* Label justification code (L|C|R) [L] */
 	double size;			/* Fixed symbol size when otherwise cannot set it */
+	double size2;			/* 2nd size (height) for 2-D symbols */
 	double scale;			/* Scale all given sizes, including +s<length> of a line */
 	double width;			/* Override auto-width with a fixed legend width */
 	unsigned int ncols;		/* How many columns to use for symbols */

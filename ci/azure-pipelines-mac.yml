@@ -2,33 +2,12 @@
 
 steps:
 
-- bash: |
-    set -x -e
-    brew update
-    brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript || true
-  displayName: Install dependencies
+- bash: bash ci/install-dependencies-macos.sh
+  displayName: Install GMT dependencies
 
-- bash: |
-    set -x -e
-    brew install graphicsmagick || true
-  displayName: Install dependencies for running tests
-  condition: eq(variables['TEST'], true)
-
-- bash: |
-    set -x -e
-    brew install pngquant
-    pip3 install --user sphinx
-    echo "##vso[task.prependpath]$HOME/Library/Python/3.7/bin"
-    brew install graphicsmagick ffmpeg || true
-  displayName: Install dependencies for building documentation
+- bash: echo "##vso[task.prependpath]$HOME/Library/Python/3.9/bin"
+  displayName: Add sphinx to PATH
   condition: eq(variables['BUILD_DOCS'], true)
-
-- bash: |
-    set -x -e
-    # we need the GNU tar
-    brew install gnu-tar
-  displayName: Install dependencies for packaging
-  condition: eq(variables['PACKAGE'], true)
 
 - bash: |
     echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
@@ -62,7 +41,7 @@ steps:
 # Cache the ${HOME}/.gmt directory, for docs and testing
 - task: Cache@2
   inputs:
-    key: cachedata | 20200607
+    key: cachedata | 20200820-3
     path: $(HOME)/.gmt
     cacheHitVar: CACHE_CACHEDATA_RESTORED
   displayName: Cache GMT remote data for testing
@@ -94,20 +73,38 @@ steps:
     gmt defaults -Vd
     gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
     gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
-    gmt grdimage @earth_relief_01d -JH10c -Baf -pdf map
+    gmt grdimage @earth_relief_01d -JH10c -Baf -Vd -pdf map
     gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
   displayName: Check a few simple commands
 
 # Download remote files, if not already cached
 - bash: |
     set -x -e
+    # list of datasets used in tests
+    data="@earth_relief_01d \
+          @earth_relief_30m \
+          @earth_relief_20m \
+          @earth_relief_15m \
+          @earth_relief_10m @earth_relief_10m_g \
+          @earth_relief_06m \
+          @earth_relief_05m @earth_relief_05m_g \
+          @earth_relief_04m \
+          @earth_relief_02m
+          @earth_relief_01m \
+          @earth_day_01d \
+          @earth_day_20m \
+          @earth_night_20m \
+          @earth_age_06m \
+          @earth_mask_05m"
+    # Download remote data and cache files
+    # download remote data multiple times to make sure all are downloaded
+    gmt which -Ga $data
+    gmt which -Ga $data
+    gmt which -Ga $data
     gmt get -Dcache
-    gmt which -Ga @earth_relief_30m @earth_relief_20m @earth_relief_15m \
-        @earth_relief_10m @earth_relief_10m_g @earth_relief_06m \
-        @earth_relief_05m_g @earth_relief_05m @earth_relief_04m \
-        @earth_relief_02m @earth_relief_01m
-    gmt which -Ga @earth_day_01d @earth_day_20m
-    gmt which -Ga @earth_night_20m
+    # Download extra tiles for tests
+    # test/grdimage/rounding.sh
+    gmt grdcut -R3:57/4:18/44:00/44:15 @earth_relief_03s -G/dev/null
   displayName: Download remote data
   condition: ne(variables['CACHE_CACHEDATA_RESTORED'], true)
 
@@ -119,7 +116,7 @@ steps:
   displayName: Full tests
   env:
     CTEST_ARGS: "--output-on-failure --force-new-ctest-process -j4 --timeout 360"
-  condition: eq(variables['TEST'], true)
+  condition: eq(variables['RUN_TESTS'], true)
 
 # Publish the whole build directory for debugging purpose
 - task: CopyFiles@2
@@ -141,7 +138,7 @@ steps:
     bash <(curl -s https://codecov.io/bash)
   env:
     CODECOV_TOKEN: $(codecov.token)
-  condition: and(eq(variables['TEST'], true), succeededOrFailed())
+  condition: and(eq(variables['RUN_TESTS'], true), succeededOrFailed())
   displayName: Upload test coverage
 
 - bash: |

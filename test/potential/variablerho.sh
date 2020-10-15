@@ -58,6 +58,5 @@ gmt grdtrack -Gfaa.nc -ELM/RM -o0,2 -nn > faa.trk
 gmt psxy -R -J -O -K -W1p,blue faa.trk >> $ps
 echo "-256 250 FAA" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i -Gwhite -C+tO >> $ps
 echo "+256 250 CONSTANT DENSITY" | gmt pstext -R -J -O -K -F+jTR+f14p,blue -Dj0.1i -Gwhite -C+tO >> $ps
-echo "+256 250 VARIABLE DENSITY" | gmt pstext -R -J -O -K -F+jTR+f14p,red -Dj0.1i/0.4i -Gwhite -C+tO >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo "+256 250 VARIABLE DENSITY" | gmt pstext -R -J -O -F+jTR+f14p,red -Dj0.1i/0.4i -Gwhite -C+tO >> $ps
 rm -f vgg.trk faa.trk plateau.trk rho.trk rho.nc plateau.nc vgg.nc faa.nc

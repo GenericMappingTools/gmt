@@ -32,11 +32,18 @@
 /* Local functions */
 
 GMT_LOCAL GDALDatasetH gdal_open (struct GMT_CTRL *GMT, char *gdal_filename) {
-	char *file = NULL, path[PATH_MAX] = {""};
+	char *file = NULL, path[PATH_MAX] = {""}, *c = NULL;
 	if (gmtlib_found_url_for_gdal (gdal_filename))	/* A vis*** URL, pass to GDAL as is */
 		strncpy (path, gdal_filename, PATH_MAX-1);
-	else if (strchr(gdal_filename, ':'))		/* Assume it is a SUBDATASET */
-		strncpy (path, gdal_filename, PATH_MAX-1);
+	else if ((strlen(gdal_filename) > 2) && (c = strchr(&gdal_filename[2], ':'))) {		/* Assume it is a SUBDATASET */
+		if (GMT->parent->cache) {
+			c[0] = '\0';
+			sprintf (path, "%s:%s/%s", gdal_filename, GMT->session.CACHEDIR, &c[1]);
+			c[0] = ':';
+		}
+		else
+			strncpy (path, gdal_filename, PATH_MAX-1);
+	}
 	else if ((file = gmt_getdatapath (GMT, gdal_filename, path, R_OK)) == NULL) {	/* Local file not found */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to find %s.\n", gdal_filename);
 		return (NULL);
@@ -828,6 +835,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	if (error) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread failed to extract a Sub-region\n");
+		gmt_M_free (GMT, whichBands);
 		return (-1);
 	}
 
@@ -1215,16 +1223,33 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					break;
 				case GDT_Int16:
 					if (!prhs->f_ptr.active) Ctrl->Int16.active = true;
-					for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-						nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-						for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
-							if (prhs->f_ptr.active) {
-								int16_t tmpI16;
-								memcpy (&tmpI16, &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
-								Ctrl->Float.data[nn++] = tmpI16;
-							}
-							else
-								memcpy(&Ctrl->Int16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+					if (gmtlib_file_is_jpeg2000_tile (GMT->parent, gdal_filename) != GMT_NOTSET) {
+						/* PW: Special case of jp2 tile with possible NaNs that are not recognized without the .aux.xml file */
+						float f_NaN = GMT->session.f_NaN;	/* Shorthand */
+						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
+							nn = (pad_w+m)*(nXSize_withPad) + startColPos;
+							for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
+								if (prhs->f_ptr.active) {
+									int16_t tmpI16;
+									memcpy (&tmpI16, &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+									Ctrl->Float.data[nn++] = (tmpI16 == -32768) ? f_NaN : tmpI16;
+								}
+								else
+									memcpy(&Ctrl->Int16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+						}
+					}
+					else {	/* All other short int cases */
+						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
+							nn = (pad_w+m)*(nXSize_withPad) + startColPos;
+							for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
+								if (prhs->f_ptr.active) {
+									int16_t tmpI16;
+									memcpy (&tmpI16, &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+									Ctrl->Float.data[nn++] = tmpI16;
+								}
+								else
+									memcpy(&Ctrl->Int16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+						}
 					}
 					break;
 				case GDT_UInt16:

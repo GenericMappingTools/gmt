@@ -517,6 +517,8 @@ EXTERN_MSC int GMT_pspolar (void *V_API, int mode, void *args) {
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
  	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+	gmt_set_basemap_orders (GMT, Ctrl->N.active ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
+	gmt_map_basemap (GMT);	/* Lay down gridlines */
 
 	PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
 

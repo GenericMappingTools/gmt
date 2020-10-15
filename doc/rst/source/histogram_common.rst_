@@ -11,6 +11,9 @@ range parameters it will plot the histogram. A cumulative histogram may also be 
 Required Arguments
 ------------------
 
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
+
 .. _-J:
 
 **-Jx**
@@ -26,9 +29,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
 
 .. _-A:
 
@@ -56,6 +56,17 @@ Optional Arguments
     instead of above; use **+f** to change to another font than the default
     annotation font; use **+o** to change the offset between bar and label [6p];
     use **+r** to rotate the labels from horizontal to vertical.
+
+.. _-E:
+
+**-E**\ *width*\ [**+o**\ *offset*]
+    Use an alternative histogram bar width than the default set via **-T**,
+    and optionally shift all bars by an *offset*.  Here *width* is either
+    an alternative width in data units, or the user may append a valid plot
+    dimension unit (**c**\|\ **i**\|\ **p**) for a fixed dimension instead.
+    Optionally, all bins may be shifted along the axis by *offset*. As for
+    *width*, it may be given in data units of plot dimension units by appending
+    the relevant unit.
 
 .. _-F:
 
@@ -166,6 +177,9 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+.. |Add_-l| replace:: Symbol is a rectangle with width-to-height ratio of 3:2.  Use **+S**\ *width*\ [/*height*] to overwrite with custom width and optionally height.
+.. include:: explain_-l.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_

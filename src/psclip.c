@@ -210,8 +210,14 @@ GMT_LOCAL void psclip_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *P
 
 EXTERN_MSC int GMT_psclip (void *V_API, int mode, void *args) {
 	int error = 0;
-
+	unsigned int tbl, first, eo_flag = 0;
+	bool duplicate;
+	uint64_t row, seg, n_new;
 	double x0, y0;
+
+	struct GMT_FILL no_fill;
+	struct GMT_DATASET *D = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 
 	struct PSCLIP_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
@@ -241,103 +247,105 @@ EXTERN_MSC int GMT_psclip (void *V_API, int mode, void *args) {
 	else
 		GMT->current.ps.nclip = +1;		/* Program adds one new level of clipping */
 
-	if (Ctrl->C.active && !GMT->current.map.frame.init) {
+	if (Ctrl->C.active) {	/* End clipping and optionally place basemap */
+		if (GMT->current.map.frame.init && gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		psclip_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
+		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
+		gmt_map_basemap (GMT);
+		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
 		Return (GMT_NOERROR);
 	}
 
-	/* Here we have -R -J etc to deal with */
+	/* Here we have -R -J etc to deal with and will be setting up clipping */
 
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	if (Ctrl->C.active) psclip_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 	gmt_map_basemap (GMT);
 
-	if (!Ctrl->C.active) {	/* Start new clip_path */
-		unsigned int tbl, first = (Ctrl->N.active) ? 0 : 1, eo_flag = 0;
-		bool duplicate;
-		uint64_t row, seg, n_new;
-		struct GMT_FILL no_fill;
-		struct GMT_DATASET *D = NULL;
-		struct GMT_DATASEGMENT *S = NULL;
+	/* Start new clip_path */
+	first = (Ctrl->N.active) ? 0 : 1;
 
-		gmt_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
-		gmt_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
+	gmt_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
+	gmt_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
 #ifdef DEBUG
-		/* Change default step size (in degrees) used for interpolation of line segments along great circles (if requested) */
-		if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
+	/* Change default step size (in degrees) used for interpolation of line segments along great circles (if requested) */
+	if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 #endif
 
-		GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
-		if (Ctrl->N.active) {	/* Must clip map */
-			eo_flag = PSL_EO_CLIP;	/* Do odd/even clipping when we first lay down the map perimeter */
-			gmt_map_clip_on (GMT, GMT->session.no_rgb, 1 + eo_flag);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
+	if (Ctrl->N.active) {	/* Must clip map */
+		eo_flag = PSL_EO_CLIP;	/* Do odd/even clipping when we first lay down the map perimeter */
+		gmt_map_clip_on (GMT, GMT->session.no_rgb, 1 + eo_flag);
+	}
+	if (!Ctrl->T.active) {
+		struct GMT_DATASET_HIDDEN *DH = NULL;
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
+			Return (API->error);	/* Register data input */
 		}
-		if (!Ctrl->T.active) {
-			struct GMT_DATASET_HIDDEN *DH = NULL;
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
-				Return (API->error);	/* Register data input */
-			}
-			if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-				/* We don't want trailing text because we may need to resample lines below */
-				Return (API->error);
-			}
-			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
-				Return (API->error);
-			}
-			if (D->n_columns < 2) {
-				GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
-				Return (GMT_DIM_TOO_SMALL);
-			}
-			DH = gmt_get_DD_hidden (D);
-			duplicate = (DH->alloc_mode == GMT_ALLOC_EXTERNALLY && GMT->current.map.path_mode == GMT_RESAMPLE_PATH);
-			if (Ctrl->W.active) {
-				gmt_setpen (GMT, &Ctrl->W.pen);
-				gmt_setfill (GMT, &no_fill, 1);
-			}
+		if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			/* We don't want trailing text because we may need to resample lines below */
+			Return (API->error);
+		}
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+			Return (API->error);
+		}
+		if (D->n_columns < 2) {
+			GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
+			Return (GMT_DIM_TOO_SMALL);
+		}
+		DH = gmt_get_DD_hidden (D);
+		duplicate = (DH->alloc_mode == GMT_ALLOC_EXTERNALLY && GMT->current.map.path_mode == GMT_RESAMPLE_PATH);
+		if (Ctrl->W.active) {
+			gmt_setpen (GMT, &Ctrl->W.pen);
+			gmt_setfill (GMT, &no_fill, 1);
+		}
 
-			for (tbl = 0; tbl < D->n_tables; tbl++) {
-				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
-					S = D->table[tbl]->segment[seg];	/* Shortcut to current segment */
-					if (duplicate) {	/* Must duplicate externally allocated segment since it needs to be resampled below */
-						GMT_Report (API, GMT_MSG_DEBUG, "Must duplicate external memory polygon\n");
-						S = gmt_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
-					}
-					if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample if spacing is too coarse or stair-case is requested */
-						if ((n_new = gmt_fix_up_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode)) == 0) {
-							Return (GMT_RUNTIME_ERROR);
-						}
-						S->n_rows = n_new;
-						gmt_set_seg_minmax (GMT, D->geometry, 2, S);	/* Update min/max of x/y only */
-						GMT_Report (API, GMT_MSG_DEBUG, "Resample polygon, now has %d points\n", S->n_rows);
-					}
-					if (Ctrl->W.active)
-						gmt_geo_polygons (GMT, S);
-
-					for (row = 0; row < S->n_rows; row++) {	/* Apply map projection */
-						gmt_geo_to_xy (GMT, S->data[GMT_X][row], S->data[GMT_Y][row], &x0, &y0);
-						S->data[GMT_X][row] = x0; S->data[GMT_Y][row] = y0;
-					}
-					PSL_beginclipping (PSL, S->data[GMT_X], S->data[GMT_Y], (int)S->n_rows, GMT->session.no_rgb, first);
-					first = 0;
-					if (duplicate)	/* Free duplicate segment */
-						gmt_free_segment (GMT, &S);
+		for (tbl = 0; tbl < D->n_tables; tbl++) {
+			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
+				S = D->table[tbl]->segment[seg];	/* Shortcut to current segment */
+				if (duplicate) {	/* Must duplicate externally allocated segment since it needs to be resampled below */
+					GMT_Report (API, GMT_MSG_DEBUG, "Must duplicate external memory polygon\n");
+					S = gmt_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
 				}
-			}
-			if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
-				Return (API->error);
+				if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample if spacing is too coarse or stair-case is requested */
+					if ((n_new = gmt_fix_up_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode)) == 0) {
+						Return (GMT_RUNTIME_ERROR);
+					}
+					S->n_rows = n_new;
+					gmt_set_seg_minmax (GMT, D->geometry, 2, S);	/* Update min/max of x/y only */
+					GMT_Report (API, GMT_MSG_DEBUG, "Resample polygon, now has %d points\n", S->n_rows);
+				}
+				if (Ctrl->W.active)
+					gmt_geo_polygons (GMT, S);
+
+				for (row = 0; row < S->n_rows; row++) {	/* Apply map projection */
+					gmt_geo_to_xy (GMT, S->data[GMT_X][row], S->data[GMT_Y][row], &x0, &y0);
+					S->data[GMT_X][row] = x0; S->data[GMT_Y][row] = y0;
+				}
+				PSL_beginclipping (PSL, S->data[GMT_X], S->data[GMT_Y], (int)S->n_rows, GMT->session.no_rgb, first);
+				first = 0;
+				if (duplicate)	/* Free duplicate segment */
+					gmt_free_segment (GMT, &S);
 			}
 		}
-
-		/* Finalize the composite polygon clip path */
-		PSL_beginclipping (PSL, NULL, NULL, 0, GMT->session.no_rgb, 2 + first + eo_flag);
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
+			Return (API->error);
+		}
 	}
 
+	/* Finalize the composite polygon clip path */
+	PSL_beginclipping (PSL, NULL, NULL, 0, GMT->session.no_rgb, 2 + first + eo_flag);
+
+	gmt_map_basemap (GMT);
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 
