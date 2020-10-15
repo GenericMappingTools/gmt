@@ -509,7 +509,7 @@ GMT_LOCAL bool pshistogram_new_syntax (struct GMT_CTRL *GMT, char *L, char *T, c
 	if (w_val == 0.0) return true;	/* Must have given a zero pen width (faint) */
 	if (fabs (rint (t_val) - t_val)) return true;	/* Argument to -T is not an integer, hence new style */
 	if (t_val > 5) {	/* Here we must guess that 6 is too large to be a column entry and hence it is a new syntax */
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Cannot tell if -T%s -W%s is new or deprecated syntax; selected new.\n", T, W);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Cannot tell if -T%s -W%s is new or deprecated syntax; selected new.\n", T, W);
 		return true;
 	}
 	else {
