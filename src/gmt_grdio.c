@@ -99,7 +99,7 @@ GMT_LOCAL inline struct GMT_GRID    * gmtgrdio_get_grid_data (struct GMT_GRID *p
 GMT_LOCAL inline struct GMT_IMAGE   * gmtgrdio_get_image_data (struct GMT_IMAGE *ptr) {return (ptr);}
 
 /*! gmt_M_grd_get_size computes grid size including the padding, and doubles it if complex values */
-GMT_LOCAL size_t gmt_grd_get_size (struct GMT_GRID_HEADER *h) {
+GMT_LOCAL size_t gmtgrdio_grd_get_size (struct GMT_GRID_HEADER *h) {
 	return (((((h->complex_mode & GMT_GRID_IS_COMPLEX_MASK) > 0) + 1ULL) * h->mx * h->my) * h->n_layers);
 }
 
