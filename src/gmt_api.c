@@ -10019,7 +10019,7 @@ int GMT_Put_Layers (void *V_API, struct GMT_GRID_HEADER *header, unsigned int n_
 	if (layer == NULL) return_error (API, GMT_PTR_IS_NULL);	/* Error if data is NULL */
 	if (n_layers == 0) return_error (API, GMT_VALUE_NOT_SET);	/* Error if no layers */
 
-	API = api_get_api_ptr (V_API);
+	API = gmtapi_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 	header->n_layers = n_layers;
 	if (header->layer) gmt_M_free (API->GMT, header->layer);	/* Free whatever was there */
