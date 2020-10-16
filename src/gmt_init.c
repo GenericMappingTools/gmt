@@ -13021,7 +13021,9 @@ GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, 
 
 	options = *in_options;
 
-	if (!strncmp (name, "gmtinfo", 7U)) return false;	/* Does not ever return PS */
+	if (!strncmp (name, "gmtinfo", 7U)) return false;	/* Does not ever produce PS */
+	if (!strncmp (name, "gmtread", 7U)) return false;	/* Does not ever produce PS */
+	if (!strncmp (name, "gmtwrite", 8U)) return false;	/* Does not ever produce PS */
 	if (!strncmp (name, "gmtbinstats", 11U)) return false;	/* Does not ever return PS */
 
 	/* Must do more specific checking since some of the PS producers take options that turns them into other things... */
