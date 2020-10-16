@@ -909,6 +909,7 @@ bool gmtlib_is_color (struct GMT_CTRL *GMT, char *word) {
 
 	n = (int)strlen (word);
 	if (n == 0) return (false);
+	if (strchr (word, '@')) return (true);	/* Transparency means we have a color */
 
 	if (word[0] == '#') return (true);		/* Probably #rrggbb */
 	if (gmt_colorname2index (GMT, word) >= 0) return (true);	/* Valid color name */
