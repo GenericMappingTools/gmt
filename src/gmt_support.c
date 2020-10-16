@@ -902,13 +902,14 @@ bool gmtlib_is_color (struct GMT_CTRL *GMT, char *word) {
 	int i, k, n, n_hyphen = 0, n_slashes = 0;
 
 	/* Returns true if we are sure the word is a color string - else false.
-	 * color syntax is <r/g/b>|<h-s-v>|<c/m/y/k>|<colorname>.
+	 * color syntax is <r/g/b>|<h-s-v>|<c/m/y/k>|<colorname>[@transparency].
 	 * NOTES: 1) <gray> is excluded since this function is called in places where
 	 *  a single integer may be used for font size or pen width...
 	 *        2) We are not checking if the values are kosher; just that they follow the pattern  */
 
 	n = (int)strlen (word);
 	if (n == 0) return (false);
+	if (strchr (word, '@')) return (true);	/* Transparency means we have a color */
 
 	if (word[0] == '#') return (true);		/* Probably #rrggbb */
 	if (gmt_colorname2index (GMT, word) >= 0) return (true);	/* Valid color name */
