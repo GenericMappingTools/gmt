@@ -441,8 +441,7 @@ EXTERN_MSC int GMT_vs30 (void *V_API, int mode, void *args) {
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Writing output file...\n");
-	if (GMT_Write_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE,
-				GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Gout) != 0)
+	if (GMT_Write_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Gout) != 0)
 		Return (API->error);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done.\n");
