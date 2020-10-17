@@ -21,21 +21,21 @@ jobs:
         run: |
           cd src/
           bash gmt_make_PSL_strings.sh
-          if [ $(git ls-files -m) ]; then git --no-pager diff HEAD; exit 1; fi
+          if [[ $(git ls-files -m) ]]; then git --no-pager diff HEAD; exit 1; fi
           cd ..
 
       - name: Check gmt_enum_dict.h
         run: |
           cd src/
           bash gmt_make_enum_dicts.sh
-          if [ $(git ls-files -m) ]; then git --no-pager diff HEAD; exit 1; fi
+          if [[ $(git ls-files -m) ]]; then git --no-pager diff HEAD; exit 1; fi
           cd ..
 
       - name: Check module purposes
         run: |
           cd src/
           bash gmt_make_module_purpose.sh
-          if [ $(git ls-files -m) ]; then git --no-pager diff HEAD; exit 1; fi
+          if [[ $(git ls-files -m) ]]; then git --no-pager diff HEAD; exit 1; fi
           cd ..
 
       - name: Check GMT version year
@@ -43,3 +43,16 @@ jobs:
           current_year=$(date +%Y)
           gmt_version_year=$(grep GMT_VERSION_YEAR cmake/ConfigDefault.cmake | awk -F'"' '{print $2}')
           if [ "$current_year" != "$gmt_version_year" ]; then exit 1; fi
+
+      - name: Check execute permission of bash scripts
+        run: |
+          error=0
+          echo "Following bash scripts may not have execute permission:"
+          # exclude share/tools/gmt_functions.sh
+          for file in $(find . -name "*.sh" ! -path "./share/tools/gmt_functions.sh"); do
+            if [[ ! -x "$file" ]]; then
+              ((++error))
+              echo "$error: $file"
+            fi
+          done
+          exit $error

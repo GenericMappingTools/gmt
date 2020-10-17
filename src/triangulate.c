@@ -530,6 +530,7 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "No data points given - so no triangulation can take effect\n");
 		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 		if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+		if (Ctrl->C.active) {gmt_M_free (GMT, hh); gmt_M_free (GMT, vv); }
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -543,8 +544,13 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Do Delaunay optimal triangulation on projected coordinates\n");
 
 		if (Ctrl->Q.active) {
-			if ((V = gmt_voronoi (GMT, xxp, yyp, n, GMT->current.proj.rect, Ctrl->Q.mode)) == NULL)
+			if ((V = gmt_voronoi (GMT, xxp, yyp, n, GMT->current.proj.rect, Ctrl->Q.mode)) == NULL) {
+				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+				if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+				gmt_M_free (GMT, xxp);	gmt_M_free (GMT, yyp);
+				if (Ctrl->C.active) {gmt_M_free (GMT, hh); gmt_M_free (GMT, vv); }
 				Return (GMT_RUNTIME_ERROR);
+			}
 		}
 		else
 			np = gmt_delaunay (GMT, xxp, yyp, n, &link);

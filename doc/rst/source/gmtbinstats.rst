@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt gmtbinstats** [ *table* ] |-G|\ *out_grdfile*
+**gmt gmtbinstats** [ *table* ] |-G|\ *outgrid*
 |SYN_OPT-I|
 |-C|\ **a**\|\ **d**\|\ **g**\|\ **i**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **r**\|\ **s**\|\ **u**\|\ **U**\|\ **z**
 |SYN_OPT-R|
@@ -52,6 +52,12 @@ hexagonal tiling instead or a rectangular grid layout.
 Required Arguments
 ------------------
 
+*table*
+    A 2-4 column ASCII file(s) [or binary, see
+    **-bi**] holding (x,y[,z][,w]) data values. You must use **-W**
+    to indicate that you have weights.  Only **-Cn** will accept 2 columns only.
+    If no file is specified, **gmtbinstats** will read from standard input.
+
 .. _-C:
 
 **-C**\ **a**\|\ **d**\|\ **g**\|\ **i**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **r**\|\ **s**\|\ **u**\|\ **U**\|\ **z**
@@ -68,7 +74,7 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *out_grdfile*
+**-G**\ *outgrid*
     Give the name of the output grid file.
 
 .. _-I:
@@ -82,12 +88,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-*table*
-    A 2-4 column ASCII file(s) [or binary, see
-    **-bi**] holding (x,y[,z][,w]) data values. You must use **-W**
-    to indicate that you have weights.  Only **-Cn** will accept 2 columns only.
-    If no file is specified, **gmtbinstats** will read from standard input.
 
 .. _-E:
 

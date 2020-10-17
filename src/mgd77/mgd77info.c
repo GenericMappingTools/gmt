@@ -344,10 +344,14 @@ EXTERN_MSC int GMT_mgd77info (void *V_API, int mode, void *args) {
 
 		if (read_file && MGD77_Read_File (GMT, list[argno], &M, D)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading header & data for cruise %s\n", list[argno]);
+			MGD77_Close_File (GMT, &M);
+			MGD77_Free_Dataset (GMT, &D);
 			Return (GMT_DATA_READ_ERROR);
 		}
 		if (!read_file && MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading header sequence for cruise %s\n", list[argno]);
+			MGD77_Close_File (GMT, &M);
+			MGD77_Free_Dataset (GMT, &D);
 			Return (GMT_DATA_READ_ERROR);
 		}
 

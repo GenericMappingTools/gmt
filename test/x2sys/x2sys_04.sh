@@ -33,8 +33,7 @@ gmt grdimage ss_gridded_fix1.nc -Iss_gridded_fix1_int.nc -Ei -JM5.5i -P -K -Cfaa
 gmt x2sys_report -TTEST -Cz COE_orig.txt -Lcorrections.txt -A > /dev/null
 gmt x2sys_datalist -TTEST -A -Lcorrections.txt =bad.lis -Flon,lat,z | gmt blockmean -R$R -I1m | gmt surface -R$R -I1m -Gss_gridded_fix2.nc -T0.25
 gmt grdgradient ss_gridded_fix2.nc -Ne0.75 -A65 -fg -Gss_gridded_fix2_int.nc
-gmt grdimage ss_gridded_fix2.nc -Iss_gridded_fix2_int.nc -Ei -JM5.5i -O -K -Cfaa.cpt -B1 -BWSne -Y-4.5i --MAP_FRAME_WIDTH=3p --FORMAT_GEO_MAP=dddF >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt grdimage ss_gridded_fix2.nc -Iss_gridded_fix2_int.nc -Ei -JM5.5i -O -Cfaa.cpt -B1 -BWSne -Y-4.5i --MAP_FRAME_WIDTH=3p --FORMAT_GEO_MAP=dddF >> $ps
 
 if [ ! "X$OLDX" = "X" ]; then	# Reset prior setting
 	export X2SYS_HOME=$OLDX

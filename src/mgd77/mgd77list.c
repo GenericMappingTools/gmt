@@ -867,6 +867,7 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 	if (n_paths <= 0) {
 		GMT_Report (API, GMT_MSG_ERROR, "No cruises given\n");
+		MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 		Return (GMT_NO_INPUT);
 	}
 
@@ -881,7 +882,7 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 				MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 				Return (GMT_FILE_NOT_FOUND);
 			}
-			Ctrl->L.file = path;
+			Ctrl->L.file = strdup (path);
 		}
 		n_items = MGD77_Scan_Corrtable (GMT, Ctrl->L.file, list, n_paths, M.n_out_columns, M.desired_column, &item_names, 2);
 	}
@@ -1039,7 +1040,7 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "No default MGD77 Correction table (%s) found!\n", path);
 				Return (GMT_FILE_NOT_FOUND);
 			}
-			Ctrl->L.file = path;
+			Ctrl->L.file = strdup (path);
 		}
 		MGD77_Parse_Corrtable (GMT, Ctrl->L.file, list, n_paths, M.n_out_columns, M.desired_column, 2, &CORR);
 	}

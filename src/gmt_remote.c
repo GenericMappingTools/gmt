@@ -168,7 +168,7 @@ GMT_LOCAL int gmtremote_remove_item (struct GMTAPI_CTRL *API, char *path, bool d
 #ifdef _WIN32
 		char *t = gmt_strrep (path, "/", "\\");	/* DOS rmdir needs paths with back-slashes */
 		strcpy (del_cmd, "rmdir /s /q ");
-		strcat (del_cmd, t);
+		strncat (del_cmd, t, PATH_MAX-1);
 		gmt_M_str_free (t);
 #else
 		sprintf (del_cmd, "rm -rf %s", path);
@@ -419,7 +419,7 @@ GMT_LOCAL void gmtremote_display_attribution (struct GMTAPI_CTRL *API, int key, 
 		if ((c = strrchr (API->GMT->session.DATASERVER, '/')))	/* Found last slash in http:// */
 			strcpy (name, ++c);
 		else /* Just in case */
-			strcpy (name, API->GMT->session.DATASERVER);
+			strncpy (name, API->GMT->session.DATASERVER, GMT_LEN128-1);
 		if ((c = strchr (name, '.'))) c[0] = '\0';	/* Chop off stuff after the initial name */
 		gmt_str_toupper (name);
 		GMT_Report (API, GMT_MSG_NOTICE, "Remote data courtesy of GMT data server %s [%s]\n\n", name, API->GMT->session.DATASERVER);
@@ -1007,7 +1007,8 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 		}
 		else {	/* Must be cache file */
 			if (GMT->session.CACHEDIR == NULL) goto not_local;	/* Cannot have cache data if no cache directory created yet */
-			snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.CACHEDIR, &file[1]);	/* This is where all cache files live */
+			clean_file = gmt_get_filename (API, file, "honsuU");	/* Strip off any file modifier or netCDF directives */
+			snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.CACHEDIR, &clean_file[1]);	/* This is where all cache files live */
 			if ((c = strchr (local_path, '=')) || (c = strchr (local_path, '?'))) {
 				was = c[0];	c[0] = '\0';
 			}
@@ -1018,8 +1019,9 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 			}
 			if (c) c[0] = was;
 		}
-		GMT_Report (API, GMT_MSG_DEBUG, "Remote file %s exists locally as %s\n", file, local_path);
+		GMT_Report (API, GMT_MSG_DEBUG, "Remote file %s exists locally as %s\n", clean_file, local_path);
 		remote_path[0] = '\0';	/* No need to get from elsewhere */
+		if (clean_file)	gmt_M_str_free (clean_file);
 		return GMT_NOERROR;
 
 not_local:	/* Get here if we failed to find a remote file already on disk */
@@ -1083,6 +1085,7 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 				break;
 		}
 		if (jp2_file) gmt_M_str_free (jp2_file);
+		if (clean_file)	gmt_M_str_free (clean_file);
 		GMT_Report (API, GMT_MSG_DEBUG, "Get remote file %s and write to %s\n", remote_path, local_path);
 
 		return GMT_NOERROR;
@@ -1145,7 +1148,7 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 
 int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file) {
 	/* Detect if a file matches the name <path>/[N|S]yy[E|W]xxx.tag.jp2 (e.g., N22W160.earth_relief_01m_p.jp2) */
-	char *c, tmp[GMT_LEN64] = {""};
+	char *c, tmp[PATH_MAX] = {""};
 	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* Bad argument */
 	if ((c = strrchr (file, '/')) == NULL)	/* Get place of the last slash */
 		sprintf (tmp, "@%s", file);	/* Now should have something like @N22W160.earth_relief_01m_p.jp2 */

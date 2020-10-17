@@ -33,5 +33,4 @@ gmt psxy -R -J -O -K bworth_rn.txt -Sc0.1c -Gblue -Ey >> $ps
 gmt psxy -R -J -O -K bworth_rn.txt -Wfaint,blue >> $ps
 gmt psxy -R -J -O -K bworth_brn.txt -Sc0.1c -Ggreen -Ey >> $ps
 gmt psxy -R -J -O -K bworth_brn.txt -W0.25p >> $ps
-gmt psxy -R -J -O -K curven.txt -W0.5p,red >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt psxy -R -J -O curven.txt -W0.5p,red >> $ps

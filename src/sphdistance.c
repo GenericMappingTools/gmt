@@ -59,6 +59,9 @@ struct SPHDISTANCE_CTRL {
 	struct SPHDISTANCE_C {	/* -C */
 		bool active;
 	} C;
+	struct SPHDISTANCE_D {	/* -D for variable tension */
+		bool active;
+	} D;
 	struct SPHDISTANCE_E {	/* -Ed|n|z[<dist>] */
 		bool active;
 		unsigned int mode;
@@ -136,7 +139,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "\t==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s [-C] [-En|z|d[<dr>]]\n", name, GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s [-C] [-D] [-En|z|d[<dr>]]\n", name, GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<unit>] [-N<nodetable>] [-Q<voronoitable>] [%s] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -152,6 +155,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Suppress connecting Voronoi arcs using great circles, i.e., connect by straight lines,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   unless m or p is appended to first follow meridian then parallel, or vice versa.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory]. Not used with -Q.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Delete any duplicate points [Default assumes there are no duplicates].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify the quantity that should be assigned to the grid nodes:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -En The Voronoi polygon ID.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ez The z-value of the Voronoi center node (natural NN gridding).\n");
@@ -192,10 +196,7 @@ static int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct GM
 				Ctrl->C.active = true;
 				break;
 			case 'D':
-				if (gmt_M_compat_check (GMT, 4))
-					GMT_Report (API, GMT_MSG_COMPAT, "-D option is deprecated; duplicates are automatically removed.\n");
-				else
-					n_errors += gmt_default_error (GMT, opt->option);
+				Ctrl->D.active = true;
 				break;
 			case 'E':
 				Ctrl->E.active = true;
@@ -408,22 +409,24 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 
-			/* Data record to process - avoid duplicate points as gmt_stripack_lists cannot handle that */
+			/* Data record to process - avoid duplicate points with -D as gmt_stripack_lists cannot handle that */
 			in = In->data;	/* Only need to process numerical part here */
 
-			if (first) {	/* Beginning of new segment; keep track of the very first coordinate in case of duplicates */
-				first_x = prev_x = in[GMT_X];	first_y = prev_y = in[GMT_Y];
-			}
-			else {	/* Look for duplicate point at end of segments that replicate start point */
-				if (in[GMT_X] == first_x && in[GMT_Y] == first_y) {	/* If any point after the first matches the first */
-					n_dup++;
-					continue;
+			if (Ctrl->D.active) {	/* Check for duplicates */
+				if (first) {	/* Beginning of new segment; keep track of the very first coordinate in case of duplicates */
+					first_x = prev_x = in[GMT_X];	first_y = prev_y = in[GMT_Y];
 				}
-				if (n && in[GMT_X] == prev_x && in[GMT_Y] == prev_y) {	/* Identical neighbors */
-					n_dup++;
-					continue;
+				else {	/* Look for duplicate point at end of segments that replicate start point */
+					if (in[GMT_X] == first_x && in[GMT_Y] == first_y) {	/* If any point after the first matches the first */
+						n_dup++;
+						continue;
+					}
+					if (n && in[GMT_X] == prev_x && in[GMT_Y] == prev_y) {	/* Identical neighbors */
+						n_dup++;
+						continue;
+					}
+					prev_x = in[GMT_X];	prev_y = in[GMT_Y];
 				}
-				prev_x = in[GMT_X];	prev_y = in[GMT_Y];
 			}
 
 			/* Convert lon,lat in degrees to Cartesian x,y,z triplets */
@@ -447,7 +450,15 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 		if (!Ctrl->C.active) gmt_M_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
 		gmt_M_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 
-		if (n_dup) GMT_Report (API, GMT_MSG_WARNING, "Skipped %" PRIu64 " duplicate points in segments\n", n_dup);
+		if (Ctrl->D.active) {	/* Report */
+			if (n_dup)
+				GMT_Report (API, GMT_MSG_WARNING, "Skipped %" PRIu64 " duplicate points in segments\n", n_dup);
+			else
+				GMT_Report (API, GMT_MSG_INFORMATION, "No duplicate points found in the segments\n");
+		}
+		else
+			GMT_Report (API, GMT_MSG_INFORMATION, "No duplicate check performed [-D was not activated]\n");
+
 		GMT_Report (API, GMT_MSG_INFORMATION, "Do Voronoi construction using %" PRIu64 " points\n", n);
 
 		T.mode = VORONOI;

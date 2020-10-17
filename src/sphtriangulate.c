@@ -439,7 +439,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -T is selected we print arc lengths instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with the binary output option.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Skip repeated input vertex at the end of a closed segment.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Delete any duplicate points [Default assumes there are no duplicates].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set distance unit arc (d)egree, m(e)ter, (f)oot, (k)m, (M)ile, (n)autical mile, or s(u)rvey foot [e].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Output filename for Delaunay or Voronoi polygon information [Store in output segment headers].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Delaunay: output is the node triplets and area (i, j, k, area).\n");
@@ -598,9 +598,8 @@ EXTERN_MSC int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
-				gmt_M_free (GMT, lon);	gmt_M_free (GMT, lat);
-				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
-				gmt_M_free (GMT,  zz);
+				gmt_M_free (GMT, lon);	gmt_M_free (GMT, lat);	gmt_M_free (GMT, xx);
+				gmt_M_free (GMT, yy);	gmt_M_free (GMT,  zz);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
@@ -612,6 +611,8 @@ EXTERN_MSC int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 
 		if (In->data == NULL) {
 			gmt_quit_bad_record (API, In);
+			gmt_M_free (GMT, lon);	gmt_M_free (GMT, lat);	gmt_M_free (GMT, xx);
+			gmt_M_free (GMT, yy);	gmt_M_free (GMT,  zz);
 			Return (API->error);
 		}
 
@@ -652,7 +653,15 @@ EXTERN_MSC int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	gmt_M_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 	GMT->session.min_meminc = GMT_MIN_MEMINC;		/* Reset to the default value */
 
-	if (Ctrl->D.active && n_dup) GMT_Report (API, GMT_MSG_INFORMATION, "Skipped %d duplicate points in segments\n", n_dup);
+	if (Ctrl->D.active) {	/* Report */
+		if (n_dup)
+			GMT_Report (API, GMT_MSG_WARNING, "Skipped %d duplicate points in segments\n", n_dup);
+		else
+			GMT_Report (API, GMT_MSG_INFORMATION, "No duplicate points found in the segments\n");
+	}
+	else
+		GMT_Report (API, GMT_MSG_INFORMATION, "No duplicate check performed [-D was not activated]\n");
+
 	GMT_Report (API, GMT_MSG_INFORMATION, "Do Voronoi construction using %d points\n", n);
 
 	gmt_M_memset (&T, 1, struct STRIPACK);

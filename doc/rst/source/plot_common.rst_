@@ -13,6 +13,9 @@ If a symbol is selected, **-G** and **-W** determines the fill and outline/no ou
 Required Arguments
 ------------------
 
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
+
 .. _-J:
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
@@ -28,9 +31,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
 
 .. _-A:
 
@@ -94,7 +94,9 @@ Optional Arguments
     used we can control how the look-up color is applied to our symbol.
     Append **+cf** to use it to fill the symbol, while **+cl** will just
     set the error pen color and turn off symbol fill.  Giving **+c** will
-    set both color items.
+    set both color items.  **Note**: The error bars are placed behind symbols
+    except for the large vertical and horizontal bar symbols (**-Sb**\|\ **B**)
+    where they are plotted on top to avoid the lower bounds being obscured.
 
 .. _-F:
 
@@ -244,7 +246,9 @@ Optional Arguments
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-t.rst_
-If no transparency is appended then we will read it from the last column per data record instead.
+..
+
+   If no transparency is appended then we will read it from the last numerical column per data record instead.
 
 .. include:: explain_help.rst_
 

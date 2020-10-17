@@ -57,6 +57,12 @@ choose binary input and/or output to avoid loss of precision.
 Required Arguments
 ------------------
 
+*table*
+    3 (or 4, see **-W**) column ASCII data table file(s) (or binary, see
+    **-bi**) holding (*x*,\ *y*,\ *z*\ [,\ *w*])
+    data values, where [*w*] is an optional weight for the data.
+    If no file is specified, **blockmode** will read from standard input.
+
 .. _-I:
 
 .. include:: explain_-I.rst_
@@ -66,12 +72,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-*table*
-    3 (or 4, see **-W**) column ASCII data table file(s) (or binary, see
-    **-bi**) holding (*x*,\ *y*,\ *z*\ [,\ *w*])
-    data values, where [*w*] is an optional weight for the data.
-    If no file is specified, **blockmode** will read from standard input.
 
 .. _-A:
 

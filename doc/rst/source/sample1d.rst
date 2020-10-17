@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt sample1d** [ *table* ]
-[ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
+[ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+d**][**+l**] ]
 [ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |-N|\ *col* ]
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
@@ -51,11 +51,6 @@ is not supported.
 Required Arguments
 ------------------
 
-None.
-
-Optional Arguments
-------------------
-
 *table*
     This is one or more ASCII [of binary, see
     **-bi**] files with one column containing the
@@ -63,9 +58,12 @@ Optional Arguments
     and the remaining columns holding other data values. If no file is
     provided, **sample1d** reads from standard input.
 
+Optional Arguments
+------------------
+
 .. _-A:
 
-**-A**\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**
+**-A**\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+d**][**+l**]
     For track resampling (if **-T**...\ *unit* is set) we can select how
     this is to be performed. Append **f** to keep original points, but
     add intermediate points if needed; note this selection does not
@@ -75,11 +73,13 @@ Optional Arguments
     **r** to resample at equidistant locations; input points are not
     necessarily included in the output, and **R** as **r**, but adjust
     given spacing to fit the track length exactly. Finally, append
+    **+d** to delete duplicate input records (identified by having
+    no change in the time column, and
     **+l** if distances should be measured along rhumb lines (loxodromes).
 
 .. _-F:
 
-**-Fl**\|\ **a**\|\ **c**\|\ **n**\ **s**\ *p*\ [**+d1**\|\ **2**]
+**-Fl**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**]
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), **n** (no interpolation: nearest point), or **s**
     (smoothing cubic spline; append fit parameter *p*) [Default

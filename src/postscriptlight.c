@@ -369,6 +369,7 @@ static struct PSL_FONT PSL_standard_fonts[PSL_N_STANDARD_FONTS] = {
 #define PSL_ONE_SPACE		1
 #define PSL_COMPOSITE_1		8
 #define PSL_COMPOSITE_2		16
+#define PSL_COMPOSITE_2_FNT		64
 #define PSL_SYMBOL_FONT		12
 #define PSL_CHUNK		2048
 
@@ -718,6 +719,16 @@ static int psl_iy (struct PSL_CTRL *PSL, double y) {
 	return (PSL->internal.y0 + (int)lrint (y * PSL->internal.y2iy));
 }
 
+static double psl_ix10 (struct PSL_CTRL *PSL, double x) {
+	/* Convert user x to PS dots with 1 decimal point */
+	return (PSL->internal.x0 + 0.1 *lrint (10.0 * x * PSL->internal.x2ix));
+}
+
+static double psl_iy10 (struct PSL_CTRL *PSL, double y) {
+	/* Convert user y to PS dots with 1 decimal point */
+	return (PSL->internal.y0 + 0.1 * lrint (10.0 * y * PSL->internal.y2iy));
+}
+
 static int psl_iz (struct PSL_CTRL *PSL, double z) {
 	/* Convert user distances to PS dots */
 	return ((int)lrint (z * PSL->internal.dpu));
@@ -940,11 +951,13 @@ static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double 
 
 	}
 
+	/* For curved lines for text placement we use 10 times the precision in the coordinates since we will
+	 * be taking derivatives to compute angles and thus need higher precision than integer PS coordinates */
 	PSL_comment (PSL, "Set concatenated coordinate arrays for line segments:\n");
 	PSL_command (PSL, "/PSL_path_x [ ");
 	for (i = k = 0; i < ntot; i++) {
 		if (!use[i]) continue;
-		PSL_command (PSL, "%d ", psl_ix (PSL, x[i]));
+		PSL_command (PSL, "%g ", psl_ix10 (PSL, x[i]));
 		k++;
 		if ((k%10) == 0) PSL_command (PSL, "\n\t");
 	}
@@ -952,7 +965,7 @@ static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double 
 	PSL_command (PSL, "/PSL_path_y [ ");
 	for (i = k = 0; i < ntot; i++) {
 		if (!use[i]) continue;
-		PSL_command (PSL, "%d ", psl_iy (PSL, y[i]));
+		PSL_command (PSL, "%g ", psl_iy10 (PSL, y[i]));
 		k++;
 		if ((k%10) == 0) PSL_command (PSL, "\n\t");
 	}
@@ -1812,10 +1825,11 @@ static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *text) {
 
 static struct PSL_WORD *psl_add_word_part (struct PSL_CTRL *PSL, char *word, int length, int fontno, double fontsize, int sub, int super, int small, int under, int space, double rgb[]) {
 	/* For flag: bits 1 and 2 give number of spaces to follow (0, 1, or 2)
-	 * bit 3 == 1 means leading TAB
-	 * bit 4 == 1 means Composite 1 character
-	 * bit 5 == 1 means Composite 2 character
-	 * bit 6 == 1 means underline word
+	 * bit 3 == 1 [4]  means leading TAB
+	 * bit 4 == 1 [8]  means Composite 1 character
+	 * bit 5 == 1 [16] means Composite 2 character
+	 * bit 6 == 1 [32] means underline word
+	 * bit 7 == 1 [64] means Composite 2 character has a different font that Composite 1 character
 	 */
 
 	int i = 0;
@@ -1872,11 +1886,47 @@ static void psl_freewords (struct PSL_WORD **word, int n_words) {
 	}
 }
 
+void psl_got_composite_fontswitch (struct PSL_CTRL *PSL, char *text) {
+	/* If a composite character is made from two different fonts then we need to flag these.
+	 * E.g., Epsilon time-derivative = @!\277@~145@~ using current and Symbol font.
+	 * Here we need to switch to symbol font for one char, from whatever font we are using.
+	 * We look for such cases and count the occurrences, plus replace the font changing code
+	 * @ (either @~ or @%font% with ASCII escape (27)). */
+	size_t k;
+	int n = 0;
+	for (k = 0; k < strlen (text); k++) {
+		if (text[k] != '@') continue;
+		/* Start of an escape sequence */
+		k++;
+		if (text[k] != '!') continue;	/* Not a composite character request */
+		k++;	/* Step to start of character1 */
+		if (text[k] == '\\') k += 4; else k++;	/* Skip the octal or regular first character */
+		if (text[k] != '@') continue;	/* No font switching in the composite glyph */
+		/* Here we do have such a thing, and we need to avoid the regular string splitting at @ in PSL_plottext and PSL_deftextdim */
+		text[k] = PSL_ASCII_ES;	/* Replace @ with ASCII ESC code for now */
+		k++;	/* Font code type is ~ or % */
+		if (text[k] == '~')	/* Symbol font */
+			k++;	/* Step to character2 */
+		else {	/* Some random font switch */
+			k++;	/* Step past first % */
+			while (text[k] != '%') k++;	/* Skip past the font name or number */
+			k++;	/* Step to character2 */
+		}
+		if (text[k] == '\\') k += 4; else k++;	/* Skip the octal or regular second character */
+		if (text[k] != '@')	/* Not ideal, user error presumably */
+			PSL_message (PSL, PSL_MSG_WARNING, "Warning: psl_got_composite_fontswitch expected a font-change at end of composite character 2\n");
+		else	/* Get passed the font return code */
+			text[k] = PSL_ASCII_ES;	/* Skip to end of text section */
+		n++;	/* Found one of these cases */
+	}
+	if (n) PSL_message (PSL, PSL_MSG_DEBUG, "psl_got_composite_fontswitch found %d composite characters with different fonts/char sets\n", n);
+}
+
 static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char *paragraph) {
 	/* Typeset one or more paragraphs.  Separate paragraphs by adding \r to end of last word in a paragraph.
 	 * This is a subfunction that simply place all the text attributes on the stack.
 	 */
-	int n, p, n_scan, last_k = -1, error = 0, old_font, font, after, len, n_alloc_txt;
+	int n, p, n_scan, last_k = -1, error = 0, old_font, font, font2, after, len, n_alloc_txt, F_flag;
 	int *font_unique = NULL;
 	unsigned int i, i1, i0, j, k, n_items, n_font_unique, n_rgb_unique;
 	size_t n_alloc, n_words = 0;
@@ -1890,10 +1940,12 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 
 	sub_on = super_on = scaps_on = symbol_on = font_on = size_on = color_on = under_on = false;
 
+
 	/* Break input string into words (sorta based on old pstext) */
 	n_alloc = PSL_CHUNK;
 	text = (char **) PSL_memory (PSL, NULL, n_alloc, char *);
 	copy = strdup (paragraph);	/* Need copy since strtok_r will mess with the text */
+	psl_got_composite_fontswitch (PSL, copy);
 	c = strtok_r (copy, sep, &lastp);	/* Found first word */
 	while (c) {	/* Found another word */
 		text[n_words] = strdup (c);
@@ -1965,13 +2017,38 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 							n_alloc <<= 1;
 							word = PSL_memory (PSL, word, n_alloc, struct PSL_WORD *);
 						}
+						/* Watch out for escaped font change before 2nd character */
+						if (clean[i1] == PSL_ASCII_ES) {	/* Have a font change on either side of 2nd character */
+							i1++;
+							if (clean[i1] == '~')	/* Toggle the symbol font */
+								font2 = PSL_SYMBOL_FONT;
+							else {	/* Font switching with @%font% ...@%% */
+								i1++;
+								font2 = psl_getfont (PSL, &clean[i1]);
+								while (clean[i1] != '%') i1++;
+							}
+							i1++;	/* Now at start of 2nd character */
+							F_flag = PSL_COMPOSITE_2 | PSL_COMPOSITE_2_FNT;
+						}
+						else {	/* No 2nd font */
+							font2 = font;
+							F_flag = PSL_COMPOSITE_2;
+						}
+
 						if (clean[i1] == '\\') { /* 2nd char is Octal code character */
-							word[k] = psl_add_word_part (PSL, &clean[i1], 4, font, fontsize, sub_on, super_on, scaps_on, under_on, PSL_COMPOSITE_2, rgb);
+							word[k] = psl_add_word_part (PSL, &clean[i1], 4, font2, fontsize, sub_on, super_on, scaps_on, under_on, F_flag, rgb);
 							i1 += 4;
 						}
 						else {	/* Regular character */
-							word[k] = psl_add_word_part (PSL, &clean[i1], 1, font, fontsize, sub_on, super_on, scaps_on, under_on, PSL_COMPOSITE_2, rgb);
+							word[k] = psl_add_word_part (PSL, &clean[i1], 1, font2, fontsize, sub_on, super_on, scaps_on, under_on, F_flag, rgb);
 							i1++;
+						}
+						if (font2 != font) {	/* Skip past the font switcher */
+							i1++;	/* Step over the implicit @ (ASCII 27) */
+							if (font2 == PSL_SYMBOL_FONT)
+								i1++;	/* Move past the ~ */
+							else
+								i1 += 2;	/* Move past the %% */
 						}
 						if (!clean[i1]) word[k]->flag++;	/* New word after this composite */
 						k++;
@@ -2087,7 +2164,7 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 			} /* End loop over word with @ in it */
 
 			if (!plain_word && (last_k = k - 1) >= 0) {	/* Allow space if text ends with @ commands only */
-				word[last_k]->flag &= 60;
+				word[last_k]->flag &= 124;	/* Knock of anything unused */
 				word[last_k]->flag |= 1;
 			}
 		}
@@ -4851,45 +4928,6 @@ int PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fontsize, 
 	PSL_comment (PSL, "PSL_plottextbox end:\n");
 	strncpy (PSL->current.string, &text[i], PSL_BUFSIZ - 1);	/* Save the string with one left for null terminator */
 	return (PSL_NO_ERROR);
-}
-
-void psl_got_composite_fontswitch (struct PSL_CTRL *PSL, char *text) {
-	/* If a composite character is made from two different fonts then we need to flag these.
-	 * E.g., Epsilon time-derivative = @!\277@~145@~ using current and Symbol font.
-	 * Here we need to switch to symbol font for one char, from whatever font we are using.
-	 * We look for such cases and count the occurrences, plus replace the font changing code
-	 * @ (either @~ or @%font% with ASCII escape (27)). */
-	size_t k;
-	int n = 0, step;
-	for (k = 0; k < strlen (text); k++) {
-		if (text[k] != '@') continue;
-		/* Start of an escape sequence */
-		k++;
-		if (text[k] != '!') continue;	/* Not a composite character request */
-		k++;	/* Step to start of character1 */
-		if (text[k] == '\\') k += 4; else k++;	/* Skip the octal or regular first character */
-		if (text[k] != '@') continue;	/* No font switching in the composite glyph */
-		/* Here we do have such a thing, and we need to avoid the regular string splitting at @ in PSL_plottext and PSL_deftextdim */
-		text[k] = PSL_ASCII_ES;	/* Replace @ with ASCII ESC code for now */
-		k++;	/* Font code type is ~ or % */
-		if (text[k] == '~') {	/* Symbol font */
-			k++;	/* Step to character2 */
-			step = 1;	/* Since we will toggle back with @~ */
-		}
-		else {	/* Some random font switch */
-			k++;	/* Step past first % */
-			while (text[k] != '%') k++;	/* Skip past the font name or number */
-			step = 2;	/* Since we will toggle back with @%% */
-			k++;	/* Step to character2 */
-		}
-		if (text[k] == '\\') k += 4; else k++;	/* Skip the octal or regular second character */
-		if (text[k] != '@')	/* Not ideal, user error presumably */
-			PSL_message (PSL, PSL_MSG_WARNING, "Warning: psl_got_composite_fontswitch expected a font-change at end of composite character 2\n");
-		else	/* Get passed the font return code */
-			text[k] = PSL_ASCII_ES;	/* Skip to end of text section */
-		n++;	/* Found one of these cases */
-	}
-	if (n) PSL_message (PSL, PSL_MSG_DEBUG, "psl_got_composite_fontswitch found %d composite characters with different fonts/char sets\n", n);
 }
 
 int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char *text) {

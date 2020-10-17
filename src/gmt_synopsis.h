@@ -73,7 +73,7 @@
 #define GMT_OFFSET	"[+o<dx>[/<dy>]]"
 #define GMT_TROSE_DIR	GMT_XYANCHOR "+w<width>[+f[<level>]]" GMT_JUSTIFY "[+l<w,e,s,n>]" GMT_OFFSET
 #define GMT_TROSE_MAG	GMT_XYANCHOR "+w<width>[+d[<dec>[/<dlabel>]]][+i<pen>]" GMT_JUSTIFY "[+l<w,e,s,n>][+p<pen>][+t<ints>]" GMT_OFFSET
-#define GMT_SCALE	GMT_XYANCHOR "+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f]" GMT_JUSTIFY "[+l[<label>]]" GMT_OFFSET "[+u]"
+#define GMT_SCALE	GMT_XYANCHOR "+w<length>[e|f|M|n|k|u][+a<align>][+c[[<slon>/]<slat>]][+f]" GMT_JUSTIFY "[+l[<label>]]" GMT_OFFSET "[+u]"
 #define GMT_INSET_A	GMT_XYANCHOR "+w<width>[/<height>]" GMT_JUSTIFY GMT_OFFSET
 #define GMT_INSET_B	"<xmin>/<xmax>/<ymin>/<ymax>[+r][+u<unit>]"
 #define GMT_INSET_A_CL	GMT_XYANCHOR "+w<width>[/<height>]" GMT_JUSTIFY GMT_OFFSET "[+s<file>][+t]"

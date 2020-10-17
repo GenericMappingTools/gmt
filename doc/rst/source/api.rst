@@ -2791,6 +2791,8 @@ how the options are passed to the module:
         Expects ``args`` to be an array of text strings and ``mode`` to be a count of how many
         options are passed (i.e., the ``argc, argv[]`` model used by the GMT programs themselves).
 
+From external interfaces and with a debug verbosity level set, ``GMT_Call_Module`` will
+also print out the equivalent command line to standard error (or its substitute).
 
 Set program options via text array arguments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

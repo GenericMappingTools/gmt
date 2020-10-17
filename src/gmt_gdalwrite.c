@@ -282,7 +282,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	GDALColorEntry   sEntry;
 	GDALProgressFunc pfnProgress = GDALTermProgress;
 
-	int  n_cols, n_rows, i;
+	int  n_cols, n_rows, i, error = GMT_NOERROR;
 	int  typeCLASS, typeCLASS_f, nColors, n_byteOffset, n_bands, registration;
 	int  is_geog = 0, gdal_err = 0;
 	uint64_t nn, ijk = 0;
@@ -582,10 +582,11 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	}
 
 	if (!prhs->H.active && gmt_strlcmp(pszFormat,"netCDF")) { /* Change some attributes written by GDAL (not finished) */
-		int ncid, err;
-		gmt_M_err_trap (nc_open (fname, NC_WRITE, &ncid));
-		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(prhs->command), prhs->command));
-		gmt_M_err_trap (nc_close (ncid));
+		int ncid;
+		error = nc_open (fname, NC_WRITE, &ncid);
+		error += nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(prhs->command), prhs->command);
+		error += nc_close (ncid);
+		if (error) GMT_Report(GMT->parent,GMT_MSG_ERROR,"Error adding history: %d\n", error);
 	}
 
 	gmt_M_free(GMT, outByte);
@@ -593,5 +594,5 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	if (papszOptions != NULL) CSLDestroy (papszOptions);
 	GDALDestroyDriverManager();
 
-	return (GMT_NOERROR);
+	return error;
 }

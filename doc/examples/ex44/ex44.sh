@@ -7,7 +7,7 @@
 
 gmt begin ex44
 	gmt subplot begin 2x1 -Fs15c/10c -B -BWSne
-		gmt coast -R10W/5E/35N/44N -JM15c -EES+gbisque -Gbrown -Wfaint -N1/1p -Sazure1 -Df --FORMAT_GEO_MAP=dddF -c0
+		gmt coast -R10W/5E/35N/44N -JM15c -EES+gbisque -Gbrown -Wfaint -N1/1p -Sazure1 -Dh --FORMAT_GEO_MAP=dddF -c0
 		gmt inset begin -DjTR+w5c/2.35c+o0.4c/0.25c -F+gwhite+p1p+c0.1c+s
 			gmt coast -R15W/35E/30N/48N -JM? -Da -Gbrown -B0 -EES+gbisque --MAP_FRAME_TYPE=plain
 		gmt inset end

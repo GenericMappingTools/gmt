@@ -47,5 +47,4 @@ gmt psxy -R -J -O -K -W2p,green << EOF >> $ps
 EOF
 echo "400 192 Point symmetry" | gmt pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps
 echo "400 192 100% outwardtaper" | gmt pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/-0.3i >> $ps
-gmt psscale -Ct.cpt -Dx${x}i/${yoffe}i+w4i/0.1i+h+jTC -O -K -B0.5 >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt psscale -Ct.cpt -Dx${x}i/${yoffe}i+w4i/0.1i+h+jTC -O -B0.5 >> $ps

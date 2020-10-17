@@ -64,7 +64,4 @@ gmt psxy $R -J -O -K -L -W0.5p,- << EOF >> $ps
 EOF
 # Do clipping and plot the clipped files
 gmt spatial Ag.txt -C -R-2/11/-4/9 -fg | gmt psxy $R -Jm0.15i -O -K -W3p,red >> $ps
-gmt spatial Bg.txt -C -R-2/11/-4/9 -fg | gmt psxy $R -Jm0.15i -O -K -W3p,blue >> $ps
-
-gmt psxy $R -J -O -T >> $ps
-
+gmt spatial Bg.txt -C -R-2/11/-4/9 -fg | gmt psxy $R -Jm0.15i -O -W3p,blue >> $ps

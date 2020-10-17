@@ -60,10 +60,11 @@ struct FILTER1D_CTRL {
 	struct FILTER1D_F {	/* -F<type><width>[<mode>] */
 		bool active;
 		bool highpass;
+		bool variable;
 		char filter;	/* Character codes for the filter */
 		double width;
 		int mode;	/* -1/0/+1 */
-		char *file;	/* Character codes for the filter */
+		char *file;	/* File with custom filter coefficients or w(t) variable widths */
 	} F;
 	struct FILTER1D_L {	/* -L<lackwidth> */
 		bool active;
@@ -114,6 +115,7 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	bool out_at_time;		/* true when output is required at evenly spaced intervals */
 	bool f_operator;		/* true if custom weights coefficients sum to zero */
 	bool highpass;		/* true if we are doing a highpass filter */
+	bool variable;		/* true if we are doing a variable width filter */
 
 	uint64_t *n_this_col;		/* Pointer to array of counters [one per column]  */
 	uint64_t *n_left;		/* Pointer to array of counters [one per column]  */
@@ -130,7 +132,10 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	int way;			/* -1 find minimum, +1 find maximum  [for the l|L|u|U filter] */
 	unsigned int mode_selection;
 	unsigned int n_multiples;
+	unsigned int nw;		/* Length of variable filter width array */
 
+	double *ft;				/* Pointer for array of variable filter times  */
+	double *fw;				/* Pointer for array of variable filter widths  */
 	double *f_wt;			/* Pointer for array of filter coefficients  */
 	double *min_loc;		/* Pointer for array of values, one per [column]  */
 	double *max_loc;
@@ -156,6 +161,7 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	double extreme;			/* Extreme value [for the l|L|u|U filter] */
 
 	struct GMT_DATASET *Fin;	/* Pointer to table with custom weight coefficients (optional) */
+	struct GMT_DATASET *W;	/* Pointer to table with variable filter widths (optional) */
 	struct GMT_ARRAY T;
 };
 
@@ -169,7 +175,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	return (C);
 }
 
-static void Free_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->F.file);
 	gmt_free_array (GMT, &(C->T.T));
@@ -188,6 +194,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set filtertype.  Choose from convolution and non-convolution filters\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and append filter <width> in same units as time column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <width> is a file (and <type> is not f) it must have a time-series of filter widths.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h select high-pass filtering [Default is low-pass filtering].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Convolution filters:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     b: Boxcar : Weights are equal.\n");
@@ -280,10 +287,15 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 				Ctrl->F.active = true;
 				if (opt->arg[0] && strchr ("BbCcGgMmPpLlUuFf", opt->arg[0])) {	/* OK filter code */
 					Ctrl->F.filter = opt->arg[0];
-					Ctrl->F.width = atof (&opt->arg[1]);
 					if ((c = strstr (opt->arg, "+h"))) {	/* Want high-pass filter */
 						Ctrl->F.highpass = true;
 						c[0] = '\0';	/* Chop off +h */
+					}
+					if (gmt_access (GMT, &opt->arg[1], R_OK))
+						Ctrl->F.width = atof (&opt->arg[1]);
+					else if (Ctrl->F.filter != 'f') {	/* Got variable filter width series */
+						Ctrl->F.variable = true;
+						Ctrl->F.file = strdup (&opt->arg[1]);
 					}
 					switch (Ctrl->F.filter) {	/* Get some further info from some filters */
 						case 'P':
@@ -576,6 +588,7 @@ GMT_LOCAL int filter1d_do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INF
 	uint64_t i_row, left, right, n_l, n_r, k = 0, n_for_call, n_good_ones, last_k;
 	uint64_t iq, i_col, diff;
 	int64_t i_f_wt, n_in_filter;
+	int result;
 	bool *good_one = NULL;	/* Pointer to array of logicals [one per column]  */
 	double t_time, delta_time, wt, val, med, scl, small, symmetry;
 	double *wt_sum = NULL;		/* Pointer for array of weight sums [each column]  */
@@ -608,6 +621,19 @@ GMT_LOCAL int filter1d_do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INF
 	Out = gmt_new_record (GMT, NULL, NULL);
 
 	while (k <= last_k) {
+		if (F->variable) {	/* Must obtain the filter width for this time */
+			if (F->T.array[k] < F->ft[0] || F->T.array[k] > F->ft[F->nw-1]) {
+				k++;
+				continue;	/* Outside filter width array */
+			}
+			result = gmt_intpol (GMT, F->ft, F->fw, NULL, F->nw, 1, &(F->T.array[k]), &(F->filter_width), 0.0, GMT->current.setting.interpolant);
+			filter1d_set_up_filter (GMT, F);
+			if (F->T.array[k] < F->t_start || F->T.array[k] > F->t_stop) {
+				k++;
+				continue;	/* Outside full filter window */
+			}
+		}
+
 		while ((F->T.array[k] - F->data[F->t_col][left] - small) > F->half_width) ++left;
 		while (right < F->n_rows && (F->data[F->t_col][right] - F->T.array[k] - small) <= F->half_width) ++right;
 		n_in_filter = (int64_t)(right - left);
@@ -834,6 +860,7 @@ GMT_LOCAL void filter1d_load_parameters (struct FILTER1D_INFO *F, struct FILTER1
 	F->T = Ctrl->T.T;
 	F->out_at_time = Ctrl->T.active;
 	F->highpass = Ctrl->F.highpass;
+	F->variable = Ctrl->F.variable;
 }
 
 /* Must free allocated memory before returning */
@@ -842,9 +869,9 @@ GMT_LOCAL void filter1d_load_parameters (struct FILTER1D_INFO *F, struct FILTER1
 #define Return2(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
-	uint64_t col, tbl, row, seg;
+	uint64_t col, tbl, row, seg, tseg;
 	int error;
-	unsigned int save_col, n_out_cols;
+	unsigned int save_col[2], n_out_cols;
 
 	double last_time, new_time, in;
 
@@ -958,18 +985,36 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 		case 'f':
 			F.filter_type = FILTER1D_CUSTOM;
 			if ((error = GMT_Set_Columns (API, GMT_IN, 1, GMT_COL_FIX_NO_TEXT)) != 0) Return (error, "Error in GMT_Set_Columns");
-			save_col = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
+			save_col[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
 			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Always read the weights as floats */
 			gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
 			if ((F.Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 				Return (API->error, "Error Reading input\n");
 			}
 			gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
-			gmt_set_column (GMT, GMT_IN, GMT_X, save_col);	/* Reset this col type to whatever it actually is */
+			gmt_set_column (GMT, GMT_IN, GMT_X, save_col[GMT_X]);	/* Reset this col type to whatever it actually is */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;
 	}
 	if (F.filter_type > FILTER1D_CONVOLVE) F.robust = false;
+	if (F.variable) {
+		if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != 0) Return (error, "Error in GMT_Set_Columns");
+		save_col[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
+		save_col[GMT_Y] = GMT->current.io.col_type[GMT_IN][GMT_Y];	/* Save col type in case it is a time column */
+		gmt_set_column (GMT, GMT_IN, GMT_X, GMT->current.io.col_type[GMT_IN][F.t_col]);	/* Same units as time-series "t"*/
+		gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);	/* Always read the widths as floats */
+		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
+		if ((F.W = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
+			Return (API->error, "Error Reading input\n");
+		}
+		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_set_column (GMT, GMT_IN, GMT_X, save_col[GMT_X]);	/* Reset this col type to whatever it actually is */
+		gmt_set_column (GMT, GMT_IN, GMT_Y, save_col[GMT_Y]);	/* Reset this col type to whatever it actually is */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " filter weights from file %s.\n", F.W->n_records, Ctrl->F.file);
+		if (! (F.W->n_segments == 1 || F.W->n_segments == D->n_segments)) {
+			Return (API->error, "Variable filter width requires either one segment (shared with all data segments) or one width segment per input data segments\n");
+		}
+	}
 
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = false;	/* Turn off default GMT NaN-handling */
 	GMT->current.io.skip_if_NaN[F.t_col] = true;			/* ... But disallow NaN in "time" column */
@@ -991,8 +1036,8 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Filter the data columns\n");
 
-	for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
-		for (seg = 0; seg < D->table[tbl]->n_segments; ++seg) {	/* For each segment */
+	for (tbl = tseg = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
+		for (seg = 0; seg < D->table[tbl]->n_segments; ++seg, tseg++) {	/* For each segment */
 			/* Duplicate data and set up arrays and parameters needed to filter this segment */
 			S = D->table[tbl]->segment[seg];
 			if (S->n_rows > F.n_row_alloc) {
@@ -1038,7 +1083,14 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 				}
 			}
 
-			if (filter1d_set_up_filter (GMT, &F)) {
+			if (F.variable) {
+				/* Set pointers to these arrays */
+				unsigned int ks = (F.W->n_segments > 1) ? tseg : 0;	/* Either a shared segment or one per input segment */
+				F.ft = F.W->table[0]->segment[ks]->data[GMT_X];
+				F.fw = F.W->table[0]->segment[ks]->data[GMT_Y];
+				F.nw = F.W->table[0]->segment[ks]->n_rows;
+			}
+			if (!F.variable && filter1d_set_up_filter (GMT, &F)) {
 				filter1d_free_space (GMT, &F);
 				Return (GMT_RUNTIME_ERROR, "Fatal error during coefficient setup.\n");
 			}

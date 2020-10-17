@@ -37,6 +37,4 @@ gmt grdcontour -R Fig_2_p5.nc -J -O -K -Z+s0.001 -C5 -A10 -Gl335/0/0/90,0/90/155
 gmt psxy -R -J -O -K $data -Sc0.1i -Gblack >> $ps
 gmt psxy -R -J -O -K $data -Sc0.025i -Gwhite >> $ps
 gmt psxy -R -J -O -K @mag_validate_1990.txt -Sc0.1i -Gwhite -W0.25p  >> $ps
-gmt psxy -R -J -O -K @mag_validate_1990.txt -Sc0.025i -Gblack >> $ps
-gmt psxy -R -J -O -T >> $ps
-
+gmt psxy -R -J -O @mag_validate_1990.txt -Sc0.025i -Gblack >> $ps

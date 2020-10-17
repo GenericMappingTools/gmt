@@ -741,6 +741,9 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
 			uint64_t dim[4] = {1, 1, row, 0};
 			if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_TEXT, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to make data set for country listing!\n");
+				gmt_M_free (GMT, GMT_DCW_country);
+				gmt_M_free (GMT, GMT_DCW_state);
+				gmt_M_free (GMT, GMT_DCW_country_with_state);
 				return GMT_RUNTIME_ERROR;
 			}
 			S = D->table[0]->segment[0];	/* The one and only segment in this table */
@@ -749,6 +752,9 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
 
 	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_WRITE_NORMAL, NULL, NULL, D) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to write data set for country listing to stdout!\n");
+		gmt_M_free (GMT, GMT_DCW_country);
+		gmt_M_free (GMT, GMT_DCW_state);
+		gmt_M_free (GMT, GMT_DCW_country_with_state);
 		return GMT_RUNTIME_ERROR;
 	}
 

@@ -114,6 +114,9 @@ static int clear_data (struct GMTAPI_CTRL *API, char *planet) {
 						sprintf (current_d3, "%s/%s/%s/%s", server_dir, dir1[d1], dir2[d2], dir3[d3]);	/* E.g., ~/.gmt/server/earth/earth_relief/earth_relief_15s_p */
 						if (gmt_remove_dir (API, current_d3, false)) {
 							GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", current_d3);
+							gmtlib_free_dir_list (GMT, &dir1);
+							gmtlib_free_dir_list (GMT, &dir2);
+							gmtlib_free_dir_list (GMT, &dir3);
 							return GMT_NOERROR;
 						}
 						d3++;
@@ -122,6 +125,8 @@ static int clear_data (struct GMTAPI_CTRL *API, char *planet) {
 				}
 				if (gmt_remove_dir (API, current_d2, false)) {
 					GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", current_d2);
+					gmtlib_free_dir_list (GMT, &dir1);
+					gmtlib_free_dir_list (GMT, &dir2);
 					return GMT_NOERROR;
 				}
 				d2++;
@@ -130,6 +135,7 @@ static int clear_data (struct GMTAPI_CTRL *API, char *planet) {
 		}
 		if (gmt_remove_dir (API, current_d1, false)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", current_d1);
+			gmtlib_free_dir_list (GMT, &dir1);
 			return GMT_NOERROR;
 		}
 		d1++;
@@ -162,7 +168,7 @@ static int clear_sessions (struct GMTAPI_CTRL *API) {
 #ifdef _WIN32
 	char* t = gmt_strrep(API->session_dir, "/", "\\");		/* rmdir needs paths with back-slashes */
 	strcpy(del_cmd, "rmdir /s /q ");
-	strcat(del_cmd, t);
+	strncat(del_cmd, t, PATH_MAX-1);
 	gmt_M_str_free(t);
 #else
 	sprintf (del_cmd, "rm -rf %s", API->session_dir);
@@ -201,6 +207,7 @@ static int clear_geography (struct GMTAPI_CTRL *API, char *data) {
 		sprintf (current_dir, "%s/%s", geography_dir, dir[d]);	/* E.g., ~/.gmt/geography/gshhg */
 		if (gmt_remove_dir (API, current_dir, false)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", current_dir);
+			gmtlib_free_dir_list (GMT, &dir);
 			return GMT_NOERROR;
 		}
 		d++;

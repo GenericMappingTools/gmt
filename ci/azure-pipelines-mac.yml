@@ -5,7 +5,7 @@ steps:
 - bash: bash ci/install-dependencies-macos.sh
   displayName: Install GMT dependencies
 
-- bash: echo "##vso[task.prependpath]$HOME/Library/Python/3.8/bin"
+- bash: echo "##vso[task.prependpath]$HOME/Library/Python/3.9/bin"
   displayName: Add sphinx to PATH
   condition: eq(variables['BUILD_DOCS'], true)
 
@@ -102,6 +102,9 @@ steps:
     gmt which -Ga $data
     gmt which -Ga $data
     gmt get -Dcache
+    # Download extra tiles for tests
+    # test/grdimage/rounding.sh
+    gmt grdcut -R3:57/4:18/44:00/44:15 @earth_relief_03s -G/dev/null
   displayName: Download remote data
   condition: ne(variables['CACHE_CACHEDATA_RESTORED'], true)
 

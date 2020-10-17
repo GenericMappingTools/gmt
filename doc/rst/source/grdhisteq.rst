@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdhisteq** *in_grdfile* [ |-G|\ *out_grdfile* ]
+**gmt grdhisteq** *ingrid* [ |-G|\ *outgrid* ]
 [ |-C|\ *n_cells* ] [ |-D|\ [*file*] ] [ |-N|\ [*norm*] ]
 [ |-Q| ]
 |SYN_OPT-R|
@@ -59,7 +59,7 @@ location of the most negative input value, and so on.
 Required Arguments
 ------------------
 
-*in_grdfile*
+*ingrid*
     2-D grid file to be equalized. (See GRID FILE FORMATS below).
 
 Optional Arguments
@@ -77,7 +77,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *out_grdfile*
+**-G**\ *outgrid*
     Name of output 2-D grid file. Used with **-N** only. (See GRID FILE FORMATS below).
 
 .. _-N:
@@ -95,7 +95,7 @@ Optional Arguments
 .. _-R:
 
 .. |Add_-R| replace:: Using the **-R** option
-    will select a subsection of *in_grdfile* grid. If this subsection
+    will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted.
 .. include:: explain_-R.rst_
 

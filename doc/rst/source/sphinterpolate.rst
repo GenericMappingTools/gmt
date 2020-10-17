@@ -12,7 +12,9 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt sphinterpolate** [ *table* ] |-G|\ *grdfile*
+**gmt sphinterpolate** [ *table* ]
+|-G|\ *grdfile*
+[ |-D|\ [*east*] ]
 [ |SYN_OPT-I| ]
 [ |-Q|\ *mode*\ [*options*] ]
 [ |SYN_OPT-R| ]
@@ -44,6 +46,9 @@ criteria.
 Required Arguments
 ------------------
 
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
+
 .. _-G:
 
 **-G**\ *grdfile*
@@ -52,8 +57,13 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
+.. _-D:
+
+**-D**\ [*east*]
+    Skip duplicate points since the spherical gridding algorithm cannot handle them.
+    [Default assumes there are no duplicates, except possibly at the poles].
+    Append a repeating longitude (*east*) to skip records with that longitude instead
+    of the full (slow) search for duplicates.
 
 .. _-I:
 
@@ -145,6 +155,17 @@ To interpolate the points in the file testdata.txt on a global 1x1
 degree grid with no tension, use::
 
     gmt sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
+
+Notes
+-----
+
+The STRIPACK algorithm and implementation expect that there are no duplicate points
+in the input.  It is best that the user ensures that this is the case.  GMT has tools,
+such as :doc:`blockmean` and others, to combine close points into single entries.
+Also, **sphinterpolate** has a **-D** option to determine and exclude duplicates, but
+it is a very brute-force yet exact comparison that is very slow for large data sets.
+A much quicker check involves appending a specific repeating longitude value.
+Detection of duplicates in the STRIPACK library will exit the module.
 
 See Also
 --------

@@ -70,10 +70,10 @@ do
 		gmt makecpt -H -C$right -T-1/1 > tt.right.cpt
 	fi
 	gmt makecpt -H -C$right -T-1/1/0.25 > tt.right2.cpt
-	gmt colorbar -Dx1.55i/${y}i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
-	gmt colorbar -Dx4.50i/${y}i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
-	gmt colorbar -Dx1.55i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
-	gmt colorbar -Dx4.50i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
+	gmt colorbar -Dx1.55i/${y}i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
+	gmt colorbar -Dx4.50i/${y}i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
+	gmt colorbar -Dx1.55i/${y2}i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
+	gmt colorbar -Dx4.50i/${y2}i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 	gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC <<- END
 	1.55 $y ${left}
 	4.50 $y ${right}

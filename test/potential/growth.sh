@@ -32,10 +32,9 @@ while read file; do
 done < t.lis
 gmt grdtrack -Gsmt.nc+Uk -E0/75/200/75 -o0,2 -nn | gmt psxy -R -J -O -K -W1p >> $ps
 gmt psscale -Ct2.cpt -Dx3i/-0.4i+w-6i/0.15i+h+jTC -O -K -Baf -Bx+l"Time of emplacement" >> $ps
-gmt psxy -R1/10/0/1 -JX-6i/0.15i -O -K -Y-0.55i -Gblack << EOF >> $ps
+gmt psxy -R1/10/0/1 -JX-6i/0.15i -O -Y-0.55i -Gblack << EOF >> $ps
 5.25	0
 5.50	0
 5.50	1
 5.25	1
 EOF
-gmt psxy -R -J -O -T >> $ps

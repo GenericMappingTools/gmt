@@ -43,7 +43,7 @@ gmt sample1d track.txt -I10k -Ap | gmt psxy $RJ -O -K -W0.25p,orange,- >> $ps
 gmt project -C20/73 -E35/68 -G30 -Q > tmp.txt
 gmt psxy $RJ -O -K tmp.txt -Sc0.1c -Ggreen >> $ps
 gmt sample1d tmp.txt -I100k -AR | gmt psxy $RJ -O -K -Sc0.2c -Gblack >> $ps
-gmt pstext -R0/6/0/4 -Jx1i -O -K -F+jLB+f14p,Courier << EOF >> $ps
+gmt pstext -R0/6/0/4 -Jx1i -O -F+jLB+f14p,Courier << EOF >> $ps
 0.2 0.2 BLACK LINE:  psxy default
 0.2 0.4 RED LINE:    Loxodrome mode
 0.2 0.6 BLUE LINE:   -Am mode
@@ -52,4 +52,3 @@ gmt pstext -R0/6/0/4 -Jx1i -O -K -F+jLB+f14p,Courier << EOF >> $ps
 0.2 1.2 BLACK PTS:   -AR mode
 0.2 1.4 CYAN PTS:    -Ar mode
 EOF
-gmt psxy $RJ -O -T >> $ps

@@ -158,6 +158,17 @@ enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 	GMT_CSH_MODE,			/* Write C-shell script */
 	GMT_DOS_MODE};			/* Write DOS script */
 
+/*! Various mode for basemap order */
+enum GMT_enum_basemap {
+	GMT_BASEMAP_BEFORE			= 0,
+	GMT_BASEMAP_AFTER			= 1,
+	GMT_BASEMAP_FRAME_BEFORE	= 0,
+	GMT_BASEMAP_FRAME_AFTER		= 1,
+	GMT_BASEMAP_GRID_BEFORE		= 0,
+	GMT_BASEMAP_GRID_AFTER		= 2,
+	GMT_BASEMAP_ANNOT_BEFORE	= 0,
+	GMT_BASEMAP_ANNOT_AFTER		= 4};
+
 /* Since -I is not a global option but we almost use it as such, we define the long-option for it here.
  * Modules that need it in their module_kw[] array can just add it to their list. */
 #define GMT_INCREMENT_KW { '/', 'I', "increment", "", "", "e,n", "exact,number" }
@@ -511,7 +522,7 @@ enum GMT_enum_inonout {GMT_IOO_UNKNOWN = 0,	/* Decide based on range and type */
 	GMT_IOO_SPHERICAL};			/* Use spherical inside function */
 
 enum GMT_enum_path {GMT_RESAMPLE_PATH = 0,	/* Default: Resample geographic paths based in a max gap allowed (path_step) */
-	GMT_LEAVE_PATH};	/* Options like -A can turn of this resampling, where available */
+	GMT_LEAVE_PATH};	/* Options like -A can turn off this resampling, where available */
 
 enum GMT_enum_stairpath {GMT_STAIRS_OFF = 0,	/* Default: No stairclimbing */
 	GMT_STAIRS_Y,	/* Move vertically (meridian) to next point along y, then horizontally along x */

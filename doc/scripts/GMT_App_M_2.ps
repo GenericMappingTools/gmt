@@ -1,17 +1,16 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 792 612
-%%HiResBoundingBox: 0 0 792.0000 612.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psscale
+%%HiResBoundingBox: 0 0 792.0000 612.0000
+%%Title: GMT v6.2.0_7d97e26-dirty_2020.10.08 [64-bit] Document from colorbar
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:51:31 2018
+%%CreationDate: Thu Oct  8 13:37:44 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
 %%Pages: 1
 %%EndComments
-
 %%BeginProlog
 250 dict begin
 /! {bind def} bind def
@@ -336,9 +335,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +591,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +634,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -648,37 +642,31 @@ end
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
 %%EndProlog
-
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
-PSLevel 1 gt { << /PageSize [792 612] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
-
 %%Page: 1 1
-
 %%BeginPageSetup
 V 0.06 0.06 scale
 %%EndPageSetup
-
 /PSL_page_xsize 13200 def
 /PSL_page_ysize 10200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
 FQ
 O0
 1200 1200 TM
-
 % PostScript produced by:
-%@GMT: gmt psscale -Cages.cpt -D00/13+w-8/0.5+jML+ef
+%@GMT: gmt colorbar -Cages.cpt -Dx00/13+w-8/0.5+jML+ef
 %@PROJ: xy 0.00000000 542.00000000 0.00000000 0.19685039 542.000 -0.000 0.000 0.197 +xy
-%GMTBoundingBox: 72 72 226.772 14.1732
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 0 4252 T
 25 W
 236 0 T
@@ -765,14 +753,13 @@ V -90 R (0) mr Z U
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: gmt psscale -Cages.cpt -D04/13+w-8/0.5+jML+ef -L
+%@GMT: gmt colorbar -Cages.cpt -Dx04/13+w-8/0.5+jML+ef -L
 %@PROJ: xy 0.00000000 542.00000000 0.00000000 0.19685039 542.000 -0.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1890 4252 T
 25 W
 236 0 T
@@ -819,6 +806,7 @@ N 1374 0 M 0 -83 D S
 N 1031 0 M 0 -83 D S
 N 687 0 M 0 -83 D S
 N 344 0 M 0 -83 D S
+N 0 0 M 0 -83 D S
 3780 -167 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V -90 R (Neogene) ml Z U
@@ -841,14 +829,13 @@ V -90 R (Neogene) ml Z U
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: gmt psscale -Cages.cpt -D08/13+w-8/0.5+jML+ef -L0.0
+%@GMT: gmt colorbar -Cages.cpt -Dx08/13+w-8/0.5+jML+ef -L0.0
 %@PROJ: xy 0.00000000 542.00000000 0.00000000 0.19685039 542.000 -0.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 3780 4252 T
 25 W
 236 0 T
@@ -905,14 +892,13 @@ V -90 R (Neogene) ml Z U
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: gmt psscale -Cages.cpt -D12/13+w-8/0.5+jML+ef -L0.1
+%@GMT: gmt colorbar -Cages.cpt -Dx12/13+w-8/0.5+jML+ef -L0.1
 %@PROJ: xy 0.00000000 542.00000000 0.00000000 0.19685039 542.000 -0.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 5669 4252 T
 25 W
 236 0 T
@@ -942,11 +928,11 @@ O1
 236 296 3460 0 Sb
 {1 A} FS
 O0
-122 -122 -122 -122 2 -27 240 SP
--27 240 M
--122 -122 D
-122 -122 D
-S
+122 -104 -122 -104 2 -27 222 SP
+-27 222 M
+-122 -104 D
+122 -104 D
+P S
 2 setlinecap
 3608 -83 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
@@ -970,14 +956,13 @@ V -90 R (Neogene) ml Z U
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: gmt psscale -Cages.cpt -D16/13+w08/0.5+jML+ef -L
+%@GMT: gmt colorbar -Cages.cpt -Dx16/13+w08/0.5+jML+ef -L
 %@PROJ: xy 0.00000000 542.00000000 0.00000000 0.19685039 0.000 542.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 7559 4252 T
 25 W
 236 0 T
@@ -1024,6 +1009,7 @@ N 2405 0 M 0 -83 D S
 N 2749 0 M 0 -83 D S
 N 3092 0 M 0 -83 D S
 N 3436 0 M 0 -83 D S
+N 3780 0 M 0 -83 D S
 0 -167 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V -90 R (Neogene) ml Z U
@@ -1046,14 +1032,13 @@ V -90 R (Neogene) ml Z U
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: gmt psscale -Cages.cpt -D20/13+w08/0.5+jML+ef -L0.1
+%@GMT: gmt colorbar -Cages.cpt -Dx20/13+w08/0.5+jML+ef -L0.1
 %@PROJ: xy 0.00000000 542.00000000 0.00000000 0.19685039 0.000 542.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 9449 4252 T
 25 W
 236 0 T
@@ -1083,11 +1068,11 @@ O1
 236 296 3460 0 Sb
 {1 A} FS
 O0
--122 -122 122 -122 2 3807 240 SP
-3807 240 M
-122 -122 D
--122 -122 D
-S
+-122 -104 122 -104 2 3807 222 SP
+3807 222 M
+122 -104 D
+-122 -104 D
+P S
 2 setlinecap
 172 -83 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
@@ -1111,14 +1096,13 @@ V -90 R (Neogene) ml Z U
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: gmt psscale -Cyears.cpt -D00/04+w08/0.5+jML+ef
+%@GMT: gmt colorbar -Cyears.cpt -Dx00/04+w08/0.5+jML+ef
 %@PROJ: xy 0.00000000 542.00000000 0.00000000 0.19685039 0.000 542.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 25 W
 236 0 T
 90 R
@@ -1203,14 +1187,13 @@ V -90 R (0) mr Z U
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: gmt psscale -Cyears.cpt -D04/04+w-8/0.5+jML+ef -L
+%@GMT: gmt colorbar -Cyears.cpt -Dx04/04+w-8/0.5+jML+ef -L
 %@PROJ: xy 0.00000000 542.00000000 0.00000000 0.19685039 542.000 -0.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1890 0 T
 25 W
 236 0 T
@@ -1281,14 +1264,13 @@ V -90 R (0) mr Z U
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: gmt psscale -Cyears.cpt -D08/04+w-8/0.5+jML+ef -L0.0
+%@GMT: gmt colorbar -Cyears.cpt -Dx08/04+w-8/0.5+jML+ef -L0.0
 %@PROJ: xy 0.00000000 542.00000000 0.00000000 0.19685039 542.000 -0.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 3780 0 T
 25 W
 236 0 T
@@ -1345,14 +1327,13 @@ V -90 R (0) mr Z U
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: gmt psscale -Cyears.cpt -D12/04+w-8/0.5+jML+ef -L0.1
+%@GMT: gmt colorbar -Cyears.cpt -Dx12/04+w-8/0.5+jML+ef -L0.1
 %@PROJ: xy 0.00000000 542.00000000 0.00000000 0.19685039 542.000 -0.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 5669 0 T
 25 W
 236 0 T
@@ -1382,11 +1363,11 @@ O1
 236 296 3460 0 Sb
 {1 A} FS
 O0
-122 -122 -122 -122 2 -27 240 SP
--27 240 M
--122 -122 D
-122 -122 D
-S
+122 -104 -122 -104 2 -27 222 SP
+-27 222 M
+-122 -104 D
+122 -104 D
+P S
 2 setlinecap
 3608 -353 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
@@ -1410,14 +1391,13 @@ V -90 R (0) mr Z U
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: gmt psscale -Cyears.cpt -D16/04+w-8/0.5+jML+ef -Li
+%@GMT: gmt colorbar -Cyears.cpt -Dx16/04+w-8/0.5+jML+ef -Li
 %@PROJ: xy 0.00000000 542.00000000 0.00000000 0.19685039 542.000 -0.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 7559 0 T
 25 W
 236 0 T
@@ -1474,14 +1454,13 @@ V -90 R (023) mr Z U
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: gmt psscale -Cyears.cpt -D20/04+w-8/0.5+jML+ef -Li0.1
+%@GMT: gmt colorbar -Cyears.cpt -Dx20/04+w-8/0.5+jML+ef -Li0.1
 %@PROJ: xy 0.00000000 542.00000000 0.00000000 0.19685039 542.000 -0.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 9449 0 T
 25 W
 236 0 T
@@ -1511,11 +1490,11 @@ O1
 236 296 3460 0 Sb
 {1 A} FS
 O0
-122 -122 -122 -122 2 -27 240 SP
--27 240 M
--122 -122 D
-122 -122 D
-S
+122 -104 -122 -104 2 -27 222 SP
+-27 222 M
+-122 -104 D
+122 -104 D
+P S
 2 setlinecap
 3608 -827 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
@@ -1535,15 +1514,13 @@ V -90 R (023) mr Z U
 0 setlinecap
 -9449 0 T
 %%EndObject
-
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage
-
 %%Trailer
-
 end
 %%EOF

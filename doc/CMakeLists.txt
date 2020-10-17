@@ -32,6 +32,7 @@ install (FILES
 	COMPONENT Runtime)
 
 # reST documentation
+find_package (Sphinx)
 add_subdirectory (rst)
 set (RST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/rst/source)
 set (RST_STATIC_DIR ${CMAKE_CURRENT_BINARY_DIR}/rst/_static)
@@ -41,15 +42,17 @@ add_subdirectory (fig)
 add_subdirectory (scripts)
 add_subdirectory (examples)
 
-# Optimize images for HTML documentation
-find_program (PNGQUANT pngquant)
-if (PNGQUANT)
-	add_custom_target (optimize_images
-		COMMAND ${PNGQUANT} --strip --force --ext .png ${RST_BINARY_DIR}/_images/*.png
-	)
-	add_dependencies (optimize_images docs_depends)
-	add_depend_to_target (gmt_release optimize_images)
-endif (PNGQUANT)
+if (SPHINX_FOUND)
+	# Optimize images for HTML documentation
+	find_program (PNGQUANT pngquant)
+	if (PNGQUANT)
+		add_custom_target (optimize_images
+			COMMAND ${PNGQUANT} --strip --force --ext .png ${RST_BINARY_DIR}/_images/*.png
+		)
+		add_dependencies (optimize_images docs_depends)
+		add_depend_to_target (gmt_release optimize_images)
+	endif (PNGQUANT)
+endif(SPHINX_FOUND)
 
 
 # Install target for examples

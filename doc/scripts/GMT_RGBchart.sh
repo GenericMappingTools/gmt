@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# Plots a page of all 555 unique named colors
+# Plots a page of all 663 unique named colors
 # Usage: GMT_RGBchart.sh <size>
-# where <size> is the page size. Use either: ledger, a4, or letter
+# where <size> is the page size. Use either: tabloid, a4, or letter
 # This produces the file GMT_RGBchart_<size>.ps
 
 SIZE=$1

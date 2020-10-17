@@ -624,6 +624,7 @@ EXTERN_MSC int GMT_mgd77track (void *V_API, int mode, void *args) {
 
 	if (n_paths <= 0) {
 		GMT_Report (API, GMT_MSG_ERROR, "No cruises given\n");
+		MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 		Return (GMT_NO_INPUT);
 	}
 
@@ -639,7 +640,9 @@ EXTERN_MSC int GMT_mgd77track (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_set_basemap_orders (GMT, Ctrl->N.active ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+	gmt_map_basemap (GMT);	/* Basemap before data */
 
 	gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	gmt_setpen (GMT, &Ctrl->W.pen);
