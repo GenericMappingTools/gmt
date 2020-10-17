@@ -924,7 +924,8 @@ GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct G
 	 * Each segment has leading columns of wavelength and wavenumber corresponding to wavelengths 1:5000 km.
 	 * The next 12 columns has the chosen transfer function evaluated for times 1k, 2k, 5k, 10k, 20k, 50k, 100k, 200k, 500k, 1M, 2M, and 5M years.
 	 * Each segment is written to a separate file. Obviously, if no -F or -M are given then all columns are the same since elastic */
-	int k, t, s, n_times, n_te;
+	uint64_t k;
+	int t, s, n_times, n_te;
 	char file[GMT_LEN64] = {""};
 	static char *FLX_response[6] = {"Elastic", "Viscoelastic", "Firmoviscous (1 layer)", "Firmoviscous (2 layer)", "Viscous (1 layer)", "Viscous (2 layer)"};
 	uint64_t dim[4] = {1, 0, 0, 0};
