@@ -253,7 +253,7 @@ components of the raw spectrum of the data in topo.nc, try
 
    ::
 
-    gmt grdfft topo.nc -N+w+z -fg -V
+    gmt grdfft topo.nc -N+w+z -fg -V -E > /dev/null
 
 You can now make plots of the data in topo_taper.nc, topo_real.nc, and topo_imag.nc.
 
