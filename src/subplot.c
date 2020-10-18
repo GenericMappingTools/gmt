@@ -688,17 +688,16 @@ void subplot_wipe_history_and_settings (struct GMTAPI_CTRL *API) {
 	 * as well as any subplot history file.  Same for settings.
 	 */
 
-	int fig, subplot, inset;
-	unsigned int row, col;
+	int fig, subplot, inset, row, col;
 	char file[PATH_MAX] = {""}, panel[GMT_LEN32] = {""};
 	struct GMT_SUBPLOT *P = NULL;
 
 	gmtlib_get_graphics_item (API, &fig, &subplot, panel, &inset);	/* Determine the natural history level */
 	if (subplot && (P = gmt_subplot_info (API, fig))) {
 		for (row = 0; row < P->nrows; row++) for (col = 0; col < P->ncolumns; col++) {
-			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_HISTORY_FILE, fig, row, col);
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%d-%d", API->gwf_dir, GMT_HISTORY_FILE, fig, row, col);
 			gmt_remove_file (API->GMT, file);
-			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_SETTINGS_FILE, fig, row, col);
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%d-%d", API->gwf_dir, GMT_SETTINGS_FILE, fig, row, col);
 			gmt_remove_file (API->GMT, file);
 		}
 	}
