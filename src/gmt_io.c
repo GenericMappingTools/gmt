@@ -5165,6 +5165,27 @@ char *gmt_strncpy (char *dest, const char *source, size_t num) {
 	return dest;
 }
 
+char *gmtlib_valid_filemodifiers (struct GMT_CTRL *GMT) {
+	/* Returns a single string with all unique valid file modifiers.
+	 * We do this based on the individua modifier constants and assemble
+	 * one with the unique entries on the fly. */
+	char count[GMT_LEN128], *m = NULL;
+	static char string[GMT_LEN16];
+	unsigned int k, q;
+	gmt_M_unused (GMT);
+	gmt_M_memset (count, GMT_LEN128, char);
+	m = GMT_GRIDFILE_MODIFIERS;
+	for (k = 0; k < strlen (m); k++)
+		count[m[k]]++;
+	m = GMT_CPTFILE_MODIFIERS;
+	for (k = 0; k < strlen (m); k++)
+		count[m[k]]++;
+	for (k = q = 0; k < GMT_LEN128; k++)
+		if (count[k]) string[q++] = k;
+	string[q] = '\0';
+	return ((char *)string);
+}
+
 char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const char *mods) {
 	/* Need to strip off any modifiers and netCDF specifications that may be part of filename */
 	char file[PATH_MAX] = {""}, *c = NULL, *clean_file = NULL;
@@ -5203,7 +5224,7 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 	if (gmt_file_is_cache (GMT->parent, filename))			/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, filename, 0);
 
-	if ((cleanfile = gmt_get_filename (GMT->parent, &filename[first], "honsuU")) == NULL) return (-1);	/* Likely not a valid filename */
+	if ((cleanfile = gmt_get_filename (GMT->parent, &filename[first], gmtlib_valid_filemodifiers (GMT))) == NULL) return (-1);	/* Likely not a valid filename */
 	strncpy (file, cleanfile, PATH_MAX-1);
 	gmt_M_str_free (cleanfile);
 	if (mode == W_OK)

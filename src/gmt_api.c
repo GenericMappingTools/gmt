@@ -13813,21 +13813,21 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 			else if (gmt_M_file_is_netcdf (file))	/* Meaning it specifies a layer etc via ?<args> */
 				c = strchr (file, '?');
 			else {	/* Check for modifiers */
-				unsigned int nm = gmt_validate_modifiers (API->GMT, file, 0, "onsuU", GMT_MSG_QUIET);
+				unsigned int nm = gmt_validate_modifiers (API->GMT, file, 0, GMT_GRIDFILE_MODIFIERS, GMT_MSG_QUIET);
 				if (nm) /* Found some valid modifiers, lets get to the first */
-					c = gmt_first_modifier (API->GMT, file, "onsuU");
+					c = gmt_first_modifier (API->GMT, file, GMT_GRIDFILE_MODIFIERS);
 			}
 			break;
 		case GMT_IS_IMAGE:
 			c = strstr (file, "=gd");	/* Got image=gd[+modifiers] */
 			break;
 		case GMT_IS_PALETTE:
-			if (gmt_validate_modifiers (API->GMT, file, '-', "iuU", GMT_MSG_ERROR)) {
+			if (gmt_validate_modifiers (API->GMT, file, '-', GMT_CPTFILE_MODIFIERS, GMT_MSG_ERROR)) {
 				GMT_Report (API, GMT_MSG_DEBUG, "CPT filename has invalid modifiers! (%s)\n", file);
 				return_error (V_API, GMT_NOT_A_VALID_MODIFIER);
 			}
 			else
-				c = gmt_first_modifier (API->GMT, file, "iuU");
+				c = gmt_first_modifier (API->GMT, file, GMT_CPTFILE_MODIFIERS);
 			break;
 		default:	/* No checks for the other families */
 			break;

@@ -262,6 +262,25 @@ enum GMT_enum_basemap {
 /* Modifiers for contour -A option */
 #define GMT_CONTSPEC_MODS "acdefghijklLnNoprstuvwxX="
 
+/* Valid modifiers for various input files */
+
+/* Modifers for grid files:
+ * +o<offset>  adds this offset to all grid values
+ * +n<nodata> sets what the no-data value is
+ * +s<scl> scales all grid values by this scale
+ * +u<unit> converts Cartesian x/y coordinates from given unit to meters
+ * +U<unit> converts Cartesian x/y coordinates from meter to given unit
+ */
+#define GMT_GRIDFILE_MODIFIERS "onsuU"
+
+/* Modifiers for CPT files:
+ * +h<hinge> to override soft-hinge value in CPT
+ * +i<dz> is used to round auto-deteremined min/amax range to a multiple of dz.
+ * +u<unit> converts z-values from given unit to meters
+ * +U<unit> converts z-values from meter to given unit
+ */
+#define GMT_CPTFILE_MODIFIERS "hiuU"
+
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
 	GMT_LEFT_RIGHT = 1,
