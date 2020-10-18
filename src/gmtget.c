@@ -206,7 +206,8 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active) {	/* Data download */
 		if (!strncmp (Ctrl->D.dir, "all", 3U) || !strncmp (Ctrl->D.dir, "data", 4U)) {	/* Want data */
 			bool found;
-			unsigned int n_tiles, k, d = 0, t, n_items = 0, n;
+			int k;
+			unsigned int n_tiles, d = 0, t, n_items = 0, n;
 			char **list = NULL, *string = NULL, *token = NULL, *tofree = NULL;
 			char planet[GMT_LEN32] = {""}, group[GMT_LEN32] = {""}, dataset[GMT_LEN64] = {""}, size[GMT_LEN32] = {""}, message[GMT_LEN256] = {""};
 			double world[4] = {-180.0, +180.0, -90.0, +90.0};
