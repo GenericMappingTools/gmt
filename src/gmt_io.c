@@ -5170,7 +5170,7 @@ char *gmtlib_valid_filemodifiers (struct GMT_CTRL *GMT) {
 	 * We do this based on the individua modifier constants and assemble
 	 * one with the unique entries on the fly. */
 	char count[GMT_LEN128], *m = NULL;
-	char string[GMT_LEN16];
+	static char string[GMT_LEN16];
 	unsigned int k, q;
 	gmt_M_unused (GMT);
 	gmt_M_memset (count, GMT_LEN128, char);
@@ -5183,7 +5183,7 @@ char *gmtlib_valid_filemodifiers (struct GMT_CTRL *GMT) {
 	for (k = q = 0; k < GMT_LEN128; k++)
 		if (count[k]) string[q++] = k;
 	string[q] = '\0';
-	return (string);
+	return ((char *)string);
 }
 
 char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const char *mods) {
