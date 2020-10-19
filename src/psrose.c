@@ -741,7 +741,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	gmt_parse_common_options (GMT, "J", 'J', "x1i");
 	GMT->common.R.active[RSET] = GMT->common.J.active = true;
 	wesn[XLO] = wesn[YLO] = -Ctrl->S.scale;	wesn[XHI] = wesn[YHI] = Ctrl->S.scale;
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
+	if (gmt_map_setup (GMT, wesn)) {
 		gmt_M_free (GMT, length);		gmt_M_free (GMT, xx);	gmt_M_free (GMT, sum);
 		gmt_M_free (GMT, azimuth);		gmt_M_free (GMT, yy);
 		Return (GMT_PROJECTION_ERROR);

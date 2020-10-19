@@ -618,7 +618,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && Ctrl->F.mode == SUBPLOT_FIGURE, "Option -J: Requires -Fs to determine subplot height!\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.reset_h && !GMT->common.J.active && !GMT->common.R.active[RSET], "Option -Fs: Requires -R -J to determine subplot height if specified as zero!\n");
 		if (GMT->common.J.active) {	/* Compute map height from -R -J */
-			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) n_errors++;
+			if (gmt_map_setup (GMT, GMT->common.R.wesn)) n_errors++;
 			for (j = 0; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = GMT->current.map.height;
 		}
 		if (B_args) {	/* Got common -B settings that applies to all axes not controlled by -SR, -SC */

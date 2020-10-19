@@ -805,7 +805,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	add = !(T.x_offset == 0.0 && T.y_offset == 0.0);
 	if (add && Ctrl->D.justify) T.boxflag |= 64;
 
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->G.mode) GMT->current.ps.nclip = (Ctrl->N.active) ? +1 : +2;	/* Signal that this program initiates clipping that will outlive this process */
 

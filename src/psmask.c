@@ -657,7 +657,7 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 		gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection */
 	}
 
-	if (!Ctrl->C.active && make_plot && gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (!Ctrl->C.active && make_plot && gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->D.active) {	/* Want to dump the x-y contour lines of the mask */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 2};

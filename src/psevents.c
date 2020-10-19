@@ -739,7 +739,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 		if (fp_labels) fclose (fp_labels);
 		Return (API->error);
 	}
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {	/* Set up map projection */
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) {	/* Set up map projection */
 		if (fp_symbols) fclose (fp_symbols);
 		if (fp_labels) fclose (fp_labels);
 		Return (GMT_PROJECTION_ERROR);
