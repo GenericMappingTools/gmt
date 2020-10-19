@@ -630,7 +630,7 @@ EXTERN_MSC int GMT_mgd77track (void *V_API, int mode, void *args) {
 
 	use = (M.original) ? MGD77_ORIG : MGD77_REVISED;
 
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) {
 		MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 		Return (GMT_PROJECTION_ERROR);
 	}

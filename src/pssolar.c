@@ -552,7 +552,7 @@ EXTERN_MSC int GMT_pssolar (void *V_API, int mode, void *args) {
 		double *lon = NULL, *lat = NULL, x0, y0;
 		unsigned int first = (Ctrl->N.active) ? 0 : 1;
 
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
+		if (gmt_map_setup (GMT, GMT->common.R.wesn)) {
 			gmt_M_free (GMT, Sun);
 			Return (GMT_PROJECTION_ERROR);
 		}

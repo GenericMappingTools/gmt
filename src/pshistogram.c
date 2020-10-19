@@ -1215,11 +1215,11 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		wesn[XLO] = F.wesn[YLO];	wesn[XHI] = F.wesn[YHI];
 		wesn[YLO] = F.wesn[XLO];	wesn[YHI] = F.wesn[XHI];
 		gmt_M_memcpy (GMT->common.R.wesn, wesn, 4, double);
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_map_setup (GMT, wesn)) Return (GMT_PROJECTION_ERROR);
 	}
 	else {
 		gmt_M_memcpy (GMT->common.R.wesn, F.wesn, 4, double);
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, F.wesn), "")) {
+		if (gmt_map_setup (GMT, F.wesn)) {
 			gmt_M_free (GMT, data);
 			if (F.weights) gmt_M_free (GMT, weights);
 			Return (GMT_PROJECTION_ERROR);
