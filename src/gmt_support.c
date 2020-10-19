@@ -16856,7 +16856,8 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 			nt = urint (range / inc);
 			new = nt * inc;
 			if (nt && !doubleAlmostEqualZero (new, range)) {	/* Must adjust inc to match proper range */
-				inc = range / (nt - 1);
+				//inc = range / (nt - 1);
+				inc = range / nt;
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Range (max - min) is not a whole multiple of inc. Adjusted inc to %g\n", option, inc);
 			}
 		}
