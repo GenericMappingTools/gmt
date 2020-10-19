@@ -627,7 +627,7 @@ GMT_LOCAL int filter1d_do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INF
 			}
 		}
 
-		while ((F->T.array[k] - F->data[F->t_col][left] - small) > F->half_width) ++left;
+		while (left  < F->n_rows && (F->T.array[k] - F->data[F->t_col][left] - small) > F->half_width) ++left;
 		while (right < F->n_rows && (F->data[F->t_col][right] - F->T.array[k] - small) <= F->half_width) ++right;
 		n_in_filter = (int64_t)(right - left);
 		if ( n_in_filter <= 0 || (F->check_lack && ( (F->filter_width / n_in_filter) > F->lack_width) ) ) {
