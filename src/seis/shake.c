@@ -29,9 +29,9 @@
 #define THIS_MODULE_MODERN_NAME	"shake"
 #define THIS_MODULE_LIB		"seis"
 #define THIS_MODULE_PURPOSE	"Compute Peak Ground Acceleration/Velocity and Intensity."
-#define THIS_MODULE_KEYS	"<G{,LD(=,>GG)"
+#define THIS_MODULE_KEYS	"<G{,LD(=,GG}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:RVi"
+#define THIS_MODULE_OPTIONS "-:RVif"
 
 /* Control structure */
 
@@ -61,6 +61,7 @@ struct SHAKE_CTRL {
 		unsigned int mode;	/* 0 = dist to nearest point, 1 = also get the point, 2 = instead get seg#, pt# */
 		unsigned int sph;	/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		char *file;	/* Name of file with lines */
+		double line[4];
 		char unit;
 	} L;
 	struct SHAKE_M {
@@ -101,8 +102,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -G<outgrid> -L<fault.dat> -M<mag> [-Ca,v,i] [-F<mecatype>] [%s] [%s]\n",
-	             name, GMT_Rgeoz_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -G<outgrid> -L<fault.dat> -M<mag> [-Ca,v,i] [-F<mecatype>] [%s] [%s] [%s]\n",
+	             name, GMT_Rgeoz_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -123,7 +124,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   3 normal.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   4 thrust.\n\n");
 	GMT_Option (API, "R,V");
-	GMT_Option (API, "i,:");
+	GMT_Option (API, "f,i,:");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -137,7 +138,7 @@ static int parse (struct GMT_CTRL *GMT, struct SHAKE_CTRL *Ctrl, struct GMT_Z_IO
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, pos = 0;
+	unsigned int n, n_errors = 0, n_files = 0, pos = 0;
 	char txt_a[GMT_LEN256] = {""}, p[GMT_LEN16] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -202,10 +203,16 @@ static int parse (struct GMT_CTRL *GMT, struct SHAKE_CTRL *Ctrl, struct GMT_Z_IO
 				break;
 			case 'L':	/* -L<table>[+u[+|-]<unit>] */
 				Ctrl->L.active = true;
-				Ctrl->L.file = gmt_get_filename (API, opt->arg, "u");
-				if (!gmt_check_filearg (GMT, 'L', Ctrl->L.file, GMT_IN, GMT_IS_DATASET)) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-L<fault> error. Must provide an existing file name.\n");
-					n_errors++;
+				if (strchr(opt->arg, '/')) {
+					n = sscanf (opt->arg, "%lf/%lf/%lf/%lf", &Ctrl->L.line[0], &Ctrl->L.line[1], &Ctrl->L.line[2], &Ctrl->L.line[3]);
+					n_errors += gmt_M_check_condition (GMT, n < 4, "Option -L: Must specify lon0/lat0/lon1/lat1\n");
+				}
+				else {
+					Ctrl->L.file = gmt_get_filename(API, opt->arg, "u");
+					if (!gmt_check_filearg (GMT, 'L', Ctrl->L.file, GMT_IN, GMT_IS_DATASET)) {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-L error. Must provide either an existing file name or line coordinates.\n");
+						n_errors++;
+					}
 				}
 				break;
 			case 'M':
@@ -221,7 +228,7 @@ static int parse (struct GMT_CTRL *GMT, struct SHAKE_CTRL *Ctrl, struct GMT_Z_IO
 	if ((Ctrl->G.do_PGA + Ctrl->G.do_PGV + Ctrl->G.do_INT) == 0) {Ctrl->G.do_INT = true;}	/* Default */
 
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active, "-L option: Must provide a fault file name.\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active, "-L option: Must provide a fault file name or coordinates.\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->M.active, "-M option: Must specify magnitude.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -302,6 +309,24 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)
 		Return (API->error);
 
+	if (!Ctrl->L.file) {
+		/* -------------------------------------------------------------------------------
+		Since it's actually so boring to fill in a GMT_TABLE struct, easier to write
+		the line vertices in a tmp file, and let GMT_Read_Data() do the job.
+		------------------------------------------------------------------------------ */
+		char *line_file = "lixo_line.dat";
+		FILE *fp;
+
+		if ((fp = fopen (line_file, "w")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "SHAKE: Unable to open temporary file for writing\n");
+			Return (API->error);
+		}
+
+		fprintf (fp, "%f\t%f\n%f\t%f", Ctrl->L.line[0], Ctrl->L.line[1], Ctrl->L.line[2], Ctrl->L.line[3]);
+		fclose ((void *) fp);
+		Ctrl->L.file = line_file;
+	}
+
 	gmt_disable_bghi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -L files */
 	if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL)
 		Return (API->error);
@@ -313,6 +338,9 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 	gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
 	gmt_set_segmentheader (GMT, GMT_OUT, false);	/* Since processing of -L file might have turned it on [should be determined below] */
 	xyline = Lin->table[0];			/* Can only be one table since we read a single file */
+
+	if (Ctrl->L.line) remove (Ctrl->L.file);		/* It was a temp file */
+
 	if (proj_type == GMT_GEO2CART) {	/* Must convert the line points first */
 		for (seg = 0; seg < xyline->n_segments; seg++) {
 			for (row = 0; row < xyline->segment[seg]->n_rows; row++) {
