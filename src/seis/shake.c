@@ -225,7 +225,10 @@ static int parse (struct GMT_CTRL *GMT, struct SHAKE_CTRL *Ctrl, struct GMT_Z_IO
 		}
 	}
 
-	if ((Ctrl->G.do_PGA + Ctrl->G.do_PGV + Ctrl->G.do_INT) == 0) {Ctrl->G.do_INT = true;}	/* Default */
+	if (!Ctrl->C.active) {
+		Ctrl->C.selected[1] = Ctrl->C.selected[2] = Ctrl->G.do_INT = Ctrl->C.no_PGV = true;		/* The default */
+		Ctrl->C.n_selected = 1;
+	}
 
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active, "-L option: Must provide a fault file name or coordinates.\n");
@@ -306,8 +309,8 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 	proj_type = gmt_init_distaz (GMT, Ctrl->L.unit, way, GMT_MAP_DIST);
 
 	/* Initialize the i/o for doing table reading */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)
-		Return (API->error);
+	//if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)
+		//Return (API->error);
 
 	if (!Ctrl->L.file) {
 		/* -------------------------------------------------------------------------------
