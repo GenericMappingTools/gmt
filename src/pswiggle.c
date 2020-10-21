@@ -477,7 +477,7 @@ EXTERN_MSC int GMT_pswiggle (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the pswiggle main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 

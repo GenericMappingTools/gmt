@@ -267,7 +267,7 @@ EXTERN_MSC int GMT_psbasemap (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Constructing the basemap\n");
 
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->A.active) {	/* Just save outline in geographic coordinates */
 		/* Loop counter-clockwise around the rectangular projected domain, recovering the lon/lat points */

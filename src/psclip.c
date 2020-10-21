@@ -248,7 +248,7 @@ EXTERN_MSC int GMT_psclip (void *V_API, int mode, void *args) {
 		GMT->current.ps.nclip = +1;		/* Program adds one new level of clipping */
 
 	if (Ctrl->C.active) {	/* End clipping and optionally place basemap */
-		if (GMT->current.map.frame.init && gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (GMT->current.map.frame.init && gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		psclip_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
@@ -262,7 +262,7 @@ EXTERN_MSC int GMT_psclip (void *V_API, int mode, void *args) {
 
 	/* Here we have -R -J etc to deal with and will be setting up clipping */
 
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	if (Ctrl->C.active) psclip_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */

@@ -765,7 +765,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 	convert = (make_plot || (GMT->common.R.active[RSET] && GMT->common.J.active));
 	get_contours = (Ctrl->D.active || Ctrl->W.active);
 
-	if (GMT->common.J.active && gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT->common.J.active && gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	x = gmt_M_memory (GMT, NULL, n_alloc, double);

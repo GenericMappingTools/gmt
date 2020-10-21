@@ -1076,7 +1076,7 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, Conf); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 /* Two macros used to detect if an image has no meta-data for region and increments */
 #define img_inc_is_one(h) (h->inc[GMT_X] == 1.0 && h->inc[GMT_Y] == 1.0)
@@ -1170,11 +1170,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 			if (Ctrl->I.file == NULL && gmt_file_is_tiled_list (API, Ctrl->In.file, NULL, NULL, NULL)) {	/* Must read and stitch the data tiles first */
 				if ((Grid_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, API->tile_wesn, Ctrl->In.file, NULL)) == NULL) {	/* Get stitched grid */
-					gmt_M_free (GMT, Conf);
 					Return (API->error);
 				}
 				if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, Grid_orig, data_grd)) {
-					gmt_M_free (GMT, Conf);
 					Return (API->error);
 				}
 				got_data_tiles = true;
@@ -1184,7 +1182,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			mem_I = gmt_M_file_is_memory (Ctrl->I.file);	/* Remember if the intensity grid was passed as a memory grid */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read intensity grid header from file %s\n", Ctrl->I.file);
 			if ((Intens_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
-				gmt_M_free (GMT, Conf);
 				Return (API->error);
 			}
 		}
@@ -1229,7 +1226,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		/* Read in the the entire image that is to be mapped */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate memory and read image file %s\n", Ctrl->In.file);
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_IMAGE_NO_INDEX, NULL, Ctrl->In.file, NULL)) == NULL) {
-			gmt_M_free (GMT, Conf);
 			Return (API->error);
 		}
 		grid_registration = I->header->registration;	/* This is presumably pixel registration since it is an image */
@@ -1277,7 +1273,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (!got_data_tiles) {	/* Only avoid this step if we already read a data tile bunch earlier under the I.derive == true section above */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read header from file %s\n", Ctrl->In.file);
 			if ((Grid_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
-				gmt_M_free (GMT, Conf);	/* Done with the configuration structure */
 				Return (API->error);
 			}
 			if ((API->error = gmt_img_sanitycheck (GMT, Grid_orig->header))) {	/* Used map projection on a Mercator (i.e., already a Cartesian) grid */
@@ -1308,7 +1303,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		gmt_set_R_from_grd (GMT, Grid_orig->header);
 
 	/* Initialize the projection for the selected -R -J */
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	/* Determine the wesn to be used to read the grid file; or bail if file is outside -R */
 
@@ -1832,8 +1827,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		    	Conf->n_columns, Conf->n_rows, (Ctrl->E.device_dpi ? -24 : 24));
 		}
 	}
-
-	gmt_M_free (GMT, Conf);	/* Done with the configuration structure */
 
 	if (!Ctrl->A.active) {	/* Finalize PostScript plot, possibly including basemap */
 		if (!Ctrl->N.active) gmt_map_clip_off (GMT);

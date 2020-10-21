@@ -14299,7 +14299,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 							return NULL;
 						}
 						GMT->common.J.active = GMT->common.R.active[RSET] = true;	/* Since we have set those here */
-						if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
+						if (gmt_map_setup (GMT, GMT->common.R.wesn))
 							return NULL;
 					}
 					GMT->common.R.active[RSET] = false;	/* Since we will need to parse it again officially in GMT_Parse_Common */

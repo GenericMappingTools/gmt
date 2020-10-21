@@ -394,7 +394,7 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 	if (!GMT->common.R.active[RSET])	/* -R was not set so we use the grid domain */
 		gmt_set_R_from_grd (GMT, Grid[0]->header);
 
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	/* Determine the wesn to be used to read the grid file */
 

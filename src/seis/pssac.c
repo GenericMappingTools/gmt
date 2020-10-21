@@ -621,7 +621,7 @@ EXTERN_MSC int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level fun
 
 	current_pen = Ctrl->W.pen;
 
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
