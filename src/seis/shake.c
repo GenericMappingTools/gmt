@@ -309,8 +309,8 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 	proj_type = gmt_init_distaz (GMT, Ctrl->L.unit, way, GMT_MAP_DIST);
 
 	/* Initialize the i/o for doing table reading */
-	//if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)
-		//Return (API->error);
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)
+		Return (API->error);
 
 	if (!Ctrl->L.file) {
 		/* -------------------------------------------------------------------------------
