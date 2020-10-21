@@ -5186,46 +5186,6 @@ char *gmtlib_valid_filemodifiers (struct GMT_CTRL *GMT) {
 	return ((char *)string);
 }
 
-GMT_LOCAL char *gmtio_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, const char *mods) {
-	/* A filename make have sequences that could look like a GMT modifier but is actually just part
-	 * of the filename, e.g. My.File+o44.grd.  We do not want to catch such sequences as modifiers and
-	 * parse them.  The strategy we use is to start from the end of the filename and work backwards
-	 * until the first non-expected "modifier" is found, then return pointer to first actual modifier
-	 * found, or NULL.  Any modifier will be of the form +?[<arg>], where ? is a lower or upper-case
-	 * letter, and <arg> is optional. */
-	bool go = true;	/* Keep scanning backwards until we find an unrecognized modifier */
-	char *modifiers = NULL;	/* Pointer to the start of valid modifiers in this filename, or NULL */
-	size_t k = strlen (filename);	/* k will serve as the index of the current character in the filename string */
-	gmt_M_unused (API);
-
-	while (filename[k] != '+' && k) k--;	/* Wind back to last found plus sign */
-	if (k == 0 || filename[k+1] == '\0') go = false;	/* No modifiers found at all, or we found a single trailing + in the name (e.g., my.test+) */
-	while (go) {	/* Here, filename[k] == '+' and k > 0 */
-		if (isalpha (filename[k+1]) && strchr (mods, filename[k+1])) {	/* This is a valid file modifier */
-			modifiers = &filename[k];	/* Update the pointer the the current start of valid modifiers */
-			k--;	/* Step one back from the '+' character; k could become 0 if filename was just valid modifiers (...) */
-			while (filename[k] != '+' && k) k--;	/* Wind back to last found plus sign as long as we are not in first position */
-			if (k == 0) go = false;	/* Ran out of characters */
-		}
-		else	/* Not a valid modifier or just part of something like a positive number - stop our scanning */
-			go = false;
-	}
-	return (modifiers);	/* Pass out the start of the valid modifiers or NULL */
-}
-
-GMT_LOCAL char *my_strrstr (const char *s, const char *m) {
-    char *last = NULL;
-    size_t n = strlen(m);
-
-    while ((s = strchr(s, *m)) != NULL) {
-        if (!strncmp(s, m, n))
-            last = (char *)s;
-        if (*s++ == '\0')
-            break;
-    }
-    return last;
-}
-
 char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const char *mods) {
 	/* Need to strip off any valid, trailing modifiers and netCDF specifications that may be part of filename */
 	char file[PATH_MAX] = {""}, *c = NULL, *clean_file = NULL;
@@ -5239,10 +5199,10 @@ char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const cha
 	if (mods) {	/* Given modifiers to chop off if they are valid */
 		char *f = NULL;
 		/* If recognized file extension for grids (.grd, .nc) or cpt (.cpt) we must look after those */
-		if ((f = my_strrstr (file, ".grd")) || (f = my_strrstr (file, ".cpt")) || (f = my_strrstr (file, ".nc")))
-			c = gmtio_last_valid_file_modifier (API, f, mods);
+		if ((f = gmt_strrstr (file, ".grd")) || (f = gmt_strrstr (file, ".cpt")) || (f = gmt_strrstr (file, ".nc")))
+			c = gmtlib_last_valid_file_modifier (API, f, mods);
 		else
-			c = gmtio_last_valid_file_modifier (API, file, mods);
+			c = gmtlib_last_valid_file_modifier (API, file, mods);
 
 		if (c == NULL)	/* Modifier free file name */
 			return (strdup (file));

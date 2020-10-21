@@ -13362,6 +13362,33 @@ char *gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep) {
 	return (k > 0 && k < len) ? &string[k-1] : NULL;
 }
 
+char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, const char *mods) {
+	/* A filename make have sequences that could look like a GMT modifier but is actually just part
+	 * of the filename, e.g. My.File+o44.grd.  We do not want to catch such sequences as modifiers and
+	 * parse them.  The strategy we use is to start from the end of the filename and work backwards
+	 * until the first non-expected "modifier" is found, then return pointer to first actual modifier
+	 * found, or NULL.  Any modifier will be of the form +?[<arg>], where ? is a lower or upper-case
+	 * letter, and <arg> is optional. */
+	bool go = true;	/* Keep scanning backwards until we find an unrecognized modifier */
+	char *modifiers = NULL;	/* Pointer to the start of valid modifiers in this filename, or NULL */
+	size_t k = strlen (filename);	/* k will serve as the index of the current character in the filename string */
+	gmt_M_unused (API);
+
+	while (filename[k] != '+' && k) k--;	/* Wind back to last found plus sign */
+	if (k == 0 || filename[k+1] == '\0') go = false;	/* No modifiers found at all, or we found a single trailing + in the name (e.g., my.test+) */
+	while (go) {	/* Here, filename[k] == '+' and k > 0 */
+		if (isalpha (filename[k+1]) && strchr (mods, filename[k+1])) {	/* This is a valid file modifier */
+			modifiers = &filename[k];	/* Update the pointer the the current start of valid modifiers */
+			k--;	/* Step one back from the '+' character; k could become 0 if filename was just valid modifiers (...) */
+			while (filename[k] != '+' && k) k--;	/* Wind back to last found plus sign as long as we are not in first position */
+			if (k == 0) go = false;	/* Ran out of characters */
+		}
+		else	/* Not a valid modifier or just part of something like a positive number - stop our scanning */
+			go = false;
+	}
+	return (modifiers);	/* Pass out the start of the valid modifiers or NULL */
+}
+
 #if 0
 /* Was used to test the tokenizing of +<code>[<args] in cases
  * where <args> may contain an escaped or quoted +, etc.
