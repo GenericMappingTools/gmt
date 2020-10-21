@@ -8035,7 +8035,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 		/* Must handle special case when a list of colors are given instead of a CPT name.  We make a temp CPT from the colors */
 		if (family == GMT_IS_PALETTE && !just_get_data) { /* CPTs must be handled differently since the master files live in share/cpt and filename is missing .cpt */
 			int c_err = 0;
-			char CPT_file[PATH_MAX] = {""}, *file = NULL;
+			char CPT_file[PATH_MAX] = {""}, *file = NULL, *m = NULL, *f = NULL;
 			if (input[0] == '@') first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable CPTs */
 			file = strdup (&input[first]);
 			if ((c_err = gmtapi_colors2cpt (API, &file, &mode)) < 0) { /* Maybe converted colors to new CPT */
@@ -8047,16 +8047,24 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 				size_t len = strlen (file), elen;
 				char *ext = (len > 4 && strstr (file, ".cpt")) ? "" : ".cpt", *q = NULL;
 				elen = strlen (ext);
-				if ((q = gmtlib_file_unitscale (file))) q[0] = '\0';    /* Truncate modifier */
-				else if ((q = strstr (file, "+h"))) q[0] = '\0';    /* Truncate +h modifier */
+				/* Need to check for CPT filename modifiers */
+				if ((f = gmt_strrstr (file, ".cpt")))
+					m = gmtlib_last_valid_file_modifier (API, f, GMT_CPTFILE_MODIFIERS);
+				else
+					m = gmtlib_last_valid_file_modifier (API, file, GMT_CPTFILE_MODIFIERS);
+
+				if (m) {	/* Got one or more valid CPT file modifiers */
+					if ((q = gmtlib_cptfile_unitscale (API, m))) q[0] = '\0';    /* Truncate modifier after processing the unit */
+					if (m[0] && (q = strstr (m, "+h"))) q[0] = '\0';    /* Truncate +h modifier (checking for m[0] since the line above could leave it blank) */
+				}
 				if (elen)	/* Master: Append extension and supply path */
 					gmt_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
 				else if (!gmt_getdatapath (API->GMT, file, CPT_file, R_OK)) {	/* Use name.cpt as is but look for it */
 					GMT_Report (API, GMT_MSG_ERROR, "GMT_Read_Data: File not found: %s\n", file);
 					gmt_M_str_free (input);
-					return_null (API, GMT_FILE_NOT_FOUND);	/* Failed to find the file anywyere */
+					return_null (API, GMT_FILE_NOT_FOUND);	/* Failed to find the file anywhere */
 				}
-				if (q) {q[0] = '+'; strncat (CPT_file, q, PATH_MAX-1);}	/* Add back the z-scale modifier */
+				if (m && q) {q[0] = '+'; strncat (CPT_file, q, PATH_MAX-1);}	/* Add back the z modifiers */
 			}
 			else	/* Got color list, now a temp CPT instead */
 				strncpy (CPT_file, file, PATH_MAX-1);

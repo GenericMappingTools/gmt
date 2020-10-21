@@ -1151,62 +1151,24 @@ GMT_LOCAL void gmtsupport_copy_palette_hdrs (struct GMT_CTRL *GMT, struct GMT_PA
 	for (hdr = 0; hdr < P_from->n_headers; hdr++) P_to->header[hdr] = strdup (P_from->header[hdr]);
 }
 
-#if 0
-/*! Decode the optional +w, +u|U<unit> and determine scales */
-GMT_LOCAL struct CPT_Z_SCALE *gmtsupport_cpt_parse (struct GMT_CTRL *GMT, char *file, unsigned int direction) {
-	unsigned int pos = 0, uerr = 0;
-	int unit;
-	char *c = NULL, p[GMT_LEN32] = {""};
-	struct CPT_Z_SCALE *Z = NULL;
-	gmt_M_unused(direction);
-
-	if ((c = gmt_first_modifier (GMT, file, "uUw")) == NULL) return NULL;	/* No modifiers found */
-	/* Found at least one modifier */
-	Z = gmt_M_memory (GMT, NULL, 1, struct CPT_Z_SCALE);
-	while (gmt_getmodopt (GMT, 0, c, "uUw", &pos, p, &uerr) && uerr == 0) {
-		switch (p[0]) {
-			case 'U': Z->z_mode = 1;	/* Intentionally fall through */
-			case 'u':
-				unit = gmtlib_get_unit_number (GMT, p[1]);		/* Convert char unit to enumeration constant for this unit */
-				if (unit == GMT_IS_NOUNIT) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "CPT z unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
-					gmt_M_free (GMT, Z);
-					return NULL;
-				}
-				Z->z_unit = (unsigned int)unit;
-				Z->z_unit_to_meter = GMT->current.proj.m_per_unit[Z->z_unit];	/* Converts unit to meters */
-				if (Z->z_mode) Z->z_unit_to_meter = 1.0 / Z->z_unit_to_meter;	/* Wanted the inverse */
-				Z->z_adjust |= 1;		/* Says we have successfully parsed and readied the x/y scaling */
-				break;
-			case 'w':
-				if (direction == GMT_IN)
-					Z->z_wrap = 1;
-				else
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtsupport_cpt_parse: Modifier +w ignored for output.\n");
-				break;
-			default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
-				break;
-		}
-	}
-	c[0] = '\0';	/* Chop off all modifiers so the filename can be used */
-
-	return (Z);
-}
-#endif
-
 /*! Decode the optional +u|U<unit> and determine scales and +h[<z>] for hinge control */
 GMT_LOCAL struct CPT_Z_SCALE *gmtsupport_cpt_parse (struct GMT_CTRL *GMT, char *file, unsigned int direction, unsigned int *hinge_mode, double *z_hinge) {
 	/* CPT file arg is <file>[+h[<hinge>]][+u|U<unit>]
 	 * The +h modifier is used to turn a soft hinge in a CPT to a hard hinge at the user-selected z-value [0]
-	 * or to adjust the location of the hinge for an hard hinge CPT. */
+	 * or to adjust the location of the hinge for an hard hinge CPT.
+	 * Note: The +i<inc> modifier is dealt with and removed in those modules that support it, hence not checked here. */
 	enum gmt_enum_units u_number;
 	unsigned int mode = 0;
-	char *c = NULL;
+	char *c = NULL, *f = NULL, *m = NULL;
 	struct CPT_Z_SCALE *Z = NULL;
 	gmt_M_unused(direction);
 
+	if ((f = gmt_strrstr (file, ".cpt")))	/* Got a file with CPT extension, look from there on out */
+		m = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
+	else	/* Must use the full file name */ 
+		m = gmtlib_last_valid_file_modifier (GMT->parent, file, GMT_CPTFILE_MODIFIERS);
 	*hinge_mode = 0;	/* Default is no hinge modifier */
-	if ((c = strstr (file, "+h"))) {	/* Gave hinge modifier, examine and set parameters */
+	if (m && (c = strstr (m, "+h"))) {	/* Gave hinge modifier, examine and set parameters */
 		if (c[2]) {	/* Gave hinge value for soft hinge */
 			if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf (GMT, &c[2], gmt_M_type (GMT, GMT_IN, GMT_Z), z_hinge), &c[2])) {
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtsupport_cpt_parse: CPT hinge modifier %s was not successfully parsed and is ignored.\n", c);
@@ -1225,7 +1187,7 @@ GMT_LOCAL struct CPT_Z_SCALE *gmtsupport_cpt_parse (struct GMT_CTRL *GMT, char *
 		}
 	}
 
-	if ((c = gmtlib_file_unitscale (file)) == NULL) return NULL;	/* Did not find any +u|U modifiers */
+	if (m == NULL || (c = gmtlib_cptfile_unitscale (GMT->parent, m)) == NULL) return NULL;	/* Did not find any +u|U modifiers */
 	mode = (c[1] == 'u') ? 0 : 1;
 	u_number = gmtlib_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
 	if (u_number == GMT_IS_NOUNIT) {
@@ -6051,14 +6013,19 @@ GMT_LOCAL int gmtsupport_find_mod_syntax_start (char *arg, int k) {
  * data in km or miles.  Appending +u<unit> to the file addresses this conversion. */
 
 /*! . */
-char *gmtlib_file_unitscale (char *name) {
+char *gmtlib_cptfile_unitscale (struct GMTAPI_CTRL *API, char *name) {
 	/* Determine if this file ends in +u|U<unit>, with <unit> one of the valid Cartesian distance units */
-	char *c = NULL;
+	char *c = NULL, *f = NULL;
 	size_t len = strlen (name);	/* Get length of the file name */
 	if (len < 4) return NULL;	/* Not enough space for name and modifier */
-	if ((c = strstr (name, "+u")) == NULL && (c = strstr (name, "+U")) == NULL) return NULL;	/* No such modifier */
-	if (strchr (GMT_LEN_UNITS2, c[2]) == NULL) return NULL;		/* Does no have a valid unit at the end */
-	return c;	/* Return valid modifier */
+	if ((f = gmt_strrstr (name, ".cpt")))
+		c = gmtlib_last_valid_file_modifier (API, f, "uU");
+	else
+		c = gmtlib_last_valid_file_modifier (API, name, "uU");
+	if (c == NULL) return NULL;	/* No modifiers */
+	if (c && (f = strstr (c, "+u")) == NULL && (f = strstr (c, "+U")) == NULL) return NULL;	/* No +u or +U modifier */
+	if (strchr (GMT_LEN_UNITS2, f[2]) == NULL) return NULL;		/* Does no have a valid unit at the end */
+	return f;	/* Return valid modifier */
 }
 
 /*! . */
@@ -7953,11 +7920,15 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file) {
 
 bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	/* Return true if cpt is the name of a GMT CPT master table and not a local file */
-	char *c = NULL;
+	char *c = NULL, *f = NULL;
 	if (cpt == NULL) return true;	/* No cpt given means use GMT_DEFAULT_CPT_NAME master */
 	if (gmt_M_file_is_memory (cpt)) return false;	/* A CPT was given via memory location */
-	if ((c = gmt_first_modifier (GMT, cpt, "uUw")))
-		c[0] = '\0';	/* Must chop off modifiers for access to work */
+		if ((f = gmt_strrstr (cpt, ".cpt")))
+			c = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
+		else
+			c = gmtlib_last_valid_file_modifier (GMT->parent, cpt, GMT_CPTFILE_MODIFIERS);
+	if (c && (f = gmt_first_modifier (GMT, c, GMT_CPTFILE_MODIFIERS)))
+		f[0] = '\0';	/* Must chop off modifiers for access to work */
 	if (cpt[0] && !gmt_access (GMT, cpt, R_OK)) return false;	/* A CPT was given and exists */
 	return true;	/* Acting as if it is a master table */
 }
@@ -17275,19 +17246,28 @@ CROAK:	/* We are done or premature return due to error */
 
 void gmt_cpt_interval_modifier (struct GMT_CTRL *GMT, char **arg, double *interval) {
 	/* CPT files in some programs (grd2kml, grdimage, grdvector, grdview) may have a +i<dz> modifier,
-	 * but it may be just one of several modifiers.  Here, we wish to remove this
+	 * but it may be just one of several valid CPT modifiers.  Here, we wish to remove this
 	 * modifier, set the corresponding interval, and update *file to only have the
 	 * remaining text items. */
-	char *file = NULL, *c = NULL, new_arg[PATH_MAX] = {""};
+	char *file = NULL, *c = NULL, *f = NULL, new_arg[PATH_MAX] = {""};
 	gmt_M_unused (GMT);
-	if (arg == NULL || (file = *arg) == NULL || file[0] == '\0') return;
-	if ((c = strstr (file, "+i")) == NULL) return;
-	/* Here we have a +i<dz> string in c */
-	*interval = atof (&c[2]);
-	c[0] = '\0';	c++;	/* Chop off and move one char to the right */
+	if (arg == NULL || (file = *arg) == NULL || file[0] == '\0') return;	/* NULL argument */
+	if ((f = gmt_strrstr (file, ".cpt")))	/* Filename has .cpt extension, look behind it */
+		c = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
+	else	/* Must search the entire filename from the back */
+		c = gmtlib_last_valid_file_modifier (GMT->parent, file, GMT_CPTFILE_MODIFIERS);
+	if (c == NULL) return;	/* No modifiers present in the filename */
+	if ((f = strstr (c, "+i")) == NULL) return;	/* Modifiers are present, but not the +i setting */
+	/* Here we have a +i<dz> string in section pointed to by f */
+	if (f[2] == '\0' || !(f[2] == '.' || isdigit (f[2]))) {	/* Failed basic sanity checking */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "CPT filename has +i appended [%s] but sets no valid interval\n", f);
+		return;	/* Simply not acting on the bad argument */
+	}
+	*interval = atof (&f[2]);
+	f[0] = '\0';	f++;	/* Chop off and move one char to the right */
 	strncpy (new_arg, file, PATH_MAX-1);        /* Everything up to start of +i */
-	while (*c && *c != '+') c++;                /* Wind to next modifier or reach end of string */
-	if (*c) strncat (new_arg, c, PATH_MAX-1);   /* Append other modifiers given after +i */
+	while (*f && *f != '+') f++;                /* Wind to next modifier or reach end of string */
+	if (*f) strncat (new_arg, f, PATH_MAX-1);   /* Append other modifiers given after +i */
 	gmt_M_str_free (*arg);
 	*arg = strdup (new_arg);
 }
