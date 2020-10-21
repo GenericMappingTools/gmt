@@ -5213,6 +5213,19 @@ GMT_LOCAL char *gmtio_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* f
 	return (modifiers);	/* Pass out the start of the valid modifiers or NULL */
 }
 
+GMT_LOCAL char *my_strrstr (const char *s, const char *m) {
+    char *last = NULL;
+    size_t n = strlen(m);
+
+    while ((s = strchr(s, *m)) != NULL) {
+        if (!strncmp(s, m, n))
+            last = (char *)s;
+        if (*s++ == '\0')
+            break;
+    }
+    return last;
+}
+
 char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const char *mods) {
 	/* Need to strip off any valid, trailing modifiers and netCDF specifications that may be part of filename */
 	char file[PATH_MAX] = {""}, *c = NULL, *clean_file = NULL;
@@ -5224,7 +5237,14 @@ char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const cha
 	if (file[0] == '\0')
 		return NULL;	/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
 	if (mods) {	/* Given modifiers to chop off if they are valid */
-		if ((c = gmtio_last_valid_file_modifier (API, file, mods)) == NULL)	/* Modifier free file name */
+		char *f = NULL;
+		/* If recognized file extension for grids (.grd, .nc) or cpt (.cpt) we must look after those */
+		if ((f = my_strrstr (file, ".grd")) || (f = my_strrstr (file, ".cpt")) || (f = my_strrstr (file, ".nc")))
+			c = gmtio_last_valid_file_modifier (API, f, mods);
+		else
+			c = gmtio_last_valid_file_modifier (API, file, mods);
+
+		if (c == NULL)	/* Modifier free file name */
 			return (strdup (file));
 		c[0] = '\0';	/* Begone with you */
 	}
