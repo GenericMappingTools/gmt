@@ -287,7 +287,7 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
-	gmt_set_pad (GMT, 0);	/* Change the default pad */
+	gmt_set_pad (GMT, 0);	/* Change the default pad (ignored if input is a memory grid) */
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) 	/* Get header only */
 		Return (API->error);
 
@@ -305,7 +305,7 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 		if (!Ctrl->C.selected[k]) continue;
 		/* Create the empty grid and allocate space */
 		if ((Grid[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn,
-		                                G->header->inc, GMT->common.R.registration, 0, NULL)) == NULL)
+		                                G->header->inc, GMT->common.R.registration, G->header->pad[0], NULL)) == NULL)
 			Return (API->error);
 	}
 
@@ -401,12 +401,11 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 	k1 = log(0.6);
 
 	for (j = k = 0; j < G->header->n_rows; j++) {
-		//rlat = G->header->wesn[YLO] + j * G->header->inc[GMT_Y];
-		rlat = G->header->wesn[YHI] - j * G->header->inc[GMT_Y];	/* Do it Top-Down to compensate UD flip from ML version */
+		rlat = G->header->wesn[YHI] - j * G->header->inc[GMT_Y];
 		for (i = 0; i < G->header->n_columns; i++, k++) {
 			rlon = G->header->wesn[XLO] + i * G->header->inc[GMT_X];
-			//ij = gmt_M_ijp(G->header, j, i);
-			ij = k;
+			ij = gmt_M_ijp(G->header, j, i);
+			//ij = k;
 
 			(void)gmt_near_lines (GMT, rlon, rlat, xyline, Ctrl->L.mode, &dist, &xnear, &ynear);
 
@@ -470,13 +469,11 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 
 			if (Ctrl->G.do_PGV || Ctrl->G.do_INT)
 				Grid[1]->data[ij] = (float)exp (rfm_pgv + rfd_pgv + fs_pgv);
-		}
-	}
-
-	if (Ctrl->G.do_INT) {
-		for (k = 0; k < G->header->size; k++) {
-			tmp = log10(Grid[1]->data[k]);
-			Grid[2]->data[k] = (float)(4.398 + 1.916 * tmp + 0.280 * tmp*tmp);
+	
+			if (Ctrl->G.do_INT) {
+				tmp = log10(Grid[1]->data[ij]);
+				Grid[2]->data[ij] = (float)(4.398 + 1.916 * tmp + 0.280 * tmp*tmp);
+			}
 		}
 	}
 
