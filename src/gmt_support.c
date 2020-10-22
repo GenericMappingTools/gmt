@@ -13366,23 +13366,23 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 				k++;
 				switch (modifiers[k]) {	/* The modifier code */
 					case 'h': case 'i': case 'o': case 'n': case 's':	/* +h[<hinge>], +i<inc>, ++o<offset>, +n<nodata>, +s<scale> */
-						k++;
+						k++;	/* Move to start of argument, next modifier, or NULL */
 						while (modifiers[k] && modifiers[k] != '+' && strchr ("-+.0123456789eE", modifiers[k])) k++;	/* Skip a numerical argument */
-						if (!(modifiers[k] == '\0' || modifiers[k] == '+')) error = true;
+						if (!(modifiers[k] == '\0' || modifiers[k] == '+')) error = true;	/* Means we found non-numbers after valid modifier */
 						break;
 					case 'u': case 'U':	/* +u<unit>, +U<unit */
-						k++;
-						if (strchr (GMT_LEN_UNITS2, modifiers[k]) == NULL)
-							error = true;
-						else
+						k++;	/* Move to start of argument, next modifier, or NULL */
+						if (modifiers[k] == '\0' || strchr (GMT_LEN_UNITS2, modifiers[k]) == NULL)
+							error = true;	/* Missing the unit argument */
+						else	/* Got valid unit */
 							k++;
 						break;
-					default:
+					default:	/* Modifier not from the global grid/CPT list */
 						error = true;
 						break;
 				}
 			}
-			else
+			else	/* Found some junk */
 				error = true;
 		}
 		if (error) {
