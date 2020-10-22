@@ -352,6 +352,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 			if (buffer[0] == '#') { fprintf (fp, "%s", buffer); continue; }	/* Pass comments */
 			if (!strncmp (buffer, "N: ", 3U)) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot use custom symbols that expect extra parameters: %s\n", name);
+				fclose (fpc);
 				return (GMT_RUNTIME_ERROR);
 			}
 			if (first) {	/* Insert our count and rotation as first actionable macro command */
@@ -497,7 +498,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +xl|r|x0 to connect 1st and last point to anchor points at xmin, xmax, or x0, or\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   append +yb|t|y0 to connect 1st and last point to anchor points at ymin, ymax, or y0.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Polygon may be painted (-G) and optionally outlined via +p<pen> [no outline].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border [clipping is on]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border [clipping is on].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nr to turn off clipping and plot repeating symbols for periodic maps.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nc to retain clipping but turn off plotting of repeating symbols for periodic maps.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will clip or skip symbols that fall outside and plot repeating symbols].\n");
@@ -923,7 +924,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	bool get_rgb = false, clip_set = false, fill_active, may_intrude_inside = false;
 	bool error_x = false, error_y = false, def_err_xy = false, can_update_headpen = true;
 	bool default_outline, outline_active, geovector = false, save_W = false, save_G = false, QR_symbol = false;
-	unsigned int n_needed, n_cols_start = 2, justify, tbl;
+	unsigned int n_needed, n_cols_start = 2, justify, tbl, grid_order, frame_order;
 	unsigned int n_total_read = 0, j, geometry, icol = 0, tcol = 0;
 	unsigned int bcol, ex1, ex2, ex3, change = 0, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
@@ -1090,7 +1091,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	GMT_Report (API, GMT_MSG_DEBUG, "Operation will require %d input columns [n_cols_start = %d]\n", n_needed, n_cols_start);
 
-	if (GMT->common.R.active[RSET] && GMT->common.J.active && gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
+	if (GMT->common.R.active[RSET] && GMT->common.J.active && gmt_map_setup (GMT, GMT->common.R.wesn))
 		Return (GMT_PROJECTION_ERROR);
 	if (S.u_set) {	/* When -Sc<unit> is given we temporarily reset the system unit to these units so conversions will work */
 		save_u = GMT->current.setting.proj_length_unit;
@@ -1099,18 +1100,31 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 	if (S.G.delay) GMT->current.ps.nclip = +2;	/* Signal that this program initiates clipping that will outlive this process */
 
+	if ((gmt_M_is_conical(GMT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))) {	/* Must turn clipping on for 360-range conical */
+		/* Special case of 360-range conical (which is periodic but do not touch at w=e) so we must clip to ensure nothing is plotted in the gap between west and east border */
+		clip_set = true;
+		frame_order = (Ctrl->N.active) ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER;
+	}
+	else if (not_line && (Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_CLIP_NO_REPEAT)) {	/* Only set clip if plotting symbols and -N not used */
+		clip_set = true;
+		frame_order = GMT_BASEMAP_FRAME_AFTER;
+	}
+	else
+		frame_order = (Ctrl->N.active) ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER;
+
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL)
 		Return (GMT_RUNTIME_ERROR);
+	grid_order = (polygon) ? GMT_BASEMAP_GRID_AFTER : GMT_BASEMAP_GRID_BEFORE;
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_set_basemap_orders (GMT, frame_order, grid_order, GMT_BASEMAP_ANNOT_BEFORE);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+ 	gmt_map_basemap (GMT);	/* Lay down gridlines */
 	if (Ctrl->T.active) {	/* Honor canvas fill and box draw */
 		gmt_map_basemap (GMT);
 		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
 		Return (GMT_NOERROR);
 	}
-
-	gmt_map_basemap (GMT);	/* Lay down any gridlines before symbols */
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (gmt_contlabel_prep (GMT, &S.G, NULL)) Return (GMT_RUNTIME_ERROR);	/* Needed after map_setup */
@@ -1125,12 +1139,6 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	/* Change default step size (in degrees) used for interpolation of line segments along great circles (if requested) */
 	if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 #endif
-	if ((gmt_M_is_conical(GMT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))) {	/* Must turn clipping on for 360-range conical */
-		/* Special case of 360-range conical (which is periodic but do not touch at w=e) so we must clip to ensure nothing is plotted in the gap between west and east border */
-		clip_set = true;
-	}
-	else if (not_line && (Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_CLIP_NO_REPEAT))	/* Only set clip if plotting symbols and -N not used */
-		clip_set = true;
 	if (clip_set) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
 	if (S.symbol == GMT_SYMBOL_TEXT) gmt_setfont (GMT, &S.font);	/* Set the required font */
@@ -1223,7 +1231,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	in = GMT->current.io.curr_rec;
 
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT, GMT_SYMBOL_QUOTED_LINE, GMT_SYMBOL_DECORATED_LINE) */
-		bool periodic = false, delayed_unit_scaling = false;
+		bool periodic = false, delayed_unit_scaling = false, E_bar_above = false, E_bar_below = false;
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, col;
 		double xpos[2], width = 0.0, dim[PSL_MAX_DIMS];
 		struct GMT_RECORD *In = NULL;
@@ -1263,6 +1271,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		PSL_command (GMT->PSL, "V\n");	/* Place all symbols under a gsave/grestore clause */
+
+		if (Ctrl->E.active) {	/* Place errorbars below symbol except for large bars */
+			E_bar_above = (S.symbol == GMT_SYMBOL_BARX || S.symbol == GMT_SYMBOL_BARY);
+			E_bar_below = !E_bar_above;
+		}
 
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
 			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
@@ -1383,6 +1396,10 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				}
 				else if (S.symbol == PSL_DOT && !Ctrl->G.active)	/* Must switch on default black fill */
 					current_fill = black;
+				if (Ctrl->E.active) {	/* Must update decision on where error bars go since symbol has changed */
+					E_bar_above = (S.symbol == GMT_SYMBOL_BARX || S.symbol == GMT_SYMBOL_BARY);
+					E_bar_below = !E_bar_above;
+				}
 			}
 
 			if (get_rgb) {
@@ -1414,6 +1431,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						continue;
 				}
 			}
+			if (S.symbol == PSL_ELLIPSE && S.convert_angles) may_intrude_inside = true;	/* Always assume we may extend outside border */
 
 			if (QR_symbol) {
 				if (Ctrl->G.active)	/* Change color of QR code */
@@ -1443,7 +1461,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			if (GMT->common.t.variable)	/* Update the transparency for current symbol (or -t was given) */
 				PSL_settransparency (PSL, 0.01 * in[tcol]);
 
-			if (Ctrl->E.active) {
+			if (E_bar_below) {
 				if (Ctrl->E.mode) gmt_M_rgb_copy (Ctrl->E.pen.rgb, current_fill.rgb);
 				if (Ctrl->E.mode & 1) gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
 				gmt_setpen (GMT, &Ctrl->E.pen);
@@ -1882,6 +1900,23 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						if ((error = gmt_draw_custom_symbol (GMT, xpos[item], plot_y, dim, In->text, S.custom, &current_pen, &current_fill, outline_setting)))
 							Return (error);
 						break;
+				}
+			}
+			if (E_bar_above) {	/* Delayed placement or errorbar on top of bar symbols */
+				if (Ctrl->E.mode) gmt_M_rgb_copy (Ctrl->E.pen.rgb, current_fill.rgb);
+				if (Ctrl->E.mode & 1) gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
+				gmt_setpen (GMT, &Ctrl->E.pen);
+				if (error_x) {
+					if (error_type[GMT_X] < EBAR_WHISKER)
+						psxy_plot_x_errorbar (GMT, PSL, in[GMT_X], in[GMT_Y], &in[xy_errors[GMT_X]], Ctrl->E.size, n_total_read, error_type[GMT_X]);
+					else
+						psxy_plot_x_whiskerbar (GMT, PSL, plot_x, in[GMT_Y], &in[xy_errors[GMT_X]], Ctrl->E.size, current_fill.rgb, n_total_read, error_type[GMT_X]);
+				}
+				if (error_y) {
+					if (error_type[GMT_Y] < EBAR_WHISKER)
+						psxy_plot_y_errorbar (GMT, PSL, in[GMT_X], in[GMT_Y], &in[xy_errors[GMT_Y]], Ctrl->E.size, n_total_read, error_type[GMT_Y]);
+					else
+						psxy_plot_y_whiskerbar (GMT, PSL, in[GMT_X], plot_y, &in[xy_errors[GMT_Y]], Ctrl->E.size, current_fill.rgb, n_total_read, error_type[GMT_Y]);
 				}
 			}
 			if (S.read_symbol_cmd && (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC)) {	/* Reset status */
@@ -2356,6 +2391,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	PSL_setdash (PSL, NULL, 0);
 	GMT->current.map.is_world = old_is_world;
 	if (geovector) PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
+
+	gmt_map_basemap (GMT);
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 

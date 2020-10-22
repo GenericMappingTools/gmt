@@ -83,6 +83,4 @@ EOF
 gmt math -T0/8/0.02 T 20 12 FPDF = p.d
 gmt psxy -R0/8/0/1 -J -O -K p.d -W1p -BWS+t"Probability Density Functions" -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR+t"F(@~n@-1@-=20, n@-2@- = 12@~)" >> $ps
-# Done
-gmt psxy -R -J -O -T >> $ps
+gmt pstext -R -J -O -F+f12p,Times-Italic+cTR+jTR+t"F(@~n@-1@-=20, n@-2@- = 12@~)" >> $ps

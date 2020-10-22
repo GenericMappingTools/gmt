@@ -50,11 +50,6 @@ divide a large x,y[,z] dataset into segments.
 Required Arguments
 ------------------
 
-none.
-
-Optional Arguments
-------------------
-
 *table*
     One or more ASCII [or binary, see **-bi**]
     files with 2, 3, or 5 columns holding (x,y,[z[,d,h]])
@@ -62,6 +57,9 @@ Optional Arguments
     non-decreasing, specify the **-S** option; default expects (x,y,z)
     only. If no files are specified, **splitxyz** will read from
     standard input.
+
+Optional Arguments
+------------------
 
 .. _-A:
 

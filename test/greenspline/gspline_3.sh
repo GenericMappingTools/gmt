@@ -53,6 +53,4 @@ gmt makecpt -Cpolar -T-5/5 -D > tt.cpt
 gmt grdimage grad.nc -Ctt.cpt -Jx2.8i -M -Bx0.5 -By0.2 -BWSne -Y4.25i -O -K >> $ps
 gmt grdcontour splined.nc -Jx2.8i -O -Bx0.5 -By0.2 -BWSne -C0.2 -A0.2 -K -GlLT/1/0,1.5/0.5/1.5/1 >> $ps
 gmt psxy use.xyz -R -J -O -K -Sc0.05i -Gblack >> $ps
-echo "0 1 b)" | gmt pstext -R -J -O -K -N -F+jBR+f24p -Dj0.1i/0.3i >> $ps
-gmt psxy -R -J -O -T >> $ps
-
+echo "0 1 b)" | gmt pstext -R -J -O -N -F+jBR+f24p -Dj0.1i/0.3i >> $ps

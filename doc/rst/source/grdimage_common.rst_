@@ -4,14 +4,14 @@ Description
 -----------
 
 **grdimage** reads a 2-D grid file and produces a gray-shaded (or
-colored) map by by building a rectangular image and assigning pixels
+colored) map by building a rectangular image and assigning pixels
 a gray-shade (or color) based on the z-value and the CPT file.
 Optionally, illumination may be added by providing a file with
 intensities in the (-1,+1) range or instructions to derive intensities
 from the input data grid. Values outside this range will be
 clipped. Such intensity files can be created from the grid using
 :doc:`grdgradient` and, optionally, modified by :doc:`grdmath` or
-:doc:`grdhisteq`. A third alternative is available when GMT is build
+:doc:`grdhisteq`. A third alternative is available when GMT is built
 with GDAL support. Pass *image* which can be an image file (geo-referenced or not).
 In this case the image can optionally be illuminated with the
 file provided via the **-I** option. Here, if image has no coordinates

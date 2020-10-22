@@ -719,6 +719,16 @@ static int psl_iy (struct PSL_CTRL *PSL, double y) {
 	return (PSL->internal.y0 + (int)lrint (y * PSL->internal.y2iy));
 }
 
+static double psl_ix10 (struct PSL_CTRL *PSL, double x) {
+	/* Convert user x to PS dots with 1 decimal point */
+	return (PSL->internal.x0 + 0.1 *lrint (10.0 * x * PSL->internal.x2ix));
+}
+
+static double psl_iy10 (struct PSL_CTRL *PSL, double y) {
+	/* Convert user y to PS dots with 1 decimal point */
+	return (PSL->internal.y0 + 0.1 * lrint (10.0 * y * PSL->internal.y2iy));
+}
+
 static int psl_iz (struct PSL_CTRL *PSL, double z) {
 	/* Convert user distances to PS dots */
 	return ((int)lrint (z * PSL->internal.dpu));
@@ -941,11 +951,13 @@ static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double 
 
 	}
 
+	/* For curved lines for text placement we use 10 times the precision in the coordinates since we will
+	 * be taking derivatives to compute angles and thus need higher precision than integer PS coordinates */
 	PSL_comment (PSL, "Set concatenated coordinate arrays for line segments:\n");
 	PSL_command (PSL, "/PSL_path_x [ ");
 	for (i = k = 0; i < ntot; i++) {
 		if (!use[i]) continue;
-		PSL_command (PSL, "%d ", psl_ix (PSL, x[i]));
+		PSL_command (PSL, "%g ", psl_ix10 (PSL, x[i]));
 		k++;
 		if ((k%10) == 0) PSL_command (PSL, "\n\t");
 	}
@@ -953,7 +965,7 @@ static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double 
 	PSL_command (PSL, "/PSL_path_y [ ");
 	for (i = k = 0; i < ntot; i++) {
 		if (!use[i]) continue;
-		PSL_command (PSL, "%d ", psl_iy (PSL, y[i]));
+		PSL_command (PSL, "%g ", psl_iy10 (PSL, y[i]));
 		k++;
 		if ((k%10) == 0) PSL_command (PSL, "\n\t");
 	}

@@ -311,6 +311,7 @@ GMT_LOCAL float *grdmix_get_array (struct GMT_CTRL *GMT, struct GRDMIX_AIW *X, i
 			}
 			if (GMT_Destroy_Data (GMT->parent, G) != GMT_NOERROR) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to free %s grid!\n", name);
+				gmt_M_free (GMT, array);
 				return NULL;
 			}
 		}
@@ -319,6 +320,7 @@ GMT_LOCAL float *grdmix_get_array (struct GMT_CTRL *GMT, struct GRDMIX_AIW *X, i
 				array[node] = gmt_M_is255 ((*I)->data[node]);
 			if (GMT_Destroy_Data (GMT->parent, I) != GMT_NOERROR) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to free %s image!\n", name);
+				gmt_M_free (GMT, array);
 				return NULL;
 			}
 		}
@@ -499,6 +501,9 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		for (band = 0; band < H->n_bands; band++) {	/* March across the RGB values in both images and increment counters */
 			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, H->wesn, H->inc, H->registration, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a grid for output!\n");
+				if (alpha) gmt_M_free (GMT, alpha);
+				if (intens) gmt_M_free (GMT, intens);
+				gmt_M_free (GMT, weights);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			off = band * H->size;
@@ -520,16 +525,27 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			sprintf (file, Ctrl->G.file, code[band]);
 			/* Write out grid */
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) {
+				if (alpha) gmt_M_free (GMT, alpha);
+				if (intens) gmt_M_free (GMT, intens);
+				gmt_M_free (GMT, weights);
 				Return (API->error);
 			}
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, G) != GMT_NOERROR) {
+				if (alpha) gmt_M_free (GMT, alpha);
+				if (intens) gmt_M_free (GMT, intens);
+				gmt_M_free (GMT, weights);
 				Return (API->error);
 			}
 			if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to free grid!\n");
+				if (alpha) gmt_M_free (GMT, alpha);
+				if (intens) gmt_M_free (GMT, intens);
+				gmt_M_free (GMT, weights);
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
+		if (alpha) gmt_M_free (GMT, alpha);
+		if (intens) gmt_M_free (GMT, intens);
 		Return (GMT_NOERROR);
 	}
 
@@ -667,7 +683,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(node) shared(H,I,alpha)
 #endif
-		for (node = 0; node < H->size; node++)	/* Scale to 0-255 range */
+		for (node = 0; node < (int64_t)H->size; node++)	/* Scale to 0-255 range */
 			I->alpha[node] = gmt_M_u255 (alpha[node]);
 		gmt_M_free (GMT, alpha);
 	}

@@ -1,9 +1,9 @@
 .. index:: ! events
 .. include:: module_core_purpose.rst_
 
-********
+******
 events
-********
+******
 
 |events_purpose|
 
@@ -12,8 +12,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt events** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-S|\ *symbol*\ [*size*]
+**gmt events**
+|-J|\ *parameters*
+|SYN_OPT-Rz|
 |-T|\ *now*
+[ *table* ]
+[ |-A|\ **r**\|\ **s** ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]] ]
@@ -22,7 +26,9 @@ Synopsis
 [ |-G|\ *color* ]
 [ |-L|\ [*length*\|\ **t**] ]
 [ |-M|\ **i**\|\ **s**\|\ **t**\ [*val1*]\ [**+c**\ *val2*] ]
+[ |-N|\ [**c**\|\ **r**] ]
 [ |-Q|\ *prefix* ]
+[ |-S|\ *symbol*\ [*size*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]

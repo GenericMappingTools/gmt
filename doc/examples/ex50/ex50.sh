@@ -17,9 +17,9 @@ gmt begin ex50
 	gmt math -T-4/4/0.1 T ZPDF = p.txt
 	gmt plot -R-4/4/0/0.4 p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y2.25c
 	# Plot t distribution
-	gmt plot -R-4/4/0/0.4 p.txt -W1p,lightgray -BWS -Bxa1 -Byaf -Y2.25c
+	gmt plot -R-4/4/0/0.4 p.txt -W1p,lightgray -Y2.25c
 	gmt math -T-4/4/0.1 T 3 TPDF = p.txt
-	gmt plot p.txt -L+yb -Glightgreen -W1p
+	gmt plot p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf
 	# Plot F distribution
 	gmt math -T0/6/0.02 T 20 12 FPDF = p.txt
 	gmt plot -R0/6/0/1.02 p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y2.25c
@@ -49,9 +49,9 @@ gmt begin ex50
 	gmt math -T-4/4/0.1 T ZCDF = p.txt
 	gmt plot -R-4/4/0/1.02 p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y2.25c
 	# Plot t cumulative distribution
-	gmt plot -R-4/4/0/1.02 p.txt -W1p,lightgray -BES -Bxa1 -Byaf -Y2.25c
+	gmt plot -R-4/4/0/1.02 p.txt -W1p,lightgray -Y2.25c
 	gmt math -T-4/4/0.1 T 3 TCDF = p.txt
-	gmt plot p.txt -L+yb -Glightred -W1p
+	gmt plot p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf
 	# Plot F cumulative distribution
 	gmt math -T0/6/0.02 T 20 12 FCDF = p.txt
 	gmt plot -R0/6/0/1.02 p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y2.25c

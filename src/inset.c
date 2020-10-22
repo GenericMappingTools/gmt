@@ -183,7 +183,7 @@ static int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_OPTI
 		/* Was -R -J given */
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Option -J: Requires -R as well!\n");
 		if (GMT->common.J.active) {	/* Compute map height */
-			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) n_errors++;
+			if (gmt_map_setup (GMT, GMT->common.R.wesn)) n_errors++;
 		}
 	}
 	else {	/* gmt inset end was given, when -D -F -M -N are not allowed */

@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdgradient** *in_grdfile* |-G|\ *out_grdfile*
+**gmt grdgradient** *ingrid* |-G|\ *outgrid*
 [ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
 [ |-E|\ [**m**\|\ **s**\|\ **p**]\ *azim/elev*\ [**+a**\ *ambient*][**+d**\ *diffuse*][**+p**\ *specular*][**+s**\ *shine*] ]
 [ |-N|\ [**e**\|\ **t**][*amp*][**+a**\ *ambient*][**+s**\ *sigma*][**+o**\ *offset*] ]
@@ -37,12 +37,12 @@ boundary conditions (see **-n**).
 Required Arguments
 ------------------
 
-*in_grdfile*
+*ingrid*
     2-D grid file from which to compute directional derivative. (See GRID FILE FORMATS below).
 
 .. _-G:
 
-**-G**\ *out_grdfile*
+**-G**\ *outgrid*
     Name of the output grid file for the directional derivative. (See
     GRID FILE FORMATS below).
 
@@ -66,7 +66,7 @@ Optional Arguments
     retained; this is useful for illuminating data with two directions
     of lineated structures, e.g., **-A**\ *0*/*270* illuminates from the
     north (top) and west (left).  Finally, if *azim* is a file it must
-    be a grid of the same domain, spacing and registration as *in_grdfile*
+    be a grid of the same domain, spacing and registration as *ingrid*
     and we will update the azimuth at each output node when computing the
     directional derivatives.
 
@@ -172,7 +172,7 @@ for :doc:`grdimage` or :doc:`grdview`, a good first try is **-Ne**\ 0.6.
 
 Usually 255 shades are more than enough for visualization purposes. You
 can save 75% disk space by appending =nb/a to the output filename
-*out_grdfile*.
+*outgrid*.
 
 If you want to make several illuminated maps of subregions of a large
 data set, and you need the illumination effects to be consistent across

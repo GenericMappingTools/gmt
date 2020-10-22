@@ -486,13 +486,14 @@ GMT_LOCAL int filter1d_set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO
 
 	if (F->out_at_time) {
 		/* populate F->t_start and F->t_stop */
-		double	t_shift;
+		/* Here, F->T.set == 1 means we were only given an increment, otherwise we got min/max/inc.
+		 * Thus, for the latter we want whatever stop we pick to be an integer steps of inc from min. */
 		if (F->T.set == 1 || F->t_start_t < t_0) /* Not set or user defined t_start_t outside bounds */
-			F->t_start = t_0;
+			F->t_start = (F->T.set == 1) ? floor (t_0 / F->t_int) * F->t_int : F->t_start_t + floor ((t_0 - F->t_start_t) / F->t_int) * F->t_int;
 		else
 			F->t_start = F->t_start_t;
 		if (F->T.set == 1 || F->t_stop_t > t_1) /* Not set or user defined t_stop_t outside bounds */
-			F->t_stop = t_1;
+			F->t_stop = (F->T.set == 1) ? ceil (t_1 / F->t_int) * F->t_int : F->t_stop_t - floor ((F->t_stop_t - t_1) / F->t_int) * F->t_int;
 		else
 			F->t_stop = F->t_stop_t;
 
@@ -501,14 +502,6 @@ GMT_LOCAL int filter1d_set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO
 			F->t_start += F->half_width;
 			F->t_stop  -= F->half_width;
 		}
-
-		/* align F->t_start and F->t_stop to F->t_int */
-		t_shift = F->t_int - fmod (F->t_start - F->t_start_t, F->t_int);
-		if ( fabs (t_shift - F->t_int) < GMT_CONV4_LIMIT ) t_shift = 0.0; /* avoid values close to F->t_int */
-		F->t_start += t_shift; /* make F->t_start - F->t_start_t an integral multiple of F->t_int */
-		t_shift = fmod (F->t_stop - F->t_start_t, F->t_int);
-		if ( fabs (t_shift - F->t_int) < GMT_CONV4_LIMIT ) t_shift = 0.0; /* avoid values close to F->t_int */
-		F->t_stop -= t_shift; /* make F->t_stop - F->t_start_t an integral multiple of F->t_int */
 	}
 	else {
 		if (F->use_ends) {
@@ -634,7 +627,8 @@ GMT_LOCAL int filter1d_do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INF
 			}
 		}
 
-		while ((F->T.array[k] - F->data[F->t_col][left] - small) > F->half_width) ++left;
+		/* Determine data window for convolution/filter */
+		while (left  < F->n_rows && (F->T.array[k] - F->data[F->t_col][left]  - small) > F->half_width)  ++left;
 		while (right < F->n_rows && (F->data[F->t_col][right] - F->T.array[k] - small) <= F->half_width) ++right;
 		n_in_filter = (int64_t)(right - left);
 		if ( n_in_filter <= 0 || (F->check_lack && ( (F->filter_width / n_in_filter) > F->lack_width) ) ) {

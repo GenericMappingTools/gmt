@@ -164,6 +164,7 @@ struct GMT_SUBPLOT {
 	unsigned int first;		/* 1 the first time we reach panel, 0 later */
 	unsigned int no_scaling;	/* 1 when we are plotting a scale, bar, etc and not map and don't want to auto-scale plot */
 	unsigned int parallel;	/* 1 for axis-parallel annotations [0 for standard] */
+	unsigned int inside;	/* 1 if all annots/ticks are inside panels [0 for outside] */
 	int row, col;			/* Current panel position e.g., 0,0 */
 	int nrows, ncolumns;	/* Panel arrangement for subplot window */
 	int dir[2];				/* Cartesian axis direction: +1 or -1 [1/1] */

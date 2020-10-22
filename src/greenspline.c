@@ -1574,6 +1574,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 		if (In->data == NULL) {
 			gmt_quit_bad_record (API, In);
+			for (p = 0; p < n; p++) gmt_M_free (GMT, X[p]);
+			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			Return (API->error);
 		}
 

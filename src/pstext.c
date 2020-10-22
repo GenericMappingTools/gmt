@@ -802,16 +802,19 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	if (Ctrl->M.active) n_expected_cols += 3;
 	no_in_txt = (Ctrl->F.get_text > 1);	/* No text in the input record */
 
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->G.mode) GMT->current.ps.nclip = (Ctrl->N.active) ? +1 : +2;	/* Signal that this program initiates clipping that will outlive this process */
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	if (Ctrl->G.mode)	/* Delayed clipping so plot -B first */
+		gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
+	else
+		gmt_set_basemap_orders (GMT, Ctrl->N.active ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
-
-	if (Ctrl->G.mode) gmt_map_basemap (GMT);	/* Must lay down basemap before text clipping is activated, otherwise we do it at the end */
+	gmt_map_basemap (GMT);
 
 	if (gmt_M_is_dnan (Ctrl->F.font.size))
 		Ctrl->F.font.size = GMT->current.setting.font_annot[GMT_PRIMARY].size;
@@ -899,7 +902,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 
 		if (clip_set)
 			gmt_map_clip_off (GMT);
-		if (!Ctrl->G.mode) gmt_map_basemap (GMT);	/* Normally we do basemap at the end, except when clipping (-Gc|C) interferes */
+		gmt_map_basemap (GMT);
 		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
 		gmt_M_str_free (use_text);
@@ -1367,7 +1370,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	GMT->current.map.is_world = old_is_world;
 	GMT->current.io.scan_separators = GMT_TOKEN_SEPARATORS;		/* Reset */
 
-	if (!Ctrl->G.mode) gmt_map_basemap (GMT);	/* Normally we do basemap at the end, except when clipping (-Gc|C) interferes */
+	gmt_map_basemap (GMT);
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 

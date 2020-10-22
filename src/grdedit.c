@@ -104,7 +104,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A] [-C] [%s]\n", name, GMT_GRDEDIT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E[a|h|l|r|t|v]] [-G<outgrid>] [%s] [-L[+n|p]] [-N<table>] [%s] [-S] [-T]\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E[a|e|h|l|r|t|v]] [-G<outgrid>] [%s] [-L[+n|p]] [-N<table>] [%s] [-S] [-T]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -116,6 +116,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_grd_info_syntax (API->GMT, 'D');
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Transpose or rotate the entire grid (this may exchange x and y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  a Rotate grid around 180 degrees.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  e Exchange x(lon) and y(lat).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  h Flip grid left-to-right (as grdmath FLIPLR).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  l Rotate grid 90 degrees left (counter-clockwise).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  r Rotate grid 90 degrees right (clockwise).\n");
@@ -179,7 +180,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 				Ctrl->E.active = true;
 				if (opt->arg[0] == '\0')	/* Default transpose */
 					Ctrl->E.mode = 't';
-				else if (strchr ("ahlrtv", opt->arg[0]))
+				else if (strchr ("aehlrtv", opt->arg[0]))
 					Ctrl->E.mode = opt->arg[0];
 				else {
 					n_errors++;
@@ -294,6 +295,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 	}
 
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, Ctrl->G.active ? GMT_CONTAINER_AND_DATA : GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+		free(projstring);
 		Return (API->error);
 	}
 	grid_was_read = Ctrl->G.active;
@@ -302,11 +304,13 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 	if ((G->header->type == GMT_GRID_IS_SF || G->header->type == GMT_GRID_IS_SD) && Ctrl->T.active) {
 		GMT_Report (API, GMT_MSG_ERROR, "Toggling registrations not possible for Surfer grid formats\n");
 		GMT_Report (API, GMT_MSG_ERROR, "(Use grdconvert to convert to GMT default format and work on that file)\n");
+		free(projstring);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (Ctrl->S.active && !gmt_grd_is_global (GMT, G->header)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Shift only allowed for global grids\n");
+		free(projstring);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -441,6 +445,9 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 			case 'a': /* Rotate grid around 180 degrees */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Rotate grid around 180 degrees\n");
 				break;
+			case 'e': /* Exchange lon and lat */
+				GMT_Report (API, GMT_MSG_INFORMATION, "Exchange x|longitude and y|latitude\n");
+				break;
 			case 'h': /* Flip grid horizontally */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Flip grid horizontally (FLIPLR)\n");
 				break;
@@ -460,7 +467,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 
 		h_tr = gmt_get_header (GMT);
 		gmt_copy_gridheader (GMT, h_tr, G->header);	/* First make a copy of header */
-		if (strchr ("ltr", Ctrl->E.mode)) {	/* These operators interchange x and y */
+		if (strchr ("eltr", Ctrl->E.mode)) {	/* These operators interchange x and y */
 			h_tr->wesn[XLO] = G->header->wesn[YLO];
 			h_tr->wesn[XHI] = G->header->wesn[YHI];
 			h_tr->inc[GMT_X] = G->header->inc[GMT_Y];
@@ -470,6 +477,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 			h_tr->inc[GMT_Y] = G->header->inc[GMT_X];
 			strncpy (h_tr->y_units, G->header->x_units, GMT_GRID_UNIT_LEN80);
 			gmt_set_grddim (GMT, h_tr);	/* Recompute n_columns, n_rows, mx, size, etc */
+			gmt_M_doublep_swap (G->x, G->y);
 		}
 
 		/* Now transpose the matrix */
@@ -479,6 +487,9 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 			switch (Ctrl->E.mode) {
 				case 'a': /* Rotate grid around 180 degrees */
 					ij_tr = gmt_M_ijp (h_tr, G->header->n_rows-1-row, G->header->n_columns-1-col);
+					break;
+				case 'e': /* Exchange coordinates */
+					ij_tr = gmt_M_ijp (h_tr, h_tr->n_rows-1-col, h_tr->n_columns-1-row);
 					break;
 				case 'h': /* Flip horizontally (FLIPLR) */
 					ij_tr = gmt_M_ijp (h_tr, row, G->header->n_columns-1-col);

@@ -41,6 +41,4 @@ gmt psxyz -R -J -O -K -W1p -Gyellow -Sf-1/0.1i+b+l -X0.5i t.txt -p150/35 >> $ps
 gmt psxyz -R -J -O -K -W1p -Gyellow -Sf-1/0.1i+c+l -X0.5i t.txt -p150/35 >> $ps
 gmt psxyz -R -J -O -K -W1p -Gyellow -Sf-1/0.1i+f+l -X0.5i t.txt -p150/35 >> $ps
 gmt psxyz -R -J -O -K -W1p -Gyellow -Sf-1/0.1i+s+l -X0.5i t.txt -p150/35 >> $ps
-gmt psxyz -R -J -O -K -W1p -Gyellow -Sf-1/0.1i+t+l -X0.5i t.txt -p150/35 >> $ps
-gmt psxy -R -J -O -T >> $ps
-
+gmt psxyz -R -J -O -W1p -Gyellow -Sf-1/0.1i+t+l -X0.5i t.txt -p150/35 >> $ps

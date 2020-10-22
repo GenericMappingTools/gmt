@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdproject** *in_grdfile* |-G|\ *out_grdfile* |-J|\ *parameters*
+**gmt grdproject** *ingrid* |-G|\ *outgrid* |-J|\ *parameters*
 [ |-C|\ [*dx/dy*] ]
 [ |-D|\ *xinc*\ [**+e**\|\ **n**][/\ *yinc*\ [**+e**\|\ **n**]] ]
 [ |-E|\ *dpi* ] [ |-F|\ [**c**\|\ **i**\|\ **p**\|\ **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**] ] [ |-I| ] [ |-M|\ **c**\|\ **i**\|\ **p** ]
@@ -49,12 +49,12 @@ than that implied by the extent of the grid file.
 Required Arguments
 ------------------
 
-*in_grdfile*
+*ingrid*
     2-D binary grid file to be transformed. (See GRID FILE FORMATS below.)
 
 .. _-G:
 
-**-G**\ *out_grdfile*
+**-G**\ *outgrid*
     Specify the name of the output grid file. (See GRID FILE FORMATS below.)
 
 .. _-J:

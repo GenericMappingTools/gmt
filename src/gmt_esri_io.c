@@ -259,7 +259,6 @@ GMT_LOCAL int gmtesriio_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GR
 	}
 	else if ((HH->flags[0] == 'L' || HH->flags[0] == 'B') && HH->flags[1] == '2') {	/* A Arc/Info BINARY file */
 		if ((fp2 = gmt_fopen (GMT, header->title, "r")) == NULL) {
-			gmt_fclose (GMT, fp);
 			return (GMT_GRDIO_OPEN_FAILED);
 		}
 		/* To use the same parsing header code as in the ASCII file case where header and data are in the
@@ -272,21 +271,18 @@ GMT_LOCAL int gmtesriio_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GR
 	if (sscanf (record, "%*s %d", &header->n_columns) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding ncols record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
-		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %d", &header->n_rows) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding nrows record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
-		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->wesn[XLO]) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding xll record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
-		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_str_tolower (record);
@@ -295,7 +291,6 @@ GMT_LOCAL int gmtesriio_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GR
 	if (sscanf (record, "%*s %lf", &header->wesn[YLO]) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding yll record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
-		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_str_tolower (record);
@@ -304,7 +299,6 @@ GMT_LOCAL int gmtesriio_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GR
 	if (sscanf (record, "%*s %lf", &header->inc[GMT_X]) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding cellsize record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
-		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	/* Handle the optional nodata_value record */

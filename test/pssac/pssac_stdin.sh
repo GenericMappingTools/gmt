@@ -18,11 +18,10 @@ nykl.z 300 20 0p,blue
 onkl.z 400 30 2.2p,yellow
 sdkl.z 500 35 2.2p
 EOF
-gmt pssac -J -R -B$Bx -B$By -BWsen -Ed -M0.8i -K -O -Y7c -h1 >> $ps << EOF
+gmt pssac -J -R -B$Bx -B$By -BWsen -Ed -M0.8i -O -Y7c -h1 >> $ps << EOF
 name    X  Y   pen
 ntkl.z 195 16 2p,red
 nykl.z 300 20 0p,blue
 onkl.z 400 30 2.2p,yellow
 sdkl.z 500 35 2.2p
 EOF
-gmt psxy -J -R -O -T >> $ps

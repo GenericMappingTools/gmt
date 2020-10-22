@@ -168,7 +168,7 @@ GMT_LOCAL int gmtremote_remove_item (struct GMTAPI_CTRL *API, char *path, bool d
 #ifdef _WIN32
 		char *t = gmt_strrep (path, "/", "\\");	/* DOS rmdir needs paths with back-slashes */
 		strcpy (del_cmd, "rmdir /s /q ");
-		strcat (del_cmd, t);
+		strncat (del_cmd, t, PATH_MAX-1);
 		gmt_M_str_free (t);
 #else
 		sprintf (del_cmd, "rm -rf %s", path);
@@ -419,7 +419,7 @@ GMT_LOCAL void gmtremote_display_attribution (struct GMTAPI_CTRL *API, int key, 
 		if ((c = strrchr (API->GMT->session.DATASERVER, '/')))	/* Found last slash in http:// */
 			strcpy (name, ++c);
 		else /* Just in case */
-			strcpy (name, API->GMT->session.DATASERVER);
+			strncpy (name, API->GMT->session.DATASERVER, GMT_LEN128-1);
 		if ((c = strchr (name, '.'))) c[0] = '\0';	/* Chop off stuff after the initial name */
 		gmt_str_toupper (name);
 		GMT_Report (API, GMT_MSG_NOTICE, "Remote data courtesy of GMT data server %s [%s]\n\n", name, API->GMT->session.DATASERVER);
@@ -957,7 +957,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 	if (file[0] == '/')
 #endif
 	{
-		clean_file = gmt_get_filename (API, file, "honsuU");	/* Strip off any file modifier or netCDF directives */
+		clean_file = gmt_get_filename (API, file, gmtlib_valid_filemodifiers (GMT));	/* Strip off any file modifier or netCDF directives */
 		if (access (clean_file, F_OK)) {
 			GMT_Report (API, GMT_MSG_ERROR, "File %s was not found\n", file);
 			gmt_M_str_free (clean_file);
@@ -1007,7 +1007,8 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 		}
 		else {	/* Must be cache file */
 			if (GMT->session.CACHEDIR == NULL) goto not_local;	/* Cannot have cache data if no cache directory created yet */
-			snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.CACHEDIR, &file[1]);	/* This is where all cache files live */
+			clean_file = gmt_get_filename (API, file, gmtlib_valid_filemodifiers (GMT));	/* Strip off any file modifier or netCDF directives */
+			snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.CACHEDIR, &clean_file[1]);	/* This is where all cache files live */
 			if ((c = strchr (local_path, '=')) || (c = strchr (local_path, '?'))) {
 				was = c[0];	c[0] = '\0';
 			}
@@ -1018,8 +1019,9 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 			}
 			if (c) c[0] = was;
 		}
-		GMT_Report (API, GMT_MSG_DEBUG, "Remote file %s exists locally as %s\n", file, local_path);
+		GMT_Report (API, GMT_MSG_DEBUG, "Remote file %s exists locally as %s\n", clean_file, local_path);
 		remote_path[0] = '\0';	/* No need to get from elsewhere */
+		if (clean_file)	gmt_M_str_free (clean_file);
 		return GMT_NOERROR;
 
 not_local:	/* Get here if we failed to find a remote file already on disk */
@@ -1083,6 +1085,7 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 				break;
 		}
 		if (jp2_file) gmt_M_str_free (jp2_file);
+		if (clean_file)	gmt_M_str_free (clean_file);
 		GMT_Report (API, GMT_MSG_DEBUG, "Get remote file %s and write to %s\n", remote_path, local_path);
 
 		return GMT_NOERROR;
@@ -1124,7 +1127,7 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 	/* Looking for local files given a relative path - must search directories we are allowed.
 	 * Note: Any netCDF files with directives have had those chopped off earlier, so file is a valid name */
 
-	clean_file = gmt_get_filename (API, file, "honsuU");	/* Strip off any file modifier or netCDF directives */
+	clean_file = gmt_get_filename (API, file, gmtlib_valid_filemodifiers (GMT));	/* Strip off any file modifier or netCDF directives */
 	if (gmt_getdatapath (GMT, clean_file, local_path, R_OK)) {	/* Found it */
 		/* Return full path */
 		if (c &&!is_query) {	/* We need to pass the ?var[]() or [id][+mods]stuff as part of the filename */
@@ -1453,7 +1456,8 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 	/* Builds a list of the tiles to download for the chosen region, dataset and resolution.
 	 * Uses the optional tile information grid to know if a particular tile exists. */
 	char tile_list[PATH_MAX] = {""}, *file = NULL, **tile = NULL, datatype[3] = {'L', 'O', 'X'}, regtype[2] = {'G', 'P'};
-	unsigned int k, k_filler = GMT_NOTSET, n_tiles = 0, ocean = (srtm_flag) ? 0 : 2;
+	int k_filler = GMT_NOTSET;
+	unsigned int k, n_tiles = 0, ocean = (srtm_flag) ? 0 : 2;
 	FILE *fp = NULL;
 	struct GMT_DATA_INFO *Ip = &API->remote_info[k_data], *Is = NULL;	/* Pointer to primary tiled dataset */
 

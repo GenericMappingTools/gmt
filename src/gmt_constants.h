@@ -158,6 +158,17 @@ enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 	GMT_CSH_MODE,			/* Write C-shell script */
 	GMT_DOS_MODE};			/* Write DOS script */
 
+/*! Various mode for basemap order */
+enum GMT_enum_basemap {
+	GMT_BASEMAP_BEFORE			= 0,
+	GMT_BASEMAP_AFTER			= 1,
+	GMT_BASEMAP_FRAME_BEFORE	= 0,
+	GMT_BASEMAP_FRAME_AFTER		= 1,
+	GMT_BASEMAP_GRID_BEFORE		= 0,
+	GMT_BASEMAP_GRID_AFTER		= 2,
+	GMT_BASEMAP_ANNOT_BEFORE	= 0,
+	GMT_BASEMAP_ANNOT_AFTER		= 4};
+
 /* Since -I is not a global option but we almost use it as such, we define the long-option for it here.
  * Modules that need it in their module_kw[] array can just add it to their list. */
 #define GMT_INCREMENT_KW { '/', 'I', "increment", "", "", "e,n", "exact,number" }
@@ -250,6 +261,25 @@ enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 
 /* Modifiers for contour -A option */
 #define GMT_CONTSPEC_MODS "acdefghijklLnNoprstuvwxX="
+
+/* Valid modifiers for various input files */
+
+/* Modifers for grid files:
+ * +o<offset>  adds this offset to all grid values
+ * +n<nodata> sets what the no-data value is
+ * +s<scl> scales all grid values by this scale
+ * +u<unit> converts Cartesian x/y coordinates from given unit to meters
+ * +U<unit> converts Cartesian x/y coordinates from meter to given unit
+ */
+#define GMT_GRIDFILE_MODIFIERS "onsuU"
+
+/* Modifiers for CPT files:
+ * +h<hinge> to override soft-hinge value in CPT
+ * +i<dz> is used to round auto-deteremined min/amax range to a multiple of dz.
+ * +u<unit> converts z-values from given unit to meters
+ * +U<unit> converts z-values from meter to given unit
+ */
+#define GMT_CPTFILE_MODIFIERS "hiuU"
 
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {

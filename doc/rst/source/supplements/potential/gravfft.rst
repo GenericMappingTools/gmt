@@ -62,7 +62,7 @@ Required Arguments
 
 *ingrid*
     2-D binary grid file to be operated on. (See GRID FILE FORMATS below).
-    For cross-spectral operations, also give the second grid file *ingrd2*.
+    For cross-spectral operations, also give the second grid file *ingrid2*.
 
 .. _-G:
 
@@ -121,9 +121,9 @@ Optional Arguments
 .. _-I:
 
 **-I**\ **w**\|\ **b**\|\ **c**\|\ **t**\|\ **k**
-    Use *ingrd2* and *ingrd1* (a grid with topography/bathymetry) to estimate admittance\|coherence and
+    Use *ingrid2* and *ingrid1* (a grid with topography/bathymetry) to estimate admittance\|coherence and
     write it to stdout (**-G** ignored if set). This grid should contain
-    gravity or geoid for the same region of *ingrd1*. Default
+    gravity or geoid for the same region of *ingrid1*. Default
     computes admittance. Output contains 3 or 4 columns. Frequency
     (wavelength), admittance (coherence) one sigma error bar and,
     optionally, a theoretical admittance. Append dataflags (one to

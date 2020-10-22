@@ -214,8 +214,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the GMT logo.", 0);
 	GMT_Option (API, "J-Z,K,O,P,R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Control text label plotted beneath the logo:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append l to plot text label [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to plot URL for GMT.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append l to plot \"The Generic Mapping Tools\" [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to plot the URL for GMT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append n to skip label entirely.\n");
 	GMT_Option (API, "U,V");
 	GMT_Option (API, "X,c,f,t,.");
@@ -357,12 +357,12 @@ EXTERN_MSC int GMT_gmtlogo (void *V_API, int mode, void *args) {
 		gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 		gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->D.width;
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_map_setup (GMT, wesn)) Return (GMT_PROJECTION_ERROR);
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (API->error);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 		gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 		gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust to BL corner */
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (API->error);
@@ -372,7 +372,7 @@ EXTERN_MSC int GMT_gmtlogo (void *V_API, int mode, void *args) {
 		wesn[XLO] = Ctrl->D.refpoint->x;	wesn[YLO] = Ctrl->D.refpoint->y;
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->D.width;
 		GMT->common.R.active[RSET] = GMT->common.J.active = true;
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_map_setup (GMT, wesn)) Return (GMT_PROJECTION_ERROR);
 	}
 
 	PSL_command (PSL, "V\n");	/* Ensure the entire gmtlogo output after initialization is between gsave/grestore */
@@ -409,10 +409,10 @@ EXTERN_MSC int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	sprintf (cmd, "-T -Rd -JI0/%gi -N -O -K -X%gi -Y%gi %s", scale * 1.55, scale * 0.225, y, pars);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Calling psclip with args %s\n", cmd);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
-	sprintf (cmd, "-Rd -JI0/%gi -S%s -G%s -A35000+l -Dc -O -K %s --GMT_HISTORY=readonly", scale * 1.55, c_water, c_land, pars);
+	sprintf (cmd, "-Rd -JI0/%gi -Bxg45 -Byg30 -S%s -G%s -A35000+l -Dc -O -K %s --GMT_HISTORY=readonly", scale * 1.55, c_water, c_land, pars);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Calling pscoast with args %s\n", cmd);
 	GMT_Call_Module (API, "pscoast", GMT_MODULE_CMD, cmd);
-	sprintf (cmd, "-Rd -JI0/%gi -C -O -K -Bxg45 -Byg30  %s --MAP_POLAR_CAP=none --GMT_HISTORY=readonly", scale * 1.55, pars);
+	sprintf (cmd, "-Rd -JI0/%gi -C -O -K  %s --MAP_POLAR_CAP=none --GMT_HISTORY=readonly", scale * 1.55, pars);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Calling psclip with args %s\n", cmd);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
 

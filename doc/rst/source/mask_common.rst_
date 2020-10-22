@@ -15,8 +15,11 @@ contouring to create polygons that will clip out regions of no interest.
 When clipping is initiated, it will stay in effect until turned off by a
 second call to the module using the **-C** option.
 
-Required
---------
+Required Arguments
+------------------
+
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
 
 .. _-I:
 
@@ -37,9 +40,6 @@ Required
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
 
 .. _-B:
 

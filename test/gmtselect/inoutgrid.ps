@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v5.3.0_r17207 [64-bit] Document from grdimage
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.2.0_1d42355-dirty_2020.10.06 [64-bit] Document from grdimage
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Oct 15 17:42:21 2016
+%%CreationDate: Tue Oct  6 22:23:03 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -646,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -657,23 +658,30 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: grdimage mask.nc -JX6i -P -Bafg1 -Ct.cpt -Q -K
+%@GMT: gmt grdimage mask.nc -JX6i -P -Bafg1 -Ct.cpt -Q -K
 %@PROJ: xy 0.00000000 5.00000000 0.00000000 5.00000000 0.000 5.000 0.000 5.000 +xy
+%GMTBoundingBox: 72 72 432 432
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
 0 7200 D
 -7200 0 D
+P
 PSL_clip N
 V N 0 0 T 7200 7200 scale [/Indexed /DeviceRGB 1 <
 808080FFC0CB>] setcolorspace
@@ -721,6 +729,7 @@ S
 0 7200 M
 7200 0 D
 S
+/PSL_slant_y 0 def
 2 setlinecap
 25 W
 N 0 7200 M 0 -7200 D S
@@ -733,8 +742,8 @@ N 0 2880 M -83 0 D S
 N 0 4320 M -83 0 D S
 N 0 5760 M -83 0 D S
 N 0 7200 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (0) sw mx
@@ -791,8 +800,8 @@ N 0 2880 M 83 0 D S
 N 0 4320 M 83 0 D S
 N 0 5760 M 83 0 D S
 N 0 7200 M 83 0 D S
-/PSL_AH0 0
 /MM {exch M} def
+/PSL_AH0 0
 (0) sw mx
 (1) sw mx
 (2) sw mx
@@ -846,8 +855,8 @@ N 2880 0 M 0 -83 D S
 N 4320 0 M 0 -83 D S
 N 5760 0 M 0 -83 D S
 N 7200 0 M 0 -83 D S
-/PSL_AH0 0
 /MM {neg M} def
+/PSL_AH0 0
 (0) sh mx
 (1) sh mx
 (2) sh mx
@@ -901,8 +910,8 @@ N 2880 0 M 0 83 D S
 N 4320 0 M 0 83 D S
 N 5760 0 M 0 83 D S
 N 7200 0 M 0 83 D S
-/PSL_AH0 0
 /MM {M} def
+/PSL_AH0 0
 (0) sh mx
 (1) sh mx
 (2) sh mx
@@ -954,17 +963,18 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -Rmask.nc -JX6i -O -K in.txt -Sc0.1i -Gwhite -W0.25p
+%@GMT: gmt psxy -Rmask.nc -JX6i -O -K in.txt -Sc0.1i -Gwhite -W0.25p
 %@PROJ: xy 0.00000000 5.00000000 0.00000000 5.00000000 0.000 5.000 0.000 5.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
 0 7200 D
 -7200 0 D
+P
 PSL_clip N
 4 W
 V
@@ -992,17 +1002,18 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -Rmask.nc -JX6i -O -K out.txt -Sc0.1i -Gblack -W0.25p
+%@GMT: gmt psxy -Rmask.nc -JX6i -O out.txt -Sc0.1i -Gblack -W0.25p
 %@PROJ: xy 0.00000000 5.00000000 0.00000000 5.00000000 0.000 5.000 0.000 5.000 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
 0 7200 D
 -7200 0 D
+P
 PSL_clip N
 4 W
 V
@@ -1024,3 +1035,16 @@ O1
 U
 PSL_cliprestore
 %%EndObject
+
+grestore
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
+%PSL_Begin_Trailer
+%%PageTrailer
+U
+showpage
+
+%%Trailer
+
+end
+%%EOF

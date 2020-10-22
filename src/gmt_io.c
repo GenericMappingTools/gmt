@@ -3346,8 +3346,10 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	else	/* No trailing text found, reset tpos */
 		*tpos = 0;
 	if (GMT->current.io.OGR) {	/* A few decision specific to OGR files */
-		if ((ret_val = gmtio_select_all_ogr_if_requested (GMT)))	/* Finalize choice of aspatial fields */
+		if ((ret_val = gmtio_select_all_ogr_if_requested (GMT))) {	/* Finalize choice of aspatial fields */
+			gmt_M_free (GMT, type);
 			return ret_val;
+		}
 		ret_val |= gmtio_reconsider_rectype (GMT);	/* Consider the nature of aspatial information */
 	}
 
@@ -4995,7 +4997,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	unsigned int d, pos;
 	int t_data;
 	size_t L;
-	bool found;
+	bool found = false;
 	char *udir[4] = {GMT->session.USERDIR, GMT->session.DATADIR, GMT->session.CACHEDIR, NULL}, dir[PATH_MAX];
 	char path_separator[2] = {',', '\0'}, serverdir[PATH_MAX] = {""};
 #ifdef HAVE_DIRENT_H_
@@ -5163,6 +5165,27 @@ char *gmt_strncpy (char *dest, const char *source, size_t num) {
 	return dest;
 }
 
+char *gmtlib_valid_filemodifiers (struct GMT_CTRL *GMT) {
+	/* Returns a single string with all unique valid file modifiers.
+	 * We do this based on the individua modifier constants and assemble
+	 * one with the unique entries on the fly. */
+	char count[GMT_LEN128], *m = NULL;
+	static char string[GMT_LEN16];
+	unsigned int k, q;
+	gmt_M_unused (GMT);
+	gmt_M_memset (count, GMT_LEN128, char);
+	m = GMT_GRIDFILE_MODIFIERS;
+	for (k = 0; k < strlen (m); k++)
+		count[m[k]]++;
+	m = GMT_CPTFILE_MODIFIERS;
+	for (k = 0; k < strlen (m); k++)
+		count[m[k]]++;
+	for (k = q = 0; k < GMT_LEN128; k++)
+		if (count[k]) string[q++] = k;
+	string[q] = '\0';
+	return ((char *)string);
+}
+
 char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const char *mods) {
 	/* Need to strip off any modifiers and netCDF specifications that may be part of filename */
 	char file[PATH_MAX] = {""}, *c = NULL, *clean_file = NULL;
@@ -5201,8 +5224,8 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 	if (gmt_file_is_cache (GMT->parent, filename))			/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, filename, 0);
 
-	if ((cleanfile = gmt_get_filename (GMT->parent, &filename[first], "honsuU")) == NULL) return (-1);	/* Likely not a valid filename */
-	strcpy (file, cleanfile);
+	if ((cleanfile = gmt_get_filename (GMT->parent, &filename[first], gmtlib_valid_filemodifiers (GMT))) == NULL) return (-1);	/* Likely not a valid filename */
+	strncpy (file, cleanfile, PATH_MAX-1);
 	gmt_M_str_free (cleanfile);
 	if (mode == W_OK)
 		return (access (file, mode));	/* When writing, only look in current directory */
@@ -7036,6 +7059,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	 *	 -W		Revert to default pen [current.map_default_pen if not set on command line]
 	 * z:	-Z<zval>	Obtain fill via cpt lookup using this z value
 	 *	-ZNaN		Get the NaN color from the CPT
+	 *	-t<transp>		Apply this transparency to both fill and pen
 	 *
 	 * header is the text string to process
 	 * P is the color palette used for the -Z option
@@ -7057,8 +7081,9 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	 */
 
 	unsigned int processed = 0, change = 0, col, ogr_col;
+	bool got_transparency = false;
 	char line[GMT_BUFSIZ] = {""}, *txt = NULL;
-	double z;
+	double z, transparency = 0.0;
 	struct GMT_FILL test_fill;
 	struct GMT_PEN test_pen;
 
@@ -7111,6 +7136,10 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 
 	if (!header || !header[0]) return (0);
 
+	if (gmt_parse_segment_item (GMT, header, "-t", line)) {	/* Found a potential -t option for transparency */
+		transparency = atof (line) * 0.01;
+		got_transparency = true;	/* Must apply to any fill and pen settings */
+	}
 	if (gmt_parse_segment_item (GMT, header, "-G", line)) {	/* Found a potential -G option */
 		test_fill = *def_fill;
 		if (line[0] == '-') {	/* Turn fill OFF */
@@ -7126,6 +7155,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 		}
 		else if (!gmt_getfill (GMT, line, &test_fill)) {	/* Successfully processed a -G<fill> option */
 			*fill = test_fill;
+			if (got_transparency) fill->rgb[3] = transparency;
 			*use_fill = true;
 			change = 1;
 			processed++;	/* Processed one option */
@@ -7135,6 +7165,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	if (P && gmt_parse_segment_item (GMT, header, "-Z", line)) {	/* Found a potential -Z option to set symbol r/g/b via cpt-lookup */
 		if(!strncmp (line, "NaN", 3U))	{	/* Got -ZNaN */
 			gmt_get_fill_from_z (GMT, P, GMT->session.d_NaN, fill);
+			if (got_transparency) fill->rgb[3] = transparency;
 			*use_fill = true;
 			change |= 2;
 			processed++;	/* Processed one option */
@@ -7144,6 +7175,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 				gmt_get_fill_from_key (GMT, P, line, fill);
 			else if (sscanf (line, "%lg", &z) == 1)
 				gmt_get_fill_from_z (GMT, P, z, fill);
+			if (got_transparency) fill->rgb[3] = transparency;
 			*use_fill = true;
 			change |= 2;
 			processed++;	/* Processed one option */
@@ -7166,6 +7198,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 		}
 		else if (!gmt_getpen (GMT, line, &test_pen)) {
 			*pen = test_pen;
+			if (got_transparency) pen->rgb[3] = transparency;
 			*use_pen = true;
 			change |= 4;
 		}
@@ -7756,7 +7789,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Mismatch between actual (%d) and expected (%d) fields near line %" PRIu64 " in file %s\n",
 				            status, n_expected_fields, n_read, file);
 				if (!use_GMT_io) GMT->current.io.input = psave;	/* Restore previous setting */
-				return (NULL);
+				return NULL;
 			}
 
 			gmt_prep_tmp_arrays (GMT, GMT_IN, row, S->n_columns);	/* Init or reallocate tmp read vectors */
@@ -8252,7 +8285,7 @@ void gmtlib_free_image (struct GMT_CTRL *GMT, struct GMT_IMAGE **I, bool free_im
 }
 
 /*! . */
-struct GMT_VECTOR * gmt_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns, unsigned int direction) {
+struct GMT_VECTOR *gmt_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns, unsigned int direction) {
 	/* Allocates space for a new vector container.  No space allocated for the vectors themselves */
 	uint64_t col;
 	struct GMT_VECTOR *V = NULL;
@@ -8295,7 +8328,7 @@ int gmtlib_alloc_vectors (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, uint64_t n
 }
 
 /*! . */
-struct GMT_VECTOR * gmtlib_duplicate_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR *V_in, unsigned int mode) {
+struct GMT_VECTOR *gmtlib_duplicate_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR *V_in, unsigned int mode) {
 	/* Duplicates a vector container - optionally allocates and duplicates the data vectors */
 	struct GMT_VECTOR *V = NULL;
 	unsigned int col;

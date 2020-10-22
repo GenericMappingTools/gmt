@@ -46,7 +46,7 @@ Required Arguments
 *ingrid*
     2-D binary grid file to be operated on. (See GRID FILE FORMATS
     below). For cross-spectral operations, also give the second grid
-    file *ingrd2*.
+    file *ingrid2*.
 **-G**\ *outfile*
     Specify the name of the output grid file or the 1-D spectrum table
     (see **-E**). (See GRID FILE FORMATS below).
@@ -253,7 +253,7 @@ components of the raw spectrum of the data in topo.nc, try
 
    ::
 
-    gmt grdfft topo.nc -N+w+z -fg -V
+    gmt grdfft topo.nc -N+w+z -fg -V -E > /dev/null
 
 You can now make plots of the data in topo_taper.nc, topo_real.nc, and topo_imag.nc.
 

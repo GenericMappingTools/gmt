@@ -570,7 +570,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, n_files > 0, "No input files are allowed\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.set, "Option -L: Cannot be used if -B option sets increments.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.set[GMT_X], "Option -L: Cannot be used if -B option sets increments.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.dpi <= 0.0, "Option -N: The dpi must be > 0.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "Option -Z: No file given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK), "Option -Z: Cannot access file %s\n", Ctrl->Z.file);
@@ -661,9 +661,18 @@ GMT_LOCAL bool psscale_letter_hangs_down (char *text) {
 	return false;
 }
 
+GMT_LOCAL unsigned int psscale_shrink_triangle (double gap, double yt, double *yp, unsigned int *p_arg) {
+	*p_arg = PSL_MOVE|PSL_STROKE;
+	if (gmt_M_is_zero (gap)) return 3;
+	/* Must close triangle and shrink it a bit to align with width */
+	*p_arg |= PSL_CLOSE;
+	yp[0] -= yt;	yp[3] -= yt;	yp[2] += yt;
+	return (4);
+}
+
 GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width) {
-	unsigned int i, ii, id, j, nb, ndec = 0, dec, depth, flip = Ctrl->D.mmode, l_justify, n_use_labels = 0;
-	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nm, barmem, k, justify, no_B_mode = Ctrl->S.mode;
+	unsigned int i, ii, id, j, nb, ndec = 0, dec, depth, flip = Ctrl->D.mmode, l_justify, n_use_labels = 0, p_arg;
+	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nv, nm, barmem, k, justify, no_B_mode = Ctrl->S.mode;
 	int this_just, p_val, center = 0;
 	bool reverse, all = true, use_image, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
 	bool B_set = GMT->current.map.frame.draw, skip_lines = Ctrl->S.skip, need_image;
@@ -671,7 +680,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	static char *method[2] = {"polygons", "colorimage"};
 	unsigned char *bar = NULL, *tmp = NULL;
 	double hor_annot_width, annot_off, label_off = 0.0, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
-	double z = 0.0, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off = 0.0, rgb[4], rrggbb[4], prev_del_z, this_del_z = 0.0;
+	double z = 0.0, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off = 0.0, rgb[4], rrggbb[4], prev_del_z, this_del_z = 0.0, yt = 0.0;
 	double length = Ctrl->D.dim[GMT_X], width = Ctrl->D.dim[GMT_Y], gap = Ctrl->L.spacing, t_len, max_intens[2], xp[4], yp[4];
 	double *xpos = NULL, elength[2] = {0.0, 0.0};
 	struct GMT_FILL *f = NULL;
@@ -997,6 +1006,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		xd = 0.5 * w * (c - 1.0);
 		yd = 0.5 * w * (s - 1.0);
 		xt = yd * 2.0 * Ctrl->D.elength / width;	/* Shift of triangle peak x-pos to maintain original angle theta */
+		yt = 0.5 * w * (c - s + 1) / s;	/* Change in triangle base y-coordinates if there is gap and we must close the polygon */
 	}
 	/* Set up array with x-coordinates for the CPT z_lows + final z_high */
 	n_xpos = P->n_colors + 1;
@@ -1070,10 +1080,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		PSL_setlinecap (PSL, PSL_BUTT_CAP);	/* Butt cap required for outline of triangle */
 
 		if (Ctrl->D.emode & (reverse + 1)) {	/* Add color triangle on left side */
-			xp[0] = xp[2] = xleft - gap;	xp[1] = xleft - gap - Ctrl->D.elength;
-			yp[0] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
-			for (i = 0; i < 3; i++) xp[i] += xd;
+			xp[0] = xp[2] = xp[3] = xleft - gap;	xp[1] = xleft - gap - Ctrl->D.elength;
+			yp[0] = yp[3] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
+			for (i = 0; i < 4; i++) xp[i] += xd;
 			xp[1] += xt;
+			nv = psscale_shrink_triangle (gap, yt, yp, &p_arg);
 			id = (reverse) ? GMT_FGD : GMT_BGD;
 			if ((f = P->bfn[id].fill) != NULL)
 				gmt_setfill (GMT, f, 0);
@@ -1082,8 +1093,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, 0);
 			}
-			PSL_plotpolygon (PSL, xp, yp, 3);
-			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
+			PSL_plotpolygon (PSL, xp, yp, nv);
+			PSL_plotline (PSL, xp, yp, nv, p_arg);
 			nan_off = Ctrl->D.elength - xd;	/* Must make space for the triangle */
 		}
 		if (Ctrl->D.emode & 4) {	/* Add NaN rectangle on left side */
@@ -1102,10 +1113,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, Ctrl->D.etext, 0.0, PSL_MR, 0);
 		}
 		if (Ctrl->D.emode & (2 - reverse)) {	/* Add color triangle on right side */
-			xp[0] = xp[2] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
-			yp[0] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
-			for (i = 0; i < 3; i++) xp[i] -= xd;
+			xp[0] = xp[2] = xp[3] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
+			yp[0] = yp[3] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
+			for (i = 0; i < 4; i++) xp[i] -= xd;
 			xp[1] -= xt;
+			nv = psscale_shrink_triangle (gap, yt, yp, &p_arg);
 			id = (reverse) ? GMT_BGD : GMT_FGD;
 			if ((f = P->bfn[id].fill) != NULL)
 				gmt_setfill (GMT, f, 0);
@@ -1114,8 +1126,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, 0);
 			}
-			PSL_plotpolygon (PSL, xp, yp, 3);
-			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
+			PSL_plotpolygon (PSL, xp, yp, nv);
+			PSL_plotline (PSL, xp, yp, nv, p_arg);
 		}
 
 		PSL_setlinecap (PSL, PSL_SQUARE_CAP);	/* Square cap required for box of scale bar */
@@ -1242,7 +1254,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		if (P->is_wrapping) {	/* Add cyclic glyph */
 			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
 				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
-			else if ((Ctrl->D.emode & 4) == 0)	/* TNo nan so place on left */
+			else if ((Ctrl->D.emode & 4) == 0)	/* No nan so place on left */
 				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
 			else	/* Give up and place in center */
 				x0 = 0.5 * (xleft + xright);
@@ -1337,10 +1349,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		PSL_setlinecap (PSL, PSL_BUTT_CAP);	/* Butt cap required for outline of triangle */
 
 		if (Ctrl->D.emode & (reverse + 1)) {	/* Add color triangle at bottom */
-			xp[0] = xp[2] = xleft - gap;	xp[1] = xleft - gap - Ctrl->D.elength;
-			yp[0] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
-			for (i = 0; i < 3; i++) xp[i] += xd;
+			xp[0] = xp[2] = xp[3] = xleft - gap;	xp[1] = xleft - gap - Ctrl->D.elength;
+			yp[0] = yp[3] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
+			for (i = 0; i < 4; i++) xp[i] += xd;
 			xp[1] += xt;
+			nv = psscale_shrink_triangle (gap, yt, yp, &p_arg);
 			id = (reverse) ? GMT_FGD : GMT_BGD;
 			if ((f = P->bfn[id].fill) != NULL)
 				gmt_setfill (GMT, f, 0);
@@ -1349,8 +1362,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, 0);
 			}
-			PSL_plotpolygon (PSL, xp, yp, 3);
-			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
+			PSL_plotpolygon (PSL, xp, yp, nv);
+			PSL_plotline (PSL, xp, yp, nv, p_arg);
 			nan_off = Ctrl->D.elength - xd;	/* Must make space for the triangle */
 		}
 		if (Ctrl->D.emode & 4) {	/* Add NaN rectangle on left side */
@@ -1369,10 +1382,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, Ctrl->D.etext, -90.0, PSL_TC, 0);
 		}
 		if (Ctrl->D.emode & (2 - reverse)) {	/* Add color triangle at top */
-			xp[0] = xp[2] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
-			yp[0] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
-			for (i = 0; i < 3; i++) xp[i] -= xd;
+			xp[0] = xp[2] = xp[3] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
+			yp[0] = yp[3] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
+			for (i = 0; i < 4; i++) xp[i] -= xd;
 			xp[1] -= xt;
+			nv = psscale_shrink_triangle (gap, yt, yp, &p_arg);
 			id = (reverse) ? GMT_BGD : GMT_FGD;
 			if ((f = P->bfn[id].fill) != NULL)
 				gmt_setfill (GMT, f, 0);
@@ -1381,8 +1395,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, 0);
 			}
-			PSL_plotpolygon (PSL, xp, yp, 3);
-			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
+			PSL_plotpolygon (PSL, xp, yp, nv);
+			PSL_plotline (PSL, xp, yp, nv, p_arg);
 		}
 
 		PSL_setlinecap (PSL, PSL_SQUARE_CAP);	/* Square cap required for box of scale bar */
@@ -1662,14 +1676,14 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), ""))
+		if (gmt_map_setup (GMT, wesn))
 			Return (GMT_PROJECTION_ERROR);
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL)
 			Return (GMT_RUNTIME_ERROR);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
+		if (gmt_map_setup (GMT, GMT->common.R.wesn))
 			Return (GMT_PROJECTION_ERROR);
 		gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 
@@ -1691,7 +1705,7 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 		gmt_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
 		if (GMT->current.plot.panel.active) GMT->current.plot.panel.no_scaling = 1;	/* Do not rescale dimensions */
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), ""))
+		if (gmt_map_setup (GMT, wesn))
 			Return (GMT_PROJECTION_ERROR);
 		if (GMT->current.plot.panel.active) GMT->current.plot.panel.no_scaling = 0;	/* Reset no_scaling flag */
 	}
