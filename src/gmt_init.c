@@ -13832,6 +13832,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if (!GMT->init.history[id]) id++;		/* No history for -RP, increment to -RG as fallback */
 			if (GMT->init.history[id]) {	/* There is history for -R so -R will be added below */
 				GMT_Report (API, GMT_MSG_DEBUG, "Given -E, found there is a grid or plot region already.\n");
+				if ((opt = GMT_Make_Option (API, 'R', GMT->init.history[id])) == NULL) return NULL;	/* Failure to make -R option */
+				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append -R option */
+				GMT_Report (API, GMT_MSG_DEBUG, "Added -R%s for pscoast.\n", opt->arg);
 				add_R = false;
 			}
 		}
