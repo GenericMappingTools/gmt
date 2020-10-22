@@ -13358,6 +13358,38 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 		else	/* Not a valid modifier or just part of something like a positive number - stop our scanning */
 			go = false;
 	}
+	if (modifiers) {	/* Check that we have modifiers only and not stuff like +o.myextension */
+		bool error = false;
+		k = 0;
+		while (!error && modifiers[k]) {
+			if (modifiers[k] == '+') {
+				k++;
+				switch (modifiers[k]) {	/* The modifier code */
+					case 'h': case 'i': case 'o': case 'n': case 's':	/* +h[<hinge>], +i<inc>, ++o<offset>, +n<nodata>, +s<scale> */
+						k++;
+						while (modifiers[k] && modifiers[k] != '+' && strchr ("-+.0123456789eE", modifiers[k])) k++;	/* Skip a numerical argument */
+						if (!(modifiers[k] == '\0' || modifiers[k] == '+')) error = true;
+						break;
+					case 'u': case 'U':	/* +u<unit>, +U<unit */
+						k++;
+						if (strchr (GMT_LEN_UNITS2, modifiers[k]) == NULL)
+							error = true;
+						else
+							k++;
+						break;
+					default:
+						error = true;
+						break;
+				}
+			}
+			else
+				error = true;
+		}
+		if (error) {
+			GMT_Report (API, GMT_MSG_WARNING, "Your filename %s have what appears as valid GMT modifiers (from list +%s) but are embedded rather than appended to the filename - modifiers ignored\n", filename, mods);
+			modifiers = NULL;
+		}
+	}
 	return (modifiers);	/* Pass out the start of the valid modifiers or NULL */
 }
 
