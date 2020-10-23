@@ -7942,7 +7942,10 @@ bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 		c = gmtlib_last_valid_file_modifier (GMT->parent, cpt, GMT_CPTFILE_MODIFIERS);
 	if (c && (f = gmt_first_modifier (GMT, c, GMT_CPTFILE_MODIFIERS)))
 		f[0] = '\0';	/* Must chop off modifiers for further checks to work */
-	if (gmtsupport_cpt_master_index (GMT, cpt)) return true;
+	if (gmtsupport_cpt_master_index (GMT, cpt)) {
+		if (c && f) f[0] = '+';	/* Restore modifier before we return */
+		return true;
+	}
 	if (cpt[0] && !gmt_access (GMT, cpt, R_OK)) return false;	/* A CPT was given and exists */
 	return false;	/* Well, what can we do at this point */
 }
