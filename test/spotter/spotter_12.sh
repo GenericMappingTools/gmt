@@ -24,7 +24,7 @@ gmt backtracker suiko.txt -Db -ED2012x.txt > start_at_ridge.txt
 gmt backtracker loihi.txt -Df -ED2012x.txt > end_of_flow.txt
 #
 gmt pscoast -R150/220/00/65 -JM7i -P -K -G30/120/30 -A500 -Dl -W0.25p -B20 -BWSne -Xc > $ps
-gmt psxy -R -J -O -K -Sc0.1i -Cdrift D2012_HI_drift.txt >> $ps
+gmt psxy -R -J -O -K -Sc0.1i -Cdrift.cpt D2012_HI_drift.txt >> $ps
 gmt psxy -R -J -O -K -Sc0.1i -Gred -W0.5p loihi.txt >> $ps
 # Task 1: [OK]
 gmt backtracker loihi.txt -Df -Lb1 -ED2012x.txt -FD2012_HI_drift.txt | gmt psxy -R -J -O -K -W1p >> $ps
