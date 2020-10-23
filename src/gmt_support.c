@@ -9320,6 +9320,51 @@ void gmt_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 	gmt_M_rgb_copy (G->rgb, GMT->current.setting.ps_page_rgb);		/* Default box color is page color [nominally white] */
 }
 
+GMT_LOCAL int gmtsupport_is_cpt_file (struct GMT_CTRL *GMT, char *file) {
+	/* Read a file that may be a CPT file or a contour listing file.  We will return
+	 * 0 if it is a contour file, 1 if a CPT and -1 if we get read errors.
+	/* Because a non-commented record in a contour listing file is of the format
+	 *  cval [angle] C|A|c|a [pen]] OR  cval C|A|c|a [angle [pen]].
+	 * we can uniquely determine if it is that sort of file by finding the lone
+	 * character A|a|C|c between white space on the left and white space or NULL on right.
+	 */
+	int answer = 1;	/* Default response is that this is a CPT file, flagged as 1 */
+	char *txt = NULL, *c = NULL;
+	unsigned int k = 0;
+	struct GMT_DATASET *C = NULL;
+
+	if ((C = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IO_ASCII, NULL, file, NULL)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to read potential CPT or contour information file %s\n", file);
+		return (-1);
+	}
+	if (C->n_records == 0) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No records found inCPT or contour information file %s\n", file);
+		return (-1);
+	}
+	if (C->table[0]->segment[0]->text == NULL || (txt = C->table[0]->segment[0]->text[0]) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No text records found inCPT or contour information file %s\n", file);
+		return (-1);
+	}
+	if ((c = strchr (txt, ';'))) c[0] = '\0';	/* Chop off optional CPT labels since they have have text that can trick us */
+
+	while (txt[k] && !(txt[k] == '\t' || txt[k] == ' ')) k++;	/* Scan to first occurrence of white space */
+	while (txt[k] && strchr ("AaCc", txt[k]) == NULL) k++;		/* Scan to first occurrence of one of the key letters */
+	if ((k && (txt[k-1] == '\t' || txt[k-1] == ' ')) && (txt[k] && (txt[k+1] == '\t' || txt[k+1] == ' ' || txt[k+1] == '\0')))
+		answer = 0;	/* It is a contour file */
+	if (c) c[0] = ';';	/* Restore semicolon */
+
+	if (GMT_Destroy_Data (GMT->parent, &C)) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to free memory for contour information file %s\n", file);
+	}
+
+	if (answer)
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s assumed to be a CPT file\n", file);
+	else
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s determined to be a contour information file\n", file);
+
+	return (answer);	/* If we find a recognized contour type then we return true */
+}
+
 
 unsigned int gmt_contour_C_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct CONTOUR_ARGS *A) {
 	unsigned int n_errors = 0;
@@ -9341,9 +9386,13 @@ unsigned int gmt_contour_C_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct 
 		gmt_M_str_free (A->file);
 		A->file = strdup (arg);
 	}
-	else if (!gmt_access (GMT, arg, R_OK) || gmt_file_is_cache (API, arg)) {	/* Gave a readable file (CPT or contourfile) */
+	else if (!gmt_access (GMT, arg, R_OK) || gmt_file_is_cache (API, arg)) {	/* Gave a readable file (CPT or contour file) */
+		int answer;
 		A->interval = 1.0;	/* This takes us past a check only */
-		A->cpt = gmt_is_cpt_file (GMT, arg);
+		if ((answer = gmtsupport_is_cpt_file (GMT, arg)) == -1)
+			n_errors++;
+		else	
+			A->cpt = (answer == 1);
 		gmt_M_str_free (A->file);
 		A->file = strdup (arg);
 	}
@@ -17021,47 +17070,6 @@ void gmt_extend_region (struct GMT_CTRL *GMT, double wesn[], unsigned int mode, 
 		wesn[XHI] = ceil  ((wesn[XHI] + adjust * inc[XHI]) / inc[XHI]) * inc[XHI];
 		wesn[YHI] = ceil  ((wesn[YHI] + adjust * inc[YHI]) / inc[YHI]) * inc[YHI];
 	}
-}
-
-bool gmt_is_cpt_file (struct GMT_CTRL *GMT, char *file) {
-	/* Read a possible contour file looking for a non-commented record of the format
-	 *  cval [angle] C|A|c|a [pen]] records.
-	 * The deprecated format was cval C|A|c|a [angle [pen]].
-	 * If we do then we return false, else true [meaning it is likely a CPT file].
-	 */
-	bool answer;
-	char type;
-	unsigned int save_coltype = GMT->current.io.col_type[GMT_IN][GMT_X];
-	struct GMT_DATASET *C = NULL;
-
-	gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Since x is likely longitude we must avoid 360 wrapping here */
-
-	if ((C = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, file, NULL)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to read potential contour information file %s\n", file);
-		return (false);
-	}
-	if (C->n_records == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No records found in contour information file %s\n", file);
-		return (false);
-	}
-
-	type = C->table[0]->segment[0]->text[0][0];	/* This would normally be the contour type if we are reading that sort of file */
-
-	if (GMT_Destroy_Data (GMT->parent, &C)) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to free memory for contour information file %s\n", file);
-	}
-
-	gmt_set_column (GMT, GMT_IN, GMT_X, save_coltype);	/* Reset column type to what is was before */
-
-	if (strchr ("AaCc", type) == NULL) {	/* If we find a recognized contour type then we return true */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s determined to be a CPT file\n", file);
-		answer = true;
-	}
-	else {
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s determined tobe a contour information file\n", file);
-		answer = false;
-	}
-	return (answer);	/* If we find a recognized contour type then we return true */
 }
 
 struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, char *file, bool inner_tics, unsigned int *type, unsigned int *n_contours) {
