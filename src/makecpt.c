@@ -406,10 +406,7 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the makecpt main code ----------------------------*/
 
-	if (Ctrl->C.active) {
-		if (Ctrl->C.file[0] != '@' && (l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
-	}
-	else {	/* No table specified; set default table */
+	if (!Ctrl->C.active) {	/* No table specified; set default table */
 		Ctrl->C.active = true;
 		Ctrl->C.file = strdup (GMT_DEFAULT_CPT_NAME);
 	}

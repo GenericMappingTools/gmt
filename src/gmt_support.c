@@ -1163,7 +1163,7 @@ GMT_LOCAL struct CPT_Z_SCALE *gmtsupport_cpt_parse (struct GMT_CTRL *GMT, char *
 	struct CPT_Z_SCALE *Z = NULL;
 	gmt_M_unused(direction);
 
-	if ((f = gmt_strrstr (file, ".cpt")))	/* Got a file with CPT extension, look from there on out */
+	if ((f = gmt_strrstr (file, GMT_CPT_EXTENSION)))	/* Got a file with CPT extension, look from there on out */
 		m = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
 	else	/* Must use the full file name */ 
 		m = gmtlib_last_valid_file_modifier (GMT->parent, file, GMT_CPTFILE_MODIFIERS);
@@ -6019,7 +6019,7 @@ char *gmtlib_cptfile_unitscale (struct GMTAPI_CTRL *API, char *name) {
 	char *c = NULL, *f = NULL;
 	size_t len = strlen (name);	/* Get length of the file name */
 	if (len < 4) return NULL;	/* Not enough space for name and modifier */
-	if ((f = gmt_strrstr (name, ".cpt")))
+	if ((f = gmt_strrstr (name, GMT_CPT_EXTENSION)))
 		c = gmtlib_last_valid_file_modifier (API, f, "uU");
 	else
 		c = gmtlib_last_valid_file_modifier (API, name, "uU");
@@ -7355,6 +7355,18 @@ int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL bool gmtsupport_cpt_master_index (struct GMT_CTRL *GMT, char *name) {
+	size_t len;
+	gmt_M_unused(GMT);
+	if (name == NULL) return true;	/* true, because no name means we default to GMT_DEFAULT_CPT_NAME */
+	len = strlen (name);	/* Length of the master table name so we can limit comparison to just those characters */
+	/* Note: THere are near-duplicate names like broc and brocO, but since they are ordered alphabetically our
+	 * search for broc will first compare with broc before broc0 so not an issue. */
+	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) if (!strncmp (name, GMT_CPT_master[k], len))
+		return true;
+	return false;
+}
+
 /*! . */
 GMT_LOCAL void gmtsupport_make_continuous_colorlist (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	/* Convert a (by default) discrete CPT made from a color list to a continuous CPT instead */
@@ -7923,15 +7935,16 @@ bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	/* Return true if cpt is the name of a GMT CPT master table and not a local file */
 	char *c = NULL, *f = NULL;
 	if (cpt == NULL) return true;	/* No cpt given means use GMT_DEFAULT_CPT_NAME master */
-	if (gmt_M_file_is_memory (cpt)) return false;	/* A CPT was given via memory location */
-		if ((f = gmt_strrstr (cpt, ".cpt")))
-			c = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
-		else
-			c = gmtlib_last_valid_file_modifier (GMT->parent, cpt, GMT_CPTFILE_MODIFIERS);
+	if (gmt_M_file_is_memory (cpt)) return false;	/* A CPT was given via memory location so cannot be a master reference */
+	if ((f = gmt_strrstr (cpt, GMT_CPT_EXTENSION)))	/* Only examine modifiers from there onwards */
+		c = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
+	else	/* Must examine the entire file name for modifiers */
+		c = gmtlib_last_valid_file_modifier (GMT->parent, cpt, GMT_CPTFILE_MODIFIERS);
 	if (c && (f = gmt_first_modifier (GMT, c, GMT_CPTFILE_MODIFIERS)))
-		f[0] = '\0';	/* Must chop off modifiers for access to work */
+		f[0] = '\0';	/* Must chop off modifiers for further checks to work */
+	if (gmtsupport_cpt_master_index (GMT, cpt)) return true;
 	if (cpt[0] && !gmt_access (GMT, cpt, R_OK)) return false;	/* A CPT was given and exists */
-	return true;	/* Acting as if it is a master table */
+	return false;	/* Well, what can we do at this point */
 }
 
 int gmtlib_set_current_item_file (struct GMT_CTRL *GMT, const char *item, char *file) {
@@ -17333,7 +17346,7 @@ void gmt_cpt_interval_modifier (struct GMT_CTRL *GMT, char **arg, double *interv
 	char *file = NULL, *c = NULL, *f = NULL, new_arg[PATH_MAX] = {""};
 	gmt_M_unused (GMT);
 	if (arg == NULL || (file = *arg) == NULL || file[0] == '\0') return;	/* NULL argument */
-	if ((f = gmt_strrstr (file, ".cpt")))	/* Filename has .cpt extension, look behind it */
+	if ((f = gmt_strrstr (file, GMT_CPT_EXTENSION)))	/* Filename has .cpt extension, look behind it */
 		c = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
 	else	/* Must search the entire filename from the back */
 		c = gmtlib_last_valid_file_modifier (GMT->parent, file, GMT_CPTFILE_MODIFIERS);

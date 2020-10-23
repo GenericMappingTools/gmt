@@ -498,10 +498,7 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grd2cpt main code ----------------------------*/
 
-	if (Ctrl->C.active) {
-		if (Ctrl->C.file[0] != '@' && (l = strstr (Ctrl->C.file, ".cpt")) != NULL) *l = 0;	/* Strip off .cpt if used */
-	}
-	else {	/* No table specified; set GMT_DEFAULT_CPT_NAME table */
+	if (!Ctrl->C.active) {	/* No table specified; set GMT_DEFAULT_CPT_NAME table */
 		Ctrl->C.active = true;
 		Ctrl->C.file = strdup (GMT_DEFAULT_CPT_NAME);
 	}
