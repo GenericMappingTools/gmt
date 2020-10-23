@@ -274,7 +274,7 @@ enum GMT_enum_basemap {
 #define GMT_GRIDFILE_MODIFIERS "onsuU"
 
 /* Modifiers for CPT files:
- * +[h<hinge>] to override soft-hinge value in CPT
+ * +h[<hinge>] to override soft-hinge value in CPT
  * +i<dz> is used to round auto-determined min/max range to a multiple of dz.
  * +u<unit> converts z-values from given unit to meters
  * +U<unit> converts z-values from meter to given unit
