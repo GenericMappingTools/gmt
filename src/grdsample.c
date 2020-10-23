@@ -245,8 +245,8 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 	if (GMT->common.R.active[RSET]) {		/* Gave -R */
 		bool wrap_360_i = (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_360_range (Gin->header->wesn[XLO], Gin->header->wesn[XHI]));
 		bool wrap_360_o = (gmt_M_is_geographic (GMT, GMT_OUT) && gmt_M_360_range (wesn_o[XLO], wesn_o[XHI]));
-
 		unsigned int k;
+
 		/* Adjust wesn used to READ subset unless 360 geographic */
 		if (!wrap_360_i) {
 			k = 0;
