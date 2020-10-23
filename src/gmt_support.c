@@ -9342,9 +9342,8 @@ unsigned int gmt_contour_C_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct 
 		A->file = strdup (arg);
 	}
 	else if (!gmt_access (GMT, arg, R_OK) || gmt_file_is_cache (API, arg)) {	/* Gave a readable file (CPT or contourfile) */
-		size_t L = strlen(arg);
 		A->interval = 1.0;	/* This takes us past a check only */
-		A->cpt = (L > 4 && !strncmp (&arg[L-4], ".cpt", 4U)) ? true : false;	/* Extension determines if we got a CPT file */
+		A->cpt = gmt_is_cpt_file (GMT, arg);
 		gmt_M_str_free (A->file);
 		A->file = strdup (arg);
 	}
@@ -17024,18 +17023,16 @@ void gmt_extend_region (struct GMT_CTRL *GMT, double wesn[], unsigned int mode, 
 	}
 }
 
-bool gmt_is_contour_table (struct GMT_CTRL *GMT, char *file) {
+bool gmt_is_cpt_file (struct GMT_CTRL *GMT, char *file) {
 	/* Read a possible contour file looking for a non-commented record of the format
 	 *  cval [angle] C|A|c|a [pen]] records.
 	 * The deprecated format was cval C|A|c|a [angle [pen]].
-	 * If we do then we return true, else false [meaning it is likely a CPT file].
+	 * If we do then we return false, else true [meaning it is likely a CPT file].
 	 */
 	bool answer;
 	char type;
 	unsigned int save_coltype = GMT->current.io.col_type[GMT_IN][GMT_X];
 	struct GMT_DATASET *C = NULL;
-
-	if (file == NULL || file[0] == '\0') return false;	/* Not much we can do about this */
 
 	gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Since x is likely longitude we must avoid 360 wrapping here */
 
@@ -17057,12 +17054,12 @@ bool gmt_is_contour_table (struct GMT_CTRL *GMT, char *file) {
 	gmt_set_column (GMT, GMT_IN, GMT_X, save_coltype);	/* Reset column type to what is was before */
 
 	if (strchr ("AaCc", type) == NULL) {	/* If we find a recognized contour type then we return true */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s determined to not be a contour information file\n", file);
-		answer = false;
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s determined to be a CPT file\n", file);
+		answer = true;
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s determined to be a contour information file\n", file);
-		answer = true;
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s determined tobe a contour information file\n", file);
+		answer = false;
 	}
 	return (answer);	/* If we find a recognized contour type then we return true */
 }

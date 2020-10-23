@@ -154,8 +154,8 @@
 /* Determine if we should skip this CPT slice */
 #define gmt_M_skip_cptslice(P,index) ((index >= 0 && P->data[index].skip) || (index < 0 && P->bfn[index+3].skip))
 
-/* See if CPT modifiers was given (+u|U modifier) */
-#define gmt_M_cpt_mod(arg) ((arg) && ((arg)[0] =='+' && strchr ("uU", (arg)[1])))
+/* See if CPT modifiers was given (+h|i|u|U) */
+#define gmt_M_cpt_mod(arg) ((arg) && ((arg)[0] =='+' && strchr (GMT_CPTFILE_MODIFIERS, (arg)[1])))
 
 /* See if no CPT name was given (+u|U modifier may be present but not filename) */
 #define gmt_M_no_cpt_given(arg) (arg == NULL || arg[0] == '\0' || gmt_M_cpt_mod(arg))
