@@ -345,13 +345,15 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 					n_errors += gmtselect_old_C_parser (API, opt->arg, Ctrl);
 					break;
 				}
-				/* Here we perform new syntax parsing */
+				/* Here we perform new syntax parsing, and c points to +d<arg> */
 				if (opt->arg[0] == 0) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -C: No file given\n");
 					n_errors++;
 				}
 				else {
-					Ctrl->C.file = gmt_get_filename (API, opt->arg, "d");
+					Ctrl->C.mode = gmt_get_distance (GMT, &c[2], &(Ctrl->C.dist), &(Ctrl->C.unit));
+					c[0] = '\0';	/* Chop off module-specific modifier */
+					Ctrl->C.file = gmt_get_filename (API, opt->arg, NULL);
 					if (gmt_count_char (GMT, Ctrl->C.file, '/') == 1 && gmt_access (GMT, Ctrl->C.file, R_OK)) {	/* Check if we got a lon/lat point */
 						if ((j = sscanf (Ctrl->C.file, "%[^/]/%s", za, zb)) != 2) continue;	/* No, strange... */
 						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, za, gmt_M_type (GMT, GMT_IN, GMT_X), false, &Ctrl->C.lon), za);
@@ -359,8 +361,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 						if (n_errors == 0)
 							Ctrl->C.point = true;
 					}
+					c[0] = '+';	/* Restore module-specific modifier */
 				}
-				Ctrl->C.mode = gmt_get_distance (GMT, &c[2], &(Ctrl->C.dist), &(Ctrl->C.unit));
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				Ctrl->D.active = true;
@@ -414,19 +416,22 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 					n_errors += gmtselect_old_L_parser (API, opt->arg, Ctrl);
 					break;
 				}
-				/* Here we perform new syntax parsing */
+				/* Here we perform new syntax parsing, withg c pointing to the +d<arg> string */
 				if (gmt_validate_modifiers (GMT, opt->arg, 'L', "dp", GMT_MSG_ERROR)) n_errors++;
 				if (opt->arg[0] == 0) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -L: No file given\n");
 					n_errors++;
 				}
-				else
-					Ctrl->L.file = gmt_get_filename (API, opt->arg, "dp");
-				if (gmt_get_modifier (opt->arg, 'd', buffer)) {
-					Ctrl->L.mode = gmt_get_distance (GMT, buffer, &(Ctrl->L.dist), &(Ctrl->L.unit));
+				else {	/* Use c to explore modifiers */
+					if (gmt_get_modifier (c, 'd', buffer)) {
+						Ctrl->L.mode = gmt_get_distance (GMT, buffer, &(Ctrl->L.dist), &(Ctrl->L.unit));
+					}
+					if (gmt_get_modifier (c, 'p', buffer))
+						Ctrl->L.end_mode = 10;
+					c[0] = '\0';	/* Chop off module-specific modifier */
+					Ctrl->L.file = gmt_get_filename (API, opt->arg, NULL);
+					c[0] = '+';	/* Restore module-specific modifier */
 				}
-				if (gmt_get_modifier (opt->arg, 'p', buffer))
-					Ctrl->L.end_mode = 10;
 				break;
 			case 'N':	/* Inside/outside GSHHS land */
 				Ctrl->N.active = true;

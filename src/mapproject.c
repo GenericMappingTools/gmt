@@ -584,12 +584,17 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				if (!(strstr (opt->arg, "+u") || strstr (opt->arg, "+p") || strchr (opt->arg, '/')))
 					n_errors += mapproject_old_L_parser (API, opt->arg, Ctrl);
 				else {
+					char *m = NULL;
 					if (gmt_validate_modifiers (GMT, opt->arg, 'L', "up", GMT_MSG_ERROR)) n_errors++;
-					Ctrl->L.file = gmt_get_filename (API, opt->arg, "up");
-					if (gmt_get_modifier (opt->arg, 'u', txt_a))
-						Ctrl->L.unit = mapproject_set_unit_and_mode (API, txt_a, &Ctrl->L.sph);
-					if (gmt_get_modifier (opt->arg, 'p', txt_a))
-						Ctrl->L.mode = GMT_MP_GIVE_FRAC;
+					if ((m = gmt_first_modifier (GMT, opt->arg, "up"))) {
+						if (gmt_get_modifier (m, 'u', txt_a))
+							Ctrl->L.unit = mapproject_set_unit_and_mode (API, txt_a, &Ctrl->L.sph);
+						if (gmt_get_modifier (m, 'p', txt_a))
+							Ctrl->L.mode = GMT_MP_GIVE_FRAC;
+						m[0] = '\0';	/* Chop off modifiers */
+					}
+					Ctrl->L.file = gmt_get_filename (API, opt->arg, NULL);
+					if (m) m[0] = '+';	/* Restore modifiers */
 				}
 				/* Check settings */
 				n_errors += gmt_M_check_condition (GMT, !strchr (GMT_LEN_UNITS "cC", (int)Ctrl->L.unit),
