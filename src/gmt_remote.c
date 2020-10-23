@@ -606,7 +606,7 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 	time_t begin, end;
 
 	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) {  /* Not allowed to use remote copying */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Remote download is currently deactivated\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Remote download is currently deactivated\n");
 		return 1;
 	}
 	if (GMT->current.io.internet_error) return 1;   			/* Not able to use remote copying in this session */
