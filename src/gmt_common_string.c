@@ -34,6 +34,7 @@
  *  gmt_strlcmp             Compares strings (ignoring case) until first reaches null character
  *  gmt_strtok              Reiterant replacement of strtok
  *  gmt_strtok_m            A Matlab style strtok
+ *  gmt_strrstr				A strstr but for last occurrence
  *  gmt_dos_path_fix        Turn /c/dir/... paths into c:/dir/...
  *  str(n)casecmp           Case-insensitive string comparison functions
  *  strtok_r                Reentrant string tokenizer from Gnulib (LGPL)
@@ -229,6 +230,20 @@ void gmt_strtok_m (char *in, char **token, char **remain, char *sep) {
 			remain[0] = strdup(p);
 	}
 	free(p);
+}
+
+char *gmt_strrstr (const char *s, const char *m) {
+	/* Find last occurrence of m in s */
+    char *last = NULL;
+    size_t n = strlen(m);
+
+    while ((s = strchr(s, *m)) != NULL) {
+        if (!strncmp(s, m, n))
+            last = (char *)s;
+        if (*s++ == '\0')
+            break;
+    }
+    return last;
 }
 
 unsigned int gmt_get_modifier (const char *string, char modifier, char *token) {
