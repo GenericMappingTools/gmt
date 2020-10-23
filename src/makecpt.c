@@ -381,7 +381,7 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	double *z = NULL;
 
-	char *l = NULL, *kind[2] = {"discrete", "continuous"};
+	char *kind[2] = {"discrete", "continuous"};
 
 	struct MAKECPT_CTRL *Ctrl = NULL;
 	struct GMT_PALETTE *Pin = NULL, *Pout = NULL;

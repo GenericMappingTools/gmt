@@ -463,7 +463,7 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	size_t n_alloc = GMT_TINY_CHUNK;
 	bool write = false, interpolate = true;
 
-	char format[GMT_BUFSIZ] = {""}, *l = NULL, **grdfile = NULL;
+	char format[GMT_BUFSIZ] = {""}, **grdfile = NULL;
 
 	double *z = NULL, wesn[4], mean, sd, wsum = 0.0, scale;
 
