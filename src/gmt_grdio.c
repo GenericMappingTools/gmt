@@ -154,12 +154,16 @@ GMT_LOCAL void gmtgrdio_grd_parse_xy_units (struct GMT_CTRL *GMT, struct GMT_GRI
 	/* Decode the optional +u|U<unit> and determine scales */
 	enum gmt_enum_units u_number;
 	unsigned int mode = 0;
-	char *c = NULL, *name = NULL;
+	char *c = NULL, *name = NULL, *f = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	if (gmt_M_is_geographic (GMT, direction)) return;	/* Does not apply to geographic data */
 	name = (file) ? file : HH->name;
-	if ((c = gmtlib_file_unitscale (name)) == NULL) return;	/* Did not find any modifier */
+	if ((f = gmt_strrstr (name, ".grd")) || (f = gmt_strrstr (file, ".nc")))
+		c = gmtlib_last_valid_file_modifier (GMT->parent, f, "Uu");
+	else
+		c = gmtlib_last_valid_file_modifier (GMT->parent, name, "Uu");
+	if (c == NULL) return;	/* Did not find any modifier */
 	mode = (c[1] == 'u') ? 0 : 1;
 	u_number = gmtlib_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
 	if (u_number == GMT_IS_NOUNIT) {
@@ -1038,6 +1042,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	int val;
 	unsigned int direction = (magic) ? GMT_IN : GMT_OUT, pos = 0;
 	char tmp[GMT_LEN512] = {""};	/* But it's copied at most 256 chars into header->name so 256 should do */
+	char *c = NULL, *f = NULL;	/* Various char pointers used to deal with file modifiers */
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	if (file[0] == '@') pos = 1;	/* At this point we will already have downloaded any remote file so skip the @ */
@@ -1052,18 +1057,24 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	header->nan_value      = (gmt_grdfloat)NAN;
 
 	i = strcspn (HH->name, "=");	/* get number of chars until first '=' or '\0' */
-	j = strcspn (HH->name, "+");	/* get number of chars until first '+' or '\0' */
 
-	if (HH->name[i] == '\0' && (HH->name[j] && strchr ("ons", HH->name[j+1]))) {	/* No grid type but gave valid modifiers */
+	if ((f = gmt_strrstr (HH->name, ".grd")) || (f = gmt_strrstr (HH->name, ".nc")))
+		c = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_GRIDFILE_MODIFIERS);
+	else
+		c = gmtlib_last_valid_file_modifier (GMT->parent, HH->name, GMT_GRIDFILE_MODIFIERS);
+
+	if (HH->name[i] == '\0' && c) {	/* No grid type but gave valid modifiers */
 		/* parse grid format string: */
-		if ((val = gmtgrdio_parse_grd_format_scale (GMT, header, &HH->name[j])) != GMT_NOERROR)
+		if ((val = gmtgrdio_parse_grd_format_scale (GMT, header, c)) != GMT_NOERROR)
 			return val;
-		HH->name[j] = '\0';	/* Chop off since we did got the scalings */
+		c[0] = '\0';	/* Chop off since we did got the scalings */
 	}
 	if (HH->name[i]) {	/* Reading or writing when =suffix is present: get format type, scale, offset and missing value */
 		i++;
 		/* parse grid format string: */
-		if ((val = gmtgrdio_parse_grd_format_scale (GMT, header, &HH->name[i])) != GMT_NOERROR)
+		if (c && (val = gmtgrdio_parse_grd_format_scale (GMT, header, c)) != GMT_NOERROR)
+			return val;
+		else if ((val = gmtgrdio_parse_grd_format_scale (GMT, header, &HH->name[i])) != GMT_NOERROR)
 			return val;
 		if (header->type == GMT_GRID_IS_GD && HH->name[i+2] && HH->name[i+2] == '?') {	/* A SUBDATASET request for GDAL */
 			char *pch = strstr(&HH->name[i+3], "::");
