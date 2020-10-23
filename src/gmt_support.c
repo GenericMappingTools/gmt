@@ -9336,10 +9336,11 @@ void gmt_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 GMT_LOCAL int gmtsupport_is_cpt_file (struct GMT_CTRL *GMT, char *file) {
 	/* Read a file that may be a CPT file or a contour listing file.  We will return
 	 * 0 if it is a contour file, 1 if a CPT and -1 if we get read errors.
-	/* Because a non-commented record in a contour listing file is of the format
-	 *  cval [angle] C|A|c|a [pen]] OR  cval C|A|c|a [angle [pen]].
+	 * Because a non-commented record in a contour listing file is of the format
+	 *   cval [angle] C|A|c|a [pen]] OR  cval C|A|c|a [angle [pen]] (deprecated format),
 	 * we can uniquely determine if it is that sort of file by finding the lone
 	 * character A|a|C|c between white space on the left and white space or NULL on right.
+	 * If that is not found then it must be a CPT file.
 	 */
 	int answer = 1;	/* Default response is that this is a CPT file, flagged as 1 */
 	char *txt = NULL, *c = NULL;
@@ -9351,20 +9352,20 @@ GMT_LOCAL int gmtsupport_is_cpt_file (struct GMT_CTRL *GMT, char *file) {
 		return (-1);
 	}
 	if (C->n_records == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No records found inCPT or contour information file %s\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No records found in CPT or contour information file %s\n", file);
 		return (-1);
 	}
 	if (C->table[0]->segment[0]->text == NULL || (txt = C->table[0]->segment[0]->text[0]) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No text records found inCPT or contour information file %s\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No text records found in CPT or contour information file %s\n", file);
 		return (-1);
 	}
-	if ((c = strchr (txt, ';'))) c[0] = '\0';	/* Chop off optional CPT labels since they have have text that can trick us */
+	if ((c = strchr (txt, ';'))) c[0] = '\0';	/* Chop off optional CPT labels since they may have text that can trick us */
 
-	while (txt[k] && !(txt[k] == '\t' || txt[k] == ' ')) k++;	/* Scan to first occurrence of white space */
+	while (txt[k] && !(txt[k] == '\t' || txt[k] == ' ')) k++;	/* Scan to first occurrence of white space, thus skipping <cval> */
 	while (txt[k] && strchr ("AaCc", txt[k]) == NULL) k++;		/* Scan to first occurrence of one of the key letters */
 	if ((k && (txt[k-1] == '\t' || txt[k-1] == ' ')) && (txt[k] && (txt[k+1] == '\t' || txt[k+1] == ' ' || txt[k+1] == '\0')))
-		answer = 0;	/* It is a contour file */
-	if (c) c[0] = ';';	/* Restore semicolon */
+		answer = 0;	/* Yes, this is a contour file */
+	if (c) c[0] = ';';	/* Restore semicolon to be nice */
 
 	if (GMT_Destroy_Data (GMT->parent, &C)) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to free memory for contour information file %s\n", file);
