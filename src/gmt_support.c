@@ -16993,6 +16993,49 @@ void gmt_extend_region (struct GMT_CTRL *GMT, double wesn[], unsigned int mode, 
 	}
 }
 
+bool gmt_is_contour_table (struct GMT_CTRL *GMT, char *file) {
+	/* Read a possible contour file looking for a non-commented record of the format
+	 *  cval [angle] C|A|c|a [pen]] records.
+	 * The deprecated format was cval C|A|c|a [angle [pen]].
+	 * If we do then we return true, else false [meaning it is likely a CPT file].
+	 */
+	bool answer;
+	char type;
+	unsigned int save_coltype = GMT->current.io.col_type[GMT_IN][GMT_X];
+	struct GMT_DATASET *C = NULL;
+
+	if (file == NULL || file[0] == '\0') return false;	/* Not much we can do about this */
+
+	gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Since x is likely longitude we must avoid 360 wrapping here */
+
+	if ((C = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, file, NULL)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to read potential contour information file %s\n", file);
+		return (false);
+	}
+	if (C->n_records == 0) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No records found in contour information file %s\n", file);
+		return (false);
+	}
+
+	type = C->table[0]->segment[0]->text[0][0];	/* This would normally be the contour type if we are reading that sort of file */
+
+	if (GMT_Destroy_Data (GMT->parent, &C)) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to free memory for contour information file %s\n", file);
+	}
+
+	gmt_set_column (GMT, GMT_IN, GMT_X, save_coltype);	/* Reset column type to what is was before */
+
+	if (strchr ("AaCc", type) == NULL) {	/* If we find a recognized contour type then we return true */
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s determined to not be a contour information file\n", file);
+		answer = false;
+	}
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s determined to be a contour information file\n", file);
+		answer = true;
+	}
+	return (answer);	/* If we find a recognized contour type then we return true */
+}
+
 struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, char *file, bool inner_tics, unsigned int *type, unsigned int *n_contours) {
 	/* Read contour info from file with cval [angle] C|A|c|a [pen]] records.
 	 * The deprecated format was cval C|A|c|a [angle [pen]].

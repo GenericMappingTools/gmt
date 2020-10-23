@@ -396,6 +396,7 @@ EXTERN_MSC unsigned int gmt_check_language (struct GMT_CTRL *GMT, unsigned int m
 EXTERN_MSC bool gmt_script_is_classic (struct GMT_CTRL *GMT, FILE *fp);
 EXTERN_MSC int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library);
 EXTERN_MSC unsigned int gmt_polygon_orientation (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo);
+EXTERN_MSC bool gmt_is_contour_table (struct GMT_CTRL *GMT, char *file);
 EXTERN_MSC struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, char *file, bool inner_ticks, unsigned int *type, unsigned int *n_contours);
 EXTERN_MSC int gmt_signum (double x);
 EXTERN_MSC void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double value, double *rgb);
