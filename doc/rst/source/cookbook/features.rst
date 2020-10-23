@@ -2114,7 +2114,7 @@ packed integer grids (=\ *ID*\ **+s**\ *a* is a shorthand for
 if you tend to use what *could* look like modifier-sequences to GMT (e.g., using
 filenames like data.grid+o4) you can prevent any confusion by using either the
 GMT-recommended ".grd" or ".nc" as grid file extensions (e.g., data.my+o4.grd).
-Since valid modifiers are *appended* to a file name,finding such an extension simplifies parsing.
+Since valid modifiers are *appended* to a file name, finding such an extension simplifies parsing.
 
 Note that the GMT netCDF and native binary grids store the grid scale and offset
 in the file, hence if you specify these attributes when writing a file then upon reading the grid
