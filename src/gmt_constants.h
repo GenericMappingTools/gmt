@@ -241,6 +241,9 @@ enum GMT_enum_basemap {
 
 /* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"
+/* CPT extension is pretty fixed */
+#define GMT_CPT_EXTENSION	".cpt"
+#define GMT_CPT_EXTENSION_LEN	4U
 
 #define GMT_IS_ROMAN_LCASE	1	/* For converting Arabic numerals to Roman */
 #define GMT_IS_ROMAN_UCASE	2

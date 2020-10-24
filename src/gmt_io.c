@@ -5199,7 +5199,7 @@ char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const cha
 	if (mods) {	/* Given modifiers to chop off if they are valid */
 		char *f = NULL;
 		/* If recognized file extension for grids (.grd, .nc) or cpt (.cpt) we must look after those */
-		if ((f = gmt_strrstr (file, ".grd")) || (f = gmt_strrstr (file, ".cpt")) || (f = gmt_strrstr (file, ".nc")))
+		if ((f = gmt_strrstr (file, ".grd")) || (f = gmt_strrstr (file, GMT_CPT_EXTENSION)) || (f = gmt_strrstr (file, ".nc")))
 			c = gmtlib_last_valid_file_modifier (API, f, mods);
 		else
 			c = gmtlib_last_valid_file_modifier (API, file, mods);
