@@ -714,7 +714,7 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 				 * 1. Current azimuth diffs from previous azimuth by ~180 degree
 				 * 2. Takeoff angle is ~90 degree so that the data fall at the beachball boundary
 				 *
-				 * Note: the choices of 10.0 and 80.0 are arbitary and may NOT working for extreme cases.
+				 * Note: the choices of 10.0 and 80.0 are arbitrary and may NOT work for extreme cases.
 				 */
 				azi[n][1] = azp;
 				assert (n < 2);
