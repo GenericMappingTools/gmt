@@ -282,7 +282,7 @@ GMT_LOCAL double pshistogram_set_xy_array (struct GMT_CTRL *GMT, struct PSHISTOG
 	/* Compute the x- and y-coordinates for this bar given bin ibox and return polygon coordinates via px, py.
 	 * We also return the z-value of the bar for CPT lookup purposes. */
 	unsigned int i;
-	double dx, off, xx, yy;
+	double dx, off, xx, yy, zval;
 
 	x[0] = F->T->array[ibox];
 	x[1] = F->T->array[ibox+1];
@@ -304,6 +304,13 @@ GMT_LOCAL double pshistogram_set_xy_array (struct GMT_CTRL *GMT, struct PSHISTOG
 		y[2] = d_log101p (GMT, 100.0 * F->boxh[ibox] / F->sum_w );
 	else
 		y[2] = F->boxh[ibox];
+
+	/* For cpt purposes we either return counts or percent */
+	if (F->hist_type == PSHISTOGRAM_FREQ_PCT || F->hist_type == PSHISTOGRAM_LOG_FREQ_PCT || F->hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)
+		zval = (100.0 * F->boxh[ibox]) / F->sum_w;
+	else
+		zval = F->boxh[ibox];
+
 	y[3] = y[2];
 	if (Ctrl->E.active) {	/* Adjust histogram plot width [and possibly shift positions] if they are given in data units */
 		if (!Ctrl->E.w_is_dim) {	/* Must adjust this bins x-coords to have the given x-width instead */
@@ -333,7 +340,7 @@ GMT_LOCAL double pshistogram_set_xy_array (struct GMT_CTRL *GMT, struct PSHISTOG
 			for (i = 0; i < 4; i++) px[i] += Ctrl->E.off;
 		}
 	}
-	return (y[2]);
+	return (zval);
 }
 
 GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct PSHISTOGRAM_CTRL *Ctrl, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, struct PSHISTOGRAM_D *D) {
@@ -342,7 +349,7 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 	char label[GMT_LEN64] = {""};
 	bool first = true, stairs = Ctrl->S.active, flip_to_y = Ctrl->A.active, draw_outline = Ctrl->W.active, cpt = Ctrl->C.active;
 	double area = 0.0, rgb[4], x[4], y[4], bin_width, zval, label_angle = 0.0, *px = NULL, *py = NULL;
-	double plot_x = 0.0, plot_y = 0.0, *xpol = NULL, *ypol = NULL;
+	double plot_x = 0.0, plot_y = 0.0, *xpol = NULL, *ypol = NULL, maxz = 0.0;
 	struct GMT_FILL *f = NULL;
 	struct GMT_PEN *pen = &Ctrl->W.pen;
 	struct GMT_FILL *fill = &Ctrl->G.fill;
@@ -374,6 +381,7 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 			else	/* Add up as we go along */
 				area += bin_width * F->boxh[ibox];
 			zval = pshistogram_set_xy_array (GMT, Ctrl, F, ibox, x, y, px, py);	/* Get polygon coordinates for this bar in plot units */
+			if (zval > maxz) maxz = zval;
 
 			if (stairs) {	/* Need to build up the full cumulative polygon one step at the time */
 				if (first) {	/* Initialization of start point */
@@ -397,6 +405,7 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 				PSL_plotpolygon (PSL, px, py, 4);
 		}
 	}
+	fprintf (stderr, "Max z = %g\n", maxz);
 	if (stairs && F->n_boxes) {	/* Finalize cumulative polygon and plot it */
 		xpol[k] = px[1];	ypol[k++] = py[1];
 		PSL_plotpolygon (PSL, xpol, ypol, k);
@@ -537,7 +546,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Plot horizontal bars, i.e., flip x and y axis [Default is vertical].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign fill to bars based on the bar-values.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign fill to bars based on the bar-values (count or percent only; see -Z).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Place histogram count labels on top of each bar; optionally append modifiers:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +b places the labels beneath the bars [above]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +f<font> sets the label font [FONT_ANNOT_PRIMARY]\n");
