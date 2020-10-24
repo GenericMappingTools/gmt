@@ -15452,15 +15452,16 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->fq_parse = true;	/* This will be set to false once at least one header has been parsed */
 				break;
 			}
-			for (j = 1, colon = 0; text[j]; j++) if (text[j] == ':') colon = j;
-			if (colon) {	/* Gave :<labelinfo> */
+			/* Determine the first colon as a separator between info and specs */
+			for (j = 1, colon = GMT_NOTSET; colon == GMT_NOTSET && text[j]; j++) if (text[j] == ':') colon = j;
+			if (colon != GMT_NOTSET) {	/* Gave :<labelinfo> */
 				text[colon] = 0;
 				gmt_contlabel_init (GMT, &p->G, 0);
 				decode_error += gmt_contlabel_info (GMT, 'S', &text[1], &p->G);
 				decode_error += gmt_contlabel_specs (GMT, &text[colon+1], &p->G);
 				if (!cmd && gmt_contlabel_prep (GMT, &p->G, NULL)) decode_error++;
 			}
-			else
+			else	/* No <labelinfo> given */
 				decode_error += gmt_contlabel_info (GMT, 'S', &text[1], &p->G);
 			p->fq_parse = false;	/* No need to parse more later */
 			break;
