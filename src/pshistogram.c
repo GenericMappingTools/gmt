@@ -349,7 +349,7 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 	char label[GMT_LEN64] = {""};
 	bool first = true, stairs = Ctrl->S.active, flip_to_y = Ctrl->A.active, draw_outline = Ctrl->W.active, cpt = Ctrl->C.active;
 	double area = 0.0, rgb[4], x[4], y[4], bin_width, zval, label_angle = 0.0, *px = NULL, *py = NULL;
-	double plot_x = 0.0, plot_y = 0.0, *xpol = NULL, *ypol = NULL, maxz = 0.0;
+	double plot_x = 0.0, plot_y = 0.0, *xpol = NULL, *ypol = NULL;
 	struct GMT_FILL *f = NULL;
 	struct GMT_PEN *pen = &Ctrl->W.pen;
 	struct GMT_FILL *fill = &Ctrl->G.fill;
@@ -381,7 +381,6 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 			else	/* Add up as we go along */
 				area += bin_width * F->boxh[ibox];
 			zval = pshistogram_set_xy_array (GMT, Ctrl, F, ibox, x, y, px, py);	/* Get polygon coordinates for this bar in plot units */
-			if (zval > maxz) maxz = zval;
 
 			if (stairs) {	/* Need to build up the full cumulative polygon one step at the time */
 				if (first) {	/* Initialization of start point */
@@ -405,7 +404,6 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 				PSL_plotpolygon (PSL, px, py, 4);
 		}
 	}
-	fprintf (stderr, "Max z = %g\n", maxz);
 	if (stairs && F->n_boxes) {	/* Finalize cumulative polygon and plot it */
 		xpol[k] = px[1];	ypol[k++] = py[1];
 		PSL_plotpolygon (PSL, xpol, ypol, k);
