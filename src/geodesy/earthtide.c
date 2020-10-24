@@ -1382,7 +1382,7 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 					n_errors++;
 					break;
 				}
-				n_errors += gmt_parse_array (GMT, 'T', opt->arg, & (Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR, 0);
+				n_errors += gmt_parse_array (GMT, 'T', opt->arg, & (Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR | GMT_ARRAY_UNIQUE, 0);
 
 				break;
 			default:	/* Report bad options */

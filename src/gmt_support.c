@@ -16505,7 +16505,28 @@ char *gmt_arabic2roman (unsigned int number, char string[], size_t size, bool lo
 	return string;
 }
 
-double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, uint64_t *n) {
+GMT_LOCAL double *gmtsupport_unique_array (struct GMT_CTRL *GMT, double *array, uint64_t *n) {
+	size_t k, j;
+	/* Sort the array in case user did not enter values that were monotonically increasing */
+	gmt_sort_array (GMT, array, *n, GMT_DOUBLE);
+	/* Skip any duplicates in the sorted array */
+	k = 0; j = 1;
+	while (j < *n) {
+		if (doubleAlmostEqualZero (array[j], array[k]))
+			j++;
+		else
+			array[++k] = array[j++];
+	}
+	k++;	/* (new) total number of unique values */
+	if (k < *n) {
+		*n = k;	/* Update count, if necessary */
+		array = gmt_M_memory (GMT, array, *n, double);	/* Reallocate exact length of array */
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Eliminated %d duplicate values from the sorted array\n", (int)(j-k));
+	}
+	return array;
+}
+
+double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, bool unique, uint64_t *n) {
 	/* Given a comma-separated string of values of type, parse and return array and its length */
 	size_t k;
 	unsigned int pos = 0;
@@ -16530,7 +16551,10 @@ double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, 
 		}
 		k++;
 	}
-	return array;
+	if (!unique) return array;	/* Return as is */
+
+	/* Return a possibly sorted and monotonically increasing array */
+	return (gmtsupport_unique_array (GMT, array, n));
 }
 
 GMT_LOCAL uint64_t gmtsupport_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
@@ -16612,6 +16636,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	}
 	gmt_M_str_free (T->file);		/* In case earlier parsing */
 	gmt_M_memset (T, 1, struct GMT_ARRAY);	/* Wipe clean the structure */
+
+	if (flags & GMT_ARRAY_UNIQUE)
+		T->unique = true;	/* Resulting array must contain unique and sorted entries */
 
 	/* 1a. Check if argument is a remote file */
 	if (gmt_file_is_cache (GMT->parent, argument) || gmt_M_file_is_url (argument)) {	/* Remote file, must check */
@@ -16899,14 +16926,27 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		T->array = gmt_M_memory (GMT, NULL, T->n, double);
 		gmt_M_memcpy (T->array, D->table[0]->segment[0]->data[GMT_X], T->n, double);
 		GMT_Destroy_Data (GMT->parent, &D);
+		if (T->unique)	/* Must sort and eliminate duplicates */
+			T->array = gmtsupport_unique_array (GMT, T->array, &(T->n));
 		T->var_inc = gmtsupport_var_inc (T->array, T->n);
 		return GMT_NOERROR;
 	}
 
 	if (T->list) {	/* Got a list, parse and make array */
-		if ((T->array = gmt_list_to_array (GMT, T->list, gmt_M_type (GMT, GMT_IN, T->col), &(T->n))) == NULL)
+		if ((T->array = gmt_list_to_array (GMT, T->list, gmt_M_type (GMT, GMT_IN, T->col), T->unique, &(T->n))) == NULL)
 			return GMT_PARSE_ERROR;
 		T->var_inc = gmtsupport_var_inc (T->array, T->n);
+		T->min = T->array[0];	T->max = T->array[T->n-1];
+		if (T->n > 1) {	/* Got at least min/max */
+			if (!T->var_inc) {	/* Just did an alternate way to set an equidistant array */
+				T->inc = T->array[1] - T->array[0];
+				T->set = 3;
+			}
+			else
+				T->set = 2;
+		}
+		else	/* Got a single point only */
+			T->set = 1;
 		return GMT_NOERROR;
 	}
 
