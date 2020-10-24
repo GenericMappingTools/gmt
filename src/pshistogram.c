@@ -742,7 +742,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 	if (pshistogram_new_syntax (GMT, l_arg, t_arg, w_arg)) {
 		/* Process -T<width> [-Lb|h|l] [-W<pen>] */
 		Ctrl->T.active = true;
-		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST, 0);
+		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_UNIQUE, 0);
 		if (l_arg) {	/* Gave -Lb|h|l */
 			Ctrl->L.active = true;
 			if (l_arg[0] == 'l') Ctrl->L.mode = PSHISTOGRAM_LEFT;
@@ -1038,6 +1038,9 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 		if (F.weights) gmt_M_free (GMT, weights);
 		Return (GMT_RUNTIME_ERROR);
+	}
+	else if (F.T->list && F.T->set > 1 && !GMT->common.R.active[RSET]) {	/* Update min/max */
+		F.wesn[XLO] = F.T->min; F.wesn[XHI] = F.T->max;
 	}
 
 	if (pshistogram_fill_boxes (GMT, &F, data, weights, n)) {

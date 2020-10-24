@@ -145,7 +145,8 @@ enum GMT_enum_array {
 	GMT_ARRAY_NOINC = 8,
 	GMT_ARRAY_SCALAR = 16,
 	GMT_ARRAY_NOMINMAX = 32,
-	GMT_ARRAY_ROUND = 64};
+	GMT_ARRAY_ROUND = 64,
+	GMT_ARRAY_UNIQUE = 128};
 
 /*! Handling of swap/no swap in i/o */
 enum GMT_swap_direction {
