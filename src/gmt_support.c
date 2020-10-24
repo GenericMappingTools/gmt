@@ -16512,14 +16512,14 @@ GMT_LOCAL double *gmtsupport_unique_array (struct GMT_CTRL *GMT, double *array, 
 	/* Skip any duplicates in the sorted array */
 	k = 0; j = 1;
 	while (j < *n) {
-		if (doubleAlmostEqualZero (array[j], array[k]))
+		if (doubleAlmostEqualZero (array[j], array[k]))	/* Skip repeated point */
 			j++;
-		else
+		else	/* Copy over unique value */ 
 			array[++k] = array[j++];
 	}
 	k++;	/* (new) total number of unique values */
-	if (k < *n) {
-		*n = k;	/* Update count, if necessary */
+	if (k < *n) {	/* Update array count */
+		*n = k;
 		array = gmt_M_memory (GMT, array, *n, double);	/* Reallocate exact length of array */
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Eliminated %d duplicate values from the sorted array\n", (int)(j-k));
 	}
