@@ -22,7 +22,7 @@ gmt pstext -R0/8/0/10 -Jx1i -F+f14p+jRM -O -K -X-3.45i -N << EOF >> $ps
 -0.1 7.5 az: -140
 -0.1 9.2 az: -180
 EOF
-gmt pstext -R0/8/0/10 -Jx1i -F+f14p+jLM -O -K -N << EOF >> $ps
+gmt pstext -R0/8/0/10 -Jx1i -F+f14p+jLM -O -N << EOF >> $ps
 6.2 0.7 az: 150
 6.2 2.4 az: 120
 6.2 4.1 az: 90
@@ -30,4 +30,3 @@ gmt pstext -R0/8/0/10 -Jx1i -F+f14p+jLM -O -K -N << EOF >> $ps
 6.2 7.5 az: 30
 6.2 9.2 az: 0
 EOF
-gmt psxy -R -J -O -T >> $ps

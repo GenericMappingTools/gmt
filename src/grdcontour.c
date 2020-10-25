@@ -898,7 +898,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 		if (gmt_M_file_is_memory (optN->arg))	/* Got cpt via a memory object */
 			strncpy (cptfile, optN->arg, PATH_MAX-1);
-		else if ((L = strlen (optN->arg)) >= 4 && !strncmp (&optN->arg[L-4], ".cpt", 4U)) {	/* Gave a cpt argument, check that it is valid */
+		else if ((L = strlen (optN->arg)) >= 4 && !strncmp (&optN->arg[L-4], GMT_CPT_EXTENSION, GMT_CPT_EXTENSION_LEN)) {	/* Gave a cpt argument, check that it is valid */
 			if (!gmt_file_is_cache (API, optN->arg) && gmt_access (API->GMT, optN->arg, R_OK)) {
 				GMT_Report (API, GMT_MSG_ERROR, "Option -N: CPT file %s not found\n", optN->arg);
 				bailout (GMT_PARSE_ERROR);
@@ -917,7 +917,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			switch (opt->option) {
 				case 'A' : case 'D': case 'F': case 'G': case 'K': case 'L': case 'Q': case 'T': case 'U': case 'W': case 'Z':	/* Only for grdcontour */
 					strcat (cmd2, string); break;
-				case 'B':	/* Must worry about spaces*/
+				case 'B':	/* Must worry about spaces */
 					if (strchr (opt->arg, ' ') || strchr (opt->arg, '\t')) {	/* Must place all string arguments in quotes */
 						char dup_string[GMT_LEN128] = {""};
 						grdcontour_embed_quotes (opt->arg, dup_string);
@@ -933,7 +933,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 						strcpy (cptfile, opt->arg);
 						got_C_cpt = true;
 					}
-					else if ((L = strlen (opt->arg)) >= 4 && !strncmp (&opt->arg[L-4], ".cpt", 4U)) {	/* Gave a -C<cpt> argument, check that it is valid */
+					else if ((L = strlen (opt->arg)) >= 4 && !strncmp (&opt->arg[L-4], GMT_CPT_EXTENSION, GMT_CPT_EXTENSION_LEN)) {	/* Gave a -C<cpt> argument, check that it is valid */
 						if (!gmt_file_is_cache (API, opt->arg) && gmt_access (API->GMT, opt->arg, R_OK)) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -C: CPT file %s not found\n", opt->arg);
 							bailout (GMT_PARSE_ERROR);
@@ -977,7 +977,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 						strcat (cmd1, string);	strcat (cmd2, string);
 					}
 					break;
-				default:	/* These arguments go into both commands (may be -p -n etc) */
+				default:	/* These arguments go into both commands (may be -p -n, --, etc) */
 					strcat (cmd1, string);	strcat (cmd2, string);
 					break;
 			}
@@ -1082,6 +1082,8 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		if (make_plot) {
 			if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
+			GMT->current.map.frame.order = GMT_BASEMAP_AFTER;	/* Move to last order since only calling gmt_map_basemap once */
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 			gmt_map_basemap (GMT);
 			gmt_plane_perspective (GMT, -1, 0.0);
@@ -1151,9 +1153,11 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if (make_plot) {
+		if (make_plot) {	/* Place empty plot according to -B settings */
 			if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
+			GMT->current.map.frame.order = GMT_BASEMAP_AFTER;	/* Move to last order since only calling gmt_map_basemap once */
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 			gmt_map_basemap (GMT);
 			gmt_plane_perspective (GMT, -1, 0.0);
@@ -1218,11 +1222,11 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 	else if ((Ctrl->A.info.file && strchr (Ctrl->A.info.file, ',')) || (Ctrl->C.info.file && strchr (Ctrl->C.info.file, ','))) {	/* Got a comma-separated list of contours */
 		uint64_t na = 0, nc = 0;
 		double *za = NULL, *zc = NULL;
-		if (Ctrl->A.info.file && strchr (Ctrl->A.info.file, ',') && (za = gmt_list_to_array (GMT, Ctrl->A.info.file, gmt_M_type (GMT, GMT_IN, GMT_Z), &na)) == NULL) {
+		if (Ctrl->A.info.file && strchr (Ctrl->A.info.file, ',') && (za = gmt_list_to_array (GMT, Ctrl->A.info.file, gmt_M_type (GMT, GMT_IN, GMT_Z), true, &na)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while parsing annotated contours from list %s\n", Ctrl->A.info.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (Ctrl->C.info.file && strchr (Ctrl->C.info.file, ',') && (zc = gmt_list_to_array (GMT, Ctrl->C.info.file, gmt_M_type (GMT, GMT_IN, GMT_Z), &nc)) == NULL) {
+		if (Ctrl->C.info.file && strchr (Ctrl->C.info.file, ',') && (zc = gmt_list_to_array (GMT, Ctrl->C.info.file, gmt_M_type (GMT, GMT_IN, GMT_Z), true, &nc)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while parsing regular contours from list %s\n", Ctrl->C.info.file);
 			if (za) gmt_M_free (GMT, za);
 			Return (GMT_RUNTIME_ERROR);
@@ -1296,9 +1300,11 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 #endif
 	if (n_contours == 0) {	/* No contours within range of data */
 		GMT_Report (API, GMT_MSG_WARNING, "No contours found\n");
-		if (make_plot) {
+		if (make_plot) {	/* Place empty map depending on -B */
 			if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
+			GMT->current.map.frame.order = GMT_BASEMAP_AFTER;	/* Move to last order since only calling gmt_map_basemap once */
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 			gmt_map_basemap (GMT);
 			gmt_plane_perspective (GMT, -1, 0.0);
@@ -1391,12 +1397,13 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (rgb, 4, double);
 
-	if (make_plot) {
+	if (make_plot) {	/* Here we have contours to plot and possibly canvas/basemap plotting to do */
 		if (Ctrl->contour.delay) GMT->current.ps.nclip = +2;	/* Signal that this program initiates clipping that will outlive this process */
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_set_basemap_orders (GMT, Ctrl->contour.delay ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
-		if (Ctrl->contour.delay) gmt_map_basemap (GMT);	/* Must do -B here before clipping makes it not doable */
+		gmt_map_basemap (GMT);
 		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 		if (GMT->common.l.active) {	/* Add one or two contour entries to the auto-legend entry under modern mode; examine which pen & label we place */
@@ -1612,10 +1619,9 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 		gmt_contlabel_plot (GMT, &Ctrl->contour);
 
-		if (!Ctrl->contour.delay) {
+		if (!Ctrl->contour.delay)
 			gmt_map_clip_off (GMT);
-			gmt_map_basemap (GMT);
-		}
+		gmt_map_basemap (GMT);
 
 		gmt_plane_perspective (GMT, -1, 0.0);
 

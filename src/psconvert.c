@@ -573,7 +573,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 #else
 	GMT_Message (API, GMT_TIME_NONE, "\t   (e.g., -G/some/unusual/dir/bin/gs).\n");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Temporarily increase dpi by <factor>, rasterize, then downsample [no downsampling].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-H Temporarily increase dpi by integer <factor>, rasterize, then downsample [no downsampling].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to improve raster image quality, especially for lower raster resolutions.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Ghostscript versions >= 9.00 change gray-shades by using ICC profiles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   GS 9.05 and above provide the '-dUseFastColor=true' option to prevent that\n");
@@ -840,6 +840,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
+	}
+
+	if (Ctrl->H.active && Ctrl->H.factor <= 1) {	/* Allow -H1 (or zero or bad negative factors) to mean the same as giving no -H */
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Selecting -H1 or less turns off sub-pixeling\n");
+			Ctrl->H.active = false;
 	}
 
 	if (!Ctrl->T.active) Ctrl->T.device = GS_DEV_JPG;	/* Default output device if none is specified */
@@ -2424,7 +2429,9 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		if (GMT->current.setting.run_mode == GMT_MODERN) {
 			if (Ctrl->T.ps) {	/* Under modern mode we can also save the PS file by renaming it */
-				strncpy (out_file, Ctrl->F.file, PATH_MAX-1);
+			        out_file[0] = '\0'; /* truncate string to build new output file */
+				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
+				strcat (out_file, Ctrl->F.file);
 				strcat (out_file, ".ps");
 				GMT_Report (API, GMT_MSG_DEBUG, "Rename %s -> %s\n", tmp_file, out_file);
 				if (gmt_rename_file (GMT, tmp_file, out_file, GMT_COPY_FILE))

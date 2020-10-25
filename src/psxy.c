@@ -924,7 +924,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	bool get_rgb = false, clip_set = false, fill_active, may_intrude_inside = false;
 	bool error_x = false, error_y = false, def_err_xy = false, can_update_headpen = true;
 	bool default_outline, outline_active, geovector = false, save_W = false, save_G = false, QR_symbol = false;
-	unsigned int n_needed, n_cols_start = 2, justify, tbl;
+	unsigned int n_needed, n_cols_start = 2, justify, tbl, grid_order, frame_order;
 	unsigned int n_total_read = 0, j, geometry, icol = 0, tcol = 0;
 	unsigned int bcol, ex1, ex2, ex3, change = 0, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
@@ -1091,7 +1091,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	GMT_Report (API, GMT_MSG_DEBUG, "Operation will require %d input columns [n_cols_start = %d]\n", n_needed, n_cols_start);
 
-	if (GMT->common.R.active[RSET] && GMT->common.J.active && gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
+	if (GMT->common.R.active[RSET] && GMT->common.J.active && gmt_map_setup (GMT, GMT->common.R.wesn))
 		Return (GMT_PROJECTION_ERROR);
 	if (S.u_set) {	/* When -Sc<unit> is given we temporarily reset the system unit to these units so conversions will work */
 		save_u = GMT->current.setting.proj_length_unit;
@@ -1100,18 +1100,31 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 	if (S.G.delay) GMT->current.ps.nclip = +2;	/* Signal that this program initiates clipping that will outlive this process */
 
+	if ((gmt_M_is_conical(GMT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))) {	/* Must turn clipping on for 360-range conical */
+		/* Special case of 360-range conical (which is periodic but do not touch at w=e) so we must clip to ensure nothing is plotted in the gap between west and east border */
+		clip_set = true;
+		frame_order = (Ctrl->N.active) ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER;
+	}
+	else if (not_line && (Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_CLIP_NO_REPEAT)) {	/* Only set clip if plotting symbols and -N not used */
+		clip_set = true;
+		frame_order = GMT_BASEMAP_FRAME_AFTER;
+	}
+	else
+		frame_order = (Ctrl->N.active) ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER;
+
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL)
 		Return (GMT_RUNTIME_ERROR);
+	grid_order = (polygon) ? GMT_BASEMAP_GRID_AFTER : GMT_BASEMAP_GRID_BEFORE;
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_set_basemap_orders (GMT, frame_order, grid_order, GMT_BASEMAP_ANNOT_BEFORE);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+ 	gmt_map_basemap (GMT);	/* Lay down gridlines */
 	if (Ctrl->T.active) {	/* Honor canvas fill and box draw */
 		gmt_map_basemap (GMT);
 		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
 		Return (GMT_NOERROR);
 	}
-
-	gmt_map_basemap (GMT);	/* Lay down any gridlines before symbols */
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (gmt_contlabel_prep (GMT, &S.G, NULL)) Return (GMT_RUNTIME_ERROR);	/* Needed after map_setup */
@@ -1126,12 +1139,6 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	/* Change default step size (in degrees) used for interpolation of line segments along great circles (if requested) */
 	if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 #endif
-	if ((gmt_M_is_conical(GMT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))) {	/* Must turn clipping on for 360-range conical */
-		/* Special case of 360-range conical (which is periodic but do not touch at w=e) so we must clip to ensure nothing is plotted in the gap between west and east border */
-		clip_set = true;
-	}
-	else if (not_line && (Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_CLIP_NO_REPEAT))	/* Only set clip if plotting symbols and -N not used */
-		clip_set = true;
 	if (clip_set) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
 	if (S.symbol == GMT_SYMBOL_TEXT) gmt_setfont (GMT, &S.font);	/* Set the required font */
@@ -1424,6 +1431,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						continue;
 				}
 			}
+			if (S.symbol == PSL_ELLIPSE && S.convert_angles) may_intrude_inside = true;	/* Always assume we may extend outside border */
 
 			if (QR_symbol) {
 				if (Ctrl->G.active)	/* Change color of QR code */
@@ -2383,6 +2391,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	PSL_setdash (PSL, NULL, 0);
 	GMT->current.map.is_world = old_is_world;
 	if (geovector) PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
+
+	gmt_map_basemap (GMT);
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 

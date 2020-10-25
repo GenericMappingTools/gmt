@@ -60,13 +60,11 @@ sub-headers, and ASCII tables may have regular headers as well.
 Required Arguments
 ------------------
 
-None
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
 
 .. _-A:
 

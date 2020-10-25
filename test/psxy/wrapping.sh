@@ -21,6 +21,4 @@ gmt psxy -Rg -JA180/0/2i -Bg30 -Gred testpol.d -O -K -X4i -Y-0.25i >> $ps
 gmt psxy -R -J -W0.25p testpol.d -O -K >> $ps
 #
 gmt psxy -R-220/220/-90/90 -JX6.5/1.75i -B60g30 -BWSne -Gred testpol.d -O -K -X-4i -Y2.7i >> $ps
-gmt psxy -R -J -W0.25p testpol.d -O -K >> $ps
-gmt psxy -R -J -T -O >> $ps
-
+gmt psxy -R -J -W0.25p testpol.d -O >> $ps

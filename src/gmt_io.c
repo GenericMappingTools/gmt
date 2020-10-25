@@ -5165,24 +5165,48 @@ char *gmt_strncpy (char *dest, const char *source, size_t num) {
 	return dest;
 }
 
+char *gmtlib_valid_filemodifiers (struct GMT_CTRL *GMT) {
+	/* Returns a single string with all unique valid file modifiers.
+	 * We do this based on the individua modifier constants and assemble
+	 * one with the unique entries on the fly. */
+	char count[GMT_LEN128], *m = NULL;
+	static char string[GMT_LEN16];
+	unsigned int k, q;
+	gmt_M_unused (GMT);
+	gmt_M_memset (count, GMT_LEN128, char);
+	m = GMT_GRIDFILE_MODIFIERS;
+	for (k = 0; k < strlen (m); k++)
+		count[(int)m[k]]++;
+	m = GMT_CPTFILE_MODIFIERS;
+	for (k = 0; k < strlen (m); k++)
+		count[(int)m[k]]++;
+	for (k = q = 0; k < GMT_LEN128; k++)
+		if (count[k]) string[q++] = k;
+	string[q] = '\0';
+	return ((char *)string);
+}
+
 char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const char *mods) {
-	/* Need to strip off any modifiers and netCDF specifications that may be part of filename */
+	/* Need to strip off any valid, trailing modifiers and netCDF specifications that may be part of filename */
 	char file[PATH_MAX] = {""}, *c = NULL, *clean_file = NULL;
 
-	if (strstr (filename, "/=tiled_"))	/* Special list with remote tiles, use as is */
+	if (strstr (filename, "/=tiled_"))	/* Special list with remote tiles, use exactly as is */
 		strncpy (file, filename, PATH_MAX-1);
-	else	/* Exclude netCDF3-D grid extensions to make sure we get a valid file name */
+	else	/* Strip off netCDF3-D grid extensions to make sure we get a valid file name */
 		sscanf (filename, "%[^=?]", file);
 	if (file[0] == '\0')
-		return NULL;		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
-	if (mods) {	/* Given modifiers to chop off */
-		if (gmt_validate_modifiers (API->GMT, file, '-', mods, GMT_MSG_DEBUG)) {
-			GMT_Report (API, GMT_MSG_DEBUG, "Filename has invalid modifiers - probably not a file with modifiers (%s)\n", file);
+		return NULL;	/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
+	if (mods) {	/* Given modifiers to chop off if they are valid */
+		char *f = NULL;
+		/* If recognized file extension for grids (.grd, .nc) or cpt (.cpt) we must look after those */
+		if ((f = gmt_strrstr (file, ".grd")) || (f = gmt_strrstr (file, GMT_CPT_EXTENSION)) || (f = gmt_strrstr (file, ".nc")))
+			c = gmtlib_last_valid_file_modifier (API, f, mods);
+		else
+			c = gmtlib_last_valid_file_modifier (API, file, mods);
+
+		if (c == NULL)	/* Modifier free file name */
 			return (strdup (file));
-		}
-		/* See if we have any */
-		if ((c = gmt_first_modifier (API->GMT, file, mods)))
-			c[0] = '\0';	/* Begone with you */
+		c[0] = '\0';	/* Begone with you */
 	}
 	clean_file = strdup (file);
 
@@ -5203,7 +5227,7 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 	if (gmt_file_is_cache (GMT->parent, filename))			/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, filename, 0);
 
-	if ((cleanfile = gmt_get_filename (GMT->parent, &filename[first], "honsuU")) == NULL) return (-1);	/* Likely not a valid filename */
+	if ((cleanfile = gmt_get_filename (GMT->parent, &filename[first], gmtlib_valid_filemodifiers (GMT))) == NULL) return (-1);	/* Likely not a valid filename */
 	strncpy (file, cleanfile, PATH_MAX-1);
 	gmt_M_str_free (cleanfile);
 	if (mode == W_OK)
@@ -7038,6 +7062,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	 *	 -W		Revert to default pen [current.map_default_pen if not set on command line]
 	 * z:	-Z<zval>	Obtain fill via cpt lookup using this z value
 	 *	-ZNaN		Get the NaN color from the CPT
+	 *	-t<transp>		Apply this transparency to both fill and pen
 	 *
 	 * header is the text string to process
 	 * P is the color palette used for the -Z option
@@ -7059,8 +7084,9 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	 */
 
 	unsigned int processed = 0, change = 0, col, ogr_col;
+	bool got_transparency = false;
 	char line[GMT_BUFSIZ] = {""}, *txt = NULL;
-	double z;
+	double z, transparency = 0.0;
 	struct GMT_FILL test_fill;
 	struct GMT_PEN test_pen;
 
@@ -7113,6 +7139,10 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 
 	if (!header || !header[0]) return (0);
 
+	if (gmt_parse_segment_item (GMT, header, "-t", line)) {	/* Found a potential -t option for transparency */
+		transparency = atof (line) * 0.01;
+		got_transparency = true;	/* Must apply to any fill and pen settings */
+	}
 	if (gmt_parse_segment_item (GMT, header, "-G", line)) {	/* Found a potential -G option */
 		test_fill = *def_fill;
 		if (line[0] == '-') {	/* Turn fill OFF */
@@ -7128,6 +7158,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 		}
 		else if (!gmt_getfill (GMT, line, &test_fill)) {	/* Successfully processed a -G<fill> option */
 			*fill = test_fill;
+			if (got_transparency) fill->rgb[3] = transparency;
 			*use_fill = true;
 			change = 1;
 			processed++;	/* Processed one option */
@@ -7137,6 +7168,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	if (P && gmt_parse_segment_item (GMT, header, "-Z", line)) {	/* Found a potential -Z option to set symbol r/g/b via cpt-lookup */
 		if(!strncmp (line, "NaN", 3U))	{	/* Got -ZNaN */
 			gmt_get_fill_from_z (GMT, P, GMT->session.d_NaN, fill);
+			if (got_transparency) fill->rgb[3] = transparency;
 			*use_fill = true;
 			change |= 2;
 			processed++;	/* Processed one option */
@@ -7146,6 +7178,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 				gmt_get_fill_from_key (GMT, P, line, fill);
 			else if (sscanf (line, "%lg", &z) == 1)
 				gmt_get_fill_from_z (GMT, P, z, fill);
+			if (got_transparency) fill->rgb[3] = transparency;
 			*use_fill = true;
 			change |= 2;
 			processed++;	/* Processed one option */
@@ -7168,6 +7201,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 		}
 		else if (!gmt_getpen (GMT, line, &test_pen)) {
 			*pen = test_pen;
+			if (got_transparency) pen->rgb[3] = transparency;
 			*use_pen = true;
 			change |= 4;
 		}

@@ -31,6 +31,4 @@ gmt pslegend -R -J -O -K -Dx6.25i/7.25i+w2.75i+jTR+l1.2 -C0.1i/0.1i -F+p2p+gwhit
 gmt pslegend -R -J -O -K -Dx0.25i/4.75i+w2.75i+jTL+l1.2 -C0.1i/0.1i -F+p2p,blue+gwhite+i0.5p,blue tt.txt >> $ps
 gmt pslegend -R -J -O -K -Dx6.25i/4.75i+w2.75i+jTR+l1.2 -C0.1i/0.1i -F+p2p,blue+gwhite+i0.5p,blue+s5p/-3p/navy tt.txt >> $ps
 gmt pslegend -R -J -O -K -Dx0.25i/2.25i+w2.75i+jTL+l1.2 -C0.1i/0.1i -F+i2p,blue+gwhite+p0.5p,blue tt.txt >> $ps
-gmt pslegend -R -J -O -K -Dx6.25i/2.25i+w2.75i+jTR+l1.2 -C0.1i/0.1i -F+gcornsilk+i2p+p0.5p+s-5p/-3p/orange+r tt.txt >> $ps
-gmt psxy -R -J -O -T >> $ps
-
+gmt pslegend -R -J -O -Dx6.25i/2.25i+w2.75i+jTR+l1.2 -C0.1i/0.1i -F+gcornsilk+i2p+p0.5p+s-5p/-3p/orange+r tt.txt >> $ps

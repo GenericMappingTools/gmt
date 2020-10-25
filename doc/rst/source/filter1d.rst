@@ -48,6 +48,9 @@ and use that as the independent variable for filtering.
 Required Arguments
 ------------------
 
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
+
 .. _-F:
 
 **-F**\ **type**\ *width*\ [*modifier*]
@@ -101,9 +104,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
 
 .. _-D:
 

@@ -1537,7 +1537,7 @@ int gmt_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 	 */
 
 	unsigned int k, np_new, n, n_use;
-	uint64_t start;
+	uint64_t start = 0;
 	bool close;
 	size_t n_alloc;
 	double *xtmp = NULL, *ytmp = NULL;

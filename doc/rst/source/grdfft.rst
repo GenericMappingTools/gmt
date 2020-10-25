@@ -21,6 +21,7 @@ Synopsis
 [ |-F|\ [**r**\|\ **x**\|\ **y**]\ *params* ]
 [ |-I|\ [*scale*\|\ **g**] ]
 [ |-N|\ *params* ]
+[ |-Q|\ ]
 [ |-S|\ *scale* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
@@ -46,7 +47,7 @@ Required Arguments
 *ingrid*
     2-D binary grid file to be operated on. (See GRID FILE FORMATS
     below). For cross-spectral operations, also give the second grid
-    file *ingrd2*.
+    file *ingrid2*.
 **-G**\ *outfile*
     Specify the name of the output grid file or the 1-D spectrum table
     (see **-E**). (See GRID FILE FORMATS below).
@@ -152,6 +153,13 @@ Optional Arguments
 
 .. include:: explain_fft.rst_
 
+.. _-Q:
+
+**-Q**
+    Selects no wavenumber operations. Useful in conjunction with **-N** modifiers
+    when you wish to write out the 2-D spectrum (or other intermediate grid products)
+    only.
+
 .. _-S:
 
 **-S**\ *scale*
@@ -233,27 +241,20 @@ and finally scale radians to micro-radians:
     gmt grdfft faa.nc -Ig -A38 -S1e6 -V -Gdefl_38.nc
 
 Second vertical derivatives of gravity anomalies are related to the
-curvature of the field. We can compute these as mGal/m^2 by
-differentiating twice:
-
-   ::
+curvature of the field. We can compute these as mGal/m^2 by::
 
     gmt grdfft gravity.nc -D -D -V -Ggrav_2nd_derivative.nc
 
 To compute cross-spectral estimates for co-registered bathymetry and
-gravity grids, and report result as functions of wavelengths in km, try
-
-   ::
+gravity grids, and report result as functions of wavelengths in km, try::
 
     gmt grdfft bathymetry.nc gravity.grd -E+wk -fg -V > cross_spectra.txt
 
 To examine the pre-FFT grid after detrending, point-symmetry reflection,
 and tapering has been applied, as well as saving the real and imaginary
-components of the raw spectrum of the data in topo.nc, try
+components of the raw spectrum of the data in topo.nc, try::
 
-   ::
-
-    gmt grdfft topo.nc -N+w+z -fg -V
+    gmt grdfft topo.nc -N+w+z -fg -V -Q
 
 You can now make plots of the data in topo_taper.nc, topo_real.nc, and topo_imag.nc.
 

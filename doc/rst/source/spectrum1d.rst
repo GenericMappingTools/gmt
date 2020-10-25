@@ -72,6 +72,11 @@ be written to *stdout* (unless disabled via **-T**).
 Required Arguments
 ------------------
 
+*table*
+    One or more ASCII (or binary, see **-bi**)
+    files holding X(t) [Y(t)] samples in the first 1 [or 2] columns. If
+    no files are specified, **spectrum1d** will read from standard input.
+
 .. _-S:
 
 **-S**\ *segment_size*
@@ -86,11 +91,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-*table*
-    One or more ASCII (or binary, see **-bi**)
-    files holding X(t) [Y(t)] samples in the first 1 [or 2] columns. If
-    no files are specified, **spectrum1d** will read from standard input.
 
 .. _-C:
 

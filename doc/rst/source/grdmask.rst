@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdmask** *pathfiles* |-G|\ *mask_grd_file*
+**gmt grdmask** *table* |-G|\ *mask_grd_file*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**] ]
@@ -53,7 +53,7 @@ are considered "inside".
 Required Arguments
 ------------------
 
-*pathfiles*
+*table*
     The name of 1 or more ASCII [or binary, see
     **-bi**] files holding the polygon(s) or data points.
 

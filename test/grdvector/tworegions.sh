@@ -14,5 +14,4 @@ gmt xyz2grd -R -I30m -Gv.grd t.txt -i0,1,3
 gmt psvelo t.txt -JM3i -R-2/2/-2/2 -Se0.1i/0.95/12 -A9p+e -W1.5p,red -P -Bafg1 -BWSne -K > $ps
 gmt grdvector u.grd v.grd -R -J -O -K -Q0.1i+e -Gblue -W1p,blue -Si0.1i -Bafg1 -BwSne --MAP_VECTOR_SHAPE=0.2 -X3.25i >> $ps
 gmt psvelo t.txt -J -R-1/1/-1/1 -Se0.1i/0.95/12 -A9p+e -W1.5p,red -O -Bafg1 -BWSne -K -X-3.25i -Y3.75i >> $ps
-gmt grdvector u.grd v.grd -R -J -O -K -Q0.1i+e -Gblue -W1p,blue -Si0.1i -Bafg1 -BwSne --MAP_VECTOR_SHAPE=0.2 -X3.25i >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt grdvector u.grd v.grd -R -J -O -Q0.1i+e -Gblue -W1p,blue -Si0.1i -Bafg1 -BwSne --MAP_VECTOR_SHAPE=0.2 -X3.25i >> $ps

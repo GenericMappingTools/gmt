@@ -570,7 +570,7 @@ EXTERN_MSC int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		cc_t = cos(Ctrl->H.m_dip*D2R)*cos((Ctrl->H.m_dec - 90.)*D2R);
 		cs_t = cos(Ctrl->H.m_dip*D2R)*sin((Ctrl->H.m_dec - 90.)*D2R);
 		s_t = sin(Ctrl->H.m_dip*D2R);
-		if (!Ctrl->T.m_var4) {		/* In all the other cases the field parameters are constatnt */
+		if (!Ctrl->T.m_var4) {		/* In all the other cases the field parameters are constant */
 			okabe_mag_param = gmt_M_memory (GMT, NULL, 1, struct MAG_PARAM);
 			okabe_mag_param[0].rim[0] = 1e2*cos(Ctrl->H.t_dip*D2R) * cos((Ctrl->H.t_dec - 90.)*D2R);
 			okabe_mag_param[0].rim[1] = 1e2*cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90.)*D2R);

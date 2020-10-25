@@ -15,5 +15,4 @@ gmt grd2xyz tmp.nc -s | gmt psxy -R$Rp -JM6i -Sc0.3c -Gblue -O -K >> $ps
 # Fill nodes green inside the selected sub region
 gmt grd2xyz -R353/368/-15/14 tmp.nc | gmt psxy -R$Rp -JM6i -Sc0.2c -Ggreen -O -K >> $ps
 # Show NaN nodes as red
-gmt grd2xyz tmp.nc -s+r | gmt psxy -R$Rp -JM6i -Sc0.1c -Gred -O -K >> $ps
-gmt psxy -R$Rp -J -O -T >> $ps
+gmt grd2xyz tmp.nc -s+r | gmt psxy -R$Rp -JM6i -Sc0.1c -Gred -O >> $ps

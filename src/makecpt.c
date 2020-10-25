@@ -313,7 +313,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'T':	/* Sets up color z values */
 				Ctrl->T.active = Ctrl->T.interpolate = true;
-				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_RANGE | GMT_ARRAY_NOINC, GMT_Z);
+				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_RANGE | GMT_ARRAY_NOINC | GMT_ARRAY_UNIQUE, GMT_Z);
 				if (Ctrl->T.T.set == 2) Ctrl->T.interpolate = false;	/* Did not give increment, just min/max */
 				break;
 			case 'Q':	/* Logarithmic scale */
@@ -381,7 +381,7 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	double *z = NULL;
 
-	char *l = NULL, *kind[2] = {"discrete", "continuous"};
+	char *kind[2] = {"discrete", "continuous"};
 
 	struct MAKECPT_CTRL *Ctrl = NULL;
 	struct GMT_PALETTE *Pin = NULL, *Pout = NULL;
@@ -406,10 +406,7 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the makecpt main code ----------------------------*/
 
-	if (Ctrl->C.active) {
-		if (Ctrl->C.file[0] != '@' && (l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
-	}
-	else {	/* No table specified; set default table */
+	if (!Ctrl->C.active) {	/* No table specified; set default table */
 		Ctrl->C.active = true;
 		Ctrl->C.file = strdup (GMT_DEFAULT_CPT_NAME);
 	}

@@ -205,3 +205,8 @@ You can use the [conda package manager](https://conda.io/) that comes with the
    ```
    conda install gmt=5 -c conda-forge
    ```
+
+4. If you want to install the weekly snapshot of the GMT master branch, use:
+   ```
+   conda install gmt -c conda-forge/label/dev
+   ```

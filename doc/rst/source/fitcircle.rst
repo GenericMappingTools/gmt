@@ -12,7 +12,6 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-
 **gmt fitcircle** [ *table* ] |-L|\ *norm* [ |-F|\ *flags* ] [ |-S|\ [*lat*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
@@ -64,6 +63,11 @@ represented factor in the data and is not easily estimated by either method.
 Required Arguments
 ------------------
 
+*table*
+    One or more ASCII [or binary, see **-bi**] files containing lon,lat [or lat,lon; see
+    **-:**\ [**i**\|\ **o**]] values in the first 2 columns. If no
+    file is specified, **fitcircle** will read from standard input.
+
 .. _-L:
 
 **-L**\ *norm*
@@ -72,11 +76,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-*table*
-    One or more ASCII [or binary, see **-bi**] files containing lon,lat [or lat,lon; see
-    **-:**\ [**i**\|\ **o**]] values in the first 2 columns. If no
-    file is specified, **fitcircle** will read from standard input.
 
 .. _-F:
 

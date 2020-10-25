@@ -409,7 +409,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	rect[YHI] =  0.5 * SQRT3 * rect[XHI];
 	tri_x[1] = rect[XHI];	tri_x[2] = 0.5 * rect[XHI];	tri_y[2] = rect[YHI];
 	gmt_M_memcpy (wesn_orig, GMT->common.R.wesn, 6, double);
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, rect), ""))
+	if (gmt_map_setup (GMT, rect))
 		Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL)

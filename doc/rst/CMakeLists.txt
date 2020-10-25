@@ -16,8 +16,6 @@
 #-------------------------------------------------------------------------------
 
 # reST documentation
-find_package (Sphinx)
-
 if (SPHINX_FOUND)
 	# Create configuration file
 	configure_file (conf.py.in conf.py @ONLY)

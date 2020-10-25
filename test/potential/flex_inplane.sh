@@ -41,9 +41,8 @@ gmt grdmath smt_grav.nc grav_co.nc ADD = tmp.nc
 gmt grdtrack -Gtmp.nc+Uk -ELM/RM -o0,2 | gmt psxy -R -J -O -K -W1p,red  >> $ps
 gmt grdtrack -Ggrav_co.nc+Uk -ELM/RM -o0,2 | gmt psxy -R -J -O -K -W0.25,red,-  >> $ps
 echo "-300 270 FAA" | gmt pstext -R -J -O -K -F+jLT+f14p -Dj0.1i >>$ps
-gmt pstext -R -J -O -K -F+jRB+f14p -Dj0.1i << EOF >>$ps
+gmt pstext -R -J -O -F+jRB+f14p -Dj0.1i << EOF >>$ps
 300 240 Isotropic [0 Pa]
 300 210 @;blue;Extension [$N Pa]@;;
 300 180 @;red;Compression [-$N Pa]@;;
 EOF
-gmt psxy -R -J -O -T >> $ps

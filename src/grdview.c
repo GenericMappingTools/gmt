@@ -869,7 +869,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		if (Ctrl->N.active && Ctrl->N.level > GMT->common.R.wesn[ZHI]) GMT->common.R.wesn[ZHI] = Ctrl->N.level;
 	}
 
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	/* Determine the wesn to be used to read the grid file */
 
@@ -882,6 +882,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		/* No grid to plot; just do empty map and bail */
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 		GMT->current.plot.mode_3D |= 2;	/* Ensure that foreground axis is drawn */
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 		gmt_map_basemap (GMT);
@@ -1178,8 +1179,9 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	PSL_setformat (PSL, 3);
 
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
-	if (GMT->current.proj.three_D) gmt_map_basemap (GMT); /* Plot basemap first if 3-D */
+	gmt_map_basemap (GMT);
 	if (GMT->current.proj.z_pars[0] == 0.0) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	gmt_plane_perspective (GMT, -1, 0.0);
 
@@ -2056,10 +2058,11 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		}
 	}
 
+	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_map_basemap (GMT);	/* Plot basemap last if not 3-D */
 	if (GMT->current.proj.three_D)
 		gmt_vertical_axis (GMT, 2);	/* Draw foreground axis */
-	else
-		gmt_map_basemap (GMT);	/* Plot basemap last if not 3-D */
+	gmt_plane_perspective (GMT, -1, 0.0);
 
 	gmt_plotend (GMT);
 

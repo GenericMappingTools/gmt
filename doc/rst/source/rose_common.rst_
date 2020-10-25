@@ -12,16 +12,14 @@ outline of the windrose is drawn with the same color as :term:`MAP_DEFAULT_PEN`.
 Required Arguments
 ------------------
 
-None.
-
-Optional Arguments
-------------------
-
 .. |Add_intables| replace:: If a file with only
     azimuths are given, use **-i** to indicate the single column with
     azimuths; then all lengths are set to unity (see **-Zu** to set
     actual lengths to unity as well).
 .. include:: explain_intables.rst_
+
+Optional Arguments
+------------------
 
 .. _-A:
 
@@ -64,7 +62,9 @@ Optional Arguments
 .. _-F:
 
 **-F**
-    Do not draw the scale length bar [Default plots scale in lower right corner provided **-B** is used]
+    Do *not* draw the scale length bar [Default plots scale bar in lower right corner
+    provided **-B** is used. We use :term:`MAP_TICK_PEN_PRIMARY` to draw the scale and
+    label it with :term:`FONT_ANNOT_PRIMARY`].
 
 .. _-G:
 

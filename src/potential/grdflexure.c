@@ -924,7 +924,8 @@ GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct G
 	 * Each segment has leading columns of wavelength and wavenumber corresponding to wavelengths 1:5000 km.
 	 * The next 12 columns has the chosen transfer function evaluated for times 1k, 2k, 5k, 10k, 20k, 50k, 100k, 200k, 500k, 1M, 2M, and 5M years.
 	 * Each segment is written to a separate file. Obviously, if no -F or -M are given then all columns are the same since elastic */
-	int k, t, s, n_times, n_te;
+	uint64_t k;
+	int t, s, n_times, n_te;
 	char file[GMT_LEN64] = {""};
 	static char *FLX_response[6] = {"Elastic", "Viscoelastic", "Firmoviscous (1 layer)", "Firmoviscous (2 layer)", "Viscous (1 layer)", "Viscous (2 layer)"};
 	uint64_t dim[4] = {1, 0, 0, 0};
@@ -939,7 +940,7 @@ GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct G
 
 	R->relative = true;	/* Relative times are implicitly given */
 	n_te = (R->mode > FLX_FV2) ? 1 : 7;	/* For purely viscous we don't need to loop over plate thickness */
-	gmt_parse_array (GMT, 'T', "1/5000/1", &T, GMT_ARRAY_RANGE, 0);	/* In km */
+	gmt_parse_array (GMT, 'T', "1/5000/1", &T, GMT_ARRAY_RANGE | GMT_ARRAY_UNIQUE, 0);	/* In km */
 	gmt_create_array (GMT, 'T', &T, NULL, NULL);
 	dim[GMT_ROW] = T.n;
 	n_times = (Ctrl->F.active || Ctrl->M.active) ? 12 : 1;	/* No point repeating 12 identical results for the elastic case */
