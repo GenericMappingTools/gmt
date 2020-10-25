@@ -842,8 +842,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 		}
 	}
 
-	if (Ctrl->H.active && Ctrl->H.factor <= 0) {	/* Allow -H0 (or bad negative factors) to mean the same as giving no -H */
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Selecting -H0 turns off sub-pixeling\n");
+	if (Ctrl->H.active && Ctrl->H.factor <= 1) {	/* Allow -H1 (or zero or bad negative factors) to mean the same as giving no -H */
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Selecting -H1 or less turns off sub-pixeling\n");
 			Ctrl->H.active = false;
 	}
 
