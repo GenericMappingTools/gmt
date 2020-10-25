@@ -39,7 +39,7 @@ brew untap homebrew/cask-versions homebrew/cask homebrew/bundle \
 brew uninstall php
 
 # Install GMT dependencies
-brew update
+#brew update
 brew install ${packages}
 
 if [ "$BUILD_DOCS" = "true" ]; then
