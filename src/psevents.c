@@ -429,12 +429,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	}
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_col;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_col, "Binary input data (-bi) must have at least %u columns.\n", n_col);
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.active && Ctrl->S.active), "Must specify either -A or -S.\n");
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->A.active || Ctrl->S.active), "Must specify either -A or -S.\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.active + Ctrl->S.active) != 1, "Must specify either -A or -S.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Cannot specify both -C and -G.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == PSEVENTS_LINE_REC && Ctrl->G.active, "Option -G: Cannot be used with lines (-Ar).\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == PSEVENTS_LINE_REC && Ctrl->C.active, "Option -C: Cannot be used with lines (-Ar).\n");
-	if (Ctrl->A.mode == PSEVENTS_LINE_TO_POINTS) {	/* Most options are not valid with -Ar<dpi> sincewe are not ploting */
+	if (Ctrl->A.mode == PSEVENTS_LINE_TO_POINTS) {	/* Most options are not valid with -Ar<dpi> since we are not plotting */
 		n_errors += gmt_M_check_condition (GMT, Ctrl->D.active, "Option -D: Not allowed with -Ar<dpi>.\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active[0], "Option -Es: Not allowed with -Ar<dpi>.\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active[1], "Option -Et: Not allowed with -Ar<dpi>.\n");
@@ -515,8 +514,9 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 		/* No plotting, but resampling a line data set into a densely sampled point file.
 		 * We will resample the line densely so that plotting circles will look exactly the same as drawing the line, given the dpi of the movie frames.
 		 * To do this we need projected coordinates (we have -R -J) in inches, the final dpi used by movie, and some GMT internal magic. The resampled line will be
-		 * written to stdout.  The recipe we will perform in-memory is something like this (n is last column number in input file):
-		 * gmt mapproject line.txt -R -J -G+uC | gmt sample1d -N2 -T${d}c -Fl -AR | gmt mapproject -R -J -I -o0-n,0 [--FORMAT_CLOCK_OUT=hh:mm:ss.xx] > points.txt
+		 * written to stdout.  The recipe we will perform in-memory is something like this ($n is last column number in input file):
+		 *
+		 * gmt mapproject line.txt -R -J -G+uC | gmt sample1d -N$n -T${d}c -Fl -AR | gmt mapproject -R -J -I -o0-$n,0 [--FORMAT_CLOCK_OUT=hh:mm:ss.xxx] > points.txt
 		 */
 
 		char Fmode, source[GMT_VF_LEN] = {""}, destination[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
@@ -605,7 +605,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 		if ((D = GMT_Read_VirtualFile (API, destination)) == NULL) {
 			Return (API->error);
 		}
-		/* Create final virtual file for using the resampled data in the inverse mapprojected call and write to stdout */
+		/* Create final virtual file for using the resampled data in the inverse mapproject call and write to stdout */
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D, source) != GMT_NOERROR) {
 			Return (API->error);
 		}
