@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-Rz|
 |-T|\ *now*
 [ *table* ]
-[ |-A|\ **r**\ [*dpi*]\|\ **s** ]
+[ |-A|\ **r**\ [*dpu*]\|\ **s** ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]] ]
@@ -67,9 +67,11 @@ color, we may try
 
 To convert the time-series seismic_trace.txt (time, amplitude) into a (time, amplitude, time) file that **events** can plot
 with a variable pen (by plotting densely placed circles), we use **-i** to ensure we read the time-column twice and then use
-a *dpi* of 200 (HD movie) and the projection parameters we will use when making the plot, e.g.,::
+a *dpu* of 80 pixels per cm (HD movie) and the projection parameters we will use when making the plot, e.g.,::
 
       gmt events seismic_trace.txt -R1984-09-10T03:15/1984-09-10T03:45/-15/15 -JX20cT/10c -Ar200 -i0,1,0 > seismic_trace_pts.txt
+
+**Note**: If your :term:`PROJ_LENGTH_UNIT` is set to inch then you need to use the equivalent *dpu* of 200 pixels per inch for HD.
 
 See Also
 --------
