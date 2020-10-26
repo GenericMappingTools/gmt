@@ -504,7 +504,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 		 */
 
 		char Fmode, source[GMT_VF_LEN] = {""}, destination[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
-		unsigned n_cols, type;
+		unsigned last_col, type;
 		double dt, spacing = 1.0 / Ctrl->A.dpi;	/* Pixel size in inches */
 		struct GMT_DATASET *D = NULL;
 
@@ -528,14 +528,14 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 		}
 		/* Read all input lines */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Line sampling Step 0: Read input lines.\n");
-		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (D->n_records < 2 || D->n_columns < 3) {
 			GMT_Report (API, GMT_MSG_ERROR, "Your line data must (a) have more than 1 record and (2) have at least 3 data columns (x,y,time).\n");
 			Return (API->error);
 		}
-		n_cols = D->n_columns;	/* Remember how many columns there were in the input file. */
+		last_col = D->n_columns - 1;	/* Remember ID of last column in the input file. */
 		dt = (D->table[0]->segment[0]->n_rows > 1) ? D->table[0]->segment[0]->data[t_in][1] - D->table[0]->segment[0]->data[t_in][0] : 0.0;	/* Pick first increment to get a sense of data spacing in time */
 		/* Create virtual files for using the data in mapproject and another for holding the result */
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D, source) != GMT_NOERROR) {
@@ -573,7 +573,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		/* Build sample1d command and run it. The projected distances are always in the last data column */
-		sprintf (cmd, "%s -N%d -T%.16gc -F%c -AR ->%s", source, n_cols-1, spacing, Fmode, destination);
+		sprintf (cmd, "%s -N%d -T%.16gc -F%c -AR ->%s", source, last_col, spacing, Fmode, destination);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Line sampling Step 2: %s.\n", cmd);
 		if (GMT_Call_Module (GMT->parent, "sample1d", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Resample all columns using the spacing */
 			Return (API->error);
@@ -593,7 +593,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D, source) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		sprintf (cmd, "%s -R%s -J%s -I -o0:%d --PROJ_LENGTH_UNIT=inch", source, GMT->common.R.string, GMT->common.J.string, n_cols-2);
+		sprintf (cmd, "%s -R%s -J%s -I -o0:%d --PROJ_LENGTH_UNIT=inch", source, GMT->common.R.string, GMT->common.J.string, last_col);
 		if (type == GMT_IS_ABSTIME && dt > 0.0 && dt < 10.0)	/* Make sure we have enough precision to hold millisecond spacings if first spacing is 10 sec or less */
 			strcat (cmd, "  --FORMAT_CLOCK_OUT=hh:mm:ss.xxx");
 		GMT_Report (API, GMT_MSG_INFORMATION, "Line sampling Step 3: %s.\n", cmd);
