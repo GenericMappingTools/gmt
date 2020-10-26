@@ -436,7 +436,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == PSEVENTS_LINE_REC && Ctrl->C.active, "Option -C: Cannot be used with lines (-Ar).\n");
 	if (Ctrl->A.mode == PSEVENTS_LINE_TO_POINTS) {	/* Most options are not valid with -Ar<dpi> sincewe are not ploting */
 		n_errors += gmt_M_check_condition (GMT, Ctrl->D.active, "Option -D: Not allowed with -Ar<dpi>.\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active, "Option -E: Not allowed with -Ar<dpi>.\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active[0], "Option -Es: Not allowed with -Ar<dpi>.\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active[1], "Option -Et: Not allowed with -Ar<dpi>.\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active, "Option -F: Not allowed with -Ar<dpi>.\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->G.active, "Option -G: Not allowed with -Ar<dpi>.\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->L.active, "Option -L: Not allowed with -Ar<dpi>.\n");
