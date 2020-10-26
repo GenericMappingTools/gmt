@@ -560,6 +560,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT|GMT_IS_REFERENCE, NULL, destination) == GMT_NOTSET) {
 			Return (API->error);
 		}
+		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the subsequent operations and module calls */
 		/* Build mapproject command and run the module. Note: we want distances in inches since 1/dpi is in inches */
 		sprintf (cmd, "%s -R%s -J%s -G+uC --PROJ_LENGTH_UNIT=inch ->%s", source, GMT->common.R.string, GMT->common.J.string, destination);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Line sampling Step 1: %s.\n", cmd);
