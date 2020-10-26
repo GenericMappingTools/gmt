@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt makecpt** [ |-A|\ *transparency*\ [**+a**] ]
+**gmt makecpt**
+[ |-A|\ *transparency*\ [**+a**] ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
@@ -91,8 +92,8 @@ Optional Arguments
 
 **-D**\ [**i**\|\ **o**]
     Select the back- and foreground colors to match the colors for
-    lowest and highest *z*-values in the output CPT [Default uses
-    the colors specified in the master file, or those defined by the
+    lowest and highest *z*-values in the output CPT [Default (**-D** or **-Do**)
+    uses the colors specified in the master file, or those defined by the
     parameters :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`, and
     :term:`COLOR_NAN`]. Append **i** to match the colors for the lowest and
     highest values in the input (instead of the output) CPT.
