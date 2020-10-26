@@ -785,7 +785,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 	bool line_start = true, do_geo_conv = false, double_whammy = false, first = true;
 	bool geodetic_calc = false, datum_conv_only = false, along_track = false, projected = false;
 
-	unsigned int i = 0, col, speed_col = 2, first_z_col = 0;
+	unsigned int i = 0, col, speed_col = 2, first_z_col = 0, i_col_x, i_col_y, o_col_x, o_col_y;
 	unsigned int ecol_type[MP_COL_N] = {GMT_IS_FLOAT, GMT_IS_FLOAT, GMT_IS_FLOAT, GMT_IS_FLOAT,
                                         GMT_IS_FLOAT, GMT_IS_FLOAT, GMT_IS_FLOAT, GMT_IS_ABSTIME};
 
@@ -798,6 +798,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 	double speed = 0, last_speed = -1.0, extra[MP_COL_N];	/* Max possible extra output columns from -A -G -L -Z */
 
 	char format[GMT_BUFSIZ] = {""}, unit_name[GMT_LEN64] = {""}, scale_unit_name[GMT_LEN64] = {""};
+	char  W[GMT_LEN64] = {""}, E[GMT_LEN64] = {""}, S[GMT_LEN64] = {""}, N[GMT_LEN64] = {""};
 
 	bool (*map_fwd) (struct GMT_CTRL *, double, double, double *, double *);	/* Pointers to the selected forward mapping function */
 	void (*map_inv) (struct GMT_CTRL *, double *, double *, double, double);	/* Pointers to the selected inverse mapping function */
@@ -1096,11 +1097,20 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			strcat (message, " coordinates [degrees]\n");
 		}
 		else {
-			char text[GMT_LEN128] = {""};
-			sprintf (text, format, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+			char text[GMT_LEN256] = {""};
+			gmt_ascii_format_one (GMT, W, GMT->common.R.wesn[XLO], gmt_M_type(GMT,GMT_IN,GMT_X));
+			gmt_ascii_format_one (GMT, E, GMT->common.R.wesn[XHI], gmt_M_type(GMT,GMT_IN,GMT_X));
+			gmt_ascii_format_one (GMT, S, GMT->common.R.wesn[YLO], gmt_M_type(GMT,GMT_IN,GMT_Y));
+			gmt_ascii_format_one (GMT, N, GMT->common.R.wesn[YHI], gmt_M_type(GMT,GMT_IN,GMT_Y));
+
+			sprintf (text, "%s/%s/%s/%s", W, E, S, N);
 			sprintf (message, "Transform %s", text);
 			(Ctrl->I.active) ? strcat (message, " <- ") : strcat (message, " -> ");
-			sprintf (text, format, xmin, xmax, ymin, ymax);
+			gmt_ascii_format_one (GMT, W, xmin, gmt_M_type(GMT,GMT_OUT,GMT_X));
+			gmt_ascii_format_one (GMT, E, xmax, gmt_M_type(GMT,GMT_OUT,GMT_X));
+			gmt_ascii_format_one (GMT, S, ymin, gmt_M_type(GMT,GMT_OUT,GMT_Y));
+			gmt_ascii_format_one (GMT, N, ymax, gmt_M_type(GMT,GMT_OUT,GMT_Y));
+			sprintf (text, "%s/%s/%s/%s", W, E, S, N);
 			strcat (message, text);
 			strcat (message, " [");
 			strcat (message, unit_name);
@@ -1151,6 +1161,9 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	/* Now we are ready to take on some input values */
 
+	i_col_x = gmt_M_type (GMT,GMT_IN,GMT_X);
+	i_col_y = gmt_M_type (GMT,GMT_IN,GMT_Y);
+
 	if ((gmt_M_is_geographic (GMT, GMT_IN) || Ctrl->E.active) && Ctrl->I.active) {
 		gmt_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
 		gmt_set_cartesian (GMT, GMT_IN);
@@ -1175,6 +1188,12 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Override -fog for normal operation\n");
 		gmt_set_cartesian (GMT, GMT_OUT);
 	}
+	if (Ctrl->I.active) {
+		i_col_x = gmt_M_type (GMT,GMT_IN,GMT_X);
+		i_col_y = gmt_M_type (GMT,GMT_IN,GMT_Y);
+	}
+	o_col_x = gmt_M_type (GMT,GMT_OUT,GMT_X);
+	o_col_y = gmt_M_type (GMT,GMT_OUT,GMT_Y);
 
 	/* Specify input and output expected columns */
 	if ((error = GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX)) != GMT_NOERROR) {
@@ -1562,22 +1581,26 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION) && n > 0) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Projected %" PRIu64 " points\n", n);
-		sprintf (format, "Input extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n",
-		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
-		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_INFORMATION, format, x_in_min, x_in_max, y_in_min, y_in_max);
+		gmt_ascii_format_one (GMT, W, x_in_min, i_col_x);
+		gmt_ascii_format_one (GMT, E, x_in_max, i_col_x);
+		gmt_ascii_format_one (GMT, S, y_in_min, i_col_y);
+		gmt_ascii_format_one (GMT, N, y_in_max, i_col_y);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Input extreme values:  Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", W, E, S, N);
 		if (!geodetic_calc) {
-			sprintf (format, "Output extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n",
-			         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
-			         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-			GMT_Report (API, GMT_MSG_INFORMATION, format, x_out_min, x_out_max, y_out_min, y_out_max);
+			gmt_ascii_format_one (GMT, W, x_out_min, o_col_x);
+			gmt_ascii_format_one (GMT, E, x_out_max, o_col_x);
+			gmt_ascii_format_one (GMT, S, y_out_min, o_col_y);
+			gmt_ascii_format_one (GMT, N, y_out_max, o_col_y);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Output extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", W, E, S, N);
 			if (Ctrl->I.active) {
 				if (Ctrl->E.active)
 					GMT_Report (API, GMT_MSG_INFORMATION, "Mapped %" PRIu64 " ECEF coordinates [m] to (lon,lat,h)\n", n);
 				else if (Ctrl->N.active)
 					GMT_Report (API, GMT_MSG_INFORMATION, "Converted %" PRIu64 " auxiliary (lon,lat) to geodetic coordinates [degrees]\n", n);
+				else if (gmt_M_is_geographic (GMT, GMT_OUT))
+					GMT_Report (API, GMT_MSG_INFORMATION, "Mapped %" PRIu64 " x-y pairs [%s] to lon-lat pairs\n", n, unit_name);
 				else
-					GMT_Report (API, GMT_MSG_INFORMATION, "Mapped %" PRIu64 " x-y pairs [%s] to lon-lat\n", n, unit_name);
+					GMT_Report (API, GMT_MSG_INFORMATION, "Mapped %" PRIu64 " x-y pairs [%s] to data pairs\n", n, unit_name);
 			}
 			else if (Ctrl->T.active && GMT->current.proj.datum.h_given)
 				GMT_Report (API, GMT_MSG_INFORMATION, "Datum-converted %" PRIu64 " (lon,lat,h) triplets\n", n);
@@ -1588,9 +1611,9 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			else if (Ctrl->N.active)
 				GMT_Report (API, GMT_MSG_INFORMATION, "Converted %" PRIu64 " (lon,lat) geodetic to auxiliary coordinates [degrees]\n", n);
 			else if (gmt_M_is_geographic (GMT, GMT_IN))
-				GMT_Report (API, GMT_MSG_INFORMATION, "Mapped %" PRIu64 " lon-lat pairs to x-y [%s]\n", n, unit_name);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Mapped %" PRIu64 " lon-lat pairs to x-y pairs[%s]\n", n, unit_name);
 			else
-				GMT_Report (API, GMT_MSG_INFORMATION, "Mapped %" PRIu64 " data pairs to x-y [%s]\n", n, unit_name);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Mapped %" PRIu64 " data pairs to x-y pairs [%s]\n", n, unit_name);
 		}
 		if (Ctrl->S.active && n != n_read) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " fell outside region\n", n_read - n);
 	}
