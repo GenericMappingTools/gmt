@@ -44,7 +44,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **r**\|\ **s**
+**-A**\ **r**\ [*dpi*]\|\ **s**
     When no **-S** is given we expect to read lines or polygons.  Two different forms for input are
     considered and specified via **-A**\ : (1) Choose **-Ar** if your input data are *lines*, the data
     format is given as *x, y, time*, and the "event" is the portion of that line limited by the current
@@ -55,7 +55,12 @@ Optional Arguments
     duration and rise/fade periods.  If **-L**\ [**t**] is set then the *string* must be either
     *begin*/*length*\|\ *end* or *begin*,\ *length*\|\ *end* (if *begin* is absolute time).  Use a comma to
     separate absolute time specifications, otherwise a slash is adequate. **Note**:
-    Neither lines nor polygons allow for any labels to be placed.
+    Neither lines nor polygons allow for any labels to be placed. Finally, you can use **-Ar\ *dpi* to
+    perform no plotting but instead convert your *x, y\[, *zcols* ], time* data into densely sampled points so that
+    later calls to **events** may use this sampled data set instead and plot it as circles with **-Sc**\ [*width*].
+    This way you can plot "lines" that can have variable pen color and fixed or variable pen width as well as
+    taking advantage of the full machinery of **-Es** and the effects controlled by **-M** for symbols.
+    The *dpi* must match the intended dpi when running :doc:`movie`.
 
 .. _-B:
 
