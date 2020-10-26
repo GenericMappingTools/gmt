@@ -6,15 +6,10 @@ dpi=200
 s=0.25
 h=4
 L=S
+x=1
 gmt set FORMAT_FLOAT_OUT %.16g
-#if [ "X${L}" = "XW" ]; then
-	list=(1)
-#else
-#	list=(8 4 2 1 0.5)
-#fi
-for x in ${list[*]}; do
 d=$(gmt math -Q $dpi INV $x MUL =)
-gmt mapproject onkl_waveform.dat $R -JX20cT/10c -G+uC | gmt sample1d -N2 -T${d}c -Fl | gmt mapproject $R -JX20cT/10c -I -o0-2,0 --FORMAT_CLOCK_OUT=hh:mm:ss.xx > pts.txt
+gmt mapproject onkl_waveform.dat $R -JX20cT/10c -G+uC --PROJ_LENGTH_UNIT=inch | gmt sample1d -N2 -T${d}c -Fl -AR | gmt mapproject $R -JX20cT/10c -I -o0-2,0 --FORMAT_CLOCK_OUT=hh:mm:ss.xx --PROJ_LENGTH_UNIT=inch > pts.txt
 cat << EOF > main.sh
 gmt begin map_E${dpi}_${L}${s}p_H${h}_X${x} png E${dpi},H${h}
 	gmt set FORMAT_DATE_MAP "o dd yyyy" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p
@@ -30,4 +25,3 @@ gmt end show
 EOF
 chmod +x main.sh
 main.sh
-done

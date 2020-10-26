@@ -29,7 +29,7 @@
 #define THIS_MODULE_MODERN_NAME	"events"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot event symbols, lines, polygons and labels for a moment in time"
-#define THIS_MODULE_KEYS	"<D{,CC(,>X}"
+#define THIS_MODULE_KEYS	"<D{,CC(,>?}"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS	"-:>BJKOPRUVXYabdefhipq"
 
@@ -52,7 +52,8 @@ enum Psevent {	/* Misc. named array indices */
 	PSEVENTS_VAR_DURATION = 2,
 	PSEVENTS_VAR_ENDTIME = 3,
 	PSEVENTS_LINE_REC = 1,
-	PSEVENTS_LINE_SEG = 2
+	PSEVENTS_LINE_SEG = 2,
+	PSEVENTS_LINE_TO_POINTS = 4
 };
 
 #define PSEVENTS_MODS "dfloOpr"
@@ -63,6 +64,7 @@ struct PSEVENTS_CTRL {
 	struct PSEVENTS_A {	/* 	-Ar|s */
 		bool active;
 		unsigned int mode;
+		double dpi;	/* For -Ar<dpi> only */
 	} A;
 	struct PSEVENTS_C {	/* 	-C<cpt> */
 		bool active;
@@ -228,7 +230,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 			case 'A':	/* Plotting lines or polygons, how are they given */
 				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
-					case 'r':	Ctrl->A.mode = PSEVENTS_LINE_REC; break;
+					case 'r':
+						if (opt->arg[1] && (Ctrl->A.dpi = atof (&opt->arg[1])) > 0.0)
+							Ctrl->A.mode = PSEVENTS_LINE_TO_POINTS;
+						else
+							Ctrl->A.mode = PSEVENTS_LINE_REC;
+						break;
 					case 's':	Ctrl->A.mode = PSEVENTS_LINE_SEG; break;
 					default:
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Specify -Ar|s\n");
@@ -414,7 +421,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 		enum gmt_col_enum type = (strchr (t_string, 'T')) ? GMT_IS_ABSTIME : gmt_M_type (GMT, GMT_IN, n_col-1);
 		n_errors += gmt_verify_expectations (GMT, type, gmt_scanf_arg (GMT, t_string, type, false, &Ctrl->T.now), t_string);
 	}
-	else {
+	else if (Ctrl->A.mode != PSEVENTS_LINE_TO_POINTS) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T: -T<now> is a required option.\n");
 		n_errors++;
 	}
@@ -487,6 +494,123 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the psevents main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
+
+	if (Ctrl->A.mode == PSEVENTS_LINE_TO_POINTS) {
+		/* No plotting, but resampling a line data set into a densely sampled point file.
+		 * We will resample the line densely so that plotting circles will look exactly the same as drawing the line, given the dpi of the movie frames.
+		 * To do this we need projected coordinates (we have -R -J) in inches, the final dpi used by movie, and some GMT internal magic. The resampled line will be
+		 * written to stdout.  The recipe we will perform in-memory is something like this (n is last column number in input file):
+		 * gmt mapproject line.txt -R -J -G+uC | gmt sample1d -N2 -T${d}c -Fl -AR | gmt mapproject -R -J -I -o0-n,0 [--FORMAT_CLOCK_OUT=hh:mm:ss.xx] > points.txt
+		 */
+
+		char Fmode, source[GMT_VF_LEN] = {""}, destination[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
+		unsigned n_cols, type;
+		double dt, spacing = 1.0 / Ctrl->A.dpi;	/* Pixel size in inches */
+		struct GMT_DATASET *D = NULL;
+
+		if (Ctrl->C.active) t_in++;	/* Reading x, y, zvalue, time[, length] records */
+		type = gmt_M_type (GMT, GMT_IN, t_in);	/* Need to know if we have absolute time formatting or just floating point numbers */
+
+		switch (GMT->current.setting.interpolant) {
+			case GMT_SPLINE_LINEAR:	Fmode = 'l'; break;
+			case GMT_SPLINE_AKIMA:	Fmode = 'a'; break;
+			case GMT_SPLINE_CUBIC:	Fmode = 'c'; break;
+			case GMT_SPLINE_NN:	Fmode = 'n'; break;
+			default:
+				GMT_Report (API, GMT_MSG_ERROR, "Your current setting for GMT_INTERPOLANT is invalid (only a|c|l|n may be used). Selecting linear interpolation.\n");
+				Fmode = 'l';
+				break;
+		}
+
+		/* Gather all listed or implicit input sources from the command line */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register all data inputs */
+			Return (API->error);
+		}
+		/* Read all input lines */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Line sampling Step 0: Read input lines.\n");
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+			Return (API->error);
+		}
+		if (D->n_records < 2 || D->n_columns < 3) {
+			GMT_Report (API, GMT_MSG_ERROR, "Your line data must (a) have more than 1 record and (2) have at least 3 data columns (x,y,time).\n");
+			Return (API->error);
+		}
+		n_cols = D->n_columns;	/* Remember how many columns there were in the input file. */
+		dt = (D->table[0]->segment[0]->n_rows > 1) ? D->table[0]->segment[0]->data[t_in][1] - D->table[0]->segment[0]->data[t_in][0] : 0.0;	/* Pick first increment to get a sense of data spacing in time */
+		/* Create virtual files for using the data in mapproject and another for holding the result */
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D, source) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT|GMT_IS_REFERENCE, NULL, destination) == GMT_NOTSET) {
+			Return (API->error);
+		}
+		/* Build mapproject command and run the module. Note: we want distances in inches since 1/dpi is in inches */
+		sprintf (cmd, "%s -R%s -J%s -G+uC --PROJ_LENGTH_UNIT=inch ->%s", source, GMT->common.R.string, GMT->common.J.string, destination);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Line sampling Step 1: %s.\n", cmd);
+		if (GMT_Call_Module (GMT->parent, "mapproject", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Convert the line to projected coordinates and compute distance in cm along the lines */
+			Return (API->error);
+		}
+		/* Close the source virtual file and destroy the data set */
+		if (GMT_Close_VirtualFile (GMT->parent, source) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {	/* Completely done with the original dataset */
+			Return (API->error);
+		}
+		/* Get the projected dataset with along-line projected distance measurements */
+		if ((D = GMT_Read_VirtualFile (API, destination)) == NULL) {	/* Get the x, y[, zcols...], time, dist dataset */
+			Return (API->error);
+		}
+		/* Close the destination virtual file */
+		if (GMT_Close_VirtualFile (GMT->parent, destination) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		/* Create new virtual files for using the projected data in sample1d and another for holding the result */
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D, source) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT|GMT_IS_REFERENCE, NULL, destination) == GMT_NOTSET) {
+			Return (API->error);
+		}
+		/* Build sample1d command and run it. The projected distances are always in the last data column */
+		sprintf (cmd, "%s -N%d -T%.16gc -F%c -AR ->%s", source, n_cols-1, spacing, Fmode, destination);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Line sampling Step 2: %s.\n", cmd);
+		if (GMT_Call_Module (GMT->parent, "sample1d", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Resample all columns using the spacing */
+			Return (API->error);
+		}
+		/* Close the latest source virtual file and destroy the data set */
+		if (GMT_Close_VirtualFile (GMT->parent, source) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {	/* Completely done with the original dataset */
+			Return (API->error);
+		}
+		/* Get the resampled dataset that was computed */
+		if ((D = GMT_Read_VirtualFile (API, destination)) == NULL) {
+			Return (API->error);
+		}
+		/* Create final virtual file for using the resampled data in the inverse mapprojected call and write to stdout */
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D, source) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		sprintf (cmd, "%s -R%s -J%s -I -o0:%d --PROJ_LENGTH_UNIT=inch", source, GMT->common.R.string, GMT->common.J.string, n_cols-2);
+		if (type == GMT_IS_ABSTIME && dt > 0.0 && dt < 10.0)	/* Make sure we have enough precision to hold millisecond spacings if first spacing is 10 sec or less */
+			strcat (cmd, "  --FORMAT_CLOCK_OUT=hh:mm:ss.xxx");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Line sampling Step 3: %s.\n", cmd);
+		if (GMT_Call_Module (GMT->parent, "mapproject", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Recover original coordinates by inversely project the data and write to stdout */
+			Return (API->error);
+		}
+		/* Close the latest source virtual file and destroy the data set */
+		if (GMT_Close_VirtualFile (GMT->parent, source) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {	/* Completely done with the original dataset */
+			Return (API->error);
+		}
+		GMT_Report (API, GMT_MSG_INFORMATION, "Line sampling written to standard output\n");
+
+		Return (GMT_NOERROR);
+	}
 
 	/* Now we are ready to take on some input values */
 
