@@ -71,10 +71,11 @@ struct GRD2CPT_CTRL {
 		char *file;
 		unsigned int levels;
 	} E;
-	struct GRD2CPT_F {	/* -F[r|R|h|c][+c] */
+	struct GRD2CPT_F {	 /* -F[r|R|h|c][+c[<label>]] */
 		bool active;
 		bool cat;
 		unsigned int model;
+		char *label;
 	} F;
 	struct GRD2CPT_G {	/* -Glow/high for input CPT truncation */
 		bool active;
@@ -137,6 +138,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Deallo
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->E.file);
+	gmt_M_str_free (C->F.label);
 	gmt_M_str_free (C->T.file);
 	gmt_M_free (GMT, C);
 }
@@ -146,7 +148,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *H_OPT = (API->GMT->current.setting.run_mode == GMT_MODERN) ? " [-H]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A<transparency>[+a]] [-C<cpt>] [-D[i|o]] [-E[<nlevels>][+c][+f<file>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F[R|r|h|c][+c]] [-G<zlo>/<zhi>]%s [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]]\n", H_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F[R|r|h|c][+c[<label>]]] [-G<zlo>/<zhi>]%s [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]]\n", H_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T<start>/<stop>/<inc> or -T<n>] [-Sh|l|m|u]\n\t[%s] [-W[w]] [-Z] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -164,7 +166,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f<file> to save the CDF table to a file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k) [Default uses the input model]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to output a discrete CPT in categorical CPT format.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c[label>] to output a discrete CPT in categorical CPT format.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The <label>, if present, sets the labels for each category. It may be a\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   comma-separated list of category names, or <start>[-], where we automatically build\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   labels from <start> (a letter or an integer). Append - to build ranges <start>-<start+1>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set that limit to NaN.\n");
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)
@@ -279,7 +284,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c", GMT_MSG_ERROR)) n_errors++;
 				if (gmt_get_modifier (opt->arg, 'c', txt_a)) {
 					Ctrl->F.cat = true;
-					if (txt_a[0] == '\0') break;
+					Ctrl->F.label = strdup (txt_a);
 				}
 				Ctrl->F.active = true;
 				switch (txt_a[0]) {
@@ -833,7 +838,17 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN will be written out */
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
-	if (Ctrl->F.cat) Pout->categorical = 1;
+	if (Ctrl->F.cat) {	/* Flag as a categorical CPT */
+		Pout->categorical = 1;
+		if (Ctrl->F.label[0]) {	/* Want categorical labels */
+			char **label = gmt_cat_cpt_labels (GMT, Ctrl->F.label, Pout->n_colors);
+			for (unsigned int k = 0; k < Pout->n_colors; k++) {
+				if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
+				Pout->data[k].label = label[k];	/* Now the job of the CPT to free these strings */
+			}
+			gmt_M_free (GMT, label);
+		}
+	}
 
 	if (Ctrl->A.active) gmt_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 
