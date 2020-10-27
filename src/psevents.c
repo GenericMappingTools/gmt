@@ -526,9 +526,6 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 		double dt, spacing = (GMT->current.setting.proj_length_unit == GMT_INCH) ? 1.0 / Ctrl->A.dpu : 1.0 / (2.54 * Ctrl->A.dpu);	/* Pixel size in inches regardless of dpu unit */
 		struct GMT_DATASET *D = NULL;
 
-		if (Ctrl->C.active) t_in++;	/* Reading x, y, zvalue, time[, length] records */
-		type = gmt_M_type (GMT, GMT_IN, t_in);	/* Need to know if we have absolute time formatting or just floating point numbers */
-
 		switch (GMT->current.setting.interpolant) {
 			case GMT_SPLINE_LINEAR:	Fmode = 'l'; break;
 			case GMT_SPLINE_AKIMA:	Fmode = 'a'; break;
@@ -550,11 +547,12 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (D->n_records < 2 || D->n_columns < 3) {
-			GMT_Report (API, GMT_MSG_ERROR, "Your line data must (a) have more than 1 record and (2) have at least 3 data columns (x,y,time).\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Your line data must (a) have more than 1 record and (2) have at least 3 data columns (x,y[,z][,size],time).\n");
 			Return (API->error);
 		}
-		last_col = D->n_columns - 1;	/* Remember ID of last column in the input file. */
-		dt = (D->table[0]->segment[0]->n_rows > 1) ? D->table[0]->segment[0]->data[t_in][1] - D->table[0]->segment[0]->data[t_in][0] : 0.0;	/* Pick first increment to get a sense of data spacing in time */
+		last_col = D->n_columns - 1;	/* Remember ID of last column in the input file which must be the time column. */
+		type = gmt_M_type (GMT, GMT_IN, last_col);	/* Need to know if we have absolute time formatting or just floating point numbers */
+		dt = (D->table[0]->segment[0]->n_rows > 1) ? D->table[0]->segment[0]->data[last_col][1] - D->table[0]->segment[0]->data[last_col][0] : 0.0;	/* Pick first increment to get a sense of data spacing in time */
 		/* Create virtual files for using the data in mapproject and another for holding the result */
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D, source) != GMT_NOERROR) {
 			Return (API->error);
@@ -591,8 +589,8 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT|GMT_IS_REFERENCE, NULL, destination) == GMT_NOTSET) {
 			Return (API->error);
 		}
-		/* Build sample1d command and run it. The projected distances are always in the last data column */
-		sprintf (cmd, "%s -N%d -T%.16gc -F%c -AR ->%s", source, last_col, spacing, Fmode, destination);
+		/* Build sample1d command and run it. The projected distances are always in the last data column which is one past our input last column */
+		sprintf (cmd, "%s -N%d -T%.16gc -F%c -AR ->%s", source, last_col+1, spacing, Fmode, destination);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Line sampling Step 2: %s.\n", cmd);
 		if (GMT_Call_Module (GMT->parent, "sample1d", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Resample all columns using the spacing */
 			Return (API->error);
@@ -612,14 +610,16 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D, source) != GMT_NOERROR) {
 			Return (API->error);
 		}
+		/* Build inverse mapproject command and run it. We are done with the along-line distances and thus use -o to retain the original (resampeled) columns only */
 		sprintf (cmd, "%s -R%s -J%s -I -o0:%d --PROJ_LENGTH_UNIT=inch", source, GMT->common.R.string, GMT->common.J.string, last_col);
 		if (type == GMT_IS_ABSTIME && dt > 0.0) {	/* Make sure we have enough precision to hold resampled points - this is a bit of guesswork for now */
 			if (dt < 5.0)	/* Make sure we have enough precision to hold millisecond spacings if first spacing is 5 sec or less */
-				strcat (cmd, "  --FORMAT_CLOCK_OUT=hh:mm:ss.xxx");
+				strcat (cmd, " --FORMAT_CLOCK_OUT=hh:mm:ss.xxx");
 			else if (dt < 50.0)	/* Make sure we have enough precision to hold 100th of second spacings if first spacing is 50 sec or less */
-				strcat (cmd, "  --FORMAT_CLOCK_OUT=hh:mm:ss.xx");
+				strcat (cmd, " --FORMAT_CLOCK_OUT=hh:mm:ss.xx");
 			else if (dt < 500.0)	/* Make sure we have enough precision to hold 10th of second spacings if first spacing is 500 sec or less */
-				strcat (cmd, "  --FORMAT_CLOCK_OUT=hh:mm:ss.x");
+				strcat (cmd, " --FORMAT_CLOCK_OUT=hh:mm:ss.x");
+			/* else the system default hh:mm:ss is good enough */
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Line sampling Step 3: %s.\n", cmd);
 		if (GMT_Call_Module (GMT->parent, "mapproject", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Recover original coordinates by inversely project the data and write to stdout */
