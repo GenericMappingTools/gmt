@@ -6482,8 +6482,8 @@ GMT_LOCAL int gmtapi_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned i
 		/* Because gmtlib_is_color cannot uniquely determine what a single number is, check for that separately first. */
 		for (k = 0; gray && k < s_length; k++)
 			if (!isdigit ((*str)[k])) gray = false;	/* Not just a bunch of integers */
-		if (gray) {	/* Must also rule out temporary files like 14334.cpt since the ".cpt" is not present */
-			snprintf (tmp_file, GMT_LEN64, "%s.cpt", *str);	/* Try this as a filename */
+		if (gray) {	/* Must also rule out temporary files like 14334.cpt since the GMT_CPT_EXTENSION is not present */
+			snprintf (tmp_file, GMT_LEN64, "%s%s", *str, GMT_CPT_EXTENSION);	/* Try this as a filename */
 			if (!gmt_access (API->GMT, tmp_file, F_OK))
 				return 0;	/* Probably a process id temp file like 13223.cpt */
 		}
@@ -8044,11 +8044,11 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 				return_null (API, GMT_CPT_READ_ERROR);	/* Failed in the conversion */
 			}
 			else if (c_err == 0) {	/* Regular cpt (master or local), append .cpt and set path */
-				size_t len = strlen (file), elen;
-				char *ext = (len > 4 && strstr (file, ".cpt")) ? "" : ".cpt", *q = NULL;
-				elen = strlen (ext);
+				bool is_cpt_master = gmt_is_cpt_master (API->GMT, file);
+				char *q = NULL;
+
 				/* Need to check for CPT filename modifiers */
-				if ((f = gmt_strrstr (file, ".cpt")))
+				if ((f = gmt_strrstr (file, GMT_CPT_EXTENSION)))
 					m = gmtlib_last_valid_file_modifier (API, f, GMT_CPTFILE_MODIFIERS);
 				else
 					m = gmtlib_last_valid_file_modifier (API, file, GMT_CPTFILE_MODIFIERS);
@@ -8057,8 +8057,8 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 					if ((q = gmtlib_cptfile_unitscale (API, m))) q[0] = '\0';    /* Truncate modifier after processing the unit */
 					if (m[0] && (q = strstr (m, "+h"))) q[0] = '\0';    /* Truncate +h modifier (checking for m[0] since the line above could leave it blank) */
 				}
-				if (elen)	/* Master: Append extension and supply path */
-					gmt_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
+				if (is_cpt_master)	/* Master: Append extension and supply path */
+					gmt_getsharepath (API->GMT, "cpt", file, GMT_CPT_EXTENSION, CPT_file, R_OK);
 				else if (!gmt_getdatapath (API->GMT, file, CPT_file, R_OK)) {	/* Use name.cpt as is but look for it */
 					GMT_Report (API, GMT_MSG_ERROR, "GMT_Read_Data: File not found: %s\n", file);
 					gmt_M_str_free (input);
@@ -11571,6 +11571,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	else if (!strncmp (module, "gmtbinstats", 11U)) {
 		type = ((opt = GMT_Find_Option (API, 'T', *head)) && opt->arg[0] != 'r') ? 'D' : 'G';	/* Giving -T[h] means we change default output from grid to dataset */
 	}
+	/* 1s. Check if psevents is doing data prep */
+	else if (!strncmp (module, "psevents", 8U)) {
+		type = ((opt = GMT_Find_Option (API, 'A', *head)) && opt->arg[0] == 'r' && opt->arg[1] && isdigit (opt->arg[1])) ? 'D' : 'X';	/* Giving -Ar<dpi> means we resample a line, else plotting */
+	}
 
 	/* 2a. Get the option key array for this module */
 	key = gmtapi_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */
@@ -13846,7 +13850,7 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 			c = strstr (file, "=gd");	/* Got image=gd[+modifiers] */
 			break;
 		case GMT_IS_PALETTE:
-			if ((f = gmt_strrstr (file, ".cpt")))
+			if ((f = gmt_strrstr (file, GMT_CPT_EXTENSION)))
 				c = gmtlib_last_valid_file_modifier (API, f, GMT_CPTFILE_MODIFIERS);
 			else
 				c = gmtlib_last_valid_file_modifier (API, file, GMT_CPTFILE_MODIFIERS);

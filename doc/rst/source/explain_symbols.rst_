@@ -424,7 +424,7 @@
                 **-SqN**\|\ **n**\ +\|-1 is used.
 
             **+l**\ *label*
-                Set the constant label text. **Note**: iI the text length exceeds
+                Set the constant label text. **Note**: if the text length exceeds
                 the line length then no text will appear.
 
             **+L**\ *flag*

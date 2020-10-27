@@ -940,7 +940,7 @@ GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct G
 
 	R->relative = true;	/* Relative times are implicitly given */
 	n_te = (R->mode > FLX_FV2) ? 1 : 7;	/* For purely viscous we don't need to loop over plate thickness */
-	gmt_parse_array (GMT, 'T', "1/5000/1", &T, GMT_ARRAY_RANGE, 0);	/* In km */
+	gmt_parse_array (GMT, 'T', "1/5000/1", &T, GMT_ARRAY_RANGE | GMT_ARRAY_UNIQUE, 0);	/* In km */
 	gmt_create_array (GMT, 'T', &T, NULL, NULL);
 	dim[GMT_ROW] = T.n;
 	n_times = (Ctrl->F.active || Ctrl->M.active) ? 12 : 1;	/* No point repeating 12 identical results for the elastic case */

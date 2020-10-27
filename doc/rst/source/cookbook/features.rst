@@ -1082,7 +1082,7 @@ modifier will scale z *from unit to* meters, while **+U**\ *unit* does
 the inverse (scale z *from meters to unit*).
 
 **Note**: Users are allowed to name their CPT files anything they want, but
-they are required to have the file extension ".cpt".  This allows us to prevent
+we recommend the use of the file extension ".cpt".  This allows us to prevent
 any confusion when parsing filenames that may have sequences that otherwise
 might look like a file *modifier* (e.g., data.my+u5.cpt). Since valid modifiers
 are *appended* to a file name, finding such an extension simplifies parsing.

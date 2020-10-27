@@ -222,7 +222,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 			case 'T':	/* Set level sampling spacing */
 				Ctrl->T.active = true;
 				Ctrl->T.string = strdup (opt->arg);
-				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR | GMT_ARRAY_RANGE, GMT_Z);
+				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR | GMT_ARRAY_RANGE | GMT_ARRAY_UNIQUE, GMT_Z);
 				break;
 
 			case 'S':	/* Sample vertically across the grid stack at one or more points */
@@ -267,7 +267,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 				}
 				Ctrl->Z.active[mode] = true;
 				if (mode == GMT_IN)
-					n_errors += gmt_parse_array (GMT, 'Z', &opt->arg[1], &(Ctrl->Z.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR | GMT_ARRAY_RANGE, GMT_Z);
+					n_errors += gmt_parse_array (GMT, 'Z', &opt->arg[1], &(Ctrl->Z.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR | GMT_ARRAY_RANGE | GMT_ARRAY_UNIQUE, GMT_Z);
 				break;
 
 			default:	/* Report bad options */

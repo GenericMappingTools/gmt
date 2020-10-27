@@ -990,7 +990,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				         (G->header->z_max - G->header->z_add_offset) / G->header->z_scale_factor);
 			}
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			if (n_nan) {
+			if (n_nan || Ctrl->M.active) {
 				double percent = 100.0 * n_nan / G->header->nm;
 				sprintf (record, "%s: %" PRIu64 " nodes (%.1f%%) set to NaN", HH->name, n_nan, percent);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);

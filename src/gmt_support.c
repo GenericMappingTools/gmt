@@ -1167,7 +1167,7 @@ GMT_LOCAL struct CPT_Z_SCALE *gmtsupport_cpt_parse (struct GMT_CTRL *GMT, char *
 	struct CPT_Z_SCALE *Z = NULL;
 	gmt_M_unused(direction);
 
-	if ((f = gmt_strrstr (file, ".cpt")))	/* Got a file with CPT extension, look from there on out */
+	if ((f = gmt_strrstr (file, GMT_CPT_EXTENSION)))	/* Got a file with CPT extension, look from there on out */
 		m = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
 	else	/* Must use the full file name */ 
 		m = gmtlib_last_valid_file_modifier (GMT->parent, file, GMT_CPTFILE_MODIFIERS);
@@ -6023,7 +6023,7 @@ char *gmtlib_cptfile_unitscale (struct GMTAPI_CTRL *API, char *name) {
 	char *c = NULL, *f = NULL;
 	size_t len = strlen (name);	/* Get length of the file name */
 	if (len < 4) return NULL;	/* Not enough space for name and modifier */
-	if ((f = gmt_strrstr (name, ".cpt")))
+	if ((f = gmt_strrstr (name, GMT_CPT_EXTENSION)))
 		c = gmtlib_last_valid_file_modifier (API, f, "uU");
 	else
 		c = gmtlib_last_valid_file_modifier (API, name, "uU");
@@ -7371,6 +7371,18 @@ int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL bool gmtsupport_cpt_master_index (struct GMT_CTRL *GMT, char *name) {
+	size_t len;
+	gmt_M_unused(GMT);
+	if (name == NULL) return true;	/* true, because no name means we default to GMT_DEFAULT_CPT_NAME */
+	len = strlen (name);	/* Length of the master table name so we can limit comparison to just those characters */
+	/* Note: THere are near-duplicate names like broc and brocO, but since they are ordered alphabetically our
+	 * search for broc will first compare with broc before broc0 so not an issue. */
+	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) if (!strncmp (name, GMT_CPT_master[k], len))
+		return true;
+	return false;
+}
+
 /*! . */
 GMT_LOCAL void gmtsupport_make_continuous_colorlist (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	/* Convert a (by default) discrete CPT made from a color list to a continuous CPT instead */
@@ -7939,15 +7951,19 @@ bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	/* Return true if cpt is the name of a GMT CPT master table and not a local file */
 	char *c = NULL, *f = NULL;
 	if (cpt == NULL) return true;	/* No cpt given means use GMT_DEFAULT_CPT_NAME master */
-	if (gmt_M_file_is_memory (cpt)) return false;	/* A CPT was given via memory location */
-		if ((f = gmt_strrstr (cpt, ".cpt")))
-			c = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
-		else
-			c = gmtlib_last_valid_file_modifier (GMT->parent, cpt, GMT_CPTFILE_MODIFIERS);
+	if (gmt_M_file_is_memory (cpt)) return false;	/* A CPT was given via memory location so cannot be a master reference */
+	if ((f = gmt_strrstr (cpt, GMT_CPT_EXTENSION)))	/* Only examine modifiers from there onwards */
+		c = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
+	else	/* Must examine the entire file name for modifiers */
+		c = gmtlib_last_valid_file_modifier (GMT->parent, cpt, GMT_CPTFILE_MODIFIERS);
 	if (c && (f = gmt_first_modifier (GMT, c, GMT_CPTFILE_MODIFIERS)))
-		f[0] = '\0';	/* Must chop off modifiers for access to work */
+		f[0] = '\0';	/* Must chop off modifiers for further checks to work */
+	if (gmtsupport_cpt_master_index (GMT, cpt)) {
+		if (c && f) f[0] = '+';	/* Restore modifier before we return */
+		return true;
+	}
 	if (cpt[0] && !gmt_access (GMT, cpt, R_OK)) return false;	/* A CPT was given and exists */
-	return true;	/* Acting as if it is a master table */
+	return false;	/* Well, what can we do at this point */
 }
 
 int gmtlib_set_current_item_file (struct GMT_CTRL *GMT, const char *item, char *file) {
@@ -9336,6 +9352,52 @@ void gmt_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 	gmt_M_rgb_copy (G->rgb, GMT->current.setting.ps_page_rgb);		/* Default box color is page color [nominally white] */
 }
 
+GMT_LOCAL int gmtsupport_is_cpt_file (struct GMT_CTRL *GMT, char *file) {
+	/* Read a file that may be a CPT file or a contour listing file.  We will return
+	 * 0 if it is a contour file, 1 if a CPT and -1 if we get read errors.
+	 * Because a non-commented record in a contour listing file is of the format
+	 *   cval [angle] C|A|c|a [pen]] OR  cval C|A|c|a [angle [pen]] (deprecated format),
+	 * we can uniquely determine if it is that sort of file by finding the lone
+	 * character A|a|C|c between white space on the left and white space or NULL on right.
+	 * If that is not found then it must be a CPT file.
+	 */
+	int answer = 1;	/* Default response is that this is a CPT file, flagged as 1 */
+	char *txt = NULL, *c = NULL;
+	unsigned int k = 0;
+	struct GMT_DATASET *C = NULL;
+
+	if ((C = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IO_ASCII, NULL, file, NULL)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to read potential CPT or contour information file %s\n", file);
+		return (-1);
+	}
+	if (C->n_records == 0) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No records found in CPT or contour information file %s\n", file);
+		return (-1);
+	}
+	if (C->table[0]->segment[0]->text == NULL || (txt = C->table[0]->segment[0]->text[0]) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No text records found in CPT or contour information file %s\n", file);
+		return (-1);
+	}
+	if ((c = strchr (txt, ';'))) c[0] = '\0';	/* Chop off optional CPT labels since they may have text that can trick us */
+
+	while (txt[k] && !(txt[k] == '\t' || txt[k] == ' ')) k++;	/* Scan to first occurrence of white space, thus skipping <cval> */
+	while (txt[k] && strchr ("AaCc", txt[k]) == NULL) k++;		/* Scan to first occurrence of one of the key letters */
+	if ((k && (txt[k-1] == '\t' || txt[k-1] == ' ')) && (txt[k] && (txt[k+1] == '\t' || txt[k+1] == ' ' || txt[k+1] == '\0')))
+		answer = 0;	/* Yes, this is a contour file */
+	if (c) c[0] = ';';	/* Restore semicolon to be nice */
+
+	if (GMT_Destroy_Data (GMT->parent, &C)) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to free memory for contour information file %s\n", file);
+	}
+
+	if (answer)
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s assumed to be a CPT file\n", file);
+	else
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s determined to be a contour information file\n", file);
+
+	return (answer);	/* If we find a recognized contour type then we return true */
+}
+
 
 unsigned int gmt_contour_C_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct CONTOUR_ARGS *A) {
 	unsigned int n_errors = 0;
@@ -9357,10 +9419,13 @@ unsigned int gmt_contour_C_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct 
 		gmt_M_str_free (A->file);
 		A->file = strdup (arg);
 	}
-	else if (!gmt_access (GMT, arg, R_OK) || gmt_file_is_cache (API, arg)) {	/* Gave a readable file (CPT or contourfile) */
-		size_t L = strlen(arg);
+	else if (!gmt_access (GMT, arg, R_OK) || gmt_file_is_cache (API, arg)) {	/* Gave a readable file (CPT or contour file) */
+		int answer;
 		A->interval = 1.0;	/* This takes us past a check only */
-		A->cpt = (L > 4 && !strncmp (&arg[L-4], ".cpt", 4U)) ? true : false;	/* Extension determines if we got a CPT file */
+		if ((answer = gmtsupport_is_cpt_file (GMT, arg)) == -1)
+			n_errors++;
+		else	
+			A->cpt = (answer == 1);
 		gmt_M_str_free (A->file);
 		A->file = strdup (arg);
 	}
@@ -16456,7 +16521,28 @@ char *gmt_arabic2roman (unsigned int number, char string[], size_t size, bool lo
 	return string;
 }
 
-double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, uint64_t *n) {
+GMT_LOCAL double *gmtsupport_unique_array (struct GMT_CTRL *GMT, double *array, uint64_t *n) {
+	size_t k, j;
+	/* Sort the array in case user did not enter values that were monotonically increasing */
+	gmt_sort_array (GMT, array, *n, GMT_DOUBLE);
+	/* Skip any duplicates in the sorted array */
+	k = 0; j = 1;
+	while (j < *n) {
+		if (doubleAlmostEqualZero (array[j], array[k]))	/* Skip repeated point */
+			j++;
+		else	/* Copy over unique value */ 
+			array[++k] = array[j++];
+	}
+	k++;	/* (new) total number of unique values */
+	if (k < *n) {	/* Update array count */
+		*n = k;
+		array = gmt_M_memory (GMT, array, *n, double);	/* Reallocate exact length of array */
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Eliminated %d duplicate values from the sorted array\n", (int)(j-k));
+	}
+	return array;
+}
+
+double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, bool unique, uint64_t *n) {
 	/* Given a comma-separated string of values of type, parse and return array and its length */
 	size_t k;
 	unsigned int pos = 0;
@@ -16481,7 +16567,10 @@ double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, 
 		}
 		k++;
 	}
-	return array;
+	if (!unique) return array;	/* Return as is */
+
+	/* Return a possibly sorted and monotonically increasing array */
+	return (gmtsupport_unique_array (GMT, array, n));
 }
 
 GMT_LOCAL uint64_t gmtsupport_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
@@ -16563,6 +16652,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	}
 	gmt_M_str_free (T->file);		/* In case earlier parsing */
 	gmt_M_memset (T, 1, struct GMT_ARRAY);	/* Wipe clean the structure */
+
+	if (flags & GMT_ARRAY_UNIQUE)
+		T->unique = true;	/* Resulting array must contain unique and sorted entries */
 
 	/* 1a. Check if argument is a remote file */
 	if (gmt_file_is_cache (GMT->parent, argument) || gmt_M_file_is_url (argument)) {	/* Remote file, must check */
@@ -16850,14 +16942,27 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		T->array = gmt_M_memory (GMT, NULL, T->n, double);
 		gmt_M_memcpy (T->array, D->table[0]->segment[0]->data[GMT_X], T->n, double);
 		GMT_Destroy_Data (GMT->parent, &D);
+		if (T->unique)	/* Must sort and eliminate duplicates */
+			T->array = gmtsupport_unique_array (GMT, T->array, &(T->n));
 		T->var_inc = gmtsupport_var_inc (T->array, T->n);
 		return GMT_NOERROR;
 	}
 
 	if (T->list) {	/* Got a list, parse and make array */
-		if ((T->array = gmt_list_to_array (GMT, T->list, gmt_M_type (GMT, GMT_IN, T->col), &(T->n))) == NULL)
+		if ((T->array = gmt_list_to_array (GMT, T->list, gmt_M_type (GMT, GMT_IN, T->col), T->unique, &(T->n))) == NULL)
 			return GMT_PARSE_ERROR;
 		T->var_inc = gmtsupport_var_inc (T->array, T->n);
+		T->min = T->array[0];	T->max = T->array[T->n-1];
+		if (T->n > 1) {	/* Got at least min/max */
+			if (!T->var_inc) {	/* Just did an alternate way to set an equidistant array */
+				T->inc = T->array[1] - T->array[0];
+				T->set = 3;
+			}
+			else
+				T->set = 2;
+		}
+		else	/* Got a single point only */
+			T->set = 1;
 		return GMT_NOERROR;
 	}
 
@@ -17301,7 +17406,7 @@ void gmt_cpt_interval_modifier (struct GMT_CTRL *GMT, char **arg, double *interv
 	char *file = NULL, *c = NULL, *f = NULL, new_arg[PATH_MAX] = {""};
 	gmt_M_unused (GMT);
 	if (arg == NULL || (file = *arg) == NULL || file[0] == '\0') return;	/* NULL argument */
-	if ((f = gmt_strrstr (file, ".cpt")))	/* Filename has .cpt extension, look behind it */
+	if ((f = gmt_strrstr (file, GMT_CPT_EXTENSION)))	/* Filename has .cpt extension, look behind it */
 		c = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
 	else	/* Must search the entire filename from the back */
 		c = gmtlib_last_valid_file_modifier (GMT->parent, file, GMT_CPTFILE_MODIFIERS);
