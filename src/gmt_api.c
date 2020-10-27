@@ -11571,6 +11571,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	else if (!strncmp (module, "gmtbinstats", 11U)) {
 		type = ((opt = GMT_Find_Option (API, 'T', *head)) && opt->arg[0] != 'r') ? 'D' : 'G';	/* Giving -T[h] means we change default output from grid to dataset */
 	}
+	/* 1s. Check if psevents is doing data prep */
+	else if (!strncmp (module, "psevents", 8U)) {
+		type = ((opt = GMT_Find_Option (API, 'A', *head)) && opt->arg[0] == 'r' && opt->arg[1] && isdigit (opt->arg[1])) ? 'D' : 'X';	/* Giving -Ar<dpi> means we resample a line, else plotting */
+	}
 
 	/* 2a. Get the option key array for this module */
 	key = gmtapi_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */

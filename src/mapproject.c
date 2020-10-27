@@ -1180,7 +1180,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 		gmt_set_geographic (GMT, GMT_OUT);
 		gmt_set_column (GMT, GMT_IO, GMT_Z, GMT_IS_FLOAT);
 	}
-	else if (!gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->I.active) {	/* Must swap what the in and out types are for non-gepgraphic transformations (like absolute time) */
+	else if (!gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->I.active) {	/* Must swap what the in and out types are for non-geographic transformations (like absolute time) */
 		gmt_M_uint_swap (GMT->current.io.col_type[GMT_IN][GMT_X], GMT->current.io.col_type[GMT_OUT][GMT_X]);
 		gmt_M_uint_swap (GMT->current.io.col_type[GMT_IN][GMT_Y], GMT->current.io.col_type[GMT_OUT][GMT_Y]);
 	}

@@ -13046,6 +13046,11 @@ GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, 
 	else if (!strncmp (name, "pscontour", 9U)) {	/* Check for -D option */
 		if ((opt = GMT_Find_Option (API, 'D', options))) return false;	/* -D writes dataset */
 	}
+	else if (!strncmp (name, "psevents", 8U)) {	/* Check for -D option */
+		if ((opt = GMT_Find_Option (API, 'A', options)) == NULL) return true;	/* All but -A is guaranteed to write PS */
+		if (opt->arg[0] == 'r' && opt->arg[1] && isdigit (opt->arg[1])) return false;	/* This is just preparing an densely sampled file */
+		return true;	/* Any other case gets here and makes PS */
+	}
 	else if (!strncmp (name, "pshistogram", 11U)) {	/* Check for -I option */
 		if ((opt = GMT_Find_Option (API, 'I', options))) return false;	/* -I writes dataset */
 	}
