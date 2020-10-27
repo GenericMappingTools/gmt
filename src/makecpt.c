@@ -71,10 +71,11 @@ struct MAKECPT_CTRL {
 		bool active;
 		unsigned int levels;
 	} E;
-	struct MAKECPT_F {	/* -F[r|R|h|c][+c] */
+	struct MAKECPT_F {	/* -F[r|R|h|c][+c[<label>]] */
 		bool active;
 		bool cat;
 		unsigned int model;
+		char *label;
 	} F;
 	struct MAKECPT_G {	/* -Glow/high for input CPT truncation */
 		bool active;
@@ -132,6 +133,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *C) {	/* Deallo
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->C.file);
+	gmt_M_str_free (C->F.label);
 	gmt_free_array (GMT, &(C->T.T));
 	gmt_M_free (GMT, C);
 }
@@ -200,7 +202,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 
 	int n;
 	unsigned int n_errors = 0, n_files[2] = {0, 0};
-	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL;
+	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) if (opt->option == 'Q') Ctrl->Q.active = true;;	/* If -T given before -Q we need to flag -T+l */
@@ -251,7 +253,10 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 			case 'F':	/* Sets format for color reporting */
 				Ctrl->F.active = true;
 				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c", GMT_MSG_ERROR)) n_errors++;
-				if (gmt_get_modifier (opt->arg, 'c', txt_a)) Ctrl->F.cat = true;
+				if (gmt_get_modifier (opt->arg, 'c', txt_a)) {
+					Ctrl->F.cat = true;
+					Ctrl->F.label = strdup (txt_a);
+				}
 				switch (opt->arg[0]) {
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;
 					case 'h': Ctrl->F.model = GMT_HSV; break;
@@ -368,6 +373,12 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Cannot combine -E with -T\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
+}
+GMT_LOCAL char ** makecpt_cat_labels (struct GMT_CTRL *GMT, char *label, unsigned int n) {
+	/* Generate categorical labels for n categories from the label magic argument */
+	char **Clabel = gmt_M_memory (GMT, NULL, n, char *);
+
+	return Clabel;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -585,7 +596,17 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN will be written out */
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
-	if (Ctrl->F.cat) Pout->categorical = 1;
+	if (Ctrl->F.cat) {
+		Pout->categorical = 1;
+		if (Ctrl->F.label[0]) {	/* Want categorical labels */
+			char **label = makecpt_cat_labels (GMT, Ctrl->F.label, Pout->n_colors);
+			for (unsigned int k = 0; k < Pout->n_colors; k++) {
+				if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
+				Pout->data[k].label = label[k];	/* Now the job of the CPT to free these strings */
+			}
+			gmt_M_free (GMT, label);
+		}
+	}
 
 	write = (GMT->current.setting.run_mode == GMT_CLASSIC || Ctrl->H.active);	/* Only output to stdout in classic mode and with -H in modern mode */
 
