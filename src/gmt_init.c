@@ -18103,7 +18103,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			if (error) return (error);		/* Bail at this point */
 			gmt_reset_history (API->GMT);	/* No old classic history shall affect a new modern mode session */
 
-			gmt_conf (API->GMT);				/* Get the original system defaults */
+			gmt_conf_SI (API->GMT);				/* Get the original system defaults */
 			if (!clean_start) gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
 			snprintf (dir, PATH_MAX, "%s/%s", API->gwf_dir, GMT_SETTINGS_FILE);	/* Reuse dir string for saving gmt.conf to this dir */
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode here so putdefaults can skip writing PS_MEDIA if not PostScript output */
