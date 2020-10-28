@@ -462,6 +462,19 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+GMT_LOCAL void psevents_set_XY (struct GMT_CTRL *GMT, unsigned int x_type, unsigned int y_type, double out[], char *X, char *Y) {
+	/* Format the x and y outputs */
+	if (x_type == GMT_IS_ABSTIME)
+		gmt_ascii_format_one (GMT, X, out[GMT_X], x_type);
+	else
+		sprintf (X, "%.16g", out[GMT_X]);
+	if (y_type == GMT_IS_ABSTIME)
+		gmt_ascii_format_one (GMT, Y, out[GMT_Y], y_type);
+	else
+		sprintf (Y, "%.16g", out[GMT_Y]);
+}
+
+EXTERN_MSC int gmtlib_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_IO *S, unsigned int mode);
 
 /* Must free allocated memory before returning */
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -469,7 +482,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 
 EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	char tmp_file_symbols[PATH_MAX] = {""}, tmp_file_labels[PATH_MAX] = {""}, cmd[BUFSIZ] = {""};
-	char string[GMT_LEN128] = {""}, header[GMT_BUFSIZ] = {""}, find, *c = NULL;
+	char string[GMT_LEN128] = {""}, header[GMT_BUFSIZ] = {""}, X[GMT_LEN32] = {""}, Y[GMT_LEN32] = {""},find, *c = NULL;
 
 	bool do_coda, finite_duration, out_segment = false;
 
@@ -477,7 +490,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 	enum gmt_col_enum time_type, end_type;
 
-	unsigned int n_cols_needed = 3, s_in = 2, t_in = 2, d_in = 3, s_col = 2, i_col = 3, t_col = 4;
+	unsigned int n_cols_needed = 3, s_in = 2, t_in = 2, d_in = 3, s_col = 2, i_col = 3, t_col = 4, x_type, y_type;
 
 	uint64_t n_total_read = 0, n_symbols_plotted = 0, n_labels_plotted = 0;
 
@@ -668,6 +681,12 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	time_type = gmt_M_type (GMT, GMT_IN, t_in);
 	end_type = (Ctrl->L.mode == PSEVENTS_VAR_ENDTIME) ? time_type : GMT_IS_FLOAT;
 	find = (time_type == GMT_IS_ABSTIME) ? ',' : '/';
+	x_type = gmt_M_type (GMT, GMT_IN, GMT_X);
+	y_type = gmt_M_type (GMT, GMT_IN, GMT_Y);
+	if (x_type == GMT_IS_ABSTIME || y_type == GMT_IS_ABSTIME) {	/* Force precision of msec */
+		strncpy (GMT->current.setting.format_clock_out, "hh:mm:ss.xxx", GMT_LEN64-1);
+		gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
+	}
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -823,12 +842,14 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 				fprintf (fp_symbols, "%c -t%g %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], out[t_col], header);
 				out_segment = false;	/* Wait for next segment header */
 			}
+			psevents_set_XY (GMT, x_type, y_type, out, X, Y);
+
 			if (Ctrl->A.active)	/* Just the line coordinates */
-				fprintf (fp_symbols, "%.16g\t%.16g\n", out[GMT_X], out[GMT_Y]);
+				fprintf (fp_symbols, "%s\t%s\n", X, Y);
 			else if (Ctrl->C.active)	/* Need to pass on the z-value for cpt lookup in plot */
-				fprintf (fp_symbols, "%.16g\t%.16g\t%.16g\t%g\t%g\t%g\n", out[GMT_X], out[GMT_Y], out[GMT_Z], out[s_col], out[i_col], out[t_col]);
+				fprintf (fp_symbols, "%s\t%s\t%.16g\t%g\t%g\t%g\n", X, Y, out[GMT_Z], out[s_col], out[i_col], out[t_col]);
 			else
-				fprintf (fp_symbols, "%.16g\t%.16g\t%g\t%g\t%g\n", out[GMT_X], out[GMT_Y], out[s_col], out[i_col], out[t_col]);
+				fprintf (fp_symbols, "%s\t%s\t%g\t%g\t%g\n", X, Y, out[s_col], out[i_col], out[t_col]);
 			n_symbols_plotted++;	/* Count output symbols */
 		}
 
@@ -862,7 +883,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 					Return (GMT_RUNTIME_ERROR);
 				}
 			}
-			out[GMT_X] = in[GMT_X];	out[GMT_Y] = in[GMT_Y];	/* Pass out the input coordinates unchanged */
+			psevents_set_XY (GMT, x_type, y_type, in, X, Y);	/* Pass out the input coordinates unchanged */
 
 			/* Labels have variable transparency during optional rise and fade, and fully opaque during normal section, and skipped otherwise unless coda */
 
@@ -878,7 +899,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 			}
 			else if (do_coda)	/* If there is a coda then the label is visible given its coda attributes */
 				out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2];
-			fprintf (fp_labels, "%.16g\t%.16g\t%g\t%s\n", out[GMT_X], out[GMT_Y], out[GMT_Z], In->text);
+			fprintf (fp_labels, "%s\t%s\t%g\t%s\n", X, Y, out[GMT_Z], In->text);
 			n_labels_plotted++;	/* Count output labels */
 		}
 	} while (true);
