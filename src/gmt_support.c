@@ -7407,6 +7407,55 @@ unsigned int gmt_validate_cpt_parameters (struct GMT_CTRL *GMT, struct GMT_PALET
 	return GMT_NOERROR;
 }
 
+char ** gmt_cat_cpt_labels (struct GMT_CTRL *GMT, char *label, unsigned int n) {
+	/* Generate categorical labels for n categories from the label magic argument */
+	unsigned int k = 0;
+	char **Clabel = gmt_M_memory (GMT, NULL, n, char *);
+
+	if (strchr (label, ',')) {	/* Got list of category names */
+		char *word = NULL, *trail = NULL, *orig = strdup (label);
+		trail = orig;
+		while ((word = strsep (&trail, ",")) != NULL && k < n) {
+			if (*word != '\0')	/* Skip empty strings */
+				Clabel[k] = strdup (word);
+			k++;
+		}
+		gmt_M_str_free (orig);
+	}
+	else {	/* Auto-build the labels */
+		unsigned int mode;
+		int start;
+		char string[GMT_LEN64] = {""};
+		if (isdigit (label[0])) {	/* Integer categories */
+			mode = 1;
+			start = atoi (label);
+		}
+		else {	/* Letter categories */
+			mode = 3;
+			start = label[0];
+		}
+		if (label[strlen(label)-1] == '-') mode++;	/* Wants a range */
+		for (k = 0; k < n; k++) {
+			switch (mode) {
+				case 1:	/* Single integer label */
+					sprintf (string, "%d", start+k);
+					break;
+				case 2:	/* Integer range label */
+					sprintf (string, "%d-%d", start+k, start+k+1);
+					break;
+				case 3:	/* Single letter label */
+					sprintf (string, "%c", start+k);
+					break;
+				case 4:	/* Character range label */
+					sprintf (string, "%c-%c", start+k, start+k+1);
+					break;
+			}
+			Clabel[k] = strdup (string);
+		}
+	}
+	return Clabel;
+}
+
 /*! . */
 struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned int source_type, unsigned int cpt_flags) {
 	/* Opens and reads a color palette file in RGB, HSV, or CMYK of arbitrary length.
