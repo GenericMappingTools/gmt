@@ -326,7 +326,7 @@ names to them, try::
 
 To instead add unique category labels A, B, C, ... to a 10-item categorical CPT, try::
 
-    gmt makecpt -Cjet -T0/q0/1 -F+cA
+    gmt makecpt -Cjet -T0/10/1 -F+cA
 
 .. include:: cpt_notes.rst_
 
