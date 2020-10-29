@@ -1319,7 +1319,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	}
 
 	if (n_skipped && n_read == 0)
-		GMT_Report (API, GMT_MSG_WARNING, "Skipped %u records as blank - please check\n", n_skipped);
+		GMT_Report (API, GMT_MSG_WARNING, "Skipped %u records as blank - please check input data.\n", n_skipped);
 	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 
 	if (GMT->common.t.variable)	/* Reset the transparency */
