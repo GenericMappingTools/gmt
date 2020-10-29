@@ -191,7 +191,7 @@ The STRIPACK algorithm and implementation expect that there are no duplicate poi
 in the input.  It is best that the user ensures that this is the case.  GMT has tools,
 such as :doc:`blockmean` and others, to combine close points into single entries.
 Also, **sphdistance** has a **-D** option to determine and exclude duplicates, but
-it is a very brute-force yet exact comparision that is very slow for large data sets.
+it is a very brute-force yet exact comparison that is very slow for large data sets.
 Detection of duplicates in the STRIPACK library will exit the module.
 
 See Also

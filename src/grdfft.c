@@ -88,6 +88,9 @@ struct GRDFFT_CTRL {
 		bool active;
 		struct GMT_FFT_INFO *info;
 	} N;
+	struct GRDFFT_Q {	/* -Q */
+		bool active;
+	} Q;
 	struct GRDFFT_S {	/* -S<scale> */
 		bool active;
 		double scale;
@@ -568,7 +571,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<scale>|g]] [-E[r|x|y][+w[k]][+n]] [-F[r|x|y]<parameters>] [-I[<scale>|g]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s] [-S<scale>]\n", GMT_FFT_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s] [-Q] [-S<scale>]\n", GMT_FFT_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-fg] [%s] [%s]\n\n", GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -599,6 +602,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optional for -E (spectrum written to stdout); required otherwise.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Integrate, i.e., divide by kr [ * scale].  Use -Ig to get m from mGal].\n");
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Perform no operations, just do forward FFF and write output if selected in -N.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S multiply field by scale after inverse FFT [1.0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give -Sd to convert deflection of vertical to micro-radians.\n");
 	GMT_Option (API, "V");
@@ -767,6 +771,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 					Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, opt->arg);
 				if (Ctrl->N.info == NULL) n_errors++;
 				break;
+			case 'Q':	/* No operator */
+				Ctrl->Q.active = true;
+				break;
 			case 'S':	/* Scale */
 				Ctrl->S.active = true;
 				Ctrl->S.scale = (opt->arg[0] == 'd' || opt->arg[0] == 'D') ? 1.0e6 : atof (opt->arg);
@@ -805,10 +812,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 	if (Ctrl->N.info && gmt_M_compat_check (GMT, 4) && Ctrl->T.active)
 		Ctrl->N.info->trend_mode = GMT_FFT_REMOVE_NOTHING;
 
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->n_op_count), "Must specify at least one operation\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->n_op_count) && !Ctrl->Q.active, "Must specify at least one operation (unless -Q is set)\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->n_op_count && Ctrl->Q.active, "Cannot specify operations if -Q is set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale == 0.0, "Option -S: scale must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0], "Must specify input file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active && !Ctrl->G.file, "Option -G: Must specify output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active && !Ctrl->Q.active && !Ctrl->G.file, "Option -G: Must specify output grid file unless -E or -Q is set\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -899,6 +907,8 @@ EXTERN_MSC int GMT_grdfft (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 	}
 
+	if (Ctrl->Q.active) GMT_Report (API, GMT_MSG_INFORMATION, "No wavenumber operations selected\n");
+
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
 		switch (Ctrl->operation[op_count]) {
 			case GRDFFT_UP_DOWN_CONTINUE:
@@ -946,7 +956,7 @@ EXTERN_MSC int GMT_grdfft (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (!Ctrl->E.active) {	/* Since -E output is handled separately by grdfft_do_spectrum itself */
+	if (!Ctrl->E.active && !Ctrl->Q.active) {	/* Since -E output is handled separately by grdfft_do_spectrum itself */
 		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Report (API, GMT_MSG_INFORMATION, "inverse FFT...\n");
 
 		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))

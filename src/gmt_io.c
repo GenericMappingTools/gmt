@@ -5176,10 +5176,10 @@ char *gmtlib_valid_filemodifiers (struct GMT_CTRL *GMT) {
 	gmt_M_memset (count, GMT_LEN128, char);
 	m = GMT_GRIDFILE_MODIFIERS;
 	for (k = 0; k < strlen (m); k++)
-		count[m[k]]++;
+		count[(int)m[k]]++;
 	m = GMT_CPTFILE_MODIFIERS;
 	for (k = 0; k < strlen (m); k++)
-		count[m[k]]++;
+		count[(int)m[k]]++;
 	for (k = q = 0; k < GMT_LEN128; k++)
 		if (count[k]) string[q++] = k;
 	string[q] = '\0';
@@ -5187,23 +5187,26 @@ char *gmtlib_valid_filemodifiers (struct GMT_CTRL *GMT) {
 }
 
 char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const char *mods) {
-	/* Need to strip off any modifiers and netCDF specifications that may be part of filename */
+	/* Need to strip off any valid, trailing modifiers and netCDF specifications that may be part of filename */
 	char file[PATH_MAX] = {""}, *c = NULL, *clean_file = NULL;
 
-	if (strstr (filename, "/=tiled_"))	/* Special list with remote tiles, use as is */
+	if (strstr (filename, "/=tiled_"))	/* Special list with remote tiles, use exactly as is */
 		strncpy (file, filename, PATH_MAX-1);
-	else	/* Exclude netCDF3-D grid extensions to make sure we get a valid file name */
+	else	/* Strip off netCDF3-D grid extensions to make sure we get a valid file name */
 		sscanf (filename, "%[^=?]", file);
 	if (file[0] == '\0')
-		return NULL;		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
-	if (mods) {	/* Given modifiers to chop off */
-		if (gmt_validate_modifiers (API->GMT, file, '-', mods, GMT_MSG_DEBUG)) {
-			GMT_Report (API, GMT_MSG_DEBUG, "Filename has invalid modifiers - probably not a file with modifiers (%s)\n", file);
+		return NULL;	/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
+	if (mods) {	/* Given modifiers to chop off if they are valid */
+		char *f = NULL;
+		/* If recognized file extension for grids (.grd, .nc) or cpt (.cpt) we must look after those */
+		if ((f = gmt_strrstr (file, ".grd")) || (f = gmt_strrstr (file, GMT_CPT_EXTENSION)) || (f = gmt_strrstr (file, ".nc")))
+			c = gmtlib_last_valid_file_modifier (API, f, mods);
+		else
+			c = gmtlib_last_valid_file_modifier (API, file, mods);
+
+		if (c == NULL)	/* Modifier free file name */
 			return (strdup (file));
-		}
-		/* See if we have any */
-		if ((c = gmt_first_modifier (API->GMT, file, mods)))
-			c[0] = '\0';	/* Begone with you */
+		c[0] = '\0';	/* Begone with you */
 	}
 	clean_file = strdup (file);
 

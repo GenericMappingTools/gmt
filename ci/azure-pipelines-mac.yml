@@ -5,7 +5,7 @@ steps:
 - bash: bash ci/install-dependencies-macos.sh
   displayName: Install GMT dependencies
 
-- bash: echo "##vso[task.prependpath]$HOME/Library/Python/3.9/bin"
+- bash: echo "##vso[task.prependpath]$(python3 -m site --user-base)/bin"
   displayName: Add sphinx to PATH
   condition: eq(variables['BUILD_DOCS'], true)
 

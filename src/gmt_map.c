@@ -9575,8 +9575,8 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 			else
 				err = gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST, type, "");
 			break;
-		case 'C':	/* Cartesian distances (in PROJ_LENGTH_UNIT) after first projecting input coordinates with -J */
-			err = gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ, type, "");
+		case 'C':	/* Cartesian distances (in PROJ_LENGTH_UNIT) after first projecting input coordinates with -J is still just GMT_CARTESIAN_DIST */
+			err = gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST, type, "");
 			proj_type = GMT_GEO2CART;
 			break;
 
@@ -9594,7 +9594,7 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 		case 'S':	/* Spherical cosine distances (for various gridding functions) */
 			err = gmtmap_set_distaz (GMT, GMT_DIST_COS + mode, type, "");
 			break;
-		case 'P':	/* Spherical distances after first inversily projecting Cartesian coordinates with -J */
+		case 'P':	/* Spherical distances after first inversely projecting Cartesian coordinates with -J */
 			err = gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ_INV, type, "");
 			proj_type = GMT_CART2GEO;
 			break;

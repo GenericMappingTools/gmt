@@ -125,6 +125,7 @@ struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays
 	bool var_inc;	/* true if the resulting array has variable spacing */
 	bool logarithmic;	/* true if inc = 1,2,3 and we want logarithmic scale */
 	bool logarithmic2;	/* true if inc = integer and we want log2 scale */
+	bool unique;	/* true if any list shall be reduced to a monotonic, sorted array */
 	bool delay[2];	/* true if min and/or max shall be set from data set extremes after read [false] */
 	unsigned int spatial;	/* 1 if <unit> implies a Cartesian and 2 if a geospatial distance */
 	unsigned int set;	/* 1 if inc set, 3 if min/max/in set, 0 otherwise */
