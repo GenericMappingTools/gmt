@@ -14975,8 +14975,8 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	}
 	else if (strchr (bar_symbols[mode], (int) text[0])) {	/* Bar, column, cube with size */
 
-		/* Bar:		-Sb|B[<size_x|size_y>[c|i|p|u]][+b|B[<base>]]				*/
-		/* Column:	-So|O[<size_x>[c|i|p|u][/<ysize>[c|i|p|u]]][+b|B[<base>]]	*/
+		/* Bar:		-Sb|B[<size_x|size_y>[c|i|p|u]][+b|B[<base>]][+z|Z<nz>]				*/
+		/* Column:	-So|O[<size_x>[c|i|p|u][/<ysize>[c|i|p|u]]][+b|B[<base>]][+z|Z<nz>]	*/
 		/* Cube:	-Su|U[<size_x>[c|i|p|u]]	*/
 
 		for (j = 1; text[j]; j++) {	/* Look at chars following the symbol code */
@@ -14984,9 +14984,18 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			if (text[j] == 'b' || text[j] == 'B') bset = j;	/* Basically not worry about +b|B vs b|B by just checking for b|B */
 		}
 		if ((c = strstr (text, "+z")) || (c = strstr (text, "+Z"))) {	/* Got +z|Z<nz> */
-			n_z = atoi (&c[2]);
-			if (c[1] == 'Z') p->accumulate = true;	/* Getting dz1 dz2 ... etc and not z1 z1 ... */
-			c[0] = '\0';	/* Temporarily chop this off... */
+			if (strchr ("uU", text[0])) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Symbol u|U does not support the +z+Z<nz> modifier\n");
+				decode_error++;
+			}
+			else {	/* Only bars and columns have this feature */
+				if ((n_z = atoi (&c[2])) <= 0) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Modifier +z+Z<nz> given bad value for <nz> (%d)\n", n_z);
+					decode_error++;
+				}
+				if (c[1] == 'Z') p->accumulate = true;	/* Getting dz1 dz2 ... etc and not z1 z1 ... */
+				c[0] = '\0';	/* Temporarily chop this off... */
+			}
 		}
 		strncpy (text_cp, text, GMT_LEN256-1);
 		if (c) c[0] = '+';	/* ...and restore it */
@@ -15162,6 +15171,10 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'B':
 			p->symbol = GMT_SYMBOL_BARX;
+			if (n_z) {
+				p->n_required = n_z;	/* Need more than one z value from file */
+				for (k = 0; k < n_z; k++) p->nondim_col[p->n_nondim++] = 2 + k;	/* all band z in user units */
+			}
 			if (bset) {
 				if (text[bset+1] == '\0') {	/* Read it from data file (+ means probably +z<col>) */
 					p->base_set = 2;
@@ -15176,6 +15189,10 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'b':
 			p->symbol = GMT_SYMBOL_BARY;
+			if (n_z) {
+				p->n_required = n_z;	/* Need more than one z value from file */
+				for (k = 0; k < n_z; k++) p->nondim_col[p->n_nondim++] = 2 + k;	/* all band z in user units */
+			}
 			if (bset) {
 				if (p->user_unit[GMT_Y]) text_cp[strlen(text_cp)-1] = '\0';	/* Chop off u */
 				if (text_cp[bset+1] == '\0') {	/* Read it from data file */

@@ -195,6 +195,7 @@
         We may place vertical (**b**) or horizontal (**B**) bars, and they may extend from the
         *base* of your choosing.  The thickness of a bar can be a given dimension or can be
         specified in the units of that axis so its width scales with the projection and region.
+        Using modifiers you can also plot multi-band bars with colors set via **-C**.
 
     **-Sb**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ \|\ **B**\ [*base*]]
         Vertical **b**\ ar extending from *base* to y. The *size* is bar width.
@@ -202,7 +203,12 @@
         By default, *base* = 0. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
         data column.  Use **+B**\ [*base*] if the bar height is measured relative
-        to *base* [Relative to origin].
+        to *base* [Relative to origin]. Normally, the bar requires a single input *y*-value.
+        To plot multi-band bars, please append **+y**\|\ Y**\ *ny*, where *ny indicates the
+        total number of bands in the bar.  Upper case **Y** means we must accumulate the
+        bar value from the increments *dy* while lower case **y** means we get the absolute
+        values. Multiband bars requires **-C** with one color per band (value = 0, 1, ...).
+        Thus, input records are *x y1 y2 ... yn* or *x dy1 dy2 ... dyn*.
 
     **-SB**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ \|\ **B**\ [*base*]]
         Horizontal **b**\ ar extending from *base* to x. The *size* is bar width.
@@ -210,7 +216,12 @@
         By default, *base* = 0. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
         data column.  Use **+B**\ [*base*] if the bar length is measured relative
-        to *base* [Relative to origin].
+        to *base* [Relative to origin]. Normally, the bar requires a single input *x*-value.
+        To plot multi-band bars, please append **+x**\|\ X**\ *nx*, where *nx indicates the
+        total number of bands in the bar.  Upper case **X** means we must accumulate the
+        bar value from the increments *dx* while lower case **x** means we get the absolute
+        values. Multiband bars requires **-C** with one color per band (value = 0, 1, ...).
+        Thus, input records are *x1 y x2 ... xn* or *dx1 y dx2 ... dxn*.
 
     The next family of symbols are all different types of *vectors*. Apart from requiring parameters
     such as *length* and *direction* (or optionally the coordinates of the end point), we also

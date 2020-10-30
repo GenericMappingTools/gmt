@@ -214,8 +214,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      [Default = 0 (1 for log-scales)]. Use +B if heights are measured relative to base [relative to origin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      To read the <base> value from file, specify +b with no trailing argument.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      For multi-band columns append +z<nbands>; then <nbands> z-values will\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      be read from file instead of just 1.  Use +Z if dz increments are given instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Multiband columns requires -C with one color per band (0, 1, ...).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      be read from file instead of just one.  Use +Z if dz increments are given instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Multiband columns requires -C with one color per band (values 0, 1, ...).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Ellipses: If not given, we read direction, major, and minor axis from columns 4-6.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SE rather than -Se is selected, %s will expect azimuth, and\n", mod_name);
 	GMT_Message (API, GMT_TIME_NONE, "\t     axes [in km], and convert azimuths based on map projection.\n");
@@ -296,7 +296,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL unsigned int psxyz_old_W_parser (struct GMTAPI_CTRL *API, struct PSXYZ_CTRL *Ctrl, char *text) {
+GMT_LOCAL unsigned int gmt_get_z_bands (struct GMTAPI_CTRL *API, struct PSXYZ_CTRL *Ctrl, char *text) {
 	unsigned int j = 0, n_errors = 0;
 	if (text[j] == '-') {Ctrl->W.pen.cptmode = 1; j++;}
 	if (text[j] == '+') {Ctrl->W.pen.cptmode = 3; j++;}
@@ -308,14 +308,6 @@ GMT_LOCAL unsigned int psxyz_old_W_parser (struct GMTAPI_CTRL *API, struct PSXYZ
 		n_errors++;
 	}
 	return n_errors;
-}
-
-GMT_LOCAL unsigned int psxyz_get_column_bands (struct GMT_SYMBOL *S) {
-	/* Report how many bands in the 3-D column */
-	unsigned int n_z = S->n_required;	/* z normallly not counted unless +z|Z was used, so this could be 0 */
-	if (S->base_set & 2 && n_z) n_z--;	/* Remove the base column item */
-	if (n_z == 0) n_z = 1;	/* 1 means singleband column */
-	return (n_z);
 }
 
 static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTION *options, struct GMT_SYMBOL *S) {
@@ -454,7 +446,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 					}
 					else {
 						GMT_Report (API, GMT_MSG_ERROR, "Your -W syntax is obsolete; see program usage.\n");
-						n_errors += psxyz_old_W_parser (API, Ctrl, opt->arg);
+						n_errors += gmt_get_z_bands (API, Ctrl, opt->arg);
 					}
 				}
 				else if (opt->arg[0] && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
@@ -496,8 +488,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Binary input data cannot have symbol information\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Option -W modifier +c requires the -C option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.anchor && (!Ctrl->G.active && !Ctrl->Z.active) && !Ctrl->L.outline, "Option -L<modifiers> must include +p<pen> if -G not given\n");
-	if (Ctrl->S.active && S->symbol == GMT_SYMBOL_COLUMN) {
-		n = psxyz_get_column_bands (S);
+	if (Ctrl->S.active && gmt_is_barcolumn (GMT, S)) {
+		n = gmt_get_columbar_bands (GMT, S);
 		n_errors += gmt_M_check_condition (GMT, n > 1 && !Ctrl->C.active, "Option -So|O with multiple layers requires -C\n");
 	}
 
@@ -699,7 +691,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 	}
 
-	if (get_rgb && S.symbol == GMT_SYMBOL_COLUMN && (n_z = psxyz_get_column_bands (&S)) > 1) get_rgb = rgb_from_z = false;	/* Not used in the same way here */
+	if (get_rgb && gmt_is_barcolumn (GMT, &S) && (n_z = gmt_get_columbar_bands (GMT, &S)) > 1) get_rgb = rgb_from_z = false;	/* Not used in the same way here */
 	if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols_start += 1;
 	if (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) n_cols_start += 2;
 
@@ -709,8 +701,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	ex3 = (rgb_from_z) ? 6 : 5;
 	pos2x = ex1 + GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd longitude (for VECTORS with two sets of coordinates) */
 	pos2y = ex2 - GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd latitude (for VECTORS with two sets of coordinates) */
-	if (S.symbol == GMT_SYMBOL_COLUMN) {
-		n_z = psxyz_get_column_bands (&S);	/* > 0 for multiband, else 0 */
+	if (gmt_is_barcolumn (GMT, &S)) {
+		n_z = gmt_get_columbar_bands (GMT, &S);	/* > 0 for multiband, else 0 */
 		n_needed = n_cols_start + ((n_z > 1) ? n_z - 1 : S.n_required);
 	}
 	else
@@ -986,8 +978,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					if ((error = gmt_parse_symbol_option (GMT, In->text, &S, 1, false))) {
 						Return (error);
 					}
-					if (S.symbol == GMT_SYMBOL_COLUMN) {
-						n_z = psxyz_get_column_bands (&S);
+					if (gmt_is_barcolumn (GMT, &S)) {
+						n_z = gmt_get_columbar_bands (GMT, &S);
 						if (n_z > 1 && !Ctrl->C.active) {
 							GMT_Report (API, GMT_MSG_ERROR, "The -So|O option with multiple layers requires -C - skipping this point\n");
 							continue;
@@ -1090,9 +1082,9 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &data[n].x, &data[n].y) || gmt_M_is_dnan(in[GMT_Z])) continue;	/* NaNs on input */
 			data[n].flag = S.convert_angles;
 			data[n].z = gmt_z_to_zz (GMT, in[GMT_Z]);
-			if (S.symbol == GMT_SYMBOL_COLUMN) {	/* Must allocate space for multiple z-values */
+			if (gmt_is_barcolumn (GMT, &S)) {	/* Must allocate space for multiple z-values */
 				bool skip = false;
-				n_z = psxyz_get_column_bands (&S);
+				n_z = gmt_get_columbar_bands (GMT, &S);
 				data[n].zz = gmt_M_memory (GMT, NULL, n_z, double);
 				if (S.accumulate == false) {
 					for (col = GMT_Z + 1, k = 1; k < n_z; k++, col++) {
