@@ -918,7 +918,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 
 	if (Ctrl->S.active && gmt_is_barcolumn (GMT, S)) {
 		j = gmt_get_columbar_bands (GMT, S);
-		n_errors += gmt_M_check_condition (GMT, j > 1 && !Ctrl->C.active, "Option -Sb|B with multiple layers requires -C\n");
+		n_errors += gmt_M_check_condition (GMT, j > 1 && !Ctrl->C.active, "Options -Sb|B with multiple layers require -C\n");
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -1570,6 +1570,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						}
 						xt = x_1;
 						xx = 0.0;
+						if (S.base_set & 4) xx += S.base;		/* Must add base to x start */
 						for (k = 0; k < n_z; k++) {	/* For each band in the column */
 							xb = xt;
 							if (Ctrl->C.active && n_z > 1) {	/* Must update band color based on band number k */
@@ -1581,11 +1582,10 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 								xx += in[kk];	/* Must get cumulate y value from dy increments */
 							else {
 								xx = in[kk];	/* Got actual y values */
-								if (S.base_set & 4) xx += base;		/* Must add base to y height */
+								if (S.base_set & 4) xx += S.base;		/* Must add base to y height */
 							}
 							gmt_geo_to_xy (GMT, xx, in[GMT_Y], &xt, &dummy);
 							PSL_plotbox (PSL, xb, y_1, xt, y_2);
-							base = xx;	/* Next base */
 						}
 						break;
 					case GMT_SYMBOL_BARY:
@@ -1601,6 +1601,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						}
 						yt = y_1;
 						yy = 0.0;
+						if (S.base_set & 4) yy += S.base;		/* Must add base to y height */
 						for (k = 0; k < n_z; k++) {	/* For each band in the column */
 							yb = yt;
 							if (Ctrl->C.active && n_z > 1) {	/* Must update band color based on band number k */
@@ -1611,11 +1612,10 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 								yy += in[GMT_Y+k];	/* Must get cumulate y value from dy increments */
 							else {
 								yy = in[GMT_Y+k];	/* Got actual y values */
-								if (S.base_set & 4) yy += base;		/* Must add base to y height */
+								if (S.base_set & 4) yy += S.base;		/* Must add base to y height */
 							}
 							gmt_geo_to_xy (GMT, in[GMT_X], yy, &dummy, &yt);
 							PSL_plotbox (PSL, x_1, yb, x_2, yt);
-							base = yy;	/* Next base */
 						}
 						break;
 					case PSL_CROSS:

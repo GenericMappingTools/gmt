@@ -490,7 +490,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.anchor && (!Ctrl->G.active && !Ctrl->Z.active) && !Ctrl->L.outline, "Option -L<modifiers> must include +p<pen> if -G not given\n");
 	if (Ctrl->S.active && gmt_is_barcolumn (GMT, S)) {
 		n = gmt_get_columbar_bands (GMT, S);
-		n_errors += gmt_M_check_condition (GMT, n > 1 && !Ctrl->C.active, "Option -So|O with multiple layers requires -C\n");
+		n_errors += gmt_M_check_condition (GMT, n > 1 && !Ctrl->C.active, "Options -Sb|B|o|O with multiple layers require -C\n");
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -590,8 +590,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	char s_args[GMT_BUFSIZ] = {""};
 
 	double dim[PSL_MAX_DIMS], rgb[3][4] = {{-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}};
-	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL, *v4_rgb = NULL;
-	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, zz, length, base, *z_for_cpt = NULL;
+	double DX = 0, DY = 0, dummy, *xp = NULL, *yp = NULL, *in = NULL, *v4_rgb = NULL;
+	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, zz, zb, length, base, *z_for_cpt = NULL;
 
 	struct GMT_PEN default_pen, current_pen, last_headpen, last_spiderpen;
 	struct GMT_FILL default_fill, current_fill, black, no_fill;
@@ -981,7 +981,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					if (gmt_is_barcolumn (GMT, &S)) {
 						n_z = gmt_get_columbar_bands (GMT, &S);
 						if (n_z > 1 && !Ctrl->C.active) {
-							GMT_Report (API, GMT_MSG_ERROR, "The -So|O option with multiple layers requires -C - skipping this point\n");
+							GMT_Report (API, GMT_MSG_ERROR, "The -Sb|B|o|O options with multiple layers require -C - skipping this point\n");
 							continue;
 						}
 					}
@@ -1084,19 +1084,30 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			data[n].z = gmt_z_to_zz (GMT, in[GMT_Z]);
 			if (gmt_is_barcolumn (GMT, &S)) {	/* Must allocate space for multiple z-values */
 				bool skip = false;
+				unsigned int kk;
 				n_z = gmt_get_columbar_bands (GMT, &S);
 				data[n].zz = gmt_M_memory (GMT, NULL, n_z, double);
 				if (S.accumulate == false) {
 					for (col = GMT_Z + 1, k = 1; k < n_z; k++, col++) {
 						if (in[col] < in[col-1]) {
-							GMT_Report (API, GMT_MSG_ERROR, "The -So|O option requires monotonically increasing z-values - not true near line %d\n", n_total_read);
+							GMT_Report (API, GMT_MSG_ERROR, "The -Sb|B|o|O options require monotonically increasing band-values - not true near line %d\n", n_total_read);
 							skip = true;
 						}
 					}
 				}
 				if (skip) continue;
-				for (col = GMT_Z, k = 0; k < n_z; k++, col++ )
-					data[n].zz[k] = gmt_z_to_zz (GMT, in[col]);
+				for (col = GMT_Z, k = 0; k < n_z; k++, col++ ) {
+					if (S.symbol == GMT_SYMBOL_BARX) {
+						kk = (k == 0) ? GMT_X : col;
+						gmt_geo_to_xy (GMT, in[GMT_X], in[kk], &data[n].zz[k], &dummy);
+					}
+					else if (S.symbol == GMT_SYMBOL_BARY) {
+						kk = (k == 0) ? GMT_Y : col;
+						gmt_geo_to_xy (GMT, in[col], in[GMT_Y], &dummy, &data[n].zz[k]);
+					}
+					else
+						data[n].zz[k] = gmt_z_to_zz (GMT, in[col]);
+				}
 				data[n].flag = S.accumulate;
 			}
 
@@ -1474,7 +1485,23 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							data[i].dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
 						}
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
-						PSL_plotbox (PSL, xpos[item], data[i].y - 0.5 * data[i].dim[0], data[i].dim[2], data[i].y + 0.5 * data[i].dim[0]);
+						base = data[i].dim[2];	zz = 0.0;
+						if (data[i].flag & 32) zz += base;		/* Must add base to t height */
+						for (k = 0; k < n_z; k++) {	/* For each band in the column */
+							zb = zz;
+							if (Ctrl->C.active && n_z > 1) {	/* Must update band color based on band number k */
+								gmt_get_fill_from_z (GMT, P, k+0.5, &data[i].f);
+								gmt_setfill (GMT, &data[i].f, data[i].outline);
+							}
+							if (data[i].flag & 1)
+								zz += data[i].zz[k];	/* Must get cumulate t value from dt increments */
+							else {
+								zz = data[i].zz[k];	/* Got actual t values */
+								if (data[i].flag & 32) zz += base;		/* Must add base to t height */
+							}
+							PSL_plotbox (PSL, zb, data[i].y - 0.5 * data[i].dim[0], zz, data[i].y + 0.5 * data[i].dim[0]);
+						}
+						if (item == last_time) gmt_M_free (GMT, data[i].zz);	/* Free column band array */
 						break;
 					case GMT_SYMBOL_BARY:
 						if (!Ctrl->N.active) in[GMT_Y] = MAX (GMT->common.R.wesn[YLO], MIN (data[i].y, GMT->common.R.wesn[YHI]));
@@ -1484,7 +1511,23 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							data[i].dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
 						}
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
-						PSL_plotbox (PSL, xpos[item] - 0.5 * data[i].dim[0], data[i].y, xpos[item] + 0.5 * data[i].dim[0], data[i].dim[2]);
+						base = data[i].dim[2];	zz = 0.0;
+						if (data[i].flag & 32) zz += base;		/* Must add base to t height */
+						for (k = 0; k < n_z; k++) {	/* For each band in the column */
+							zb = zz;
+							if (Ctrl->C.active && n_z > 1) {	/* Must update band color based on band number k */
+								gmt_get_fill_from_z (GMT, P, k+0.5, &data[i].f);
+								gmt_setfill (GMT, &data[i].f, data[i].outline);
+							}
+							if (data[i].flag & 1)
+								zz += data[i].zz[k];	/* Must get cumulate t value from dt increments */
+							else {
+								zz = data[i].zz[k];	/* Got actual t values */
+								if (data[i].flag & 32) zz += base;		/* Must add base to t height */
+							}
+							PSL_plotbox (PSL, xpos[item] - 0.5 * data[i].dim[0], zb, xpos[item] + 0.5 * data[i].dim[0], zz);
+						}
+						if (item == last_time) gmt_M_free (GMT, data[i].zz);	/* Free column band array */
 						break;
 					case GMT_SYMBOL_COLUMN:
 						if (data[i].flag & 4) {
