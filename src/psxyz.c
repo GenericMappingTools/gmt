@@ -294,7 +294,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is the required number of columns.\n");
 	GMT_Option (API, "c,di,e,f,g,h,i,p,qi,t");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For plotting symbols with variable transparency read from file, give no value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For plotting symbols with variable transparency read from file, append no value\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and give the transparency as the last numerical value in the data record.\n");
 	GMT_Option (API, ":,.");
 
 	return (GMT_MODULE_USAGE);
@@ -640,7 +641,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	char s_args[GMT_BUFSIZ] = {""};
 
 	double dim[PSL_MAX_DIMS], rgb[3][4] = {{-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}};
-	double DX = 0, DY = 0, dummy, *xp = NULL, *yp = NULL, *in = NULL, *v4_rgb = NULL;
+	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL, *v4_rgb = NULL;
 	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, zz, zb, length, base, *z_for_cpt = NULL;
 
 	struct GMT_PEN default_pen, current_pen, last_headpen, last_spiderpen;
@@ -1128,8 +1129,6 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			data[n].flag = S.convert_angles;
 			data[n].z = gmt_z_to_zz (GMT, in[GMT_Z]);
 			if (gmt_is_barcolumn (GMT, &S)) {	/* Must allocate space for multiple z-values */
-				bool skip = false;
-				unsigned int kk;
 				n_z = gmt_get_columbar_bands (GMT, &S);
 				data[n].zz = gmt_M_memory (GMT, NULL, n_z, double);
 				/* Accumulate increments, deal with any origin shifts, then project to final x, yy, zz coordinates depending on BARX, BARY, COLUMN */
