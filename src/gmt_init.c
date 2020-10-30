@@ -14981,12 +14981,12 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 
 		if ((c = strstr (text, "+z")) || (c = strstr (text, "+Z"))) {	/* Got +z|Z<nz> */
 			if (strchr ("uU", text[0])) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Symbol u|U does not support the +z+Z<nz> modifier\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Symbol u|U does not support the +z|Z<nz> modifier\n");
 				decode_error++;
 			}
 			else {	/* Only bars and columns have this feature */
 				if ((n_z = atoi (&c[2])) <= 0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Modifier +z+Z<nz> given bad value for <nz> (%d)\n", n_z);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Modifier +z|Z<nz> given bad value for <nz> (%d)\n", n_z);
 					decode_error++;
 				}
 				if (c[1] == 'Z') p->accumulate = true;	/* Getting dz1 dz2 ... etc and not z1 z1 ... */
@@ -14999,7 +14999,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				if (c[0]) strncat (text_cp, c, GMT_LEN256-1);	/* Append this modifier to text_cp */
 			}
 		}
-		else
+		else	/* Copy as is */
 			strncpy (text_cp, text, GMT_LEN256-1);
 		for (j = 1; text_cp[j]; j++) {	/* Look at chars following the symbol code */
 			if (text_cp[j] == '/') slash = j;

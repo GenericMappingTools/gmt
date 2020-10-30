@@ -1465,10 +1465,6 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				else
 					PSL_command (PSL, "/QR_outline false def\n");
 			}
-			if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & GMT_BASE_ORIGIN))
-				in[GMT_X] += S.base;
-			else if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & GMT_BASE_ORIGIN))
-				in[GMT_Y] += S.base;
 
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 

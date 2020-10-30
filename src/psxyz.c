@@ -210,6 +210,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      Use +B instead if heights are measured relative to base [relative to origin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Use -SB for horizontal bars; then <base> value refers to the x location.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      To read the <base> value from file, specify +b with no trailing argument.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      For multi-band bars append +z<nbands>; then <nbands> y-values will\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      be read from file instead of just one.  Use +Z if dy increments are given instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Multiband bars requires -C with one color per band (values 0, 1, ...).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      For -SB the input band values are x (or dx) values instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   3-D Column: Append +b[<base>] to give the z-value of the base of the column\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      [Default = 0 (1 for log-scales)]. Use +B if heights are measured relative to base [relative to origin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      To read the <base> value from file, specify +b with no trailing argument.\n");
@@ -569,6 +573,52 @@ GMT_LOCAL bool psxyz_no_z_variation (struct GMT_CTRL *GMT, struct GMT_DATASEGMEN
 		if (!doubleAlmostEqualZero (L->data[GMT_Z][row], L->data[GMT_Z][row-1])) return false;
 	}
 	return (true);
+}
+
+GMT_LOCAL bool psxyz_load_bands (struct GMT_CTRL *GMT, double *in, double *out, unsigned int n, uint64_t rec, struct GMT_SYMBOL *S) {
+	/* Accumulate and project to projected values */
+	unsigned int k, kk, col;
+	double xx, yy;
+
+	for (col = GMT_Z, k = 0; k < n; k++, col++ ) {	/* Place the x, y, z OR dx, dy, or dz increments in the out array */
+		if (S->symbol == GMT_SYMBOL_BARX)	/* Must pick first x, then what follows z */
+			kk = (k == 0) ? GMT_X : col;
+		else if (S->symbol == GMT_SYMBOL_BARY)	/* Must pick first y, then what follows z */
+			kk = (k == 0) ? GMT_Y : col;
+		else	/* just pick z columns */
+			kk = col;
+		out[k] = in[kk];
+	}
+	if (S->accumulate) {	/* Do the accumulation of increments into absolute values */
+		for (k = 1; k < n; k++)
+			out[k] += out[k-1];
+	}
+	if (S->base_set & GMT_BASE_ORIGIN) {	/* Add the new origin offset */
+		for (k = 0; k < n; k++)
+			out[k] += S->base;
+	}
+	/* Now we have final x1, x2, x3... or y1, y2, y3..., or z1, z2, z3... in the data array in user units */
+
+	for (k = 1; k < n; k++) {	/* Check things are monotonically increasing */
+		if (out[k] < out[k-1]) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "The -Sb|B|o|O options require monotonically increasing band-values - not true near line %d\n", rec);
+			return true;
+		}
+	}
+	/* Now project the data values to projected units */
+	for (k = 0; k < n; k++) {
+		if (S->symbol == GMT_SYMBOL_BARX) {	/* Project and keep the projected x values */
+			gmt_geo_to_xy (GMT, out[k], in[GMT_Y], &xx, &yy);
+			out[k] = xx;
+		}
+		else if (S->symbol == GMT_SYMBOL_BARY) {	/* Project and keep the projected y values */
+			gmt_geo_to_xy (GMT, in[GMT_X], out[k], &xx, &yy);
+			out[k] = yy;
+		}
+		else	/* Just get the projected z values */
+			out[k] = gmt_z_to_zz (GMT, out[k]);
+	}
+	return false;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -1074,11 +1124,6 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 
 			if (n == n_alloc) data = gmt_M_malloc (GMT, data, n, &n_alloc, struct PSXYZ_DATA);
 
-			if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & GMT_BASE_ORIGIN))
-				in[GMT_X] += S.base;
-			else if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & GMT_BASE_ORIGIN))
-				in[GMT_Y] += S.base;
-
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &data[n].x, &data[n].y) || gmt_M_is_dnan(in[GMT_Z])) continue;	/* NaNs on input */
 			data[n].flag = S.convert_angles;
 			data[n].z = gmt_z_to_zz (GMT, in[GMT_Z]);
@@ -1087,28 +1132,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				unsigned int kk;
 				n_z = gmt_get_columbar_bands (GMT, &S);
 				data[n].zz = gmt_M_memory (GMT, NULL, n_z, double);
-				if (S.accumulate == false) {
-					for (col = GMT_Z + 1, k = 1; k < n_z; k++, col++) {
-						if (in[col] < in[col-1]) {
-							GMT_Report (API, GMT_MSG_ERROR, "The -Sb|B|o|O options require monotonically increasing band-values - not true near line %d\n", n_total_read);
-							skip = true;
-						}
-					}
-				}
-				if (skip) continue;
-				for (col = GMT_Z, k = 0; k < n_z; k++, col++ ) {
-					if (S.symbol == GMT_SYMBOL_BARX) {
-						kk = (k == 0) ? GMT_X : col;
-						gmt_geo_to_xy (GMT, in[GMT_X], in[kk], &data[n].zz[k], &dummy);
-					}
-					else if (S.symbol == GMT_SYMBOL_BARY) {
-						kk = (k == 0) ? GMT_Y : col;
-						gmt_geo_to_xy (GMT, in[col], in[GMT_Y], &dummy, &data[n].zz[k]);
-					}
-					else
-						data[n].zz[k] = gmt_z_to_zz (GMT, in[col]);
-				}
-				data[n].flag = S.accumulate;
+				/* Accumulate increments, deal with any origin shifts, then project to final x, yy, zz coordinates depending on BARX, BARY, COLUMN */
+				if (psxyz_load_bands (GMT, in, data[n].zz, n_z, n_total_read, &S)) continue;
 			}
 
 			if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && !S.par_set) {	/* Ellipses or rectangles */
@@ -1485,20 +1510,14 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							data[i].dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
 						}
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
-						base = data[i].dim[2];	zz = 0.0;
-						if (data[i].flag & 32) zz += base;		/* Must add base to t height */
+						zz = data[i].dim[2];	/* Projected x-value of start of bar */
 						for (k = 0; k < n_z; k++) {	/* For each band in the column */
 							zb = zz;
 							if (Ctrl->C.active && n_z > 1) {	/* Must update band color based on band number k */
 								gmt_get_fill_from_z (GMT, P, k+0.5, &data[i].f);
 								gmt_setfill (GMT, &data[i].f, data[i].outline);
 							}
-							if (data[i].flag & 1)
-								zz += data[i].zz[k];	/* Must get cumulate t value from dt increments */
-							else {
-								zz = data[i].zz[k];	/* Got actual t values */
-								if (data[i].flag & 32) zz += base;		/* Must add base to t height */
-							}
+							zz = data[i].zz[k];	/* Projected x-values */
 							PSL_plotbox (PSL, zb, data[i].y - 0.5 * data[i].dim[0], zz, data[i].y + 0.5 * data[i].dim[0]);
 						}
 						if (item == last_time) gmt_M_free (GMT, data[i].zz);	/* Free column band array */
@@ -1511,20 +1530,14 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							data[i].dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
 						}
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
-						base = data[i].dim[2];	zz = 0.0;
-						if (data[i].flag & 32) zz += base;		/* Must add base to t height */
+						zz = data[i].dim[2];	/* Projected y-value of start of bar */
 						for (k = 0; k < n_z; k++) {	/* For each band in the column */
 							zb = zz;
 							if (Ctrl->C.active && n_z > 1) {	/* Must update band color based on band number k */
 								gmt_get_fill_from_z (GMT, P, k+0.5, &data[i].f);
 								gmt_setfill (GMT, &data[i].f, data[i].outline);
 							}
-							if (data[i].flag & 1)
-								zz += data[i].zz[k];	/* Must get cumulate t value from dt increments */
-							else {
-								zz = data[i].zz[k];	/* Got actual t values */
-								if (data[i].flag & 32) zz += base;		/* Must add base to t height */
-							}
+							zz = data[i].zz[k];	/* Projected y-values */
 							PSL_plotbox (PSL, xpos[item] - 0.5 * data[i].dim[0], zb, xpos[item] + 0.5 * data[i].dim[0], zz);
 						}
 						if (item == last_time) gmt_M_free (GMT, data[i].zz);	/* Free column band array */
@@ -1544,7 +1557,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 						}
 						else
 							dim[1] = data[i].dim[1];
-						base = data[i].dim[2];	zz = 0.0;
+						base = data[i].dim[2];	/* Projected z-value of start of column */
 						for (k = 0; k < n_z; k++) {	/* For each band in the column */
 							if (Ctrl->C.active && n_z > 1) {
 								/* Must update band color based on band number k */
@@ -1554,13 +1567,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 									if (S.shade3D) gmt_illuminate (GMT, lux[j], rgb[j]);
 								}
 							}
-							if (data[i].flag & 1)
-								zz += data[i].zz[k];	/* Must get cumulate z value from dz increments */
-							else {
-								zz = data[i].zz[k];	/* Got actual z values */
-								if (data[i].flag & 32) zz += base;		/* Must add base to z height */
-							}
-							dim[2] = fabs (zz - base);	/* band height */
+							zz = data[i].zz[k];	/* Projected z-values */
+							dim[2] = fabs (zz - base);	/* band height in projected units */
 							psxyz_column3D (GMT, PSL, xpos[item], data[i].y, (zz + base) / 2.0, dim, rgb, data[i].outline);
 							base = zz;	/* Next base */
 						}
