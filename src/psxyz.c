@@ -826,8 +826,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		}
 	}
 	bcol = (S.read_size) ? ex2 : ex1;
-	if (S.symbol == GMT_SYMBOL_BARX && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
-	if (S.symbol == GMT_SYMBOL_BARY && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
+	if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & GMT_BASE_READ)) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
+	if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & GMT_BASE_READ)) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	if (penset_OK) gmt_setpen (GMT, &current_pen);
 	QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
@@ -1074,9 +1074,9 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 
 			if (n == n_alloc) data = gmt_M_malloc (GMT, data, n, &n_alloc, struct PSXYZ_DATA);
 
-			if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & 4))
+			if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & GMT_BASE_ORIGIN))
 				in[GMT_X] += S.base;
-			else if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & 4))
+			else if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & GMT_BASE_ORIGIN))
 				in[GMT_Y] += S.base;
 
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &data[n].x, &data[n].y) || gmt_M_is_dnan(in[GMT_Z])) continue;	/* NaNs on input */
@@ -1118,7 +1118,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					in2[ex2] = in2[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
 			}
 
-			if (S.base_set & 2) {	/* Got base from input column */
+			if (S.base_set & GMT_BASE_READ) {	/* Got base from input column */
 				bcol = (S.read_size) ? ex2 : ex1;
 				if (S.symbol == GMT_SYMBOL_COLUMN)
 					bcol += S.n_required - 1;	/* Since we have z1 z2 ... z2 base */
@@ -1130,7 +1130,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				S.size_y = in[ex2];
 				if (delayed_unit_scaling[GMT_Y]) S.size_y *= GMT->session.u2u[S.u][GMT_INCH];
 			}
-			if (S.base_set & 4) data[n].flag |= 32;	/* Flag that base needs to be added to height(s) */
+			if (S.base_set & GMT_BASE_ORIGIN) data[n].flag |= 32;	/* Flag that base needs to be added to height(s) */
 
 			if (Ctrl->W.cpt_effect) {
 				if (Ctrl->W.pen.cptmode & 1) {	/* Change pen color via CPT */

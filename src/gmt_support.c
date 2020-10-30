@@ -17269,7 +17269,7 @@ unsigned int gmt_get_columbar_bands (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S)
 	/* Report how many bands in the 3-D column */
 	unsigned int n_z = S->n_required;	/* z normally not counted unless +z|Z was used, so this could be 0 */
 	gmt_M_unused (GMT);
-	if (S->base_set & 2 && n_z) n_z--;	/* Remove the base column item */
+	if ((S->base_set & GMT_BASE_READ) && n_z) n_z--;	/* Remove the base column item */
 	if (n_z == 0) n_z = 1;	/* 1 means single band column */
 	return (n_z);
 }

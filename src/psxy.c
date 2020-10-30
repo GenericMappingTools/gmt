@@ -1199,8 +1199,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 	}
 	bcol = (S.read_size) ? ex2 : ex1;
-	if (S.symbol == GMT_SYMBOL_BARX && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_X));
-	if (S.symbol == GMT_SYMBOL_BARY && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
+	if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & GMT_BASE_READ)) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_X));
+	if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & GMT_BASE_READ)) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0)
 		gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
 	else if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && S.convert_angles && !S.par_set) {
@@ -1465,9 +1465,9 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				else
 					PSL_command (PSL, "/QR_outline false def\n");
 			}
-			if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & 4))
+			if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & GMT_BASE_ORIGIN))
 				in[GMT_X] += S.base;
-			else if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & 4))
+			else if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & GMT_BASE_ORIGIN))
 				in[GMT_Y] += S.base;
 
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
@@ -1531,7 +1531,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					in[ex2] = in[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
 			}
 
-			if (S.base_set & 2) {
+			if (S.base_set & GMT_BASE_READ) {
 				bcol = (S.read_size) ? ex2 : ex1;
 				S.base = in[bcol];	/* Got base from input column */
 			}
@@ -1570,7 +1570,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						}
 						xt = x_1;
 						xx = 0.0;
-						if (S.base_set & 4) xx += S.base;		/* Must add base to x start */
+						if (S.base_set & GMT_BASE_ORIGIN) xx += S.base;		/* Must add base to x start */
 						for (k = 0; k < n_z; k++) {	/* For each band in the column */
 							xb = xt;
 							if (Ctrl->C.active && n_z > 1) {	/* Must update band color based on band number k */
@@ -1582,7 +1582,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 								xx += in[kk];	/* Must get cumulate y value from dy increments */
 							else {
 								xx = in[kk];	/* Got actual y values */
-								if (S.base_set & 4) xx += S.base;		/* Must add base to y height */
+								if (S.base_set & GMT_BASE_ORIGIN) xx += S.base;		/* Must add base to y height */
 							}
 							gmt_geo_to_xy (GMT, xx, in[GMT_Y], &xt, &dummy);
 							PSL_plotbox (PSL, xb, y_1, xt, y_2);
@@ -1601,7 +1601,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						}
 						yt = y_1;
 						yy = 0.0;
-						if (S.base_set & 4) yy += S.base;		/* Must add base to y height */
+						if (S.base_set & GMT_BASE_ORIGIN) yy += S.base;		/* Must add base to y height */
 						for (k = 0; k < n_z; k++) {	/* For each band in the column */
 							yb = yt;
 							if (Ctrl->C.active && n_z > 1) {	/* Must update band color based on band number k */
@@ -1612,7 +1612,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 								yy += in[GMT_Y+k];	/* Must get cumulate y value from dy increments */
 							else {
 								yy = in[GMT_Y+k];	/* Got actual y values */
-								if (S.base_set & 4) yy += S.base;		/* Must add base to y height */
+								if (S.base_set & GMT_BASE_ORIGIN) yy += S.base;		/* Must add base to y height */
 							}
 							gmt_geo_to_xy (GMT, in[GMT_X], yy, &dummy, &yt);
 							PSL_plotbox (PSL, x_1, yb, x_2, yt);

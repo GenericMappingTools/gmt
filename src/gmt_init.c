@@ -15177,13 +15177,13 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 			if (bset) {
 				if (text[bset+1] == '\0') {	/* Read it from data file (+ means probably +z<col>) */
-					p->base_set = 2;
+					p->base_set = GMT_BASE_READ;
 					p->n_required = 1;
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {
 					if (gmtinit_get_uservalue (GMT, &text[bset+1], gmt_M_type (GMT, GMT_IN, GMT_X), &p->base, "-SB base value")) return GMT_PARSE_ERROR;
-					p->base_set = 1;
+					p->base_set = GMT_BASE_ARG;
 				}
 			}
 			break;
@@ -15196,13 +15196,13 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			if (bset) {
 				if (p->user_unit[GMT_Y]) text_cp[strlen(text_cp)-1] = '\0';	/* Chop off u */
 				if (text_cp[bset+1] == '\0') {	/* Read it from data file */
-					p->base_set = 2;
+					p->base_set = GMT_BASE_READ;
 					p->n_required = 1;
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {
 					if (gmtinit_get_uservalue (GMT, &text_cp[bset+1], gmt_M_type (GMT, GMT_IN, GMT_Y), &p->base, "-Sb base value")) return GMT_PARSE_ERROR;
-					p->base_set = 1;
+					p->base_set = GMT_BASE_ARG;
 				}
 			}
 			break;
@@ -15445,13 +15445,13 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 			if (bset) {
 				if (text[bset+1] == '\0' || text[bset+1] == '+') {	/* Read it from data file */
-					p->base_set = 2;
+					p->base_set = GMT_BASE_READ;
 					p->n_required ++;
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {
 					if (gmtinit_get_uservalue (GMT, &text[bset+1], gmt_M_type (GMT, GMT_IN, GMT_Z), &p->base, "-So|O base value")) return GMT_PARSE_ERROR;
-					p->base_set = 1;
+					p->base_set = GMT_BASE_ARG;
 				}
 			}
 			if (mode == 0) {
@@ -15730,7 +15730,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		p->base = (GMT->current.proj.xyz_projection[GMT_Y] == GMT_LOG10) ? 1.0 : 0.0;
 	else if (p->symbol == GMT_SYMBOL_COLUMN)
 		p->base = (GMT->current.proj.xyz_projection[GMT_Z] == GMT_LOG10) ? 1.0 : 0.0;
-	if (add_to_base) p->base_set |= 4;	/* Means to add base value to height offset to get actual z at top */
+	if (add_to_base) p->base_set |= GMT_BASE_ORIGIN;	/* Means to add base value to height offset to get actual z at top */
 	return (decode_error);
 }
 

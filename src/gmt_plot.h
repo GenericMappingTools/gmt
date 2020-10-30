@@ -82,6 +82,13 @@ enum GMT_enum_wedgetype {GMT_WEDGE_NORMAL = 0,
 	GMT_WEDGE_RADII = 2,
 	GMT_WEDGE_SPIDER = 3};
 
+/*! Type of symbol base value */
+
+enum GMT_enum_basetype {GMT_BASE_MIN = 0,	/* Bar starts at the minimum value in -R */
+	GMT_BASE_ARG = 1,		/* Base given via +b<base> */
+	GMT_BASE_READ = 2,		/* Base read from file due to +b */
+	GMT_BASE_ORIGIN = 4};		/* For +z|Z: All values relative to given base */
+
 /*! A sub-symbol for symbols along a front */
 struct GMT_FRONTLINE {
 	double f_gap;		/* Gap between front symbols in inches */
