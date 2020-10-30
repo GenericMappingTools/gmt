@@ -7,7 +7,8 @@
 
         Both the cube and column symbols are 3-D, and can have their colors
         modulated based on the view point (lower case **u** and **o**) or be
-        of uniform color (upper case **U** and **O**).
+        of uniform color (upper case **U** and **O**). The column may also
+        be multiband using the **+z**\|\ **Z** modifier.
 
     **-So**\ *size*\ [**c**\|\ **i**\|\ **p**\|\ **u**][**+b**\ \|\ **B**\ [*base*]]
         c\ **o**\ lumn (3-D) extending from *base* to *z*.  The *size* sets base width

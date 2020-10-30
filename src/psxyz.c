@@ -703,7 +703,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	pos2y = ex2 - GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd latitude (for VECTORS with two sets of coordinates) */
 	if (gmt_is_barcolumn (GMT, &S)) {
 		n_z = gmt_get_columbar_bands (GMT, &S);	/* > 0 for multiband, else 0 */
-		n_needed = n_cols_start + ((n_z > 1) ? n_z - 1 : S.n_required);
+		n_needed = n_cols_start + ((n_z > 1) ? n_z - 2 : S.n_required);
 	}
 	else
 		n_needed = n_cols_start + S.n_required;
