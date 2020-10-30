@@ -14979,10 +14979,6 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		/* Column:	-So|O[<size_x>[c|i|p|u][/<ysize>[c|i|p|u]]][+b|B[<base>]][+z|Z<nz>]	*/
 		/* Cube:	-Su|U[<size_x>[c|i|p|u]]	*/
 
-		for (j = 1; text[j]; j++) {	/* Look at chars following the symbol code */
-			if (text[j] == '/') slash = j;
-			if (text[j] == 'b' || text[j] == 'B') bset = j;	/* Basically not worry about +b|B vs b|B by just checking for b|B */
-		}
 		if ((c = strstr (text, "+z")) || (c = strstr (text, "+Z"))) {	/* Got +z|Z<nz> */
 			if (strchr ("uU", text[0])) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Symbol u|U does not support the +z+Z<nz> modifier\n");
@@ -14994,11 +14990,21 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					decode_error++;
 				}
 				if (c[1] == 'Z') p->accumulate = true;	/* Getting dz1 dz2 ... etc and not z1 z1 ... */
-				c[0] = '\0';	/* Temporarily chop this off... */
+				/* Must deal with situations where +b|B is given before +z|Z or vice versa */
+				c[0] = '\0';	/* Temporarily chop off the +z|Z modifier... */
+				strncpy (text_cp, text, GMT_LEN256-1);	/* Copy over everything up to +z|z */
+				c[0] = '+';	/* Restore modifier */
+				c++;	/* Move past the plus sign */
+				while (c[0] && c[0] != '+') c++;	/* Scan to end of text or to start of next modifier +b|B */
+				if (c[0]) strncat (text_cp, c, GMT_LEN256-1);	/* Append this modifier to text_cp */
 			}
 		}
-		strncpy (text_cp, text, GMT_LEN256-1);
-		if (c) c[0] = '+';	/* ...and restore it */
+		else
+			strncpy (text_cp, text, GMT_LEN256-1);
+		for (j = 1; text_cp[j]; j++) {	/* Look at chars following the symbol code */
+			if (text_cp[j] == '/') slash = j;
+			if (text_cp[j] == 'b' || text_cp[j] == 'B') bset = j;	/* Basically not worry about +b|B vs b|B by just checking for b|B */
+		}
 		if (bset) {	/* Chop off the b|B<base> from copy to avoid confusion when parsing.  <base> is always in user units */
 			if (text_cp[bset] == 'B') add_to_base = true;
 			if (text_cp[bset-1] == '+')	/* Gave +b|B */
