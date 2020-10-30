@@ -14975,24 +14975,25 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	}
 	else if (strchr (bar_symbols[mode], (int) text[0])) {	/* Bar, column, cube with size */
 
-		/* Bar:		-Sb|B[<size_x|size_y>[c|i|p|u]][+b|B[<base>]][+z|Z<nz>]				*/
-		/* Column:	-So|O[<size_x>[c|i|p|u][/<ysize>[c|i|p|u]]][+b|B[<base>]][+z|Z<nz>]	*/
+		/* Bar:		-Sb|B[<size_x|size_y>[c|i|p|u]][+b|B[<base>]][+v|i<nz>]				*/
+		/* Column:	-So|O[<size_x>[c|i|p|u][/<ysize>[c|i|p|u]]][+b|B[<base>]][+v|i<nz>]	*/
 		/* Cube:	-Su|U[<size_x>[c|i|p|u]]	*/
 
-		if ((c = strstr (text, "+z")) || (c = strstr (text, "+Z"))) {	/* Got +z|Z<nz> */
+		/* Also worry about backwards handlig of +z|Z, now +v|i */
+		if ((c = strstr (text, "+v")) || (c = strstr (text, "+i")) || (c = strstr (text, "+z")) || (c = strstr (text, "+Z"))) {	/* Got +z|Z<nz> */
 			if (strchr ("uU", text[0])) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Symbol u|U does not support the +z|Z<nz> modifier\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Symbol u|U does not support the +%c<nz> modifier\n", c[1]);
 				decode_error++;
 			}
 			else {	/* Only bars and columns have this feature */
 				if ((n_z = atoi (&c[2])) <= 0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Modifier +z|Z<nz> given bad value for <nz> (%d)\n", n_z);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Modifier +%c<nz> given bad value for <nz> (%d)\n", c[1], n_z);
 					decode_error++;
 				}
-				if (c[1] == 'Z') p->accumulate = true;	/* Getting dz1 dz2 ... etc and not z1 z1 ... */
-				/* Must deal with situations where +b|B is given before +z|Z or vice versa */
-				c[0] = '\0';	/* Temporarily chop off the +z|Z modifier... */
-				strncpy (text_cp, text, GMT_LEN256-1);	/* Copy over everything up to +z|z */
+				if (c[1]== 'i' || c[1] == 'Z') p->accumulate = true;	/* Getting dv1 dv2 ... etc and not v1 v1 ... */
+				/* Must deal with situations where +b|B is given before +v|i|z|Z or vice versa */
+				c[0] = '\0';	/* Temporarily chop off the +i+v+z|Z modifier... */
+				strncpy (text_cp, text, GMT_LEN256-1);	/* Copy over everything up to +v|i|z|Z */
 				c[0] = '+';	/* Restore modifier */
 				c++;	/* Move past the plus sign */
 				while (c[0] && c[0] != '+') c++;	/* Scan to end of text or to start of next modifier +b|B */

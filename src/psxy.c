@@ -522,10 +522,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      Use upper case -SB for horizontal bars (<base> then refers to x\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      and width may be in y-units [Default is vertical]. To read the <base>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      value from file, specify +b with no trailing value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      For multi-band bars append +z<nbands>; then <nbands> y-values will\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      be read from file instead of just one.  Use +Z if dy increments are given instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      For multi-band bars append +v<nbands>; then <nbands> values will\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      be read from file instead of just one.  Use +i if value increments are given instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Multiband bars requires -C with one color per band (values 0, 1, ...).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      For -SB the input band values are x (or dx) values instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      For -SB the input band values are x (or dx) values instead of y (or d).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Decorated line: Give [d|f|l|n|s|x]<info>[:<symbolinfo>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     <code><info> controls placement of a symbol along lines.  Select\n");
 	gmt_cont_syntax (API->GMT, 7, 2);
