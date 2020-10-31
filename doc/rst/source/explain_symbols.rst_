@@ -204,11 +204,12 @@
         value. If *base* is not appended then we read it from the last input
         data column.  Use **+B**\ [*base*] if the bar height is measured relative
         to *base* [Relative to origin]. Normally, the bar requires a single input *y*-value.
-        To plot multi-band bars, please append **+v**\|\ i**\ *ny*, where *ny indicates the
-        total number of bands in the bar.  Here, **i** means we must accumulate the
-        bar value from the increments *dy* while **v** means we get the absolute
-        values. Multiband bars requires **-C** with one color per band (value = 0, 1, ...).
-        Thus, input records are *x y1 y2 ... yn* or *x dy1 dy2 ... dyn*.
+        To plot multi-band bars, please append **+v**\|\ **i**\ *ny*, where *ny* indicates the
+        total number of bands in the bar.  Here, **+i** means we must accumulate the
+        bar values from the increments *dy*, while **+v** means we get the complete
+        values relative to *base*. Multiband bars requires **-C** with one color per band
+        (CPT z-values must be 0, 1, ..., *ny* - 1).
+        Thus, input records are either (*x y1 y2 ... yn*) or (*x dy1 dy2 ... dyn*).
 
     **-SB**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *nx*]
         Horizontal **b**\ ar extending from *base* to x. The *size* is bar width.
@@ -217,11 +218,12 @@
         value. If *base* is not appended then we read it from the last input
         data column.  Use **+B**\ [*base*] if the bar length is measured relative
         to *base* [Relative to origin]. Normally, the bar requires a single input *x*-value.
-        To plot multi-band bars, please append **+v**\|\ i**\ *ny*, where *ny indicates the
-        total number of bands in the bar.  Here, **i** means we must accumulate the
-        bar value from the increments *dx* while **v** means we get the absolute
-        values. Multiband bars requires **-C** with one color per band (value = 0, 1, ...).
-        Thus, input records are *x1 y x2 ... xn* or *dx1 y dx2 ... dxn*.
+        To plot multi-band bars, please append **+v**\|\ **i**\ *nx*, where *nx* indicates the
+        total number of bands in the bar.  Here, **+i** means we must accumulate the
+        bar value from the increments *dx*, while **+v** means we get the complete
+        values relative to *base*. Multiband bars requires **-C** with one color per band
+        (CPT z-values must be 0, 1, ..., *nx* - 1).
+        Thus, input records are either (*x1 y x2 ... xn*) or (*dx1 y dx2 ... dxn*).
 
     The next family of symbols are all different types of *vectors*. Apart from requiring parameters
     such as *length* and *direction* (or optionally the coordinates of the end point), we also
