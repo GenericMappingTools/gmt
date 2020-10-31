@@ -526,6 +526,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      be read from file instead of just one.  Use +i if value increments are given instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Multiband bars requires -C with one color per band (values 0, 1, ...).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      For -SB the input band values are x (or dx) values instead of y (or d).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Normally, multiband bars are stacked on top of each other.  For side-by-side placement instead,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      append +s[<gap>], where optional <gap> is gaps between bars in fraction (or percent) of <size> [no gap].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Decorated line: Give [d|f|l|n|s|x]<info>[:<symbolinfo>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     <code><info> controls placement of a symbol along lines.  Select\n");
 	gmt_cont_syntax (API->GMT, 7, 2);
@@ -1636,8 +1638,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 								PSL_plotbox (PSL, x_2, yb, x_2 + bar_width, yt);
 							}
 							else {	/* Plot sections on top of previous sections */
-								gmt_geo_to_xy (GMT, in[GMT_X], yy, &dummy, &yt);
 								yb = yt;
+								gmt_geo_to_xy (GMT, in[GMT_X], yy, &dummy, &yt);
 								PSL_plotbox (PSL, x_1, yb, x_2, yt);
 							}
 						}

@@ -214,6 +214,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      be read from file instead of just one.  Use +i if value increments are given instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Multiband bars requires -C with one color per band (values 0, 1, ...).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      For -SB the input band values are x (or dx) values instead of y (or dy).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Normally, multiband bars are stacked on top of each other.  For side-by-side placement instead,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      append +s[<gap>], where optional <gap> is gaps between bars in fraction (or percent) of <size> [no gap].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   3-D Column: Append +b[<base>] to give the z-value of the base of the column\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      [Default = 0 (1 for log-scales)]. Use +B if heights are measured relative to base [relative to origin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      To read the <base> value from file, specify +b with no trailing argument.\n");
@@ -643,6 +645,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	double dim[PSL_MAX_DIMS], rgb[3][4] = {{-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}};
 	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL, *v4_rgb = NULL;
 	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, zz, zb, length, base, *z_for_cpt = NULL;
+	double bar_gap, bar_width, bar_step;
 
 	struct GMT_PEN default_pen, current_pen, last_headpen, last_spiderpen;
 	struct GMT_FILL default_fill, current_fill, black, no_fill;
@@ -1136,9 +1139,13 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 			if (gmt_is_barcolumn (GMT, &S)) {	/* Must allocate space for multiple z-values */
 				n_z = gmt_get_columbar_bands (GMT, &S);
-				data[n].zz = gmt_M_memory (GMT, NULL, n_z, double);
+				data[n].zz = gmt_M_memory (GMT, NULL, n_z + S.sidebyside, double);	/* If sidebyside then zz[nz] has the gap */
 				/* Accumulate increments, deal with any origin shifts, then project to final x, yy, zz coordinates depending on BARX, BARY, COLUMN */
 				if (psxyz_load_bands (GMT, in, data[n].zz, n_z, n_total_read, &S)) continue;
+				if (S.sidebyside) {
+					 data[n].flag |= 64;
+					 data[n].zz[n_z] = S.gap;
+				}
 			}
 
 			if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && !S.par_set) {	/* Ellipses or rectangles */
@@ -1509,15 +1516,28 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							data[i].dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
 						}
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
-						zz = data[i].dim[2];	/* Projected x-value of start of bar */
+						zz = zb = data[i].dim[2];	/* Projected x-value of start of bar */
+						if (data[i].flag & 64) {	/* Compute skinny bar width and gaps */
+							bar_gap = data[i].dim[0] * data[i].zz[n_z] * 0.01;	/* Total width of all gaps */
+							bar_width = (data[i].dim[0] - bar_gap) / n_z;	/* Width of individual skinny bars */
+							bar_gap /= (n_z - 1);	/* Width of individual gap */
+							bar_step = bar_width + bar_gap;	/* Spacing between start of each bar */
+							y_1 = data[i].y - 0.5 * data[i].dim[0] - 0.5 * data[i].dim[0];
+						}
 						for (k = 0; k < n_z; k++) {	/* For each band in the column */
-							zb = zz;
 							if (Ctrl->C.active && n_z > 1) {	/* Must update band color based on band number k */
 								gmt_get_fill_from_z (GMT, P, k+0.5, &data[i].f);
 								gmt_setfill (GMT, &data[i].f, data[i].outline);
 							}
-							zz = data[i].zz[k];	/* Projected x-values */
-							PSL_plotbox (PSL, zb, data[i].y - 0.5 * data[i].dim[0], zz, data[i].y + 0.5 * data[i].dim[0]);
+							if (data[i].flag & 64) {	/* Sidebyside */
+								y_2 = y_1 + bar_step * k;	/* Recycle y_2 as bottom point on skinny bar k */
+								PSL_plotbox (PSL, zb, y_2, data[i].zz[k], y_2 + bar_width);
+							}
+							else {
+								zb = zz;
+								zz = data[i].zz[k];	/* Projected x-values */
+								PSL_plotbox (PSL, zb, data[i].y - 0.5 * data[i].dim[0], zz, data[i].y + 0.5 * data[i].dim[0]);
+							}
 						}
 						if (item == last_time) gmt_M_free (GMT, data[i].zz);	/* Free column band array */
 						break;
@@ -1529,15 +1549,28 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							data[i].dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
 						}
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
-						zz = data[i].dim[2];	/* Projected y-value of start of bar */
+						zz = zb = data[i].dim[2];	/* Projected y-value of start of bar */
+						if (data[i].flag & 64) {	/* Compute skinny bar width and gaps */
+							bar_gap = data[i].dim[0] * data[i].zz[n_z] * 0.01;	/* Total width of all gaps */
+							bar_width = (data[i].dim[0] - bar_gap) / n_z;	/* Width of individual skinny bars */
+							bar_gap /= (n_z - 1);	/* Width of individual gap */
+							bar_step = bar_width + bar_gap;	/* Spacing between start of each bar */
+							x_1 = xpos[item] - 0.5 * data[i].dim[0];
+						}
 						for (k = 0; k < n_z; k++) {	/* For each band in the column */
-							zb = zz;
 							if (Ctrl->C.active && n_z > 1) {	/* Must update band color based on band number k */
 								gmt_get_fill_from_z (GMT, P, k+0.5, &data[i].f);
 								gmt_setfill (GMT, &data[i].f, data[i].outline);
 							}
-							zz = data[i].zz[k];	/* Projected y-values */
-							PSL_plotbox (PSL, xpos[item] - 0.5 * data[i].dim[0], zb, xpos[item] + 0.5 * data[i].dim[0], zz);
+							if (data[i].flag & 64) {	/* Sidebyside */
+								x_2 = x_1 + bar_step * k;	/* Recycle x_2 as left point on skinny bar k */
+								PSL_plotbox (PSL, x_2, zb, x_2 + bar_width, data[i].zz[k]);
+							}
+							else {
+								zb = zz;
+								zz = data[i].zz[k];	/* Projected y-values */
+								PSL_plotbox (PSL, xpos[item] - 0.5 * data[i].dim[0], zb, xpos[item] + 0.5 * data[i].dim[0], zz);
+							}
 						}
 						if (item == last_time) gmt_M_free (GMT, data[i].zz);	/* Free column band array */
 						break;
