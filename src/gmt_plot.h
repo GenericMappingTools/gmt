@@ -144,12 +144,14 @@ struct GMT_SYMBOL {
 	double size_y;		/* Current symbol size in y */
 	double given_size_x;	/* Symbol size read from file or command line */
 	double given_size_y;	/* Symbol size read from file or command line */
+	double gap;			/* Fractional spacing between side-by-side bars when -Sb|B+s[<gap>] is given */
 	bool read_size_cmd;	/* true when -S indicated we must read symbol sizes from file */
 	bool read_size;		/* true when we must read symbol size from file for the current record */
 	bool shade3D;		/* true when we should simulate shading of 3D symbols cube and column */
 	bool fq_parse;		/* true -Sf or -Sq were given with no args on command line and must be parsed via segment headers */
-	bool accumulate;	/* true if -So takes many band z and they are increments, not total z values */
+	bool accumulate;	/* true if -So|b|B takes many band z and they are increments, not total z values */
 	bool diagonal;		/* true if -Sr+s is given */
+	bool sidebyside;		/* true if -Sb|B+s[<gap>] is given */
 	struct GMT_FONT font;	/* Font to use for the -Sl symbol */
 	unsigned int convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
 	unsigned int n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */

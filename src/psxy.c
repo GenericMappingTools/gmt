@@ -944,6 +944,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 	double direction, length, dx, dy, d, yy, yt, yb, *in = NULL, *z_for_cpt = NULL;
 	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2, xx, xb, xt, dummy, headpen_width = 0.25;
+	double bar_gap, bar_width, bar_step;
 
 	struct GMT_PEN current_pen, default_pen, save_pen, last_headpen, last_spiderpen;
 	struct GMT_FILL current_fill, default_fill, black, no_fill, save_fill;
@@ -1565,11 +1566,16 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							x_2 = plot_x;
 							y_1 = plot_y - 0.5 * dim[0]; y_2 = plot_y + 0.5 * dim[0];
 						}
-						xt = x_1;
+						xt = xb = x_1;
 						xx = 0.0;
+						if (S.sidebyside) {	/* Compute skinny bar width and gaps */
+							bar_gap = (y_2 - y_1) * S.gap * 0.01;	/* Total width of all gaps */
+							bar_width = (y_2 - y_1 - bar_gap) / n_z;	/* Width of individual skinny bars */
+							bar_gap /= (n_z - 1);	/* Width of individual gap */
+							bar_step = bar_width + bar_gap;	/* Spacing between start of each bar */
+						}
 						if (S.base_set & GMT_BASE_ORIGIN) xx += S.base;		/* Must add base to x start */
 						for (k = 0; k < n_z; k++) {	/* For each band in the column */
-							xb = xt;
 							if (Ctrl->C.active && n_z > 1) {	/* Must update band color based on band number k */
 								gmt_get_fill_from_z (GMT, P, k+0.5, &current_fill);
 								gmt_setfill (GMT, &current_fill, outline_setting);
@@ -1581,38 +1587,59 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 								xx = in[kk];	/* Got actual y values */
 								if (S.base_set & GMT_BASE_ORIGIN) xx += S.base;		/* Must add base to y height */
 							}
-							gmt_geo_to_xy (GMT, xx, in[GMT_Y], &xt, &dummy);
-							PSL_plotbox (PSL, xb, y_1, xt, y_2);
+							if (S.sidebyside) {	/* Plot full skinny bars side by side so get top coordinate for this bar */
+								gmt_geo_to_xy (GMT, xx, in[GMT_Y], &xt, &dummy);
+								y_2 = y_1 + bar_step * k;	/* Recycle y_2 as bottom point on skinny bar k */
+								PSL_plotbox (PSL, xb, y_2, xt, y_2 + bar_width);
+							}
+							else {	/* Plot sections on top of previous sections */
+								xb = xt;
+								gmt_geo_to_xy (GMT, xx, in[GMT_Y], &xt, &dummy);
+								PSL_plotbox (PSL, xb, y_1, xt, y_2);
+							}
 						}
 						break;
 					case GMT_SYMBOL_BARY:
 						if (!Ctrl->N.active) in[GMT_Y] = MAX (GMT->common.R.wesn[YLO], MIN (in[GMT_Y], GMT->common.R.wesn[YHI]));
-						if (S.user_unit[GMT_X]) {	/* Width measured in x units */
+						if (S.user_unit[GMT_X]) {	/* Width measured in x units so need two projection calls */
 							gmt_geo_to_xy (GMT, in[GMT_X] - 0.5 * dim[0], S.base, &x_1, &y_1);
 							gmt_geo_to_xy (GMT, in[GMT_X] + 0.5 * dim[0], in[GMT_Y], &x_2, &y_2);
 						}
-						else {
-							gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], S.base, &x_1, &y_1);	/* Zero y level for vertical bars */
+						else {	/* WIdth given in plot units so just need to use the plot_x location +/- half the width */
+							gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], S.base, &dummy, &y_1);	/* Zero y level for vertical bars */
 							x_1 = plot_x - 0.5 * dim[0]; x_2 = plot_x + 0.5 * dim[0];
 							y_2 = plot_y;
 						}
-						yt = y_1;
+						yt = yb = y_1;
 						yy = 0.0;
+						if (S.sidebyside) {	/* Compute skinny bar width and gaps */
+							bar_gap = (x_2 - x_1) * S.gap * 0.01;	/* Total width of all gaps */
+							bar_width = (x_2 - x_1 - bar_gap) / n_z;	/* Width of individual skinny bars */
+							bar_gap /= (n_z - 1);	/* Width of individual gap */
+							bar_step = bar_width + bar_gap;	/* Spacing between start of each bar */
+						}
 						if (S.base_set & GMT_BASE_ORIGIN) yy += S.base;		/* Must add base to y height */
 						for (k = 0; k < n_z; k++) {	/* For each band in the column */
-							yb = yt;
 							if (Ctrl->C.active && n_z > 1) {	/* Must update band color based on band number k */
 								gmt_get_fill_from_z (GMT, P, k+0.5, &current_fill);
 								gmt_setfill (GMT, &current_fill, outline_setting);
 							}
 							if (S.accumulate)
-								yy += in[GMT_Y+k];	/* Must get cumulate y value from dy increments */
+								yy += in[GMT_Y+k];	/* Must get cumulate y value from dy increments, base already added above */
 							else {
 								yy = in[GMT_Y+k];	/* Got actual y values */
-								if (S.base_set & GMT_BASE_ORIGIN) yy += S.base;		/* Must add base to y height */
+								if (S.base_set & GMT_BASE_ORIGIN) yy += S.base;		/* Must add base to y height since we are resetting yy */
 							}
-							gmt_geo_to_xy (GMT, in[GMT_X], yy, &dummy, &yt);
-							PSL_plotbox (PSL, x_1, yb, x_2, yt);
+							if (S.sidebyside) {	/* Plot full skinny bars side by side so get top coordinate for this bar */
+								gmt_geo_to_xy (GMT, in[GMT_X], yy, &dummy, &yt);
+								x_2 = x_1 + bar_step * k;	/* Recycle x_2 as left point on skinny bar k */
+								PSL_plotbox (PSL, x_2, yb, x_2 + bar_width, yt);
+							}
+							else {	/* Plot sections on top of previous sections */
+								gmt_geo_to_xy (GMT, in[GMT_X], yy, &dummy, &yt);
+								yb = yt;
+								PSL_plotbox (PSL, x_1, yb, x_2, yt);
+							}
 						}
 						break;
 					case PSL_CROSS:

@@ -14975,29 +14975,44 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	}
 	else if (strchr (bar_symbols[mode], (int) text[0])) {	/* Bar, column, cube with size */
 
-		/* Bar:		-Sb|B[<size_x|size_y>[c|i|p|u]][+b|B[<base>]][+v|i<nz>]				*/
+		/* Bar:		-Sb|B[<size_x|size_y>[c|i|p|u]][+b|B[<base>]][+v|i<nz>][+s[<gap>]]				*/
 		/* Column:	-So|O[<size_x>[c|i|p|u][/<ysize>[c|i|p|u]]][+b|B[<base>]][+v|i<nz>]	*/
 		/* Cube:	-Su|U[<size_x>[c|i|p|u]]	*/
 
-		/* Also worry about backwards handlig of +z|Z, now +v|i */
-		if ((c = strstr (text, "+v")) || (c = strstr (text, "+i")) || (c = strstr (text, "+z")) || (c = strstr (text, "+Z"))) {	/* Got +z|Z<nz> */
+		/* Also worry about backwards handling of +z|Z, now +v|i */
+		if ((c = strstr (text, "+v")) || (c = strstr (text, "+i"))|| (c = strstr (text, "+z")) || (c = strstr (text, "+Z"))) {	/* Got +z|Z<nz> */
+			char *s = strstr (text, "+s");
 			if (strchr ("uU", text[0])) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Symbol u|U does not support the +%c<nz> modifier\n", c[1]);
 				decode_error++;
 			}
 			else {	/* Only bars and columns have this feature */
+				char *b = NULL;
 				if ((n_z = atoi (&c[2])) <= 0) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Modifier +%c<nz> given bad value for <nz> (%d)\n", c[1], n_z);
 					decode_error++;
 				}
 				if (c[1]== 'i' || c[1] == 'Z') p->accumulate = true;	/* Getting dv1 dv2 ... etc and not v1 v1 ... */
-				/* Must deal with situations where +b|B is given before +v|i|z|Z or vice versa */
-				c[0] = '\0';	/* Temporarily chop off the +i+v+z|Z modifier... */
-				strncpy (text_cp, text, GMT_LEN256-1);	/* Copy over everything up to +v|i|z|Z */
+				/* Must deal with situations where +b|B is given before +v|i|h|z|Z or vice versa */
+				if (s && s < c) c = s;	/* +s was given before the +i|v|z|Z section */
+				c[0] = '\0';	/* Temporarily chop off the +i+v+z|Z modifier... (possibly starting with +s) */
+				strncpy (text_cp, text, GMT_LEN256-1);	/* Copy over everything up to [+s]+v|i|z|Z[+s] */
 				c[0] = '+';	/* Restore modifier */
-				c++;	/* Move past the plus sign */
-				while (c[0] && c[0] != '+') c++;	/* Scan to end of text or to start of next modifier +b|B */
-				if (c[0]) strncat (text_cp, c, GMT_LEN256-1);	/* Append this modifier to text_cp */
+				c++;	/* Move past this plus sign */
+				if ((b = strstr (c, "+b")) || (b = strstr (c, "+B")) || (b = strchr (c, 'b')) || (b = strchr (c, 'B'))) {	/* Check for both current and deprecated bar settings */
+					strncat (text_cp, b, GMT_LEN256-1);	/* Append this modifier to text_cp */
+				}
+				if (s) {
+					p->sidebyside = true;
+					if (s[2]) {	/* Gave a bar gap setting; we will return this in percent even if we got a fraction */
+						if (((p->gap = atof (&s[2])) <= 0.0 || p->gap > 100.0)) {
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Modifier +s<gap> given bad value for <gap> (%g)\n", p->gap);
+							decode_error++;
+						}
+						else if (p->gap < 1.0)	/* Clearly a gap given as fraction, convert to percent */
+							p->gap *= 100.0;
+					}	/* Else the p->gap is zero for no gap between bars */
+				}
 			}
 		}
 		else	/* Copy as is */
@@ -15189,7 +15204,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {
-					if (gmtinit_get_uservalue (GMT, &text[bset+1], gmt_M_type (GMT, GMT_IN, GMT_X), &p->base, "-SB base value")) return GMT_PARSE_ERROR;
+					if (gmtinit_get_uservalue (GMT, &text_cp[bset+1], gmt_M_type (GMT, GMT_IN, GMT_X), &p->base, "-SB base value")) return GMT_PARSE_ERROR;
 					p->base_set = GMT_BASE_ARG;
 				}
 			}

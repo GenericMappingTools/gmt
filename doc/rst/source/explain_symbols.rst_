@@ -197,7 +197,7 @@
         specified in the units of that axis so its width scales with the projection and region.
         Using modifiers **+v** or **+i** you can also plot multi-band bars with colors set via **-C**.
 
-    **-Sb**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *ny*]
+    **-Sb**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *ny*][**+s**\ [*gap*]]
         Vertical **b**\ ar extending from *base* to y. The *size* is bar width.
         Append **u** if *size* is in x-units [Default is plot-distance units].
         By default, *base* = 0. Append **+b**\ [*base*] to change this
@@ -207,11 +207,13 @@
         To plot multi-band bars, please append **+v**\|\ **i**\ *ny*, where *ny* indicates the
         total number of bands in the bar.  Here, **+i** means we must accumulate the
         bar values from the increments *dy*, while **+v** means we get the complete
-        values relative to *base*. Multiband bars requires **-C** with one color per band
-        (CPT z-values must be 0, 1, ..., *ny* - 1).
+        values relative to *base*. Normally, the bands are plotted as sections of the final bar.
+        Use **+s** to instead split the bar into *ny* side-buy-side slices that act as individual skinnier bars. The
+        optional *gap* is a percent (of fraction) of *size* for adding gaps between the bars [none].
+        Multiband bars requires **-C** with one color per band (CPT z-values must be 0, 1, ..., *ny* - 1).
         Thus, input records are either (*x y1 y2 ... yn*) or (*x dy1 dy2 ... dyn*).
 
-    **-SB**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *nx*]
+    **-SB**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *nx*][**+s**\ [*gap*]]
         Horizontal **b**\ ar extending from *base* to x. The *size* is bar width.
         Append **u** if *size* is in y-units [Default is plot-distance units].
         By default, *base* = 0. Append **+b**\ [*base*] to change this
@@ -221,8 +223,10 @@
         To plot multi-band bars, please append **+v**\|\ **i**\ *nx*, where *nx* indicates the
         total number of bands in the bar.  Here, **+i** means we must accumulate the
         bar value from the increments *dx*, while **+v** means we get the complete
-        values relative to *base*. Multiband bars requires **-C** with one color per band
-        (CPT z-values must be 0, 1, ..., *nx* - 1).
+        values relative to *base*. Normally, the bands are plotted as sections of the final bar.
+        Use **+s** to instead split the bar into *nx* side-buy-side slices that act as individual skinnier bars. The
+        optional *gap* is a percent (of fraction) of *size* for adding gaps between the bars [none].
+        Multiband bars requires **-C** with one color per band (CPT z-values must be 0, 1, ..., *nx* - 1).
         Thus, input records are either (*x1 y x2 ... xn*) or (*dx1 y dx2 ... dxn*).
 
     The next family of symbols are all different types of *vectors*. Apart from requiring parameters
