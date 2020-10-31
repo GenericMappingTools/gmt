@@ -1128,6 +1128,12 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &data[n].x, &data[n].y) || gmt_M_is_dnan(in[GMT_Z])) continue;	/* NaNs on input */
 			data[n].flag = S.convert_angles;
 			data[n].z = gmt_z_to_zz (GMT, in[GMT_Z]);
+			if (S.base_set & GMT_BASE_READ) {	/* Got base from input column */
+				bcol = (S.read_size) ? ex2 : ex1;
+				if (S.symbol == GMT_SYMBOL_COLUMN)
+					bcol += S.n_required - 1;	/* Since we have z1 z2 ... z2 base */
+				S.base = in[bcol];
+			}
 			if (gmt_is_barcolumn (GMT, &S)) {	/* Must allocate space for multiple z-values */
 				n_z = gmt_get_columbar_bands (GMT, &S);
 				data[n].zz = gmt_M_memory (GMT, NULL, n_z, double);
@@ -1142,12 +1148,6 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					in2[ex2] = in2[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
 			}
 
-			if (S.base_set & GMT_BASE_READ) {	/* Got base from input column */
-				bcol = (S.read_size) ? ex2 : ex1;
-				if (S.symbol == GMT_SYMBOL_COLUMN)
-					bcol += S.n_required - 1;	/* Since we have z1 z2 ... z2 base */
-				S.base = in[bcol];
-			}
 			if (S.read_size) {	/* Update sizes from input */
 				S.size_x = in[ex1] * S.factor;
 				if (delayed_unit_scaling[GMT_X]) S.size_x *= GMT->session.u2u[S.u][GMT_INCH];

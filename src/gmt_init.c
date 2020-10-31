@@ -15185,7 +15185,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			if (bset) {
 				if (text[bset+1] == '\0') {	/* Read it from data file (+ means probably +z<col>) */
 					p->base_set = GMT_BASE_READ;
-					p->n_required = 1;
+					p->n_required++;
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {
@@ -15204,7 +15204,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				if (p->user_unit[GMT_Y]) text_cp[strlen(text_cp)-1] = '\0';	/* Chop off u */
 				if (text_cp[bset+1] == '\0') {	/* Read it from data file */
 					p->base_set = GMT_BASE_READ;
-					p->n_required = 1;
+					p->n_required++;
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {
@@ -15453,7 +15453,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			if (bset) {
 				if (text[bset+1] == '\0' || text[bset+1] == '+') {	/* Read it from data file */
 					p->base_set = GMT_BASE_READ;
-					p->n_required ++;
+					p->n_required++;
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {
