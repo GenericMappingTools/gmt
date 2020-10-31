@@ -48,5 +48,4 @@ gmt begin
 gmt end show
 EOF
 # 3. Run the movie
-#gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Ttimes.txt -Nanim13 -Lc0 -H8 -Pb+w1c+jBL -Fmp4 -V -W -Zs --FORMAT_DATE_MAP=-
-#gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Ttimes.txt -Nanim13 -Lc0 -H8 -Pb+w1c+jBL -M45,png -Fnone -V -W -Zs --FORMAT_DATE_MAP=-
+#gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Ttimes.txt -Nanim13 -Lc0 -H8 -Pb+w1c+jBL -M45,png -Agif -V -W -Zs --FORMAT_DATE_MAP=-
