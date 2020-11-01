@@ -61,7 +61,7 @@ Optional Arguments
     This way you can plot "lines" that can have variable pen color and fixed or variable pen width as well as
     taking advantage of the full machinery of **-Es** and **-Et** and all the effects controlled by **-M** for symbols.
     The *dpu* must match the intended dpu when running :doc:`movie`. Note *dpu* means pixels per cm if you are using
-    SI units and pixels per inch if you are using US units (hence it depends on your :term:`PROJ_ENGTH_UNIT` setting).
+    SI units and pixels per inch if you are using US units (hence it depends on your :term:`PROJ_LENGTH_UNIT` setting).
     Alternatively, append **c** or **i** to set the unit used explicitly.
 
 .. _-B:
