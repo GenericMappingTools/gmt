@@ -24,7 +24,8 @@ gmt begin
   gmt psevents waveform_AV.DO.txt -R\${PLOT_DOMAIN} -JX20cT/3.5c -Ar\${DPI} -i0,2+s1e-6,0 -f2T --GMT_INTERPOLANT=\${SPLINE} > N.txt
   gmt psevents waveform_AV.DO.txt -R\${PLOT_DOMAIN} -JX20cT/3.5c -Ar\${DPI} -i0,3+s1e-6,0 -f2T --GMT_INTERPOLANT=\${SPLINE} > Z.txt
   # 1b. Setup the desired output times (once per second)
-  gmt math -T\${TIME_RANGE}/1 -o0 T --TIME_UNIT=s = times.txt
+  dt=\$(gmt math -Q 24 INV =)
+  gmt math -T\${TIME_RANGE}/\${dt} -o0 T --TIME_UNIT=s --FORMAT_CLOCK_OUT=hh:mm:ss.xxxxx = times.txt
 gmt end
 EOF
 # 2. Set up main movie script
@@ -35,17 +36,17 @@ gmt begin
       gmt subplot set 0 -A"Z"
       gmt plot waveform_AV.DO.txt -Bpxafg -Bsxa1D -Bpyaf -BWSrt -W0.5p,darkgray -i0,3+s1e-6
       gmt events Z.txt -Sc0.5p -Gred -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T\${MOVIE_COL0}
-      printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W1p,black
+      printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W0.5p,gray
       gmt subplot set 1 -A"N"
       gmt plot waveform_AV.DO.txt -Bpxafg -Bsxa1D -Bpyaf -BWSrt -W0.5p,darkgray -i0,2+s1e-6
       gmt events N.txt -Sc0.5p -Gred -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T\${MOVIE_COL0}
-      printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W1p,black
+      printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W0.5p,gray
       gmt subplot set 2 -A"E"
       gmt plot waveform_AV.DO.txt -Bpxafg -Bsxa1D -Bpyaf -BWSrt -W0.5p,darkgray -i0,1+s1e-6
       gmt events E.txt -Sc0.5p -Gred -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T\${MOVIE_COL0}
-      printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W1p,black
+      printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W0.5p,gray
     gmt subplot end
 gmt end show
 EOF
 # 3. Run the movie
-#gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Ttimes.txt -Nanim13 -Lc0 -H8 -Pb+w1c+jBL -M45,png -Agif -V -W -Zs --FORMAT_DATE_MAP=-
+#gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Ttimes.txt -Nanim13 -Lc0 -H8 -Pb+w1c+jBL -M1000,png -Agif -V -W -Zs --FORMAT_DATE_MAP=-  --FORMAT_CLOCK_OUT=hh:mm:ss.xxxxx
