@@ -8225,6 +8225,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->common.R.wesn[YLO] = orig[GMT_Y] - 0.5 * part * ydim;
 		GMT->common.R.wesn[XHI] = GMT->common.R.wesn[XLO] + xdim;
 		GMT->common.R.wesn[YHI] = GMT->common.R.wesn[YLO] + ydim;
+		GMT->common.R.dimension = 2;	/* Since we know it is a grid */
 		return (GMT_NOERROR);
 	}
 	if ((item[0] == 'g' || item[0] == 'd') && item[1] == '\0') {	/* Check -Rd|g separately in case user has files called d or g */
@@ -8238,6 +8239,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		}
 		GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = +90.0;
 		gmt_set_geographic (GMT, GMT_IN);
+		GMT->common.R.dimension = 2;	/* Since we know it is a grid */
 		return (GMT_NOERROR);
 	}
 	ptr = item;	/* To avoid compiler warning that item cannot be NULL */
@@ -8324,6 +8326,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		else
 			GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
 		gmt_set_geographic (GMT, GMT_IN);
+		GMT->common.R.dimension = 2;	/* Since we know it is a grid */
 		return (GMT_NOERROR);
 	}
 	else if (strchr (GMT_LEN_UNITS2, item[0])) {	/* Obsolete: Specified min/max in projected distance units */
@@ -14345,6 +14348,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		GMT_Report (API, GMT_MSG_DEBUG, "Revised options: %s\n", string);
 		GMT_Destroy_Cmd (API, &string);
 	}
+
 	/* Here we can call the rest of the initialization */
 
 	return (gmtinit_begin_module_sub (API, lib_name, mod_name, Ccopy));
@@ -16852,6 +16856,8 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	gmtlib_fft_initialization (GMT);	/* Determine which FFT algos are available and set pointers */
 
 	gmtinit_set_today (GMT);	/* Determine today's rata die value */
+
+	GMT->common.R.dimension = 2;	/* Most likely scenario but will be reset by -R for those cases when it is not a grid */
 
 	return (GMT);
 }
