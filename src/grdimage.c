@@ -696,8 +696,8 @@ GMT_LOCAL void grdimage_grd_gray_with_intensity (struct GMT_CTRL *GMT, struct GR
 	uint64_t byte, kk_s, kk_i, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
-	struct GMT_GRID_HEADER *H_i = Conf->Intens->header;	/* Pointer to the active intensity header */
-	bool different = !(gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));	/* True of they differ in padding */
+	struct GMT_GRID_HEADER *H_i = (Conf->int_mode) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
+	bool different = (Conf->int_mode && !gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));	/* True of they differ in padding */
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> gray image with illumination.\n");
 #ifdef _OPENMP
@@ -752,8 +752,8 @@ GMT_LOCAL void grdimage_grd_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 	uint64_t byte, kk_s, kk_i, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
-	struct GMT_GRID_HEADER *H_i = Conf->Intens->header;	/* Pointer to the active intensity header */
-	bool different = !(gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));	/* True of they differ in padding */
+	struct GMT_GRID_HEADER *H_i = (Conf->int_mode) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
+	bool different = (Conf->int_mode && !gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));	/* True of they differ in padding */
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 #ifdef _OPENMP
@@ -833,8 +833,8 @@ GMT_LOCAL void grdimage_grd_color_with_intensity (struct GMT_CTRL *GMT, struct G
 	uint64_t byte, kk_s, kk_i, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
-	struct GMT_GRID_HEADER *H_i = Conf->Intens->header;	/* Pointer to the active intensity header */
-	bool different = !(gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));	/* True of they differ in padding */
+	struct GMT_GRID_HEADER *H_i = (Conf->int_mode) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
+	bool different = (Conf->int_mode && !gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));	/* True of they differ in padding */
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 #ifdef _OPENMP
@@ -867,8 +867,8 @@ GMT_LOCAL void grdimage_grd_color_with_intensity_CM (struct GMT_CTRL *GMT, struc
 	uint64_t byte, kk_s, kk_i, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
-	struct GMT_GRID_HEADER *H_i = Conf->Intens->header;	/* Pointer to the active intensity header */
-	bool different = !(gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));
+	struct GMT_GRID_HEADER *H_i = (Conf->int_mode) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
+	bool different = (Conf->int_mode && !gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 	/* Determine NaN rgb 0-255 triple ones */
@@ -916,7 +916,7 @@ GMT_LOCAL void grdimage_img_gray_with_intensity (struct GMT_CTRL *GMT, struct GR
 	uint64_t byte, kk_s, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active image header */
-	struct GMT_GRID_HEADER *H_i = Conf->Intens->header;	/* Pointer to the active intensity header */
+	struct GMT_GRID_HEADER *H_i = (Conf->int_mode) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
 
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,scol,node_s,node_i,rgb) shared(GMT,Conf,Ctrl,H_s,H_i,image)
@@ -967,7 +967,7 @@ GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 	uint64_t byte, kk_s, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active image header */
-	struct GMT_GRID_HEADER *H_i = Conf->Intens->header;	/* Pointer to the active intensity header */
+	struct GMT_GRID_HEADER *H_i = (Conf->int_mode) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
 
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,k,scol,node_s,node_i,rgb) shared(GMT,Conf,Ctrl,H_s,H_i,image)
@@ -1051,7 +1051,7 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 	uint64_t byte, kk_s, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active image header */
-	struct GMT_GRID_HEADER *H_i = Conf->Intens->header;	/* Pointer to the active intensity header */
+	struct GMT_GRID_HEADER *H_i = (Conf->int_mode) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
 
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,k,scol,node_s,node_i,rgb) shared(GMT,Conf,Ctrl,H_s,H_i,image)
@@ -1076,7 +1076,7 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, Conf); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 /* Two macros used to detect if an image has no meta-data for region and increments */
 #define img_inc_is_one(h) (h->inc[GMT_X] == 1.0 && h->inc[GMT_Y] == 1.0)
@@ -1170,11 +1170,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 			if (Ctrl->I.file == NULL && gmt_file_is_tiled_list (API, Ctrl->In.file, NULL, NULL, NULL)) {	/* Must read and stitch the data tiles first */
 				if ((Grid_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, API->tile_wesn, Ctrl->In.file, NULL)) == NULL) {	/* Get stitched grid */
-					gmt_M_free (GMT, Conf);
 					Return (API->error);
 				}
 				if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, Grid_orig, data_grd)) {
-					gmt_M_free (GMT, Conf);
 					Return (API->error);
 				}
 				got_data_tiles = true;
@@ -1184,7 +1182,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			mem_I = gmt_M_file_is_memory (Ctrl->I.file);	/* Remember if the intensity grid was passed as a memory grid */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read intensity grid header from file %s\n", Ctrl->I.file);
 			if ((Intens_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
-				gmt_M_free (GMT, Conf);
 				Return (API->error);
 			}
 		}
@@ -1229,7 +1226,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		/* Read in the the entire image that is to be mapped */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate memory and read image file %s\n", Ctrl->In.file);
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_IMAGE_NO_INDEX, NULL, Ctrl->In.file, NULL)) == NULL) {
-			gmt_M_free (GMT, Conf);
 			Return (API->error);
 		}
 		grid_registration = I->header->registration;	/* This is presumably pixel registration since it is an image */
@@ -1277,7 +1273,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (!got_data_tiles) {	/* Only avoid this step if we already read a data tile bunch earlier under the I.derive == true section above */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read header from file %s\n", Ctrl->In.file);
 			if ((Grid_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
-				gmt_M_free (GMT, Conf);	/* Done with the configuration structure */
 				Return (API->error);
 			}
 			if ((API->error = gmt_img_sanitycheck (GMT, Grid_orig->header))) {	/* Used map projection on a Mercator (i.e., already a Cartesian) grid */
@@ -1308,7 +1303,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		gmt_set_R_from_grd (GMT, Grid_orig->header);
 
 	/* Initialize the projection for the selected -R -J */
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	/* Determine the wesn to be used to read the grid file; or bail if file is outside -R */
 
@@ -1692,9 +1687,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	normal_y = !(GMT->current.proj.projection_GMT == GMT_LINEAR && !GMT->current.proj.xyz_pos[1] && !resampled);
 
 	Conf->actual_row = gmt_M_memory (GMT, NULL, Conf->n_rows, unsigned int);	/* Deal with any reversal of the y-axis due to -J */
-	for (row = 0; row < Conf->n_rows; row++) Conf->actual_row[row] = (normal_y) ? row : Conf->n_rows - row - 1;
+	for (row = 0; row < (unsigned int)Conf->n_rows; row++) Conf->actual_row[row] = (normal_y) ? row : Conf->n_rows - row - 1;
 	Conf->actual_col = gmt_M_memory (GMT, NULL, Conf->n_columns, unsigned int);	/* Deal with any reversal of the x-axis due to -J */
-	for (col = 0; col < Conf->n_columns; col++) Conf->actual_col[col] = (normal_x) ? col : Conf->n_columns - col - 1;
+	for (col = 0; col < (unsigned int)Conf->n_columns; col++) Conf->actual_col[col] = (normal_x) ? col : Conf->n_columns - col - 1;
 
 	rgb_cube_scan = (P && Ctrl->Q.active && !Ctrl->A.active);	/* Need to look for unique rgb for PostScript masking */
 
@@ -1815,9 +1810,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (Ctrl->A.active) {	/* Creating a raster image, not PostScript */
 			if (Ctrl->Q.active) {	/* Must initialize the transparency byte (alpha): 255 everywhere except at NaNs where it should be 0 */
 				memset (Out->alpha, 255, header_work->nm);
-				for (node = row = 0; row < Conf->n_rows; row++) {
+				for (node = row = 0; row < (unsigned int)Conf->n_rows; row++) {
 					kk = gmt_M_ijpgi (header_work, row, 0);
-					for (col = 0; col < Conf->n_columns; col++, node++) {
+					for (col = 0; col < (unsigned int)Conf->n_columns; col++, node++) {
 						if (gmt_M_is_fnan (Grid_proj->data[kk + col])) Out->alpha[node] = 0;
 					}
 				}
@@ -1832,8 +1827,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		    	Conf->n_columns, Conf->n_rows, (Ctrl->E.device_dpi ? -24 : 24));
 		}
 	}
-
-	gmt_M_free (GMT, Conf);	/* Done with the configuration structure */
 
 	if (!Ctrl->A.active) {	/* Finalize PostScript plot, possibly including basemap */
 		if (!Ctrl->N.active) gmt_map_clip_off (GMT);

@@ -145,7 +145,8 @@ enum GMT_enum_array {
 	GMT_ARRAY_NOINC = 8,
 	GMT_ARRAY_SCALAR = 16,
 	GMT_ARRAY_NOMINMAX = 32,
-	GMT_ARRAY_ROUND = 64};
+	GMT_ARRAY_ROUND = 64,
+	GMT_ARRAY_UNIQUE = 128};
 
 /*! Handling of swap/no swap in i/o */
 enum GMT_swap_direction {
@@ -241,6 +242,9 @@ enum GMT_enum_basemap {
 
 /* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"
+/* CPT extension is pretty fixed */
+#define GMT_CPT_EXTENSION	".cpt"
+#define GMT_CPT_EXTENSION_LEN	4U
 
 #define GMT_IS_ROMAN_LCASE	1	/* For converting Arabic numerals to Roman */
 #define GMT_IS_ROMAN_UCASE	2
@@ -261,6 +265,25 @@ enum GMT_enum_basemap {
 
 /* Modifiers for contour -A option */
 #define GMT_CONTSPEC_MODS "acdefghijklLnNoprstuvwxX="
+
+/* Valid modifiers for various input files */
+
+/* Modifiers for grid files:
+ * +o<offset>  adds this offset to all grid values
+ * +n<nodata> sets what the no-data value is
+ * +s<scl> scales all grid values by this scale
+ * +u<unit> converts Cartesian x/y coordinates from given unit to meters
+ * +U<unit> converts Cartesian x/y coordinates from meter to given unit
+ */
+#define GMT_GRIDFILE_MODIFIERS "onsuU"
+
+/* Modifiers for CPT files:
+ * +h[<hinge>] to override soft-hinge value in CPT
+ * +i<dz> is used to round auto-determined min/max range to a multiple of dz.
+ * +u<unit> converts z-values from given unit to meters
+ * +U<unit> converts z-values from meter to given unit
+ */
+#define GMT_CPTFILE_MODIFIERS "hiuU"
 
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {

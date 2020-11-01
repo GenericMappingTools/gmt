@@ -765,7 +765,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 	convert = (make_plot || (GMT->common.R.active[RSET] && GMT->common.J.active));
 	get_contours = (Ctrl->D.active || Ctrl->W.active);
 
-	if (GMT->common.J.active && gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT->common.J.active && gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	x = gmt_M_memory (GMT, NULL, n_alloc, double);
@@ -959,11 +959,11 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 	else if ((Ctrl->A.info.file && strchr (Ctrl->A.info.file, ',')) || (Ctrl->C.info.file && strchr (Ctrl->C.info.file, ','))) {	/* Got a comma-separated list of contours */
 		uint64_t na = 0, nc = 0;
 		double *za = NULL, *zc = NULL;
-		if (Ctrl->A.info.file && strchr (Ctrl->A.info.file, ',') && (za = gmt_list_to_array (GMT, Ctrl->A.info.file, gmt_M_type (GMT, GMT_IN, GMT_Z), &na)) == NULL) {
+		if (Ctrl->A.info.file && strchr (Ctrl->A.info.file, ',') && (za = gmt_list_to_array (GMT, Ctrl->A.info.file, gmt_M_type (GMT, GMT_IN, GMT_Z), true, &na)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while parsing annotated contours from list %s\n", Ctrl->A.info.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (Ctrl->C.info.file && strchr (Ctrl->C.info.file, ',') && (zc = gmt_list_to_array (GMT, Ctrl->C.info.file, gmt_M_type (GMT, GMT_IN, GMT_Z), &nc)) == NULL) {
+		if (Ctrl->C.info.file && strchr (Ctrl->C.info.file, ',') && (zc = gmt_list_to_array (GMT, Ctrl->C.info.file, gmt_M_type (GMT, GMT_IN, GMT_Z), true, &nc)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while parsing regular contours from list %s\n", Ctrl->C.info.file);
 			if (za) gmt_M_free (GMT, za);
 			Return (GMT_RUNTIME_ERROR);

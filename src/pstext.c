@@ -754,7 +754,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	bool master_record = false, skip_text_records = false, old_is_world, clip_set = false, no_in_txt, check_if_outside;
 
 	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col, rec_mode, a_col = 0, tcol;
-	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols, z_col = GMT_Z;
+	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols, z_col = GMT_Z, n_skipped = 0;
 
 	size_t n_alloc = 0;
 
@@ -805,7 +805,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	add = !(T.x_offset == 0.0 && T.y_offset == 0.0);
 	if (add && Ctrl->D.justify) T.boxflag |= 64;
 
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->G.mode) GMT->current.ps.nclip = (Ctrl->N.active) ? +1 : +2;	/* Signal that this program initiates clipping that will outlive this process */
 
@@ -1118,7 +1118,10 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_ERROR, "Text record line %d is NULL! Skipped but this is trouble)\n", n_read);
 					continue;
 				}
-				if (gmt_is_a_blank_line (line)) continue;	/* Skip blank lines or # comments */
+				if (gmt_is_a_blank_line (line)) {
+					n_skipped++;
+					continue;	/* Skip blank lines or # comments */
+				}
 				strncpy (cp_line, line, GMT_BUFSIZ-1);	/* Make a copy because in_line may be pointer to a strdup-ed line that we cannot enlarge */
 				line = cp_line;
 			}
@@ -1253,8 +1256,17 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			}
 			n_paragraphs++;
 
-			if (GMT->common.t.variable)	/* Update the transparency for current symbol (or -t was given) */
+			if (GMT->common.t.variable)	{	/* Update the transparency for current symbol (or -t was given) */
+				if (gmt_M_is_dnan (in[tcol])) {
+					GMT_Report (API, GMT_MSG_WARNING, "Record %d had bad transparency (NaN) - set to 0.0\n", n_read);
+					in[tcol] = 0.0;
+				}
+				else if (in[tcol] < 0.0 || in[tcol] > 100.0) {
+					GMT_Report (API, GMT_MSG_WARNING, "Record %d had transparency out of range (%g) - set to 0.0\n", n_read, in[tcol]);
+					in[tcol] = 0.0;
+				}
 				PSL_settransparency (PSL, 0.01 * in[tcol]);
+			}
 			PSL_setfont (PSL, T.font.id);
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, in[GMT_Z]);
 			if (T.boxflag & 32) {	/* Draw line from original point to shifted location */
@@ -1306,6 +1318,8 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	if (n_skipped && n_read == 0)
+		GMT_Report (API, GMT_MSG_WARNING, "Skipped %u records as blank - please check input data.\n", n_skipped);
 	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 
 	if (GMT->common.t.variable)	/* Reset the transparency */

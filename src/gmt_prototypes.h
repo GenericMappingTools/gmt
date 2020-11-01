@@ -370,6 +370,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC char ** gmt_cat_cpt_labels (struct GMT_CTRL *GMT, char *label, unsigned int n);
 EXTERN_MSC bool gmt_same_fill (struct GMT_CTRL *GMT, struct GMT_FILL *F1, struct GMT_FILL *F2);
 EXTERN_MSC unsigned int gmt_contour_first_pos (struct GMT_CTRL *GMT, char *arg);
 EXTERN_MSC unsigned int gmt_contour_A_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct CONTOUR_ARGS *A);
@@ -418,7 +419,7 @@ EXTERN_MSC void gmt_filename_get (char *name);
 EXTERN_MSC bool gmt_no_pstext_input (struct GMTAPI_CTRL *API, char *arg);
 EXTERN_MSC void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned int cpt_flags);
 EXTERN_MSC bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg);
-EXTERN_MSC double * gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, uint64_t *n);
+EXTERN_MSC double * gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, bool unique, uint64_t *n);
 EXTERN_MSC int gmt_getfonttype (struct GMT_CTRL *GMT, char *name);
 EXTERN_MSC int gmt_legend_file (struct GMTAPI_CTRL *API, char *file);
 EXTERN_MSC void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do_fill, struct GMT_FILL *fill, bool do_line, struct GMT_PEN *pen, struct GMT_LEGEND_ITEM *item);
@@ -636,7 +637,7 @@ EXTERN_MSC bool gmt_getpen (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *pe
 EXTERN_MSC void gmt_freepen (struct GMT_CTRL *GMT, struct GMT_PEN *pen);
 EXTERN_MSC bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double *rgb);
 EXTERN_MSC int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_ROSE *mr);
-EXTERN_MSC int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int flag, struct GMT_MAP_SCALE *ms);
+EXTERN_MSC int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_SCALE *ms);
 EXTERN_MSC int gmt_getinset (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_INSET *B);
 EXTERN_MSC int gmt_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_PANEL **P);
 EXTERN_MSC char * gmt_putfont (struct GMT_CTRL *GMT, struct GMT_FONT *F);

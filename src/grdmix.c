@@ -683,7 +683,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(node) shared(H,I,alpha)
 #endif
-		for (node = 0; node < H->size; node++)	/* Scale to 0-255 range */
+		for (node = 0; node < (int64_t)H->size; node++)	/* Scale to 0-255 range */
 			I->alpha[node] = gmt_M_u255 (alpha[node]);
 		gmt_M_free (GMT, alpha);
 	}

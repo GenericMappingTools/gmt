@@ -311,7 +311,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 				}
 				else {
 					Ctrl->D.active = Ctrl->D.scale.vertical = true;
-					n_errors += gmt_getscale (GMT, 'D', opt->arg, GMT_SCALE_MAP, &Ctrl->D.scale);
+					n_errors += gmt_getscale (GMT, 'D', opt->arg, &Ctrl->D.scale);
 				}
 				break;
 			case 'F':
@@ -477,7 +477,7 @@ EXTERN_MSC int GMT_pswiggle (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the pswiggle main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 

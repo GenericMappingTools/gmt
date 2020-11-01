@@ -6482,8 +6482,8 @@ GMT_LOCAL int gmtapi_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned i
 		/* Because gmtlib_is_color cannot uniquely determine what a single number is, check for that separately first. */
 		for (k = 0; gray && k < s_length; k++)
 			if (!isdigit ((*str)[k])) gray = false;	/* Not just a bunch of integers */
-		if (gray) {	/* Must also rule out temporary files like 14334.cpt since the ".cpt" is not present */
-			snprintf (tmp_file, GMT_LEN64, "%s.cpt", *str);	/* Try this as a filename */
+		if (gray) {	/* Must also rule out temporary files like 14334.cpt since the GMT_CPT_EXTENSION is not present */
+			snprintf (tmp_file, GMT_LEN64, "%s%s", *str, GMT_CPT_EXTENSION);	/* Try this as a filename */
 			if (!gmt_access (API->GMT, tmp_file, F_OK))
 				return 0;	/* Probably a process id temp file like 13223.cpt */
 		}
@@ -6717,7 +6717,7 @@ int gmtlib_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
 		S_obj = API->object[i];	/* Shorthand only */
 		if (!S_obj) continue;								/* Empty object */
-		if (direction != GMT_NOTSET && S_obj->direction != direction) continue;		/* Not the same direction */
+		if (direction != GMT_NOTSET && (int)S_obj->direction != direction) continue;		/* Not the same direction */
 		if (direction == GMT_IN && S_obj->status != GMT_IS_UNUSED && object_ID == GMT_NOTSET) continue;		/* Already used this input object once */
 		if (!(family == GMT_NOTSET || (int)S_obj->family == family)) {		/* Not the required data type; check for exceptions... */
 			if (family == GMT_IS_DATASET && (S_obj->actual_family == GMT_IS_VECTOR || S_obj->actual_family == GMT_IS_MATRIX))
@@ -8035,7 +8035,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 		/* Must handle special case when a list of colors are given instead of a CPT name.  We make a temp CPT from the colors */
 		if (family == GMT_IS_PALETTE && !just_get_data) { /* CPTs must be handled differently since the master files live in share/cpt and filename is missing .cpt */
 			int c_err = 0;
-			char CPT_file[PATH_MAX] = {""}, *file = NULL;
+			char CPT_file[PATH_MAX] = {""}, *file = NULL, *m = NULL, *f = NULL;
 			if (input[0] == '@') first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable CPTs */
 			file = strdup (&input[first]);
 			if ((c_err = gmtapi_colors2cpt (API, &file, &mode)) < 0) { /* Maybe converted colors to new CPT */
@@ -8044,19 +8044,27 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 				return_null (API, GMT_CPT_READ_ERROR);	/* Failed in the conversion */
 			}
 			else if (c_err == 0) {	/* Regular cpt (master or local), append .cpt and set path */
-				size_t len = strlen (file), elen;
-				char *ext = (len > 4 && strstr (file, ".cpt")) ? "" : ".cpt", *q = NULL;
-				elen = strlen (ext);
-				if ((q = gmtlib_file_unitscale (file))) q[0] = '\0';    /* Truncate modifier */
-				else if ((q = strstr (file, "+h"))) q[0] = '\0';    /* Truncate +h modifier */
-				if (elen)	/* Master: Append extension and supply path */
-					gmt_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
+				bool is_cpt_master = gmt_is_cpt_master (API->GMT, file);
+				char *q = NULL;
+
+				/* Need to check for CPT filename modifiers */
+				if ((f = gmt_strrstr (file, GMT_CPT_EXTENSION)))
+					m = gmtlib_last_valid_file_modifier (API, f, GMT_CPTFILE_MODIFIERS);
+				else
+					m = gmtlib_last_valid_file_modifier (API, file, GMT_CPTFILE_MODIFIERS);
+
+				if (m) {	/* Got one or more valid CPT file modifiers */
+					if ((q = gmtlib_cptfile_unitscale (API, m))) q[0] = '\0';    /* Truncate modifier after processing the unit */
+					if (m[0] && (q = strstr (m, "+h"))) q[0] = '\0';    /* Truncate +h modifier (checking for m[0] since the line above could leave it blank) */
+				}
+				if (is_cpt_master)	/* Master: Append extension and supply path */
+					gmt_getsharepath (API->GMT, "cpt", file, GMT_CPT_EXTENSION, CPT_file, R_OK);
 				else if (!gmt_getdatapath (API->GMT, file, CPT_file, R_OK)) {	/* Use name.cpt as is but look for it */
 					GMT_Report (API, GMT_MSG_ERROR, "GMT_Read_Data: File not found: %s\n", file);
 					gmt_M_str_free (input);
-					return_null (API, GMT_FILE_NOT_FOUND);	/* Failed to find the file anywyere */
+					return_null (API, GMT_FILE_NOT_FOUND);	/* Failed to find the file anywhere */
 				}
-				if (q) {q[0] = '+'; strncat (CPT_file, q, PATH_MAX-1);}	/* Add back the z-scale modifier */
+				if (m && q) {q[0] = '+'; strncat (CPT_file, q, PATH_MAX-1);}	/* Add back the z modifiers */
 			}
 			else	/* Got color list, now a temp CPT instead */
 				strncpy (CPT_file, file, PATH_MAX-1);
@@ -11600,6 +11608,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	else if (!strncmp (module, "gmtbinstats", 11U)) {
 		type = ((opt = GMT_Find_Option (API, 'T', *head)) && opt->arg[0] != 'r') ? 'D' : 'G';	/* Giving -T[h] means we change default output from grid to dataset */
 	}
+	/* 1s. Check if psevents is doing data prep */
+	else if (!strncmp (module, "psevents", 8U)) {
+		type = ((opt = GMT_Find_Option (API, 'A', *head)) && opt->arg[0] == 'r' && opt->arg[1] && isdigit (opt->arg[1])) ? 'D' : 'X';	/* Giving -Ar<dpi> means we resample a line, else plotting */
+	}
 
 	/* 2a. Get the option key array for this module */
 	key = gmtapi_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */
@@ -11628,7 +11640,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		return_null (NULL, GMT_ONLY_ONE_ALLOWED);	/* Too many output objects */
 	}
 	n_alloc = n_keys;	/* Initial number of allocations */
-	info = calloc (n_alloc, sizeof (struct GMT_RESOURCE));
+	if ((info = gmt_M_memory (API->GMT, NULL, n_alloc, struct GMT_RESOURCE)) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: Unable to allocate GMT_RESOURCE array\n");
+		return_null (NULL, GMT_MEMORY_ERROR);
+	}
 
 	if (!strncmp (module, "psrose", 6U) && (opt = GMT_Find_Option (API, 'E', *head)) && strcmp (opt->arg, "m")) {
 		/* Giving any -E option but -Em means we have either input or output so must update the key accordingly */
@@ -11756,7 +11771,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			            opt->option, opt->arg, satisfy);
 		if (n_items == n_alloc) {
 			n_alloc <<= 1;
-			info = realloc (info, n_alloc * sizeof (struct GMT_RESOURCE));
+			if ((info = gmt_M_memory (API->GMT, info, n_alloc, struct GMT_RESOURCE)) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: Unable to reallocate GMT_RESOURCE array\n");
+				return_null (NULL, GMT_MEMORY_ERROR);
+			}
 		}
 	}
 
@@ -11795,7 +11813,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				if (direction == GMT_IN) n_in_added++;
 				if (n_items == n_alloc) {
 					n_alloc <<= 1;
-					info = realloc (info, n_alloc * sizeof (struct GMT_RESOURCE));
+					if ((info = gmt_M_memory (API->GMT, info, n_alloc, struct GMT_RESOURCE)) == NULL) {
+						GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: Unable to reallocate GMT_RESOURCE array\n");
+						return_null (NULL, GMT_MEMORY_ERROR);
+					}
 				}
 			}
 		}
@@ -11805,8 +11826,14 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	gmt_M_str_free (key);
 
 	/* Reallocate the information structure array or remove entirely if nothing given. */
-	if (n_items && n_items < n_alloc) info = realloc (info, n_items * sizeof (struct GMT_RESOURCE));
-	else if (n_items == 0) gmt_M_str_free (info);	/* No containers used */
+	if (n_items && n_items < n_alloc) {
+		if ((info = gmt_M_memory (API->GMT, info, n_items, struct GMT_RESOURCE)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: Unable to finalize size of GMT_RESOURCE array\n");
+			return_null (NULL, GMT_MEMORY_ERROR);
+		}
+	}
+	else if (n_items == 0)
+		gmt_M_free (API->GMT, info);	/* No containers used */
 
 	gmt_M_memset (nn, 4, unsigned int);
 	for (ku = 0; ku < n_items; ku++)	/* Count how many primary and secondary objects each for input and output */
@@ -13817,7 +13844,7 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 	 * https://<address>/grdfile[=<id>][+o<offset>][+n<invalid>][+s<scale>][+u|U<unit>]
 	 */
 
-	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, was, *file = NULL, *c = NULL;
+	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, was, *file = NULL, *c = NULL, *f = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
@@ -13849,22 +13876,21 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 			}
 			else if (gmt_M_file_is_netcdf (file))	/* Meaning it specifies a layer etc via ?<args> */
 				c = strchr (file, '?');
-			else {	/* Check for modifiers */
-				unsigned int nm = gmt_validate_modifiers (API->GMT, file, 0, "onsuU", GMT_MSG_QUIET);
-				if (nm) /* Found some valid modifiers, lets get to the first */
-					c = gmt_first_modifier (API->GMT, file, "onsuU");
+			else {	/* Check for possible file modifiers */
+				if ((f = gmt_strrstr (file, ".grd")) || (f = gmt_strrstr (file, ".nc")))
+					c = gmtlib_last_valid_file_modifier (API, f, GMT_GRIDFILE_MODIFIERS);
+				else
+					c = gmtlib_last_valid_file_modifier (API, file, GMT_GRIDFILE_MODIFIERS);
 			}
 			break;
 		case GMT_IS_IMAGE:
 			c = strstr (file, "=gd");	/* Got image=gd[+modifiers] */
 			break;
 		case GMT_IS_PALETTE:
-			if (gmt_validate_modifiers (API->GMT, file, '-', "iuU", GMT_MSG_ERROR)) {
-				GMT_Report (API, GMT_MSG_DEBUG, "CPT filename has invalid modifiers! (%s)\n", file);
-				return_error (V_API, GMT_NOT_A_VALID_MODIFIER);
-			}
+			if ((f = gmt_strrstr (file, GMT_CPT_EXTENSION)))
+				c = gmtlib_last_valid_file_modifier (API, f, GMT_CPTFILE_MODIFIERS);
 			else
-				c = gmt_first_modifier (API->GMT, file, "iuU");
+				c = gmtlib_last_valid_file_modifier (API, file, GMT_CPTFILE_MODIFIERS);
 			break;
 		default:	/* No checks for the other families */
 			break;

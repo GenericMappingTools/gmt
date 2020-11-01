@@ -617,8 +617,10 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Option -J: Requires -R as well!\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && Ctrl->F.mode == SUBPLOT_FIGURE, "Option -J: Requires -Fs to determine subplot height!\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.reset_h && !GMT->common.J.active && !GMT->common.R.active[RSET], "Option -Fs: Requires -R -J to determine subplot height if specified as zero!\n");
+		n_errors += gmt_M_check_condition (GMT, (!GMT->common.J.active || !GMT->common.R.active[RSET]) && Ctrl->F.mode == SUBPLOT_PANEL && Ctrl->F.reset_h, "Option -Fs: Requires -R -J to determine subplot height if specified as zero!\n");
+
 		if (GMT->common.J.active) {	/* Compute map height from -R -J */
-			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) n_errors++;
+			if (gmt_map_setup (GMT, GMT->common.R.wesn)) n_errors++;
 			for (j = 0; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = GMT->current.map.height;
 		}
 		if (B_args) {	/* Got common -B settings that applies to all axes not controlled by -SR, -SC */
@@ -688,17 +690,16 @@ void subplot_wipe_history_and_settings (struct GMTAPI_CTRL *API) {
 	 * as well as any subplot history file.  Same for settings.
 	 */
 
-	int fig, subplot, inset;
-	unsigned int row, col;
+	int fig, subplot, inset, row, col;
 	char file[PATH_MAX] = {""}, panel[GMT_LEN32] = {""};
 	struct GMT_SUBPLOT *P = NULL;
 
 	gmtlib_get_graphics_item (API, &fig, &subplot, panel, &inset);	/* Determine the natural history level */
 	if (subplot && (P = gmt_subplot_info (API, fig))) {
 		for (row = 0; row < P->nrows; row++) for (col = 0; col < P->ncolumns; col++) {
-			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_HISTORY_FILE, fig, row, col);
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%d-%d", API->gwf_dir, GMT_HISTORY_FILE, fig, row, col);
 			gmt_remove_file (API->GMT, file);
-			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_SETTINGS_FILE, fig, row, col);
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%d-%d", API->gwf_dir, GMT_SETTINGS_FILE, fig, row, col);
 			gmt_remove_file (API->GMT, file);
 		}
 	}

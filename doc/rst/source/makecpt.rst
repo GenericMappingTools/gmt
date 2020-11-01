@@ -12,11 +12,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt makecpt** [ |-A|\ *transparency*\ [**+a**] ]
+**gmt makecpt**
+[ |-A|\ *transparency*\ [**+a**] ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]]]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -91,8 +92,8 @@ Optional Arguments
 
 **-D**\ [**i**\|\ **o**]
     Select the back- and foreground colors to match the colors for
-    lowest and highest *z*-values in the output CPT [Default uses
-    the colors specified in the master file, or those defined by the
+    lowest and highest *z*-values in the output CPT [Default (**-D** or **-Do**)
+    uses the colors specified in the master file, or those defined by the
     parameters :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`, and
     :term:`COLOR_NAN`]. Append **i** to match the colors for the lowest and
     highest values in the input (instead of the output) CPT.
@@ -110,11 +111,17 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]]
     Force output CPT to be written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
     append **+c** to write discrete palettes in categorical format.
+    If *label* is appended then we create labels for each category to be used
+    when the CPT is plotted. The *label* may be a comma-separated list of
+    category names (you can skip a category by not giving a name), or give
+    *start*[-], where we automatically build monotonically increasing labels
+    from *start* (a single letter or an integer). Append - to build ranges
+    *start*-*start+1* instead.
 
 .. _-G:
 
@@ -311,6 +318,15 @@ we always get a color regardless of the *z* value, try
    ::
 
     gmt makecpt -Cjet -T0/500 -Ww > wrapped.cpt
+
+To build a categorical table with 3 categories and add specific category
+names to them, try::
+
+    gmt makecpt -Ccubhelix -T0/3/1 -F+cClouds,Trees,Water > cat.cpt
+
+To instead add unique category labels A, B, C, ... to a 10-item categorical CPT, try::
+
+    gmt makecpt -Cjet -T0/10/1 -F+cA
 
 .. include:: cpt_notes.rst_
 

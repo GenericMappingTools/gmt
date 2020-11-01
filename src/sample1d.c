@@ -309,7 +309,7 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 		Ctrl->T.active = true;
 	}
 	if (Ctrl->T.active) {	/* Do this one here since we need Ctrl->N.col to be set first, if selected */
-		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_NOMINMAX, Ctrl->N.col);
+		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_NOMINMAX | GMT_ARRAY_UNIQUE, Ctrl->N.col);
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && s_arg, "Specify only one of -N and -S\n");

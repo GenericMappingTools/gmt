@@ -416,7 +416,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'L':
 				Ctrl->L.active = true;
-				n_errors += gmt_getscale (GMT, 'L', opt->arg, GMT_SCALE_MAP, &Ctrl->L.scale);
+				n_errors += gmt_getscale (GMT, 'L', opt->arg, &Ctrl->L.scale);
 				break;
 			case 'm':
 				if (gmt_M_compat_check (GMT, 4))	/* Warn and fall through on purpose */
@@ -681,7 +681,7 @@ GMT_LOCAL int pscoast_check_antipode_status (struct GMT_CTRL *GMT, struct GMT_SH
 	strncpy (old_J, GMT->common.J.string, GMT_LEN128-1);
 	GMT->common.J.active = false;
 	gmt_parse_common_options (GMT, "J", 'J', "x1i");
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) return (-1);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) return (-1);
 	GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 
 	if ((status[0] = gmt_shore_level_at_point (GMT, c, inside, clon, clat)) < 0) {
@@ -696,7 +696,7 @@ GMT_LOCAL int pscoast_check_antipode_status (struct GMT_CTRL *GMT, struct GMT_SH
 	/* Back to initial projection */
 	GMT->common.J.active = false;
 	gmt_parse_common_options (GMT, "J", 'J', old_J);
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) return (-1);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) return (-1);
 	return (GMT_NOERROR);
 }
 
@@ -798,7 +798,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Switching to -Jx|X...d[/...d] for geographic data\n");
 	}
 
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 

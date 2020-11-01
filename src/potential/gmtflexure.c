@@ -260,7 +260,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 					case 'n':	Ctrl->Q.mode = NO_LOAD;
 						if (opt->arg[1]) {	/* Gave domain info */
 							Ctrl->Q.set_x = true;
-							n_errors += gmt_parse_array (GMT, 'Q', &opt->arg[1], &(Ctrl->Q.T), GMT_ARRAY_DIST, 0);
+							n_errors += gmt_parse_array (GMT, 'Q', &opt->arg[1], &(Ctrl->Q.T), GMT_ARRAY_DIST | GMT_ARRAY_UNIQUE, 0);
 						}
 						break;
 					case 'q':	Ctrl->Q.mode = F_LOAD; break;

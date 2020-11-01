@@ -808,13 +808,13 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', "x1i");
 		wesn[XHI] = Ctrl->D.dim[GMT_X];	wesn[YHI] = Ctrl->D.dim[GMT_Y];
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_map_setup (GMT, wesn)) Return (GMT_PROJECTION_ERROR);
 		if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Cannot use -B if no -R -J */
 			GMT->common.B.active[GMT_PRIMARY] = GMT->common.B.active[GMT_SECONDARY] = false;
 			GMT_Report (API, GMT_MSG_INFORMATION, "Disabling your -B option since -R -J were not set\n");
 		}
 	}
-	else if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
+	else if (gmt_map_setup (GMT, GMT->common.R.wesn))
 		Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);

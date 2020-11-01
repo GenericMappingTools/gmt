@@ -3580,7 +3580,7 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 
 	if (phase != 0.0) A->phase = phase;	/* phase must apply to entire axis */
 	if (I->active) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Axis sub-item %c set more than once (typo?)\n", flag);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Axis sub-item %c set more than once (typo?)\n", flag);
 		return (GMT_NOERROR);
 	}
 	if (unit == 'c' || unit == 'C') {
@@ -13023,7 +13023,9 @@ GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, 
 
 	options = *in_options;
 
-	if (!strncmp (name, "gmtinfo", 7U)) return false;	/* Does not ever return PS */
+	if (!strncmp (name, "gmtinfo", 7U)) return false;	/* Does not ever produce PS */
+	if (!strncmp (name, "gmtread", 7U)) return false;	/* Does not ever produce PS */
+	if (!strncmp (name, "gmtwrite", 8U)) return false;	/* Does not ever produce PS */
 	if (!strncmp (name, "gmtbinstats", 11U)) return false;	/* Does not ever return PS */
 
 	/* Must do more specific checking since some of the PS producers take options that turns them into other things... */
@@ -13045,6 +13047,11 @@ GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, 
 	}
 	else if (!strncmp (name, "pscontour", 9U)) {	/* Check for -D option */
 		if ((opt = GMT_Find_Option (API, 'D', options))) return false;	/* -D writes dataset */
+	}
+	else if (!strncmp (name, "psevents", 8U)) {	/* Check for -D option */
+		if ((opt = GMT_Find_Option (API, 'A', options)) == NULL) return true;	/* All but -A is guaranteed to write PS */
+		if (opt->arg[0] == 'r' && opt->arg[1] && isdigit (opt->arg[1])) return false;	/* This is just preparing an densely sampled file */
+		return true;	/* Any other case gets here and makes PS */
 	}
 	else if (!strncmp (name, "pshistogram", 11U)) {	/* Check for -I option */
 		if ((opt = GMT_Find_Option (API, 'I', options))) return false;	/* -I writes dataset */
@@ -13832,6 +13839,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if (!GMT->init.history[id]) id++;		/* No history for -RP, increment to -RG as fallback */
 			if (GMT->init.history[id]) {	/* There is history for -R so -R will be added below */
 				GMT_Report (API, GMT_MSG_DEBUG, "Given -E, found there is a grid or plot region already.\n");
+				if ((opt = GMT_Make_Option (API, 'R', GMT->init.history[id])) == NULL) return NULL;	/* Failure to make -R option */
+				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append -R option */
+				GMT_Report (API, GMT_MSG_DEBUG, "Added -R%s for pscoast.\n", opt->arg);
 				add_R = false;
 			}
 		}
@@ -14299,7 +14309,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 							return NULL;
 						}
 						GMT->common.J.active = GMT->common.R.active[RSET] = true;	/* Since we have set those here */
-						if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
+						if (gmt_map_setup (GMT, GMT->common.R.wesn))
 							return NULL;
 					}
 					GMT->common.R.active[RSET] = false;	/* Since we will need to parse it again officially in GMT_Parse_Common */
@@ -14439,7 +14449,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	/* GMT_PLOT */
 
 	gmtinit_free_plot_array (GMT);	/* Free plot arrays and reset n_alloc, n */
-	gmtlib_free_custom_symbols (GMT);	/* Free linked list of custom psxy[z] symbols, if any */
+	gmtlib_free_custom_symbols (GMT);	/* Free linked list of custom psxy[z] symbols, if any, since only valid in this module */
 	gmtinit_free_user_media (GMT);	/* Free user-specified media formats */
 
 	/* Reset frame fill painting */
@@ -14460,7 +14470,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	/* ALL POINTERS IN GMT ARE NOW JUNK AGAIN */
 	if (pass_changes_back) gmt_M_memcpy (&(GMT->current.setting), &saved_settings, 1U, struct GMT_DEFAULTS);
 	GMT->current.setting.verbose = V_level;	/* Pass the currently selected level back up */
-
+	GMT->init.n_custom_symbols = 0;	GMT->init.custom_symbol = NULL;	/* Reset this to 0/NULL since just junk (already freed) */
 
 	/* Try this to fix valgrind leaks */
 
@@ -15449,15 +15459,16 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->fq_parse = true;	/* This will be set to false once at least one header has been parsed */
 				break;
 			}
-			for (j = 1, colon = 0; text[j]; j++) if (text[j] == ':') colon = j;
-			if (colon) {	/* Gave :<labelinfo> */
+			/* Determine the first colon as a separator between info and specs */
+			for (j = 1, colon = GMT_NOTSET; colon == GMT_NOTSET && text[j]; j++) if (text[j] == ':') colon = j;
+			if (colon != GMT_NOTSET) {	/* Gave :<labelinfo> */
 				text[colon] = 0;
 				gmt_contlabel_init (GMT, &p->G, 0);
 				decode_error += gmt_contlabel_info (GMT, 'S', &text[1], &p->G);
 				decode_error += gmt_contlabel_specs (GMT, &text[colon+1], &p->G);
 				if (!cmd && gmt_contlabel_prep (GMT, &p->G, NULL)) decode_error++;
 			}
-			else
+			else	/* No <labelinfo> given */
 				decode_error += gmt_contlabel_info (GMT, 'S', &text[1], &p->G);
 			p->fq_parse = false;	/* No need to parse more later */
 			break;

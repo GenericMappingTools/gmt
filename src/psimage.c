@@ -587,7 +587,7 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.n_rows * Ctrl->D.dim[GMT_Y];
 		gmt_M_memcpy (Rwesn, wesn, 4U, double);
 		strncpy (Jarg, "X1i", GMT_LEN128);
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
+		if (gmt_map_setup (GMT, wesn)) {
 			if (free_GMT)
 				gmt_M_free (GMT, picture);
 			else if (is_eps || did_gray)
@@ -608,7 +608,7 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	else {	/* First use current projection, project, then use fake projection */
 		gmt_M_memcpy (Rwesn, GMT->common.R.wesn, 4U, double);
 		strncpy (Jarg, GMT->common.J.string, GMT_LEN128);
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
+		if (gmt_map_setup (GMT, GMT->common.R.wesn)) {
 			if (free_GMT)
 				gmt_M_free (GMT, picture);
 			else if (is_eps || did_gray)
@@ -634,7 +634,7 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.n_columns * Ctrl->D.dim[GMT_X];
 		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.n_rows * Ctrl->D.dim[GMT_Y];
 		GMT->common.R.active[RSET] = GMT->common.J.active = true;
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
+		if (gmt_map_setup (GMT, wesn)) {
 			if (free_GMT)
 				gmt_M_free (GMT, picture);
 			else if (is_eps || did_gray)
@@ -676,7 +676,7 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	/* Redo original -R -J so basemap can work */
 	GMT->common.J.active = false;
 	gmt_parse_common_options (GMT, "J", 'J', Jarg);
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, Rwesn), "")) {
+	if (gmt_map_setup (GMT, Rwesn)) {
 		if (free_GMT)
 			gmt_M_free (GMT, picture);
 		else if (is_eps || did_gray)

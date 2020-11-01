@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-Rz|
 |-T|\ *now*
 [ *table* ]
-[ |-A|\ **r**\|\ **s** ]
+[ |-A|\ **r**\ [*dpu*][**c**\|\ **i**]\|\ **s** ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]] ]
@@ -66,6 +66,15 @@ color, we may try
         -i2,1,3,4+s50,0 -hi1 > q.txt
     gmt makecpt -Cred,green,blue -T0,70,300,10000 > q.cpt
     gmt psevents -Rg -JG200/5/6i -Baf q.txt -SE- -Cq.cpt --TIME_UNIT=d -T2018-05-01T -Es+r2+d6 -Ms5+c0.5 -Mi1+c-0.6 -Mt+c0 -P > tlayer.ps
+
+To convert the time-series seismic_trace.txt (time, amplitude) into a (time, amplitude, time) file that **psevents** can plot
+with a variable pen (by plotting densely placed circles), we use **-i** to ensure we read the time-column twice and then use
+a *dpu* of 80 pixels per cm (HD movie) and the projection parameters we will use when making the plot, e.g.,::
+
+      gmt psevents seismic_trace.txt -R1984-09-10T03:15/1984-09-10T03:45/-15/15 -JX20cT/10c -Ar80c -i0,1,0 -f2T > seismic_trace_pts.txt
+
+**Note**: If your :term:`PROJ_LENGTH_UNIT` is set to inch then you need to use the equivalent *dpu* of 200 pixels per inch for HD,
+or you specify **-Ar**\ 200**i**.
 
 See Also
 --------

@@ -252,7 +252,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'C':
 				if (gmt_M_compat_check (GMT, 5)) {	/* Need to check for deprecated -Cm|[+w]<modefile> option */
-					if (((c = strstr (opt->arg, "+w")) || (opt->arg[0] == 'm' && opt->arg[1] == '\0') || opt->arg[0] == '\0') && strstr (opt->arg, ".cpt") == NULL) {
+					if (((c = strstr (opt->arg, "+w")) || (opt->arg[0] == 'm' && opt->arg[1] == '\0') || opt->arg[0] == '\0') && strstr (opt->arg, GMT_CPT_EXTENSION) == NULL) {
 						GMT_Report (API, GMT_MSG_COMPAT, "Option -C for mode-vector(s) is deprecated; use -E instead.\n");
 						Ctrl->E.active = true;
 						if ((c = strstr (opt->arg, "+w"))) {	/* Wants to write out mean direction */
@@ -741,7 +741,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	gmt_parse_common_options (GMT, "J", 'J', "x1i");
 	GMT->common.R.active[RSET] = GMT->common.J.active = true;
 	wesn[XLO] = wesn[YLO] = -Ctrl->S.scale;	wesn[XHI] = wesn[YHI] = Ctrl->S.scale;
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
+	if (gmt_map_setup (GMT, wesn)) {
 		gmt_M_free (GMT, length);		gmt_M_free (GMT, xx);	gmt_M_free (GMT, sum);
 		gmt_M_free (GMT, azimuth);		gmt_M_free (GMT, yy);
 		Return (GMT_PROJECTION_ERROR);
