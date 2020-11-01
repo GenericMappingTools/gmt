@@ -301,6 +301,11 @@ if (GMT_USE_THREADS AND NOT GLIB_FOUND)
 		CACHE INTERNAL "GTHREAD config message")
 endif (GMT_USE_THREADS AND NOT GLIB_FOUND)
 
+# FreeBSD uses a separate library for backtracking
+if (${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
+	find_library (EXECINFO_LIBRARY NAMES execinfo)
+	list (APPEND GMT_OPTIONAL_LIBRARIES ${EXECINFO_LIBRARY})
+endif (${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
 
 ##
 ##	Find pre-downloaded/pre-installed GSHHG and DCW data
