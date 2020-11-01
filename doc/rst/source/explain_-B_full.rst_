@@ -68,6 +68,10 @@
     specify annotations normal [Default] and parallel to the axis, respectively. Note that
     these defaults can be changed via :term:`MAP_ANNOT_ORTHO`. Geographic axes can
     take **+f** which will give fancy annotations with W|E|S|N suffices encoding the sign.
+    **Note**: Text items such as *title*, *label* and *seclabel* are seen by GMT as part of
+    a long string containing everything passed to **-B**. Therefore, they cannot contain substrings
+    that looks like other modifiers.  If you need to embed such sequences (e.g., **+t**\ "Solving a+b=c")
+    you need to replace those + symbols with their octal equivalent \\053, (e.g., **+t**\ "Solving a\\053b=c").
 
     The *intervals* specification is a concatenated string made up of substrings
     of the form

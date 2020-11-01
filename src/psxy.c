@@ -522,6 +522,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      Use upper case -SB for horizontal bars (<base> then refers to x\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      and width may be in y-units [Default is vertical]. To read the <base>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      value from file, specify +b with no trailing value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      For multi-band bars append +v<nbands>; then <nbands> values will\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      be read from file instead of just one.  Use +i if value increments are given instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Multiband bars requires -C with one color per band (values 0, 1, ...).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      For -SB the input band values are x (or dx) values instead of y (or d).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Normally, multiband bars are stacked on top of each other.  For side-by-side placement instead,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      append +s[<gap>], where optional <gap> is gaps between bars in fraction (or percent) of <size> [no gap].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Decorated line: Give [d|f|l|n|s|x]<info>[:<symbolinfo>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     <code><info> controls placement of a symbol along lines.  Select\n");
 	gmt_cont_syntax (API->GMT, 7, 2);
@@ -600,7 +606,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is the required number of columns.\n");
 	GMT_Option (API, "c,di,e,f,g,h,i,l,p,qi,t");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For plotting symbols with variable transparency read from file, give no value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For plotting symbols with variable transparency read from file, append no value\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and give the transparency as the last numerical value in the data record.\n");
 	GMT_Option (API, ":,.");
 
 	return (GMT_MODULE_USAGE);
@@ -912,6 +919,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.anchor && (!Ctrl->G.active && !Ctrl->Z.active) && !Ctrl->L.outline, "Option -L<modifiers> must include +p<pen> if -G not given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.mode == 1 && !Ctrl->S.active, "Option -I with no argument is only applicable for symbols\n");
 
+	if (Ctrl->S.active && gmt_is_barcolumn (GMT, S)) {
+		j = gmt_get_columbar_bands (GMT, S);
+		n_errors += gmt_M_check_condition (GMT, j > 1 && !Ctrl->C.active, "Options -Sb|B with multiple layers require -C\n");
+	}
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -925,15 +937,16 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	bool error_x = false, error_y = false, def_err_xy = false, can_update_headpen = true;
 	bool default_outline, outline_active, geovector = false, save_W = false, save_G = false, QR_symbol = false;
 	unsigned int n_needed, n_cols_start = 2, justify, tbl, grid_order, frame_order;
-	unsigned int n_total_read = 0, j, geometry, icol = 0, tcol = 0;
+	unsigned int n_total_read = 0, j, geometry, icol = 0, tcol = 0, n_z = 0, k, kk;
 	unsigned int bcol, ex1, ex2, ex3, change = 0, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
 	int error = GMT_NOERROR, outline_setting;
 
 	char s_args[GMT_BUFSIZ] = {""};
 
-	double direction, length, dx, dy, d, *in = NULL, *z_for_cpt = NULL;
-	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2, headpen_width = 0.25;
+	double direction, length, dx, dy, d, yy, yt, yb, *in = NULL, *z_for_cpt = NULL;
+	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2, xx, xb, xt, dummy, headpen_width = 0.25;
+	double bar_gap, bar_width, bar_step;
 
 	struct GMT_PEN current_pen, default_pen, save_pen, last_headpen, last_spiderpen;
 	struct GMT_FILL current_fill, default_fill, black, no_fill, save_fill;
@@ -1076,7 +1089,12 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		for (j = n_cols_start; j < 6; j++) gmt_set_column (GMT, GMT_IN, j, GMT_IS_DIMENSION);		/* Since these may have units appended */
 	for (j = 0; j < S.n_nondim; j++) gmt_set_column (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles, not dimensions */
 
-	n_needed = n_cols_start + S.n_required;
+	if (gmt_is_barcolumn (GMT, &S)) {
+		n_z = gmt_get_columbar_bands (GMT, &S);	/* > 0 for multiband, else 0 */
+		n_needed = n_cols_start + ((n_z > 1) ? n_z - 2 : S.n_required);
+	}
+	else
+		n_needed = n_cols_start + S.n_required;
 	if (Ctrl->I.mode) {
 		n_needed++;	/* Read intensity from data file */
 		icol = n_needed - 1;
@@ -1185,8 +1203,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 	}
 	bcol = (S.read_size) ? ex2 : ex1;
-	if (S.symbol == GMT_SYMBOL_BARX && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_X));
-	if (S.symbol == GMT_SYMBOL_BARY && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
+	if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & GMT_BASE_READ)) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_X));
+	if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & GMT_BASE_READ)) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0)
 		gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
 	else if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && S.convert_angles && !S.par_set) {
@@ -1223,6 +1241,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;
 	if (not_line && !outline_active && S.symbol != PSL_WEDGE && !fill_active && !get_rgb && !QR_symbol) outline_active = true;	/* If no fill nor outline for symbols then turn outline on */
+	if (get_rgb && gmt_is_barcolumn (GMT, &S) && (n_z = gmt_get_columbar_bands (GMT, &S)) > 1) get_rgb = rgb_from_z = false;	/* Not used in the same way here */
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, Ctrl->D.dx, Ctrl->D.dy, 0.0, PSL_FWD);	/* Shift plot a bit */
 
@@ -1346,6 +1365,13 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				if (S.read_symbol_cmd == 1 && (error = gmt_parse_symbol_option (GMT, In->text, &S, 0, false))) {
 					Return (error);
 				}
+				if (gmt_is_barcolumn (GMT, &S)) {
+					n_z = gmt_get_columbar_bands (GMT, &S);
+					if (n_z > 1 && !Ctrl->C.active) {
+						GMT_Report (API, GMT_MSG_ERROR, "The -Sb|B option with multiple layers requires -C - skipping this point\n");
+						continue;
+					}
+				}
 				QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 				/* Since we only now know if some of the input columns should NOT be considered dimensions we
 				 * must visit such columns and if the current length unit is NOT inch then we must undo the scaling */
@@ -1443,10 +1469,6 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				else
 					PSL_command (PSL, "/QR_outline false def\n");
 			}
-			if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & 4))
-				in[GMT_X] += S.base;
-			else if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & 4))
-				in[GMT_Y] += S.base;
 
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 
@@ -1509,7 +1531,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					in[ex2] = in[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
 			}
 
-			if (S.base_set & 2) {
+			if (S.base_set & GMT_BASE_READ) {
 				bcol = (S.read_size) ? ex2 : ex1;
 				S.base = in[bcol];	/* Got base from input column */
 			}
@@ -1546,20 +1568,81 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							x_2 = plot_x;
 							y_1 = plot_y - 0.5 * dim[0]; y_2 = plot_y + 0.5 * dim[0];
 						}
-						PSL_plotbox (PSL, x_1, y_1, x_2, y_2);
+						xt = xb = x_1;
+						xx = 0.0;
+						if (S.sidebyside) {	/* Compute skinny bar width and gaps */
+							bar_gap = (y_2 - y_1) * S.gap * 0.01;	/* Total width of all gaps */
+							bar_width = (y_2 - y_1 - bar_gap) / n_z;	/* Width of individual skinny bars */
+							bar_gap /= (n_z - 1);	/* Width of individual gap */
+							bar_step = bar_width + bar_gap;	/* Spacing between start of each bar */
+						}
+						if (S.base_set & GMT_BASE_ORIGIN) xx += S.base;		/* Must add base to x start */
+						for (k = 0; k < n_z; k++) {	/* For each band in the column */
+							if (Ctrl->C.active && n_z > 1) {	/* Must update band color based on band number k */
+								gmt_get_fill_from_z (GMT, P, k+0.5, &current_fill);
+								gmt_setfill (GMT, &current_fill, outline_setting);
+							}
+							kk = (k == 0) ? GMT_X : GMT_Y + k;	/* First x is in col 0, next in col 2 ... */
+							if (S.accumulate)
+								xx += in[kk];	/* Must get cumulate y value from dy increments */
+							else {
+								xx = in[kk];	/* Got actual y values */
+								if (S.base_set & GMT_BASE_ORIGIN) xx += S.base;		/* Must add base to y height */
+							}
+							if (S.sidebyside) {	/* Plot full skinny bars side by side so get top coordinate for this bar */
+								gmt_geo_to_xy (GMT, xx, in[GMT_Y], &xt, &dummy);
+								y_2 = y_1 + bar_step * k;	/* Recycle y_2 as bottom point on skinny bar k */
+								PSL_plotbox (PSL, xb, y_2, xt, y_2 + bar_width);
+							}
+							else {	/* Plot sections on top of previous sections */
+								xb = xt;
+								gmt_geo_to_xy (GMT, xx, in[GMT_Y], &xt, &dummy);
+								PSL_plotbox (PSL, xb, y_1, xt, y_2);
+							}
+						}
 						break;
 					case GMT_SYMBOL_BARY:
 						if (!Ctrl->N.active) in[GMT_Y] = MAX (GMT->common.R.wesn[YLO], MIN (in[GMT_Y], GMT->common.R.wesn[YHI]));
-						if (S.user_unit[GMT_X]) {	/* Width measured in x units */
+						if (S.user_unit[GMT_X]) {	/* Width measured in x units so need two projection calls */
 							gmt_geo_to_xy (GMT, in[GMT_X] - 0.5 * dim[0], S.base, &x_1, &y_1);
 							gmt_geo_to_xy (GMT, in[GMT_X] + 0.5 * dim[0], in[GMT_Y], &x_2, &y_2);
 						}
-						else {
-							gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], S.base, &x_1, &y_1);	/* Zero y level for vertical bars */
+						else {	/* WIdth given in plot units so just need to use the plot_x location +/- half the width */
+							gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], S.base, &dummy, &y_1);	/* Zero y level for vertical bars */
 							x_1 = plot_x - 0.5 * dim[0]; x_2 = plot_x + 0.5 * dim[0];
 							y_2 = plot_y;
 						}
-						PSL_plotbox (PSL, x_1, y_1, x_2, y_2);
+						yt = yb = y_1;
+						yy = 0.0;
+						if (S.sidebyside) {	/* Compute skinny bar width and gaps */
+							bar_gap = (x_2 - x_1) * S.gap * 0.01;	/* Total width of all gaps */
+							bar_width = (x_2 - x_1 - bar_gap) / n_z;	/* Width of individual skinny bars */
+							bar_gap /= (n_z - 1);	/* Width of individual gap */
+							bar_step = bar_width + bar_gap;	/* Spacing between start of each bar */
+						}
+						if (S.base_set & GMT_BASE_ORIGIN) yy += S.base;		/* Must add base to y height */
+						for (k = 0; k < n_z; k++) {	/* For each band in the column */
+							if (Ctrl->C.active && n_z > 1) {	/* Must update band color based on band number k */
+								gmt_get_fill_from_z (GMT, P, k+0.5, &current_fill);
+								gmt_setfill (GMT, &current_fill, outline_setting);
+							}
+							if (S.accumulate)
+								yy += in[GMT_Y+k];	/* Must get cumulate y value from dy increments, base already added above */
+							else {
+								yy = in[GMT_Y+k];	/* Got actual y values */
+								if (S.base_set & GMT_BASE_ORIGIN) yy += S.base;		/* Must add base to y height since we are resetting yy */
+							}
+							if (S.sidebyside) {	/* Plot full skinny bars side by side so get top coordinate for this bar */
+								gmt_geo_to_xy (GMT, in[GMT_X], yy, &dummy, &yt);
+								x_2 = x_1 + bar_step * k;	/* Recycle x_2 as left point on skinny bar k */
+								PSL_plotbox (PSL, x_2, yb, x_2 + bar_width, yt);
+							}
+							else {	/* Plot sections on top of previous sections */
+								yb = yt;
+								gmt_geo_to_xy (GMT, in[GMT_X], yy, &dummy, &yt);
+								PSL_plotbox (PSL, x_1, yb, x_2, yt);
+							}
+						}
 						break;
 					case PSL_CROSS:
 					case  PSL_PLUS:
