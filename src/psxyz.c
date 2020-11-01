@@ -602,8 +602,8 @@ GMT_LOCAL bool psxyz_load_bands (struct GMT_CTRL *GMT, double *in, double *out, 
 	}
 	/* Now we have final x1, x2, x3... or y1, y2, y3..., or z1, z2, z3... in the data array in user units */
 
-	for (k = 1; k < n; k++) {	/* Check things are monotonically increasing */
-		if (out[k] < out[k-1]) {
+	for (k = 1; k < n; k++) {	/* Check things are monotonically increasing for single bars or columns */
+		if (!S->sidebyside && out[k] < out[k-1]) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "The -Sb|B|o|O options require monotonically increasing band-values - not true near line %d\n", rec);
 			return true;
 		}

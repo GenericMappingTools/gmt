@@ -189,13 +189,14 @@
     The next type of symbol is the horizontal or vertical bar:
 
     .. figure:: /_images/GMT_base_symbols4.*
-        :width: 600 px
+        :width: 700 px
         :align: center
 
         We may place vertical (**b**) or horizontal (**B**) bars, and they may extend from the
         *base* of your choosing.  The thickness of a bar can be a given dimension or can be
         specified in the units of that axis so its width scales with the projection and region.
-        Using modifiers **+v** or **+i** you can also plot multi-band bars with colors set via **-C**.
+        Using modifiers **+v** or **+i** you can also plot multi-band bars with colors set via **-C**,
+        and **+s** can represent those as groups of individual bars instead.
 
     **-Sb**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *ny*][**+s**\ [*gap*]]
         Vertical **b**\ ar extending from *base* to y. The *size* is bar width.
