@@ -7,7 +7,7 @@
 # 
 # The finished movie is available in our YouTube channel as well:
 # https://youtu.be/xxxxxxxxxx
-# The movie took ~x.xx hour to render on a 24-core MacPro 2013.
+# The 76-sec, 1081 frame movie took 12 minutes to render on a 24-core MacPro 2013.
 
 # 0. Create an include file with key parameters
 cat << EOF > inc.sh
@@ -36,15 +36,15 @@ gmt begin
       gmt subplot set 0 -A"Z"
       gmt plot waveform_AV.DO.txt -Bpxafg -Bsxa1D -Bpyaf -BWSrt -W0.5p,darkgray -i0,3+s1e-6
       gmt events Z.txt -Sc0.5p -Gred -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T\${MOVIE_COL0}
-      printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W0.5p,gray
+      printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W0.5p
       gmt subplot set 1 -A"N"
       gmt plot waveform_AV.DO.txt -Bpxafg -Bsxa1D -Bpyaf -BWSrt -W0.5p,darkgray -i0,2+s1e-6
-      gmt events N.txt -Sc0.5p -Gred -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T\${MOVIE_COL0}
-      printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W0.5p,gray
+      gmt events N.txt -Sc0.5p -Ggreen -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T\${MOVIE_COL0}
+      printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W0.5p
       gmt subplot set 2 -A"E"
       gmt plot waveform_AV.DO.txt -Bpxafg -Bsxa1D -Bpyaf -BWSrt -W0.5p,darkgray -i0,1+s1e-6
-      gmt events E.txt -Sc0.5p -Gred -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T\${MOVIE_COL0}
-      printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W0.5p,gray
+      gmt events E.txt -Sc0.5p -Gblue -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T\${MOVIE_COL0}
+      printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W0.5p
     gmt subplot end
 gmt end show
 EOF
