@@ -82,6 +82,13 @@ enum GMT_enum_wedgetype {GMT_WEDGE_NORMAL = 0,
 	GMT_WEDGE_RADII = 2,
 	GMT_WEDGE_SPIDER = 3};
 
+/*! Type of symbol base value */
+
+enum GMT_enum_basetype {GMT_BASE_MIN = 0,	/* Bar starts at the minimum value in -R */
+	GMT_BASE_ARG = 1,		/* Base given via +b<base> */
+	GMT_BASE_READ = 2,		/* Base read from file due to +b */
+	GMT_BASE_ORIGIN = 4};		/* For +z|Z: All values relative to given base */
+
 /*! A sub-symbol for symbols along a front */
 struct GMT_FRONTLINE {
 	double f_gap;		/* Gap between front symbols in inches */
@@ -137,12 +144,14 @@ struct GMT_SYMBOL {
 	double size_y;		/* Current symbol size in y */
 	double given_size_x;	/* Symbol size read from file or command line */
 	double given_size_y;	/* Symbol size read from file or command line */
+	double gap;			/* Fractional spacing between side-by-side bars when -Sb|B+s[<gap>] is given */
 	bool read_size_cmd;	/* true when -S indicated we must read symbol sizes from file */
 	bool read_size;		/* true when we must read symbol size from file for the current record */
 	bool shade3D;		/* true when we should simulate shading of 3D symbols cube and column */
 	bool fq_parse;		/* true -Sf or -Sq were given with no args on command line and must be parsed via segment headers */
-	bool accumulate;	/* true if -So takes many band z and they are increments, not total z values */
+	bool accumulate;	/* true if -So|b|B takes many band z and they are increments, not total z values */
 	bool diagonal;		/* true if -Sr+s is given */
+	bool sidebyside;		/* true if -Sb|B+s[<gap>] is given */
 	struct GMT_FONT font;	/* Font to use for the -Sl symbol */
 	unsigned int convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
 	unsigned int n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */

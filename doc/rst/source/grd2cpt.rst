@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*][**+c**][**+f**\ *file*] ]
-[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**] ]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]] ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -120,11 +120,17 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]]
     Force output CPT to written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
     append **+c** to write discrete palettes in categorical format.
+    If *label* is appended then we create labels for each category to be used
+    when the CPT is plotted. The *label* may be a comma-separated list of
+    category names (you can skip a category by not giving a name), or give
+    *start*[-], where we automatically build monotonically increasing labels
+    from *start* (a single letter or an integer). Append - to build ranges
+    *start*-*start+1* instead.
 
 .. _-G:
 

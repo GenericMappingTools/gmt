@@ -120,6 +120,7 @@ struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays
 	bool count;	/* true if we got number of items rather than increment */
 	bool add;	/* true if we are asked to add a computed spatial distance column to output */
 	bool reverse;	/* true if we want to reverse the array to give high to low on output */
+	bool reciprocal;	/* true if we gave the reciprocal increment */
 	bool round;	/* true if we want to adjust increment to ensure min/max range is a multiple of inc */
 	bool exact_inc;	/* true if we want the increment to be exact and to adjust min/max instead */
 	bool var_inc;	/* true if the resulting array has variable spacing */
