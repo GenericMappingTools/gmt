@@ -23,9 +23,8 @@ gmt begin
   gmt psevents waveform_AV.DO.txt -R\${PLOT_DOMAIN} -JX20cT/3.5c -Ar\${DPI} -i0,1+s1e-6,0 -f2T --GMT_INTERPOLANT=\${SPLINE} > E.txt
   gmt psevents waveform_AV.DO.txt -R\${PLOT_DOMAIN} -JX20cT/3.5c -Ar\${DPI} -i0,2+s1e-6,0 -f2T --GMT_INTERPOLANT=\${SPLINE} > N.txt
   gmt psevents waveform_AV.DO.txt -R\${PLOT_DOMAIN} -JX20cT/3.5c -Ar\${DPI} -i0,3+s1e-6,0 -f2T --GMT_INTERPOLANT=\${SPLINE} > Z.txt
-  # 1b. Setup the desired output times (once per second)
-  dt=\$(gmt math -Q 24 INV =)
-  gmt math -T\${TIME_RANGE}/\${dt} -o0 T --TIME_UNIT=s --FORMAT_CLOCK_OUT=hh:mm:ss.xxxxx = times.txt
+  # 1b. Setup the desired output times (24 frames per second)
+  gmt math -T\${TIME_RANGE}/24+i -o0 T --TIME_UNIT=s --FORMAT_CLOCK_OUT=hh:mm:ss.xxxxx = times.txt
 gmt end
 EOF
 # 2. Set up main movie script
@@ -49,4 +48,4 @@ gmt begin
 gmt end show
 EOF
 # 3. Run the movie
-#gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Ttimes.txt -Nanim13 -Lc0 -H8 -Pb+w1c+jBL -M1000,png -Agif -V -W -Zs --FORMAT_DATE_MAP=-  --FORMAT_CLOCK_OUT=hh:mm:ss.xxxxx
+gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Ttimes.txt -Nanim13 -Lc0 -H8 -Pb+w1c+jBL -Fmp4 -V -W -Zs --FORMAT_DATE_MAP=- --FORMAT_CLOCK_OUT=hh:mm:ss.xxxxx
