@@ -28,9 +28,6 @@ copyright = "@GMT_VERSION_YEAR@, The GMT Team."
 version = '@GMT_PACKAGE_VERSION_MAJOR@.@GMT_PACKAGE_VERSION_MINOR@'
 # The full version shown in the page title
 release = '@GMT_PACKAGE_VERSION@'
-# Make the "Edit on GitHub" button link to the correct branch
-# Default to master branch if Azure Pipelines environmental variable BUILD_SOURCEBRANCHNAME is not defined
-github_version = os.getenv("BUILD_SOURCEBRANCHNAME", 'master')
 
 # -- Options for HTML output ---------------------------------------------------
 html_theme = 'rtd'
@@ -63,7 +60,7 @@ html_context = {
     "display_github": True,
     "github_user": "GenericMappingTools",
     "github_repo": "gmt",
-    "github_version": github_version,
+    "github_version": "master",
     "theme_vcs_pageview_mode": "edit",
     "conf_py_path": "/doc/rst/source/",
     # Enable versions switch on Azure Pipelines.

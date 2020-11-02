@@ -16631,7 +16631,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	-T<argument>
 	 *
 	 * where <argument> is one of these:
-	 *	[<min/max/]<inc>[<unit>|+a|e|n|b|l]
+	 *	[<min/max/]<inc>[<unit>|+a|e|i|n|b|l]
 	 *	<file>
 	 *
 	 * Parsing:
@@ -16645,26 +16645,28 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	2) If +n is given it means that <inc> is an integer that
 	 *	   says how many points we want equidistantly distributed
 	 *	   between <min> and <max>.
-	 *	3) If <min>/<max> are missing then it means these will
+	 *	3) If +i is given it means that <inc> is the reciprocal of
+	 *     what is needed, e.g. use 24i instead of 0.041666...
+	 *	4) If <min>/<max> are missing then it means these will
 	 *	   be derived from the data extent.  Unless +n is also
 	 *	   given then the data extremes will be rounded to the
 	 *	   first and last multiple of <inc> that is inside the
 	 *	   moin-max data range.
-	 *	4) If <unit> is given and is any of the temporal units
+	 *	5) If <unit> is given and is any of the temporal units
 	 *	   o|y then we will compute a non-equidistant set of calendar
 	 *	   time values.
-	 *	5) If <unit> is given and it is any of the spatial length units
+	 *	6) If <unit> is given and it is any of the spatial length units
 	 *	   d|m|s|e|f|k|M|n|u or c (Cartesian), then we will compute
 	 *	   distances along a track given by the first two columns and the
 	 *	   resulting distances are our time-series values.
-	 *      6) If +l is given then we are setting up a log10 array which is
+	 *  7) If +l is given then we are setting up a log10 array which is
 	 *	   equidistant in log10(t).  Here, inc must be 1, 2, or 3 exclusively
 	 *	   which translates into
-	 *      7) If +b is given then we are setting up a log2 array which is
+	 *  8) If +b is given then we are setting up a log2 array which is
 	 *	   equidistant in log2(t).  Here, inc must be an integer and indicates
 	 *	   the log2 increment.
-	 *      8) If +a is given then we will add the output array as a new output column.
-	 *      9) If +e is given when only an increment is given then we must keep the
+	 *  9) If +a is given then we will add the output array as a new output column.
+	 * 10) If +e is given when only an increment is given then we must keep the
 	 *	   increment exact and adjust max to ensure (max-min)/inc is an integer.
 	 *	   The default adjusts inc instead, if flag GMT_ARRAY_ROUND is passed.
 	 *     10) Since -T is a command-line option we enforce ISO calendar string format
@@ -16720,13 +16722,13 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		return (GMT_NOERROR);
 	}
 
-	if (gmt_validate_modifiers (GMT, argument, option, "abelnt", GMT_MSG_ERROR)) return (GMT_PARSE_ERROR);
+	if (gmt_validate_modifiers (GMT, argument, option, GMT_ARRAY_MODIFIERS, GMT_MSG_ERROR)) return (GMT_PARSE_ERROR);
 
-	if ((m = gmt_first_modifier (GMT, argument, "abelnt"))) {	/* Process optional modifiers +a, +b, +e, +l, +n, +t */
+	if ((m = gmt_first_modifier (GMT, argument, GMT_ARRAY_MODIFIERS))) {	/* Process optional modifiers +a, +b, +e, +i, +l, +n, +t */
 		unsigned int pos = 0;	/* Reset to start of new word */
 		unsigned int n_errors = 0;
 		char p[GMT_LEN32] = {""};
-		while (gmt_getmodopt (GMT, 'T', m, "abelnt", &pos, p, &n_errors) && n_errors == 0) {
+		while (gmt_getmodopt (GMT, 'T', m, GMT_ARRAY_MODIFIERS, &pos, p, &n_errors) && n_errors == 0) {
 			switch (p[0]) {
 				case 'a':	/* Add spatial distance column to output */
 					T->add = true;
@@ -16736,6 +16738,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 					break;
 				case 'e':	/* Increment must be honored exactly */
 					T->exact_inc = true;
+					break;
+				case 'i':	/* Gave reciprocal increment; calculate inc later */
+					T->reciprocal = true;
 					break;
 				case 'n':	/* Gave number of points instead; calculate inc later */
 					T->count = true;
@@ -16759,7 +16764,10 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		if (m) m[0] = '\0';	/* Chop off the plus */
 		T->count = true;
 	}
-
+	if (T->count && T->reciprocal) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Cannot give both +i and +n\n", option);
+		return GMT_PARSE_ERROR;
+	}
 	/* 2. Dealt with the file option, now parse [<min/max/]<inc> */
 	if ((ns = sscanf (argument, "%[^/]/%[^/]/%s", txt[GMT_X], txt[GMT_Y], txt[GMT_Z])) < 1) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Must specify valid min[/max[/inc[<unit>|+n]]] option\n", option);
@@ -17005,6 +17013,8 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		T->max = *max;
 	if (T->count)	/* This means we gave a count instead of increment  */
 		inc = (T->max - T->min) / (T->inc - 1.0);
+	else if (T->reciprocal)	/* This means we gave the reciprocal increment  */
+		inc = 1.0 / T->inc;
 
 	t0 = T->min;	t1 = T->max;
 	if (T->temporal && GMT->current.setting.time_system.unit != T->unit) {	/* Dealing with calendar time and must update time unit */
