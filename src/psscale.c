@@ -1624,6 +1624,12 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 	if (P->has_range)	/* Convert from normalized to default CPT z-range */
 		gmt_stretch_cpt (GMT, P, 0.0, 0.0);
 
+	if (P->categorical && (Ctrl->D.emode & 1 || Ctrl->D.emode & 2)) {
+			GMT_Report (API, GMT_MSG_WARNING, "Option -D: Cannot select back/fore-ground extender for categorical CPT\n");
+			if (Ctrl->D.emode & 1) Ctrl->D.emode -= 1;
+			if (Ctrl->D.emode & 2) Ctrl->D.emode -= 2;
+	}
+
 	if (Ctrl->G.active) {	/* Attempt truncation */
 		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, P, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 		if (Ptrunc == NULL)

@@ -8914,10 +8914,20 @@ int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
 	if (gmt_M_is_dnan (value)) return (GMT_NAN - 3);	/* Set to NaN color */
 	if (P->is_wrapping)	/* Wrap to fit CPT range - we can never return back- or fore-ground colors */
 		value = MOD (value - P->data[0].z_low, P->wrap_length) + P->data[0].z_low;	/* Now within range */
-	else if (value > P->data[P->n_colors-1].z_high)
+	else if (value > P->data[P->n_colors-1].z_high) {
+		if (P->categorical) {	/* Set to NaN for categorical */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+			return GMT_NAN - 3;
+		}
 		return (GMT_FGD - 3);	/* Set to foreground color */
-	else if (value < P->data[0].z_low)
+	}
+	else if (value < P->data[0].z_low) {
+		if (P->categorical) {	/* Set to NaN for categorical */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+			return GMT_NAN - 3;
+		}
 		return (GMT_BGD - 3);	/* Set to background color */
+	}
 
 	/* Must search for correct index */
 
@@ -8939,7 +8949,14 @@ int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
 			hi = mid;
 	}
 	index = lo;
-	if (value >= P->data[index].z_low && value < P->data[index].z_high) return (index);
+	
+	if (value >= P->data[index].z_low && value < P->data[index].z_high) {
+		if (P->categorical && !doubleAlmostEqualZero (P->data[index].z_low, value)) {
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+			index = GMT_NAN - 3;	/* Since categorical data is not on an interval */
+		}
+		return (index);
+	}
 
 	/* Slow search in case the table was not sorted
 	 * No idea whether it is possible, but it most certainly
@@ -8949,6 +8966,10 @@ int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
 	index = 0;
 	while (index < P->n_colors && ! (value >= P->data[index].z_low && value < P->data[index].z_high) ) index++;
 	if (index == P->n_colors) index--;	/* Because we use <= for last range */
+	if (P->categorical && !doubleAlmostEqualZero (P->data[index].z_low, value)) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+		index = GMT_NAN - 3;	/* Since categorical data is not on an interval */
+	}
 	return (index);
 }
 
