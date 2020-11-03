@@ -1056,8 +1056,8 @@ etc) it would be meaningless to compute average values (what would 1.5
 mean?). For such data a special format of the CPTs are provided.
 Here, each category is assigned a unique key, a color or pattern, and an
 optional label (usually the category name) marked by a leading
-semi-colon. Keys must be monotonically increasing but do not need to be
-consecutive. The format is
+semi-colon. Keys (if numerical) must be monotonically increasing but do
+not need to be consecutive. The format is
 
 +-----------------+--------+--------------+
 | key\ :sub:`1`   | *Fill* | [;\ *label*] |
