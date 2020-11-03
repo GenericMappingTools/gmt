@@ -4623,6 +4623,7 @@ GMT_LOCAL void gmtio_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATA
 			strcat (GMT->current.setting.format_clock_out, "x");
 			w_max--;
 		}
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "To prevent loss of time-series precision we have changed FORMAT_CLOCK_OUT to %s\n", GMT->current.setting.format_clock_out);
 		gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
 	}
 }
