@@ -273,8 +273,12 @@ GMT_LOCAL double grdview_get_z_ave (double v[], double next_up, uint64_t n) {
 	return (z_ave / n);
 }
 
-GMT_LOCAL void grdview_add_node (double x[], double y[], double z[], double v[], uint64_t *k, unsigned int node, double X_vert[], double Y_vert[], gmt_grdfloat topo[], gmt_grdfloat zgrd[], uint64_t ij) {
+GMT_LOCAL void grdview_add_node (bool used[], double x[], double y[], double z[], double v[], uint64_t *k, unsigned int node, double X_vert[], double Y_vert[], gmt_grdfloat topo[], gmt_grdfloat zgrd[], uint64_t ij) {
 	/* Adds a corner node to list of points and increments *k */
+	if (used) {	/* If we keep track of which nodes we have used then we do not want to use one twice */
+		if (used[node]) return;
+		used[node] = true;
+	}
 	x[*k] = X_vert[node];
 	y[*k] = Y_vert[node];
 	z[*k] = topo[ij];
@@ -292,6 +296,7 @@ GMT_LOCAL void grdview_paint_it (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, str
 	index = gmt_get_rgb_from_z (GMT, P, z, rgb);	/* This sets P->skip as well */
 	if (PH->skip) return;	/* Skip this z-slice */
 
+	PSL_comment (PSL, "Paint polygon z = %g\n", z);
 	/* Now we must paint, with colors or patterns */
 
 	if ((index >= 0 && (f = P->data[index].fill) != NULL) || (index < 0 && (f = P->bfn[index+3].fill) != NULL))	/* Pattern */
@@ -799,7 +804,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 	gmt_grdfloat *saved_data_pointer = NULL;
 
-	double cval, x_left, x_right, y_top, y_bottom, small = GMT_CONV4_LIMIT, z_ave;
+	double cval, x_left, x_right, y_top, y_bottom, small = FLT_EPSILON, z_ave;
 	double inc2[2], wesn[4] = {0.0, 0.0, 0.0, 0.0}, z_val, x_pixel_size, y_pixel_size;
 	double this_intensity = 0.0, next_up = 0.0, xmesh[4], ymesh[4], rgb[4];
 	double *x_imask = NULL, *y_imask = NULL, x_inc[4], y_inc[4], *x = NULL, *y = NULL;
@@ -1062,8 +1067,6 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		n_edges = Z->header->n_rows * (urint (ceil (Z->header->n_columns / 16.0)));
 		edge = gmt_M_memory (GMT, NULL, n_edges, unsigned int);
 		binij = gmt_M_memory (GMT, NULL, Topo->header->nm, struct GRDVIEW_BIN);
-		small = GMT_CONV4_LIMIT * (Z->header->z_max - Z->header->z_min);
-		if (small < 1.0e-7) small = 1.0e-7;	/* Make sure it is not smaller than single-precision EPS */
 		if ((Z_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, Z)) == NULL) {
 			gmt_M_free (GMT, edge);		gmt_M_free (GMT, binij);
 			Return (API->error);	/* Original copy of Z grid used for contouring */
@@ -1723,6 +1726,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 						this_intensity = Ctrl->I.value;
 				}
 
+				PSL_comment (PSL, "Filled surface bin (%d, %d)\n", j, i);
 				/* Get mesh polygon */
 
 				X_vert[0] = X_vert[3] = x_left;		X_vert[1] = X_vert[2] = x_right;
@@ -1794,7 +1798,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 							low = corner[p];
 							n = 0;
-							grdview_add_node (x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
+							grdview_add_node (NULL, x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
 							next_side = low;
 							way = 0;
 
@@ -1856,8 +1860,8 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 								p1 = (next_side % 3) ? 2 : 0;
 								p2 = (next_side % 3) ? 0 : 2;
 							}
-							grdview_add_node (x, y, z, v, &n, p1, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p1]);
-							grdview_add_node (x, y, z, v, &n, p2, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p2]);
+							grdview_add_node (NULL, x, y, z, v, &n, p1, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p1]);
+							grdview_add_node (NULL, x, y, z, v, &n, p2, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p2]);
 
 							/* Compute the xy from the xyz triplets */
 
@@ -1873,6 +1877,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 					} /* End Saddle section */
 					else {
+						bool nused[4] = {false, false, false, false};	/* PW: Used to avoid using nodes twice - I did not extend this to the saddle case as not sure if it is needed */
 						/* Ok, here we do not have to worry about saddles */
 
 						/* Find lowest corner (id = low) */
@@ -1882,7 +1887,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 						/* Set this points as the start anchor */
 
 						n = 0;
-						grdview_add_node (x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
+						grdview_add_node (nused, x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
 						start_side = next_side = low;
 						way = 1;
 
@@ -1907,7 +1912,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 							while (!(next_side == entry_side || next_side == exit_side)) {	/* Must add intervening corner */
 								if (way == 1) next_side = (next_side + 1) % 4;
-								grdview_add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
+								grdview_add_node (nused, x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
 								if (way == -1) next_side = (next_side - 1 + 4) % 4;
 							}
 							if (next_side == entry_side) {	/* Just hook up */
@@ -1922,7 +1927,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 							while (!(start_side == next_side)) {	/* Must add intervening corner */
 								if (way == 1) next_side = (next_side + 1) % 4;
-								grdview_add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
+								grdview_add_node (nused, x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
 								if (way == -1) next_side = (next_side - 1 + 4) % 4;
 							}
 
@@ -1950,7 +1955,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 						while (!(start_side == next_side)) {	/* Must add intervening corner */
 							if (way == 1) next_side = (next_side +1) % 4;
-							grdview_add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
+							grdview_add_node (nused, x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
 							if (way == -1) next_side = (next_side - 1 + 4) % 4;
 						}
 
