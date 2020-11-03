@@ -4598,6 +4598,7 @@ GMT_LOCAL void gmtio_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATA
 
 	if (GMT->common.b.active[GMT_OUT]) return;	/* Nothing to do if using binary i/o */
 	if (D == NULL || D->table == NULL || D->table[0]->segment == NULL || D->table[0]->segment[0] == NULL) return;	/* Nothing to work with */
+	if (GMT->current.setting.time_system.unit != 's') return;	/* Current unit is not second */
 	if (strcmp (GMT->current.setting.format_clock_out, "hh:mm:ss")) return;	/* User has changed from default format - do nothing */
 	for (col = 0; !abstime_found && col < D->n_columns; col++)
 		if (GMT->current.io.col_type[GMT_OUT][col] == GMT_IS_ABSTIME) abstime_found = true;
@@ -4626,6 +4627,25 @@ GMT_LOCAL void gmtio_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATA
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "To prevent loss of time-series precision we have changed FORMAT_CLOCK_OUT to %s\n", GMT->current.setting.format_clock_out);
 		gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
 	}
+}
+
+void gmt_increase_abstime_format_precision (struct GMT_CTRL *GMT, unsigned int col, double dt) {
+	/* Adjust output format for absolute time if we need more precision in the seconds */
+	double sub;
+	int w;
+	if (GMT->current.io.col_type[GMT_OUT][col] != GMT_IS_ABSTIME) return;	/* Not an abstime column */
+	if (GMT->current.setting.time_system.unit != 's') return;	/* Current unit is not second */
+	if (strcmp (GMT->current.setting.format_clock_out, "hh:mm:ss")) return;	/* User has changed from default format - do nothing */
+	sub = dt - floor (dt);	/* Fractional second */
+	if (gmt_M_is_zero (sub)) return;	/* Not checking zeros for width */
+	w = gmtio_get_precision_width (GMT, sub);	/* Get desired precision */
+	strcat (GMT->current.setting.format_clock_out, ".");
+	while (w) {
+		strcat (GMT->current.setting.format_clock_out, "x");
+		w--;
+	}
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "To prevent loss of time-series precision we have changed FORMAT_CLOCK_OUT to %s\n", GMT->current.setting.format_clock_out);
+	gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
 }
 
 /*! . */
