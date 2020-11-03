@@ -1877,7 +1877,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 					} /* End Saddle section */
 					else {
-						bool nused[4] = {false, false, false, false};
+						bool nused[4] = {false, false, false, false};	/* PW: Used to avoid using nodes twice - I did not extend this to the saddle case as not sure if it is needed */
 						/* Ok, here we do not have to worry about saddles */
 
 						/* Find lowest corner (id = low) */
