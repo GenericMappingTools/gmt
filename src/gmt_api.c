@@ -11578,6 +11578,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 
 	/* 2a. Get the option key array for this module */
 	key = gmtapi_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */
+	if (n_keys == 0) {		/* gmtset and begin for instances have no keys */
+		*n = 0;
+		return NULL;
+	}
 
 	if (gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) {
 		char txt[4] = {""};
