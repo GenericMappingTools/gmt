@@ -1595,7 +1595,7 @@ GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 	for (k = 0; k < 2; k++) {
 		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) continue;
 
-		dz = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Z].item[item[k]]);
+		dz = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Z].item[item[k]]);	/* Gridline spacing in z */
 
 		if (!GMT->current.map.frame.axis[GMT_Z].item[item[k]].active || fabs(dz) == 0.0) continue;
 
@@ -1609,8 +1609,8 @@ GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 			zz = gmt_z_to_zz (GMT, z[i]);
 			PSL_plotsegment (PSL, min, zz, max, zz);
 		}
-		z0 = gmt_z_to_zz (GMT, z[0]);
-		z1 = gmt_z_to_zz (GMT, z[nz-1]);
+		z0 = gmt_z_to_zz (GMT, zmin);	/* These are the projected min and max z values, i.e., the ends of vertical gridlines on the back walls */
+		z1 = gmt_z_to_zz (GMT, zmax);
 
 		dd = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[qplane].item[item[k]]);
 		if (!GMT->current.map.frame.axis[qplane].item[item[k]].active || fabs(dd) == 0.0) continue;
