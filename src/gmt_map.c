@@ -2730,6 +2730,12 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.clip = &map_wesn_clip;
 	}
 	else {
+		double VE = GMT->current.proj.scale[GMT_Y] / GMT->current.proj.scale[GMT_X];
+		if (VE < 1.0)
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Linear projection implies x-axis distance exaggeration relative to the y-axis by a factor of %g\n", VE);
+		else if (VE > 1.0)
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Linear projection implies y-axis distance exaggeration relative to the x-axis by a factor of %g\n", VE);
+
 		GMT->current.map.outside = &gmtmap_rect_outside;
 		GMT->current.map.crossing = &gmtmap_rect_crossing;
 		GMT->current.map.overlap = &gmtmap_cartesian_overlap;
