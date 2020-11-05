@@ -180,7 +180,11 @@ FORMAT Parameters
         without leading zeros (default uses fixed width formats). As
         examples, try hh:mm, hh.mm.ss, hh:mm:ss.xxxx, hha.m., etc.
         [hh:mm:ss]. If the format is simply - then no clock is output and
-        the ISO T divider between date and clock is omitted.
+        the ISO T divider between date and clock is omitted.  **Note**: When
+        high-precision time-series are written to ASCII output the default
+        format may not be adequate.  Many modules automatically handle
+        this by extending the format, but you should be alert of unusual
+        situations where data may appear truncated to nearest second.
 
     **FORMAT_DATE_IN**
         Formatting template that indicates how an input date string is

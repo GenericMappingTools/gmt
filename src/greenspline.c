@@ -2036,6 +2036,9 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 #endif
 
+
+	if (dimension == 1) gmt_increase_abstime_format_precision (GMT, GMT_X, Ctrl->I.inc[GMT_X]);	/* In case we need more sub-second precision output */
+
 	if (Ctrl->E.active) {	/* Need to duplicate the data since SVD destroys it */
 		orig_obs = gmt_M_memory (GMT, NULL, nm, double);
 		gmt_M_memcpy (orig_obs, obs, nm, double);

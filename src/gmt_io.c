@@ -4572,6 +4572,82 @@ int gmtlib_nc_get_att_text (struct GMT_CTRL *GMT, int ncid, int varid, char *nam
 	return status;
 }
 
+GMT_LOCAL int gmtio_get_precision_width (struct GMT_CTRL *GMT, double x) {
+	/* Here, x < 1 seconds and we want to determine an approximate precision with max truncation error of GMT_CONV4_LIMIT */
+	int k = -1;
+	double trunc_err, inv_x = 1.0 / x;
+	static double power_U[9] = {1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9};
+	static double power_D[9] = {1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9};
+
+	/* Here we compute |D-T|/D, where D is the incoming dt and T is the value recovered if printed using k decimals.
+	 * We want this relative truncation error to be < 10^-4 */
+	do {
+		k++;	/* First time k becomes 0 */
+		trunc_err = fabs (x - rint (x * power_U[k]) * power_D[k]) * inv_x;
+		// fprintf (stderr, "k = %d x = %g trunc_err = %g\n", k, x, trunc_err);
+	} while (k < 8 && trunc_err > GMT_CONV4_LIMIT);	/* Stop at nanoseconds if things go off the rails */
+	return (k + 1);
+}
+
+GMT_LOCAL void gmtio_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
+	bool abstime_found = false;
+	unsigned int col, row;
+	int w_max = 0, this_w;
+	double sub;
+	struct GMT_DATASEGMENT *S = NULL;
+
+	if (GMT->common.b.active[GMT_OUT]) return;	/* Nothing to do if using binary i/o */
+	if (D == NULL || D->table == NULL || D->table[0]->segment == NULL || D->table[0]->segment[0] == NULL) return;	/* Nothing to work with */
+	if (GMT->current.setting.time_system.unit != 's') return;	/* Current unit is not second */
+	if (strcmp (GMT->current.setting.format_clock_out, "hh:mm:ss")) return;	/* User has changed from default format - do nothing */
+	for (col = 0; !abstime_found && col < D->n_columns; col++)
+		if (GMT->current.io.col_type[GMT_OUT][col] == GMT_IS_ABSTIME) abstime_found = true;
+	if (!abstime_found) return;	/* No absolute time columns to worry about */
+
+	/* If we get here we have ASCII absolute time output and the default FORMAT_CLOCK_OUT remains in effect.
+	 * To assist the user we will scan the first segment's rows up to MIN (20, n_rows) and make our best guess
+	 * from that subset.  We will give information messages about our decision but not a warning. */
+
+	S = D->table[0]->segment[0];	/* The first segment */
+	for (col = 0; col < D->n_columns; col++) {
+		if (GMT->current.io.col_type[GMT_OUT][col] != GMT_IS_ABSTIME) continue;	/* Not an abstime column */
+		for (row = 0; row < MIN (S->n_rows, 20); row++) {	/* Maximum 20 rows are examined */
+			sub = S->data[col][row] - floor (S->data[col][row]);	/* Fractional second */
+			if (gmt_M_is_zero (sub)) continue;	/* Not checking zeros for width */
+			if ((this_w = gmtio_get_precision_width (GMT, sub)) > w_max)
+				w_max = this_w;
+		}
+	}
+	if (w_max) {	/* Need to append w_max "x" to the default format */
+		strcat (GMT->current.setting.format_clock_out, ".");
+		while (w_max) {
+			strcat (GMT->current.setting.format_clock_out, "x");
+			w_max--;
+		}
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "To prevent loss of time-series precision we have changed FORMAT_CLOCK_OUT to %s\n", GMT->current.setting.format_clock_out);
+		gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
+	}
+}
+
+void gmt_increase_abstime_format_precision (struct GMT_CTRL *GMT, unsigned int col, double dt) {
+	/* Adjust output format for absolute time if we need more precision in the seconds */
+	double sub;
+	int w;
+	if (GMT->current.io.col_type[GMT_OUT][col] != GMT_IS_ABSTIME) return;	/* Not an abstime column */
+	if (GMT->current.setting.time_system.unit != 's') return;	/* Current unit is not second */
+	if (strcmp (GMT->current.setting.format_clock_out, "hh:mm:ss")) return;	/* User has changed from default format - do nothing */
+	sub = dt - floor (dt);	/* Fractional second */
+	if (gmt_M_is_zero (sub)) return;	/* Not checking zeros for width */
+	w = gmtio_get_precision_width (GMT, sub);	/* Get desired precision */
+	strcat (GMT->current.setting.format_clock_out, ".");
+	while (w) {
+		strcat (GMT->current.setting.format_clock_out, "x");
+		w--;
+	}
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "To prevent loss of time-series precision we have changed FORMAT_CLOCK_OUT to %s\n", GMT->current.setting.format_clock_out);
+	gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
+}
+
 /*! . */
 int gmtlib_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, struct GMT_DATASET *D, bool use_GMT_io, int table) {
 	/* Writes an entire data set to file or stream */
@@ -4590,6 +4666,8 @@ int gmtlib_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 	else			/* Force ASCII mode */
 		strcpy (open_mode, (append) ? "a" : "w");
 	GMT->current.io.record_type[GMT_OUT] = D->type;
+
+	gmtio_check_abstime_format (GMT, D);	/* If some columns are absolute time destined for ASCII formatting, we may need to change FORMAT_CLOCK_OUT template */
 
 	/* Convert any destination type to stream */
 
