@@ -321,7 +321,10 @@ GMT Miscellaneous Parameters
         for 6: obsolete syntax from early GMT 5 will be considered errors.
 
     **GMT_DATA_SERVER**
-        Address of the data directory on the remote server [The SOEST server].
+        URL of the GMT data server [The **Oceania** server].
+
+        Visit https://www.generic-mapping-tools.org/mirrors/ for a list of
+        active mirrors of the GMT data server.
 
     **GMT_DATA_SERVER_LIMIT**
         Upper limit on the size of remote file to download [unlimited].  Give
