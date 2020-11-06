@@ -907,8 +907,8 @@ GMT_LOCAL void gmtplot_fancy_frame_straight_outline (struct GMT_CTRL *GMT, struc
 		scale = 0.5;
 		++kn;
 	}
-	axis = side & 2;	/* Gives 0 for GMT_X and 1 for GMT_Y */
-	T = &GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_UPPER];
+	axis = side % 2;	/* Gives 0 for GMT_X and 1 for GMT_Y */
+	T = &GMT->current.map.frame.axis[axis].item[GMT_TICK_UPPER];
 	if (!T->active) return;
 
 	gmt_geo_to_xy (GMT, lonA, latA, &x[0], &y[0]);
@@ -5629,6 +5629,12 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	struct PSL_CTRL *PSL= GMT->PSL;
 
 	/* 0. Determine if we need to be here and set a few parameters */
+
+	/* If a use only gave -Bx<stuff> or -By<stuff> then we override the -BWESN settings to turn off the unspecified axis */
+	if (!GMT->current.map.frame.set_frame[GMT_PRIMARY]) {
+		if (GMT->current.map.frame.set[GMT_Y] && !GMT->current.map.frame.set[GMT_X]) GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT_AXIS_NONE;
+		if (GMT->current.map.frame.set[GMT_X] && !GMT->current.map.frame.set[GMT_Y]) GMT->current.map.frame.side[W_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT_AXIS_NONE;
+	}
 
 	if (!GMT->common.B.active[GMT_PRIMARY] && !GMT->common.B.active[GMT_SECONDARY]) return;	/* No frame annotation/ticks/gridlines specified */
 
