@@ -4266,6 +4266,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 			GMT->current.map.frame.draw = true;	/* But we do wish to draw the frame */
 			if (GMT->common.J.zactive) GMT->current.map.frame.drawz = true;	/* Also brings z-axis into contention */
 			GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Since checkerboard without intervals look stupid */
+			GMT->current.map.frame.set[no] = true;	/* Since we want this axis drawn */
 			continue;
 		}
 
