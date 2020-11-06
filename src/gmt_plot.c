@@ -5630,7 +5630,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 	/* 0. Determine if we need to be here and set a few parameters */
 
-	/* If a use only gave -Bx<stuff> or -By<stuff> then we override the -BWESN settings to turn off the unspecified axis */
+	/* If a user only gave -Bx<stuff> OR -By<stuff> then we override the -BWESN settings to turn off the unspecified axes */
 	if (!GMT->current.map.frame.set_frame[GMT_PRIMARY]) {
 		if (GMT->current.map.frame.set[GMT_Y] && !GMT->current.map.frame.set[GMT_X]) GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT_AXIS_NONE;
 		if (GMT->current.map.frame.set[GMT_X] && !GMT->current.map.frame.set[GMT_Y]) GMT->current.map.frame.side[W_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT_AXIS_NONE;
