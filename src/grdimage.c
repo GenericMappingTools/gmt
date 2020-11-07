@@ -1478,7 +1478,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		double inc[2] = {0.0, 0.0};
 
 		if (got_z_grid && P && P->categorical && (GMT->common.n.interpolant != BCR_NEARNEIGHBOR || GMT->common.n.antialias)) {
-			GMT_Report (API, GMT_MSG_WARNING, "Your CPT is categorical. Enabling --n+a to avoid interpolation across categories\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Your CPT is categorical. Enabling --nn+a to avoid interpolation across categories.\n");
 			GMT->common.n.interpolant = BCR_NEARNEIGHBOR;
 			GMT->common.n.antialias = false;
 			GMT->common.n.threshold = 0.0;
