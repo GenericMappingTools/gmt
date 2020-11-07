@@ -487,9 +487,16 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		double dx = L_off * cosd (30.0), dy = L_off * sind (30.0);
 		int form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 		PSL_comment (PSL, "Placing vertices labels\n");
-		PSL_plottext (PSL, -dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_X], 0.0, PSL_TR, form);
-		PSL_plottext (PSL, tri_x[1]+dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Y], 0.0, PSL_TL, form);
-		PSL_plottext (PSL, tri_x[2], tri_y[2]+L_off, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Z], 0.0, PSL_BC, form);
+		if (Ctrl->D.active) {
+			PSL_plottext (PSL, -dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_X], 0.0, PSL_TR, form);
+			PSL_plottext (PSL, tri_x[1]+dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Y], 0.0, PSL_TL, form);
+			PSL_plottext (PSL, tri_x[2], tri_y[2]+L_off, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Z], 0.0, PSL_BC, form);
+		}
+		else {
+			PSL_plottext (PSL, -dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Z], 0.0, PSL_TR, form);
+			PSL_plottext (PSL, tri_x[1]+dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_X], 0.0, PSL_TL, form);
+			PSL_plottext (PSL, tri_x[2], tri_y[2]+L_off, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Y], 0.0, PSL_BC, form);
+		}
 	}
 
 	/* Now do axis annotations.  First set array args per axis: */
