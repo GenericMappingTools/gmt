@@ -18,7 +18,7 @@ gmt pstext -R0/1/0/0.9 -JX6.5c/3c -O -K -F+f12p+jBL -X-3c -Y8c -B0 << EOF >> $ps
 0.05	0.7	a = 1, b = c = 0 [red]
 0.05	0.5	b = 1, a = c = 0 [green]
 0.05	0.3	c = 1, a = b = 0 [blue]
-0.05	0.1	a = 0.4 b = 0.2 c = 0.5 [yellow]
+0.05	0.1	a = 0.3 b = 0.2 c = 0.5 [yellow]
 EOF
 # Now plot again with clockwise axes directions
 gmt psternary t.txt -R0/100/0/100/0/100 -JX11c -O -Baafg+l"A"+u" %" -Bbafg+l"B"+u" %" \
