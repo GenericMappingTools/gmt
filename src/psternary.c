@@ -334,10 +334,13 @@ GMT_LOCAL char * psternary_get_B_setting (struct GMT_OPTION *B) {
 
 GMT_LOCAL void psternary_abc_to_xy (double a, double b, double c, bool reverse, double *x, double *y) {
 	double s;
-	if (reverse) {	/* All axes are reversed in direction */
-		a = 1.0 - a;
-		b = 1.0 - b;
-		c = 1.0 - c;
+	/* Converts (a,b,c) to (x,y) assuming a = 1 (b = c = 0) is (0,0), b = 1 (a = c = 0) is (1,0) and c = 1 (a = b = 0) is (0.5, 0.866..).
+	 * Since our default setup is the opposite of this we reverse a,b,c if reverse is false */
+	if (!reverse) {	/* All axes are reversed in direction */
+		double tmp = c;
+		c = b;
+		b = a;
+		a = tmp;
 	}
 	s = (a + b + c);
 	*x = 0.5 * (2.0 * b + c) / s;
