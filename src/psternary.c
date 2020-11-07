@@ -120,13 +120,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-J Use -JX<width> to set the plot base width.\n");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Give labels for each of the 3 vertices [no labels].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Place labels where each of the three vertices reach 100%% [no labels].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Specify any label as - to skip that label only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Convert (a,b,c) to normalized (x,y) and write to standard output.  No plotting occurs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border [clipping is on]\n");
 	GMT_Option (API, "O,P,R");
 	//GMT_Message (API, GMT_TIME_NONE, "\t-Q Selects contouring.  Optionally append <cut>.  If given, then we do not draw\n");
 	//GMT_Message (API, GMT_TIME_NONE, "\t   closed contours with less than <cut> points [Draw all contours].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and symbol size (in %s).  See psxy for full list of symbols.\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and symbol size (in %s).  See plot|psxy for full list of symbols.\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s]:", 15);
@@ -488,14 +489,14 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		int form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 		PSL_comment (PSL, "Placing vertices labels\n");
 		if (Ctrl->D.active) {
-			PSL_plottext (PSL, -dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_X], 0.0, PSL_TR, form);
-			PSL_plottext (PSL, tri_x[1]+dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Y], 0.0, PSL_TL, form);
-			PSL_plottext (PSL, tri_x[2], tri_y[2]+L_off, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Z], 0.0, PSL_BC, form);
+			if (strcmp (Ctrl->L.vlabel[GMT_X], "-")) PSL_plottext (PSL, -dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_X], 0.0, PSL_TR, form);
+			if (strcmp (Ctrl->L.vlabel[GMT_Y], "-")) PSL_plottext (PSL, tri_x[1]+dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Y], 0.0, PSL_TL, form);
+			if (strcmp (Ctrl->L.vlabel[GMT_Z], "-")) PSL_plottext (PSL, tri_x[2], tri_y[2]+L_off, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Z], 0.0, PSL_BC, form);
 		}
 		else {
-			PSL_plottext (PSL, -dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Z], 0.0, PSL_TR, form);
-			PSL_plottext (PSL, tri_x[1]+dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_X], 0.0, PSL_TL, form);
-			PSL_plottext (PSL, tri_x[2], tri_y[2]+L_off, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Y], 0.0, PSL_BC, form);
+			if (strcmp (Ctrl->L.vlabel[GMT_Z], "-")) PSL_plottext (PSL, -dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Z], 0.0, PSL_TR, form);
+			if (strcmp (Ctrl->L.vlabel[GMT_X], "-")) PSL_plottext (PSL, tri_x[1]+dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_X], 0.0, PSL_TL, form);
+			if (strcmp (Ctrl->L.vlabel[GMT_Y], "-")) PSL_plottext (PSL, tri_x[2], tri_y[2]+L_off, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Y], 0.0, PSL_BC, form);
 		}
 	}
 

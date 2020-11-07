@@ -17,6 +17,7 @@ Synopsis
 [ |-R|\ *amin*\ /*amax*\ /*bmin*\ /*bmax*\ /*cmin*\ /*cmax* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
+[ |-D| ]
 [ |-G|\ *fill* ]
 [ |-L|\ *a*\ /*b*\ /*c* ]
 [ |-M| ]

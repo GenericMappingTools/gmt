@@ -43,6 +43,11 @@ Optional Arguments
     shifted over by one column (optional size would be 5th rather than 4th
     field, etc.).  If modern mode and no argument is given then we select the current CPT.
 
+.. _-D:
+
+**-D**
+    Let positive axes direction be clock-wise [Default lets the *a, b, c* axes be
+    positive in a counter-clockwise direction].
 .. _-G:
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
@@ -58,9 +63,10 @@ Optional Arguments
 .. _-L:
 
 **-L**\ *a*\ /*b*\ /*c*
-    Set the labels for the three diagram vertices [none].  These are placed a
-    distance of 3 times the :term:`MAP_LABEL_OFFSET`
-    setting from their respective corners.
+    Set the labels for the three diagram vertices where the component is 100% [none].
+    These are placed a distance of three times the :term:`MAP_LABEL_OFFSET`
+    setting from their respective corners.  To skip any one of then, specify that
+    label as -.
 
 .. _-M:
 
