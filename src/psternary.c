@@ -35,7 +35,7 @@
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqstxy"
 
 struct PSTERNARY_CTRL {
-	struct PSTERNARY_A {	/* -A[-][labelinfo] */
+	struct PSTERNARY_A {	/* -A[-][labelinfo] NOT IMPLEMENTED YET */
 		bool active;
 		char *string;	/* Since we will simply pass this on to pscontour */
 	} A;
@@ -43,6 +43,9 @@ struct PSTERNARY_CTRL {
 		bool active;
 		char *string;	/* Since we will simply pass this on to psxy or pscontour */
 	} C;
+	struct PSTERNARY_D {	/* -D */
+		bool active;
+	} D;
 	struct PSTERNARY_G {	/* -G<fill> */
 		bool active;
 		char *string;	/* Since we will simply pass this on to psxy */
@@ -99,7 +102,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> [-B<args> or -Ba<args> -Bb<args> -Bc<args>] [-C<cpt>] [-G<fill>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> [-B<args> or -Ba<args> -Bb<args> -Bc<args>] [-C<cpt>] [-D] [-G<fill>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-JX<width>] %s[-L<a>/<b/<c> ] [-M] [-N] %s%s [-S[<symbol>][<size>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<amin>/<amax>/<bmin>/<bmax>/<cmin>/<cmax>] [%s] [%s] [-W[<pen>][<attr>]]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] %s[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT);
@@ -113,6 +116,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ba<args> -Bb<args> -Bc<args> or a single -B<args> for all axes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign symbol colors based on z-value in 3rd column (with -S), or\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   specify contours to be drawn (with -Q).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Reverse positive axes direction [Default is positive counter-clockwise]\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-J Use -JX<width> to set the plot base width.\n");
 	GMT_Option (API, "K");
@@ -162,6 +166,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_
 				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.string);
 				if (opt->arg[0]) Ctrl->C.string = strdup (opt->arg);
+				break;
+			case 'D':	/* Change direction of positive axes */
+				Ctrl->D.active = true;
 				break;
 			case 'G':	/* Fill */
 				Ctrl->G.active = true;
@@ -325,8 +332,14 @@ GMT_LOCAL char * psternary_get_B_setting (struct GMT_OPTION *B) {
 
 #define SQRT3 1.73205080756887729352	/* sqrt(3) */
 
-GMT_LOCAL void psternary_abc_to_xy (double a, double b, double c, double *x, double *y) {
-	double s = (a + b + c);
+GMT_LOCAL void psternary_abc_to_xy (double a, double b, double c, bool reverse, double *x, double *y) {
+	double s;
+	if (reverse) {	/* All axes are reversed in direction */
+		a = 1.0 - a;
+		b = 1.0 - b;
+		c = 1.0 - c;
+	}
+	s = (a + b + c);
 	*x = 0.5 * (2.0 * b + c) / s;
 	*y = 0.5 * SQRT3 * c / s;
 }
@@ -385,7 +398,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 			for (row = 0; row < S->n_rows; row++) {
-				psternary_abc_to_xy (S->data[GMT_X][row], S->data[GMT_Y][row], S->data[GMT_Z][row], &x, &y);
+				psternary_abc_to_xy (S->data[GMT_X][row], S->data[GMT_Y][row], S->data[GMT_Z][row], Ctrl->D.active, &x, &y);
 				S->data[GMT_X][row] = x;	S->data[GMT_Y][row] = y;
 				for (col = GMT_Z + 1; col < D->n_columns; col++)	/* Override c column by moving columns inward */
 					S->data[col-1][row] = S->data[col][row];
@@ -480,7 +493,9 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	x_origin[0] = 0.0;	y_origin[0] = 0.0;	rot[0] = 0.0;	sign[0] = +1;	side[0] = GMT->current.map.frame.side[S_SIDE]; cmode[0] = 'S';	/* S_SIDE settings */
 	x_origin[1] = -width * 0.25;	y_origin[1] = 0.5 * height;	rot[1] = -60.0;	sign[1] = -1;	side[1] = GMT->current.map.frame.side[E_SIDE]; cmode[1] = 'N';	/* E_SIDE settings */
 	x_origin[2] = 0.75 * width;	y_origin[2] = -0.5 * height;	rot[2] = 60.0;	sign[2] = -1;	side[2] = GMT->current.map.frame.side[W_SIDE]; cmode[2] = 'N';	/* W_SIDE settings */
-
+	if (Ctrl->D.active) {	/* Flip positive directions */
+		for (k = 0; k <= GMT_Z; k++) sign[k] = - sign[k];
+	}
 	for (k = 0; k <= GMT_Z; k++) {	/* Plot the 3 axes for -B settings that have been stripped of gridline requests */
 		if (side[k] == 0) continue;	/* Did not want this axis drawn */
 		code = (side[k] & 2) ? cmode[k] : (char)tolower (cmode[k]);
