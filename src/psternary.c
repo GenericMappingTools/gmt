@@ -397,6 +397,9 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL)
 		Return (API->error);
 
+	if (GMT->common.J.active && !Ctrl->D.active && GMT->common.J.string[1] == '-')	/* Gave a negative width to reverse axes */
+		Ctrl->D.active = true;	/* Need to do this here given the abs_to_xy projection below */
+
 	/* Convert a,b,c[,z] to to x,y[,z] */
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table */
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
@@ -422,7 +425,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 
 	/* Here we are doing some sort of plotting */
 
-	rect[XHI] = gmt_M_to_inch (GMT, &GMT->common.J.string[1]);
+	rect[XHI] = fabs (gmt_M_to_inch (GMT, &GMT->common.J.string[1]));	/* Sign has already been dealt with via Ctrl->D.active */
 	rect[YHI] =  0.5 * SQRT3 * rect[XHI];
 	tri_x[1] = rect[XHI];	tri_x[2] = 0.5 * rect[XHI];	tri_y[2] = rect[YHI];
 	gmt_M_memcpy (wesn_orig, GMT->common.R.wesn, 6, double);
