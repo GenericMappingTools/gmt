@@ -321,10 +321,10 @@ GMT Miscellaneous Parameters
         for 6: obsolete syntax from early GMT 5 will be considered errors.
 
     **GMT_DATA_SERVER**
-        URL of the GMT data server [The **Oceania** server].
-
-        Visit https://www.generic-mapping-tools.org/mirrors/ for a list of
-        active mirrors of the GMT data server.
+        URL of the GMT data server [The **Oceania** server]. Please set to the
+        data server closest to your location for faster data download.  See
+        `Data Server Mirrors <https://www.generic-mapping-tools.org/mirrors/>`_
+        for a list of the currently available mirrors.
 
     **GMT_DATA_SERVER_LIMIT**
         Upper limit on the size of remote file to download [unlimited].  Give

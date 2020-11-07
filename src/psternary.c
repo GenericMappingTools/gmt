@@ -557,6 +557,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		if (Ctrl->C.active) {strcat (cmd, " -C"); if (Ctrl->C.string) strcat (cmd, Ctrl->C.string);}
 		else if (Ctrl->G.active) {strcat (cmd, " -G"); strcat (cmd, Ctrl->G.string);}
 		if (Ctrl->W.active) {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.string);}
+		if (Ctrl->N.active) strcat (cmd, " -N");
 		if ((error = GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to plot symbols\n");
 			Return (API->error);
