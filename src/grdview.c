@@ -951,8 +951,9 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (P->is_bw) Ctrl->Q.monochrome = true;
-		if (P->categorical && Ctrl->W.active) {
-			GMT_Report (API, GMT_MSG_ERROR, "Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
+		if (P->categorical && !(Ctrl->Q.mode == GRDVIEW_MESH || Ctrl->T.active)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Categorical data (as implied by CPT) cannot be interpolated and require -T or just -Qm.\n");
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (cpt) gmt_M_str_free (cpt);
 	}
