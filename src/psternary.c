@@ -493,7 +493,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	x_origin[0] = 0.0;	y_origin[0] = 0.0;	rot[0] = 0.0;	sign[0] = +1;	side[0] = GMT->current.map.frame.side[S_SIDE]; cmode[0] = 'S';	/* S_SIDE settings */
 	x_origin[1] = -width * 0.25;	y_origin[1] = 0.5 * height;	rot[1] = -60.0;	sign[1] = -1;	side[1] = GMT->current.map.frame.side[E_SIDE]; cmode[1] = 'N';	/* E_SIDE settings */
 	x_origin[2] = 0.75 * width;	y_origin[2] = -0.5 * height;	rot[2] = 60.0;	sign[2] = -1;	side[2] = GMT->current.map.frame.side[W_SIDE]; cmode[2] = 'N';	/* W_SIDE settings */
-	if (Ctrl->D.active) {	/* Flip positive directions */
+	if (Ctrl->D.active) {	/* Flip what is positive directions */
 		for (k = 0; k <= GMT_Z; k++) sign[k] = - sign[k];
 	}
 	for (k = 0; k <= GMT_Z; k++) {	/* Plot the 3 axes for -B settings that have been stripped of gridline requests */
