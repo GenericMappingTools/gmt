@@ -1450,10 +1450,43 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	if (got_z_grid && (gmt_whole_earth (GMT, Grid_orig->header->wesn, wesn) == 1))
 		need_to_project = true;	/* This can only happen if reading a remote global geographic grid and the central meridian differs from that of the projection */
 
+	/* Get or calculate a color palette file */
+
+	has_content = (got_z_grid) ? false : true;	/* Images always have content but grids may be all NaN */
+	if (got_z_grid) {	/* Got a single grid so need to convert z to color via a CPT */
+		if (Ctrl->C.active) {	/* Read a palette file */
+			char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file);
+			if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, Grid_orig->header->z_min, Grid_orig->header->z_max, Ctrl->C.dz)) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
+				gmt_free_header (API->GMT, &header_G);
+				gmt_free_header (API->GMT, &header_I);
+				Return (API->error);	/* Well, that did not go so well... */
+			}
+			if (cpt) gmt_M_str_free (cpt);
+			gray_only = (P && P->is_gray);	/* Flag that we are doing a gray scale image below */
+			Conf->P = P;
+			if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPTs will be ignored\n");
+		}
+		if (Ctrl->W.active) {	/* Check if there are just NaNs in the grid */
+			for (node = 0; !has_content && node < Grid_orig->header->size; node++)
+				if (!gmt_M_is_dnan (Conf->Grid->data[node])) has_content = true;
+		}
+	}
+
 	if (need_to_project) {	/* Need to resample the grid or image [and intensity grid] using the specified map projection */
 		int nx_proj = 0, ny_proj = 0;
 		double inc[2] = {0.0, 0.0};
 
+		if (got_z_grid && P && P->categorical && (GMT->common.n.interpolant != BCR_NEARNEIGHBOR || GMT->common.n.antialias)) {
+			GMT_Report (API, GMT_MSG_WARNING, "Your CPT is categorical. Enabling --n+a to avoid interpolation across categories\n");
+			GMT->common.n.interpolant = BCR_NEARNEIGHBOR;
+			GMT->common.n.antialias = false;
+			GMT->common.n.threshold = 0.0;
+			HH = gmt_get_H_hidden (Grid_orig->header);
+			HH->bcr_threshold = GMT->common.n.threshold;
+			HH->bcr_interpolant = GMT->common.n.interpolant;
+			HH->bcr_n = 1;
+		}
 		if (Ctrl->E.dpi == 0) {	/* Use input # of nodes as # of projected nodes */
 			nx_proj = Conf->n_columns;
 			ny_proj = Conf->n_rows;
@@ -1552,7 +1585,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* From here, use Grid_proj or Img_proj plus optionally Intens_proj in making the (now) Cartesian rectangular image */
 
-	has_content = (got_z_grid) ? false : true;	/* Images always have content but grids may be all NaN */
 	if (use_intensity_grid) IH = gmt_get_H_hidden (Intens_proj->header);
 	if (got_z_grid) { /* Dealing with a projected grid, so we only have one band [z]*/
 		Grid_proj->header->n_bands = 1;
@@ -1569,28 +1601,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	Conf->n_rows    = header_work->n_rows;
 	Conf->int_mode  = use_intensity_grid;
 	Conf->nm        = header_work->nm;
-
-	/* Get or calculate a color palette file */
-
-	if (got_z_grid) {	/* Got a single grid so need to convert z to color via a CPT */
-		if (Ctrl->C.active) {	/* Read a palette file */
-			char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file);
-			if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max, Ctrl->C.dz)) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
-				gmt_free_header (API->GMT, &header_G);
-				gmt_free_header (API->GMT, &header_I);
-				Return (API->error);	/* Well, that did not go so well... */
-			}
-			if (cpt) gmt_M_str_free (cpt);
-			gray_only = (P && P->is_gray);	/* Flag that we are doing a gray scale image below */
-			Conf->P = P;
-			if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPTs will be ignored\n");
-		}
-		if (Ctrl->W.active) {	/* Check if there are just NaNs in the grid */
-			for (node = 0; !has_content && node < header_work->size; node++)
-				if (!gmt_M_is_dnan (Conf->Grid->data[node])) has_content = true;
-		}
-	}
 
 	NaN_rgb = (P) ? P->bfn[GMT_NAN].rgb : GMT->current.setting.color_patch[GMT_NAN];	/* Determine which color represents a NaN grid node */
 	if (Ctrl->Q.active) {	/* Want colormasking via the grid's NaN entries */
