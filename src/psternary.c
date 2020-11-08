@@ -592,7 +592,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		}
 		sprintf (cmd, "-R0/1/0/1 -JX%gi -O -K -W%s %s", width, vfile, Ctrl->W.string);
 		if ((error = GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd))) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to plot symbols\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to plot lines\n");
 			Return (API->error);
 		}
 		if (GMT_Close_VirtualFile (API, vfile) != GMT_NOERROR)
