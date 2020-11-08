@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test ternary diagram plotting with (a,b,c-coordinate polygons
+# Test ternary diagram plotting with a,b,c-coordinate polygons
 ps=ternary_pol.ps
 cat << EOF > p.txt
 > -Gred
