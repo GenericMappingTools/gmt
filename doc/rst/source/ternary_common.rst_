@@ -52,15 +52,18 @@ Optional Arguments
 
 .. _-J:
 
-**-JX**\ *width*
+**-JX**\ [-]\ *width*
     The only valid projection is linear plot with specified ternary width.
+    Use a negative *width* to indicate that positive axes directions be clock-wise
+    [Default lets the *a, b, c* axes be positive in a counter-clockwise direction].
 
 .. _-L:
 
 **-L**\ *a*\ /*b*\ /*c*
-    Set the labels for the three diagram vertices [none].  These are placed a
-    distance of 3 times the :term:`MAP_LABEL_OFFSET`
-    setting from their respective corners.
+    Set the labels for the three diagram vertices where the component is 100% [none].
+    These are placed a distance of three times the :term:`MAP_LABEL_OFFSET`
+    setting from their respective corners.  To skip any one of then, specify that
+    label as -.
 
 .. _-M:
 
