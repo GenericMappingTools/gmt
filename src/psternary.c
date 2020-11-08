@@ -203,7 +203,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_
 	if (!Ctrl->M.active) {	/* Need -R -J for anything but dumping */
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify -JX option\n");
-		//n_errors += gmt_M_check_condition (GMT, !(Ctrl->S.active || Ctrl->Q.active), "Must specify either -S or -Q\n");
 		if (GMT->common.J.active) {	/* Impose our conditions on -JX */
 			n_errors += gmt_M_check_condition (GMT, GMT->common.J.string[0] != 'X', "Option -J: Must specify -JX<width>\n");
 			n_errors += gmt_M_check_condition (GMT, strchr (GMT->common.J.string, '/'), "Option -J: Must specify -JX<width>\n");
