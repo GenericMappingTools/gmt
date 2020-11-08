@@ -126,7 +126,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	//GMT_Message (API, GMT_TIME_NONE, "\t   closed contours with less than <cut> points [Draw all contours].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and symbol size (in %s).  See plot|psxy for full list of symbols.\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -S is not selected then we plot lines (requires -W) or polygons (requires -G or -C).\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -S is not selected then we plot lines (requires -W) or polygons (requires -G or -C).\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s]:", 15);
 	GMT_Option (API, "X,bi2,c,di,e,f,g,h,i,p,qi,t,:,.");
@@ -519,6 +519,24 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		PSL_setorigin (PSL, -x_origin[k], -y_origin[k], -rot[k], PSL_INV);
 	}
 
+	if (!Ctrl->S.active && (Ctrl->G.active || Ctrl->C.active)) {	/* Plot polygons before gridlines */
+		char vfile[GMT_VF_LEN] = {""};
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POLYGON, GMT_IN|GMT_IS_REFERENCE, D, vfile) == GMT_NOTSET) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to create a virtual data set\n");
+			Return (API->error);
+		}
+		sprintf (cmd, "-R0/1/0/1 -JX%gi -O -K %s", width, vfile);
+		if (Ctrl->C.active) {strcat (cmd, " -C"); if (Ctrl->C.string) strcat (cmd, Ctrl->C.string);}
+		else if (Ctrl->G.active) {strcat (cmd, " -G"); strcat (cmd, Ctrl->G.string);}
+		if (Ctrl->W.active) {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.string);}
+		if ((error = GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd))) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to plot symbols\n");
+			Return (API->error);
+		}
+		if (GMT_Close_VirtualFile (API, vfile) != GMT_NOERROR)
+			return (API->error);
+	}
+
 	/* Deal with gridline requests separately */
 	for (k = 0; k <= GMT_Z; k++) {
 		if (side[k] == 0) continue;	/* Did not want this axis drawn */
@@ -546,6 +564,9 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
+
+	/* Plot symbols and lines after gridlines */
+
 	if (Ctrl->S.active) {	/* Plot symbols */
 		char vfile[GMT_VF_LEN] = {""};
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, D, vfile) == GMT_NOTSET) {
@@ -564,17 +585,13 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		if (GMT_Close_VirtualFile (API, vfile) != GMT_NOERROR)
 			return (API->error);
 	}
-	else {	/* Plot lines or polygons */
+	else if (Ctrl->W.active && !Ctrl->S.active && !(Ctrl->G.active || Ctrl->C.active)) {	/* Plot lines */
 		char vfile[GMT_VF_LEN] = {""};
-		unsigned int d_mode = (Ctrl->G.active || Ctrl->C.active) ? GMT_IS_POLYGON : GMT_IS_LINE;
-		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, d_mode, GMT_IN|GMT_IS_REFERENCE, D, vfile) == GMT_NOTSET) {
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D, vfile) == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create a virtual data set\n");
 			Return (API->error);
 		}
-		sprintf (cmd, "-R0/1/0/1 -JX%gi -O -K %s", width, vfile);
-		if (Ctrl->C.active) {strcat (cmd, " -C"); if (Ctrl->C.string) strcat (cmd, Ctrl->C.string);}
-		else if (Ctrl->G.active) {strcat (cmd, " -G"); strcat (cmd, Ctrl->G.string);}
-		if (Ctrl->W.active) {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.string);}
+		sprintf (cmd, "-R0/1/0/1 -JX%gi -O -K -W%s %s", width, vfile, Ctrl->W.string);
 		if ((error = GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to plot symbols\n");
 			Return (API->error);
