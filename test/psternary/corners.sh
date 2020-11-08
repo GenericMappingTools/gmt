@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Calibration plot for ternary with or without -D
+# Calibration plot for ternary with or without axes reversal
 # Ensure psternary places points correctly by plotting the
 # three cardinal corners and a 4th point
 # Pick (a,b,c) for the three corners (100%) and a 4th point
@@ -21,5 +21,5 @@ gmt pstext -R0/1/0/0.9 -JX6.5c/3c -O -K -F+f12p+jBL -X-3c -Y8c -B0 << EOF >> $ps
 0.05	0.1	a = 0.3 b = 0.2 c = 0.5 [yellow]
 EOF
 # Now plot again with clockwise axes directions
-gmt psternary t.txt -R0/100/0/100/0/100 -JX11c -O -Baafg+l"A"+u" %" -Bbafg+l"B"+u" %" \
--Bcagf+l"C"+u" %" -B+gbisque -La/b/c -Sc0.5c -Wthin -Ct.cpt -D -N -X3c -Y5c >> $ps
+gmt psternary t.txt -R0/100/0/100/0/100 -JX-11c -O -Baafg+l"A"+u" %" -Bbafg+l"B"+u" %" \
+-Bcagf+l"C"+u" %" -B+gbisque -La/b/c -Sc0.5c -Wthin -Ct.cpt -N -X3c -Y5c >> $ps
