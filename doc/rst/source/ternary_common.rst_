@@ -43,11 +43,6 @@ Optional Arguments
     shifted over by one column (optional size would be 5th rather than 4th
     field, etc.).  If modern mode and no argument is given then we select the current CPT.
 
-.. _-D:
-
-**-D**
-    Let positive axes direction be clock-wise [Default lets the *a, b, c* axes be
-    positive in a counter-clockwise direction].
 .. _-G:
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
@@ -57,8 +52,10 @@ Optional Arguments
 
 .. _-J:
 
-**-JX**\ *width*
+**-JX**\ [-]\ *width*
     The only valid projection is linear plot with specified ternary width.
+    Use a negative *width* to indicate that positive axes directions be clock-wise
+    [Default lets the *a, b, c* axes be positive in a counter-clockwise direction].
 
 .. _-L:
 

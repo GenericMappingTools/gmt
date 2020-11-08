@@ -43,9 +43,6 @@ struct PSTERNARY_CTRL {
 		bool active;
 		char *string;	/* Since we will simply pass this on to psxy or pscontour */
 	} C;
-	struct PSTERNARY_D {	/* -D */
-		bool active;
-	} D;
 	struct PSTERNARY_G {	/* -G<fill> */
 		bool active;
 		char *string;	/* Since we will simply pass this on to psxy */
@@ -102,8 +99,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> [-B<args> or -Ba<args> -Bb<args> -Bc<args>] [-C<cpt>] [-D] [-G<fill>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-JX<width>] %s[-L<a>/<b/<c> ] [-M] [-N] %s%s [-S[<symbol>][<size>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> [-B<args> or -Ba<args> -Bb<args> -Bc<args>] [-C<cpt>] [-G<fill>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-JX[-]<width>] %s[-L<a>/<b/<c> ] [-M] [-N] %s%s [-S[<symbol>][<size>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<amin>/<amax>/<bmin>/<bmax>/<cmin>/<cmax>] [%s] [%s] [-W[<pen>][<attr>]]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] %s[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -116,9 +113,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ba<args> -Bb<args> -Bc<args> or a single -B<args> for all axes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign symbol colors based on z-value in 3rd column (with -S), or\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   specify contours to be drawn (with -Q).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Reverse positive axes direction [Default is positive counter-clockwise]\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [no fill].");
-	GMT_Message (API, GMT_TIME_NONE, "\t-J Use -JX<width> to set the plot base width.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-J Use -JX<width> to set the plot base width (axes are positive counter-clockwise).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give a negative width for clockwise positive axes direction.\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Place labels where each of the three vertices reach 100%% [no labels].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify any label as - to skip that label only.\n");
@@ -167,9 +164,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_
 				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.string);
 				if (opt->arg[0]) Ctrl->C.string = strdup (opt->arg);
-				break;
-			case 'D':	/* Change direction of positive axes */
-				Ctrl->D.active = true;
 				break;
 			case 'G':	/* Fill */
 				Ctrl->G.active = true;
@@ -358,7 +352,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	unsigned int n_sides = 0, side[3];
 	uint64_t tbl, seg, row, col, k;
 
-	bool clip_set = false;
+	bool clip_set = false, reverse = false;
 
 	char cmd[GMT_LEN256] = {""}, code, *name = "ABC", cmode[3] = {""}, *g = NULL;
 
@@ -397,15 +391,15 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL)
 		Return (API->error);
 
-	if (GMT->common.J.active && !Ctrl->D.active && GMT->common.J.string[1] == '-')	/* Gave a negative width to reverse axes */
-		Ctrl->D.active = true;	/* Need to do this here given the abs_to_xy projection below */
+	if (GMT->common.J.active && GMT->common.J.string[1] == '-')	/* Gave a negative width to reverse direction of axes */
+		reverse = true;	/* Need to do this here given the abs_to_xy projection below */
 
 	/* Convert a,b,c[,z] to to x,y[,z] */
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table */
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 			for (row = 0; row < S->n_rows; row++) {
-				psternary_abc_to_xy (S->data[GMT_X][row], S->data[GMT_Y][row], S->data[GMT_Z][row], Ctrl->D.active, &x, &y);
+				psternary_abc_to_xy (S->data[GMT_X][row], S->data[GMT_Y][row], S->data[GMT_Z][row], reverse, &x, &y);
 				S->data[GMT_X][row] = x;	S->data[GMT_Y][row] = y;
 				for (col = GMT_Z + 1; col < D->n_columns; col++)	/* Override c column by moving columns inward */
 					S->data[col-1][row] = S->data[col][row];
@@ -425,7 +419,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 
 	/* Here we are doing some sort of plotting */
 
-	rect[XHI] = fabs (gmt_M_to_inch (GMT, &GMT->common.J.string[1]));	/* Sign has already been dealt with via Ctrl->D.active */
+	rect[XHI] = fabs (gmt_M_to_inch (GMT, &GMT->common.J.string[1]));	/* Sign has already been dealt with via reverse */
 	rect[YHI] =  0.5 * SQRT3 * rect[XHI];
 	tri_x[1] = rect[XHI];	tri_x[2] = 0.5 * rect[XHI];	tri_y[2] = rect[YHI];
 	gmt_M_memcpy (wesn_orig, GMT->common.R.wesn, 6, double);
@@ -491,7 +485,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		double dx = L_off * cosd (30.0), dy = L_off * sind (30.0);
 		int form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 		PSL_comment (PSL, "Placing vertices labels\n");
-		if (Ctrl->D.active) {
+		if (reverse) {
 			if (strcmp (Ctrl->L.vlabel[GMT_X], "-")) PSL_plottext (PSL, -dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_X], 0.0, PSL_TR, form);
 			if (strcmp (Ctrl->L.vlabel[GMT_Y], "-")) PSL_plottext (PSL, tri_x[1]+dx, -dy, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Y], 0.0, PSL_TL, form);
 			if (strcmp (Ctrl->L.vlabel[GMT_Z], "-")) PSL_plottext (PSL, tri_x[2], tri_y[2]+L_off, GMT->current.setting.font_label.size, Ctrl->L.vlabel[GMT_Z], 0.0, PSL_BC, form);
@@ -507,7 +501,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	x_origin[0] = 0.0;	y_origin[0] = 0.0;	rot[0] = 0.0;	sign[0] = +1;	side[0] = GMT->current.map.frame.side[S_SIDE]; cmode[0] = 'S';	/* S_SIDE settings */
 	x_origin[1] = -width * 0.25;	y_origin[1] = 0.5 * height;	rot[1] = -60.0;	sign[1] = -1;	side[1] = GMT->current.map.frame.side[E_SIDE]; cmode[1] = 'N';	/* E_SIDE settings */
 	x_origin[2] = 0.75 * width;	y_origin[2] = -0.5 * height;	rot[2] = 60.0;	sign[2] = -1;	side[2] = GMT->current.map.frame.side[W_SIDE]; cmode[2] = 'N';	/* W_SIDE settings */
-	if (Ctrl->D.active) {	/* Flip what is positive directions */
+	if (reverse) {	/* Flip what is positive directions */
 		for (k = 0; k <= GMT_Z; k++) sign[k] = - sign[k];
 	}
 	for (k = 0; k <= GMT_Z; k++) {	/* Plot the 3 axes for -B settings that have been stripped of gridline requests */
