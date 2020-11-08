@@ -1,5 +1,5 @@
 **-S**\ [*symbol*][*size*]
-    Plot individual symbols in a ternary diagram.  if **-S** is not given then
+    Plot individual symbols in a ternary diagram.  If **-S** is not given then
     we will instead plot lines (requires **-W**) or polygons (requires **-C** or **-G**).
     If present, *size* is symbol size in the unit set by
     :term:`PROJ_LENGTH_UNIT` (unless **c**, **i**, or **p** is appended). If the symbol
