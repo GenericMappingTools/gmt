@@ -308,11 +308,6 @@ GMT Miscellaneous Parameters
 
 .. glossary::
 
-    **GMT_AUTO_DOWNLOAD**
-        Determines if GMT is allowed to automatically download datasets and
-        files from the remote server selected via :term:`GMT_DATA_SERVER`.  Default
-        is *on* but you can turn this off by setting it to *off*.
-
     **GMT_COMPATIBILITY**
         Determines if the current GMT version should be able to parse command-line
         options for a prior major release.  Specify the major release version number,
@@ -335,6 +330,8 @@ GMT Miscellaneous Parameters
         Specifies how often we update the local catalog of data available on
         the remote server and pruning expired data sets [1d].  Allowable time
         units are **d** (days), **w** (week), **o** (month, here 30 days).
+        To turn off periodic updates entirely, specify interval as "off", "never",
+        "infinity", or just 0.
 
     **GMT_EXPORT_TYPE**
         This setting is only used by external interfaces and controls the
