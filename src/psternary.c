@@ -529,7 +529,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		else if (Ctrl->G.active) {strcat (cmd, " -G"); strcat (cmd, Ctrl->G.string);}
 		if (Ctrl->W.active) {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.string);}
 		if ((error = GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd))) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to plot symbols\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to plot polygons\n");
 			Return (API->error);
 		}
 		if (GMT_Close_VirtualFile (API, vfile) != GMT_NOERROR)
