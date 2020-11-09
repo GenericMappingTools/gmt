@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
 # This script takes the downloaded zip content from
-# Crameri, F., (2018). Scientific colour-maps. Zenodo
-# http://doi.org/10.5281/zenodo.1243862
+# Crameri, Fabio. (2020, January 6). Scientific colour maps
+# (Version 6.0.4). Zenodo. http://doi.org/10.5281/zenodo.4153113
 # and converts the *.cpt files into proper GMT master
 # CPT files with correct attribution and hinge info
 # Run from the ScientificColourMapsX directory (X is version) after the
@@ -11,8 +11,8 @@
 # downloaded directory.  It will create a gmt subdirectory with all the CPTs.
 # You also need to edit gmt_cpt_masters.h after adding the CPTs to share/cpt
 #
-# Last setup and run for ScientificColourMaps6 on 7/11/2020 for GMT 6.1
-# Gave 28 CPTS: The original 24 plus 4 cyclical versions
+# Last setup and run for ScientificColourMaps6 on 11/08/2020 for GMT 6.2 (master)
+# Gave 44 CPTS: The original 24 plus 4 cyclical versions and 16 categorical versions
 #
 
 if [ $# -eq 0 ]; then
@@ -30,6 +30,7 @@ if [ $# -eq 0 ]; then
 	Afterwards you must:
 	  1. Update gmt_cpt_masters.h with any new entries
 	  2. Adding the CPTs to share (overwriting the previous versions)
+	  3. Probably have to edit oleron.cpt so it has a zero entry
 	EOF
 	exit 1
 fi
@@ -38,31 +39,47 @@ DIR=$1
 VERSION=6.0.4
 cat << EOF > /tmp/cpt.info
 acton|Perceptually uniform sequential colormap, by Fabio Crameri [C=RGB]
+actonS|Perceptually uniform sequential categorical colormap, by Fabio Crameri [C=RGB]
 bamako|Perceptually uniform, low-lightness gradient colormap by Fabio Crameri [C=RGB]
+bamakoS|Perceptually uniform, low-lightness gradient categoricalcolormap by Fabio Crameri [C=RGB]
 batlow|Perceptually uniform ‘rainbow’ colormap by Fabio Crameri [C=RGB]
+batlowS|Perceptually uniform ‘rainbow’ categorical colormap by Fabio Crameri [C=RGB]
 berlin|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
-bilbao|a Perceptually uniform colormap by Fabio Crameri [C=RGB]
+bilbao|Perceptually uniform colormap by Fabio Crameri [C=RGB]
+bilbaoS|Perceptually uniform categorical colormap by Fabio Crameri [C=RGB]
 broc|Perceptually uniform bimodal colormap, light, by Fabio Crameri [S,C=RGB]
 brocO|Perceptually uniform bimodal cyclic colormap, light, by Fabio Crameri [C=RGB]
 buda|Perceptually uniform, low-lightness gradient colormap, by Fabio Crameri [C=RGB]
+budaS|Perceptually uniform, low-lightness gradient categorical colormap, by Fabio Crameri [C=RGB]
 cork|Perceptually uniform bimodal colormap, light, by Fabio Crameri [S,C=RGB]
 corkO|Perceptually uniform bimodal cyclic colormap, light, by Fabio Crameri [C=RGB]
-davos|a Perceptually uniform colormap by Fabio Crameri [C=RGB]
+davos|Perceptually uniform colormap by Fabio Crameri [C=RGB]
+davosS|Perceptually uniform categorical colormap by Fabio Crameri [C=RGB]
 devon|Perceptually uniform sequential colormap, by Fabio Crameri [C=RGB]
+devonS|Perceptually uniform sequential categorical colormap, by Fabio Crameri [C=RGB]
 grayC|Perceptually uniform ‘gray’ colormap by Fabio Crameri [C=RGB]
+grayCS|Perceptually uniform ‘gray’ categorical colormap by Fabio Crameri [C=RGB]
 hawaii|Perceptually uniform lush colormap by Fabio Crameri [C=RGB]
+hawaiiS|Perceptually uniform lush categorical colormap by Fabio Crameri [C=RGB]
 imola|Perceptually uniform, low-lightness gradient colormap, by Fabio Crameri [C=RGB]
+imolaS|Perceptually uniform, low-lightness gradient categorical colormap, by Fabio Crameri [C=RGB]
 lajolla|Perceptually uniform colormap, without black or white, by Fabio Crameri [C=RGB]
+lajollaS|Perceptually uniform categorical colormap, without black or white, by Fabio Crameri [C=RGB]
 lapaz|Perceptually uniform ‘rainbow’ colormap by Fabio Crameri [C=RGB]
+lapazS|Perceptually uniform ‘rainbow’ categorical colormap by Fabio Crameri [C=RGB]
 lisbon|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
 nuuk|Perceptually uniform, low-lightness gradient colormap, by Fabio Crameri [C=RGB]
+nuukS|Perceptually uniform, low-lightness gradient categorical colormap, by Fabio Crameri [C=RGB]
 oleron|Perceptually uniform topography colormap, by Fabio Crameri [H,C=RGB]
 oslo|Perceptually uniform, B&W limits, by Fabio Crameri [C=RGB]
+osloS|Perceptually uniform, B&W limits, categorical colormap, by Fabio Crameri [C=RGB]
 roma|Perceptually uniform ‘seis’ colormap by Fabio Crameri [C=RGB]
 romaO|Perceptually uniform cyclic colormap by Fabio Crameri [C=RGB]
 tofino|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
 tokyo|Perceptually uniform colormap without black or white, by Fabio Crameri [C=RGB]
-turku|a Perceptually uniform colormap by Fabio Crameri [C=RGB]
+tokyoS|Perceptually uniform categorical colormap without black or white, by Fabio Crameri [C=RGB]
+turku|Perceptually uniform colormap by Fabio Crameri [C=RGB]
+turkuS|Perceptually uniform categorical colormap by Fabio Crameri [C=RGB]
 vik|Perceptually uniform bimodal colormap, light, by Fabio Crameri [S,C=RGB]
 vikO|Perceptually uniform bimodal cyclic colormap, light, by Fabio Crameri [C=RGB]
 EOF
@@ -76,13 +93,20 @@ while read line; do
 	#
 	EOF
 	echo $line | awk -F'|' '{printf "# %s\n", $2}' >> gmt_cpts/$cpt.cpt
+	last_char=$(echo $cpt | awk '{print substr($1,length($1),1)}')
+	if [ "X${last_char}" = "XS" ]; then
+		tmp=$(echo $cpt | awk '{print substr($1,1, length($1)-1)}')
+		cptdir=${tmp}/CategoricalPalettes
+	else
+		cptdir=${cpt}
+	fi
 	cat <<- EOF >> gmt_cpts/$cpt.cpt
 	#
 	#	www.fabiocrameri.ch/visualisation
 	#
 	# License: Creative Commons Attribution 4.0 International License
-	# Copyright (c) 2018, Fabio Crameri All rights reserved.
-	# Crameri, F., (2018). Scientific colour-maps. Zenodo. http://doi.org/10.5281/zenodo.1243862
+	# Copyright (c) 2020, Fabio Crameri All rights reserved.
+	# Crameri, F., (2020). Scientific colour-maps. Zenodo. https://zenodo.org/record/4153113
 	# This is Scientific Colour Maps version $VERSION
 	# Note: Original file converted to GMT version >= 5 CPT format.
 	EOF
@@ -95,14 +119,22 @@ while read line; do
 	else
 		hinge=""
 	fi
-	if [ "X$hinge" = "X" ]; then
+	if [ "X${last_char}" = "XS" ]; then
 		cat <<- EOF >> gmt_cpts/$cpt.cpt
 		#
 		#----------------------------------------------------------
 		# COLOR_MODEL = RGB
 		#----------------------------------------------------------
 		EOF
-		egrep -v '^#|^F|^B|^N' $cpt/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", $1, $2, $3, $4, $5, $6, $7, $8}' > /tmp/tmp.cpt 
+		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{if (NR == 1) { printf "%d\t%s/%s/%s\n%d\t%s/%s/%s\n", 0, $2, $3, $4, 1, $6, $7, $8} else {printf "%d\t%s/%s/%s\n", NR+1, $2, $3, $4}}' > /tmp/tmp.cpt 
+	elif [ "X$hinge" = "X" ]; then
+		cat <<- EOF >> gmt_cpts/$cpt.cpt
+		#
+		#----------------------------------------------------------
+		# COLOR_MODEL = RGB
+		#----------------------------------------------------------
+		EOF
+		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", $1, $2, $3, $4, $5, $6, $7, $8}' > /tmp/tmp.cpt 
 	else
 		echo "# Note: Range changed from 0-1 to -1/+1 to place hinge at zero." >> gmt_cpts/$cpt.cpt
 		cat <<- EOF >> gmt_cpts/$cpt.cpt
@@ -113,10 +145,14 @@ while read line; do
 		#----------------------------------------------------------
 		EOF
 		# Convert to -1/1 range
-		egrep -v '^#|^F|^B|^N' $cpt/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", 2*($1-0.5), $2, $3, $4, 2*($5-0.5), $6, $7, $8}' > /tmp/tmp.cpt 
+		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", 2*($1-0.5), $2, $3, $4, 2*($5-0.5), $6, $7, $8}' > /tmp/tmp.cpt 
 	fi
 	cat /tmp/tmp.cpt >> gmt_cpts/$cpt.cpt
-	egrep '^F|^B|^N' $cpt/$cpt.cpt | awk '{printf "%s\t%s/%s/%s\n", $1, $2, $3, $4}' >> gmt_cpts/$cpt.cpt
+	if [ "X${last_char}" = "XS" ]; then	# Categorical CPTS have no F or B, only NaN
+		egrep '^N' $cptdir/$cpt.cpt | awk '{printf "%s\t%s/%s/%s\n", $1, $2, $3, $4}' >> gmt_cpts/$cpt.cpt
+	else
+		egrep '^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%s\t%s/%s/%s\n", $1, $2, $3, $4}' >> gmt_cpts/$cpt.cpt
+	fi
 done < /tmp/cpt.info
 rm -f tmp
 cd $here
