@@ -17,18 +17,17 @@
 
 if [ $# -eq 0 ]; then
 	cat <<- EOF  >&2
-	Usage: build_scientific_colors_cpt.sh
+	Usage: build-scientific-colors-cpt.sh <SCM-directory>
 	
-	build_scientific_colors_cpt.sh must be run from top-level gmt directory.
-	Will create the GMT CPT version of Crameri's scientific colour maps.
+	Will create the GMT CPT versions of Crameri's scientific colour maps.
 	Give the full path to the expanded zip file top directory, such as
-	~/Download/ScientificColourMaps6
+	~/Download/ScientificColourMaps6.
 	Before running you must update this script with:
-	  1. Any new CPT entries since his last release to cpt.info
-	  2. Flag those with soft hinge as S and hard hinge as H
-	  3. Manually set the current version number/doi (see the PDF docs)
+	  1. Any new CPT entries since his last release to /tmp/cpt.info
+	  2. Flag those with a soft hinge as S and a hard hinge as H
+	  3. Manually set the current version number/doi (see the zip PDF docs)
 	Afterwards you must:
-	  1. Update gmt_cpt_masters.h with any new entries
+	  1. Update gmt_cpt_masters.h with any new entries (see /tmp/cpt_strings.txt)
 	  2. Adding the CPTs to share (overwriting the previous versions)
 	  3. Probably mess with doc/scripts/GMT_App_M*.sh for new layout
 	EOF
@@ -42,8 +41,8 @@ acton|Perceptually uniform sequential colormap, by Fabio Crameri [C=RGB]
 actonS|Perceptually uniform sequential categorical colormap, by Fabio Crameri [C=RGB]
 bamako|Perceptually uniform, low-lightness gradient colormap by Fabio Crameri [C=RGB]
 bamakoS|Perceptually uniform, low-lightness gradient categorical colormap by Fabio Crameri [C=RGB]
-batlow|Perceptually uniform ‘rainbow’ colormap by Fabio Crameri [C=RGB]
-batlowS|Perceptually uniform ‘rainbow’ categorical colormap by Fabio Crameri [C=RGB]
+batlow|Perceptually uniform 'rainbow' colormap by Fabio Crameri [C=RGB]
+batlowS|Perceptually uniform 'rainbow' categorical colormap by Fabio Crameri [C=RGB]
 berlin|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
 bilbao|Perceptually uniform colormap by Fabio Crameri [C=RGB]
 bilbaoS|Perceptually uniform categorical colormap by Fabio Crameri [C=RGB]
@@ -57,23 +56,23 @@ davos|Perceptually uniform colormap by Fabio Crameri [C=RGB]
 davosS|Perceptually uniform categorical colormap by Fabio Crameri [C=RGB]
 devon|Perceptually uniform sequential colormap, by Fabio Crameri [C=RGB]
 devonS|Perceptually uniform sequential categorical colormap, by Fabio Crameri [C=RGB]
-grayC|Perceptually uniform ‘gray’ colormap by Fabio Crameri [C=RGB]
-grayCS|Perceptually uniform ‘gray’ categorical colormap by Fabio Crameri [C=RGB]
+grayC|Perceptually uniform 'gray' colormap by Fabio Crameri [C=RGB]
+grayCS|Perceptually uniform 'gray' categorical colormap by Fabio Crameri [C=RGB]
 hawaii|Perceptually uniform lush colormap by Fabio Crameri [C=RGB]
 hawaiiS|Perceptually uniform lush categorical colormap by Fabio Crameri [C=RGB]
 imola|Perceptually uniform, low-lightness gradient colormap, by Fabio Crameri [C=RGB]
 imolaS|Perceptually uniform, low-lightness gradient categorical colormap, by Fabio Crameri [C=RGB]
 lajolla|Perceptually uniform colormap, without black or white, by Fabio Crameri [C=RGB]
 lajollaS|Perceptually uniform categorical colormap, without black or white, by Fabio Crameri [C=RGB]
-lapaz|Perceptually uniform ‘rainbow’ colormap by Fabio Crameri [C=RGB]
-lapazS|Perceptually uniform ‘rainbow’ categorical colormap by Fabio Crameri [C=RGB]
+lapaz|Perceptually uniform 'rainbow' colormap by Fabio Crameri [C=RGB]
+lapazS|Perceptually uniform 'rainbow' categorical colormap by Fabio Crameri [C=RGB]
 lisbon|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
 nuuk|Perceptually uniform, low-lightness gradient colormap, by Fabio Crameri [C=RGB]
 nuukS|Perceptually uniform, low-lightness gradient categorical colormap, by Fabio Crameri [C=RGB]
 oleron|Perceptually uniform topography colormap, by Fabio Crameri [H,C=RGB]
 oslo|Perceptually uniform, B&W limits, by Fabio Crameri [C=RGB]
 osloS|Perceptually uniform, B&W limits, categorical colormap, by Fabio Crameri [C=RGB]
-roma|Perceptually uniform ‘seis’ colormap by Fabio Crameri [C=RGB]
+roma|Perceptually uniform 'seis' colormap by Fabio Crameri [C=RGB]
 romaO|Perceptually uniform cyclic colormap by Fabio Crameri [C=RGB]
 tofino|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
 tokyo|Perceptually uniform colormap without black or white, by Fabio Crameri [C=RGB]
@@ -85,6 +84,7 @@ vikO|Perceptually uniform bimodal cyclic colormap, light, by Fabio Crameri [C=RG
 EOF
 here=`pwd`
 cd $DIR
+awk -F'|' '{printf "\"%-10s : %s\",\n", $1, $2}' /tmp/cpt.info > /tmp/cpt_strings.txt
 rm -rf gmt_cpts
 mkdir gmt_cpts
 cat <<- EOF > /tmp/front
