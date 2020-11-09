@@ -8,7 +8,7 @@ Built-in color palette tables (CPT)
 
 Figures :ref:`CPTs a <CPT_files_a>`, :ref:`b <CPT_files_b>`,
 :ref:`c <CPT_files_c>` and :ref:`d <CPT_files_d>` show the built-in
-color palettes, stored in so-called CPTs [35]_. The programs
+color palettes, stored in so-called CPTs. The programs
 :doc:`/makecpt` and :doc:`/grd2cpt` are used to access these
 master CPTs and translate/scale them to fit the user's range of
 *z*-values. The top half of the color bars in the Figure shows the
@@ -82,10 +82,3 @@ and how to switch the color bar around (by using a negative length).
 .. figure:: /_images/GMT_App_M_2.*
    :width: 600 px
    :align: center
-
-Footnote
---------
-
-.. [35]
-   The 3rd palette is called *categorical* and produces a set of
-   colors suitable for categorical plots.
