@@ -726,11 +726,11 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 			get_rgb = false;	/* Not reading z from data */
 		}
-		else if ((P->categorical & 2))	/* Get rgb from trailing text, so read no extra z columns */
+		else if ((P->categorical & GMT_CPT_CATEGORICAL_KEY))	/* Get rgb from trailing text, so read no extra z columns */
 			rgb_from_z = false;
 		else {	/* Read extra z column for symbols only */
 			rgb_from_z = not_line;
-			if (rgb_from_z && (P->categorical & 2) == 0) n_cols_start++;
+			if (rgb_from_z && (P->categorical & GMT_CPT_CATEGORICAL_KEY) == 0) n_cols_start++;
 		}
 	}
 
@@ -1098,7 +1098,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 
 			if (get_rgb) {	/* Lookup t to get rgb */
-				if (P->categorical & 2)
+				if (P->categorical & GMT_CPT_CATEGORICAL_KEY)
 					gmt_get_fill_from_key (GMT, P, In->text, &current_fill);
 				else
 					gmt_get_fill_from_z (GMT, P, in[3], &current_fill);

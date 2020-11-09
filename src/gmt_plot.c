@@ -880,42 +880,63 @@ GMT_LOCAL void gmtplot_fancy_frame_straightlat_checkers (struct GMT_CTRL *GMT, s
 
 GMT_LOCAL void gmtplot_fancy_frame_straight_outline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lonA, double latA, double lonB, double latB, unsigned int side, bool secondary_too) {
 	unsigned int k, kn = 1, axis;
-	double scale = 1.0, x[2], y[2], angle, s, c, dx, dy, Ldx, Ldy;
+	double scale = 1.0, x[2], y[2], angle, s, c, dx, dy, Ldx, Ldy, f0 = 1.0, f1 = 1.0;
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;
 
 	if (!GMT->current.map.frame.side[side]) return;	/* Do not draw this frame side */
+	switch (side) {	/* Determine if there are missing partner sides that invalidates extensions */
+		case S_SIDE:
+			if (!GMT->current.map.frame.side[W_SIDE]) f0 = 0;
+			if (!GMT->current.map.frame.side[E_SIDE]) f1 = 0;
+			break;
+		case E_SIDE:
+			if (!GMT->current.map.frame.side[S_SIDE]) f0 = 0;
+			if (!GMT->current.map.frame.side[N_SIDE]) f1 = 0;
+			break;
+		case N_SIDE:
+			if (!GMT->current.map.frame.side[E_SIDE]) f0 = 0;
+			if (!GMT->current.map.frame.side[W_SIDE]) f1 = 0;
+			break;
+		case W_SIDE:
+			if (!GMT->current.map.frame.side[N_SIDE]) f0 = 0;
+			if (!GMT->current.map.frame.side[S_SIDE]) f1 = 0;
+			break;
+	}
 
 	if (secondary_too) {
 		scale = 0.5;
 		++kn;
 	}
-	axis = side & 2;	/* Gives 0 for GMT_X and 1 for GMT_Y */
-	T = &GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_UPPER];
+	axis = side % 2;	/* Gives 0 for GMT_X and 1 for GMT_Y */
+	T = &GMT->current.map.frame.axis[axis].item[GMT_TICK_UPPER];
 	if (!T->active) return;
 
 	gmt_geo_to_xy (GMT, lonA, latA, &x[0], &y[0]);
 	gmt_geo_to_xy (GMT, lonB, latB, &x[1], &y[1]);
 	angle = d_atan2 (y[1] - y[0], x[1] - x[0]);
 	sincos (angle, &s, &c);
+	/* Ldx/dy is the components of the extension of the fancy frame into neighboring side frames */
 	Ldx = (GMT->current.setting.map_frame_type == GMT_IS_ROUNDED) ? 0.0 : GMT->current.setting.map_frame_width * c;
 	Ldy = (GMT->current.setting.map_frame_type == GMT_IS_ROUNDED) ? 0.0 : GMT->current.setting.map_frame_width * s;
+	/* dx,dy is the outward shift components to draw the outside (and possibly half-way) parallel frame outline */
 	dx =  GMT->current.setting.map_frame_width * s;
 	dy = -GMT->current.setting.map_frame_width * c;
-	PSL_plotsegment (PSL, x[0]-Ldx, y[0]-Ldy, x[1]+Ldx, y[1]+Ldy);
+	PSL_plotsegment (PSL, x[0]-f0*Ldx, y[0]-f0*Ldy, x[1]+f1*Ldx, y[1]+f1*Ldy);
 	for (k = 0; k < kn; k++) {
 		x[0] += scale*dx;
 		y[0] += scale*dy;
 		x[1] += scale*dx;
 		y[1] += scale*dy;
-		PSL_plotsegment (PSL, x[0]-Ldx, y[0]-Ldy, x[1]+Ldx, y[1]+Ldy);
+		PSL_plotsegment (PSL, x[0]-f0*Ldx, y[0]-f0*Ldy, x[1]+f1*Ldx, y[1]+f1*Ldy);
 	}
 }
 
 GMT_LOCAL void gmtplot_fancy_frame_curved_outline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lonA, double latA, double lonB, double latB, unsigned int side, bool secondary_too) {
-	double scale[2] = {1.0, 1.0}, escl, x1, x2, y1, y2, radius, r_inc, az1, az2, da0, da, width, s;
+	double scale[2] = {1.0, 1.0}, escl, x1, x2, y1, y2, radius, r_inc, az1, az2, da0, da, width, s, fw, fe;
 
-	if (!GMT->current.map.frame.side[side]) return;
-
+	if (!GMT->current.map.frame.side[side]) return;	/* This side is inactive */
+	fw = (GMT->current.map.frame.side[W_SIDE]) ? 1.0 : 0.0;	/* Only extend if W side is plotted */
+	fe = (GMT->current.map.frame.side[E_SIDE]) ? 1.0 : 0.0;	/* Only extend if E side is plotted */
 	if (secondary_too) scale[0] = scale[1] = 0.5;
 	width = GMT->current.setting.map_frame_width;
 	escl = (GMT->current.setting.map_frame_type == GMT_IS_ROUNDED) ? 0.0 : 1.0;	/* Want rounded corners */
@@ -937,12 +958,12 @@ GMT_LOCAL void gmtplot_fancy_frame_curved_outline (struct GMT_CTRL *GMT, struct 
 		while (az2 < az1) az2 += 360.0;	/* Likewise ensure az1 > az1 and is now in the 0-720 range */
 		da0 = R2D * escl * width /radius;
 		da  = R2D * escl * width / (radius + r_inc);
-		PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius, az1-da0, az2+da0, PSL_MOVE|PSL_STROKE);
-		PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius + r_inc, az1-da, az2+da, PSL_MOVE|PSL_STROKE);
+		PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius, az1-fw*da0, az2+fe*da0, PSL_MOVE|PSL_STROKE);
+		PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius + r_inc, az1-fw*da, az2+fe*da, PSL_MOVE|PSL_STROKE);
 		if (secondary_too) {
 			r_inc *= 2.0;
 			da = R2D * escl * width / (radius + r_inc);
-			PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius + r_inc, az1-da, az2+da, PSL_MOVE|PSL_STROKE);
+			PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius + r_inc, az1-fw*da, az2+fe*da, PSL_MOVE|PSL_STROKE);
 		}
 	}
 }
@@ -1135,10 +1156,10 @@ GMT_LOCAL void gmtplot_fancy_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 	PSL_setlinewidth (PSL, thin_pen);
 
-	gmtplot_fancy_frame_straight_outline (GMT, PSL, w, s, e, s, 0, dual);
-	gmtplot_fancy_frame_straight_outline (GMT, PSL, e, s, e, n, 1, dual);
-	gmtplot_fancy_frame_straight_outline (GMT, PSL, e, n, w, n, 2, dual);
-	gmtplot_fancy_frame_straight_outline (GMT, PSL, w, n, w, s, 3, dual);
+	gmtplot_fancy_frame_straight_outline (GMT, PSL, w, s, e, s, S_SIDE, dual);
+	gmtplot_fancy_frame_straight_outline (GMT, PSL, e, s, e, n, E_SIDE, dual);
+	gmtplot_fancy_frame_straight_outline (GMT, PSL, e, n, w, n, N_SIDE, dual);
+	gmtplot_fancy_frame_straight_outline (GMT, PSL, w, n, w, s, W_SIDE, dual);
 
 	gmtplot_rounded_framecorners (GMT, PSL, w, e, s, n, dual);
 }
@@ -1206,10 +1227,10 @@ GMT_LOCAL void gmtplot_polar_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 	PSL_setlinewidth (PSL, thin_pen);
 
-	gmtplot_fancy_frame_curved_outline (GMT, PSL, w, s, e, s, 0, dual);
-	gmtplot_fancy_frame_straight_outline (GMT, PSL, e, s, e, n, 1, dual);
-	gmtplot_fancy_frame_curved_outline (GMT, PSL, w, n, e, n, 2, dual);
-	gmtplot_fancy_frame_straight_outline (GMT, PSL, w, n, w, s, 3, dual);
+	gmtplot_fancy_frame_curved_outline (GMT, PSL, w, s, e, s, S_SIDE, dual);
+	gmtplot_fancy_frame_straight_outline (GMT, PSL, e, s, e, n, E_SIDE, dual);
+	gmtplot_fancy_frame_curved_outline (GMT, PSL, w, n, e, n, N_SIDE, dual);
+	gmtplot_fancy_frame_straight_outline (GMT, PSL, w, n, w, s, W_SIDE, dual);
 
 	gmtplot_rounded_framecorners (GMT, PSL, w, e, s, n, dual);
 }
@@ -1261,10 +1282,10 @@ GMT_LOCAL void gmtplot_conic_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 	PSL_setlinewidth (PSL, thin_pen);
 
-	gmtplot_fancy_frame_curved_outline (GMT, PSL, w, s, e, s, 0, dual);
-	gmtplot_fancy_frame_straight_outline (GMT, PSL, e, s, e, n, 1, dual);
-	gmtplot_fancy_frame_curved_outline (GMT, PSL, w, n, e, n, 2, dual);
-	gmtplot_fancy_frame_straight_outline (GMT, PSL, w, n, w, s, 3, dual);
+	gmtplot_fancy_frame_curved_outline (GMT, PSL, w, s, e, s, S_SIDE, dual);
+	gmtplot_fancy_frame_straight_outline (GMT, PSL, e, s, e, n, E_SIDE, dual);
+	gmtplot_fancy_frame_curved_outline (GMT, PSL, w, n, e, n, N_SIDE, dual);
+	gmtplot_fancy_frame_straight_outline (GMT, PSL, w, n, w, s, W_SIDE, dual);
 
 	gmtplot_rounded_framecorners (GMT, PSL, w, e, s, n, dual);
 }
@@ -1595,7 +1616,7 @@ GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 	for (k = 0; k < 2; k++) {
 		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) continue;
 
-		dz = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Z].item[item[k]]);
+		dz = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Z].item[item[k]]);	/* Gridline spacing in z */
 
 		if (!GMT->current.map.frame.axis[GMT_Z].item[item[k]].active || fabs(dz) == 0.0) continue;
 
@@ -1609,8 +1630,8 @@ GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 			zz = gmt_z_to_zz (GMT, z[i]);
 			PSL_plotsegment (PSL, min, zz, max, zz);
 		}
-		z0 = gmt_z_to_zz (GMT, z[0]);
-		z1 = gmt_z_to_zz (GMT, z[nz-1]);
+		z0 = gmt_z_to_zz (GMT, zmin);	/* These are the projected min and max z values, i.e., the ends of vertical gridlines on the back walls */
+		z1 = gmt_z_to_zz (GMT, zmax);
 
 		dd = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[qplane].item[item[k]]);
 		if (!GMT->current.map.frame.axis[qplane].item[item[k]].active || fabs(dd) == 0.0) continue;
@@ -5608,6 +5629,12 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	struct PSL_CTRL *PSL= GMT->PSL;
 
 	/* 0. Determine if we need to be here and set a few parameters */
+
+	/* If a user only gave -Bx<stuff> OR -By<stuff> then we override the -BWESN settings to turn off the unspecified axes */
+	if (!GMT->current.map.frame.set_frame[GMT_PRIMARY]) {
+		if (GMT->current.map.frame.set[GMT_Y] && !GMT->current.map.frame.set[GMT_X]) GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT_AXIS_NONE;
+		if (GMT->current.map.frame.set[GMT_X] && !GMT->current.map.frame.set[GMT_Y]) GMT->current.map.frame.side[W_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT_AXIS_NONE;
+	}
 
 	if (!GMT->common.B.active[GMT_PRIMARY] && !GMT->common.B.active[GMT_SECONDARY]) return;	/* No frame annotation/ticks/gridlines specified */
 

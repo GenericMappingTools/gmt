@@ -362,7 +362,7 @@ L1:
 		}
 		/* Must download it the first time */
 		if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to download the GSHHG for GMT since GMT_AUTO_DOWNLOAD is off\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to download the GSHHG for GMT since GMT_DATA_UPDATE_INTERVAL is off\n");
 			return NULL;
 		}
 		sprintf (path, "%s/geography/gshhg", GMT->session.USERDIR);	/* Local directory destination */

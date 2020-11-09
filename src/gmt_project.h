@@ -314,6 +314,7 @@ struct GMT_PROJ {
 	bool compute_scale[3];	/* true if axes lengths were set rather than scales */
 	double xyz_pow[3];		/* For GMT_POW projection */
 	double xyz_ipow[3];
+	double VE;				/* Vertical exaggeration for x-z plots */
 
 	/* Center of radii for all conic projections */
 

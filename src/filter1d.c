@@ -1028,6 +1028,8 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 
 	filter1d_allocate_space (GMT, &F);	/* Gets column-specific flags and uint64_t space */
 
+	gmt_increase_abstime_format_precision (GMT, Ctrl->N.col, F.t_int);	/* In case we need more sub-second precision output */
+
 	GMT_Report (API, GMT_MSG_INFORMATION, "Filter the data columns\n");
 
 	for (tbl = tseg = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */

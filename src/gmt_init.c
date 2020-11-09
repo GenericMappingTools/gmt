@@ -4266,6 +4266,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 			GMT->current.map.frame.draw = true;	/* But we do wish to draw the frame */
 			if (GMT->common.J.zactive) GMT->current.map.frame.drawz = true;	/* Also brings z-axis into contention */
 			GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Since checkerboard without intervals look stupid */
+			GMT->current.map.frame.set[no] = true;	/* Since we want this axis drawn */
 			continue;
 		}
 
@@ -10903,12 +10904,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 
 		case GMTCASE_GMT_AUTO_DOWNLOAD:
+			/* Deprecated as of 6.2: we only use GMT_DATA_UPDATE_INTERVAL to control this feature now, but silently process for backwards compatibility */
 			if (!strncmp (lower_value, "on", 3))
 				GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
 			else if (!strncmp (lower_value, "off", 3))
 				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT_AUTO_DOWNLOAD: Expects either on or off - set to off\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT_AUTO_DOWNLOAD [deprecated]: Expects either on or off - set to off\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "See GMT_DATA_UPDATE_INTERVAL instead for controlling down-load frequency\n");
 				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			}
 			break;
@@ -10944,7 +10947,12 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 
 		case GMTCASE_GMT_DATA_UPDATE_INTERVAL:
-			if (lower_value[0]) {
+			if (!strncmp (lower_value, "off", 3U) || !strncmp (lower_value, "infinity", 8U) || !strncmp (lower_value, "never", 5U)) {
+				/* Many ways to turn download off entirely */
+				GMT->current.setting.refresh_time = 0;
+				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
+			}
+			else if (lower_value[0]) {
 				size_t f, k = len - 1;
 				switch (lower_value[k]) {
 					case 'd':	f = 1;	break;
@@ -10953,8 +10961,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 					default:	f = 1;	break;
 				}
 				GMT->current.setting.refresh_time = atoi (lower_value) * f;
-				if (GMT->current.setting.refresh_time == 0)
-					error++;
+				if (GMT->current.setting.refresh_time == 0)	/* 0 means no auto download */
+					GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			}
 			else
 					error++;
@@ -12240,10 +12248,6 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			snprintf (value, GMT_LEN256, "%u", GMT->current.setting.compatibility);
 			break;
 
-		case GMTCASE_GMT_AUTO_DOWNLOAD:
-			strncpy (value, (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) ? "off" : "on", GMT_BUFSIZ-1);
-			break;
-
 		case GMTCASE_GMT_DATA_SERVER:	/* The default is set by cmake, see ConfigDefault.cmake */
 			strncpy (value, (GMT->session.DATASERVER) ? GMT->session.DATASERVER : "", GMT_BUFSIZ-1);
 			break;
@@ -12262,7 +12266,9 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			break;
 
 		case GMTCASE_GMT_DATA_UPDATE_INTERVAL:
-			if ((GMT->current.setting.refresh_time % 30) == 0)	/* Whole "months" = 30 days */
+			if (GMT->current.setting.refresh_time == 0)	/* Currently deactivated */
+				strcpy (value, "off");
+			else if ((GMT->current.setting.refresh_time % 30) == 0)	/* Whole "months" = 30 days */
 				snprintf (value, GMT_BUFSIZ, "%do", GMT->current.setting.refresh_time / 30);
 			else if ((GMT->current.setting.refresh_time % 7) == 0)	/* Whole weeks */
 				snprintf (value, GMT_BUFSIZ, "%dw", GMT->current.setting.refresh_time / 7);
