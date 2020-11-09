@@ -449,7 +449,7 @@ Three classes of files are given special treatment in GMT.
    parameter GMT_DATA_SERVER at compile time.
 #. If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
    limit the size of the largest datafile to download via :term:`GMT_DATA_SERVER_LIMIT` or
-   you can temporarily turn off such downloads by setting :term:`GMT_AUTO_DOWNLOAD` off.
+   you can temporarily turn off such downloads by setting :term:`GMT_DATA_UPDATE_INTERVAL` to "off".
 
 The user cache (:term:`DIR_CACHE`) and all its contents can be cleared any time
 via the command **gmt clear cache**, while the server directory with downloaded data
@@ -1056,8 +1056,8 @@ etc) it would be meaningless to compute average values (what would 1.5
 mean?). For such data a special format of the CPTs are provided.
 Here, each category is assigned a unique key, a color or pattern, and an
 optional label (usually the category name) marked by a leading
-semi-colon. Keys must be monotonically increasing but do not need to be
-consecutive. The format is
+semi-colon. Keys (if numerical) must be monotonically increasing but do
+not need to be consecutive. The format is
 
 +-----------------+--------+--------------+
 | key\ :sub:`1`   | *Fill* | [;\ *label*] |

@@ -74,7 +74,7 @@ a *dpu* of 80 pixels per cm (HD movie) and the projection parameters we will use
       gmt psevents seismic_trace.txt -R1984-09-10T03:15/1984-09-10T03:45/-15/15 -JX20cT/10c -Ar80c -i0,1,0 -f2T > seismic_trace_pts.txt
 
 **Note**: If your :term:`PROJ_LENGTH_UNIT` is set to inch then you need to use the equivalent *dpu* of 200 pixels per inch for HD,
-or you specify **-Ar**\ 200**i**.
+or you specify **-Ar**\ 200\ **i**.
 
 See Also
 --------

@@ -7295,7 +7295,7 @@ void gmtlib_copy_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_to, struct
 	P_to->has_pattern = P_from->has_pattern;	/* 1 if CPT contains any patterns */
 	P_to->has_hinge = P_from->has_hinge;		/* 1 if CPT is hinged at hinge (below) */
 	P_to->has_range = P_from->has_range;		/* 1 if CPT has a natural range (minmax below) */
-	P_to->categorical = P_from->categorical;	/* 1 if CPT applies to categorical data */
+	P_to->categorical = P_from->categorical;	/* 1 (number) or 2 (key) if CPT applies to categorical data */
 	P_to->hinge = P_from->hinge;				/* z-value for hinged CPTs */
 	P_to->wrap_length = P_from->wrap_length;	/* z-length of active CPT */
 	gmt_M_memcpy (P_to->minmax, P_from->minmax, 2, double);	/* Min/max z-value for a default range, if given */
@@ -7725,7 +7725,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		if (nread == 2 && gmt_not_numeric (GMT, T0)) {	/* Truly categorical CPT with named key */
 			X->data[n].z_low = n;	/* Just use counter as z value dummy */
 			X->data[n].key = (T0[0] == '\\') ? strdup (&T0[1]) : strdup (T0);	/* Skip escape: For user to have a name like B it must be \B to avoid conflict with BNF settings*/
-			X->categorical |= 2;	/* Flag this type of CPT */
+			X->categorical |= GMT_CPT_CATEGORICAL_KEY;	/* Flag this type of CPT */
 		}
 		else {	/* Floating point lookup values */
 			gmt_scanf_arg (GMT, T0, GMT_IS_UNKNOWN, false, &X->data[n].z_low);
@@ -7757,7 +7757,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			else if (nread == 2) {	/* Categorical cpt records with key fill [;label] */
 				X->data[n].z_high = X->data[n].z_low;
 				n_cat_records++;
-				X->categorical |= 1;
+				X->categorical |= GMT_CPT_CATEGORICAL_VAL;
 			}
 			else if (nread == 4) {
 				gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, false, &X->data[n].z_high);
@@ -7781,7 +7781,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				snprintf (clo, GMT_LEN64, "%s", T1);
 				sprintf (chi, "-");
 				n_cat_records++;
-				X->categorical |= 1;
+				X->categorical |= GMT_CPT_CATEGORICAL_VAL;
 			}
 			else if (nread == 4) {	/* gray shades or color names */
 				gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, false, &X->data[n].z_high);
@@ -8646,7 +8646,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	 */
 
 	unsigned int i, append = 0, hinge_mode = 0;
-	bool close_file = false;
+	bool close_file = false, use[3] = {true, true, true};
 	double cmyk[5], z_hinge;
 	char format[GMT_BUFSIZ] = {""}, cpt_file[PATH_MAX] = {""}, code[3] = {'B', 'F', 'N'};
 	char lo[GMT_LEN64] = {""}, hi[GMT_LEN64] = {""}, kind[3] = {'L', 'U', 'B'};
@@ -8743,7 +8743,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		gmt_ascii_format_col (GMT, hi, P->data[i].z_high, GMT_OUT, GMT_Z);
 
 		if (P->categorical) {
-			if (P->categorical == 2) strncpy (lo, P->data[i].key, GMT_LEN64-1);
+			if (P->categorical & GMT_CPT_CATEGORICAL_KEY) strncpy (lo, P->data[i].key, GMT_LEN64-1);
 			if (P->model & GMT_HSV)
 				fprintf (fp, format, lo, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\t');
 			else if (P->model & GMT_CMYK) {
@@ -8785,7 +8785,10 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		return (GMT_NOERROR);
 	}
 
+	if (P->is_wrapping || P->categorical) use[GMT_BGD] = use[GMT_FGD] = false;	/* These types of CPT has no back/foreground colors */
+
 	for (i = 0; i < 3; i++) {
+		if (!use[i]) continue;	/* This BNF entry does not apply to this CPT */
 		if (P->bfn[i].skip)
 			fprintf (fp, "%c\t-\n", code[i]);
 		else if (P->model & GMT_HSV)
@@ -8914,10 +8917,20 @@ int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
 	if (gmt_M_is_dnan (value)) return (GMT_NAN - 3);	/* Set to NaN color */
 	if (P->is_wrapping)	/* Wrap to fit CPT range - we can never return back- or fore-ground colors */
 		value = MOD (value - P->data[0].z_low, P->wrap_length) + P->data[0].z_low;	/* Now within range */
-	else if (value > P->data[P->n_colors-1].z_high)
+	else if (value > P->data[P->n_colors-1].z_high) {
+		if (P->categorical) {	/* Set to NaN for categorical */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+			return GMT_NAN - 3;
+		}
 		return (GMT_FGD - 3);	/* Set to foreground color */
-	else if (value < P->data[0].z_low)
+	}
+	else if (value < P->data[0].z_low) {
+		if (P->categorical) {	/* Set to NaN for categorical */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+			return GMT_NAN - 3;
+		}
 		return (GMT_BGD - 3);	/* Set to background color */
+	}
 
 	/* Must search for correct index */
 
@@ -8939,7 +8952,14 @@ int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
 			hi = mid;
 	}
 	index = lo;
-	if (value >= P->data[index].z_low && value < P->data[index].z_high) return (index);
+	
+	if (value >= P->data[index].z_low && value < P->data[index].z_high) {
+		if (P->categorical && !doubleAlmostEqualZero (P->data[index].z_low, value)) {
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+			index = GMT_NAN - 3;	/* Since categorical data is not on an interval */
+		}
+		return (index);
+	}
 
 	/* Slow search in case the table was not sorted
 	 * No idea whether it is possible, but it most certainly
@@ -8949,6 +8969,10 @@ int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
 	index = 0;
 	while (index < P->n_colors && ! (value >= P->data[index].z_low && value < P->data[index].z_high) ) index++;
 	if (index == P->n_colors) index--;	/* Because we use <= for last range */
+	if (P->categorical && !doubleAlmostEqualZero (P->data[index].z_low, value)) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+		index = GMT_NAN - 3;	/* Since categorical data is not on an interval */
+	}
 	return (index);
 }
 
