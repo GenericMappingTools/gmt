@@ -26,11 +26,11 @@ if [ $# -eq 0 ]; then
 	Before running you must update this script with:
 	  1. Any new CPT entries since his last release to cpt.info
 	  2. Flag those with soft hinge as S and hard hinge as H
-	  3. Manually set the current version number (see the PDF docs)
+	  3. Manually set the current version number/doi (see the PDF docs)
 	Afterwards you must:
 	  1. Update gmt_cpt_masters.h with any new entries
 	  2. Adding the CPTs to share (overwriting the previous versions)
-	  3. Probably have to edit oleron.cpt so it has a zero entry
+	  3. Probably mess with doc/scripts/GMT_App_M*.sh for new layout
 	EOF
 	exit 1
 fi
@@ -41,7 +41,7 @@ cat << EOF > /tmp/cpt.info
 acton|Perceptually uniform sequential colormap, by Fabio Crameri [C=RGB]
 actonS|Perceptually uniform sequential categorical colormap, by Fabio Crameri [C=RGB]
 bamako|Perceptually uniform, low-lightness gradient colormap by Fabio Crameri [C=RGB]
-bamakoS|Perceptually uniform, low-lightness gradient categoricalcolormap by Fabio Crameri [C=RGB]
+bamakoS|Perceptually uniform, low-lightness gradient categorical colormap by Fabio Crameri [C=RGB]
 batlow|Perceptually uniform ‘rainbow’ colormap by Fabio Crameri [C=RGB]
 batlowS|Perceptually uniform ‘rainbow’ categorical colormap by Fabio Crameri [C=RGB]
 berlin|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
@@ -87,6 +87,11 @@ here=`pwd`
 cd $DIR
 rm -rf gmt_cpts
 mkdir gmt_cpts
+cat <<- EOF > /tmp/front
+#
+#----------------------------------------------------------
+# COLOR_MODEL = RGB
+EOF
 while read line; do
 	cpt=`echo $line | awk -F'|' '{print $1}'`
 	cat <<- EOF > gmt_cpts/$cpt.cpt
@@ -119,15 +124,12 @@ while read line; do
 	else
 		hinge=""
 	fi
-	cat <<- EOF >> gmt_cpts/$cpt.cpt
-	#
-	#----------------------------------------------------------
-	# COLOR_MODEL = RGB
-	EOF
 	if [ "X${last_char}" = "XS" ]; then
+		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
 		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{if (NR == 1) { printf "%d\t%s/%s/%s\n%d\t%s/%s/%s\n", 0, $2, $3, $4, 1, $6, $7, $8} else {printf "%d\t%s/%s/%s\n", NR+1, $2, $3, $4}}' > /tmp/tmp.cpt 
 	elif [ "X$hinge" = "X" ]; then
+		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		if [ "X${last_char}" = "XO" ]; then
 			echo "# CYCLIC" >> gmt_cpts/$cpt.cpt
 		fi
@@ -135,13 +137,13 @@ while read line; do
 		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", $1, $2, $3, $4, $5, $6, $7, $8}' > /tmp/tmp.cpt 
 	else
 		echo "# Note: Range changed from 0-1 to -1/+1 to place hinge at zero." >> gmt_cpts/$cpt.cpt
+		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		echo "# $hinge" >> gmt_cpts/$cpt.cpt
 		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
 		EOF
 		# Convert to -1/1 range
 		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", 2*($1-0.5), $2, $3, $4, 2*($5-0.5), $6, $7, $8}' > /tmp/tmp.cpt 
 	fi
-	echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
 	cat /tmp/tmp.cpt >> gmt_cpts/$cpt.cpt
 	if [ "X${last_char}" = "XS" ] || [ "X${last_char}" = "XO" ]; then	# Categorical or cyclical CPTS have no F or B, only NaN
 		egrep '^N' $cptdir/$cpt.cpt | awk '{printf "%s\t%s/%s/%s\n", $1, $2, $3, $4}' >> gmt_cpts/$cpt.cpt
@@ -151,7 +153,7 @@ while read line; do
 done < /tmp/cpt.info
 # Fix the zero hinge for oleron
 grep '^#' gmt_cpts/oleron.cpt > /tmp/oleron.cpt
-egrep -v '^#|B|N|F' gmt_cpts/oleron.cpt | awk '{if (NR == 127) {printf "%s\t%s\t0.000000\t%s\n", $1, $2, $4} else if (NR == 129) {printf "0.000000\t%s\t%s\t%s\n", $2, $3, $4} else if (NR != 128) { print $0}}' >> /tmp/oleron.cpt
+egrep -v '^#|B|N|F' gmt_cpts/oleron.cpt | awk '{if (NR == 127) {printf "%s\t%s\t0.0\t\t\t%s\n", $1, $2, $4} else if (NR == 129) {printf "0.0\t\t\t%s\t%s\t%s\n", $2, $3, $4} else if (NR != 128) { print $0}}' >> /tmp/oleron.cpt
 egrep '^B|^N|^F' gmt_cpts/oleron.cpt >> /tmp/oleron.cpt
 mv -f /tmp/oleron.cpt gmt_cpts
 
