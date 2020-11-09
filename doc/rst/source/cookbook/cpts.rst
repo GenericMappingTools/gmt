@@ -7,7 +7,7 @@ Built-in color palette tables (CPT)
 -----------------------------------
 
 Figures :ref:`CPTs a <CPT_files_a>`, :ref:`b <CPT_files_b>`,
-:ref:`b <CPT_files_c>` and :ref:`b <CPT_files_d>` show the built-in
+:ref:`c <CPT_files_c>` and :ref:`d <CPT_files_d>` show the built-in
 color palettes, stored in so-called CPTs [35]_. The programs
 :doc:`/makecpt` and :doc:`/grd2cpt` are used to access these
 master CPTs and translate/scale them to fit the user's range of
@@ -41,7 +41,7 @@ respectively.
    :width: 500 px
    :align: center
 
-   The 18 categorical CPTs (those ending in "O" are the categorical
+   The 18 categorical CPTs (those ending in "S" are the categorical
    scientific color maps by Fabio Crameri) supported by GMT.
 
 
