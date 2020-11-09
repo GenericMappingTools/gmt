@@ -367,10 +367,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
  *
  * Hartmann, C., P. Venkeerberghen, J. Smeyers-Verbeke, and D. L. Massart (1997),
  *   Robust orthogonal regression for the outlier detection when comparing two
- *   serious of measurement results, Analytica Chimica Acta, 344, 17–28.
- * York, D., N. M. Evensen, M. L. Martínez, and J. De Basebe Delgado (2004),
+ *   serious of measurement results, Analytica Chimica Acta, 344, 17-28.
+ * York, D., N. M. Evensen, M. L. Martinez, and J. De Basebe Delgado (2004),
  *   Unified equations for the slope, intercept, and standard errors of the
- *   best straight line, Am. J. Phys., 72(3), 367–375.
+ *   best straight line, Am. J. Phys., 72(3), 367-375.
  *
  * as well as the standard book on regular and robust regression:
  *
