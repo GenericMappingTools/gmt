@@ -25,7 +25,7 @@ n=$(cat tt.lis | wc -l)
 let n2=n/2
 let n2=n
 # dy is line spacing and y0 is total box height
-dy=0.5
+dy=0.6
 y0=$(gmt math -Q $n2 $dy MUL 0.5 MUL 0.1 ADD =)
 
 gmt begin GMT_App_M_1d
