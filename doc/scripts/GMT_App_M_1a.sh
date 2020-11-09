@@ -49,16 +49,16 @@ sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | fgrep -v -f skip.lis
 n=$(cat tt.lis | wc -l)
 let n2=n/2
 # dy is line spacing and y0 is total box height
-dy=0.75
-y0=$(gmt math -Q $n2 $dy MUL =)
+dy=0.5
+y0=$(gmt math -Q $n2 $dy MUL 0.1 ADD =)
 
 gmt begin GMT_App_M_1a
 gmt set MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
 gmt basemap -R0/6.1/0/$y0 -Jx1i -B0
 
 let i=1
-y=0.475
-y2=0.35
+y=0.375
+y2=0.25
 while [ $i -le $n ]
 do
 	j=$(expr $i + 1)
