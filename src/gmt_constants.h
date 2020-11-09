@@ -239,6 +239,8 @@ enum GMT_enum_basemap {
 #define GMT_CPT_Z_REVERSE	2	/* Reverse CPT z-values */
 #define GMT_CPT_L_ANNOT		1	/* Annotate lower slice boundary */
 #define GMT_CPT_U_ANNOT		2	/* Annotate upper slice boundary */
+#define GMT_CPT_CATEGORICAL_VAL		1	/* Categorical CPT with numerical value */
+#define GMT_CPT_CATEGORICAL_KEY		2	/* Categorical CPT with text key */
 
 /* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"

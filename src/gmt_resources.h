@@ -619,7 +619,7 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	unsigned int has_pattern;	/* 1 if CPT contains any patterns */
 	unsigned int has_hinge;		/* 1 if CPT is hinged at hinge (below) */
 	unsigned int has_range;		/* 1 if CPT has a natural range (minmax below) */
-	unsigned int categorical;	/* 1 if CPT applies to categorical data */
+	unsigned int categorical;	/* 1 if CPT applies to categorical data, and 2 if key is a string */
 	double minmax[2];		/* Min/max z-value for a default range, if given */
 	double hinge;			/* z-value for hinged CPTs */
 	double wrap_length;		/* z-length of active CPT */

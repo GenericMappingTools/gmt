@@ -680,7 +680,7 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		if (Ctrl->N.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN will be written out */
 		if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 		if (Ctrl->F.active) Pout->model = Ctrl->F.model;
-		if (Ctrl->F.cat) Pout->categorical = 1;
+		if (Ctrl->F.cat) Pout->categorical = GMT_CPT_CATEGORICAL_VAL;
 		if (write && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
 			Return (API->error);
 		}
@@ -839,7 +839,7 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 	if (Ctrl->F.cat) {	/* Flag as a categorical CPT */
-		Pout->categorical = 1;
+		Pout->categorical = GMT_CPT_CATEGORICAL_VAL;
 		if (Ctrl->F.label[0]) {	/* Want categorical labels */
 			char **label = gmt_cat_cpt_labels (GMT, Ctrl->F.label, Pout->n_colors);
 			for (unsigned int k = 0; k < Pout->n_colors; k++) {
