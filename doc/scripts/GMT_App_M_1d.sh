@@ -3,31 +3,22 @@
 #	Makes the insets for Appendix M(cpt)
 #	[skip srtm which is just a special version of dem2]
 #
-# Use the knowledge that we need 3 pages.
-# 44 original GMT 5 CPTs and the last page has 28 scientific colormaps
-# from Fabio [www.fabiocrameri.ch/visualisation]
+# We have four sets of CPT figures to make:
+# 1a) Our regular, traditional GMT CPTs [44]
+# 1b) The regular Scientific Color Maps* [24]
+# 1c) Categorical CPTs (ours and SCM*)  [18]
+# 1d) Cyclic CPTs form SCM* [4]
+#
+# *from Fabio [www.fabiocrameri.ch/visualisation]
 
 GMT_SHAREDIR=$(gmt --show-sharedir)
 
+# Here we list all the cyclic cpts from the SCM:
 cat << EOF > tt.lis
-actonS
-bamakoS
-batlowS
-bilbaoS
-budaS
-categorical
-davosS
-devonS
-grayCS
-hawaiiS
-imolaS
-lajollaS
-lapazS
-nuukS
-osloS
-paired
-tokyoS
-turkuS
+brocO
+corkO
+romaO
+vikO
 EOF
 
 n=$(cat tt.lis | wc -l)
@@ -37,8 +28,7 @@ let n2=n
 dy=0.75
 y0=$(gmt math -Q $n2 $dy MUL 0.5 MUL =)
 
-#gmt begin GMT_App_M_1c
-gmt begin t
+gmt begin GMT_App_M_1d
 gmt set MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
 gmt basemap -R0/6.1/0/$y0 -Jx1i -B0
 
@@ -50,9 +40,9 @@ do
 	j=$(expr $i + 1)
 	left=$(sed -n ${j}p tt.lis)
 	right=$(sed -n ${i}p tt.lis)
-	gmt makecpt -H -C$left > tt.left.cpt
+	gmt makecpt -H -C$left -T-1/1 > tt.left.cpt
 	gmt makecpt -H -C$left -T-1/1/0.25 > tt.left2.cpt
-	gmt makecpt -H -C$right > tt.right.cpt
+	gmt makecpt -H -C$right -T-1/1 > tt.right.cpt
 	gmt makecpt -H -C$right -T-1/1/0.25 > tt.right2.cpt
 	gmt colorbar -Dx1.55i/${y}i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
 	gmt colorbar -Dx4.50i/${y}i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
