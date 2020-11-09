@@ -119,41 +119,42 @@ while read line; do
 	else
 		hinge=""
 	fi
+	cat <<- EOF >> gmt_cpts/$cpt.cpt
+	#
+	#----------------------------------------------------------
+	# COLOR_MODEL = RGB
+	EOF
 	if [ "X${last_char}" = "XS" ]; then
-		cat <<- EOF >> gmt_cpts/$cpt.cpt
-		#
-		#----------------------------------------------------------
-		# COLOR_MODEL = RGB
-		#----------------------------------------------------------
-		EOF
+		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
 		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{if (NR == 1) { printf "%d\t%s/%s/%s\n%d\t%s/%s/%s\n", 0, $2, $3, $4, 1, $6, $7, $8} else {printf "%d\t%s/%s/%s\n", NR+1, $2, $3, $4}}' > /tmp/tmp.cpt 
 	elif [ "X$hinge" = "X" ]; then
-		cat <<- EOF >> gmt_cpts/$cpt.cpt
-		#
-		#----------------------------------------------------------
-		# COLOR_MODEL = RGB
-		#----------------------------------------------------------
-		EOF
+		if [ "X${last_char}" = "XO" ]; then
+			echo "# CYCLIC" >> gmt_cpts/$cpt.cpt
+		fi
+		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
 		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", $1, $2, $3, $4, $5, $6, $7, $8}' > /tmp/tmp.cpt 
 	else
 		echo "# Note: Range changed from 0-1 to -1/+1 to place hinge at zero." >> gmt_cpts/$cpt.cpt
-		cat <<- EOF >> gmt_cpts/$cpt.cpt
-		#
-		#----------------------------------------------------------
-		# COLOR_MODEL = RGB
-		# $hinge
-		#----------------------------------------------------------
+		echo "# $hinge" >> gmt_cpts/$cpt.cpt
+		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
 		EOF
 		# Convert to -1/1 range
 		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", 2*($1-0.5), $2, $3, $4, 2*($5-0.5), $6, $7, $8}' > /tmp/tmp.cpt 
 	fi
+	echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
 	cat /tmp/tmp.cpt >> gmt_cpts/$cpt.cpt
-	if [ "X${last_char}" = "XS" ]; then	# Categorical CPTS have no F or B, only NaN
+	if [ "X${last_char}" = "XS" ] || [ "X${last_char}" = "XO" ]; then	# Categorical or cyclical CPTS have no F or B, only NaN
 		egrep '^N' $cptdir/$cpt.cpt | awk '{printf "%s\t%s/%s/%s\n", $1, $2, $3, $4}' >> gmt_cpts/$cpt.cpt
 	else
 		egrep '^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%s\t%s/%s/%s\n", $1, $2, $3, $4}' >> gmt_cpts/$cpt.cpt
 	fi
 done < /tmp/cpt.info
+# Fix the zero hinge for oleron
+grep '^#' gmt_cpts/oleron.cpt > /tmp/oleron.cpt
+egrep -v '^#|B|N|F' gmt_cpts/oleron.cpt | awk '{if (NR == 127) {printf "%s\t%s\t0.000000\t%s\n", $1, $2, $4} else if (NR == 129) {printf "0.000000\t%s\t%s\t%s\n", $2, $3, $4} else if (NR != 128) { print $0}}' >> /tmp/oleron.cpt
+egrep '^B|^N|^F' gmt_cpts/oleron.cpt >> /tmp/oleron.cpt
+mv -f /tmp/oleron.cpt gmt_cpts
+
 rm -f tmp
 cd $here
 echo "Folder with new cpts is $DIR/gmt_cpts"
