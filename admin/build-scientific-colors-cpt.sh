@@ -127,7 +127,7 @@ while read line; do
 	if [ "X${last_char}" = "XS" ]; then
 		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
-		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{if (NR == 1) { printf "%d\t%s/%s/%s\n%d\t%s/%s/%s\n", 0, $2, $3, $4, 1, $6, $7, $8} else {printf "%d\t%s/%s/%s\n", NR+1, $2, $3, $4}}' > /tmp/tmp.cpt 
+		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{if (NR == 1) { printf "%d\t%s/%s/%s\n%d\t%s/%s/%s\n", 0, $2, $3, $4, 1, $6, $7, $8} else {printf "%d\t%s/%s/%s\n", NR+1, $6, $7, $8}}' > /tmp/tmp.cpt 
 	elif [ "X$hinge" = "X" ]; then
 		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		if [ "X${last_char}" = "XO" ]; then
@@ -140,7 +140,6 @@ while read line; do
 		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		echo "# $hinge" >> gmt_cpts/$cpt.cpt
 		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
-		EOF
 		# Convert to -1/1 range
 		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", 2*($1-0.5), $2, $3, $4, 2*($5-0.5), $6, $7, $8}' > /tmp/tmp.cpt 
 	fi
