@@ -238,7 +238,7 @@ If already set up, make sure you're up-to-date:
 portsnap fetch update
 ```
 
-Then ``cd`` into ``/usr/ports/graphics/gmt`` and build:
+Then change into directory `/usr/ports/graphics/gmt` and build:
 
 ```
 $ make install clean
