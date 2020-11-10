@@ -13,32 +13,12 @@
 
 GMT_SHAREDIR=$(gmt --show-sharedir)
 
-# Here we list all the non-categorical/cyclic cpts from the SCM:
+# Here we list all the cyclic cpts from the SCM:
 cat << EOF > tt.lis
-acton
-bamako
-batlow
-berlin
-bilbao
-broc
-buda
-cork
-davos
-devon
-grayC
-hawaii
-imola
-lajolla
-lapaz
-lisbon
-nuuk
-oleron
-oslo
-roma
-tofino
-tokyo
-turku
-vik
+brocO
+corkO
+romaO
+vikO
 EOF
 
 n=$(cat tt.lis | wc -l)
@@ -48,7 +28,7 @@ let n2=n
 dy=0.6
 y0=$(gmt math -Q $n2 $dy MUL 0.5 MUL 0.1 ADD =)
 
-gmt begin GMT_App_M_1b
+gmt begin GMT_App_M_1d
 gmt set MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
 gmt basemap -R0/6.1/0/$y0 -Jx1i -B0
 
@@ -64,10 +44,10 @@ do
 	gmt makecpt -H -C$left -T-1/1/0.25 > tt.left2.cpt
 	gmt makecpt -H -C$right -T-1/1 > tt.right.cpt
 	gmt makecpt -H -C$right -T-1/1/0.25 > tt.right2.cpt
-	gmt colorbar -Dx1.55i/${y}i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
-	gmt colorbar -Dx4.50i/${y}i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
-	gmt colorbar -Dx1.55i/${y2}i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
-	gmt colorbar -Dx4.50i/${y2}i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
+	gmt colorbar -Dx1.55i/${y}i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
+	gmt colorbar -Dx4.50i/${y}i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
+	gmt colorbar -Dx1.55i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
+	gmt colorbar -Dx4.50i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
 	gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC <<- END
 	1.55 $y ${left}
 	4.50 $y ${right}
