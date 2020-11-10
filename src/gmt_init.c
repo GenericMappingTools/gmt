@@ -7166,7 +7166,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				gmt_message (GMT, "\t-%c Select a 3-D pseudo perspective view.  Append the\n", options[k]);
 				gmt_message (GMT, "\t   <azimuth>/<elevation> of the viewpoint [180/90].\n");
 				gmt_message (GMT, "\t   When used with -Jz|Z, optionally add /<zlevel> for frame level [bottom of z-axis].\n");
-				gmt_message (GMT, "\t   Prepend x or y to plot against the “wall” x = level or y = level [z].\n");
+				gmt_message (GMT, "\t   Prepend x or y to plot against the \"wall\" x = level or y = level [z].\n");
 				gmt_message (GMT, "\t   Optionally, append +w<lon0>/<lat0>[/<z0>] to specify a fixed coordinate point\n");
 				gmt_message (GMT, "\t   or +v<x0>/<y0> for a fixed projected point [region center and page center].\n");
 				gmt_message (GMT, "\t   For a plain rotation about the z-axis, give rotation angle only\n");
