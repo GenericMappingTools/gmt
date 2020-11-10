@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-Rz|
 |-T|\ *now*
 [ *table* ]
-[ |-A|\ **r**\ [*dpu*]\|\ **s** ]
+[ |-A|\ **r**\ [*dpu*][**c**\|\ **i**]\|\ **s** ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]] ]
@@ -71,9 +71,10 @@ To convert the time-series seismic_trace.txt (time, amplitude) into a (time, amp
 with a variable pen (by plotting densely placed circles), we use **-i** to ensure we read the time-column twice and then use
 a *dpu* of 80 pixels per cm (HD movie) and the projection parameters we will use when making the plot, e.g.,::
 
-      gmt psevents seismic_trace.txt -R1984-09-10T03:15/1984-09-10T03:45/-15/15 -JX20cT/10c -Ar200 -i0,1,0 -f2T > seismic_trace_pts.txt
+      gmt psevents seismic_trace.txt -R1984-09-10T03:15/1984-09-10T03:45/-15/15 -JX20cT/10c -Ar80c -i0,1,0 -f2T > seismic_trace_pts.txt
 
-**Note**: If your :term:`PROJ_LENGTH_UNIT` is set to inch then you need to use the equivalent *dpu* of 200 pixels per inch for HD.
+**Note**: If your :term:`PROJ_LENGTH_UNIT` is set to inch then you need to use the equivalent *dpu* of 200 pixels per inch for HD,
+or you specify **-Ar**\ 200\ **i**.
 
 See Also
 --------

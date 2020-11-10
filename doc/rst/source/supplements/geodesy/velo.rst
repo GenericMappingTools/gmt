@@ -47,16 +47,17 @@ The following should make big red arrows with green ellipses, outlined
 in red. Note that the 39% confidence scaling will give an ellipse which
 fits inside a rectangle of dimension Esig by Nsig::
 
-    gmt velo << END -R-10/10/-10/10 -W0.25p,red -Ggreen -L -Se0.2i/0.39+f18p -B1g1 -Jx0.4/0.4 -A1c+p3p+e -V -pdf test
-    #Long. Lat. Evel Nvel Esig Nsig CorEN SITE
-    #(deg) (deg) (mm/yr) (mm/yr)
-    0. -8. 0.0 0.0 4.0 6.0 0.500 4x6
-    -8. 5. 3.0 3.0 0.0 0.0 0.500 3x3
-    0. 0. 4.0 6.0 4.0 6.0 0.500
-    -5. -5. 6.0 4.0 6.0 4.0 0.500 6x4
-    5. 0. -6.0 4.0 6.0 4.0 -0.500 -6x4
-    0. -5. 6.0 -4.0 6.0 4.0 -0.500 6x-4
-    END
+  gmt velo << END -R-10/10/-10/10 -W0.6p,red -Egreen -L -Se0.2/0.39/18 -B1g1 -Jx0.4/0.4 -A0.3c+p1p+e+gred -png test
+  #Long. Lat. Evel Nvel Esig Nsig CorEN SITE
+  #(deg) (deg) (mm/yr) (mm/yr)
+  0. -8. 0.0 0.0 4.0 6.0 0.500 4x6
+  -8. 5. 3.0 3.0 0.0 0.0 0.500 3x3
+  0. 0. 4.0 6.0 4.0 6.0 0.500
+  -5. -5. 6.0 4.0 6.0 4.0 0.500 6x4
+  5. 0. -6.0 4.0 6.0 4.0 -0.500 -6x4
+  0. -5. 6.0 -4.0 6.0 4.0 -0.500 6x-4
+  END
+
 
 This example should plot some residual rates of rotation in the Western
 Transverse Ranges, California. The wedges will be dark gray, with light

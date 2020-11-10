@@ -594,7 +594,7 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 	if (Ctrl->F.cat) {	/* Flag as a categorical CPT */
-		Pout->categorical = 1;
+		Pout->categorical = GMT_CPT_CATEGORICAL_VAL;
 		if (Ctrl->F.label[0]) {	/* Want categorical labels */
 			char **label = gmt_cat_cpt_labels (GMT, Ctrl->F.label, Pout->n_colors);
 			for (unsigned int k = 0; k < Pout->n_colors; k++) {

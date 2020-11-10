@@ -44,7 +44,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **r**\ [*dpu*]\|\ **s**
+**-A**\ **r**\ [*dpu*][**c**\|\ **i**]\|\ **s**
     When no **-S** is given we expect to read lines or polygons.  Two different forms for input are
     supported and specified via the **-A**\ directive: (1) Choose **-Ar** if your input data are *lines*, the data
     format is given as *x, y, time*, and the "event" is the portion of that line limited by the current
@@ -55,13 +55,14 @@ Optional Arguments
     duration (via **-L**) and rise/fade periods (via **-Es**).  If **-L**\ [**t**] is set then the *string*
     must be either of the format *begin*/*length*\|\ *end* or *begin*,\ *length*\|\ *end*.  Use a comma to
     separate absolute time specifications, otherwise a slash is also supported. **Note**:
-    Neither lines nor polygons allow for any labels to be placed. Finally, you can use **-Ar\ *dpu* to
+    Neither lines nor polygons allow for any labels to be placed. Finally, you can use **-Ar**\ *dpu* to
     perform no plotting but instead convert your *x, y\[, *zcols* ], time* data into *densely sampled points* so that
     later calls to **events** may use this sampled data set instead and plot it as circles with **-Sc**\ [*width*].
     This way you can plot "lines" that can have variable pen color and fixed or variable pen width as well as
     taking advantage of the full machinery of **-Es** and **-Et** and all the effects controlled by **-M** for symbols.
     The *dpu* must match the intended dpu when running :doc:`movie`. Note *dpu* means pixels per cm if you are using
-    SI units and pixels per inch if you are using US units (hence it depends on your :term:`PROJ_ENGTH_UNIT` setting).
+    SI units and pixels per inch if you are using US units (hence it depends on your :term:`PROJ_LENGTH_UNIT` setting).
+    Alternatively, append **c** or **i** to set the unit used explicitly.
 
 .. _-B:
 

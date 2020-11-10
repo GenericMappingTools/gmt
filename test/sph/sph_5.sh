@@ -10,7 +10,7 @@ gmt sphtriangulate @hotspots.txt -Qv -T > tt.arcs
 gmt makecpt -Ccategorical -T0/55/1 > t.cpt
 # Make a grid with node numbers
 grep -v '^#' $data | awk '{print $1, $2, NR}' | gmt sphdistance -Rg -I30m -En5 -Gn.nc
-gmt grdimage n.nc -Ct.cpt -R0/360/-90/0 -JA0/-90/6i -Baf -P -K -nn -Y0.75i > $ps
+gmt grdimage n.nc -Ct.cpt -R0/360/-90/0 -JA0/-90/6i -Baf -P -K -nn+a -Y0.75i > $ps
 #gmt grdimage n.nc -Ct.cpt -JH0/6i -B0 -P -K > $ps
 gmt psxy -R -J -O -K tt.arcs -W1p >> $ps
 gmt psxy -R -J -O -K -SE-250 -Gwhite -Wfaint @hotspots.txt >> $ps

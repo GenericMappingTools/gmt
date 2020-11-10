@@ -41,6 +41,17 @@ For output values less frequently than every magnitude, use a negative integer *
     100
     10000
 
+Append **+i** if *inc* is a fractional number and it is cleaner to give its reciprocal
+value instead.  To set up times for a 24-frames per second animation lasting 1 minute, run::
+
+    gmt math -o0 -T0/60/24+i T =
+    0
+    0.0416666666667
+    0.0833333333333
+    0.125
+    0.166666666667
+    ...
+
 Append **+n** if *inc* is meant to indicate the *number* of equidistant coordinates
 instead.  To have exactly 5 equidistant values from 3.44 and 7.82, run::
 

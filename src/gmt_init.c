@@ -4266,6 +4266,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 			GMT->current.map.frame.draw = true;	/* But we do wish to draw the frame */
 			if (GMT->common.J.zactive) GMT->current.map.frame.drawz = true;	/* Also brings z-axis into contention */
 			GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Since checkerboard without intervals look stupid */
+			GMT->current.map.frame.set[no] = true;	/* Since we want this axis drawn */
 			continue;
 		}
 
@@ -7165,7 +7166,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				gmt_message (GMT, "\t-%c Select a 3-D pseudo perspective view.  Append the\n", options[k]);
 				gmt_message (GMT, "\t   <azimuth>/<elevation> of the viewpoint [180/90].\n");
 				gmt_message (GMT, "\t   When used with -Jz|Z, optionally add /<zlevel> for frame level [bottom of z-axis].\n");
-				gmt_message (GMT, "\t   Prepend x or y to plot against the “wall” x = level or y = level [z].\n");
+				gmt_message (GMT, "\t   Prepend x or y to plot against the \"wall\" x = level or y = level [z].\n");
 				gmt_message (GMT, "\t   Optionally, append +w<lon0>/<lat0>[/<z0>] to specify a fixed coordinate point\n");
 				gmt_message (GMT, "\t   or +v<x0>/<y0> for a fixed projected point [region center and page center].\n");
 				gmt_message (GMT, "\t   For a plain rotation about the z-axis, give rotation angle only\n");
@@ -10642,12 +10643,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 
 		case GMTCASE_GMT_AUTO_DOWNLOAD:
+			/* Deprecated as of 6.2: we only use GMT_DATA_UPDATE_INTERVAL to control this feature now, but silently process for backwards compatibility */
 			if (!strncmp (lower_value, "on", 3))
 				GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
 			else if (!strncmp (lower_value, "off", 3))
 				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT_AUTO_DOWNLOAD: Expects either on or off - set to off\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT_AUTO_DOWNLOAD [deprecated]: Expects either on or off - set to off\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "See GMT_DATA_UPDATE_INTERVAL instead for controlling down-load frequency\n");
 				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			}
 			break;
@@ -10683,7 +10686,12 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 
 		case GMTCASE_GMT_DATA_UPDATE_INTERVAL:
-			if (lower_value[0]) {
+			if (!strncmp (lower_value, "off", 3U) || !strncmp (lower_value, "infinity", 8U) || !strncmp (lower_value, "never", 5U)) {
+				/* Many ways to turn download off entirely */
+				GMT->current.setting.refresh_time = 0;
+				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
+			}
+			else if (lower_value[0]) {
 				size_t f, k = len - 1;
 				switch (lower_value[k]) {
 					case 'd':	f = 1;	break;
@@ -10692,8 +10700,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 					default:	f = 1;	break;
 				}
 				GMT->current.setting.refresh_time = atoi (lower_value) * f;
-				if (GMT->current.setting.refresh_time == 0)
-					error++;
+				if (GMT->current.setting.refresh_time == 0)	/* 0 means no auto download */
+					GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			}
 			else
 					error++;
@@ -11949,10 +11957,6 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			snprintf (value, GMT_LEN256, "%u", GMT->current.setting.compatibility);
 			break;
 
-		case GMTCASE_GMT_AUTO_DOWNLOAD:
-			strncpy (value, (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) ? "off" : "on", GMT_BUFSIZ-1);
-			break;
-
 		case GMTCASE_GMT_DATA_SERVER:	/* The default is set by cmake, see ConfigDefault.cmake */
 			strncpy (value, (GMT->session.DATASERVER) ? GMT->session.DATASERVER : "", GMT_BUFSIZ-1);
 			break;
@@ -11971,7 +11975,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			break;
 
 		case GMTCASE_GMT_DATA_UPDATE_INTERVAL:
-			if ((GMT->current.setting.refresh_time % 30) == 0)	/* Whole "months" = 30 days */
+			if (GMT->current.setting.refresh_time == 0)	/* Currently deactivated */
+				strcpy (value, "off");
+			else if ((GMT->current.setting.refresh_time % 30) == 0)	/* Whole "months" = 30 days */
 				snprintf (value, GMT_BUFSIZ, "%do", GMT->current.setting.refresh_time / 30);
 			else if ((GMT->current.setting.refresh_time % 7) == 0)	/* Whole weeks */
 				snprintf (value, GMT_BUFSIZ, "%dw", GMT->current.setting.refresh_time / 7);
@@ -14975,21 +14981,52 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	}
 	else if (strchr (bar_symbols[mode], (int) text[0])) {	/* Bar, column, cube with size */
 
-		/* Bar:		-Sb|B[<size_x|size_y>[c|i|p|u]][+b|B[<base>]]				*/
-		/* Column:	-So|O[<size_x>[c|i|p|u][/<ysize>[c|i|p|u]]][+b|B[<base>]]	*/
+		/* Bar:		-Sb|B[<size_x|size_y>[c|i|p|u]][+b|B[<base>]][+v|i<nz>][+s[<gap>]]				*/
+		/* Column:	-So|O[<size_x>[c|i|p|u][/<ysize>[c|i|p|u]]][+b|B[<base>]][+v|i<nz>]	*/
 		/* Cube:	-Su|U[<size_x>[c|i|p|u]]	*/
 
-		for (j = 1; text[j]; j++) {	/* Look at chars following the symbol code */
-			if (text[j] == '/') slash = j;
-			if (text[j] == 'b' || text[j] == 'B') bset = j;	/* Basically not worry about +b|B vs b|B by just checking for b|B */
+		/* Also worry about backwards handling of +z|Z, now +v|i */
+		if ((c = strstr (text, "+v")) || (c = strstr (text, "+i"))|| (c = strstr (text, "+z")) || (c = strstr (text, "+Z"))) {	/* Got +z|Z<nz> */
+			char *s = strstr (text, "+s");
+			if (strchr ("uU", text[0])) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Symbol u|U does not support the +%c<nz> modifier\n", c[1]);
+				decode_error++;
+			}
+			else {	/* Only bars and columns have this feature */
+				char *b = NULL;
+				if ((n_z = atoi (&c[2])) <= 0) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Modifier +%c<nz> given bad value for <nz> (%d)\n", c[1], n_z);
+					decode_error++;
+				}
+				if (c[1]== 'i' || c[1] == 'Z') p->accumulate = true;	/* Getting dv1 dv2 ... etc and not v1 v1 ... */
+				/* Must deal with situations where +b|B is given before +v|i|h|z|Z or vice versa */
+				if (s && s < c) c = s;	/* +s was given before the +i|v|z|Z section */
+				c[0] = '\0';	/* Temporarily chop off the +i+v+z|Z modifier... (possibly starting with +s) */
+				strncpy (text_cp, text, GMT_LEN256-1);	/* Copy over everything up to [+s]+v|i|z|Z[+s] */
+				c[0] = '+';	/* Restore modifier */
+				c++;	/* Move past this plus sign */
+				if ((b = strstr (c, "+b")) || (b = strstr (c, "+B")) || (b = strchr (c, 'b')) || (b = strchr (c, 'B'))) {	/* Check for both current and deprecated bar settings */
+					strncat (text_cp, b, GMT_LEN256-1);	/* Append this modifier to text_cp */
+				}
+				if (s) {
+					p->sidebyside = true;
+					if (s[2]) {	/* Gave a bar gap setting; we will return this in percent even if we got a fraction */
+						if (((p->gap = atof (&s[2])) <= 0.0 || p->gap > 100.0)) {
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Modifier +s<gap> given bad value for <gap> (%g)\n", p->gap);
+							decode_error++;
+						}
+						else if (p->gap < 1.0)	/* Clearly a gap given as fraction, convert to percent */
+							p->gap *= 100.0;
+					}	/* Else the p->gap is zero for no gap between bars */
+				}
+			}
 		}
-		if ((c = strstr (text, "+z")) || (c = strstr (text, "+Z"))) {	/* Got +z|Z<nz> */
-			n_z = atoi (&c[2]);
-			if (c[1] == 'Z') p->accumulate = true;	/* Getting dz1 dz2 ... etc and not z1 z1 ... */
-			c[0] = '\0';	/* Temporarily chop this off... */
+		else	/* Copy as is */
+			strncpy (text_cp, text, GMT_LEN256-1);
+		for (j = 1; text_cp[j]; j++) {	/* Look at chars following the symbol code */
+			if (text_cp[j] == '/') slash = j;
+			if (text_cp[j] == 'b' || text_cp[j] == 'B') bset = j;	/* Basically not worry about +b|B vs b|B by just checking for b|B */
 		}
-		strncpy (text_cp, text, GMT_LEN256-1);
-		if (c) c[0] = '+';	/* ...and restore it */
 		if (bset) {	/* Chop off the b|B<base> from copy to avoid confusion when parsing.  <base> is always in user units */
 			if (text_cp[bset] == 'B') add_to_base = true;
 			if (text_cp[bset-1] == '+')	/* Gave +b|B */
@@ -15162,30 +15199,38 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'B':
 			p->symbol = GMT_SYMBOL_BARX;
+			if (n_z) {
+				p->n_required = n_z;	/* Need more than one z value from file */
+				for (k = 0; k < n_z; k++) p->nondim_col[p->n_nondim++] = 2 + k;	/* all band z in user units */
+			}
 			if (bset) {
 				if (text[bset+1] == '\0') {	/* Read it from data file (+ means probably +z<col>) */
-					p->base_set = 2;
-					p->n_required = 1;
+					p->base_set = GMT_BASE_READ;
+					p->n_required++;
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {
-					if (gmtinit_get_uservalue (GMT, &text[bset+1], gmt_M_type (GMT, GMT_IN, GMT_X), &p->base, "-SB base value")) return GMT_PARSE_ERROR;
-					p->base_set = 1;
+					if (gmtinit_get_uservalue (GMT, &text_cp[bset+1], gmt_M_type (GMT, GMT_IN, GMT_X), &p->base, "-SB base value")) return GMT_PARSE_ERROR;
+					p->base_set = GMT_BASE_ARG;
 				}
 			}
 			break;
 		case 'b':
 			p->symbol = GMT_SYMBOL_BARY;
+			if (n_z) {
+				p->n_required = n_z;	/* Need more than one z value from file */
+				for (k = 0; k < n_z; k++) p->nondim_col[p->n_nondim++] = 2 + k;	/* all band z in user units */
+			}
 			if (bset) {
 				if (p->user_unit[GMT_Y]) text_cp[strlen(text_cp)-1] = '\0';	/* Chop off u */
 				if (text_cp[bset+1] == '\0') {	/* Read it from data file */
-					p->base_set = 2;
-					p->n_required = 1;
+					p->base_set = GMT_BASE_READ;
+					p->n_required++;
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {
 					if (gmtinit_get_uservalue (GMT, &text_cp[bset+1], gmt_M_type (GMT, GMT_IN, GMT_Y), &p->base, "-Sb base value")) return GMT_PARSE_ERROR;
-					p->base_set = 1;
+					p->base_set = GMT_BASE_ARG;
 				}
 			}
 			break;
@@ -15428,13 +15473,13 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 			if (bset) {
 				if (text[bset+1] == '\0' || text[bset+1] == '+') {	/* Read it from data file */
-					p->base_set = 2;
-					p->n_required ++;
+					p->base_set = GMT_BASE_READ;
+					p->n_required++;
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {
 					if (gmtinit_get_uservalue (GMT, &text[bset+1], gmt_M_type (GMT, GMT_IN, GMT_Z), &p->base, "-So|O base value")) return GMT_PARSE_ERROR;
-					p->base_set = 1;
+					p->base_set = GMT_BASE_ARG;
 				}
 			}
 			if (mode == 0) {
@@ -15713,7 +15758,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		p->base = (GMT->current.proj.xyz_projection[GMT_Y] == GMT_LOG10) ? 1.0 : 0.0;
 	else if (p->symbol == GMT_SYMBOL_COLUMN)
 		p->base = (GMT->current.proj.xyz_projection[GMT_Z] == GMT_LOG10) ? 1.0 : 0.0;
-	if (add_to_base) p->base_set |= 4;	/* Means to add base value to height offset to get actual z at top */
+	if (add_to_base) p->base_set |= GMT_BASE_ORIGIN;	/* Means to add base value to height offset to get actual z at top */
 	return (decode_error);
 }
 

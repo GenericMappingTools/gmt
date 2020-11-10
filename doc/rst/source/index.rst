@@ -20,6 +20,7 @@ Quick links
    - :doc:`Built-in CPTs </cookbook/cpts>`
    - :doc:`Built-in patterns </cookbook/predefined-patterns>`
    - :doc:`Octal Codes of Characters </cookbook/octal-codes>`
+   - :ref:`Character Escape Sequences <Char-esc-seq>`
    - :ref:`Pen Syntax <-Wpen_attrib>`
    - :ref:`Fill Syntax <-Gfill_attrib>`
    - :ref:`Grid Format Specifications <tbl-grdformats>`
