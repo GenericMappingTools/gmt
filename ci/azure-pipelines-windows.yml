@@ -47,7 +47,7 @@ steps:
 - bash: |
     set -x -e
     choco install ninja
-    choco install ghostscript --version 9.50
+    choco install ghostscript
   displayName: Install dependencies via chocolatey
 
 - bash: |
