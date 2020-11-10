@@ -241,5 +241,5 @@ portsnap fetch update
 Then change into directory `/usr/ports/graphics/gmt` and build:
 
 ```
-$ make install clean
+make install clean
 ```
