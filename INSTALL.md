@@ -228,8 +228,8 @@ If not done already, set up the **Ports Collection** (see
 https://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/ports-using.html):
 
 ```
-$ portsnap fetch
-$ portsnap extract
+portsnap fetch
+portsnap extract
 ```
 
 If already set up, make sure you're up-to-date:
