@@ -111,7 +111,7 @@ while read line; do
 	#
 	# License: Creative Commons Attribution 4.0 International License
 	# Copyright (c) 2020, Fabio Crameri All rights reserved.
-	# Crameri, F., (2020). Scientific colour-maps. Zenodo. https://zenodo.org/record/4153113
+	# Crameri, F., (2020). Scientific colour maps. Zenodo. https://zenodo.org/record/4153113
 	# This is Scientific Colour Maps version $VERSION
 	# Note: Original file converted to GMT version >= 5 CPT format.
 	EOF
@@ -159,4 +159,3 @@ mv -f /tmp/oleron.cpt gmt_cpts
 rm -f tmp
 cd $here
 echo "Folder with new cpts is $DIR/gmt_cpts"
-
