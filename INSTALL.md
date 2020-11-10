@@ -2,7 +2,7 @@
 
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
 
-GMT is available on Windows, macOS and Linux.
+GMT is available on Windows, macOS, Linux and FreeBSD.
 Source and binary packages are provided for the latest release,
 and can be downloaded from the [GMT main site](https://www.generic-mapping-tools.org)
 and [the GitHub repository](https://github.com/GenericMappingTools/gmt/releases).
@@ -25,6 +25,8 @@ for compiling GMT source package (either stable release or development version).
   * [ArchLinux](#archlinux)
 - [Cross Platform Install Instructions](#cross-platform-install-instructions)
   * [Install via conda](#install-via-conda)
+- [FreeBSD](#freebsd)
+  * [Install via Ports](#install-via-ports)
 
 ## Windows
 
@@ -210,3 +212,34 @@ You can use the [conda package manager](https://conda.io/) that comes with the
    ```
    conda install gmt -c conda-forge/label/dev
    ```
+
+## FreeBSD
+
+GMT may be installed on FreeBSD using Ports or from source.
+
+**NOTE:** The Ports Collection may provide old GMT versions. If you want the latest GMT release, consider [building the
+latest release from source](BUILDING.md).
+
+### Install via Ports
+
+The FreeBSD Ports Collection is a diverse collection of utility and application software that has been ported to FreeBSD.
+
+If not done already, set up the **Ports Collection** (see
+https://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/ports-using.html):
+
+```
+portsnap fetch
+portsnap extract
+```
+
+If already set up, make sure you're up-to-date:
+
+```
+portsnap fetch update
+```
+
+Then change into directory `/usr/ports/graphics/gmt` and build:
+
+```
+make install clean
+```
