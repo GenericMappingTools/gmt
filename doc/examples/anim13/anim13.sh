@@ -25,9 +25,9 @@ EOF
 cat << EOF > pre.sh
 gmt begin
 	# 1a. Create dense point-files from the waveform data components
-	gmt psevents waveform_AV.DOL.txt -R\${PLOT_DOMAIN} -JX20cT/3.5c -Ar\${DPI} -i0,1+s1e-6,0 -f2T --GMT_INTERPOLANT=\${SPLINE} > E.txt
-	gmt psevents waveform_AV.DOL.txt -R\${PLOT_DOMAIN} -JX20cT/3.5c -Ar\${DPI} -i0,2+s1e-6,0 -f2T --GMT_INTERPOLANT=\${SPLINE} > N.txt
-	gmt psevents waveform_AV.DOL.txt -R\${PLOT_DOMAIN} -JX20cT/3.5c -Ar\${DPI} -i0,3+s1e-6,0 -f2T --GMT_INTERPOLANT=\${SPLINE} > Z.txt
+	gmt events waveform_AV.DOL.txt -R\${PLOT_DOMAIN} -JX20cT/3.5c -Ar\${DPI} -i0,1+s1e-6,0 -f2T --GMT_INTERPOLANT=\${SPLINE} > E.txt
+	gmt events waveform_AV.DOL.txt -R\${PLOT_DOMAIN} -JX20cT/3.5c -Ar\${DPI} -i0,2+s1e-6,0 -f2T --GMT_INTERPOLANT=\${SPLINE} > N.txt
+	gmt events waveform_AV.DOL.txt -R\${PLOT_DOMAIN} -JX20cT/3.5c -Ar\${DPI} -i0,3+s1e-6,0 -f2T --GMT_INTERPOLANT=\${SPLINE} > Z.txt
 	# 1b. Setup the desired output times (24 frames per second)
 	gmt math -T\${TIME_RANGE}/24+i -o0 T --TIME_UNIT=s --FORMAT_CLOCK_OUT=hh:mm:ss.xxxxx = times.txt
 	# 1c. Create background page with location map and metadata
