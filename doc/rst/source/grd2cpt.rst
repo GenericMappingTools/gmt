@@ -133,7 +133,8 @@ Optional Arguments
     *start*-*start+1* instead.  If the categorical CPT should have string
     keys instead of numerical entries then append **+k**\ *keys*, where
     *keys* is either a file with one key per record or it is a comma-separated
-    list of individual keys.
+    list of individual keys. If *keys* is instead a single letter (e.g., D),
+    then we build sequential letter keys (e.g., D, E, F, ...) starting at that point.
 
 .. _-G:
 

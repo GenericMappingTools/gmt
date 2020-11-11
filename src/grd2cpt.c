@@ -174,6 +174,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   labels from <start> (a letter or an integer). Append - to build ranges <start>-<start+1>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +k<keys> to set categorical keys rather than numerical values.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <keys> may be a file with one key per line or a comma-separated list of keys.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <keys> is a single letter then we build sequential alphabetical keys from that letter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set that limit to NaN.\n");
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)
