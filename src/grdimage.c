@@ -1075,6 +1075,38 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 	}
 }
 
+GMT_LOCAL bool grdimage_adjust_R_consideration (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, bool force) {
+	/* As per https://github.com/GenericMappingTools/gmt/issues/4440, when the user wants
+	 * to plot a pixel-registered global grid using a lon-lat scaling with periodic boundaries
+	 * and a central meridian that is not a multiple of the grid increment, we must actually
+	 * adjust the plot domain -R to be such a multiple.  That, or require projection.
+	 * Pass force as true if we are to bypass the other checks that normally come first.
+	 * For instance, if grdimage -Edpi is set then we must always project, so force -> true. */
+
+	double delta;
+
+	if (!gmt_M_is_geographic (GMT, GMT_IN)) return false;	/* No geographic */
+	if (!force) {	/* See what we have */
+		if (h->registration == GMT_GRID_NODE_REG) return false;	/* gridline-registration has the repeated column needed */
+		if (gmt_M_is_nonlinear_graticule (GMT)) return true;	/* Always have to project when given most projections except -JQ */
+		if (!gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) return false;	/* No repeating columns would be visible */
+	}
+	delta = remainder (h->wesn[XLO] - GMT->common.R.wesn[XLO], h->inc[GMT_X]);
+	if (gmt_M_is_zero (delta)) return false;	/* No need to project if it is lining up */
+	/* Here we need to adjust plot region */
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your grid is pixel-registered, the projection is simply longlat, and plot region is a full 360 degrees in longitude.\n");
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "Due to lack of repeated boundary nodes, -Rw/e must be given in multiples of the grid increment (%g)\n", h->inc[GMT_X]);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "Current region (-R) setting in longitude is %g to %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
+	GMT->common.R.wesn[XLO] += delta;
+	GMT->common.R.wesn[XHI] += delta;
+	if (GMT->common.R.wesn[XHI] <= 0.0) {
+		GMT->common.R.wesn[XLO] += 360.0;
+		GMT->common.R.wesn[XHI] += 360.0;
+	}
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "Adjusted region (-R) setting in longitude is %g to %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
+	return false;
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, Conf); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -1212,7 +1244,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 		if (use_intensity_grid && GMT->common.R.active[RSET]) {
 			/* Make sure the region of the intensity grid and -R are in agreement within a noise threshold */
-            double xnoise = Intens_orig->header->inc[GMT_X]*GMT_CONV4_LIMIT, ynoise = Intens_orig->header->inc[GMT_Y]*GMT_CONV4_LIMIT;
+			double xnoise = Intens_orig->header->inc[GMT_X]*GMT_CONV4_LIMIT, ynoise = Intens_orig->header->inc[GMT_Y]*GMT_CONV4_LIMIT;
 			if (GMT->common.R.wesn[XLO] < (Intens_orig->header->wesn[XLO]-xnoise) || GMT->common.R.wesn[XHI] > (Intens_orig->header->wesn[XHI]+xnoise) ||
 			    GMT->common.R.wesn[YLO] < (Intens_orig->header->wesn[YLO]-ynoise) || GMT->common.R.wesn[YHI] > (Intens_orig->header->wesn[YHI]+ynoise)) {
 				GMT_Report (API, GMT_MSG_ERROR, "Requested region exceeds illumination extent\n");
@@ -1301,6 +1333,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (!GMT->common.R.active[RSET] && got_z_grid)	/* -R was not set so we use the grid domain */
 		gmt_set_R_from_grd (GMT, Grid_orig->header);
+
+	grdimage_adjust_R_consideration (GMT, header_work, Ctrl->E.dpi);	/* SPecial check for global pixel-registered plots */
 
 	/* Initialize the projection for the selected -R -J */
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
