@@ -66,4 +66,4 @@ gmt begin
 gmt end show
 EOF
 # 3. Run the movie
-gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Ttimes.txt -Nanim13 -Lc0+jTR+o0.5c/0.5c+gwhite+p0.25p -H8 -Pb+w0.4c+jBR -Fmp4 -V -W -Zs -M165,png --FORMAT_DATE_MAP=- --FORMAT_CLOCK_OUT=hh:mm:ss.xxxxx
+gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Ttimes.txt -Nanim13 -Lc0+jTR+o0.5c/0.5c+gwhite+p0.25p -H8 -Pb+w0.4c+jBR -Fmp4 -V -W -Zs -M165,png --FORMAT_DATE_MAP=-
