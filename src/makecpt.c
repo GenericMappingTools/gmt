@@ -71,11 +71,12 @@ struct MAKECPT_CTRL {
 		bool active;
 		unsigned int levels;
 	} E;
-	struct MAKECPT_F {	/* -F[r|R|h|c][+c[<label>]] */
+	struct MAKECPT_F {	/* -F[r|R|h|c][+c[<label>]][+k<keys>] */
 		bool active;
 		bool cat;
 		unsigned int model;
 		char *label;
+		char *key;
 	} F;
 	struct MAKECPT_G {	/* -Glow/high for input CPT truncation */
 		bool active;
@@ -134,6 +135,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *C) {	/* Deallo
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->F.label);
+	gmt_M_str_free (C->F.key);
 	gmt_free_array (GMT, &(C->T.T));
 	gmt_M_free (GMT, C);
 }
@@ -142,7 +144,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	const char *H_OPT = (API->GMT->current.setting.run_mode == GMT_MODERN) ? " [-H]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-A<transparency>[+a]] [-C<cpt>|colors] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c][+c[<label>]]] [-G<zlo>/<zhi>]%s\n", name, H_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-A<transparency>[+a]] [-C<cpt>|colors] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c][+c[<label>]][+k<keys>]] [-G<zlo>/<zhi>]%s\n", name, H_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I[c][z]] [-M] [-N] [-Q] [-S<mode>] [-T<min>/<max>[/<inc>[+b|l|n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
@@ -163,7 +165,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c[label>] to output a discrete CPT in categorical CPT format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The <label>, if present, sets the labels for each category. It may be a\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   comma-separated list of category names, or <start>[-], where we automatically build\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   labels from <start> (a letter or an integer). Append - to build ranges <start>-<start+1>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   labels from <start> (a letter or an integer). Append - to build range labels <start>-<start+1>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +k<keys> to set categorical keys rather than numerical values.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <keys> may be a file with one key per line or a comma-separated list of keys.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set that limit to NaN.\n");
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)
@@ -255,10 +259,14 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'F':	/* Sets format for color reporting */
 				Ctrl->F.active = true;
-				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c", GMT_MSG_ERROR)) n_errors++;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "ck", GMT_MSG_ERROR)) n_errors++;
 				if (gmt_get_modifier (opt->arg, 'c', txt_a)) {
 					Ctrl->F.cat = true;
 					Ctrl->F.label = strdup (txt_a);
+				}
+				if (gmt_get_modifier (opt->arg, 'k', txt_a)) {
+					Ctrl->F.cat = true;
+					Ctrl->F.key = strdup (txt_a);
 				}
 				switch (opt->arg[0]) {
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;
@@ -431,7 +439,7 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if (Ctrl->T.active && (API->error = gmt_validate_cpt_parameters (GMT, Pin, Ctrl->C.file, &(Ctrl->T.interpolate), &(Ctrl->Z.active))))
-			Return (API->error)
+		Return (API->error)
 
 	if (Ctrl->Q.active && Pin->has_hinge)
 		GMT_Report (API, GMT_MSG_WARNING, "CPT %s has a hinge but you selected a logarithmic scale\n", Ctrl->C.file);
@@ -533,7 +541,12 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	/* Set up arrays */
 
-	if (Ctrl->T.active && gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) Return (GMT_RUNTIME_ERROR);
+	if (Ctrl->T.active) {
+		if (Ctrl->F.cat && Ctrl->T.T.set == 3)	/* Must go one more increment to output what the user wants */
+			Ctrl->T.T.max += Ctrl->T.T.inc;
+		if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL))
+			Return (GMT_RUNTIME_ERROR);
+	}
 	nz = (int)Ctrl->T.T.n;		z = Ctrl->T.T.array;
 
 	if (Ctrl->T.T.list && (Pin->mode & GMT_CPT_TEMPORARY)) {	/* Array was passed as a comma-separated list of z-values so make sure it matches a list of colors, if given */
@@ -595,13 +608,30 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 	if (Ctrl->F.cat) {	/* Flag as a categorical CPT */
 		Pout->categorical = GMT_CPT_CATEGORICAL_VAL;
-		if (Ctrl->F.label[0]) {	/* Want categorical labels */
-			char **label = gmt_cat_cpt_labels (GMT, Ctrl->F.label, Pout->n_colors);
+		if (Ctrl->F.label[0]) {	/* Want categorical labels appended to each CPT record */
+			char **label = gmt_cat_cpt_strings (GMT, Ctrl->F.label, Pout->n_colors);
 			for (unsigned int k = 0; k < Pout->n_colors; k++) {
 				if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
-				Pout->data[k].label = label[k];	/* Now the job of the CPT to free these strings */
+				if (label[k]) Pout->data[k].label = label[k];	/* Now the job of the CPT to free these strings */
 			}
-			gmt_M_free (GMT, label);
+			gmt_M_free (GMT, label);	/* But the master array can go */
+		}
+		if (Ctrl->F.key) {	/* Want categorical labels */
+			char **keys = NULL;
+			if (!gmt_access (GMT, Ctrl->F.key, R_OK)) {	/* Got a file with category keys */
+				unsigned int ns = gmt_read_list (GMT, Ctrl->F.key, &keys);
+				if (ns < Pout->n_colors) {
+					GMT_Report (API, GMT_MSG_WARNING, "The categorical keys file %s had %d entries but %d were expected\n", Ctrl->F.key, ns, Pout->n_colors);
+				}
+			}
+			else	/* Got comma-separated keys */
+				keys = gmt_cat_cpt_strings (GMT, Ctrl->F.key, Pout->n_colors);
+			for (unsigned int k = 0; k < Pout->n_colors; k++) {
+				if (Pout->data[k].key) gmt_M_str_free (Pout->data[k].key);
+				if (keys[k]) Pout->data[k].key = keys[k];	/* Now the job of the CPT to free these strings */
+			}
+			gmt_M_free (GMT, keys);	/* But the master array can go */
+			Pout->categorical = GMT_CPT_CATEGORICAL_KEY;
 		}
 	}
 
