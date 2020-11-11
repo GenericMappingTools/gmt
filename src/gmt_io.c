@@ -4589,7 +4589,7 @@ int gmt_get_precision_width (struct GMT_CTRL *GMT, double x) {
 	return (k + 1);
 }
 
-GMT_LOCAL void gmtio_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t chunk) {
+void gmt_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t chunk) {
 	/* Either just scan the first chunk items of the first segment.  If 0 we mean all */
 	bool abstime_found = false;
 	unsigned int col, row;
@@ -4669,7 +4669,7 @@ int gmtlib_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 		strcpy (open_mode, (append) ? "a" : "w");
 	GMT->current.io.record_type[GMT_OUT] = D->type;
 
-	gmtio_check_abstime_format (GMT, D, 20);	/* If some columns are absolute time destined for ASCII formatting, we may need to change FORMAT_CLOCK_OUT template */
+	gmt_check_abstime_format (GMT, D, 20);	/* If some columns are absolute time destined for ASCII formatting, we may need to change FORMAT_CLOCK_OUT template */
 
 	/* Convert any destination type to stream */
 
