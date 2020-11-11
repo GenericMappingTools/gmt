@@ -1,4 +1,5 @@
 # Waveform for earthquake on 2020-10-06 05:54:50 (UTC) at 54.844°N 159.860°W at 30.4 km depth with M 5.9 - 68 km SE of Sand Point, Alaska
+# Recorded by station AV.DOL at 55.15°N, 161.86°W.
 # time(UTC)				E		N		Z
 2020-10-06T05:55:00.00	-888	-1344	-1642
 2020-10-06T05:55:00.02	-902	-1365	-1604
