@@ -187,7 +187,7 @@ jobs:
 ########################################################################################
 - job:
   displayName: 'Windows | Build Docs + Package'
-  condition: eq(variables['Build.Reason'], 'Schedule')
+  # condition: eq(variables['Build.Reason'], 'Schedule')
   timeoutInMinutes: 120
 
   pool:
