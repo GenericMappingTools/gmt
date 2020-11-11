@@ -84,7 +84,12 @@ vikO|Perceptually uniform bimodal cyclic colormap, light, by Fabio Crameri [C=RG
 EOF
 here=`pwd`
 cd $DIR
+# Make formatted list of lines suitable for copying into gmt_cpt_masters.h
 awk -F'|' '{printf "\"%-10s : %s\",\n", $1, $2}' /tmp/cpt.info > /tmp/cpt_strings.txt
+# Make list of CPTs with a hinge of some soft since these need to insert a true z = 0 slice
+grep "[H," /tmp/cpt.info | awk -F'|' '{print $1}' > /tmp/hinge.lis
+grep "[S," /tmp/cpt.info | awk -F'|' '{print $1}' >> /tmp/hinge.lis
+
 rm -rf gmt_cpts
 mkdir gmt_cpts
 cat <<- EOF > /tmp/front
@@ -150,12 +155,13 @@ while read line; do
 		egrep '^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%s\t%s/%s/%s\n", $1, $2, $3, $4}' >> gmt_cpts/$cpt.cpt
 	fi
 done < /tmp/cpt.info
-# Fix the zero hinge for oleron
-grep '^#' gmt_cpts/oleron.cpt > /tmp/oleron.cpt
-egrep -v '^#|B|N|F' gmt_cpts/oleron.cpt | awk '{if (NR == 127) {printf "%s\t%s\t0.0\t\t\t%s\n", $1, $2, $4} else if (NR == 129) {printf "0.0\t\t\t%s\t%s\t%s\n", $2, $3, $4} else if (NR != 128) { print $0}}' >> /tmp/oleron.cpt
-egrep '^B|^N|^F' gmt_cpts/oleron.cpt >> /tmp/oleron.cpt
-mv -f /tmp/oleron.cpt gmt_cpts
-
+# Fix the zero hinges
+while read cpt; do
+	grep '^#' gmt_cpts/${cpt}.cpt > /tmp/${cpt}.cpt
+	egrep -v '^#|B|N|F' gmt_cpts/${cpt}.cpt | awk '{if (NR == 127) {printf "%s\t%s\t0.0\t\t\t%s\n", $1, $2, $4} else if (NR == 129) {printf "0.0\t\t\t%s\t%s\t%s\n", $2, $3, $4} else if (NR != 128) { print $0}}' >> /tmp/${cpt}.cpt
+	egrep '^B|^N|^F' gmt_cpts/${cpt}.cpt >> /tmp/${cpt}.cpt
+	mv -f /tmp/${cpt}.cpt gmt_cpts
+done < /tmp/hinge.lis
 rm -f tmp
 cd $here
 echo "Folder with new cpts is $DIR/gmt_cpts"
