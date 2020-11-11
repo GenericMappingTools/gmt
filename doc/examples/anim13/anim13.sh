@@ -40,7 +40,7 @@ gmt begin
 	EOF
 	gmt grdimage -R190W/130W/30/75 @earth_relief_06m -Ba30+f -JM3.5c -I+d -Cterra --MAP_FRAME_TYPE=plain -X0.75c -Y0.5c -BWNbr --MAP_ANNOT_OBLIQUE=lat_parallel --FONT_ANNOT_PRIMARY=9p
 	echo 159.842W 54.844N | gmt plot -Sa0.5c -Gred -Wfaint
-	gmt meca -R190W/130W/30/75 -JM3.5c -Sm2.5c -M -G110/168/255 -T0 -W0.5p -Yh+0.5c <<- EOF
+	gmt meca -Sm2.5c -M -G110/168/255 -T0 -W0.5p -Yh+0.5c <<- EOF
 	-159.70 54.81 39 0.82 -0.68 -0.14 0.63 0.34 -0.40 25
 	EOF
 gmt end show
