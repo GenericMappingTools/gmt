@@ -542,10 +542,13 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 	/* Set up arrays */
 
 	if (Ctrl->T.active) {
-		if (Ctrl->F.cat && Ctrl->T.T.set == 3)	/* Must go one more increment to output what the user wants */
-			Ctrl->T.T.max += Ctrl->T.T.inc;
 		if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL))
 			Return (GMT_RUNTIME_ERROR);
+		if (Ctrl->F.cat && Ctrl->T.T.n > 1) {	/* Must go one more increment to output what the user wants */
+			Ctrl->T.T.n++;
+			Ctrl->T.T.array = gmt_M_memory (GMT, Ctrl->T.T.array, Ctrl->T.T.n, double);
+			Ctrl->T.T.array[Ctrl->T.T.n-1] = Ctrl->T.T.array[Ctrl->T.T.n-2] + 1;	/* Does not matter as long as > previous */
+		}
 	}
 	nz = (int)Ctrl->T.T.n;		z = Ctrl->T.T.array;
 
