@@ -12,7 +12,7 @@
 #
 # The finished movie is available in our YouTube channel as well:
 # https://youtu.be/xxxxxxxxxx
-# The 66-sec, 1081 frame movie took 12 minutes to render on a 24-core MacPro 2013.
+# The 66-sec, 1081 frame movie took ~12.5 minutes to render on a 24-core MacPro 2013.
 
 # 0. Create an include file with key parameters
 cat << EOF > inc.sh
