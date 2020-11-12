@@ -66,6 +66,11 @@ struct PSMECA_CTRL {
 		bool active;
 		struct GMT_FILL fill;
 	} G;
+	struct PSMECA_I {	/* -D[g|j|n|x]<refpoint>[+o<dx>[/<dy>]] */
+		bool active;
+		struct GMT_REFPOINT *refpoint;
+		double off[2];
+	} I;
 	struct PSMECA_L {	/* -L<pen> */
 		bool active;
 		struct GMT_PEN pen;
@@ -163,6 +168,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSMECA_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->Z.file);
+	gmt_free_refpoint (GMT, &C->I.refpoint);
 	gmt_M_free (GMT, C);
 }
 
@@ -252,7 +258,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	unsigned int n_errors = 0, n;
 	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 
@@ -363,6 +369,17 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				if (!opt->arg[0] || (opt->arg[0] && gmt_getfill (GMT, opt->arg, &Ctrl->G.fill))) {
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
+				}
+				break;
+			case 'I':
+				if ((Ctrl->I.refpoint = gmt_get_refpoint (GMT, opt->arg, 'I')) == NULL) {
+					n_errors++;	/* Failed basic parsing */
+					continue;
+				}
+				/* Args are [+o<dx>[/<dy>]] */
+				if (gmt_validate_modifiers (GMT, Ctrl->I.refpoint->args, 'I', "o", GMT_MSG_ERROR)) n_errors++;
+				if (gmt_get_modifier (Ctrl->I.refpoint->args, 'o', txt)) {
+					if ((n = gmt_get_pair (GMT, txt, GMT_PAIR_DIM_DUP, Ctrl->I.off)) < 0) n_errors++;
 				}
 				break;
 			case 'L':	/* Draw outline [set outline attributes] */
@@ -569,6 +586,9 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
+	if (Ctrl->I.active)
+		gmt_set_refpoint (GMT, Ctrl->I.refpoint);	/* Finalize reference point plot coordinates, if needed */
+
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_set_basemap_orders (GMT, Ctrl->N.active ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
@@ -610,7 +630,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 		n_rec++;
 
 		/* Immediately skip locations outside of the map area */
-		if (!Ctrl->N.active) {
+		if (!(Ctrl->N.active|| Ctrl->I.active)) {
 			gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
 			if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 		}
@@ -761,7 +781,12 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 		/* Common to all input types ... */
 
-		gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
+		if (Ctrl->I.active) {
+			plot_x = Ctrl->I.refpoint->x;
+			plot_y = Ctrl->I.refpoint->y;
+		}
+		else
+			gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 
 		/* If option -C is used, read the new position */
 
