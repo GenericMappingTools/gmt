@@ -179,7 +179,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] [%s]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<pen>][+s<size>]] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] %s[-L<pen>] [-M]\n", API->K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<pen>][+s<size>]] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] [-D%s%s %s[-L<pen>] [-M]\n", GMT_XYANCHOR, GMT_OFFSET, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fa[<size>[/<Psymbol>[<Tsymbol>]]] [-Fe<fill>] [-Fg<fill>] [-Fo] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] [-Fz[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] %s%s[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>]\n", API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<cpt>]\n", GMT_X_OPT, GMT_Y_OPT);
@@ -231,6 +231,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   r Draw box behind labels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   z Overlay zero trace moment tensor using default pen (see -W) or append outline pen.\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Set filling of compressive quadrants [Default is black].");
+	gmt_refpoint_syntax (API->GMT, "I", "Specify position of a single symbol for information only [0/0].", 0, 1);
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Sets pen attribute for outline other than the default set by -W.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Same size for any magnitude. Size is given with -S.\n");
@@ -372,6 +373,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'I':
+				Ctrl->I.active = true;
 				if ((Ctrl->I.refpoint = gmt_get_refpoint (GMT, opt->arg, 'I')) == NULL) {
 					n_errors++;	/* Failed basic parsing */
 					continue;
@@ -586,8 +588,16 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
-	if (Ctrl->I.active)
+	if (Ctrl->I.active) {
+		int mode = Ctrl->I.refpoint->mode;
 		gmt_set_refpoint (GMT, Ctrl->I.refpoint);	/* Finalize reference point plot coordinates, if needed */
+		Ctrl->I.refpoint->x += 0.5 * Ctrl->S.scale;	plot_y = Ctrl->I.refpoint->y += 0.5 * Ctrl->S.scale;	/* First let these refer to BL of symbol BoundingBox */
+		if (mode == GMT_REFPOINT_JUST) {	/* Must adjust these auto-locations by symbol size and offsets */
+			double dim[2] = {Ctrl->S.scale, Ctrl->S.scale};
+			gmt_adjust_refpoint (GMT, Ctrl->I.refpoint, dim, Ctrl->I.off, Ctrl->I.refpoint->justify, PSL_BL);
+		}
+		plot_x = Ctrl->I.refpoint->x;	plot_y = Ctrl->I.refpoint->y;
+	}
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -781,11 +791,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 		/* Common to all input types ... */
 
-		if (Ctrl->I.active) {
-			plot_x = Ctrl->I.refpoint->x;
-			plot_y = Ctrl->I.refpoint->y;
-		}
-		else
+		if (!Ctrl->I.active)
 			gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 
 		/* If option -C is used, read the new position */
@@ -896,7 +902,10 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 			PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A2.size, Ctrl->A2.T_symbol);
 		}
 		event_title[0] = string[0] = '\0';		/* Reset these two in case next record misses "string" */
+		if (Ctrl->I.active) goto once_only;
 	} while (true);
+
+once_only:	/* When -I is active we only plot the very first entry */
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
