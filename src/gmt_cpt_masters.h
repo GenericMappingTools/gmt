@@ -85,7 +85,7 @@
 "turkuS      : Perceptually uniform categorical colormap by Fabio Crameri [C=RGB]",
 "turbo       : Google's Improved Rainbow Colormap for Visualization [C=RGB]",
 "vik         : Perceptually uniform bimodal colormap, light, by Fabio Crameri [S, C=RGB]",
-"vikO        : Perceptually uniform bimodal cyclic colormap, light, by Fabio Crameri [S, C=RGB]",
+"vikO        : Perceptually uniform bimodal cyclic colormap, light, by Fabio Crameri [C=RGB]",
 "viridis     : New colormap Option D from matplotlib [C=RGB]",
 "world       : Colors for global bathymetry/topography relief [R=-7000/7000, H, C=RGB]",
 "wysiwyg     : 20 well-separated RGB colors [C=RGB]"
