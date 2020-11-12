@@ -72,7 +72,7 @@ nuukS|Perceptually uniform, low-lightness gradient categorical colormap, by Fabi
 oleron|Perceptually uniform topography colormap, by Fabio Crameri [H,C=RGB]
 oslo|Perceptually uniform, B&W limits, by Fabio Crameri [C=RGB]
 osloS|Perceptually uniform, B&W limits, categorical colormap, by Fabio Crameri [C=RGB]
-roma|Perceptually uniform 'seis' colormap by Fabio Crameri [C=RGB]
+roma|Perceptually uniform 'seis' colormap by Fabio Crameri [S,C=RGB]
 romaO|Perceptually uniform cyclic colormap by Fabio Crameri [C=RGB]
 tofino|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
 tokyo|Perceptually uniform colormap without black or white, by Fabio Crameri [C=RGB]
