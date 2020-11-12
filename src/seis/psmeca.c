@@ -590,6 +590,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	if (Ctrl->I.active) {
 		int mode = Ctrl->I.refpoint->mode;
+		Ctrl->N.active = true;
 		gmt_set_refpoint (GMT, Ctrl->I.refpoint);	/* Finalize reference point plot coordinates, if needed */
 		Ctrl->I.refpoint->x += 0.5 * Ctrl->S.scale;	plot_y = Ctrl->I.refpoint->y += 0.5 * Ctrl->S.scale;	/* First let these refer to BL of symbol BoundingBox */
 		if (mode == GMT_REFPOINT_JUST) {	/* Must adjust these auto-locations by symbol size and offsets */
