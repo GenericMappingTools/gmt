@@ -66,7 +66,7 @@ struct PSMECA_CTRL {
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct PSMECA_I {	/* -D[g|j|n|x]<refpoint>[+o<dx>[/<dy>]] */
+	struct PSMECA_I {	/* -D[g|j|J|n|x]<refpoint>[+o<dx>[/<dy>]] */
 		bool active;
 		struct GMT_REFPOINT *refpoint;
 		double off[2];
@@ -179,7 +179,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] [%s]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<pen>][+s<size>]] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] [-D%s%s %s[-L<pen>] [-M]\n", GMT_XYANCHOR, GMT_OFFSET, API->K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<pen>][+s<size>]] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] [-I%s%s %s[-L<pen>] [-M]\n", GMT_XYANCHOR, GMT_OFFSET, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fa[<size>[/<Psymbol>[<Tsymbol>]]] [-Fe<fill>] [-Fg<fill>] [-Fo] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] [-Fz[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] %s%s[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>]\n", API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<cpt>]\n", GMT_X_OPT, GMT_Y_OPT);
@@ -588,9 +588,9 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
-	if (Ctrl->I.active) {
+	if (Ctrl->I.active) {	/* Not plotting into a map but a legend box, so fix the plot location, adjust if needed */
 		int mode = Ctrl->I.refpoint->mode;
-		Ctrl->N.active = true;
+		Ctrl->N.active = true;	/* Allow this symbol to be placed anywhere relative to given anchor */
 		gmt_set_refpoint (GMT, Ctrl->I.refpoint);	/* Finalize reference point plot coordinates, if needed */
 		Ctrl->I.refpoint->x += 0.5 * Ctrl->S.scale;	plot_y = Ctrl->I.refpoint->y += 0.5 * Ctrl->S.scale;	/* First let these refer to BL of symbol BoundingBox */
 		if (mode == GMT_REFPOINT_JUST) {	/* Must adjust these auto-locations by symbol size and offsets */
@@ -641,7 +641,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 		n_rec++;
 
 		/* Immediately skip locations outside of the map area */
-		if (!(Ctrl->N.active|| Ctrl->I.active)) {
+		if (!Ctrl->N.active) {
 			gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
 			if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 		}
@@ -792,7 +792,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 		/* Common to all input types ... */
 
-		if (!Ctrl->I.active)
+		if (!Ctrl->I.active)	/* Update plot location */
 			gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 
 		/* If option -C is used, read the new position */
@@ -902,11 +902,11 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 			gmt_setfill (GMT, &Ctrl->E2.fill, Ctrl->T2.active ? 1 : 0);
 			PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A2.size, Ctrl->A2.T_symbol);
 		}
-		event_title[0] = string[0] = '\0';		/* Reset these two in case next record misses "string" */
-		if (Ctrl->I.active) goto once_only;
+		event_title[0] = string[0] = '\0';	/* Reset these two in case next record misses "string" */
+		if (Ctrl->I.active) goto once_only;	/* When -I is active we only plot the very first entry */
 	} while (true);
 
-once_only:	/* When -I is active we only plot the very first entry */
+once_only:
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
