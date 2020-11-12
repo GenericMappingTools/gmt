@@ -201,6 +201,17 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
+GMT_LOCAL unsigned int makecpt_is_categories (struct GMT_CTRL *GMT, char *arg) {
+	char txt[GMT_LEN64] = {""};
+	/* Return n if -T was given a list of cn ategory string keys rather than numerical info [0] */
+	if (arg == NULL || arg[0] == '\0') return 0;	/* Nothing at all */
+	if (strchr (arg, ',') == NULL) return 0;	/* No comma, no list of any type */
+	sscanf (arg, "%[^,]", txt);
+	if (gmt_not_numeric (GMT, txt))	/* Return the number of commas plus one */
+		return (gmt_count_char (GMT, arg, ',') + 1);
+	return 0;
+}
+
 static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to makecpt and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -209,8 +220,8 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 	 */
 
 	int n;
-	unsigned int n_errors = 0, n_files[2] = {0, 0};
-	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL;
+	unsigned int n_errors = 0, n_files[2] = {0, 0}, n_categorical = 0;
+	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL, *keys = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) if (opt->option == 'Q') Ctrl->Q.active = true;;	/* If -T given before -Q we need to flag -T+l */
@@ -263,11 +274,11 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "ck", GMT_MSG_ERROR)) n_errors++;
 				if (gmt_get_modifier (opt->arg, 'c', txt_a)) {
 					Ctrl->F.cat = true;
-					Ctrl->F.label = strdup (txt_a);
+					if (txt_a[0]) Ctrl->F.label = strdup (txt_a);
 				}
 				if (gmt_get_modifier (opt->arg, 'k', txt_a)) {
 					Ctrl->F.cat = true;
-					Ctrl->F.key = strdup (txt_a);
+					if (txt_a[0]) Ctrl->F.key = strdup (txt_a);
 				}
 				switch (opt->arg[0]) {
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;
@@ -330,7 +341,11 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'T':	/* Sets up color z values */
 				Ctrl->T.active = Ctrl->T.interpolate = true;
-				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_RANGE | GMT_ARRAY_NOINC | GMT_ARRAY_UNIQUE, GMT_Z);
+				n_categorical = makecpt_is_categories (GMT, opt->arg);
+				if (n_categorical == 0)
+					n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_RANGE | GMT_ARRAY_NOINC | GMT_ARRAY_UNIQUE, GMT_Z);
+				else
+					keys = strdup (opt->arg);
 				if (Ctrl->T.T.set == 2) Ctrl->T.interpolate = false;	/* Did not give increment, just min/max */
 				break;
 			case 'Q':	/* Logarithmic scale */
@@ -358,6 +373,18 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 		}
 	}
 
+	if (n_categorical) {	/* Must do some shuffling */
+		if (Ctrl->F.key) {
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -T: Cannot set categorical keys with both -T and -F+k.\n");
+			n_errors++;
+		}
+		else {
+			Ctrl->F.cat = true;	/* Must turn on categorical whether -F was set of not */
+			Ctrl->F.key = keys;
+			sprintf (txt_a, "1/%d/1", n_categorical);	/* Build replacement array setup */
+			n_errors += gmt_parse_array (GMT, 'T', txt_a, &(Ctrl->T.T), GMT_ARRAY_UNIQUE, GMT_Z);
+		}
+	}
 	/* Given -Qo and -T...+l are the same, make sure both ways are defined since code uses both */
 	if (Ctrl->Q.active && Ctrl->Q.mode == 2) Ctrl->T.T.logarithmic = true;
 	else if (Ctrl->T.T.logarithmic) Ctrl->Q.active = true, Ctrl->Q.mode = 2;
@@ -612,8 +639,8 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 	if (Ctrl->F.cat) {	/* Flag as a categorical CPT */
 		Pout->categorical = GMT_CPT_CATEGORICAL_VAL;
-		if (Ctrl->F.label[0]) {	/* Want categorical labels appended to each CPT record */
-			char **label = gmt_cat_cpt_strings (GMT, Ctrl->F.label, Pout->n_colors);
+		if (Ctrl->F.label || Ctrl->F.key) {	/* Want categorical labels appended to each CPT record */
+			char **label = gmt_cat_cpt_strings (GMT, (Ctrl->F.label) ? Ctrl->F.label : Ctrl->F.key, Pout->n_colors);
 			for (unsigned int k = 0; k < Pout->n_colors; k++) {
 				if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
 				if (label[k]) Pout->data[k].label = label[k];	/* Now the job of the CPT to free these strings */

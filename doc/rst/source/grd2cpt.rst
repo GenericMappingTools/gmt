@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*][**+c**][**+f**\ *file*] ]
-[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]][**+k**\ *keys*] ]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]] ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -120,7 +120,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]][**+k**\ *keys*]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]]
     Force output CPT to written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
@@ -130,11 +130,7 @@ Optional Arguments
     category names (you can skip a category by not giving a name), or give
     *start*[-], where we automatically build monotonically increasing labels
     from *start* (a single letter or an integer). Append - to build ranges
-    *start*-*start+1* instead.  If the categorical CPT should have string
-    keys instead of numerical entries then append **+k**\ *keys*, where
-    *keys* is either a file with one key per record or it is a comma-separated
-    list of individual keys. If *keys* is instead a single letter (e.g., D),
-    then we build sequential letter keys (e.g., D, E, F, ...) starting at that point.
+    *start*-*start+1* instead.
 
 .. _-G:
 
