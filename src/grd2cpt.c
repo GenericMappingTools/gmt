@@ -171,6 +171,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   comma-separated list of category names, or <start>[-], where we automatically build\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   labels from <start> (a letter or an integer). Append - to build ranges <start>-<start+1>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <keys> is a single letter then we build sequential alphabetical keys from that letter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set that limit to NaN.\n");
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)
 		GMT_Message (API, GMT_TIME_NONE, "\t-H Also write CPT to stdout [Default just saves as current CPT].\n");
@@ -211,7 +212,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 
 	int n;
 	unsigned int n_errors = 0, pos = 0, n_files[2] = {0, 0};
-	char txt_a[GMT_LEN128] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL;
+	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL;
 	char *T_arg = NULL, *S_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -284,7 +285,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c", GMT_MSG_ERROR)) n_errors++;
 				if (gmt_get_modifier (opt->arg, 'c', txt_a)) {
 					Ctrl->F.cat = true;
-					Ctrl->F.label = strdup (txt_a);
+					if (txt_a[0]) Ctrl->F.label = strdup (txt_a);
 				}
 				Ctrl->F.active = true;
 				switch (txt_a[0]) {
@@ -840,8 +841,8 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 	if (Ctrl->F.cat) {	/* Flag as a categorical CPT */
 		Pout->categorical = GMT_CPT_CATEGORICAL_VAL;
-		if (Ctrl->F.label[0]) {	/* Want categorical labels */
-			char **label = gmt_cat_cpt_labels (GMT, Ctrl->F.label, Pout->n_colors);
+		if (Ctrl->F.label) {	/* Want categorical labels */
+			char **label = gmt_cat_cpt_strings (GMT, Ctrl->F.label, Pout->n_colors);
 			for (unsigned int k = 0; k < Pout->n_colors; k++) {
 				if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
 				Pout->data[k].label = label[k];	/* Now the job of the CPT to free these strings */
