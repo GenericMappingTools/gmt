@@ -203,8 +203,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 GMT_LOCAL unsigned int makecpt_is_categories (struct GMT_CTRL *GMT, char *arg) {
 	char txt[GMT_LEN64] = {""};
-	/* Return n if -T was given a list of cn ategory string keys rather than numerical info [0] */
+	/* Return n if -T was given a list of category string keys rather than numerical info [0] */
 	if (arg == NULL || arg[0] == '\0') return 0;	/* Nothing at all */
+	if (strchr (arg, '/')) return 0;	/* Looks like xmin/xmax/xinc */
 	if (strchr (arg, ',') == NULL) return 0;	/* No comma, no list of any type */
 	sscanf (arg, "%[^,]", txt);
 	if (gmt_not_numeric (GMT, txt))	/* Return the number of commas plus one */
