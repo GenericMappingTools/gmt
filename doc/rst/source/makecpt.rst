@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]]]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]][**+k**\ *keys*] ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -111,7 +111,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]][**+k**\ *keys*]
     Force output CPT to be written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
@@ -119,9 +119,13 @@ Optional Arguments
     If *label* is appended then we create labels for each category to be used
     when the CPT is plotted. The *label* may be a comma-separated list of
     category names (you can skip a category by not giving a name), or give
-    *start*[-], where we automatically build monotonically increasing labels
+    *start*\ [-], where we automatically build monotonically increasing labels
     from *start* (a single letter or an integer). Append - to build ranges
-    *start*-*start+1* instead.
+    *start*\ -*start+1* instead.  If the categorical CPT should have string
+    keys instead of numerical entries then append **+k**\ *keys*, where
+    *keys* is either a file with one key per record or a single letter (e.g., D),
+    then we build sequential letter keys (e.g., D, E, F, ...) starting at that point.
+    For comma-separated lists of keys, use **-T** instead.
 
 .. _-G:
 
@@ -194,7 +198,9 @@ Optional Arguments
     not given, the existing range in the master CPT will be used intact.
     The values produces defines the color slice boundaries.  If **+n** is
     used it refers to the number of such boundaries and not the number of slices.
-    For details on array creation, see `Generate 1D Array`_.
+    For details on array creation, see `Generate 1D Array`_.  **Note**: To set
+    up categorical CPTs with string keys you can also give a comma-separated
+    list of your keys.
 
 .. _-V:
 
@@ -327,6 +333,10 @@ names to them, try::
 To instead add unique category labels A, B, C, ... to a 10-item categorical CPT, try::
 
     gmt makecpt -Cjet -T0/10/1 -F+cA
+
+To make a categorical CPT with string keys instead of numerical lookup values, try::
+
+    gmt makecpt -Ccategorical -Twood,water,gold 
 
 .. include:: cpt_notes.rst_
 

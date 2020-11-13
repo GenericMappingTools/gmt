@@ -867,9 +867,14 @@ void gmt_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 	double step;
 	struct GMT_GCAL calendar;
 
-	step = 0.5 / W->f_sec_to_int / GMT->current.setting.time_system.scale;	/* Precision desired in time units */
-
-	gmt_gcal_from_dt (GMT, dt + step, &calendar);			/* Convert dt to a complete calendar structure */
+	/* Ensure we get the right seconds by adding a small set if ~ an whole second */
+	i_sec = irint (floor (dt));	/* Whole integer seconds */
+	step = dt - i_sec;	/* Any fractional second */
+	if (step > 0.0)	/* Yes so no need to add any step to ensure we are between two whole seconds */
+		step = 0.0;
+	else	/* OK to add < 1 second for ensuring correct calendar second */
+		step = 0.5 / W->f_sec_to_int / GMT->current.setting.time_system.scale;	/* Precision desired in time units */
+	gmt_gcal_from_dt (GMT, dt + step, &calendar);			/* Convert dt [+ step]  to a complete calendar structure */
 
 	if (date) date[0] = 0;
 	if (date && !D->skip) {	/* Not NULL, want to format this string */

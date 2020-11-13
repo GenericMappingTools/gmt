@@ -110,7 +110,7 @@ GMT_LOCAL bool gmtdcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, 
 		}
 		/* Must download it the first time */
 		if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to download the Digital Chart of the World for GMT since GMT_AUTO_DOWNLOAD is off\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to download the Digital Chart of the World for GMT since GMT_DATA_UPDATE_INTERVAL is off\n");
 			return false;
 		}
 		sprintf (path, "%s/geography/dcw", GMT->session.USERDIR);	/* Local directory destination */

@@ -11,6 +11,19 @@ linear projection, or (b) use :doc:`grdview` **-Ts** instead.
 
 .. include:: explain_grdresample.rst_
 
+Imaging Categorical Grids
+-------------------------
+
+Geographical categorical grids have values at the nodes that should not
+be interpolated (i.e., categories 4 and 5 should never be averaged to give
+a new category 4.5).  However, imaging such grids using map projections
+requires a resampling onto an equidistant Cartesian lattice that usually
+will result in such blending.  We do not know if a grid is categorical but
+if the CPT provided via **-C** is categorical we will override any **-n** setting you
+have chosen (perhaps implicitly) with **-nn+a** that turns *on* nearest neighbor
+gridding and turns *off* anti-aliasing.  Alternatively, use :doc:`grdview` **-T**
+instead to plot individual polygons centered on each node.
+
 Image formats recognized
 ------------------------
 
