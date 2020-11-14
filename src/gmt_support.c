@@ -16967,7 +16967,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL bool gmtsupport_var_inc (double *x, uint64_t n) {
+bool gmtlib_var_inc (double *x, uint64_t n) {
 	/* Determine if spacing in the array is variable or constant */
 	bool fixed = true;	/* Start with assumption of fixed increments */
 	uint64_t k;
@@ -17018,14 +17018,14 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		GMT_Destroy_Data (GMT->parent, &D);
 		if (T->unique)	/* Must sort and eliminate duplicates */
 			T->array = gmtsupport_unique_array (GMT, T->array, &(T->n));
-		T->var_inc = gmtsupport_var_inc (T->array, T->n);
+		T->var_inc = gmtlib_var_inc (T->array, T->n);
 		return GMT_NOERROR;
 	}
 
 	if (T->list) {	/* Got a list, parse and make array */
 		if ((T->array = gmt_list_to_array (GMT, T->list, gmt_M_type (GMT, GMT_IN, T->col), T->unique, &(T->n))) == NULL)
 			return GMT_PARSE_ERROR;
-		T->var_inc = gmtsupport_var_inc (T->array, T->n);
+		T->var_inc = gmtlib_var_inc (T->array, T->n);
 		T->min = T->array[0];	T->max = T->array[T->n-1];
 		if (T->n > 1) {	/* Got at least min/max */
 			if (!T->var_inc) {	/* Just did an alternate way to set an equidistant array */
@@ -17121,7 +17121,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Your min/max/inc arguments resulted in no items\n", option);
 		return (GMT_PARSE_ERROR);
 	}
-	T->var_inc = gmtsupport_var_inc (T->array, T->n);
+	T->var_inc = gmtlib_var_inc (T->array, T->n);
 	return (GMT_NOERROR);
 }
 

@@ -60,6 +60,7 @@ struct GMT_DATACUBE {
 	double z_range[2];		/* Minimum/max z values (complements wesn[4]) */
 	double z_inc;			/* z increment (complements inc[2]) (0 if variable z spacing */
 	double *z;			/* Array of z values (complements x, y) */
+	char l_name[GMT_GRID_UNIT_LEN80];     /* uName of the 3-D variable (or empty if just one)  */
 	char l_units[GMT_GRID_UNIT_LEN80];     /* units in z-direction (complements x_units and y_units)  */
 };
 

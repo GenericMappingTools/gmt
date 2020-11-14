@@ -3280,12 +3280,97 @@ int gmt_img_sanitycheck (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 /* 3-D GMT_DATACUBE handling is here */
 
 void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsigned int geometry, unsigned int mode, double range[], const char *infile, void *data) {
+	int error = GMT_NOERROR;
+	char file[PATH_MAX] = {""};
+	uint64_t n_layers = 0, k, start_k, stop_k, n_layers_used, here;
+	double *level = NULL;
+	struct GMT_GRID *G = NULL;
+	struct GMT_DATACUBE *C = NULL;
+	struct GMT_CTRL *GMT = API->GMT;
+
 	if (geometry != GMT_IS_VOLUME) {
 		GMT_Report (API, GMT_MSG_ERROR, "Wrong geometry for GMT_IS_DATACUBE.\n");
 		API->error = GMT_WRONG_FAMILY;
 		return NULL;
 	}
-	return NULL;
+
+	if (data == NULL) {	/* Only allocate grid struct when not already allocated */
+		if (mode & GMT_DATA_ONLY) {
+			API->error = GMT_PTR_IS_NULL;		/* For mode & GMT_DATA_ONLY grid must already be allocated */
+			return (NULL);
+		}
+	}
+	else {
+		if (mode & GMT_CONTAINER_ONLY) {
+			API->error = GMT_PTR_NOT_NULL;	/* For mode & GMT_CONTAINER_ONLY we cannot pass in a datacube */
+			return (NULL);
+		}
+		C = data;	/* We are working on a datacube already allocated */
+	}
+
+	if (mode & GMT_CONTAINER_ONLY) {	/* Only get the cube header information */
+		char cube_layer[GMT_LEN64] = {""}, *nc_layer = NULL, *the_file = strdup (infile);
+		nc_layer = strchr (the_file, '?');	/* Maybe given a specific variable? */
+		if (nc_layer) {	/* Gave a specific layer. Keep variable name and remove from filename */
+			strcpy (cube_layer, &nc_layer[1]);
+			nc_layer[0] = '\0';	/* Chop off layer name for now */
+		}
+		if ((error = gmt_examine_nc_cube (GMT, the_file, &n_layers, &level))) {
+			return NULL;
+		}
+		sprintf (file, "%s?%s[%" PRIu64 "]", the_file, cube_layer, 0);	/* Read grid header from the first layer */
+		if (nc_layer) nc_layer[0] = '?';	/* Restore layer name */
+		gmt_M_str_free (the_file);
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL)
+			return (NULL);	/* Get header only */
+		/* Create data cube structure and fill in the file information */
+		C = gmt_M_memory (GMT, NULL, 1, struct GMT_DATACUBE);
+		C->header = gmt_get_header (GMT);
+		gmt_copy_gridheader (GMT, C->header, G->header);
+		C->z_range[0] = level[0];	C->z_range[1] = level[n_layers-1];
+		C->header->n_bands = n_layers;
+		if (n_layers < 3 || !gmtlib_var_inc (level, n_layers))	/* Equidistant layering */
+			C->z_inc = level[1] - level[0];	/* Since they are all the same */
+		C->z = level;	/* Let C be the owner of this array from now on */
+		if (nc_layer) strcpy (C->l_name, cube_layer);	/* Remember this name if given */
+		if (GMT_Destroy_Data (API, &G))
+			return NULL;
+		return C;
+	}
+
+	/* Here we have the grid header and the levels */
+
+	start_k = 0;	stop_k = C->header->n_bands - 1;
+	if (range && range[ZHI] > range[ZLO]) {	/* Want a subset of layers */
+		while (start_k < C->header->n_bands && level[start_k] < range[ZLO]) start_k++;	/* Advance to first required layer */
+		while (stop_k && level[stop_k] > range[ZHI]) stop_k--;		/* Advance to last required layer*/
+	}
+	n_layers_used = stop_k - start_k + 1;	/* Total number of layers actually to be read */
+
+	for (k = start_k; k <= stop_k; k++) {	/* Read the required layers into individual grid structures */
+		/* Get the k'th layer from 3D cube possibly via a selected variable l_name */
+		sprintf (file, "%s?%s[%" PRIu64 "]", infile, C->l_name, k);
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, range, file, NULL)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to read layer %" PRIu64 " from file %s.\n", k, file);
+			return (NULL);
+		}
+		if (C->data == NULL) {	/* Update grid header (due to possible subsets) and allocate cube the first time */
+			if (range) gmt_copy_gridheader (GMT, C->header, G->header);	/* Since subset can have changed dims and ranges */
+			C->header->n_bands = n_layers_used;
+			C->z_range[0] = C->z[start_k];
+			C->z_range[1] = C->z[stop_k];
+			if (start_k) memmove (C->z, &C->z[start_k], n_layers_used * sizeof(double));	/* Eliminate entries not returned */
+			C->data = gmt_M_memory_aligned (API->GMT, NULL, C->header->size * n_layers_used, gmt_grdfloat);
+			here = 0;
+		}
+		/* Place this layer in the cube */
+		gmt_M_memcpy (&C->data[here], G->data, C->header->size, gmt_grdfloat);
+		here += C->header->size;
+		if (GMT_Destroy_Data (API, &G))
+			return NULL;
+	}
+
+	return C;
 }
 
 int gmtlib_write_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsigned int geometry, unsigned int mode, double range[], const char *outfile, void *data) {
