@@ -1,8 +1,9 @@
 #include "gmt_dev.h"
 /*
  * Testing the use of user datacubes
+ * For now we can only write grid layers on output, not a single 3-D cube.
+ * Once that changes the output name will just be cube-out.nc.
  */
-
 
 int main () {
 	/* Run the test using the specified in and out types */

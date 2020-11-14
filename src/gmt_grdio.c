@@ -92,7 +92,6 @@ struct GRD_PAD {	/* Local structure */
 	unsigned int pad[4];
 };
 
-/* These functions live in other files and are extern'ed in here */
 /* Local functions */
 
 GMT_LOCAL inline struct GMT_GRID    * gmtgrdio_get_grid_data (struct GMT_GRID *ptr) {return (ptr);}
