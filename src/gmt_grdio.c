@@ -3279,6 +3279,14 @@ int gmt_img_sanitycheck (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 
 /* 3-D GMT_DATACUBE handling is here */
 
+void gmt_free_datacube (struct GMTAPI_CTRL *API, struct GMT_DATACUBE **cube) {
+	struct GMT_DATACUBE *C = *cube;
+	gmt_free_header (API->GMT, &(C->header));
+	gmt_M_free (API->GMT, C->z);
+	gmt_M_free_aligned (API->GMT, C->data);
+	gmt_M_free (API->GMT, cube);
+}
+
 void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsigned int geometry, unsigned int mode, double range[], const char *infile, void *data) {
 	int error = GMT_NOERROR;
 	char file[PATH_MAX] = {""};
