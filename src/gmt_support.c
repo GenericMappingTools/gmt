@@ -16978,11 +16978,12 @@ bool gmtlib_var_inc (double *x, uint64_t n) {
 	/* Determine if spacing in the array is variable or constant */
 	bool fixed = true;	/* Start with assumption of fixed increments */
 	uint64_t k;
-	double fix_inc;
+	double fix_inc, dx;
 	if (n <= 2) return false;	/* Strange, but a single point or pair do not imply variable increment for sure */
 	fix_inc = x[1] - x[0];
 	for (k = 2; fixed && k < n; k++) {
-		if (!doubleAlmostEqual (fabs (x[k] - x[k-1]), fix_inc))
+		dx = x[k] - x[k-1];
+		if (fabs ((fix_inc - dx) / fix_inc) > GMT_CONV8_LIMIT)
 			fixed = false;	/* Not equidistant */
 	}
 	return (!fixed);
