@@ -8159,7 +8159,7 @@ void * GMT_Read_Data_ (unsigned int *family, unsigned int *method, unsigned int 
 
 /*! . */
 void * GMT_Read_Group (void *V_API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], void *sources, unsigned int *n_items, void *data) {
-	/* Function to read a group of data files directly into program memory givin an array of objects.
+	/* Function to read a group of data files directly into program memory given an array of objects.
 	 * data is pointer to an existing array of grid container when we read a grid in two steps, otherwise use NULL.
 	 * *n_items = 0: sources is a character string with wildcard-specification for file names.
 	 * *n_items > 0: sources is an array of *n_items character strings with filenames.
@@ -8184,7 +8184,7 @@ void * GMT_Read_Group (void *V_API, unsigned int family, unsigned int method, un
 		n_files = *n_items;
 		file = (char **)sources;
 	}
-	else {	/* Gave wildcard espression(s) */
+	else {	/* Gave wildcard expression(s) */
 		pattern = (void *)sources;
 		if ((n_files = (unsigned int)gmtlib_glob_list (API->GMT, pattern, &file)) == 0) {
 			GMT_Report (API, GMT_MSG_ERROR, "GMT_Read_Group: Expansion of \"%s\" gave no results\n", pattern);
