@@ -9697,7 +9697,7 @@ void * gmtlib_create_datacube (struct GMTAPI_CTRL *API, unsigned int geometry, u
 		API->error = GMT_WRONG_FAMILY;
 		return NULL;
 	}
-
+	/* 2. Deal with direction and dimensions if NULL */
 	if (mode & GMT_IS_OUTPUT) {	/* Flagged to be an output container */
 		def_direction = GMT_OUT;	/* Set output as default direction*/
 		if (data) {
@@ -9706,7 +9706,7 @@ void * gmtlib_create_datacube (struct GMTAPI_CTRL *API, unsigned int geometry, u
 		}
 		if (this_dim == NULL) this_dim = zero_dim;	/* Provide dimensions set to zero */
 	}
-
+	/* 3. Create dummy helper grid and initialize it */
 	if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
 	 if ((G = gmt_create_grid (API->GMT)) == NULL) {
 		API->error = GMT_MEMORY_ERROR;
@@ -9717,17 +9717,21 @@ void * gmtlib_create_datacube (struct GMTAPI_CTRL *API, unsigned int geometry, u
 		return NULL;
 	}
 	if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
+	/* 4. Now create the datacube structure, duplicate header, and update higher dimensions */
 	C = gmt_M_memory (GMT, NULL, 1, struct GMT_DATACUBE);
 	C->header = gmt_get_header (GMT);
 	gmt_copy_gridheader (GMT, C->header, G->header);
 	C->z_range[0] = range[ZLO];	C->z_range[1] = range[ZHI];
 	C->header->n_bands = urint ((range[ZHI] - range[ZLO]) / inc[GMT_Z]);
 	C->z_inc = inc[GMT_Z];
-	if (GMT_Destroy_Data (API, &G))
+	/* 5. Allocate data cube, if requested */
+	if ((mode & GMT_CONTAINER_ONLY) == 0) /* Must also allocate the cube */
+		C->data = gmt_M_memory_aligned (API->GMT, NULL, C->header->size * C->header->n_bands, gmt_grdfloat);
+
+	if (gmtapi_destroy_grid (API, &G))	/* Use this instead of GMT_Destroy_Data since G was never registered */
 		return NULL;
 	return (C);
 }
-
 
 /*! . */
 void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, unsigned int mode, uint64_t dim[], double *range, double *inc, unsigned int registration, int pad, void *data) {

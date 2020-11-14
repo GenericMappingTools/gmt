@@ -313,7 +313,8 @@ GMT_LOCAL bool grdinterpolate_equidistant_levels (struct GMT_CTRL *GMT, double *
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
-	char file[PATH_MAX] = {""}, cube_layer[GMT_LEN64] = {""}, *nc_layer = NULL, *file_arg = NULL;
+	char file[PATH_MAX] = {""}, cube_layer[GMT_LEN64] = {""}, *nc_layer = NULL;
+	void *file_arg = NULL;
 	bool equi_levels;
 	int error = 0;
 	unsigned int int_mode, row, col, level_type, dtype = 0, file_mode;
@@ -694,9 +695,13 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	int_mode = gmt_set_interpolate_mode (GMT, Ctrl->F.mode, Ctrl->F.type);	/* What mode we pass to the interpolator */
 
-	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
+	if (GMT->common.R.active[RSET])	/* Use current -R setting, if any */
+		gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
 	wesn[ZLO] = level[start_k];	wesn[ZHI] = level[stop_k];	/* Then add the zmin/zmax range */
-	file_arg = (Ctrl->Z.active[GMT_IN]) ? Ctrl->In.file : Ctrl->In.file[0];	/* Passing one or a list of files */
+	if (Ctrl->Z.active[GMT_IN])	/* Pass a list of files */
+		file_arg = Ctrl->In.file;
+	else	/* Pass a single file */
+		file_arg = Ctrl->In.file[0];	/* Passing one or a list of files */
 	file_mode = (Ctrl->Z.active[GMT_IN]) ? GMT_CONTAINER_AND_DATA | GMT_DATACUBE_IS_STACK : GMT_CONTAINER_AND_DATA;
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Will read %" PRIu64 " layers (%" PRIu64 " - %" PRIu64 ") for levels %g to %g.\n", n_layers_used, start_k, stop_k, level[start_k], level[stop_k]);
@@ -717,16 +722,19 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	if (nc_layer) nc_layer[0] = '?';	/* Restore layer name */
 #endif
 
+#if 0
 	if (Ctrl->T.T.n > 1 && !Ctrl->Z.active[GMT_OUT]) {
 		GMT_Report (API, GMT_MSG_ERROR, "Sorry, writing 3-D output netCDF cube is not implemented yet.  Use -Zo for now.\n");
 		Return (GMT_MEMORY_ERROR);
 	}
+#endif
 	GMT_Report (API, GMT_MSG_INFORMATION, "Interpolate %" PRIu64 " new layers (%g to %g in steps of %g).\n", Ctrl->T.T.n, Ctrl->T.T.array[0], Ctrl->T.T.array[Ctrl->T.T.n-1]);
 
 	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);	/* The 3rd dimension is not time in the grids, but we may have read time via -Z with -f2T */
 
 	/* Create grid layers for each output level [NOTE: This assumes equidistant output grid, not true if -Tlist ! ] */
 
+	gmt_M_memcpy (wesn, C[GMT_IN]->header->wesn, 4, double);
 	inc[GMT_X] = C[GMT_IN]->header->inc[GMT_X];	inc[GMT_Y] = C[GMT_IN]->header->inc[GMT_Y];	inc[GMT_Z] = Ctrl->T.T.inc;	
 	if ((C[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATACUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, wesn, inc, C[GMT_IN]->header->registration, GMT_NOTSET, NULL)) == NULL) return (EXIT_FAILURE);
 	if (C[GMT_OUT]->z == NULL) C[GMT_OUT]->z = Ctrl->T.T.array;
