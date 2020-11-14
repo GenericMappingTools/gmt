@@ -3283,7 +3283,7 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 	int error = GMT_NOERROR;
 	char file[PATH_MAX] = {""};
 	uint64_t n_layers = 0, k, start_k, stop_k, n_layers_used, here;
-	double *level = NULL;
+	double *level = NULL, z_min, z_max;;
 	struct GMT_GRID *G = NULL;
 	struct GMT_DATACUBE *C = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
@@ -3361,7 +3361,13 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 			C->z_range[1] = C->z[stop_k];
 			if (start_k) memmove (C->z, &C->z[start_k], n_layers_used * sizeof(double));	/* Eliminate entries not returned */
 			C->data = gmt_M_memory_aligned (API->GMT, NULL, C->header->size * n_layers_used, gmt_grdfloat);
+			z_min = C->header->z_min;
+			z_max = C->header->z_max;
 			here = 0;
+		}
+		else {
+			if (G->header->z_min < z_min) z_min = G->header->z_min;
+			if (G->header->z_max > z_max) z_max = G->header->z_max;
 		}
 		/* Place this layer in the cube */
 		gmt_M_memcpy (&C->data[here], G->data, C->header->size, gmt_grdfloat);
@@ -3369,6 +3375,9 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 		if (GMT_Destroy_Data (API, &G))
 			return NULL;
 	}
+	/* Update cube min/max */
+	C->header->z_min = z_min;
+	C->header->z_max = z_max;
 
 	return C;
 }
