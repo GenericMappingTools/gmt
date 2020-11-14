@@ -1075,22 +1075,18 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 	}
 }
 
-GMT_LOCAL bool grdimage_adjust_R_consideration (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, bool force) {
+GMT_LOCAL bool grdimage_adjust_R_consideration (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	/* As per https://github.com/GenericMappingTools/gmt/issues/4440, when the user wants
 	 * to plot a pixel-registered global grid using a lon-lat scaling with periodic boundaries
 	 * and a central meridian that is not a multiple of the grid increment, we must actually
-	 * adjust the plot domain -R to be such a multiple.  That, or require projection.
-	 * Pass force as true if we are to bypass the other checks that normally come first.
-	 * For instance, if grdimage -Edpi is set then we must always project, so force -> true. */
+	 * adjust the plot domain -R to be such a multiple.  That, or require projection. */
 
 	double delta;
 
 	if (!gmt_M_is_geographic (GMT, GMT_IN)) return false;	/* No geographic */
-	if (!force) {	/* See what we have */
-		if (h->registration == GMT_GRID_NODE_REG) return false;	/* gridline-registration has the repeated column needed */
-		if (gmt_M_is_nonlinear_graticule (GMT)) return true;	/* Always have to project when given most projections except -JQ */
-		if (!gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) return false;	/* No repeating columns would be visible */
-	}
+	if (h->registration == GMT_GRID_NODE_REG) return false;	/* gridline-registration has the repeated column needed */
+	if (gmt_M_is_nonlinear_graticule (GMT)) return true;	/* Always have to project when given most projections except -JQ */
+	if (!gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) return false;	/* No repeating columns would be visible */
 	delta = remainder (h->wesn[XLO] - GMT->common.R.wesn[XLO], h->inc[GMT_X]);
 	if (gmt_M_is_zero (delta)) return false;	/* No need to project if it is lining up */
 	/* Here we need to adjust plot region */
@@ -1334,7 +1330,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	if (!GMT->common.R.active[RSET] && got_z_grid)	/* -R was not set so we use the grid domain */
 		gmt_set_R_from_grd (GMT, Grid_orig->header);
 
-	grdimage_adjust_R_consideration (GMT, header_work, Ctrl->E.dpi);	/* SPecial check for global pixel-registered plots */
+	if (Ctrl->E.dpi == 0) grdimage_adjust_R_consideration (GMT, header_work);	/* Special check for global pixel-registered plots */
 
 	/* Initialize the projection for the selected -R -J */
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
