@@ -34,6 +34,21 @@
 #ifndef GMT_GRID_H
 #define GMT_GRID_H
 
+/* Define an internal structure for handling 3-D data grid cubes */
+
+struct GMT_DATACUBE {
+	/* Part 1 is the same as for GMT_GRID definition */
+	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT 2-D header for the grid (common to all layers) */
+	gmt_grdfloat *data;             /* Pointer to the gmt_grdfloat 3-D cube - a stack of 2-D padded grids */
+	double *x, *y;                  /* Vector of plane coordinates for all layers */
+	void *hidden;                   /* Row-by-row machinery information [NULL] */
+	/* Part 2 is the extension for 3D cubes. Note: We use header->n_bands for the number of layers for 3-D grids  */
+	double z_range[2];		/* Minimum/max z values (complements wesn[4]) */
+	double z_inc;			/* z increment (complements inc[2]) (0 if variable z spacing */
+	double *z;			/* Array of z values (complements x, y) */
+	char l_units[GMT_GRID_UNIT_LEN80];     /* units in z-direction (complements x_units and y_units)  */
+};
+
 /* netcdf convention */
 #define GMT_NC_CONVENTION "CF-1.7"
 
