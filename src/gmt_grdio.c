@@ -3279,7 +3279,7 @@ int gmt_img_sanitycheck (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 
 /* 3-D GMT_DATACUBE handling is here */
 
-void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], const char *infile, void *data) {
+void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsigned int geometry, unsigned int mode, double range[], const char *infile, void *data) {
 	if (geometry != GMT_IS_VOLUME) {
 		GMT_Report (API, GMT_MSG_ERROR, "Wrong geometry for GMT_IS_DATACUBE.\n");
 		API->error = GMT_WRONG_FAMILY;
@@ -3288,7 +3288,7 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 	return NULL;
 }
 
-int gmtlib_write_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], const char *outfile, void *data) {
+int gmtlib_write_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsigned int geometry, unsigned int mode, double range[], const char *outfile, void *data) {
 	if (geometry != GMT_IS_VOLUME) {
 		GMT_Report (API, GMT_MSG_ERROR, "Wrong geometry for GMT_IS_DATACUBE.\n");
 		API->error = GMT_WRONG_FAMILY;
