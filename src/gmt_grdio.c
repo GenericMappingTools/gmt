@@ -3308,7 +3308,7 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 		C = data;	/* We are working on a datacube already allocated */
 	}
 
-	if (mode & GMT_CONTAINER_ONLY) {	/* Only get the cube header information */
+	if ((mode & GMT_DATA_ONLY) == 0) {	/* Get the cube header information */
 		char cube_layer[GMT_LEN64] = {""}, *nc_layer = NULL, *the_file = strdup (infile);
 		nc_layer = strchr (the_file, '?');	/* Maybe given a specific variable? */
 		if (nc_layer) {	/* Gave a specific layer. Keep variable name and remove from filename */
@@ -3335,7 +3335,7 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 		if (nc_layer) strcpy (C->l_name, cube_layer);	/* Remember this name if given */
 		if (GMT_Destroy_Data (API, &G))
 			return NULL;
-		return C;
+		if (mode & GMT_CONTAINER_ONLY) return C;
 	}
 
 	/* Here we have the grid header and the levels */
