@@ -3288,9 +3288,16 @@ void gmt_free_datacube (struct GMTAPI_CTRL *API, struct GMT_DATACUBE **cube) {
 	*cube = NULL;
 }
 
+uint64_t gmtgrdioget_count_files (char **list) {
+	uint64_t k = 0;
+	while (list[k])
+		k++;
+	return (k);
+}
+
 void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsigned int geometry, unsigned int mode, double range[], const char *infile, void *data) {
-	int error = GMT_NOERROR;
-	char file[PATH_MAX] = {""};
+	bool stack;	/* true if infile is in fact a NULL-terminated list of 2-D gridfile names */
+	char file[PATH_MAX] = {""}, **files = NULL;
 	uint64_t n_layers = 0, k, start_k, stop_k, n_layers_used, here;
 	double *level = NULL, z_min, z_max;
 	struct GMT_GRID *G = NULL;
@@ -3326,19 +3333,36 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 		}
 		C = data;	/* We are working on a datacube already allocated */
 	}
-
+	stack = ((mode & GMT_DATACUBE_IS_STACK) > 0);
 	/* 2. If we need to read the header etc then we based this on the first layer in the cube */
 	if ((mode & GMT_DATA_ONLY) == 0) {	/* Get the cube header information */
 		char cube_layer[GMT_LEN64] = {""}, *nc_layer = NULL, *the_file = strdup (infile);
-		nc_layer = strchr (the_file, '?');	/* Maybe given a specific variable? */
-		if (nc_layer) {	/* Gave a specific layer. Keep variable name and remove from filename */
-			strcpy (cube_layer, &nc_layer[1]);
-			nc_layer[0] = '\0';	/* Chop off layer name for now */
+		if (stack) {
+			files = (char **)infile;
+			n_layers = gmtgrdioget_count_files (files);
+			level = gmt_M_memory (GMT, NULL, n_layers, double);	/* Dummy array with all leve = 0 */
+			nc_layer = strchr (files[0], '?');	/* Maybe given a specific variable? */
+			if (nc_layer) {	/* Gave a specific layer. Keep variable name and remove from filename */
+				strcpy (cube_layer, &nc_layer[1]);
+				nc_layer[0] = '\0';	/* Chop off layer name for now */
+			}
+			strncpy (file, files[0], PATH_MAX-1);	/* Read grid header from the first file */
+			if (nc_layer) {	/* Even 2-d grids could have a specific netcdf variable passed */
+				strcat (file, "?");
+				strcat (file, cube_layer);
+			}
 		}
-		if ((error = gmt_examine_nc_cube (GMT, the_file, &n_layers, &level))) {
-			return NULL;
+		else {	/* Got a single 3-D datacube netcdf name, possibly selecting a specific variable via ?<name> */
+			nc_layer = strchr (the_file, '?');	/* Maybe given a specific variable? */
+			if (nc_layer) {	/* Gave a specific layer. Keep variable name and remove from filename */
+				strcpy (cube_layer, &nc_layer[1]);
+				nc_layer[0] = '\0';	/* Chop off layer name for now */
+			}
+			if (gmt_examine_nc_cube (GMT, the_file, &n_layers, &level)) {
+				return NULL;
+			}
+			sprintf (file, "%s?%s[0]", the_file, cube_layer);	/* Read grid header from the first layer */
 		}
-		sprintf (file, "%s?%s[0]", the_file, cube_layer);	/* Read grid header from the first layer */
 		if (nc_layer) nc_layer[0] = '?';	/* Restore layer name */
 		gmt_M_str_free (the_file);
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL)
@@ -3352,6 +3376,7 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 		if (n_layers < 3 || !gmtlib_var_inc (level, n_layers))	/* Equidistant layering */
 			C->z_inc = level[1] - level[0];	/* Since they are all the same */
 		C->z = level;	/* Let C be the owner of this array from now on */
+		C->stack = stack;
 		if (nc_layer) strcpy (C->l_name, cube_layer);	/* Remember this name if given */
 		if (GMT_Destroy_Data (API, &G))
 			return NULL;
@@ -3373,10 +3398,20 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 		return NULL;
 	}
 
+	if (C->stack) files = (char **)infile;
+
 	/* 4. Read the layers via a grid and add to growing data cube array */
 	for (k = start_k; k <= stop_k; k++) {	/* Read the required layers into individual grid structures */
 		/* Get the k'th layer from 3D cube possibly via a selected variable l_name */
-		sprintf (file, "%s?%s[%" PRIu64 "]", infile, C->l_name, k);
+		if (C->stack) {	/* Give the next unique file name from the input list */
+			strncpy (file, files[k], PATH_MAX-1);
+			if (C->l_name[0]) {	/* Even 2-D grids could have a specific netcdf variable passed */
+				strcat (file, "?");
+				strcat (file, C->l_name);
+			}
+		}
+		else	/* Get the k'th layer from this cube file */
+			sprintf (file, "%s?%s[%" PRIu64 "]", infile, C->l_name, k);
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, range, file, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to read layer %" PRIu64 " from file %s.\n", k, file);
 			return (NULL);
@@ -3410,9 +3445,8 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 }
 
 int gmtlib_write_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsigned int geometry, unsigned int mode, double range[], const char *outfile, void *data) {
-	int error = GMT_NOERROR;
 	char file[PATH_MAX] = {""};
-	uint64_t n_layers = 0, k, start_k, stop_k, n_layers_used, here, save_n_bands;
+	uint64_t k, start_k, stop_k, n_layers_used, here, save_n_bands;
 	struct GMT_GRID *G = NULL;
 	struct GMT_DATACUBE *C = data;
 	struct GMT_CTRL *GMT = API->GMT;

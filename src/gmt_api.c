@@ -9682,6 +9682,53 @@ int GMT_Destroy_Group_ (void *object, unsigned int *n_items) {
 }
 #endif
 
+
+void * gmtlib_create_datacube (struct GMTAPI_CTRL *API, unsigned int geometry, unsigned int mode, uint64_t dim[], double *range, double *inc, unsigned int registration, int pad, void *data) {
+	int def_direction = GMT_IN;	/* Default direction is GMT_IN  */
+	int error;
+	uint64_t n_layers = 0, zero_dim[4] = {0, 0, 0, 0}, *this_dim = dim;
+	struct GMT_GRID *G = NULL;
+	struct GMT_DATACUBE *C = NULL;
+	struct GMT_CTRL *GMT = API->GMT;
+
+	/* 1. Some basic sanity checking */
+	if (geometry != GMT_IS_VOLUME) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtlib_create_datacube: Wrong geometry for GMT_IS_DATACUBE.\n");
+		API->error = GMT_WRONG_FAMILY;
+		return NULL;
+	}
+
+	if (mode & GMT_IS_OUTPUT) {	/* Flagged to be an output container */
+		def_direction = GMT_OUT;	/* Set output as default direction*/
+		if (data) {
+			API->error = GMT_PTR_NOT_NULL;	/* For mode & GMT_CONTAINER_ONLY we cannot pass in a datacube */
+			return NULL;
+		}
+		if (this_dim == NULL) this_dim = zero_dim;	/* Provide dimensions set to zero */
+	}
+
+	if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
+	 if ((G = gmt_create_grid (API->GMT)) == NULL) {
+		API->error = GMT_MEMORY_ERROR;
+		return NULL;
+	}
+	if ((error = gmtapi_init_grid (API, NULL, this_dim, range, inc, registration, mode, def_direction, G))) {
+		API->error = error;
+		return NULL;
+	}
+	if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
+	C = gmt_M_memory (GMT, NULL, 1, struct GMT_DATACUBE);
+	C->header = gmt_get_header (GMT);
+	gmt_copy_gridheader (GMT, C->header, G->header);
+	C->z_range[0] = range[ZLO];	C->z_range[1] = range[ZHI];
+	C->header->n_bands = urint ((range[ZHI] - range[ZLO]) / inc[GMT_Z]);
+	C->z_inc = inc[GMT_Z];
+	if (GMT_Destroy_Data (API, &G))
+		return NULL;
+	return (C);
+}
+
+
 /*! . */
 void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, unsigned int mode, uint64_t dim[], double *range, double *inc, unsigned int registration, int pad, void *data) {
 	/* Create an empty container of the requested kind and allocate space for content.
@@ -9758,6 +9805,8 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	API = gmtapi_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
+
+	if (family == GMT_IS_DATACUBE) return (gmtlib_create_datacube (API, geometry, mode, dim, range, inc, registration, pad, data));	/* Special handling of 3-D grids via GMT_Create_Data interface */
 
 	i_mode = (family & GMT_IMAGE_ALPHA_LAYER);
 	family -= i_mode;

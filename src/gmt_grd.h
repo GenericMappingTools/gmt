@@ -49,6 +49,7 @@
 
 #define GMT_IS_DATACUBE GMT_N_FAMILIES		/* Make it the last of the known families */
 #define GMT_IS_VOLUME	(GMT_IS_SURFACE + 1)	/* Just one larger than the surface geometry */
+#define GMT_DATACUBE_IS_STACK	64		/* Passed via mode to GMT_Read_Data if infile is a NULL-terminated array of files */
 
 struct GMT_DATACUBE {
 	/* Part 1 is the same as for GMT_GRID definition */
@@ -57,6 +58,7 @@ struct GMT_DATACUBE {
 	double *x, *y;                  /* Vector of plane coordinates for all layers */
 	void *hidden;                   /* Row-by-row machinery information [NULL] */
 	/* Part 2 is the extension for 3D cubes. Note: We use header->n_bands for the number of layers for 3-D grids  */
+	bool stack;			/* true if input dataset was a list of 2-D grids rather than a single cube */
 	double z_range[2];		/* Minimum/max z values (complements wesn[4]) */
 	double z_inc;			/* z increment (complements inc[2]) (0 if variable z spacing */
 	double *z;			/* Array of z values (complements x, y) */
