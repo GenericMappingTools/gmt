@@ -7956,9 +7956,12 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
-	if (infile) input = strdup (infile);
 	API = gmtapi_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
+
+	if (family == GMT_IS_DATACUBE) return (gmtlib_read_datacube (API, method, geometry, mode, wesn, infile, data));	/* Special handling of 3-D grids via GMT_Read_Data interface */
+
+	if (infile) input = strdup (infile);
 	just_get_data = (gmt_M_file_is_memory (input));     /* A regular GMT resource passed via memory */
 	if (just_get_data && gmtapi_M_is_output (input)) {  /* A virtual output file created elsewhere, retrieve and we are done */
 		gmt_M_str_free (input);
@@ -8328,6 +8331,9 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 	if (data == NULL) return_error (V_API, GMT_PTR_IS_NULL);
 	API = gmtapi_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
+
+	if (family == GMT_IS_DATACUBE) return (gmtlib_write_datacube (API, method, geometry, mode, wesn, outfile, data));	/* Special handling of 3-D grids via GMT_Write_Data interface */
+
 	if (outfile) output = strdup (outfile);
 
 	if (output) {	/* Case 1: Save to a single specified destination (file or memory).  Register it first. */

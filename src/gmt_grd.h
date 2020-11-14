@@ -34,7 +34,21 @@
 #ifndef GMT_GRID_H
 #define GMT_GRID_H
 
-/* Define an internal structure for handling 3-D data grid cubes */
+/* Define an internal structure for handling 3-D data grid cubes.
+ *
+ * This is how we will handle 3-D data cubes internally in GMT:
+ * 1) Introduce a new structure GMT_DATACUBE to hold the information
+ * 2) Add new family GMT_IS_DATACUBE that is currently not part of the API
+ * 3) Let GMT_Read/Write_Data accept this family but immediately call either
+ *    gmtlib_read_datacube or gmtlib_write_datacube.
+ * 4) Let these functions isolate these tasks and improve them over time.
+ *
+ * If all works really well then we can consider adding this to the API.
+ * P. Wessel, Nov. 13., 2020
+ */
+
+#define GMT_IS_DATACUBE GMT_N_FAMILIES		/* Make it the last of the known families */
+#define GMT_IS_VOLUME	(GMT_IS_SURFACE + 1)	/* Just one larger than the surface geometry */
 
 struct GMT_DATACUBE {
 	/* Part 1 is the same as for GMT_GRID definition */
