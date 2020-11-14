@@ -3284,7 +3284,8 @@ void gmt_free_datacube (struct GMTAPI_CTRL *API, struct GMT_DATACUBE **cube) {
 	gmt_free_header (API->GMT, &(C->header));
 	gmt_M_free (API->GMT, C->z);
 	gmt_M_free_aligned (API->GMT, C->data);
-	gmt_M_free (API->GMT, cube);
+	gmt_M_free (API->GMT, C);
+	*cube = NULL;
 }
 
 void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsigned int geometry, unsigned int mode, double range[], const char *infile, void *data) {
