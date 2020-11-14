@@ -3288,12 +3288,17 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 	struct GMT_DATACUBE *C = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 
+	/* 1. Some basic sanity checking */
 	if (geometry != GMT_IS_VOLUME) {
 		GMT_Report (API, GMT_MSG_ERROR, "Wrong geometry for GMT_IS_DATACUBE.\n");
 		API->error = GMT_WRONG_FAMILY;
 		return NULL;
 	}
-
+	if (infile == NULL) {	/* Fatal error for reading */
+		GMT_Report (API, GMT_MSG_ERROR, "No filename for input is given.\n");
+		API->error = GMT_FILE_NOT_FOUND;
+		return NULL;
+	}
 	if (data == NULL) {	/* Only allocate grid struct when not already allocated */
 		if (mode & GMT_DATA_ONLY) {
 			API->error = GMT_PTR_IS_NULL;		/* For mode & GMT_DATA_ONLY grid must already be allocated */
@@ -3308,6 +3313,7 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 		C = data;	/* We are working on a datacube already allocated */
 	}
 
+	/* 2. If we need to read the header etc then we based this on the first layer in the cube */
 	if ((mode & GMT_DATA_ONLY) == 0) {	/* Get the cube header information */
 		char cube_layer[GMT_LEN64] = {""}, *nc_layer = NULL, *the_file = strdup (infile);
 		nc_layer = strchr (the_file, '?');	/* Maybe given a specific variable? */
@@ -3340,6 +3346,7 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 
 	/* Here we have the grid header and the levels */
 
+	/* 3. Determine which layers we want to read */
 	start_k = 0;	stop_k = C->header->n_bands - 1;
 	if (range && range[ZHI] > range[ZLO]) {	/* Want a subset of layers */
 		while (start_k < C->header->n_bands && level[start_k] < range[ZLO]) start_k++;	/* Advance to first required layer */
@@ -3352,6 +3359,7 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 		return NULL;
 	}
 
+	/* 4. Read the layers via a grid and add to growing data cube array */
 	for (k = start_k; k <= stop_k; k++) {	/* Read the required layers into individual grid structures */
 		/* Get the k'th layer from 3D cube possibly via a selected variable l_name */
 		sprintf (file, "%s?%s[%" PRIu64 "]", infile, C->l_name, k);
@@ -3380,7 +3388,7 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 		if (GMT_Destroy_Data (API, &G))
 			return NULL;
 	}
-	/* Update cube min/max */
+	/* 5. Update cube min/max */
 	C->header->z_min = z_min;
 	C->header->z_max = z_max;
 
@@ -3395,16 +3403,24 @@ int gmtlib_write_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsigne
 	struct GMT_DATACUBE *C = data;
 	struct GMT_CTRL *GMT = API->GMT;
 
+	/* 1.0 Some basic sanity checking */
 	if (geometry != GMT_IS_VOLUME) {
 		GMT_Report (API, GMT_MSG_ERROR, "Wrong geometry for GMT_IS_DATACUBE.\n");
 		API->error = GMT_WRONG_FAMILY;
 		return GMT_WRONG_FAMILY;
 	}
 	if (C == NULL) {	/* Fatal error for writing */
+		GMT_Report (API, GMT_MSG_ERROR, "No GMT_IS_DATACUBE given.\n");
 		API->error = GMT_PTR_IS_NULL;
 		return (GMT_PTR_IS_NULL);
 	}
+	if (outfile == NULL) {	/* Fatal error for writing */
+		GMT_Report (API, GMT_MSG_ERROR, "No filename for output is given.\n");
+		API->error = GMT_FILE_NOT_FOUND;
+		return (GMT_FILE_NOT_FOUND);
+	}
 
+	/* 2. Determine which layers we want to write */
 	start_k = 0;	stop_k = C->header->n_bands - 1;
 	if (range && range[ZHI] > range[ZLO]) {	/* Want to write a subset of layers */
 		while (start_k < C->header->n_bands && C->z[start_k] < range[ZLO]) start_k++;	/* Advance to first required layer */
@@ -3417,22 +3433,25 @@ int gmtlib_write_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsigne
 		return GMT_DIM_TOO_SMALL;
 	}
 
+	/* !! Remember that the gmt_nc.c codes will unpad and mess up C->data */
 	G = gmt_create_grid (GMT);	/* Need a dummy grid for writing */
-	save_n_bands = C->header->n_bands;
-	G->header = C->header;
-	G->header->n_bands = 1;	/* As long as we write individual layers */
-	here = start_k * C->header->size;
+	save_n_bands = C->header->n_bands;	/* Remember how many bands */
+	G->header = C->header;	/* Use this pointer for now */
+	G->header->n_bands = 1;	/* Grids only have one band */
+	here = start_k * C->header->size;	/* Start position in the cube for layer start_k */
+	/* 3. Write the layers via a grid */
 	for (k = start_k; k <= stop_k; k++) {	/* For all selected output levels */
 		if (n_layers_used > 1)	/* Create the k'th layer file */
 			sprintf (file, outfile, C->z[k]);
 		else	/* Just this one layer grid */
 			sprintf (file, "%s", outfile);
-		G->data = &C->data[here];
+		G->data = &C->data[here];	/* Point to start of this layer */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, range, file, G) != GMT_NOERROR) {
 			return (API->error);
 		}
 	}
-	C->header->n_bands = save_n_bands;	/* Restore */
+	C->header->n_bands = save_n_bands;	/* Restore number of layers */
+	/* Wipe and free the temporary grid structure */
 	G->data = NULL;
 	G->header = NULL;
 	gmt_free_grid (GMT, &G, false);
