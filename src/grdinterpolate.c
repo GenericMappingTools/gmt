@@ -318,7 +318,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	bool equi_levels;
 	int error = 0;
 	unsigned int int_mode, row, col, level_type, dtype = 0, file_mode;
-	uint64_t n_layers = 0, k, node, start_k, stop_k, n_layers_used;
+	uint64_t n_layers = 0, k, node, start_k, stop_k, n_layers_used, *this_dim = NULL, dims[3] = {0, 0, 0};
 	double wesn[6], inc[3], *level = NULL, *i_value = NULL, *o_value = NULL;
 	struct GMT_GRID **G[2] = {NULL, NULL}, *Grid = NULL;
 	struct GMT_DATACUBE *C[2] = {NULL, NULL};     /* Structure to hold input datasets as matrix */
@@ -735,9 +735,15 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	/* Create grid layers for each output level [NOTE: This assumes equidistant output grid, not true if -Tlist ! ] */
 
 	gmt_M_memcpy (wesn, C[GMT_IN]->header->wesn, 4, double);
-	inc[GMT_X] = C[GMT_IN]->header->inc[GMT_X];	inc[GMT_Y] = C[GMT_IN]->header->inc[GMT_Y];	inc[GMT_Z] = Ctrl->T.T.inc;	
-	if ((C[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATACUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, wesn, inc, C[GMT_IN]->header->registration, GMT_NOTSET, NULL)) == NULL) return (EXIT_FAILURE);
-	if (C[GMT_OUT]->z == NULL) C[GMT_OUT]->z = Ctrl->T.T.array;
+	inc[GMT_X] = C[GMT_IN]->header->inc[GMT_X];	inc[GMT_Y] = C[GMT_IN]->header->inc[GMT_Y];
+	if (Ctrl->T.T.var_inc) {	/* Not equidistant output levels  so must pass dimension of z */
+		dims[GMT_Z] = Ctrl->T.T.n;	/* Number of output levels */
+		this_dim = dims;
+	}
+	else	/* Equidistant output levels */
+		inc[GMT_Z] = Ctrl->T.T.inc;	
+	if ((C[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATACUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, this_dim, wesn, inc, C[GMT_IN]->header->registration, GMT_NOTSET, NULL)) == NULL) return (EXIT_FAILURE);
+	if (Ctrl->T.T.var_inc) C[GMT_OUT]->z = gmt_duplicate_array (GMT, Ctrl->T.T.array, Ctrl->T.T.n);
 
 #if 0
 	if ((G[GMT_OUT] = gmt_M_memory (GMT, NULL, Ctrl->T.T.n, struct GMT_GRID *)) == NULL) Return (GMT_MEMORY_ERROR);	/* Allocate on grid per output layer */
@@ -764,7 +770,6 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	if (GMT_Write_Data (API, GMT_IS_DATACUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, C[GMT_OUT]))
 		Return (EXIT_FAILURE);
 
-	C[GMT_OUT]->z = NULL;
 	gmt_free_datacube (API, &C[GMT_IN]);
 	gmt_free_datacube (API, &C[GMT_OUT]);
 

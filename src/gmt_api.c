@@ -9722,8 +9722,10 @@ void * gmtlib_create_datacube (struct GMTAPI_CTRL *API, unsigned int geometry, u
 	C->header = gmt_get_header (GMT);
 	gmt_copy_gridheader (GMT, C->header, G->header);
 	C->z_range[0] = range[ZLO];	C->z_range[1] = range[ZHI];
-	C->header->n_bands = urint ((range[ZHI] - range[ZLO]) / inc[GMT_Z]);
-	C->z_inc = inc[GMT_Z];
+	if (inc && inc[GMT_Z] > 0.0) {	/* Must make equidistant array, else we lave it as NULL to be set by calling module */
+		C->header->n_bands = gmtlib_make_equidistant_array (API->GMT, range[ZLO], range[ZHI], inc[GMT_Z], &(C->z));
+		C->z_inc = inc[GMT_Z];
+	}
 	/* 5. Allocate data cube, if requested */
 	if ((mode & GMT_CONTAINER_ONLY) == 0) /* Must also allocate the cube */
 		C->data = gmt_M_memory_aligned (API->GMT, NULL, C->header->size * C->header->n_bands, gmt_grdfloat);

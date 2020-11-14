@@ -16639,7 +16639,7 @@ double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, 
 	return (gmtsupport_unique_array (GMT, array, n));
 }
 
-GMT_LOCAL uint64_t gmtsupport_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
+uint64_t gmtlib_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
 	/* Just makes an equidistant array given vetted input parameters */
 	uint64_t k, n = lrint ((max - min) / fabs (inc)) + 1;
 	double *val = gmt_M_memory (GMT, NULL, n, double);
@@ -16653,6 +16653,13 @@ GMT_LOCAL uint64_t gmtsupport_make_equidistant_array (struct GMT_CTRL *GMT, doub
 	}
 	*array = val;
 	return (n);
+}
+
+double * gmt_duplicate_array (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	/* Simply duplicate the double array */
+	double *x = gmt_M_memory (GMT, NULL, n, double);
+	gmt_M_memcpy (x, array, n, double);
+	return (x);
 }
 
 unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument, struct GMT_ARRAY *T, unsigned int flags, unsigned int tcol) {
@@ -17107,7 +17114,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 			default:	/* OK as is */
 				break;
 		}
-		T->n = gmtsupport_make_equidistant_array (GMT, t0, t1, inc, &(T->array));
+		T->n = gmtlib_make_equidistant_array (GMT, t0, t1, inc, &(T->array));
 	}
 	if (T->vartime && GMT->current.setting.time_system.unit != unit) {
 		uint64_t k;
