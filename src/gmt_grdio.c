@@ -3303,6 +3303,11 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 		API->error = GMT_WRONG_FAMILY;
 		return NULL;
 	}
+	if (method != GMT_IS_FILE) {
+		GMT_Report (API, GMT_MSG_ERROR, "Wrong method for GMT_IS_DATACUBE (only file input is supported).\n");
+		API->error = GMT_NOT_A_VALID_METHOD;
+		return NULL;
+	}
 	if (infile == NULL) {	/* Fatal error for reading */
 		GMT_Report (API, GMT_MSG_ERROR, "No filename for input is given.\n");
 		API->error = GMT_FILE_NOT_FOUND;
@@ -3411,22 +3416,28 @@ int gmtlib_write_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsigne
 	struct GMT_GRID *G = NULL;
 	struct GMT_DATACUBE *C = data;
 	struct GMT_CTRL *GMT = API->GMT;
+	gmt_M_unused (mode);
 
 	/* 1.0 Some basic sanity checking */
 	if (geometry != GMT_IS_VOLUME) {
 		GMT_Report (API, GMT_MSG_ERROR, "Wrong geometry for GMT_IS_DATACUBE.\n");
 		API->error = GMT_WRONG_FAMILY;
-		return GMT_WRONG_FAMILY;
+		return API->error;
+	}
+	if (method != GMT_IS_FILE) {
+		GMT_Report (API, GMT_MSG_ERROR, "Wrong method for GMT_IS_DATACUBE (only file output is supported).\n");
+		API->error = GMT_NOT_A_VALID_METHOD;
+		return API->error;
 	}
 	if (C == NULL) {	/* Fatal error for writing */
 		GMT_Report (API, GMT_MSG_ERROR, "No GMT_IS_DATACUBE given.\n");
 		API->error = GMT_PTR_IS_NULL;
-		return (GMT_PTR_IS_NULL);
+		return API->error;
 	}
 	if (outfile == NULL) {	/* Fatal error for writing */
 		GMT_Report (API, GMT_MSG_ERROR, "No filename for output is given.\n");
 		API->error = GMT_FILE_NOT_FOUND;
-		return (GMT_FILE_NOT_FOUND);
+		return API->error;
 	}
 
 	/* 2. Determine which layers we want to write */
