@@ -3318,7 +3318,7 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 		if ((error = gmt_examine_nc_cube (GMT, the_file, &n_layers, &level))) {
 			return NULL;
 		}
-		sprintf (file, "%s?%s[%" PRIu64 "]", the_file, cube_layer, 0LL);	/* Read grid header from the first layer */
+		sprintf (file, "%s?%s[0]", the_file, cube_layer);	/* Read grid header from the first layer */
 		if (nc_layer) nc_layer[0] = '?';	/* Restore layer name */
 		gmt_M_str_free (the_file);
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL)
