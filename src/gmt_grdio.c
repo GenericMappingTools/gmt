@@ -3526,7 +3526,7 @@ int gmtlib_write_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsigne
 	/* Wipe and free the temporary grid structure */
 	G->data = NULL;
 	G->header = NULL;
-	gmt_free_grid (GMT, &G, false);
+	gmt_free_grid (GMT, &G, true);
 
 	return GMT_NOERROR;
 }

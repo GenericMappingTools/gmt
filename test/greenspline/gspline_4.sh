@@ -20,14 +20,13 @@ gmt psbasemap -R$R2D/$Z -JX6i/3i -JZ2.5i -p$view -Bx5f1g1 -By1g1 -Bz2f1 -BWSneZ+
 # Plot a small cube at the data points
 gmt psxyz -R -JX -JZ -p$view -O -K @Table_5_23.txt -Su0.05i -Gblack -Wfaint >> $ps
 # Loop over the sliced grids and draw the 10 % contour only
-let k=0
+z=5
 while read grid; do
-	z=$(gmt math -Q 5 $k $dz MUL ADD =)
 #	echo "Doing z = $z"
 	gmt grdcontour -JX $grid -C10 -L9/11 -S8 -Ddump
 	$AWK '{if ($1 == ">") {print $0} else {print $1, $2, '$z'}}' dump > tmp
 	gmt psxyz -R$R2D/$Z -JX -JZ -p$view -O -K tmp -Gp39+r300+fgray+b- -Wthin >> $ps
-	let k=k+1
+	z=$(gmt math -Q $z $dz ADD =)
 done < t.lis
 echo "12 6 Volume exceeding 10% UO@-2@- concentration" | gmt pstext -R$R2D/$Z -JX -JZ -p$view -F+jLT+f16p -O -K -Z10 -Dj0.1i >> $ps
 gmt psxyz -R -JX -JZ -p$view -O -Wthin << EOF >> $ps
