@@ -133,10 +133,11 @@ enum GMT_enum_via {
 
 /* We may allocate just a container, just the data (if container was allocated earlier), or both: */
 enum GMT_enum_container {
-	GMT_CONTAINER_AND_DATA	= 0U,    /* Create|Read|write both container and the data array */
-	GMT_CONTAINER_ONLY	= 1U,    /* Create|read|write the container but no data array */
+	GMT_CONTAINER_AND_DATA	= 0U,   /* Create|Read|write both container and the data array */
+	GMT_CONTAINER_ONLY	= 1U,   /* Create|read|write the container but no data array */
 	GMT_DATA_ONLY		= 2U,   /* Create|Read|write the container's array only */
-	GMT_WITH_STRINGS	= 32U,   /* Allocate string array also [DATASET, MATRIX, VECTOR only] */
+	GMT_WITH_STRINGS	= 32U,  /* Allocate string array also [DATASET, MATRIX, VECTOR only] */
+	GMT_DATACUBE_IS_STACK	= 64U,	/* Passed via mode to GMT_Read_Data if infile is a NULL-terminated array of files */
 	GMT_NO_STRINGS		= 0U    /* Do not allocate string array also [Default] */
 };
 
@@ -149,8 +150,9 @@ enum GMT_enum_family {
 	GMT_IS_POSTSCRIPT = 4,	/* Entity is a PostScript content struct */
 	GMT_IS_MATRIX	  = 5,	/* Entity is user matrix */
 	GMT_IS_VECTOR	  = 6,	/* Entity is set of user vectors */
-	GMT_IS_COORD	  = 7,	/* Entity is a double coordinate array */
-	GMT_N_FAMILIES	  = 8	/* Total number of families [API Developers only]  */
+	GMT_IS_DATACUBE	  = 7,	/* Entity is set of user vectors */
+	GMT_IS_COORD	  = 8,	/* Entity is a double coordinate array */
+	GMT_N_FAMILIES	  = 9	/* Total number of families [API Developers only]  */
 };
 
 #define GMT_IS_CPT	GMT_IS_PALETTE		/* Backwards compatibility for < 5.3.3; */
@@ -466,6 +468,7 @@ enum GMT_enum_geometry {
 	GMT_IS_LP	= 6U,	/* Could be any one of LINE or POLY */
 	GMT_IS_PLP	= 7U,	/* Could be any one of POINT, LINE, POLY */
 	GMT_IS_SURFACE	= 8U,
+	GMT_IS_VOLUME	= 9U,
 	GMT_IS_NONE	= 16U,	/* Non-geographical items like color palettes */
 	GMT_IS_TEXT	= 32U	/* Text strings which triggers ASCII text reading */
 };
@@ -744,6 +747,29 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	char *ProjRefWKT;               /* To store a referencing system string in WKT format */
 	int ProjRefEPSG;                /* To store a referencing system EPSG code */
 	void *hidden;			/* Book-keeping variables "hidden" from the API */
+};
+
+/*============================================================ */
+/*============== GMT_DATACUBE Public Declaration ============= */
+/*==============        EXPERIMENTAL!!!!         ============= */
+/*============================================================ */
+
+/* These containers are used to pass user datacubes in/out of GMT */
+
+struct GMT_DATACUBE {
+	/* Handing of 3-D data cubes in GMT requires a common 2-D header and extended parameters for the 3rd dimension */
+	/* These are the same as for GMT_GRID: */
+	struct GMT_GRID_HEADER *header;		/* Pointer to full GMT 2-D header for a layer (common to all layers) */
+	gmt_grdfloat *data;             	/* Pointer to the gmt_grdfloat 3-D cube - a stack of 2-D padded grids */
+	double *x, *y;                  	/* Vector of plane coordinates common to all layers */
+	void *hidden;                   	/* Row-by-row machinery information [NULL] */
+	/* These are the extensions for 3D cubes. Note: We use header->n_bands for the number of layers for 3-D cubes  */
+	unsigned int mode;			/* GMT_DATACUBE_IS_STACK if input dataset was a list of 2-D grids rather than a single cube */
+	double z_range[2];			/* Minimum/max z values (complements wesn[4]) */
+	double z_inc;				/* z increment (complements inc[2]) (0 if variable z spacing */
+	double *z;				/* Array of z values (complements x, y) */
+	char name[GMT_GRID_UNIT_LEN80];		/* Name of the 3-D variable (or empty if just one)  */
+	char units[GMT_GRID_UNIT_LEN80];	/* Units in z-direction (complements x_units and y_units)  */
 };
 
 /*============================================================ */

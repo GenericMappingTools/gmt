@@ -47,25 +47,6 @@
  * P. Wessel, Nov. 13., 2020
  */
 
-#define GMT_IS_DATACUBE GMT_N_FAMILIES		/* Make it the last of the known families */
-#define GMT_IS_VOLUME	(GMT_IS_SURFACE + 1)	/* Just one larger than the surface geometry */
-#define GMT_DATACUBE_IS_STACK	64		/* Passed via mode to GMT_Read_Data if infile is a NULL-terminated array of files */
-
-struct GMT_DATACUBE {
-	/* Part 1 is the same as for GMT_GRID definition */
-	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT 2-D header for the grid (common to all layers) */
-	gmt_grdfloat *data;             /* Pointer to the gmt_grdfloat 3-D cube - a stack of 2-D padded grids */
-	double *x, *y;                  /* Vector of plane coordinates for all layers */
-	void *hidden;                   /* Row-by-row machinery information [NULL] */
-	/* Part 2 is the extension for 3D cubes. Note: We use header->n_bands for the number of layers for 3-D grids  */
-	bool stack;			/* true if input dataset was a list of 2-D grids rather than a single cube */
-	double z_range[2];		/* Minimum/max z values (complements wesn[4]) */
-	double z_inc;			/* z increment (complements inc[2]) (0 if variable z spacing */
-	double *z;			/* Array of z values (complements x, y) */
-	char l_name[GMT_GRID_UNIT_LEN80];     /* uName of the 3-D variable (or empty if just one)  */
-	char l_units[GMT_GRID_UNIT_LEN80];     /* units in z-direction (complements x_units and y_units)  */
-};
-
 /* netcdf convention */
 #define GMT_NC_CONVENTION "CF-1.7"
 

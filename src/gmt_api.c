@@ -240,11 +240,11 @@ static uint64_t (*GMTAPI_index_function) (struct GMT_GRID_HEADER *, uint64_t, ui
  * NOTE: The order of these MUST MATCH the order in the enums in gmt_resources.h! */
 
 static const char *GMT_method[] = {"File", "Stream", "File Descriptor", "Memory Copy", "Memory Reference"};
-static const char *GMT_family[] = {"Data Table", "Grid", "Image", "CPT", "PostScript", "Matrix", "Vector", "Coord"};
+static const char *GMT_family[] = {"Data Table", "Grid", "Image", "CPT", "PostScript", "Matrix", "Vector", "Datacube", "Coord"};
 static const char *GMT_direction[] = {"Input", "Output"};
 static const char *GMT_stream[] = {"Standard", "User-supplied"};
 static const char *GMT_status[] = {"Unused", "In-use", "Used"};
-static const char *GMT_geometry[] = {"Not Set", "Point", "Line", "Polygon", "Point|Line|Poly", "Line|Poly", "Surface", "Non-Geographical", "Text"};
+static const char *GMT_geometry[] = {"Not Set", "Point", "Line", "Polygon", "Point|Line|Poly", "Line|Poly", "Surface", "Volume", "Non-Geographical", "Text"};
 static const char *GMT_class[] = {"QUIET", "NOTICE", "ERROR", "WARNING", "TIMING", "INFORMATION", "COMPATIBILITY", "DEBUG"};
 static unsigned int GMT_no_pad[4] = {0, 0, 0, 0};
 static const char *GMT_family_abbrev[] = {"D", "G", "I", "C", "X", "M", "V", "-"};
