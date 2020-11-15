@@ -3520,6 +3520,7 @@ int gmtlib_write_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsigne
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, range, file, G) != GMT_NOERROR) {
 			return (API->error);
 		}
+		here += C->header->size;	/* Move to next level */
 	}
 	C->header->n_bands = save_n_bands;	/* Restore number of layers */
 	/* Wipe and free the temporary grid structure */
