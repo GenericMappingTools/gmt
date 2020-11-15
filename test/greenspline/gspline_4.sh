@@ -24,7 +24,7 @@ let k=0
 while read grid; do
 	z=$(gmt math -Q 5 $k $dz MUL ADD =)
 #	echo "Doing z = $z"
-	gmt grdcontour -R$R2D $grid -JX -C10 -L9/11 -S8 -Ddump
+	gmt grdcontour $grid -JX -C10 -L9/11 -S8 -Ddump
 	$AWK '{if ($1 == ">") {print $0} else {print $1, $2, '$z'}}' dump > tmp
 	gmt psxyz -R$R2D/$Z -JX -JZ -p$view -O -K tmp -Gp39+r300+fgray+b- -Wthin >> $ps
 	let k=k+1
