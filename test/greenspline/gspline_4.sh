@@ -13,7 +13,7 @@ dz=0.25
 view=200/25
 method=r
 tens=0.85
-gmt greenspline -R$R3D -I$dz -G3D_%5.2lf.grd @Table_5_23.txt -S${method}${tens} -D5
+gmt greenspline -R$R3D -I$dz -G3D_%05.2lf.grd @Table_5_23.txt -S${method}${tens} -D5
 # Make a list of the grids
 ls 3D_?????.grd > t.lis
 gmt psbasemap -R$R2D/$Z -JX6i/3i -JZ2.5i -p$view -Bx5f1g1 -By1g1 -Bz2f1 -BWSneZ+b -P -K > $ps

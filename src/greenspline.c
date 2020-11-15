@@ -1909,6 +1909,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			if ((Cube = GMT_Create_Data (API, GMT_IS_DATACUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, Ctrl->R3.range, Ctrl->I.inc, \
 				GMT->common.R.registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 			n_layers = Cube->header->n_bands;
+			n_ok = Cube->header->nm * n_layers;
 			header = Cube->header;
 			data = Cube->data;	/* Pointer to the float 3-D cube */
 		}
@@ -2386,7 +2387,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (dimension > 1) yp = gmt_grd_coord (GMT, header, GMT_Y);
 		nxy = header->size;	/* Will only be used for 3-D anyway when there are layers */
 		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
-		if (dimension == 1 || write_3D_records) {	/* Write ASCII table to named file or stdout for 1-D or 3-D */
+		if (dimension == 1 || write_3D_records) {	/* Write ASCII table to named file or stdout for 1-D or stdout for 3-D */
 			if (Ctrl->G.active) {
 				if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMT_NOTSET) {
 					gmt_M_free (GMT, xp);
@@ -2406,11 +2407,12 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, xp);
 				Return (API->error);
 			}
-			if (dimension == 1) gmt_prep_tmp_arrays (GMT, GMT_OUT, Grid->header->n_columns, 1);	/* Init or reallocate tmp vector since cannot write to stdout under OpenMP */
+			if (dimension == 1)
+				data = gmt_M_memory (GMT, NULL, Grid->header->n_columns, gmt_grdfloat);
 
 		} /* Else we are writing a grid or cube */
 		gmt_M_memset (V, 4, double);
-		if (Ctrl->C.movie) {	/* Write out grid after adding contribution for each eigenvalue separately */
+		if (Ctrl->C.movie) {	/* 2-D only: Write out grid after adding contribution for each eigenvalue separately */
 			gmt_grdfloat *tmp = NULL;
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
 			char file[PATH_MAX] = {""};
@@ -2466,36 +2468,49 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			for (layer = 0, nz_off = 0; layer < n_layers; layer++, nz_off += nxy) {	/* Might be dummy loop of 1 layer unless 3-D */
 				int64_t col, row, p; /* On Windows, the 'for' index variables must be signed, so redefine these 3 inside this block only */
 				double z_level = (dimension == 3) ? Cube->z[layer] : 0.0;
+				if (dimension == 3) V[GMT_Z] = z_level;
+				if (Ctrl->Q.active) {	/* Derivatives of solution */
 #ifdef _OPENMP
 #pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(Z,dimension,yp,header,xp,X,Ctrl,GMT,alpha,Lz,norm,data,par,nz_off,z_level,nm,normalize)
 #endif
-				for (row = 0; row < header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
-					if (dimension > 1) {
-						V[GMT_Y] = yp[row];
-						if (dimension == 3) V[GMT_Z] = z_level;
-					}
-					for (col = 0; col < header->n_columns; col++) {	/* This loop is always active for 1,2,3D */
-						ij = gmt_M_ijp (header, row, col) + nz_off;
-						if (dimension == 2 && gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
-						V[GMT_X] = xp[col];
-						/* Here, V holds the current output coordinates */
-						for (p = 0, wp = 0.0; p < (int64_t)nm; p++) {
-							r = greenspline_get_radius (GMT, V, X[p], dimension);
-							if (Ctrl->Q.active) {
+					for (row = 0; row < header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
+						if (dimension > 1) V[GMT_Y] = yp[row];
+						ij = (dimension > 1) ? gmt_M_ijp (header, row, 0) + nz_off : 0;
+						for (col = 0; col < header->n_columns; col++, ij++) {	/* This loop is always active for 1,2,3D */
+							if (dimension == 2 && gmt_M_is_fnan (data[ij])) continue;	/* Only do solution where mask is not NaN */
+							V[GMT_X] = xp[col];
+							/* Here, V holds the current output coordinates */
+							for (p = 0, wp = 0.0; p < (int64_t)nm; p++) {	/* Loop over Green's function components */
+								r = greenspline_get_radius (GMT, V, X[p], dimension);
 								C = greenspline_get_dircosine (GMT, Ctrl->Q.dir, V, X[p], dimension, false);
 								part = dGdr (GMT, r, par, Lz) * C;
+								wp += alpha[p] * part;
 							}
-							else
-								part = G (GMT, r, par, Lz);
-							wp += alpha[p] * part;
+							data[ij] = (gmt_grdfloat)greenspline_ungreenspline_do_normalization (V, wp, normalize, norm, dimension);
 						}
-						V[dimension] = (gmt_grdfloat)greenspline_ungreenspline_do_normalization (V, wp, normalize, norm, dimension);
-						if (dimension > 1)	/* Special 2-D/3-D grid output */
-							data[ij] = (gmt_grdfloat)V[dimension];
-						else	/* Rec-by-rec output for 1-D */
-							GMT->hidden.mem_coord[GMT_X][col] = V[dimension];
-					}
-				}	/* End of row-loop [OpenMP] */
+					}	/* End of row-loop [OpenMP] */
+				}
+				else {	/* Regular surface */
+#ifdef _OPENMP
+#pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(Z,dimension,yp,header,xp,X,Ctrl,GMT,alpha,Lz,norm,data,par,nz_off,z_level,nm,normalize)
+#endif
+					for (row = 0; row < header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
+						if (dimension > 1) V[GMT_Y] = yp[row];
+						ij = (dimension > 1) ? gmt_M_ijp (header, row, 0) + nz_off : 0;
+						for (col = 0; col < header->n_columns; col++, ij++) {	/* This loop is always active for 1,2,3D */
+							if (dimension == 2 && gmt_M_is_fnan (data[ij])) continue;	/* Only do solution where mask is not NaN */
+							V[GMT_X] = xp[col];
+							/* Here, V holds the current output coordinates */
+							for (p = 0, wp = 0.0; p < (int64_t)nm; p++) {	/* Loop over Green's function components */
+								r = greenspline_get_radius (GMT, V, X[p], dimension);
+								part = G (GMT, r, par, Lz);
+								wp += alpha[p] * part;
+							}
+							data[ij] = (gmt_grdfloat)greenspline_ungreenspline_do_normalization (V, wp, normalize, norm, dimension);
+						}
+					}	/* End of row-loop [OpenMP] */
+				}
+
 				if (write_3D_records) {	/* Must dump this slice of the 3-D cube as ASCII slices as a backwards compatibility option */
 					V[GMT_Z] = z_level;
 					for (row = 0; row < header->n_rows; row++) {
@@ -2514,9 +2529,10 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			if (dimension == 1) {	/* Must dump 1-D records */
 				for (col = 0; col < header->n_columns; col++) {
 					V[GMT_X] = xp[col];
-					V[dimension] = GMT->hidden.mem_coord[GMT_X][col];
+					V[GMT_Y] = data[col];
 					GMT_Put_Record (API, GMT_WRITE_DATA, Rec);
 				}
+				gmt_M_free (GMT, data);
 			}
 			else if (dimension == 2) {	/* Write the 2-D grid */
 				gmt_grd_init (GMT, Out->header, options, true);
