@@ -2547,11 +2547,12 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				snprintf (Cube->header->remark, GMT_GRID_REMARK_LEN160, "%s (-S%s)", method[Ctrl->S.mode], Ctrl->S.arg);
 				if (GMT_Write_Data (API, GMT_IS_DATACUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Cube))
 					Return (EXIT_FAILURE);
-				gmt_free_datacube (API, &Cube);	/* Done with the output datacube */
 			}
 		}
 		if (delete_grid) /* No longer required for 1-D and 3-D */
 			gmt_free_grid (GMT, &Grid, dimension > 1);
+		if (dimension == 3) gmt_free_datacube (API, &Cube);	/* Done with the output datacube */
+
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
