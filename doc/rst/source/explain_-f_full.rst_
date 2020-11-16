@@ -13,6 +13,6 @@
     x,y map coordinates in given *unit* [meter]) or **f** (floating point)
     to each column or column range item. Shorthands
     **-f**\ [**i**\|\ **o**]\ **g** means
-    **-f**\ [**i**\|\ **o**]0\ **x**,1\ **y** (geographic coordinates)
+    **-f**\ [**i**\|\ **o**]0\ **x**,1\ **y** (geographic, i.e., longitude, latitude coordinates)
     and **-f**\ [**i**\|\ **o**]\ **c** means
     **-f**\ [**i**\|\ **o**]0:1\ **f** (Cartesian coordinates)
