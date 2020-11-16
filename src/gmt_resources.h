@@ -757,19 +757,19 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 /* These containers are used to pass user datacubes in/out of GMT */
 
 struct GMT_DATACUBE {
-	/* Handing of 3-D data cubes in GMT requires a common 2-D header and extended parameters for the 3rd dimension */
+	/* Handling of 3-D data cubes in GMT requires a common 2-D header and extended parameters for the 3rd dimension */
 	/* These are the same as for GMT_GRID: */
 	struct GMT_GRID_HEADER *header;		/* Pointer to full GMT 2-D header for a layer (common to all layers) */
 	gmt_grdfloat *data;             	/* Pointer to the gmt_grdfloat 3-D cube - a stack of 2-D padded grids */
 	double *x, *y;                  	/* Vector of plane coordinates common to all layers */
 	void *hidden;                   	/* Row-by-row machinery information [NULL] */
-	/* These are the extensions for 3D cubes. Note: We use header->n_bands for the number of layers for 3-D cubes  */
+	/* These are extensions for 3D cubes. Note: We use header->n_bands for the number of layers for 3-D cubes  */
 	unsigned int mode;			/* GMT_DATACUBE_IS_STACK if input dataset was a list of 2-D grids rather than a single cube */
 	double z_range[2];			/* Minimum/max z values (complements wesn[4]) */
 	double z_inc;				/* z increment (complements inc[2]) (0 if variable z spacing */
-	double *z;				/* Array of z values (complements x, y) */
-	char name[GMT_GRID_UNIT_LEN80];		/* Name of the 3-D variable (or empty if just one)  */
-	char units[GMT_GRID_UNIT_LEN80];	/* Units in z-direction (complements x_units and y_units)  */
+	double *z;					/* Array of z values (complements x, y) */
+	char name[GMT_GRID_UNIT_LEN80];		/* Name of the 3-D variable, if read from file (or empty if just one) */
+	char units[GMT_GRID_UNIT_LEN80];	/* Units in 3rd direction (complements x_units, y_units, z_units)  */
 };
 
 /*============================================================ */
