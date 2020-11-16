@@ -360,7 +360,7 @@ To instead write the results as a series of 2-D layer grids called layer_*z*.grd
 
     gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D_UO2_%g.grd
 
-Finally, to write the result to a 2-D netCDF grid, try::
+Finally, to write the result to a 3-D netCDF grid, try::
 
     gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D_UO2.nc
 
