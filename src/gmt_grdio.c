@@ -3279,13 +3279,57 @@ int gmt_img_sanitycheck (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 
 /* 3-D GMT_DATACUBE handling is here */
 
-void gmt_free_datacube (struct GMTAPI_CTRL *API, struct GMT_DATACUBE **cube) {
-	struct GMT_DATACUBE *C = *cube;
-	gmt_free_header (API->GMT, &(C->header));
-	gmt_M_free (API->GMT, C->z);
-	gmt_M_free_aligned (API->GMT, C->data);
-	gmt_M_free (API->GMT, C);
-	*cube = NULL;
+struct GMT_DATACUBE *gmt_get_datacube (struct GMT_CTRL *GMT) {
+	struct GMT_DATACUBE *C = NULL;
+	C = gmt_M_memory (GMT, NULL, 1, struct GMT_DATACUBE);
+	C->hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_DATACUBE_HIDDEN);
+	return (C);
+}
+
+struct GMT_DATACUBE *gmt_create_datacube (struct GMT_CTRL *GMT) {
+	/* Allocates space for a new datacube container.  No space allocated for the gmt_grdfloat cube itself */
+	struct GMT_DATACUBE *C = NULL;
+	struct GMT_DATACUBE_HIDDEN *GU = NULL;
+
+	C = gmt_get_datacube (GMT);
+	GU = gmt_get_U_hidden (C);
+	C->header = gmt_get_header (GMT);
+	gmt_grd_init (GMT, C->header, NULL, false); /* Set default values */
+	GMT_Set_Index (GMT->parent, C->header, GMT_GRID_LAYOUT);
+	GU->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
+	GU->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	GU->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
+	return (C);
+}
+
+unsigned int gmtlib_free_datacube_ptr (struct GMT_CTRL *GMT, struct GMT_DATACUBE *U, bool free_datacube) {
+	/* By taking a reference to the grid pointer we can set it to NULL when done */
+	struct GMT_DATACUBE_HIDDEN *UH = NULL;
+	enum GMT_enum_alloc alloc_mode;
+	if (!U) return 0;	/* Nothing to deallocate */
+	/* Only free G->data if allocated by GMT AND free_grid is true */
+	UH = gmt_get_U_hidden (U);
+	if (U->data && free_datacube) {
+		if (UH->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free_aligned (GMT, U->data);
+		U->data = NULL;	/* This will remove reference to external memory since gmt_M_free_aligned would not have been called */
+	}
+	if (U->x && UH->xyz_alloc_mode[GMT_X] == GMT_ALLOC_INTERNALLY)
+		gmt_M_free (GMT, U->x);
+	if (U->y && UH->xyz_alloc_mode[GMT_Y] == GMT_ALLOC_INTERNALLY)
+		gmt_M_free (GMT, U->y);
+	if (U->z && UH->xyz_alloc_mode[GMT_Z] == GMT_ALLOC_INTERNALLY)
+		gmt_M_free (GMT, U->z);
+	U->x = U->y = U->z = NULL;	/* This will remove reference to external memory since gmt_M_free would not have been called */
+	alloc_mode = UH->alloc_mode;
+	gmt_M_free (GMT, U->hidden);
+	gmt_free_header (GMT, &(U->header));	/* Free the header structure and anything allocated by it */
+	return (alloc_mode);
+}
+
+void gmt_free_datacube (struct GMT_CTRL *GMT, struct GMT_DATACUBE **U, bool free_datacube) {
+	/* By taking a reference to the grid pointer we can set it to NULL when done */
+	(void)gmtlib_free_datacube_ptr (GMT, *U, free_datacube);
+	gmt_M_free (GMT, *U);
 }
 
 GMT_LOCAL uint64_t gmtgrdio_get_file_count (char **list) {
@@ -3382,7 +3426,7 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 		C->mode = (mode & GMT_DATACUBE_IS_STACK);	/* Will either be GMT_DATACUBE_IS_STACK or 0 */
 		if (nc_z_named) strcpy (C->name, cube_layer);	/* Remember this name if given */
 		if (GMT_Destroy_Data (API, &G)) {	/* Must use GMT_Destroy_Data since G got registered in GMT_Read_Data */
-			gmt_free_datacube (API, &C);
+			gmt_free_datacube (GMT, &C, true);
 			return NULL;
 		}
 		if (mode & GMT_CONTAINER_ONLY)	/* All done - just wanted the header */
@@ -3397,7 +3441,7 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 		if (C->z == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_read_datacube: No layer level array available in GMT_IS_DATACUBE.\n");
 			API->error = GMT_PTR_IS_NULL;
-			gmt_free_datacube (API, &C);
+			gmt_free_datacube (GMT, &C, true);
 			return NULL;
 		}
 		while (start_k < C->header->n_bands && C->z[start_k] < range[ZLO]) start_k++;	/* Advance to first required layer */
@@ -3407,7 +3451,7 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 	if (n_layers_used == 0) {
 		GMT_Report (API, GMT_MSG_ERROR, "gmtlib_read_datacube: No layers selected from GMT_IS_DATACUBE.\n");
 		API->error = GMT_DIM_TOO_SMALL;
-		gmt_free_datacube (API, &C);
+		gmt_free_datacube (GMT, &C, true);
 		return NULL;
 	}
 
@@ -3428,7 +3472,7 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 		/* Read in the layer as a grid */
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, range, file, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_read_datacube: Unable to read layer %" PRIu64 " from file %s.\n", k, file);
-			gmt_free_datacube (API, &C);
+			gmt_free_datacube (GMT, &C, true);
 			return (NULL);
 		}
 		if (C->data == NULL) {	/* Update grid header (due to possible subsets) and allocate cube the first time */
@@ -3450,7 +3494,7 @@ void * gmtlib_read_datacube (struct GMTAPI_CTRL *API, unsigned int method, unsig
 		gmt_M_memcpy (&C->data[here], G->data, C->header->size, gmt_grdfloat);
 		here += C->header->size;	/* Advance the offset */
 		if (GMT_Destroy_Data (API, &G)) {	/* Must eliminate this registered resource */
-			gmt_free_datacube (API, &C);
+			gmt_free_datacube (GMT, &C, true);
 			return NULL;
 		}
 	}

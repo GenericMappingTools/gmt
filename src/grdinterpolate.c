@@ -746,12 +746,12 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				C[GMT_OUT]->data[node+k*C[GMT_OUT]->header->size] = (float)o_value[k];
 		}
 	}
-	gmt_free_datacube (API, &C[GMT_IN]);	/* Done with the input datacube */
+	GMT_Destroy_Data (API, &C[GMT_IN]);	/* Done with the input datacube */
 
 	if (GMT_Write_Data (API, GMT_IS_DATACUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, C[GMT_OUT]))
 		Return (EXIT_FAILURE);
 
-	gmt_free_datacube (API, &C[GMT_OUT]);	/* Done with the output datacube */
+	GMT_Destroy_Data (API, &C[GMT_OUT]);	/* Done with the output datacube */
 
 	/* Done with everything; free up remaining memory */
 

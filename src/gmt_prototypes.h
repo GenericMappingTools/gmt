@@ -187,7 +187,9 @@ EXTERN_MSC bool gmt_file_is_cache (struct GMTAPI_CTRL *API, const char *file);
 
 /* gmt_grdio.c: */
 
-EXTERN_MSC void gmt_free_datacube (struct GMTAPI_CTRL *API, struct GMT_DATACUBE **cube);
+EXTERN_MSC struct GMT_DATACUBE *gmt_get_datacube (struct GMT_CTRL *GMT);
+EXTERN_MSC struct GMT_DATACUBE *gmt_create_datacube (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmt_free_datacube (struct GMT_CTRL *GMT, struct GMT_DATACUBE **U, bool free_datacube);
 EXTERN_MSC void gmt_grd_set_datapadding (struct GMT_CTRL *GMT, bool set);
 EXTERN_MSC void gmt_grd_set_cartesian (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int direction);
 EXTERN_MSC int gmt_img_sanitycheck (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);

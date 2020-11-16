@@ -2551,7 +2551,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 		if (delete_grid) /* No longer required for 1-D and 3-D */
 			gmt_free_grid (GMT, &Grid, dimension > 1);
-		if (dimension == 3) gmt_free_datacube (API, &Cube);	/* Done with the output datacube */
+		if (dimension == 3) GMT_Destroy_Data (API, &Cube);	/* Done with the output datacube */
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);

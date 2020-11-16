@@ -2831,6 +2831,21 @@ GMT_LOCAL int gmtapi_destroy_grid (struct GMTAPI_CTRL *API, struct GMT_GRID **G_
 }
 
 /*! . */
+GMT_LOCAL int gmtapi_destroy_datacube (struct GMTAPI_CTRL *API, struct GMT_DATACUBE **U_obj) {
+	/* Delete the given grid resource. */
+	struct GMT_DATACUBE_HIDDEN *UH = NULL;
+	if (!(*U_obj)) {	/* Probably not a good sign */
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_destroy_datacube: Passed NULL pointer - skipped\n");
+		return (GMT_PTR_IS_NULL);
+	}
+	UH = gmt_get_U_hidden (*U_obj);
+	if (UH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
+
+	gmt_free_datacube (API->GMT, U_obj, true);
+	return GMT_NOERROR;
+}
+
+/*! . */
 GMT_LOCAL int gmtapi_destroy_dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET **D_obj) {
 	/* Delete the given dataset resource. */
 	struct GMT_DATASET_HIDDEN *DH = NULL;
@@ -3745,6 +3760,9 @@ GMT_LOCAL int gmtapi_destroy_data_ptr (struct GMTAPI_CTRL *API, enum GMT_enum_fa
 			break;
 		case GMT_IS_POSTSCRIPT:
 			gmtlib_free_ps_ptr (GMT, ptr);
+			break;
+		case GMT_IS_DATACUBE:
+			gmtlib_free_datacube_ptr (GMT, ptr, true);
 			break;
 		case GMT_IS_COORD:
 			/* Nothing to do as gmt_M_free below will do it */
@@ -9532,6 +9550,9 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 		case GMT_IS_POSTSCRIPT:
 			error = gmtapi_destroy_postscript (API, object);
 			break;
+		case GMT_IS_DATACUBE:
+			error = gmtapi_destroy_datacube (API, object);
+			break;
 
 		/* Also allow destroying of intermediate vector and matrix containers */
 		case GMT_IS_MATRIX:
@@ -9682,59 +9703,6 @@ int GMT_Destroy_Group_ (void *object, unsigned int *n_items) {
 }
 #endif
 
-
-void * gmtlib_create_datacube (struct GMTAPI_CTRL *API, unsigned int geometry, unsigned int mode, uint64_t dim[], double *range, double *inc, unsigned int registration, int pad, void *data) {
-	int def_direction = GMT_IN;	/* Default direction is GMT_IN  */
-	int error;
-	uint64_t n_layers = 0, zero_dim[4] = {0, 0, 0, 0}, *this_dim = dim;
-	struct GMT_GRID *G = NULL;
-	struct GMT_DATACUBE *C = NULL;
-	struct GMT_CTRL *GMT = API->GMT;
-
-	/* 1. Some basic sanity checking */
-	if (geometry != GMT_IS_VOLUME) {
-		GMT_Report (API, GMT_MSG_ERROR, "gmtlib_create_datacube: Wrong geometry for GMT_IS_DATACUBE.\n");
-		API->error = GMT_WRONG_FAMILY;
-		return NULL;
-	}
-	/* 2. Deal with direction and dimensions if NULL */
-	if (mode & GMT_IS_OUTPUT) {	/* Flagged to be an output container */
-		def_direction = GMT_OUT;	/* Set output as default direction*/
-		if (data) {
-			API->error = GMT_PTR_NOT_NULL;	/* For mode & GMT_CONTAINER_ONLY we cannot pass in a datacube */
-			return NULL;
-		}
-		if (this_dim == NULL) this_dim = zero_dim;	/* Provide dimensions set to zero */
-	}
-	/* 3. Create dummy helper grid and initialize it */
-	if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
-	 if ((G = gmt_create_grid (API->GMT)) == NULL) {
-		API->error = GMT_MEMORY_ERROR;
-		return NULL;
-	}
-	if ((error = gmtapi_init_grid (API, NULL, this_dim, range, inc, registration, mode, def_direction, G))) {
-		API->error = error;
-		return NULL;
-	}
-	if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
-	/* 4. Now create the datacube structure, duplicate header, and update higher dimensions */
-	C = gmt_M_memory (GMT, NULL, 1, struct GMT_DATACUBE);
-	C->header = gmt_get_header (GMT);
-	gmt_copy_gridheader (GMT, C->header, G->header);
-	C->z_range[0] = range[ZLO];	C->z_range[1] = range[ZHI];
-	if (inc && inc[GMT_Z] > 0.0) {	/* Must make equidistant array, else we lave it as NULL to be set by calling module */
-		C->header->n_bands = gmtlib_make_equidistant_array (API->GMT, range[ZLO], range[ZHI], inc[GMT_Z], &(C->z));
-		C->z_inc = inc[GMT_Z];
-	}
-	/* 5. Allocate data cube, if requested */
-	if ((mode & GMT_CONTAINER_ONLY) == 0) /* Must also allocate the cube */
-		C->data = gmt_M_memory_aligned (API->GMT, NULL, C->header->size * C->header->n_bands, gmt_grdfloat);
-
-	if (gmtapi_destroy_grid (API, &G))	/* Use this instead of GMT_Destroy_Data since G was never registered */
-		return NULL;
-	return (C);
-}
-
 /*! . */
 void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, unsigned int mode, uint64_t dim[], double *range, double *inc, unsigned int registration, int pad, void *data) {
 	/* Create an empty container of the requested kind and allocate space for content.
@@ -9805,15 +9773,15 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	uint64_t n_layers = 0, zero_dim[4] = {0, 0, 0, 0}, *this_dim = dim;
 	int64_t n_cols = 0;
 	bool already_registered = false, has_ID = false;
+	struct GMT_DATACUBE *C = NULL;
+	struct GMT_DATACUBE_HIDDEN *HU = NULL;
+	struct GMT_GRID *G = NULL;
 	void *new_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	API = gmtapi_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
-
-	if (family == GMT_IS_DATACUBE) return (gmtlib_create_datacube (API, geometry, mode, dim, range, inc, registration, pad, data));	/* Special handling of 3-D grids via GMT_Create_Data interface */
-
 	i_mode = (family & GMT_IMAGE_ALPHA_LAYER);
 	family -= i_mode;
 	module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we creating a resource that is a module input? */
@@ -9924,6 +9892,49 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 		 		return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			}
 			break;
+		case GMT_IS_DATACUBE:
+			if (mode & GMT_WITH_STRINGS) return_null (API, GMT_NO_STRINGS_ALLOWED);	/* Error if given unsuitable mode */
+			if (range == NULL) return_null (API, GMT_PTR_IS_NULL);	/* Need at least the z-range for cubes */
+			if (mode & GMT_IS_OUTPUT || (mode & GMT_DATA_ONLY) == 0) {	/* Create new grid unless we only ask for data only */
+				if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data pointer is not NULL */
+	 			if ((C = gmt_create_datacube (API->GMT)) == NULL)
+	 				return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
+				if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
+				if ((G = gmt_create_grid (API->GMT)) == NULL)
+		 			return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
+				if ((error = gmtapi_init_grid (API, NULL, this_dim, range, inc, registration, mode, def_direction, G)))
+					return_null (API, error);
+				if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
+				gmt_copy_gridheader (API->GMT, C->header, G->header);
+				C->z_range[0] = range[ZLO];	C->z_range[1] = range[ZHI];
+				if (inc && inc[GMT_Z] > 0.0) {	/* Must make equidistant array, else we lave it as NULL to be set by calling module */
+					HU = gmt_get_U_hidden (C);
+					C->header->n_bands = gmtlib_make_equidistant_array (API->GMT, range[ZLO], range[ZHI], inc[GMT_Z], &(C->z));
+					C->z_inc = inc[GMT_Z];
+					HU->xyz_alloc_mode[GMT_Z] = GMT_ALLOC_INTERNALLY;
+				}
+			}
+			else {	/* Already registered so has_ID must be false */
+				if (has_ID || (C = data) == NULL)
+					return_null (API, GMT_PTR_IS_NULL);	/* Error if data pointer is NULL */
+				already_registered = true;
+			}
+			if (def_direction == GMT_IN && (mode & GMT_CONTAINER_ONLY) == 0) {	/* Allocate the grid array unless we asked for header only */
+				if ((C->data = gmt_M_memory_aligned (API->GMT, NULL, C->header->size * C->header->n_bands, gmt_grdfloat)) == NULL)
+					return_null (API, error);	/* Allocation error */
+				/* Also allocate and populate the x,y vectors */
+				if ((error = gmtapi_alloc_grid_xy (API, G)) != GMT_NOERROR)
+					return_null (API, error);	/* Allocation error */
+				C->x = G->x;	C->y = G->y;	/* Let these be the datacube's from now on */
+				G->x = G->y = NULL;	/* No longer anything to do with G */
+				HU = gmt_get_U_hidden (C);
+				HU->xyz_alloc_mode[GMT_X] = HU->xyz_alloc_mode[GMT_Y] = GMT_ALLOC_INTERNALLY;
+				if (gmtapi_destroy_grid (API, &G))	/* Use this instead of GMT_Destroy_Data since G was local and never registered */
+		 			return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
+			}
+			new_obj = C;	/* Finally assign to new_obj */
+			break;
+
 		default:
  			return_null (API, GMT_NOT_A_VALID_FAMILY);
 			break;
