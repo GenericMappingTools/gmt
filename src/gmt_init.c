@@ -7087,7 +7087,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   Give one or more columns (or column ranges) separated by commas.\n");
 			gmt_message (GMT, "\t   Append T (Calendar format), t (time relative to TIME_EPOCH),\n");
 			gmt_message (GMT, "\t   f (floating point), x (longitude), y (latitude) to each item.\n");
-			gmt_message (GMT, "\t   -f[i|o]g means -f[i|o]0x,1y (geographic coordinates).\n");
+			gmt_message (GMT, "\t   -f[i|o]g means -f[i|o]0x,1y (geographic, i.e., lon/lat coordinates).\n");
 			gmt_message (GMT, "\t   -f[i|o]c means -f[i|o]0-1f (Cartesian coordinates).\n");
 			gmt_message (GMT, "\t   -fp[<unit>] means input x,y are in projected coordinates.\n");
 			break;
