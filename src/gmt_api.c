@@ -94,10 +94,11 @@
  *
  * GMT_Call_Module         : Call the specified GMT module
  *
- * Four functions are used to get grid index from row, col, and to obtain coordinates
+ * Five functions are used to get grid index from row, col, and to obtain coordinates
  *
  * GMT_Get_Coord           : Return array of coordinates for one dimension
  * GMT_Get_Index           : Return 1-D grid index given row, col
+ * GMT_Get_Index3          : Return 1-D cube index given row, col, layer
  * GMT_Get_Pixel           : Return 1-D image index given row, col, layer
  * GMT_Set_Columns         : Specify number of output columns for rec-by-rec writing
  *
@@ -10919,7 +10920,7 @@ uint64_t GMT_Get_Index_ (void *h, int *row, int *col) {
 }
 #endif
 
-/*! Convenience function to get grid or image node */
+/*! Convenience function to get image layer node */
 uint64_t GMT_Get_Pixel (void *V_API, struct GMT_GRID_HEADER *header, int row, int col, int layer) {
 	/* V_API not used but all API functions take V_API so no exceptions! */
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
@@ -10931,6 +10932,20 @@ uint64_t GMT_Get_Pixel (void *V_API, struct GMT_GRID_HEADER *header, int row, in
 uint64_t GMT_Get_Pixel_ (void *h, int *row, int *col, int *layer) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Pixel (GMT_FORTRAN, h, *row, *col, *layer));
+}
+#endif
+
+/*! Convenience function to get cube node */
+uint64_t GMT_Get_Index3 (void *V_API, struct GMT_GRID_HEADER *header, int row, int col, int layer) {
+	/* V_API not used but all API functions take V_API so no exceptions! */
+	gmt_M_unused(V_API);
+	return (GMTAPI_index_function (header, row, col, 0) + layer * header->size);
+}
+
+#ifdef FORTRAN_API
+uint64_t GMT_Get_Index3_ (void *h, int *row, int *col, int *layer) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Index3 (GMT_FORTRAN, h, *row, *col, *layer));
 }
 #endif
 
