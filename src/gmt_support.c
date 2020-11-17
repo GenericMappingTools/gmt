@@ -12641,6 +12641,28 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 	}
 }
 
+int gmt_cube_BC_set (struct GMT_CTRL *GMT, struct GMT_CUBE *U, unsigned int direction) {
+	int error = GMT_NOERROR;
+	unsigned int k;
+	struct GMT_GRID *G = gmt_get_grid (GMT);	/* Create a dummy temporary grid structure */
+
+	gmt_copy_gridheader (GMT, G->header, U->header);
+
+	for (k = 0; k < U->header->n_bands; k++) {	/* Do each layer BC separately */
+		G->data = &(U->data[k*U->header->size]);	/* Start of next 2-D layer */
+		if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G, GMT_OUT), "Cube memory")) {	/* Set boundary conditions */
+			error = GMT_GRID_BC_ERROR;
+			goto cube_clean_up;
+		}
+	}
+
+cube_clean_up:
+	G->data = NULL;
+	gmt_free_grid (GMT, &G, true);
+
+	return (GMT_NOERROR);
+}
+
 /*! . */
 bool gmt_y_out_of_bounds (struct GMT_CTRL *GMT, int *j, struct GMT_GRID_HEADER *h, bool *wrap_180) {
 	/* Adjusts the j (y-index) value if we are dealing with some sort of periodic boundary

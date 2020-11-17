@@ -5451,7 +5451,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 
 			if (U_obj->mode & GMT_CUBE_IS_STACK) files = (char **)S_obj->filename;	/* Since we have a NULL-terminated list of 2D grids */
 
-			/* 4. Read the layers via an intermediate grid and add to growing data cube slices */
+			/* Read the layers via an intermediate grid and add to growing data cube slices */
 			if (files)
 				GMT_Report (API, GMT_MSG_INFORMATION, "Reading cube from individual layer grid files\n");
 			else
@@ -5496,10 +5496,13 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					return_null (API, GMT_RUNTIME_ERROR);
 				}
 			}
-			/* 5. Update cube min/max */
+			/* Update cube min/max */
 			U_obj->header->z_min = z_min;
 			U_obj->header->z_max = z_max;
-			/* Set BCs per layer [not implemented yet] */
+			/* Set BCs per layer */
+			gmt_BC_init (GMT, U_obj->header);	/* Initialize cube interpolation and boundary condition parameters */
+			if (gmt_M_err_pass (GMT, gmt_cube_BC_set (GMT, U_obj, GMT_IN), "Cube memory"))
+				return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
 			break;
 
 	 	case GMT_IS_DUPLICATE:	/* GMT cube and header in a GMT_CUBE container object. */
@@ -5527,8 +5530,8 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			if (!S_obj->region && gmt_grd_pad_status (GMT, U_obj->header, GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
 				gmt_M_memcpy (U_obj->data, U_orig->data, U_orig->header->size * U_orig->header->n_bands, gmt_grdfloat);
 				gmt_BC_init (GMT, U_obj->header);	/* Initialize cube interpolation and boundary condition parameters */
-				//if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), "Grid memory"))
-				//	return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
+				if (gmt_M_err_pass (GMT, gmt_cube_BC_set (GMT, U_obj, GMT_IN), "Cube memory"))
+					return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
 				break;		/* Done with this cube */
 			}
 			/* Here we need to do more work: Either extract subset or add/change padding, or both. */
@@ -5567,8 +5570,8 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				}
 			}
 			gmt_BC_init (GMT, U_obj->header);	/* Initialize cube interpolation and boundary condition parameters */
-			//if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), "Grid memory"))
-			//	return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
+			if (gmt_M_err_pass (GMT, gmt_cube_BC_set (GMT, U_obj, GMT_IN), "Cube memory"))
+				return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
 			break;
 
 	 	case GMT_IS_REFERENCE:	/* GMT cube and header in a GMT_CUBE container object by reference [NOT SURE ABOUT THIS] */
@@ -5581,22 +5584,12 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			S_obj->alloc_mode = UH->alloc_mode;
 			GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_import_cube: Check pad\n");
 			gmt_BC_init (GMT, U_obj->header);	/* Initialize cube interpolation and boundary condition parameters */
-			//if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), "Grid memory"))
-			//	return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
-			if (!gmtapi_adjust_grdpadding (U_obj->header, GMT->current.io.pad)) break;	/* Pad is correct so we are done */
-			/* Here we extend U_obj->data to allow for padding, then rearrange rows */
-			if (UH->alloc_mode == GMT_ALLOC_EXTERNALLY) return_null (API, GMT_PADDING_NOT_ALLOWED);
-			GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_import_cube: Add pad\n");
-			//gmt_grd_pad_on (GMT, U_obj, GMT->current.io.pad);
-			//if (done && S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
-			//	HH = gmt_get_H_hidden (G_obj->header);
-			//	if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory cube */
-			//		gmtlib_contract_headerpad (GMT, G_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
-			//		S_obj->reset_pad = HH->reset_pad = 0;
-			//	}
-			//	if (gmtlib_expand_headerpad (GMT, G_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
-			//		S_obj->reset_pad = HH->reset_pad = 1;
-			//}
+			if (gmt_M_err_pass (GMT, gmt_cube_BC_set (GMT, U_obj, GMT_IN), "Cube memory"))
+				return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
+			if (gmtapi_adjust_grdpadding (U_obj->header, GMT->current.io.pad)) {
+				GMT_Report (API, GMT_MSG_INFORMATION, "Reference cube must have standard padding\n");
+				return_null (API, GMT_PADDING_NOT_ALLOWED);	/* Set boundary conditions */
+			}
 			GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_import_cube: Return from GMT_IS_REFERENCE\n");
 			break;
 
@@ -5706,8 +5699,8 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				gmt_M_memcpy (U_obj->header->wesn, M_obj->range, 4U, double);
 			}
 			gmt_BC_init (GMT, U_obj->header);	/* Initialize cube interpolation and boundary condition parameters */
-			//if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), "Grid memory"))
-			//	return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
+			if (gmt_M_err_pass (GMT, gmt_cube_BC_set (GMT, U_obj, GMT_IN), "Cube memory"))
+				return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			API->object[new_item]->actual_family = GMT_IS_CUBE;	/* Done reading from matrix */
 			if (start_over_method) API->object[new_item]->method = start_over_method;	/* We changed our mind from reference to duplicate due to region */
@@ -5793,14 +5786,14 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				/* Global cubes passed via matrix are not rotated to fit the desired global region, so we need to correct the wesn for this cube to match the matrix */
 				gmt_M_memcpy (U_obj->header->wesn, M_obj->range, 4U, double);
 			}
-			//else if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
-			//	if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory cube */
-			//		gmtlib_contract_headerpad (GMT, G_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
-			//		S_obj->reset_pad = 0;
-			//	}
-			//	if (gmtlib_expand_headerpad (GMT, G_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
-			//		S_obj->reset_pad = 1;
-			//}
+			else if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
+				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory cube */
+					gmtlib_contract_headerpad (GMT, U_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
+					S_obj->reset_pad = 0;
+				}
+				if (gmtlib_expand_headerpad (GMT, U_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
+					S_obj->reset_pad = 1;
+			}
 			break;
 
 		default:
@@ -5922,15 +5915,17 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 	 	case GMT_IS_DUPLICATE:	/* Duplicate GMT cube and header to a GMT_CUBE container object. Subset allowed */
 			if (S_obj->resource) return (gmtlib_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource pointer must be NULL */
 			if (mode & GMT_CONTAINER_ONLY) return (gmtlib_report_error (API, GMT_NOT_A_VALID_MODE));
+			if (gmtapi_adjust_grdpadding (U_obj->header, GMT->current.io.pad)) {
+				GMT_Report (API, GMT_MSG_INFORMATION, "Reference cube must have standard padding\n");
+				gmtlib_report_error (API, GMT_PADDING_NOT_ALLOWED);
+			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Duplicating cube data to GMT_GRID memory location\n");
 			if (!S_obj->region) {	/* No subset, possibly same padding */
 				U_copy = gmtlib_duplicate_cube (API->GMT, U_obj, GMT_DUPLICATE_DATA);
 				UH2 = gmt_get_U_hidden (U_copy);
 				UH2->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
-				//if (gmtapi_adjust_grdpadding (G_copy->header, GMT->current.io.pad))
-				//	gmt_grd_pad_on (GMT, G_copy, GMT->current.io.pad);
 				gmt_BC_init (GMT, U_copy->header);	/* Initialize cube interpolation and boundary condition parameters */
-				//if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_copy, GMT_OUT), "Grid memory")) return (gmtlib_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
+				if (gmt_M_err_pass (GMT, gmt_cube_BC_set (GMT, U_copy, GMT_OUT), "Cube memory")) return (gmtlib_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 				S_obj->resource = U_copy;	/* Set resource pointer to the cube */
 				break;		/* Done with this cube */
 			}
@@ -5976,7 +5971,7 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 			GMT_Report (API, GMT_MSG_INFORMATION, "Referencing cube data to GMT_CUBE memory location\n");
 			gmt_grd_zminmax (GMT, U_obj->header, U_obj->data);	/* Must set zmin/zmax since we are not writing */
 			gmt_BC_init (GMT, U_obj->header);	/* Initialize cube interpolation and boundary condition parameters */
-			//if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_OUT), "Grid memory")) return (gmtlib_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
+			if (gmt_M_err_pass (GMT, gmt_cube_BC_set (GMT, U_obj, GMT_OUT), "Cube memory")) return (gmtlib_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			S_obj->resource = U_obj;	/* Set resource pointer to the cube */
 			UH->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			break;
@@ -6034,8 +6029,8 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 				M_obj->type = GMT_GRDFLOAT;	/* A cube is always gmt_grdfloat */
 			}
 			MH = gmt_get_M_hidden (M_obj);
-			//if (gmtapi_adjust_grdpadding (G_obj->header, GMT_no_pad))
-			//	gmt_grd_pad_on (GMT, G_obj, GMT_no_pad);	/* Adjust pad */
+			if (gmtapi_adjust_grdpadding (U_obj->header, GMT_no_pad))
+				gmt_cube_pad_off (GMT, U_obj);	/* Remove pad */
 			/* This method requires the output data to be a gmt_grdfloat matrix - otherwise we should be DUPLICATING.
 			   This distinction is set in GMT_Open_VirtualFile */
 			gmtapi_grdheader_to_matrixinfo (U_obj->header, M_obj);	/* Populate an array with GRD header information */
@@ -6044,7 +6039,6 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 			M_obj->shape = GMT_IS_ROW_FORMAT;	/* Because it is a direct GMT gmt_grdfloat cube */
 			if (S_obj->resource) {
 				GMT_Report (API, GMT_MSG_INFORMATION, "Memcpy cube data to user memory location\n");
-				/* This assumes no pad but not so sure about that... */
 #ifdef DOUBLE_PRECISION_GRID
 				gmt_M_memcpy (M_obj->data.f8, U_obj->data, U_obj->header->nm * U_obj->header->n_bands, double);
 #else

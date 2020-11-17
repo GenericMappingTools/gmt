@@ -2539,6 +2539,54 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL void gmtgrdio_pad_cube_off_sub (struct GMT_GRID *G, gmt_grdfloat *data, uint64_t start) {
+	/* Remove the current cube pad and shuffle all rows to the left */
+	uint64_t ijp, ij0;
+	unsigned int row;
+
+	for (row = 0; row < G->header->n_rows; row++) {
+		ijp = gmt_M_ijp (G->header, row, 0);	/* Index of start of this row's first column in padded grid  */
+		ij0 = gmt_M_ij0 (G->header, row, 0);	/* Index of start of this row's first column in unpadded grid */
+		gmt_M_memcpy (&(data[ij0]), &(data[ijp]), G->header->n_columns, gmt_grdfloat);	/* Only copy the n_columns data values */
+	}
+}
+
+
+void gmt_cube_pad_off (struct GMT_CTRL *GMT, struct GMT_CUBE *U) {
+	/* Shifts the cube contents so there is no pad.  The remainder of
+	 * the array is not reset and should not be addressed, but
+	 * we set it to zero just in case.
+	 * If pad is zero then we do nothing.
+	 */
+	uint64_t k, ijp, ij0, nm, here_p = 0, here_0 = 0;
+	unsigned int row;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (U->header);
+
+	if (HH->arrangement == GMT_GRID_IS_INTERLEAVED) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Calling gmt_cube_pad_off on interleaved complex grid! Programming error?\n");
+		return;
+	}
+	if (!gmt_grd_pad_status (GMT, U->header, NULL)) return;	/* No pad so nothing to do */
+
+	/* Here, U has a pad which we need to eliminate */
+	nm = U->header->nm;	/* Number of nodes in one component */
+	for (k = 0; k < U->header->n_bands; k++) {
+		for (row = 0; row < U->header->n_rows; row++) {
+			ijp = gmt_M_ijp (U->header, row, 0) + here_p;	/* Index of start of this row's first column in padded cube  */
+			ij0 = gmt_M_ij0 (U->header, row, 0) + here_0;	/* Index of start of this row's first column in unpadded cube */
+			gmt_M_memcpy (&(U->data[ij0]), &(U->data[ijp]), U->header->n_columns, gmt_grdfloat);	/* Only copy the n_columns data values */
+		}
+		here_p += U->header->size;
+		here_0 += nm;
+	}
+	if (here_p > here_0) {	/* Just wipe the remainder of the array to be sure */
+		size_t n_to_cleen = here_p - here_0;
+		gmt_M_memset (&(U->data[nm*U->header->n_bands]), n_to_cleen, gmt_grdfloat);	/* nm*U->header->n_bands is 1st position after last row in cube */
+	}
+	gmt_M_memset (U->header->pad, 4, int);	/* Pad is no longer active */
+	gmt_set_grddim (GMT, U->header);		/* Update all dimensions to reflect the padding */
+}
+
 void gmt_grd_pad_off (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	/* Shifts the grid contents so there is no pad.  The remainder of
 	 * the array is not reset and should not be addressed, but
