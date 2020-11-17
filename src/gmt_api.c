@@ -2872,7 +2872,7 @@ GMT_LOCAL int gmtapi_destroy_cube (struct GMTAPI_CTRL *API, struct GMT_CUBE **U_
 	UH = gmt_get_U_hidden (*U_obj);
 	if (UH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
-	gmt_free_cube (API->GMT, U_obj, true);
+	gmtlib_free_cube (API->GMT, U_obj, true);
 	return GMT_NOERROR;
 }
 
@@ -5392,7 +5392,7 @@ GMT_LOCAL struct GMT_CUBE * gmtapi_import_cube (struct GMTAPI_CTRL *API, int obj
 						nc_z_named[0] = '\0';	/* Chop off layer name for now */
 					}
 					if (gmt_examine_nc_cube (GMT, the_file, &n_layers, &level)) {	/* Learn the basics about the cube */
-						GMT_Report (API, GMT_MSG_ERROR, "gmtlib_read_cube: Unable to examine cube %s.\n", the_file);
+						GMT_Report (API, GMT_MSG_ERROR, "gmtapi_import_cube: Unable to examine cube %s.\n", the_file);
 						return_null (API, GMT_RUNTIME_ERROR);
 					}
 					sprintf (file, "%s?%s[0]", the_file, cube_layer);	/* Read grid header from the first layer in the cube */
@@ -5403,7 +5403,7 @@ GMT_LOCAL struct GMT_CUBE * gmtapi_import_cube (struct GMTAPI_CTRL *API, int obj
 				if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL)
 						return_null (API, GMT_RUNTIME_ERROR);
 				/* Allocate a data cube structure and fill in the file information */
-				U_obj = gmt_create_cube (GMT);
+				U_obj = gmtlib_create_cube (GMT);
 				gmt_copy_gridheader (GMT, U_obj->header, G->header);
 				if (level) {	/* Got an array of levels from the 3-D grid */
 					U_obj->z_range[0] = level[0];	U_obj->z_range[1] = level[n_layers-1];
@@ -5415,7 +5415,7 @@ GMT_LOCAL struct GMT_CUBE * gmtapi_import_cube (struct GMTAPI_CTRL *API, int obj
 				U_obj->mode = (mode & GMT_CUBE_IS_STACK);	/* Will either be GMT_CUBE_IS_STACK or 0 */
 				if (nc_z_named) strcpy (U_obj->name, cube_layer);	/* Remember this name if given */
 				if (GMT_Destroy_Data (API, &G)) {	/* Must use GMT_Destroy_Data since G got registered in GMT_Read_Data */
-					gmt_free_cube (GMT, &U_obj, true);
+					gmtlib_free_cube (GMT, &U_obj, true);
 					return_null (API, GMT_RUNTIME_ERROR);
 				}
 			}
@@ -5431,8 +5431,8 @@ GMT_LOCAL struct GMT_CUBE * gmtapi_import_cube (struct GMTAPI_CTRL *API, int obj
 			start_k = 0;	stop_k = U_obj->header->n_bands - 1;
 			if (S_obj->region && S_obj->wesn[ZHI] > S_obj->wesn[ZLO]) {	/* Want a subset of layers */
 				if (U_obj->z == NULL) {
-					GMT_Report (API, GMT_MSG_ERROR, "gmtlib_read_cube: No layer level array available in GMT_IS_CUBE.\n");
-					gmt_free_cube (GMT, &U_obj, true);
+					GMT_Report (API, GMT_MSG_ERROR, "gmtapi_import_cube: No layer level array available in GMT_IS_CUBE.\n");
+					gmtlib_free_cube (GMT, &U_obj, true);
 					return_null (API, GMT_PTR_IS_NULL);
 				}
 				while (start_k < U_obj->header->n_bands && U_obj->z[start_k] < S_obj->wesn[ZLO]) start_k++;	/* Advance to first required layer */
@@ -5440,8 +5440,8 @@ GMT_LOCAL struct GMT_CUBE * gmtapi_import_cube (struct GMTAPI_CTRL *API, int obj
 			}
 			n_layers_used = stop_k - start_k + 1;	/* Total number of layers actually to be read */
 			if (n_layers_used == 0) {
-				GMT_Report (API, GMT_MSG_ERROR, "gmtlib_read_cube: No layers selected from GMT_IS_CUBE.\n");
-				gmt_free_cube (GMT, &U_obj, true);
+				GMT_Report (API, GMT_MSG_ERROR, "gmtapi_import_cube: No layers selected from GMT_IS_CUBE.\n");
+				gmtlib_free_cube (GMT, &U_obj, true);
 				return_null (API, GMT_DIM_TOO_SMALL);
 			}
 
@@ -5465,8 +5465,8 @@ GMT_LOCAL struct GMT_CUBE * gmtapi_import_cube (struct GMTAPI_CTRL *API, int obj
 					sprintf (file, "%s?%s[%" PRIu64 "]", S_obj->filename, U_obj->name, k);
 				/* Read in the layer as a grid */
 				if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, S_obj->wesn, file, NULL)) == NULL) {
-					GMT_Report (API, GMT_MSG_ERROR, "gmtlib_read_cube: Unable to read layer %" PRIu64 " from file %s.\n", k, file);
-					gmt_free_cube (GMT, &U_obj, true);
+					GMT_Report (API, GMT_MSG_ERROR, "gmtapi_import_cube: Unable to read layer %" PRIu64 " from file %s.\n", k, file);
+					gmtlib_free_cube (GMT, &U_obj, true);
 					return_null (API, GMT_GRID_READ_ERROR);
 				}
 				if (U_obj->data == NULL) {	/* Update grid header (due to possible subsets) and allocate cube the first time */
@@ -5488,7 +5488,7 @@ GMT_LOCAL struct GMT_CUBE * gmtapi_import_cube (struct GMTAPI_CTRL *API, int obj
 				gmt_M_memcpy (&U_obj->data[here], G->data, U_obj->header->size, gmt_grdfloat);
 				here += U_obj->header->size;	/* Advance the offset */
 				if (GMT_Destroy_Data (API, &G)) {	/* Must eliminate this registered resource */
-					gmt_free_cube (GMT, &U_obj, true);
+					gmtlib_free_cube (GMT, &U_obj, true);
 					return_null (API, GMT_RUNTIME_ERROR);
 				}
 			}
@@ -9068,7 +9068,7 @@ void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, 
 			geometry = GMT_IS_NONE;
 			break;
 		case GMT_IS_CUBE:	/* GMT cube, allocate header and possibly data array */
-			new_obj = gmt_duplicate_cube (GMT, data, mode);
+			new_obj = gmtlib_duplicate_cube (GMT, data, mode);
 			geometry = GMT_IS_VOLUME;
 			break;
 		case GMT_IS_MATRIX:	/* GMT MATRIX */
@@ -10687,7 +10687,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			if (range == NULL) return_null (API, GMT_PTR_IS_NULL);	/* Need at least the z-range for cubes */
 			if (mode & GMT_IS_OUTPUT || (mode & GMT_DATA_ONLY) == 0) {	/* Create new grid unless we only ask for data only */
 				if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data pointer is not NULL */
-	 			if ((C = gmt_create_cube (API->GMT)) == NULL)
+	 			if ((C = gmtlib_create_cube (API->GMT)) == NULL)
 	 				return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 				if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
 				if ((G = gmt_create_grid (API->GMT)) == NULL)
