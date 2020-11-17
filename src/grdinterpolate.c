@@ -321,7 +321,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	uint64_t n_layers = 0, k, node, start_k, stop_k, n_layers_used, *this_dim = NULL, dims[3] = {0, 0, 0};
 	double wesn[6], inc[3], *level = NULL, *i_value = NULL, *o_value = NULL;
 	struct GMT_GRID *Grid = NULL;
-	struct GMT_DATACUBE *C[2] = {NULL, NULL};     /* Structures to hold input/output datacubes */
+	struct GMT_CUBE *C[2] = {NULL, NULL};     /* Structures to hold input/output cubes */
 
 	struct GMT_DATASET *In = NULL, *Out = NULL;
 	struct GRDINTERPOLATE_CTRL *Ctrl = NULL;
@@ -702,12 +702,12 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		file_arg = Ctrl->In.file;
 	else	/* Pass a single 3-D file */
 		file_arg = Ctrl->In.file[0];
-	if (Ctrl->Z.active[GMT_IN])file_mode |= GMT_DATACUBE_IS_STACK;	/* Flag if we are passing a list of names */
+	if (Ctrl->Z.active[GMT_IN])file_mode |= GMT_CUBE_IS_STACK;	/* Flag if we are passing a list of names */
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Will read %" PRIu64 " layers (%" PRIu64 " - %" PRIu64 ") for levels %g to %g.\n", n_layers_used, start_k, stop_k, level[start_k], level[stop_k]);
 
-	/* Read the selected subset of the datacube into C[GMT_IN] */
-	if ((C[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATACUBE, GMT_IS_FILE, GMT_IS_VOLUME, file_mode, wesn, file_arg, NULL)) == NULL)
+	/* Read the selected subset of the cube into C[GMT_IN] */
+	if ((C[GMT_IN] = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, file_mode, wesn, file_arg, NULL)) == NULL)
 		Return (GMT_DATA_READ_ERROR);
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Interpolate %" PRIu64 " new layers (%g to %g in steps of %g).\n", Ctrl->T.T.n, Ctrl->T.T.array[0], Ctrl->T.T.array[Ctrl->T.T.n-1]);
@@ -725,7 +725,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	else	/* Normal equidistant output levels lets us pass z-inc */
 		inc[GMT_Z] = Ctrl->T.T.inc;	
 
-	if ((C[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATACUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, this_dim, wesn, inc, C[GMT_IN]->header->registration, GMT_NOTSET, NULL)) == NULL)
+	if ((C[GMT_OUT] = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, this_dim, wesn, inc, C[GMT_IN]->header->registration, GMT_NOTSET, NULL)) == NULL)
 		Return (GMT_MEMORY_ERROR);
 
 	/* If not equidistant we must add in the level array manually */
@@ -746,12 +746,12 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				C[GMT_OUT]->data[node+k*C[GMT_OUT]->header->size] = (float)o_value[k];
 		}
 	}
-	GMT_Destroy_Data (API, &C[GMT_IN]);	/* Done with the input datacube */
+	GMT_Destroy_Data (API, &C[GMT_IN]);	/* Done with the input cube */
 
-	if (GMT_Write_Data (API, GMT_IS_DATACUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, C[GMT_OUT]))
+	if (GMT_Write_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, C[GMT_OUT]))
 		Return (EXIT_FAILURE);
 
-	GMT_Destroy_Data (API, &C[GMT_OUT]);	/* Done with the output datacube */
+	GMT_Destroy_Data (API, &C[GMT_OUT]);	/* Done with the output cube */
 
 	/* Done with everything; free up remaining memory */
 

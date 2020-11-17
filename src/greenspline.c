@@ -1457,7 +1457,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	struct GMT_GRID *Grid = NULL, *Out = NULL;
 	struct GMT_GRID_HEADER *header = NULL;
-	struct GMT_DATACUBE *Cube =  NULL;     /* Structure to hold output datacube if 3-D interpolation */
+	struct GMT_CUBE *Cube =  NULL;     /* Structure to hold output cube if 3-D interpolation */
 
 	struct GREENSPLINE_LOOKUP *Lz = NULL, *Lg = NULL;
 	struct GMT_DATATABLE *T = NULL;
@@ -1887,7 +1887,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		T = Nin->table[0];
 	}
-	else {	/* Fill in an equidistant output table, grid, or datacube */
+	else {	/* Fill in an equidistant output table, grid, or cube */
 		if (dimension == 1) {	/* Dummy grid to hold the 1-D info */
 			if ((Grid = gmt_create_grid (GMT)) == NULL) Return (API->error);
 			delete_grid = true;
@@ -1906,7 +1906,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			data = Grid->data;	/* Pointer to the float 2-D grid */
 		}
 		else {	/* 3-D cube needed */
-			if ((Cube = GMT_Create_Data (API, GMT_IS_DATACUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, Ctrl->R3.range, Ctrl->I.inc, \
+			if ((Cube = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, Ctrl->R3.range, Ctrl->I.inc, \
 				GMT->common.R.registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 			n_layers = Cube->header->n_bands;
 			n_ok = Cube->header->nm * n_layers;
@@ -2545,13 +2545,13 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			else if (dimension == 3 && !write_3D_records) {	/* Write the 3-D cube */
 				gmt_grd_init (GMT, Cube->header, options, true);
 				snprintf (Cube->header->remark, GMT_GRID_REMARK_LEN160, "%s (-S%s)", method[Ctrl->S.mode], Ctrl->S.arg);
-				if (GMT_Write_Data (API, GMT_IS_DATACUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Cube))
+				if (GMT_Write_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Cube))
 					Return (EXIT_FAILURE);
 			}
 		}
 		if (delete_grid) /* No longer required for 1-D and 3-D */
 			gmt_free_grid (GMT, &Grid, dimension > 1);
-		if (dimension == 3) GMT_Destroy_Data (API, &Cube);	/* Done with the output datacube */
+		if (dimension == 3) GMT_Destroy_Data (API, &Cube);	/* Done with the output cube */
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);

@@ -187,9 +187,9 @@ EXTERN_MSC bool gmt_file_is_cache (struct GMTAPI_CTRL *API, const char *file);
 
 /* gmt_grdio.c: */
 
-EXTERN_MSC struct GMT_DATACUBE *gmt_get_datacube (struct GMT_CTRL *GMT);
-EXTERN_MSC struct GMT_DATACUBE *gmt_create_datacube (struct GMT_CTRL *GMT);
-EXTERN_MSC void gmt_free_datacube (struct GMT_CTRL *GMT, struct GMT_DATACUBE **U, bool free_datacube);
+EXTERN_MSC struct GMT_CUBE *gmt_get_cube (struct GMT_CTRL *GMT);
+EXTERN_MSC struct GMT_CUBE *gmt_create_cube (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmt_free_cube (struct GMT_CTRL *GMT, struct GMT_CUBE **U, bool free_cube);
 EXTERN_MSC void gmt_grd_set_datapadding (struct GMT_CTRL *GMT, bool set);
 EXTERN_MSC void gmt_grd_set_cartesian (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int direction);
 EXTERN_MSC int gmt_img_sanitycheck (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
@@ -224,6 +224,7 @@ EXTERN_MSC void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, doub
 EXTERN_MSC void gmt_grd_set_ij_inc (struct GMT_CTRL *GMT, unsigned int n_columns, int *ij_inc);
 EXTERN_MSC double * gmt_grd_coord (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, int dir);
 EXTERN_MSC struct GMT_GRID * gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int mode);
+EXTERN_MSC struct GMT_CUBE *gmt_duplicate_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *U, unsigned int mode);
 
 #ifdef _POSTSCRIPTLIGHT_H
 /* gmt_plot.c prototypes only included if postscriptlight has been included */

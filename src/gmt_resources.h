@@ -137,7 +137,7 @@ enum GMT_enum_container {
 	GMT_CONTAINER_ONLY	= 1U,   /* Create|read|write the container but no data array */
 	GMT_DATA_ONLY		= 2U,   /* Create|Read|write the container's array only */
 	GMT_WITH_STRINGS	= 32U,  /* Allocate string array also [DATASET, MATRIX, VECTOR only] */
-	GMT_DATACUBE_IS_STACK	= 64U,	/* Passed via mode to GMT_Read_Data if infile is a NULL-terminated array of files */
+	GMT_CUBE_IS_STACK	= 64U,	/* Passed via mode to GMT_Read_Data if infile is a NULL-terminated array of files */
 	GMT_NO_STRINGS		= 0U    /* Do not allocate string array also [Default] */
 };
 
@@ -150,7 +150,7 @@ enum GMT_enum_family {
 	GMT_IS_POSTSCRIPT = 4,	/* Entity is a PostScript content struct */
 	GMT_IS_MATRIX	  = 5,	/* Entity is user matrix */
 	GMT_IS_VECTOR	  = 6,	/* Entity is set of user vectors */
-	GMT_IS_DATACUBE	  = 7,	/* Entity is set of user vectors */
+	GMT_IS_CUBE	  = 7,	/* Entity is set of user vectors */
 	GMT_IS_COORD	  = 8,	/* Entity is a double coordinate array */
 	GMT_N_FAMILIES	  = 9	/* Total number of families [API Developers only]  */
 };
@@ -750,13 +750,13 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 };
 
 /*============================================================ */
-/*============== GMT_DATACUBE Public Declaration ============= */
+/*============== GMT_CUBE Public Declaration ============= */
 /*==============        EXPERIMENTAL!!!!         ============= */
 /*============================================================ */
 
-/* These containers are used to pass user datacubes in/out of GMT */
+/* These containers are used to pass user cubes in/out of GMT */
 
-struct GMT_DATACUBE {
+struct GMT_CUBE {
 	/* Handling of 3-D data cubes in GMT requires a common 2-D header and extended parameters for the 3rd dimension */
 	/* These are the same as for GMT_GRID: */
 	struct GMT_GRID_HEADER *header;		/* Pointer to full GMT 2-D header for a layer (common to all layers) */
@@ -764,8 +764,8 @@ struct GMT_DATACUBE {
 	double *x, *y;                  	/* Vector of plane coordinates common to all layers */
 	void *hidden;                   	/* Row-by-row machinery information [NULL] */
 	/* These are extensions for 3D cubes. Note: We use header->n_bands for the number of layers for 3-D cubes  */
-	unsigned int mode;			/* GMT_DATACUBE_IS_STACK if input dataset was a list of 2-D grids rather than a single cube */
-	double z_range[2];			/* Minimum/max z values (complements wesn[4]) */
+	unsigned int mode;			/* GMT_CUBE_IS_STACK if input dataset was a list of 2-D grids rather than a single cube */
+	double z_range[2];			/* Minimum/max z values (complements header->wesn[4]) */
 	double z_inc;				/* z increment (complements inc[2]) (0 if variable z spacing */
 	double *z;					/* Array of z values (complements x, y) */
 	char name[GMT_GRID_UNIT_LEN80];		/* Name of the 3-D variable, if read from file (or empty if just one) */

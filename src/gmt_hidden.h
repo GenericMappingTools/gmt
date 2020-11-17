@@ -42,7 +42,7 @@ static inline struct GMT_MATRIX_HIDDEN      * gmt_get_M_hidden (struct GMT_MATRI
 static inline struct GMT_GRID_HIDDEN        * gmt_get_G_hidden (struct GMT_GRID *p)         {return (p->hidden);}
 static inline struct GMT_IMAGE_HIDDEN       * gmt_get_I_hidden (struct GMT_IMAGE *p)        {return (p->hidden);}
 static inline struct GMT_GRID_HEADER_HIDDEN * gmt_get_H_hidden (struct GMT_GRID_HEADER *p)  {return (p->hidden);}
-static inline struct GMT_DATACUBE_HIDDEN    * gmt_get_U_hidden (struct GMT_DATACUBE *p)     {return (p->hidden);}
+static inline struct GMT_CUBE_HIDDEN    * gmt_get_U_hidden (struct GMT_CUBE *p)     {return (p->hidden);}
 
 /* Here are the GMT data types used for tables */
 
@@ -204,12 +204,11 @@ struct GMT_IMAGE_HIDDEN {	/* Supporting information hidden from the API */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 };
 
-struct GMT_DATACUBE_HIDDEN {	/* Supporting information hidden from the API */
+struct GMT_CUBE_HIDDEN {	/* Supporting information hidden from the API */
 	unsigned int id;                /* The internal number of the grid */
 	unsigned int alloc_level;       /* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode; /* Allocation mode [GMT_ALLOC_INTERNALLY] */
 	enum GMT_enum_alloc xyz_alloc_mode[3];	 /* Stores how the x, y and z arrays were allocated (external or internal) */
-	void *extra;                    /* Row-by-row machinery information [NULL] */
 };
 
 
