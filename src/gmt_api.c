@@ -5412,6 +5412,8 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					if (n_layers < 3 || !gmtlib_var_inc (level, n_layers))	/* Equidistant layering */
 						U_obj->z_inc = level[1] - level[0];	/* Since they are all the same */
 					U_obj->z = level;	/* Let C be the owner of this array from now on */
+					UH = gmt_get_U_hidden (U_obj);
+					UH->xyz_alloc_mode[GMT_Z] = GMT_ALLOC_INTERNALLY;
 				}
 				U_obj->header->n_bands = n_layers;
 				U_obj->mode = (mode & GMT_CUBE_IS_STACK);	/* Will either be GMT_CUBE_IS_STACK or 0 */
@@ -5886,7 +5888,7 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 				}
 
 				/* !! Remember that the gmt_nc.c codes will unpad and mess up C->data */
-				G = gmt_create_grid (GMT);	/* Need a dummy grid for writing */
+				G = gmt_get_grid (GMT);	/* Need a dummy grid for writing */
 				save_n_bands = U_obj->header->n_bands;	/* Remember how many bands */
 				G->header = U_obj->header;	/* Use this pointer for now */
 				G->header->n_bands = 1;	/* Grids only have one band */

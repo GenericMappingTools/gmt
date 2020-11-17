@@ -12644,7 +12644,7 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 int gmt_cube_BC_set (struct GMT_CTRL *GMT, struct GMT_CUBE *U, unsigned int direction) {
 	int error = GMT_NOERROR;
 	unsigned int k;
-	struct GMT_GRID *G = gmt_get_grid (GMT);	/* Create a dummy temporary grid structure */
+	struct GMT_GRID *G = gmt_create_grid (GMT);	/* Create a dummy temporary grid structure */
 
 	gmt_copy_gridheader (GMT, G->header, U->header);
 

@@ -759,8 +759,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	/* Done with everything; free up remaining memory */
 
-	if (!Ctrl->Z.active[GMT_IN])
-		gmt_M_free (GMT, level);
+	gmt_M_free (GMT, level);
 	gmt_M_free (GMT, i_value);
 	gmt_M_free (GMT, o_value);
 
