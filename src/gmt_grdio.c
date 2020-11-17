@@ -3379,6 +3379,24 @@ void gmtlib_free_cube (struct GMT_CTRL *GMT, struct GMT_CUBE **U, bool free_cube
 	gmt_M_free (GMT, *U);
 }
 
+uint64_t gmt_get_active_layers (struct GMT_CTRL *GMT, struct GMT_CUBE *U, double *range, uint64_t *start_k, uint64_t *stop_k) {
+	/* Return via start_k, stop_k the first and last index of the selected layers */
+	uint64_t n_layers = U->header->n_bands, n_layers_used;
+	if (range[0] > U->z[n_layers-1] || range[1] < U->z[0]) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_get_active_layers: Requested range is outside the valid cube range.\n");
+		return 0;
+	}
+	*start_k = 0; *stop_k = n_layers - 1;	/* We first assume all layers are needed */
+	while (*start_k < n_layers && range[0] > U->z[*start_k])	/* Find the first layer that is inside the selected range */
+		(*start_k)++;
+	if (*start_k && range[0] < U->z[*start_k]) (*start_k)--;		/* Go back one if start is less than first layer */
+	while (*stop_k && range[1] < U->z[*stop_k])	/* Find the last layer that is inside the output time range */
+		(*stop_k)--;
+	if (*stop_k < (n_layers - 1) && range[1] > U->z[*stop_k]) (*stop_k)++;	/* Go forward one if stop is larger than last layer */
+	n_layers_used = *stop_k - *start_k + 1;	/* Total number of input layers needed */
+	return (n_layers_used);
+}
+
 #ifdef HAVE_GDAL
 GMT_LOCAL void gmtgrdio_gdal_free_from (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread) {
 	int i;

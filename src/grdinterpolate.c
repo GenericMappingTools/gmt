@@ -388,6 +388,10 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	start_k = 0; stop_k = n_layers - 1;	/* We first assume all layers are needed */
 	if (Ctrl->T.active) {
+		if (Ctrl->T.T.array[0] > level[stop_k] || Ctrl->T.T.array[Ctrl->T.T.n-1] < level[start_k]) {
+			GMT_Report (API, GMT_MSG_ERROR, "Option -T: Specified range outside that of the data cube\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
 		while (start_k < n_layers && Ctrl->T.T.array[0] > level[start_k])	/* Find the first layer that is inside the output time range */
 			start_k++;
 		if (start_k && Ctrl->T.T.array[0] < level[start_k]) start_k--;		/* Go back one if start time is less than first layer */
