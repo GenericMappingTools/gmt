@@ -153,7 +153,7 @@ Optional Arguments
     the **-G** option is optional.  If set, it can be the name of a 3-D
     cube file or a filename template with a floating-point C-format identifier
     in it so that each layer is written to a 2-D grid file; otherwise
-    we write (x, y,z, w) records to stdout. (4) If **-N** is
+    we write (*x, y, z, w*) records to stdout. (4) If **-N** is
     selected then the output is an ASCII (or binary; see
     **-bo**) table; if **-G** is not given then
     this table is written to standard output. Ignored if **-C** or
