@@ -149,9 +149,9 @@ Optional Arguments
     will be written to stdout unless **-G** is specified. **Note**: For 2-D
     grids the **-G** option is required. (2) If option **-T** is
     selected then **-G** is required and the output file is a 2-D binary
-    grid file. Applies to 2-D interpolation only. (3) For 3-D datacubes
-     the **-G** option is optional.  If set, it can be the name of a 3-D
-    datacube file or a filename template with a floating-point C-format identifier
+    grid file. Applies to 2-D interpolation only. (3) For 3-D cubes
+    the **-G** option is optional.  If set, it can be the name of a 3-D
+    cube file or a filename template with a floating-point C-format identifier
     in it so that each layer is written to a 2-D grid file; otherwise
     we write (x, y,z, w) records to stdout. (4) If **-N** is
     selected then the output is an ASCII (or binary; see
