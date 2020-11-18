@@ -374,6 +374,7 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename, doubl
 
 			OGR_F_Destroy(hFeature);
 		}
+		nFeature = 0;		/* Reset for next layer */
 	}
 
 	GDALClose(hDS);
