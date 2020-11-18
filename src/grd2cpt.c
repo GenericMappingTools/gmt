@@ -248,7 +248,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* Get CPT */
 				Ctrl->C.active = true;
-				Ctrl->C.file = strdup (opt->arg);
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Set fore/back-ground to match end-colors */
 				Ctrl->D.active = true;
@@ -421,10 +421,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 		}
 	}
 
-	if (Ctrl->H.active && GMT->current.setting.run_mode == GMT_CLASSIC) {
-		n_errors++;
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option -H\n");
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) {
+		if (Ctrl->H.active) {
+			n_errors++;
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option -H\n");
+		}
 	}
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file == NULL,
+			"Options -C: No CPT argument given\n");
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] < 1, "No grid name(s) specified.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
 					"Options -W and -Z cannot be used simultaneously\n");
