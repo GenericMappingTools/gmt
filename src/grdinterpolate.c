@@ -360,6 +360,11 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		n_layers = Ctrl->Z.T.n;		/* Set number of layers anticipated */
 		level = Ctrl->Z.T.array;	/* Pointer to allocated array with the level values */
 	}
+	else if (gmt_M_file_is_memory (Ctrl->In.file[0])) {	/* Got a memory reference */
+		C[GMT_IN] = GMT_Read_VirtualFile (API, Ctrl->In.file[0]);
+		n_layers = C[GMT_IN]->header->n_bands;
+		level = C[GMT_IN]->z;
+	}
 	else {	/* See if we got a 3D netCDF data cube; if so return number of layers and and the levels array */
 		nc_z_named = strchr (Ctrl->In.file[0], '?');	/* Maybe given a specific variable? */
 		if (nc_z_named) {	/* Gave a specific variable. Keep variable name and remove from filename */
@@ -711,7 +716,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "Will read %" PRIu64 " layers (%" PRIu64 " - %" PRIu64 ") for levels %g to %g.\n", n_layers_used, start_k, stop_k, level[start_k], level[stop_k]);
 
 	/* Read the selected subset of the cube into C[GMT_IN] */
-	if ((C[GMT_IN] = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, file_mode, wesn, file_arg, NULL)) == NULL)
+	if (C[GMT_IN] == NULL && (C[GMT_IN] = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, file_mode, wesn, file_arg, NULL)) == NULL)
 		Return (GMT_DATA_READ_ERROR);
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Interpolate %" PRIu64 " new layers (%g to %g in steps of %g).\n", Ctrl->T.T.n, Ctrl->T.T.array[0], Ctrl->T.T.array[Ctrl->T.T.n-1]);

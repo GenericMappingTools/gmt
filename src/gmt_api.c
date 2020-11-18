@@ -8619,7 +8619,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 		if (S_obj->method == GMT_IS_REFERENCE) gmtapi_maybe_change_method_to_duplicate (API, S_obj);
 	}
 	S_obj->region = false;	/* No subset of anything is being considered here */
-	gmt_M_memset (S_obj->wesn, 4, double);
+	gmt_M_memset (S_obj->wesn, 6U, double);
 	/* Obtain the unique VirtualFile name */
 	if (gmtapi_encode_id (API, module_input, direction, family, actual_family, geometry, messenger, object_ID, name) != GMT_NOERROR)
 		return (API->error);
@@ -10722,8 +10722,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			break;
 		case GMT_IS_CUBE:
 			if (mode & GMT_WITH_STRINGS) return_null (API, GMT_NO_STRINGS_ALLOWED);	/* Error if given unsuitable mode */
-			if (range == NULL) return_null (API, GMT_PTR_IS_NULL);	/* Need at least the z-range for cubes */
-			if (mode & GMT_IS_OUTPUT || (mode & GMT_DATA_ONLY) == 0) {	/* Create new grid unless we only ask for data only */
+			if (mode & GMT_IS_OUTPUT || (mode & GMT_DATA_ONLY) == 0) {	/* Create new cube unless we only ask for data only */
 				if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data pointer is not NULL */
 	 			if ((C = gmtlib_create_cube (API->GMT)) == NULL)
 	 				return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
@@ -10733,13 +10732,16 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 				if ((error = gmtapi_init_grid (API, NULL, this_dim, range, inc, registration, mode, def_direction, G)))
 					return_null (API, error);
 				if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
-				gmt_copy_gridheader (API->GMT, C->header, G->header);
-				C->z_range[0] = range[ZLO];	C->z_range[1] = range[ZHI];
-				if (inc && inc[GMT_Z] > 0.0) {	/* Must make equidistant array, else we lave it as NULL to be set by calling module */
-					HU = gmt_get_U_hidden (C);
-					C->header->n_bands = gmtlib_make_equidistant_array (API->GMT, range[ZLO], range[ZHI], inc[GMT_Z], &(C->z));
-					C->z_inc = inc[GMT_Z];
-					HU->xyz_alloc_mode[GMT_Z] = GMT_ALLOC_INTERNALLY;
+				if (def_direction == GMT_IN) {
+					if (range == NULL) return_null (API, GMT_PTR_IS_NULL);	/* Need at least the z-range for cubes */
+					gmt_copy_gridheader (API->GMT, C->header, G->header);
+					C->z_range[0] = range[ZLO];	C->z_range[1] = range[ZHI];
+					if (inc && inc[GMT_Z] > 0.0) {	/* Must make equidistant array, else we lave it as NULL to be set by calling module */
+						HU = gmt_get_U_hidden (C);
+						C->header->n_bands = gmtlib_make_equidistant_array (API->GMT, range[ZLO], range[ZHI], inc[GMT_Z], &(C->z));
+						C->z_inc = inc[GMT_Z];
+						HU->xyz_alloc_mode[GMT_Z] = GMT_ALLOC_INTERNALLY;
+					}
 				}
 			}
 			else {	/* Already registered so has_ID must be false */
