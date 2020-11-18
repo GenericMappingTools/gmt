@@ -256,7 +256,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* CTP table */
 				Ctrl->C.active = true;
-				Ctrl->C.file = strdup (opt->arg);
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Set BNF to match cpt ends */
 				Ctrl->D.active = true;
@@ -391,9 +391,11 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 	else if (Ctrl->T.T.logarithmic) Ctrl->Q.active = true, Ctrl->Q.mode = 2;
 
 	if (Ctrl->H.active && GMT->current.setting.run_mode == GMT_CLASSIC) {
-		n_errors++;
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option -H\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -H: Only available in modern mode - ignored in classic mode\n");
+		Ctrl->H.active = false;
 	}
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file == NULL,
+			"Options -C: No CPT argument given\n");
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 0 && !(Ctrl->E.active || Ctrl->S.active),
 	                                   "No input files expected unless -E or -S are used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
