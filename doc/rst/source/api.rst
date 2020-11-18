@@ -3771,22 +3771,22 @@ It is represented by a :ref:`GMT_CUBE <struct-image>` structure that consists of
 :ref:`GMT_GRID_HEADER <struct-gridheader>` structure and an float array ``data`` that
 contains the cube values.
 **Note**: The header *size* value reflects number of nodes per layer, so the actual memory
-allocated will be *size * n_bands*, where the latter is one of the parameters in the *header*.
+allocated will be *size * n_bands*, where the latter is one of the parameters in the header.
 
 .. _struct-cube:
 
 .. code-block:: c
 
-  struct GMT_CUBE {     /* A GMT 3-D cube in one container */
+  struct GMT_CUBE {
        struct GMT_GRID_HEADER *header;      /* The full GMT header for the grid */
        float                  *data;        /* Pointer to the float 3-D array */
-       unsigned int mode;                   /* Indicates input was list of 2-D grids rather than a cube */
-       double z_range[2];                   /* Minimum/max z values (complements header->wesn) */
-       double z_inc;                        /* z increment (complements header->inc) (0 if variable z spacing */
-       double *x, *y, *z;                   /* Arrays of x,y,z coordinates */
-       char name[GMT_GRID_UNIT_LEN80];      /* Name of the 3-D variable, if read from file (or empty if just one) */
+       unsigned int           mode;         /* Indicates input was list of 2-D grids rather than a cube */
+       double                 z_range[2];   /* Minimum/max z values (complements header->wesn) */
+       double                 z_inc;        /* z increment (complements header->inc) (0 if variable z spacing */
+       double                 *x, *y, *z;   /* Arrays of x,y,z coordinates */
+       char name[GMT_GRID_UNIT_LEN80];      /* Name of variable, if read from file (empty if default) */
        char units[GMT_GRID_UNIT_LEN80];     /* Units in 3rd direction (complements x_units, y_units, z_units)  */
-       void *hidden;                        /* ---- Variables "hidden" from the API ---- */
+       void                   *hidden;      /* ---- Variables "hidden" from the API ---- */
  };
 
 CPT palette table
