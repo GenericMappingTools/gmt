@@ -421,11 +421,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 		}
 	}
 
-	if (GMT->current.setting.run_mode == GMT_CLASSIC) {
-		if (Ctrl->H.active) {
-			n_errors++;
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option -H\n");
-		}
+	if (Ctrl->H.active && GMT->current.setting.run_mode == GMT_CLASSIC) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -H: Only available in modern mode - ignored in classic mode\n");
+		Ctrl->H.active = false;
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file == NULL,
 			"Options -C: No CPT argument given\n");
