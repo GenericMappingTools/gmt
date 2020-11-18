@@ -2471,7 +2471,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				if (dimension == 3) V[GMT_Z] = z_level;
 				if (Ctrl->Q.active) {	/* Derivatives of solution */
 #ifdef _OPENMP
-#pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(Z,dimension,yp,header,xp,X,Ctrl,GMT,alpha,Lz,norm,data,par,nz_off,z_level,nm,normalize)
+#pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(dimension,yp,header,xp,X,Ctrl,GMT,alpha,Lz,norm,data,par,nz_off,z_level,nm,normalize)
 #endif
 					for (row = 0; row < header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
 						if (dimension > 1) V[GMT_Y] = yp[row];
@@ -2492,7 +2492,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				}
 				else {	/* Regular surface */
 #ifdef _OPENMP
-#pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(Z,dimension,yp,header,xp,X,Ctrl,GMT,alpha,Lz,norm,data,par,nz_off,z_level,nm,normalize)
+#pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(dimension,yp,header,xp,X,Ctrl,GMT,alpha,Lz,norm,data,par,nz_off,z_level,nm,normalize)
 #endif
 					for (row = 0; row < header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
 						if (dimension > 1) V[GMT_Y] = yp[row];
