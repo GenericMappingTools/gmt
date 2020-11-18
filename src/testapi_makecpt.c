@@ -22,7 +22,7 @@ int main () {
 	/* Get the CPT in memory */
 	P = GMT_Read_VirtualFile(API, output);
 	/* Write the CPT to the file output.cpt */
-	GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, "output.cpt", P);
+	GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_CPT_NO_BNF, NULL, "output.cpt", P);
 	/* Destroy session */
 	if (GMT_Destroy_Session (API)) return EXIT_FAILURE;
 }
