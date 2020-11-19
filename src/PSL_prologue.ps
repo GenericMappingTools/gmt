@@ -135,7 +135,7 @@
   PSL_eps_state restore					% Restore saved state
 }!
 /PSL_transp {						% Set transparency
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{		% Using ghostscript
+  /.setfillconstantalpha where {pop .setblendmode .setfillconstantalpha}{		% Using ghostscript
   /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}	% Or Adobe
   {pop pop} ifelse} ifelse				% Or skip if neither are supported
 }!

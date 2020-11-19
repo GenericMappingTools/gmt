@@ -1071,7 +1071,7 @@ static char *PSL_prologue_str =
 "  PSL_eps_state restore					% Restore saved state\n"
 "}!\n"
 "/PSL_transp {						% Set transparency\n"
-"  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{		% Using ghostscript\n"
+"  /.setfillconstantalpha where {pop .setblendmode .setfillconstantalpha}{		% Using ghostscript\n"
 "  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}	% Or Adobe\n"
 "  {pop pop} ifelse} ifelse				% Or skip if neither are supported\n"
 "}!\n";
