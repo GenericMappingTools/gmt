@@ -316,7 +316,7 @@ GMT Miscellaneous Parameters
         for 6: obsolete syntax from early GMT 5 will be considered errors.
 
     **GMT_DATA_SERVER**
-        URL of the GMT data server [The **Oceania** server]. Please set to the
+        Name (or URL) of a GMT data server [**oceania**]. Please set to the
         data server closest to your location for faster data download.  See
         `Data Server Mirrors <https://www.generic-mapping-tools.org/mirrors/>`_
         for a list of the currently available mirrors.
