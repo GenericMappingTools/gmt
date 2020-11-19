@@ -1604,9 +1604,14 @@ int gmt_download_tiles (struct GMTAPI_CTRL *API, char *list, unsigned int mode) 
 
 char *gmtlib_dataserver_url (struct GMTAPI_CTRL *API) {
 	/* Build the full URL to the currently selected data server */
-	static char URL[GMT_LEN256] = {""}, *link = URL;;
-	if (strncmp (API->GMT->session.DATASERVER, "http", 4U))	/* Not an URL so must assume it is the country/unit name, e.g., oceania */
-		snprintf (URL, GMT_LEN256-1, "http://%s.generic-mapping-tools.org", API->GMT->session.DATASERVER);
+	static char URL[GMT_LEN256] = {""}, *link = URL;
+	if (strncmp (API->GMT->session.DATASERVER, "http", 4U)) {	/* Not an URL so must assume it is the country/unit name, e.g., oceania */
+		/* We make this part case insensitive since all official GMT servers are lower-case */
+		char name[GMT_LEN64] = {""};
+		strncpy (name, API->GMT->session.DATASERVER, GMT_LEN64-1);
+		gmt_str_tolower (name);
+		snprintf (URL, GMT_LEN256-1, "http://%s.generic-mapping-tools.org", name);
+	}
 	else	/* Must use the URL as is */
 		snprintf (URL, GMT_LEN256-1, "%s", API->GMT->session.DATASERVER);
 	return (link);
