@@ -552,13 +552,20 @@ GMT_LOCAL unsigned int gmtio_ogr_decode_aspatial_values (struct GMT_CTRL *GMT, c
 }
 
 /*! Duplicate in to out, then find the first space not inside quotes and truncate string there */
-GMT_LOCAL void gmtio_copy_and_truncate (char *out, char *in) {
+GMT_LOCAL void gmtio_copy_and_truncate_quotes (char *out, char *in) {
 	bool quote = false;
 	while (*in && (quote || *in != ' ')) {
 		*out++ = *in;	/* Copy char */
-		if (*in++ == ' ') quote = !quote;	/* Wind to next space except skip if inside double quotes */
+		if (*in++ == '\"') quote = !quote;	/* Wind to next space except skip if inside double quotes */
 	}
 	*out = '\0';	/* Terminate string */
+}
+
+GMT_LOCAL void gmtio_copy_and_truncate (char *out, char *in) {
+	if (strchr (in, ' ') && !strchr (in, '\"'))	/* Has spaces yet no quotes... assume we can get the line as is */
+		strcpy (out, in);
+	else
+		gmtio_copy_and_truncate_quotes (out, in);
 }
 
 /*! Parse @T aspatial types; this is done once per dataset and follows @N */

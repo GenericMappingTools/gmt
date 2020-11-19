@@ -3,13 +3,18 @@
 #	Makes the insets for Appendix M(cpt)
 #	[skip srtm which is just a special version of dem2]
 #
-# Use the knowledge that we need 2 pages.
-# 44 original GMT 5 CPTs and the last page has 24 scientific colormaps
-# from Fabio [www.fabiocrameri.ch/visualisation]
+# We have four sets of CPT figures to make:
+# 1a) Our regular, traditional GMT CPTs [44]
+# 1b) The regular Scientific Color Maps* [24]
+# 1c) Categorical CPTs (ours and SCM*)  [18]
+# 1d) Cyclic CPTs form SCM* [4]
+#
+# *from Fabio [www.fabiocrameri.ch/visualisation]
 
 GMT_SHAREDIR=$(gmt --show-sharedir)
 
-cat << EOF > skip.lis
+# Here we list all the non-categorical/cyclic cpts from the SCM:
+cat << EOF > tt.lis
 acton
 bamako
 batlow
@@ -34,41 +39,30 @@ tofino
 tokyo
 turku
 vik
-srtm
 EOF
-
-#sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | grep -v srtm | awk '{print $1}' | sort -r > tt.lis
-sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | fgrep -v -f skip.lis | awk '{print $1}' | sort -r > tt.lis
 
 n=$(cat tt.lis | wc -l)
 let n2=n/2
-let n2=22
+let n2=n
 # dy is line spacing and y0 is total box height
-dy=0.75
-y0=$(gmt math -Q $n2 $dy MUL 0.5 MUL =)
+dy=0.6
+y0=$(gmt math -Q $n2 $dy MUL 0.5 MUL 0.1 ADD =)
 
 gmt begin GMT_App_M_1b
 gmt set MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
 gmt basemap -R0/6.1/0/$y0 -Jx1i -B0
+
 i=1
-y=0.475
-y2=0.35
+y=0.375
+y2=0.25
 while [ $i -le $n2 ]
 do
 	j=$(expr $i + 1)
 	left=$(sed -n ${j}p tt.lis)
 	right=$(sed -n ${i}p tt.lis)
-	if [ "$left" = "paired" ]; then
-		gmt makecpt -H -C$left > tt.left.cpt
-	else
-		gmt makecpt -H -C$left -T-1/1 > tt.left.cpt
-	fi
+	gmt makecpt -H -C$left -T-1/1 > tt.left.cpt
 	gmt makecpt -H -C$left -T-1/1/0.25 > tt.left2.cpt
-	if [ "$right" = "paired" ]; then
-		gmt makecpt -H -C$right > tt.right.cpt
-	else
-		gmt makecpt -H -C$right -T-1/1 > tt.right.cpt
-	fi
+	gmt makecpt -H -C$right -T-1/1 > tt.right.cpt
 	gmt makecpt -H -C$right -T-1/1/0.25 > tt.right2.cpt
 	gmt colorbar -Dx1.55i/${y}i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 	gmt colorbar -Dx4.50i/${y}i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
@@ -92,4 +86,5 @@ do
 	y=$(gmt math -Q $y $dy ADD =)
 	y2=$(gmt math -Q $y2 $dy ADD =)
 done
+rm -f tt.*
 gmt end show

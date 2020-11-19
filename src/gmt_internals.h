@@ -52,6 +52,7 @@ struct GMT_XINGS {
 EXTERN_MSC char *dlerror (void);
 #endif
 
+EXTERN_MSC char *gmtlib_dataserver_url (struct GMTAPI_CTRL *API);
 EXTERN_MSC char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, const char *mods);
 EXTERN_MSC char *gmtlib_valid_filemodifiers (struct GMT_CTRL *GMT);
 EXTERN_MSC int gmtlib_delete_virtualfile  (void *API, const char *string);

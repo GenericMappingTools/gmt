@@ -1138,6 +1138,9 @@ overridden by the statement
 | N   | Fill\ :sub:`nan`    |
 +-----+---------------------+
 
+While you can make such categorical CPTs by hand, both :doc:`/makecpt` and :doc:`/grd2cpt` have options to
+simplify adding string keys and labels from comma-separated arguments.
+
 Regular CPTs
 ~~~~~~~~~~~~
 

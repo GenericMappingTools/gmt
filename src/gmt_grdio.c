@@ -2182,12 +2182,13 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 
 	if (grid_global) {
 		bool true_global_region = (gmt_M_360_range (h->wesn[XLO], h->wesn[XHI]) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
+		double x_noise = GMT_CONV4_LIMIT * h->inc[GMT_X];
 		wesn[XLO] = h->wesn[XLO] + floor ((wesn[XLO] - h->wesn[XLO]) * HH->r_inc[GMT_X] + GMT_CONV4_LIMIT) * h->inc[GMT_X];
 		wesn[XHI] = h->wesn[XLO] + ceil  ((wesn[XHI] - h->wesn[XLO]) * HH->r_inc[GMT_X] - GMT_CONV4_LIMIT) * h->inc[GMT_X];
 		/* For the odd chance that xmin or xmax are outside the region: bring them in */
 		if ((wesn[XHI] - wesn[XLO]) >= 360.0) {
-			while ((wesn[XLO]) < GMT->common.R.wesn[XLO]) wesn[XLO] += h->inc[GMT_X];
-			while ((wesn[XHI]) > GMT->common.R.wesn[XHI]) wesn[XHI] -= h->inc[GMT_X];
+			while ((wesn[XLO] + x_noise) < GMT->common.R.wesn[XLO]) wesn[XLO] += h->inc[GMT_X];
+			while ((wesn[XHI]- x_noise) > GMT->common.R.wesn[XHI]) wesn[XHI] -= h->inc[GMT_X];
 		}
 		if (true_global_region && (wesn[XHI] - wesn[XLO]) < 360.0)	/* Need to enforce 360 range since that is what it should be */
 			wesn[XHI] = wesn[XLO] + 360.0;

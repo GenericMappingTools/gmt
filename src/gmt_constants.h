@@ -270,7 +270,7 @@ enum GMT_enum_basemap {
 
 /* Valid modifiers for various input files */
 
-/* Valid modifers for -Tmin/max/inc array creator */
+/* Valid modifiers for -Tmin/max/inc array creator */
 #define GMT_ARRAY_MODIFIERS "abeilnt"
 
 /* Modifiers for grid files:
