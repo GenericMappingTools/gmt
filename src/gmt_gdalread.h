@@ -234,4 +234,11 @@ struct GMT_GDALLIBRARIFIED_CTRL {
 	} M;
 };
 
+struct OGRREAD_CTRL {
+	int    info;            /* If != 0 gmt_ogrread will return only Info (Will it?) */
+	int    layer;           /* If >= 0 will return only data from that layer. Use negative to return all layers */ 
+	char  *name;            /* Vector file name */ 
+	double region[6];       /* For when a sub-region is required */ 
+};
+
 #endif  /* GMT_GDALREAD_H */
