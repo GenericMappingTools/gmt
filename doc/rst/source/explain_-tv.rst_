@@ -1,0 +1,2 @@
+**-t**\ [*transp*][**+f**][**+s**] :ref:`(more ...) <-tv_full>`
+    Set transparency level(s) in percent or read them from file.

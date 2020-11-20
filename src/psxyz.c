@@ -111,7 +111,7 @@ enum Psxyz_cliptype {
 struct PSXYZ_DATA {
 	int symbol, outline;
 	unsigned int flag;	/* 1 = convert azimuth, 2 = use geo-functions, 4 = x-base in units, 8 y-base in units */
-	double x, y, z, dim[PSL_MAX_DIMS], dist[2], transparency;
+	double x, y, z, dim[PSL_MAX_DIMS], dist[2], transparency[2];
 	double *zz;	/* For column symbol if +z<n> in effect */
 	struct GMT_FILL f;
 	struct GMT_PEN p, h;
@@ -632,7 +632,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	bool polygon, penset_OK = true, not_line, old_is_world;
 	bool get_rgb = false, read_symbol, clip_set = false, fill_active, rgb_from_z = false, QR_symbol = false;
 	bool default_outline, outline_active, save_u = false, geovector = false, can_update_headpen = true;
-	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol = 0, tcol = 0, grid_order, frame_order;
+	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol = 0, tcol_f = 0, tcol_s = 0, grid_order, frame_order;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
 	unsigned int bcol, ex1, ex2, ex3, change = 0, n_needed, n_z = 0;
 	int error = GMT_NOERROR;
@@ -770,10 +770,17 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		icol = n_needed - 1;
 		gmt_set_column (GMT, GMT_IN, icol, GMT_IS_FLOAT);
 	}
-	if (GMT->common.t.variable) {
-		n_needed++;	/* Read transparency from data file */
-		tcol = n_needed - 1;
-		gmt_set_column (GMT, GMT_IN, tcol, GMT_IS_FLOAT);
+	if (GMT->common.t.variable) {	/* Need one or two transparencies from file */
+		if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {
+			n_needed++;	/* Read fill transparencies from data file */
+			tcol_f = n_needed - 1;
+			gmt_set_column (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
+		}
+		if (GMT->common.t.mode & GMT_SET_PEN_TRANSP) {
+			n_needed++;	/* Read stroke transparencies from data file */
+			tcol_s = n_needed - 1;
+			gmt_set_column (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
+		}
 	}
 
 	if (gmt_check_binary_io (GMT, n_needed))
@@ -1183,7 +1190,20 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			data[n].p = current_pen;
 			data[n].h = last_headpen;
 			data[n].outline = outline_active ? 1 : 0;
-			if (GMT->common.t.variable) data[n].transparency = 0.01 * in[tcol];	/* Specific transparency for current symbol if -t was given */
+			if (GMT->common.t.variable) {
+				if (GMT->common.t.n_transparencies == 2) {	/* Requested two separate values to be read from file */
+					data[n].transparency[GMT_FILL_TRANSP] = 0.01 * in[tcol_f];
+					data[n].transparency[GMT_PEN_TRANSP]  = 0.01 * in[tcol_s];
+				}
+				else if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {	/* Gave fill transparency */
+					data[n].transparency[GMT_FILL_TRANSP] = 0.01 * in[tcol_f];
+					if (GMT->common.t.n_transparencies == 0) data[n].transparency[GMT_PEN_TRANSP] = data[n].transparency[GMT_FILL_TRANSP];	/* Implied to be used for stroke also */
+				}
+				else {	/* Gave stroke transparency */
+					data[n].transparency[GMT_PEN_TRANSP] = 0.01 * in[tcol_s];
+					if (GMT->common.t.n_transparencies == 0) data[n].transparency[GMT_FILL_TRANSP] = data[n].transparency[GMT_PEN_TRANSP];	/* Implied to be used for fill also */
+				}
+			}
 			data[n].string = NULL;
 			/* Next two are for sorting:
 			   dist[0] is layer "height": objects closer to the viewer have higher numbers
@@ -1491,7 +1511,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					PSL_command (PSL, "/QR_outline false def\n");
 			}
 			if (GMT->common.t.variable)	/* Update the transparency for current symbol */
-				PSL_settransparency (PSL, data[i].transparency);
+				PSL_settransparencies (PSL, data[i].transparency);
 
 			/* For global periodic maps, symbols plotted close to a periodic boundary may be clipped and should appear
 			 * at the other periodic boundary.  We try to handle this below */
@@ -1733,6 +1753,10 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 						break;
 				}
 			}
+		}
+		if (GMT->common.t.variable) {	/* Reset the transparencies */
+			double transp[2] = {0.0, 0.0};	/* None selected */
+			PSL_settransparencies (PSL, transp);
 		}
 		PSL_command (GMT->PSL, "U\n");
 		if (n_warn[1]) GMT_Report (API, GMT_MSG_INFORMATION, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);

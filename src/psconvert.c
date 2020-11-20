@@ -2239,7 +2239,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				/* Place a transparent black rectangle over everything, at level of transparency */
 				char *ptr = PSL_makecolor (GMT->PSL, Ctrl->A.fill.rgb);
 				GMT_Report (API, GMT_MSG_INFORMATION, "Append fading to %s at %d%%.\n", gmt_putrgb (GMT, Ctrl->A.fill.rgb), irint (100.0*Ctrl->A.fade_level));
-				fprintf (fpo, "V clippath %s %g /Normal PSL_transp F N U\n", ptr, Ctrl->A.fade_level);
+				fprintf (fpo, "V clippath %s %g %g /Normal PSL_transp F N U\n", ptr, Ctrl->A.fade_level, Ctrl->A.fade_level);
 				transparency = true;
 			}
 #ifdef HAVE_GDAL

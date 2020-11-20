@@ -134,8 +134,12 @@
   countdictstack PSL_dict_count sub {end} repeat	% Clean up dict stack
   PSL_eps_state restore					% Restore saved state
 }!
-/PSL_transp {						% Set transparency
-  /.setfillconstantalpha where {pop .setblendmode .setfillconstantalpha}{		% Using ghostscript
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}	% Or Adobe
-  {pop pop} ifelse} ifelse				% Or skip if neither are supported
+/PSL_transp {           % Set transparencies
+  /.setfillconstantalpha where {   % Using ghostscript; pop off dictionary first before setting mode salpha falpha
+    pop .setblendmode .setstrokeconstantalpha .setfillconstantalpha
+  }
+  {  % Or Adobe; pop off dictionary first before saving mode salpha falpha then loading the structure
+    /pdfmark where {pop /PSL_model edef /PSL_salpha edef /SPL_falpha edef [ /BM PSL_model /CA PSL_salpha /ca PSL_falpha /SetTransparency pdfmark
+  }
+  {pop pop pop} ifelse} ifelse        % Or skip if neither are supported
 }!
