@@ -2026,6 +2026,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		look_for_transparency = Ctrl->T.device != GS_DEV_PDF && Ctrl->T.device != -GS_DEV_PDF;
 		has_transparency = transparency = add_grestore = false;
 		set_background = (Ctrl->A.paint || Ctrl->A.outline);
+		trans_line = 0;
 
 		while (psconvert_file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing setpagedevice in the Setup block */
@@ -2039,8 +2040,13 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				if (old_transparency_code_needed && strstr (line, ".setfillconstantalpha")) {
 					/* Our gs is too old so we must switch the modern transparency command to the older .setopacityalpha command.
 					 * At some point in the future we will abandon support for 9.52 and older and remove this entire if-test */
-					GMT_Report (API, GMT_MSG_DEBUG, "Your gs is older than 9.53 so we must replace .setfillconstantalpha with .setopacityalpha.\n");
-					fprintf (fpo, "  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{\n");
+					if (trans_line == 0) {	/* First time we warn and deal with line number one in PSL_transp function */
+						GMT_Report (API, GMT_MSG_DEBUG, "Your gs is older than 9.53 so we must replace .setfillconstantalpha with .setopacityalpha.\n");
+						fprintf (fpo, "  /.setopacityalpha where {\n");	/* Look for old .setopacityalpha instead */
+					}
+					else
+						fprintf (fpo, "    pop .setblendmode pop .setopacityalpha}{\n");	/* Pop off the setstrokeconstantalpha value */
+					trans_line++;
 				}
 				else
 					fprintf (fpo, "%s\n", line);
