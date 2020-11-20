@@ -2048,6 +2048,11 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 						fprintf (fpo, "  { pop PSL_BM_arg .setblendmode PSL_F_arg .setopacityalpha }\n");	/* Ignore the setstrokeconstantalpha value */
 					trans_line++;
 				}
+				else if (!old_transparency_code_needed && strstr (line, ".setopacityalpha")) {
+					/* Our PostScript file was made before 6.2 master was updated to deal with new gs settings */
+					GMT_Report (API, GMT_MSG_DEBUG, "Your gs is newer than 9.52 so we must replace .setopacityalpha in old PS files with .setfillconstantalpha.\n");
+					fprintf (fpo, "/.setfillconstantalpha where {pop .setblendmode dup .setstrokeconstantalpha .setfillconstantalpha }{\n");	/* Use the transparency for both fill and stroke */
+				}
 				else
 					fprintf (fpo, "%s\n", line);
 				continue;
