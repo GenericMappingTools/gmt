@@ -1437,7 +1437,7 @@ GMT_LOCAL int psconvert_make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) 
 
 EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
-	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
+	int sys_retval = 0, r, pos_file, pos_ext, error = 0, trans_line;
 	size_t len, line_size = 0U, half_baked_size = 0;
 	uint64_t pos = 0;
 	bool got_BB, got_HRBB, file_has_HRBB, got_end, landscape, landscape_orig, set_background = false, old_transparency_code_needed;
@@ -2042,10 +2042,10 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 					 * At some point in the future we will abandon support for 9.52 and older and remove this entire if-test */
 					if (trans_line == 0) {	/* First time we warn and deal with line number one in PSL_transp function */
 						GMT_Report (API, GMT_MSG_DEBUG, "Your gs is older than 9.53 so we must replace .setfillconstantalpha with .setopacityalpha.\n");
-						fprintf (fpo, "  /.setopacityalpha where {\n");	/* Look for old .setopacityalpha instead */
+						fprintf (fpo, "  /.setopacityalpha where\n");	/* Look for old .setopacityalpha instead */
 					}
 					else
-						fprintf (fpo, "    pop .setblendmode pop .setopacityalpha}{\n");	/* Pop off the setstrokeconstantalpha value */
+						fprintf (fpo, "  { pop PSL_BM_arg .setblendmode PSL_F_arg .setopacityalpha }\n");	/* Ignore the setstrokeconstantalpha value */
 					trans_line++;
 				}
 				else
