@@ -2426,14 +2426,18 @@ bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 		if (strchr (item, '/')) {	/* Got two transparencies */
 			sscanf (item, "%lg/%lg", &GMT->common.t.value[GMT_FILL_TRANSP], &GMT->common.t.value[GMT_PEN_TRANSP]);
 		}
-		else
+		else if (GMT->common.t.mode == 0)
 			GMT->common.t.value[GMT_FILL_TRANSP] = GMT->common.t.value[GMT_PEN_TRANSP] = atof (item);
+		else if (GMT->common.t.mode & GMT_SET_FILL_TRANSP)
+			GMT->common.t.value[GMT_FILL_TRANSP] = atof (item);
+		else
+			GMT->common.t.value[GMT_PEN_TRANSP] = atof (item);
 		if (GMT->common.t.value[GMT_FILL_TRANSP] < 0.0 || GMT->common.t.value[GMT_FILL_TRANSP] > 100.0) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -t: Fill transparency must be in (0-100]%% range!\n");
 			GMT->common.t.value[GMT_FILL_TRANSP] = 0.0;
 			n_errors++;
 		}
-		else if (GMT->common.t.value[GMT_FILL_TRANSP] <= 1.0) {
+		else if (GMT->common.t.value[GMT_FILL_TRANSP] > 0.0 && GMT->common.t.value[GMT_FILL_TRANSP] <= 1.0) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Fill transparency is expected in percentage.  Did you mean %g?\n", GMT->common.t.value[GMT_FILL_TRANSP] * 100.0);
 		}
 		if (GMT->common.t.value[GMT_PEN_TRANSP] < 0.0 || GMT->common.t.value[GMT_PEN_TRANSP] > 100.0) {
@@ -2441,7 +2445,7 @@ bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 			GMT->common.t.value[GMT_PEN_TRANSP] = 0.0;
 			n_errors++;
 		}
-		else if (GMT->common.t.value[GMT_PEN_TRANSP] <= 1.0) {
+		else if (GMT->common.t.value[GMT_PEN_TRANSP] > 0.0 && GMT->common.t.value[GMT_PEN_TRANSP] <= 1.0) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Stroke transparency is expected in percentage.  Did you mean %g?\n", GMT->common.t.value[GMT_PEN_TRANSP] * 100.0);
 		}
 		GMT->common.t.active = true;
