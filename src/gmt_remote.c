@@ -422,7 +422,7 @@ GMT_LOCAL void gmtremote_display_attribution (struct GMTAPI_CTRL *API, int key, 
 			strncpy (name, gmtlib_dataserver_url (API), GMT_LEN128-1);
 		if ((c = strchr (name, '.'))) c[0] = '\0';	/* Chop off stuff after the initial name */
 		gmt_str_toupper (name);
-		GMT_Report (API, GMT_MSG_NOTICE, "Remote data courtesy of GMT data server %s [%s]\n\n", name, API->GMT->session.DATASERVER);
+		GMT_Report (API, GMT_MSG_NOTICE, "Remote data courtesy of GMT data server %s [%s]\n\n", API->GMT->session.DATASERVER, gmtlib_dataserver_url (API));
 		API->server_announced = true;
 	}
 	if (key == GMT_NOTSET) {	/* A Cache file */
