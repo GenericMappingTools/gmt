@@ -855,7 +855,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		OGRSpatialReferenceH  hSRS;
 		hSRS = OSRNewSpatialReference(NULL);
 
-		if (OSRImportFromProj4(hSRS, Ctrl->ProjRefPROJ4) == CE_None) {
+		if (Ctrl->ProjRefPROJ4 && OSRImportFromProj4(hSRS, Ctrl->ProjRefPROJ4) == CE_None) {	/* My be NULL if +unavailable */
 			char	*pszPrettyWkt = NULL;
 			OSRExportToPrettyWkt(hSRS, &pszPrettyWkt, false);
 			Ctrl->ProjRefWKT = strdup(pszPrettyWkt);
@@ -863,7 +863,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		}
 		else {
 			Ctrl->ProjRefWKT = NULL;
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_gdalread failed to convert the proj4 string\n%s\n to WKT\n",
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_gdalread failed to convert the proj4 string\n%s\nto WKT\nThis happens for example when no conversion between PROJ4 and the WKT is done by GDAL.",
 					Ctrl->ProjRefPROJ4);
 		}
 
