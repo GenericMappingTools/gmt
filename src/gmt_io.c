@@ -4586,6 +4586,7 @@ GMT_LOCAL int gmtio_get_precision_width (struct GMT_CTRL *GMT, double x) {
 	static double power_U[9] = {1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9};
 	static double power_D[9] = {1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9};
 
+	gmt_M_unused(GMT);
 	/* Here we compute |D-T|/D, where D is the incoming dt and T is the value recovered if printed using k decimals.
 	 * We want this relative truncation error to be < 10^-4 */
 	do {
