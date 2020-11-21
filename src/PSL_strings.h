@@ -15,7 +15,8 @@
  *--------------------------------------------------------------------*/
 
 /* The three former include files PSL_label.ps, PSL_text.ps, and PSL_prologue.ps
- * are now represented as three very long string literals instead.
+ * are now represented as three very long string literals instead.  However,
+ * they are still the original sources and any edits should be made to them.
  */
 
 /* Placing content of PSL_label.ps */
@@ -29,10 +30,6 @@ static char *PSL_label_str =
 "%-	the Adobe Cookbook for placing text along a curved line.\n"
 "%-	The second part is the functions that assist in finding\n"
 "%-	out where labels are placed and setting clip paths etc.\n"
-"%-\n"
-"%- NOTE: No longer used as replaced by static string in PSL_strings.h.\n"
-"%- 	 We keep the file in the repository as it may be simpler to see and edit\n"
-"%-	 the logic in this file than in the static string.\n"
 "%-----------------------------------------------------------------------------\n"
 "\n"
 "/PSL_pathtextdict 26 dict def			% Local storage for the procedure PSL_pathtext.\n"
@@ -677,9 +674,6 @@ static char *PSL_text_str =
 "%-	Knows about flush l,c,r and justified.\n"
 "%-	Knows about all GMT @ escapes, composites (but not in paragraph mode)\n"
 "%-	and underlining. No hyphenation.  1 page only.\n"
-"%- NOTE: No longer used as is, as replaced by static string in PSL_strings.h.\n"
-"%- 	 We keep the file in the repository as it may be simpler to edit and see\n"
-"%-	 the logic in this file than in the static string.\n"
 "%-----------------------------------------------------------------------------\n"
 "\n"
 "/PSL_setfont {	% Set Font, size, and color (if needed)\n"
@@ -935,9 +929,7 @@ static char *PSL_text_str =
 
 static char *PSL_prologue_str =
 "%-----------------------------------------------------------------------------\n"
-"%- NOTE: No longer used as replaced by static string in PSL_strings.h.\n"
-"%- 	 We keep the file in the repository as it may be simpler to see and edit\n"
-"%-	 the logic in this file than in the static string.\n"
+"%-  PS dictionary written to header to all GMT PostScript plots\n"
 "%-----------------------------------------------------------------------------\n"
 "% Begin pslib header\n"
 "250 dict begin\n"
