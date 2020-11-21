@@ -422,7 +422,7 @@ enum GMT_enum_colorswap {
 /*! Index for fill/stroke transparency value */
 enum GMT_enum_transp {
 	GMT_FILL_TRANSP     = 0,	/* transp[GMT_FILL_TRANSP] is used for filling */
-	GMT_PEN_TRANSP      = 1,	/* transp[GMT_PENTRANSP] is used for stroking */
+	GMT_PEN_TRANSP      = 1,	/* transp[GMT_PEN_TRANSP] is used for stroking */
 	GMT_SET_FILL_TRANSP = 1,	/* Bit-flag for fill transparency */
 	GMT_SET_PEN_TRANSP  = 2,	/* Bit-flag for stroke transparency */
 	GMT_SET_ALL_TRANSP  = 3};	/* Bit-flag for both transparencies */
