@@ -9,4 +9,5 @@
     append /*transp2* to set separate transparencies for fills and strokes.  If no transparencies
     are given then we expect to read them from the last numerical column(s).  Use the modifiers
     to indicate which one(s) we should be reading (if both are requested, fill transparency is
-    expected before stroke transparency in the column order).
+    expected before stroke transparency in the column order).  If just **-t** is given then we
+    interpret it to mean **-t+f** for fill transparency only.
