@@ -7,6 +7,6 @@
     If given, *transp* applies to both fill and stroke, but you can limit the transparency to
     one of them by appending **+f** or **+s** for fill or stroke, respectively.  Alternatively,
     append /*transp2* to set separate transparencies for fills and strokes.  If no transparencies
-    are given then we expect to read them from the last data column(s).  Use the modifiers
+    are given then we expect to read them from the last numerical column(s).  Use the modifiers
     to indicate which one(s) we should be reading (if both are requested, fill transparency is
     expected before stroke transparency in the column order).
