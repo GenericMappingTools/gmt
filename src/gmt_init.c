@@ -172,7 +172,6 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "FORMAT_TIME_SECONDARY_MAP"},
 	{ 0, "FORMAT_TIME_STAMP"},
 	{ 1, "GMT Miscellaneous Parameters"},
-	{ 0, "GMT_AUTO_DOWNLOAD"},
 	{ 0, "GMT_DATA_SERVER"},
 	{ 0, "GMT_DATA_SERVER_LIMIT"},
 	{ 0, "GMT_DATA_UPDATE_INTERVAL"},
@@ -6149,7 +6148,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 
 	/* GMT_COMPATIBILITY */
 	GMT->current.setting.compatibility = (GMT->current.setting.run_mode == GMT_CLASSIC) ? 4 : 6;
-	/* GMTCASE_GMT_AUTO_DOWNLOAD */
+	/* GMTCASE_GMT_AUTO_DOWNLOAD [Deprecated] */
 	GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
 	/* GMTCASE_GMT_DATA_SERVER_LIMIT */
 	GMT->current.setting.url_size_limit = 0;
@@ -12021,6 +12020,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 
 		/* GMT GROUP */
 
+		case GMTCASE_GMT_AUTO_DOWNLOAD:
+			/* Deprecated as of 6.2: we only use GMT_DATA_UPDATE_INTERVAL to control this feature now, so just break here */
+			break;
 		case GMTCASE_GMT_COMPATIBILITY:
 			snprintf (value, GMT_LEN256, "%u", GMT->current.setting.compatibility);
 			break;

@@ -146,10 +146,10 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 			foreach (_gmtmodule ${ARGV})
 				install (CODE "
 				execute_process (COMMAND ${CMAKE_COMMAND} -E remove -f
-					\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/${_gmtmodule})
+					\$ENV{DESTDIR}\${GMT_BINDIR_FULL}/${_gmtmodule})
 				execute_process (COMMAND ${CMAKE_COMMAND} -E create_symlink
 					gmt${GMT_INSTALL_NAME_SUFFIX}
-					\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/${_gmtmodule})
+					\$ENV{DESTDIR}\${GMT_BINDIR_FULL}/${_gmtmodule})
 				" COMPONENT Runtime)
 			endforeach (_gmtmodule)
 		endif (WIN32 AND GMT_INSTALL_MODULE_LINKS)
