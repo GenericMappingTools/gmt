@@ -34,7 +34,7 @@ Synopsis
 [ **-it**\ *word* ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
-[ |SYN_OPT-t| ]
+[ |SYN_OPT-tv| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
