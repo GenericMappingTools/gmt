@@ -5787,6 +5787,8 @@ GMT_LOCAL int gmtsupport_compare_sugs (const void *point_1, const void *point_2)
 
 /*! . */
 uint64_t gmt_read_list (struct GMT_CTRL *GMT, char *file, char ***list) {
+	/* Reads a file with one string per line. Returns number of strings an
+	 * allocated pointer to the array */
 	uint64_t n = 0;
 	size_t n_alloc = GMT_CHUNK;
 	char **p = NULL, line[GMT_BUFSIZ] = {""};
@@ -7407,7 +7409,7 @@ unsigned int gmt_validate_cpt_parameters (struct GMT_CTRL *GMT, struct GMT_PALET
 	return GMT_NOERROR;
 }
 
-char ** gmt_cat_cpt_labels (struct GMT_CTRL *GMT, char *label, unsigned int n) {
+char ** gmt_cat_cpt_strings (struct GMT_CTRL *GMT, char *label, unsigned int n) {
 	/* Generate categorical labels for n categories from the label magic argument */
 	unsigned int k = 0;
 	char **Clabel = gmt_M_memory (GMT, NULL, n, char *);
@@ -7421,6 +7423,9 @@ char ** gmt_cat_cpt_labels (struct GMT_CTRL *GMT, char *label, unsigned int n) {
 			k++;
 		}
 		gmt_M_str_free (orig);
+		if (k != n) {
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "The comma-separated string %s had %d entries but %d were expected\n", label, k, n);
+		}
 	}
 	else {	/* Auto-build the labels */
 		unsigned int mode;
@@ -7429,10 +7434,14 @@ char ** gmt_cat_cpt_labels (struct GMT_CTRL *GMT, char *label, unsigned int n) {
 		if (isdigit (label[0])) {	/* Integer categories */
 			mode = 1;
 			start = atoi (label);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Building %d sequential strings from integers starting at %d\n", n, start);
 		}
 		else {	/* Letter categories */
 			mode = 3;
 			start = label[0];
+			if (strlen (label) > 1)
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Expected a single letter to initialize auto-labels but found %s.\n", label);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Building %d sequential strings from letters starting at %c\n", n, start);
 		}
 		if (label[strlen(label)-1] == '-') mode++;	/* Wants a range */
 		for (k = 0; k < n; k++) {

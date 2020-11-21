@@ -172,7 +172,6 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "FORMAT_TIME_SECONDARY_MAP"},
 	{ 0, "FORMAT_TIME_STAMP"},
 	{ 1, "GMT Miscellaneous Parameters"},
-	{ 0, "GMT_AUTO_DOWNLOAD"},
 	{ 0, "GMT_DATA_SERVER"},
 	{ 0, "GMT_DATA_SERVER_LIMIT"},
 	{ 0, "GMT_DATA_UPDATE_INTERVAL"},
@@ -2400,6 +2399,74 @@ bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 	if (cr) cr[0] = '+';	/* Restore string */
 
 	return (false);
+}
+
+bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
+	/* Parse -t[<filltransparency>[/<stroketransparency>]][+f][+s]
+	 * Note: The transparency is optional (read from file) only for plot, plot3d, and text */
+	unsigned int n_errors = 0, nt = 0;
+	char *c = NULL;
+
+	GMT->common.t.mode = GMT->common.t.n_transparencies = 0;	/* Initialize */
+	if (item[0] && (c = gmt_first_modifier (GMT, item, "fs"))) {	/* Got modifiers */
+		unsigned int pos = 0;
+		char txt[GMT_LEN16] = {""};
+		while (gmt_getmodopt (GMT, 't', c, "fs", &pos, txt, &n_errors) && n_errors == 0) {
+			switch (txt[0]) {
+				case 'f': GMT->common.t.mode |= GMT_SET_FILL_TRANSP;	nt++;	break;	/* Set fill transparency */
+				case 's': GMT->common.t.mode |= GMT_SET_PEN_TRANSP;		nt++;	break;	/* Set stroke transparency */
+				default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+			}
+		}
+		c[0] = '\0';	/* Chop off the modifiers */
+	}
+
+	if (item[0]) {
+		if (strchr (item, '/')) {	/* Got two transparencies */
+			sscanf (item, "%lg/%lg", &GMT->common.t.value[GMT_FILL_TRANSP], &GMT->common.t.value[GMT_PEN_TRANSP]);
+			if (GMT->common.t.mode) {
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -t: If both filltrans/stroketrans are given the +f+s modifiers are ignored\n");
+				GMT->common.t.mode = 0;
+			}
+		}
+		else if (GMT->common.t.mode == 0)	/* No modifiers specified so set both transparencies */
+			GMT->common.t.value[GMT_FILL_TRANSP] = GMT->common.t.value[GMT_PEN_TRANSP] = atof (item);
+		else {	/* Must check if modifiers selected one or both of the transparencies */
+			if (GMT->common.t.mode & GMT_SET_FILL_TRANSP)
+				GMT->common.t.value[GMT_FILL_TRANSP] = atof (item);
+			if (GMT->common.t.mode & GMT_SET_PEN_TRANSP)
+				GMT->common.t.value[GMT_PEN_TRANSP] = atof (item);
+		}
+		if (GMT->common.t.value[GMT_FILL_TRANSP] < 0.0 || GMT->common.t.value[GMT_FILL_TRANSP] > 100.0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -t: Fill transparency must be in (0-100]%% range!\n");
+			GMT->common.t.value[GMT_FILL_TRANSP] = 0.0;
+			n_errors++;
+		}
+		else if (GMT->common.t.value[GMT_FILL_TRANSP] > 0.0 && GMT->common.t.value[GMT_FILL_TRANSP] <= 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Fill transparency is expected in percentage.  Did you mean %g?\n", GMT->common.t.value[GMT_FILL_TRANSP] * 100.0);
+		}
+		if (GMT->common.t.value[GMT_PEN_TRANSP] < 0.0 || GMT->common.t.value[GMT_PEN_TRANSP] > 100.0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -t: Stroke transparency must be in (0-100]%% range!\n");
+			GMT->common.t.value[GMT_PEN_TRANSP] = 0.0;
+			n_errors++;
+		}
+		else if (GMT->common.t.value[GMT_PEN_TRANSP] > 0.0 && GMT->common.t.value[GMT_PEN_TRANSP] <= 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Stroke transparency is expected in percentage.  Did you mean %g?\n", GMT->common.t.value[GMT_PEN_TRANSP] * 100.0);
+		}
+		GMT->common.t.active = true;
+	}
+	else if (!strncmp (GMT->init.module_name, "psxy", 4U) || !strncmp (GMT->init.module_name, "pstext", 6U)) {	/* Only modules psxy, psxyz, and pstext can do variable transparency */
+		GMT->common.t.active = GMT->common.t.variable = true;
+		GMT->common.t.n_transparencies = (nt) ? nt : 1;	/* If we gave -t+f+s then we need to read two transparencies, else just 1 */
+		if (GMT->common.t.mode== 0) GMT->common.t.mode = GMT_SET_FILL_TRANSP;	/* For these modules, plain -t means -t+f */
+	}
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -t was not given any argument (please add transparency in (0-100]0%% range)!\n");
+		n_errors++;
+	}
+	if (c) c[0] = '+';	/* Restore the modifiers */
+	if (!GMT->common.t.variable && GMT->common.t.mode == 0) GMT->common.t.mode = GMT_SET_FILL_TRANSP | GMT_SET_PEN_TRANSP;	/* Sets both fill and stroke transparencies unless when we read from files */
+	return (n_errors > 0);
 }
 
 /*! Check that special map-related codes are present - if not give warning */
@@ -6081,7 +6148,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 
 	/* GMT_COMPATIBILITY */
 	GMT->current.setting.compatibility = (GMT->current.setting.run_mode == GMT_CLASSIC) ? 4 : 6;
-	/* GMTCASE_GMT_AUTO_DOWNLOAD */
+	/* GMTCASE_GMT_AUTO_DOWNLOAD [Deprecated] */
 	GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
 	/* GMTCASE_GMT_DATA_SERVER_LIMIT */
 	GMT->current.setting.url_size_limit = 0;
@@ -7087,7 +7154,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   Give one or more columns (or column ranges) separated by commas.\n");
 			gmt_message (GMT, "\t   Append T (Calendar format), t (time relative to TIME_EPOCH),\n");
 			gmt_message (GMT, "\t   f (floating point), x (longitude), y (latitude) to each item.\n");
-			gmt_message (GMT, "\t   -f[i|o]g means -f[i|o]0x,1y (geographic coordinates).\n");
+			gmt_message (GMT, "\t   -f[i|o]g means -f[i|o]0x,1y (geographic, i.e., lon/lat coordinates).\n");
 			gmt_message (GMT, "\t   -f[i|o]c means -f[i|o]0-1f (Cartesian coordinates).\n");
 			gmt_message (GMT, "\t   -fp[<unit>] means input x,y are in projected coordinates.\n");
 			break;
@@ -11953,6 +12020,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 
 		/* GMT GROUP */
 
+		case GMTCASE_GMT_AUTO_DOWNLOAD:
+			/* Deprecated as of 6.2: we only use GMT_DATA_UPDATE_INTERVAL to control this feature now, so just break here */
+			break;
 		case GMTCASE_GMT_COMPATIBILITY:
 			snprintf (value, GMT_LEN256, "%u", GMT->current.setting.compatibility);
 			break;
@@ -16464,26 +16534,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 't':
-			error += GMT_more_than_once (GMT, GMT->common.t.active);
-			if (item[0]) {
-				GMT->common.t.value = atof (item);
-				if (GMT->common.t.value < 0.0 || GMT->common.t.value > 100.0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -t: Transparency must be in (0-100]%% range!\n");
-					GMT->common.t.value = 0.0;
-					error++;
-				}
-				else if (GMT->common.t.value <= 1.0) {
-					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Transparency is expected in percentage.  Did you mean %g?\n", GMT->common.t.value * 100.0);
-				}
-				GMT->common.t.active = true;
-			}
-			else if (!strncmp (GMT->init.module_name, "psxy", 4U) || !strncmp (GMT->init.module_name, "pstext", 6U)) {	/* Modules psxy, psxyz, and pstext can do variable transparency */
-				GMT->common.t.active = GMT->common.t.variable = true;
-			}
-			else {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -t was not given any value (please add transparency in (0-100]0%% range)!\n");
-				error++;
-			}
+			error += GMT_more_than_once (GMT, GMT->common.t.active) || gmtinit_parse_t_option (GMT, item);
 			break;
 
 #ifdef GMT_MP_ENABLED
