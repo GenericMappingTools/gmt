@@ -1079,9 +1079,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	else
 		nX = nXSize,	nY = nYSize;
 
-	rowVec = gmt_M_memory(GMT, NULL, nRowsPerBlock*nBlocks, size_t);
+	/* Can't find why but have to multiply by nRGBA otherwise it crashes in win32 builds */
+	rowVec = gmt_M_memory(GMT, NULL, (nRowsPerBlock * nRGBA) * nBlocks, size_t);
 	for (m = 0; m < nY; m++) rowVec[m] = m * nX;
-	colVec = gmt_M_memory(GMT, NULL, nX+pad_w+pad_e, size_t);	/* For now this will be used only to select BIP ordering */
+	colVec = gmt_M_memory(GMT, NULL, (nX+pad_w+pad_e) * nRGBA, size_t);	/* For now this will be used only to select BIP ordering */
 	/* --------------------------------------------------------------------------------- */
 
 	gmt_M_tic (GMT);

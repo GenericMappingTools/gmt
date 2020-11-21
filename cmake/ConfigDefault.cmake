@@ -141,7 +141,7 @@ endif (NOT DEFINED GMT_RELEASE_PREFIX)
 
 # Default location of remote data server
 if (NOT DEFINED GMT_DATA_SERVER)
-	set (GMT_DATA_SERVER "https://oceania.generic-mapping-tools.org")
+	set (GMT_DATA_SERVER "oceania")
 endif (NOT DEFINED GMT_DATA_SERVER)
 
 # You can set the build configuration type as a command-line argument to 'cmake' using -DCMAKE_BUILD_TYPE:STRING=Debug for example.

@@ -195,10 +195,7 @@ Optional Arguments
 
 .. include:: explain_-qi.rst_
 
-.. include:: explain_-t.rst_
-..
-
-   If no transparency is appended then we will read it from the last numerical column per data record instead.
+.. include:: explain_-tv_full.rst_
 
 .. include:: explain_colon.rst_
 

@@ -3139,7 +3139,7 @@ GMT_LOCAL int gmtapi_export_palette (struct GMTAPI_CTRL *API, int object_ID, uns
 		case GMT_IS_DUPLICATE:	/* Duplicate the input cpt */
 			if (S_obj->resource) return (gmtlib_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Duplicating CPT to GMT_PALETTE memory location\n");
-			P_copy = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE);
+			P_copy = gmtlib_create_palette (GMT, P_obj->n_colors);
 			gmtlib_copy_palette (GMT, P_copy, P_obj);
 			S_obj->resource = P_copy;	/* Set resource pointer from object to this palette */
 			break;
@@ -11899,8 +11899,8 @@ int GMT_Get_Common (void *V_API, unsigned int option, double par[]) {
 		case 's':	if (GMT->common.s.active) ret = 0; break;
 		case 't':
 			if (GMT->common.t.active) {
-				ret = 1;
-				if (par) par[0] = GMT->common.t.value;
+				ret = 2;
+				if (par) gmt_M_memcpy (par, GMT->common.t.value, 2, double);
 			}
 			break;
 		case ':':	if (GMT->common.colon.toggle[GMT_IN]) ret = GMT_IN; else if (GMT->common.colon.toggle[GMT_OUT]) ret = GMT_OUT; break;
