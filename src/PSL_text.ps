@@ -5,9 +5,9 @@
 %-	Knows about flush l,c,r and justified.
 %-	Knows about all GMT @ escapes, composites (but not in paragraph mode)
 %-	and underlining. No hyphenation.  1 page only.
-%- NOTE: No longer used as is, as replaced by static string in PSL_strings.h.
-%- 	 We keep the file in the repository as it may be simpler to edit and see
-%-	 the logic in this file than in the static string.
+%+  NOTE: No longer used directly as we build a static string in PSL_strings.h.
+%+    However, this file is the original source as it may be simpler to see and
+%+    edit the logic in this file than in the formatted static string.
 %-----------------------------------------------------------------------------
 
 /PSL_setfont {	% Set Font, size, and color (if needed)
