@@ -5633,7 +5633,7 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 	GMT->current.io.record.data = GMT->current.io.curr_rec;
 }
 
-/*! Routine will temporarily suspend any -i, -h selections for secondary inputs */
+/*! Routine will temporarily suspend any -b, -i, -g, h selections for secondary inputs */
 void gmt_disable_bghi_opts (struct GMT_CTRL *GMT) {
 	/* Temporarily turn off any -i, -h selections */
 	GMT->common.i.select = false;
@@ -5641,14 +5641,14 @@ void gmt_disable_bghi_opts (struct GMT_CTRL *GMT) {
 	GMT->current.setting.io_header[GMT_IN] = false;
 	GMT->common.g.active = false;	/* Turn this off (if set) for now */
 	/* Then deal with primary binary input selection */
-	if (GMT->common.b.active[GMT_IN]) {	/* Secondary file input requires ascii */
+	if (GMT->common.b.active[GMT_IN]) {	/* Secondary file input requires ASCII */
 		GMT->common.b.active[GMT_IN] = false;
 		GMT->common.b.bin_primary = true;
 		GMT->current.io.input = &gmtio_ascii_input;
 	}
 }
 
-/*! Routine will re-enable any suspended -i, -h selections */
+/*! Routine will re-enable any suspended -b, -i, -g, -h selections */
 void gmt_reenable_bghi_opts (struct GMT_CTRL *GMT) {
 	/* Turn on again any -i, -h selections */
 	GMT->common.i.select = GMT->common.i.orig;
