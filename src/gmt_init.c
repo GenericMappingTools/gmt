@@ -2425,13 +2425,19 @@ bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 	if (item[0]) {
 		if (strchr (item, '/')) {	/* Got two transparencies */
 			sscanf (item, "%lg/%lg", &GMT->common.t.value[GMT_FILL_TRANSP], &GMT->common.t.value[GMT_PEN_TRANSP]);
+			if (GMT->common.t.mode) {
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -t: If both filltrans/stroketrans are given the +f+s modifiers are ignored\n");
+				GMT->common.t.mode = 0;
+			}
 		}
-		else if (GMT->common.t.mode == 0)
+		else if (GMT->common.t.mode == 0)	/* No modifiers specified so set both transparencies */
 			GMT->common.t.value[GMT_FILL_TRANSP] = GMT->common.t.value[GMT_PEN_TRANSP] = atof (item);
-		else if (GMT->common.t.mode & GMT_SET_FILL_TRANSP)
-			GMT->common.t.value[GMT_FILL_TRANSP] = atof (item);
-		else
-			GMT->common.t.value[GMT_PEN_TRANSP] = atof (item);
+		else {	/* Must check if modifiers selected one or both of the transparencies */
+			if (GMT->common.t.mode & GMT_SET_FILL_TRANSP)
+				GMT->common.t.value[GMT_FILL_TRANSP] = atof (item);
+			if (GMT->common.t.mode & GMT_SET_PEN_TRANSP)
+				GMT->common.t.value[GMT_PEN_TRANSP] = atof (item);
+		}
 		if (GMT->common.t.value[GMT_FILL_TRANSP] < 0.0 || GMT->common.t.value[GMT_FILL_TRANSP] > 100.0) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -t: Fill transparency must be in (0-100]%% range!\n");
 			GMT->common.t.value[GMT_FILL_TRANSP] = 0.0;
