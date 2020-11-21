@@ -424,7 +424,7 @@ typedef struct {
  * From gs 9.53 their transparency model takes two transparencies (stroke and fill) while before
  * it only took one.  The pdfmark took two but we simply duplicated it since GMT itself only dealt
  * with one transparency for both.  From GMT 6.2.0 we will allow these two transparencies to be set
- * individually if the user so selects.  NOte: We do not support any of the soft masks/shapes stuff.
+ * individually if the user so selects.  Note: We do not support any of the soft masks/shapes stuff.
  */
 
 #define N_PDF_TRANSPARENCY_MODES	16
