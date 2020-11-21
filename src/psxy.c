@@ -937,7 +937,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	bool error_x = false, error_y = false, def_err_xy = false, can_update_headpen = true;
 	bool default_outline, outline_active, geovector = false, save_W = false, save_G = false, QR_symbol = false;
 	unsigned int n_needed, n_cols_start = 2, justify, tbl, grid_order, frame_order;
-	unsigned int n_total_read = 0, j, geometry, icol = 0, tcol = 0, n_z = 0, k, kk;
+	unsigned int n_total_read = 0, j, geometry, icol = 0, tcol_f = 0, tcol_s = 0, n_z = 0, k, kk;
 	unsigned int bcol, ex1, ex2, ex3, change = 0, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
 	int error = GMT_NOERROR, outline_setting;
@@ -1100,10 +1100,17 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		icol = n_needed - 1;
 		gmt_set_column (GMT, GMT_IN, icol, GMT_IS_FLOAT);
 	}
-	if (GMT->common.t.variable) {
-		n_needed++;	/* Read transparency from data file */
-		tcol = n_needed - 1;
-		gmt_set_column (GMT, GMT_IN, tcol, GMT_IS_FLOAT);
+	if (GMT->common.t.variable) {	/* Need one or two transparencies from file */
+		if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {
+			n_needed++;	/* Read fill transparencies from data file */
+			tcol_f = n_needed - 1;
+			gmt_set_column (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
+		}
+		if (GMT->common.t.mode & GMT_SET_PEN_TRANSP) {
+			n_needed++;	/* Read stroke transparencies from data file */
+			tcol_s = n_needed - 1;
+			gmt_set_column (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
+		}
 	}
 	if (gmt_check_binary_io (GMT, n_needed))
 		Return (GMT_RUNTIME_ERROR);
@@ -1480,8 +1487,22 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_INFORMATION, "Data point with y = NaN near line %d\n", n_total_read);
 				continue;
 			}
-			if (GMT->common.t.variable)	/* Update the transparency for current symbol (or -t was given) */
-				PSL_settransparency (PSL, 0.01 * in[tcol]);
+			if (GMT->common.t.variable) {	/* Update the transparency for current symbol (or -t was given) */
+				double transp[2] = {0.0, 0.0};	/* None selected */
+				if (GMT->common.t.n_transparencies == 2) {	/* Requested two separate values to be read from file */
+					transp[GMT_FILL_TRANSP] = 0.01 * in[tcol_f];
+					transp[GMT_PEN_TRANSP] = 0.01 * in[tcol_s];
+				}
+				else if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {	/* Gave fill transparency */
+					transp[GMT_FILL_TRANSP] = 0.01 * in[tcol_f];
+					if (GMT->common.t.n_transparencies == 0) transp[GMT_PEN_TRANSP] = transp[GMT_FILL_TRANSP];	/* Implied to be used for stroke also */
+				}
+				else {	/* Gave stroke transparency */
+					transp[GMT_PEN_TRANSP] = 0.01 * in[tcol_s];
+					if (GMT->common.t.n_transparencies == 0) transp[GMT_FILL_TRANSP] = transp[GMT_PEN_TRANSP];	/* Implied to be used for fill also */
+				}
+				PSL_settransparencies (PSL, transp);
+			}
 
 			if (E_bar_below) {
 				if (Ctrl->E.mode) gmt_M_rgb_copy (Ctrl->E.pen.rgb, current_fill.rgb);
@@ -2006,8 +2027,10 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				current_pen = save_pen; current_fill = save_fill; Ctrl->W.active = save_W; Ctrl->G.active = save_G;
 			}
 		} while (true);
-		if (GMT->common.t.variable)	/* Reset the transparency */
-			PSL_settransparency (PSL, 0.0);
+		if (GMT->common.t.variable) {	/* Reset the transparencies */
+			double transp[2] = {0.0, 0.0};	/* None selected */
+			PSL_settransparencies (PSL, transp);
+		}
 		PSL_command (GMT->PSL, "U\n");
 		if (n_warn[1]) GMT_Report (API, GMT_MSG_INFORMATION, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
 		if (n_warn[2]) GMT_Report (API, GMT_MSG_INFORMATION, "%d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);

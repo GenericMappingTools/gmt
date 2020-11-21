@@ -4586,6 +4586,7 @@ GMT_LOCAL int gmtio_get_precision_width (struct GMT_CTRL *GMT, double x) {
 	static double power_U[9] = {1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9};
 	static double power_D[9] = {1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9};
 
+	gmt_M_unused(GMT);
 	/* Here we compute |D-T|/D, where D is the incoming dt and T is the value recovered if printed using k decimals.
 	 * We want this relative truncation error to be < 10^-4 */
 	do {
@@ -5633,7 +5634,7 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 	GMT->current.io.record.data = GMT->current.io.curr_rec;
 }
 
-/*! Routine will temporarily suspend any -i, -h selections for secondary inputs */
+/*! Routine will temporarily suspend any -b, -i, -g, h selections for secondary inputs */
 void gmt_disable_bghi_opts (struct GMT_CTRL *GMT) {
 	/* Temporarily turn off any -i, -h selections */
 	GMT->common.i.select = false;
@@ -5641,14 +5642,14 @@ void gmt_disable_bghi_opts (struct GMT_CTRL *GMT) {
 	GMT->current.setting.io_header[GMT_IN] = false;
 	GMT->common.g.active = false;	/* Turn this off (if set) for now */
 	/* Then deal with primary binary input selection */
-	if (GMT->common.b.active[GMT_IN]) {	/* Secondary file input requires ascii */
+	if (GMT->common.b.active[GMT_IN]) {	/* Secondary file input requires ASCII */
 		GMT->common.b.active[GMT_IN] = false;
 		GMT->common.b.bin_primary = true;
 		GMT->current.io.input = &gmtio_ascii_input;
 	}
 }
 
-/*! Routine will re-enable any suspended -i, -h selections */
+/*! Routine will re-enable any suspended -b, -i, -g, -h selections */
 void gmt_reenable_bghi_opts (struct GMT_CTRL *GMT) {
 	/* Turn on again any -i, -h selections */
 	GMT->common.i.select = GMT->common.i.orig;

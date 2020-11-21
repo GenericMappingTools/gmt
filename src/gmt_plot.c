@@ -8070,12 +8070,12 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	PSL_beginlayer (GMT->PSL, ++GMT->current.ps.layer);
 	/* Set layer transparency, if requested. Note that PSL_transp actually sets the opacity alpha, which is (1 - transparency) */
 	if (GMT->common.t.active) {
-		if (GMT->common.t.value == 0.0) {
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "A transparency of 0 is the same as opaque. Skipped\n");
+		if (GMT->common.t.value[GMT_FILL_TRANSP] == 0.0 && GMT->common.t.value[GMT_PEN_TRANSP] == 0.0) {
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "A transparency of 0/0 is the same as opaque. Skipped\n");
 			GMT->common.t.active = false;
 		}
-		else
-			PSL_command (PSL, "%.12g /%s PSL_transp\n", 1.0 - 0.01 * GMT->common.t.value, GMT->current.setting.ps_transpmode);
+		else 	/* Place both fill and stroke transparencies in 0-1 normalized range, plus the blend mode name */
+			PSL_command (PSL, "%.12g %.12g /%s PSL_transp\n", 1.0 - 0.01 * GMT->common.t.value[GMT_FILL_TRANSP], 1.0 - 0.01 * GMT->common.t.value[GMT_PEN_TRANSP], GMT->current.setting.ps_transpmode);
 	}
 	/* If requested, place the timestamp */
 
@@ -8394,7 +8394,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 	bool K_active = (GMT->current.setting.run_mode == GMT_MODERN) ? true : GMT->common.K.active;
 	struct PSL_CTRL *PSL= GMT->PSL;
 	PSL_endlayer (GMT->PSL);
-	if (GMT->common.t.active) PSL_command (PSL, "1 /Normal PSL_transp\n"); /* Reset transparency to fully opaque, if required */
+	if (GMT->common.t.active) PSL_command (PSL, "1 1 /Normal PSL_transp\n"); /* Reset transparency to fully opaque, if required */
 
 	if (GMT->common.p.do_z_rotation) {	/* Need a undo the rotation about z of the whole page */
 		double x0 = 0.0, y0 = 0.0;	/* Default is to rotate around plot origin */

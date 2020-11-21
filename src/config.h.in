@@ -40,7 +40,7 @@
 #endif
 
 /* path to shared files */
-#define GMT_SHARE_DIR "@CMAKE_INSTALL_PREFIX@/@GMT_DATADIR@"
+#define GMT_SHARE_DIR "@GMT_DATADIR_FULL@"
 #define GMT_SHARE_DIR_RELATIVE "@GMT_DATADIR@"
 
 /* URL to remote files */
@@ -53,7 +53,7 @@
 #define GMT_BINARY_DIR_SRC_DEBUG "@GMT_BINARY_DIR@/src"
 
 /* path to documentation */
-#define GMT_DOC_DIR "@CMAKE_INSTALL_PREFIX@/@GMT_DOCDIR@"
+#define GMT_DOC_DIR "@GMT_DOCDIR_FULL@"
 
 /* min required GSHHG version and its netCDF extension */
 #define GSHHG_MIN_REQUIRED_VERSION {@GSHHG_MIN_REQUIRED_VERSION_MAJOR@, @GSHHG_MIN_REQUIRED_VERSION_MINOR@, @GSHHG_MIN_REQUIRED_VERSION_PATCH@}
