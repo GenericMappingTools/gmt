@@ -110,9 +110,9 @@ GDAL (ogr2ogr, gdal_translate), [Ghostscript](https://www.ghostscript.com),
 
 GMT uses (or can access) data derived from these sources:
 
-[Scientific Color Maps (CPT)](http://www.fabiocrameri.ch/visualisation.php)
-[Earth 15" DEM](http://dx.doi.org/10.1029/2019EA000658)
-[Earth 1" SRTM DEM](https://lpdaac.usgs.gov/products/srtmgl3v003)
-[Earth 1' crustal age](http://dx.doi.org/10.1029/2020GC009214)
-[Earth 30" Blue Marble images](https://visibleearth.nasa.gov/images/57752/blue-marble-land-surface-shallow-water-and-shaded-topography)
-[Earth 30" Black Marble images](https://earthobservatory.nasa.gov/features/NightLights/page3.php)
+- [Scientific Color Maps (CPT)](http://www.fabiocrameri.ch/visualisation.php)
+- [Earth 15" DEM](http://dx.doi.org/10.1029/2019EA000658)
+- [Earth 1" SRTM DEM](https://lpdaac.usgs.gov/products/srtmgl3v003)
+- [Earth 1' crustal age](http://dx.doi.org/10.1029/2020GC009214)
+- [Earth 30" Blue Marble images](https://visibleearth.nasa.gov/images/57752/blue-marble-land-surface-shallow-water-and-shaded-topography)
+- [Earth 30" Black Marble images](https://earthobservatory.nasa.gov/features/NightLights/page3.php)
