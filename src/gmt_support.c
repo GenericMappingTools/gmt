@@ -16747,9 +16747,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	if (strchr (argument, ',')) {
 		T->list = strdup (argument);
 		if (strchr (argument, 'T')) {	/* Gave list of absolute times */
-			gmt_set_column (GMT, GMT_IN,  tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
+			gmt_set_column_type (GMT, GMT_IN,  tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
 			/* Set output column type as time unless -fo has been set */
-			if (!GMT->common.f.active[GMT_OUT]) gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
+			if (!GMT->common.f.active[GMT_OUT]) gmt_set_column_type (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
 			T->temporal = true;
 		}
 		return (GMT_NOERROR);
@@ -16846,9 +16846,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		T->temporal = true;	/* May already be set but who cares */
 	}
 	if (T->temporal) {	/* Must set TIME_UNIT and update time system scalings */
-		gmt_set_column (GMT, GMT_IN, tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
+		gmt_set_column_type (GMT, GMT_IN, tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
 		/* Set output column type as time unless -fo has been set */
-		if (!GMT->common.f.active[GMT_OUT]) gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
+		if (!GMT->common.f.active[GMT_OUT]) gmt_set_column_type (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
 		if (has_inc) {	/* Gave a time increment */
 			if (strchr (GMT_TIME_UNITS, T->unit))	/* Gave a valid time unit */
 				txt[ns][len] = '\0';	/* Chop off time unit since we are done with it */
@@ -17234,7 +17234,7 @@ struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, cha
 	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_CONTOUR_INFO * cont = NULL;
 
-	gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Since x is likely longitude we must avoid 360 wrapping here */
+	gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Since x is likely longitude we must avoid 360 wrapping here */
 
 	if ((C = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, file, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to read contour information file %s - aborting\n", file);
@@ -17291,7 +17291,7 @@ struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, cha
 			if (got_angle) *type = 2;	/* Must set this directly if angles are provided */
 		}
 	}
-	gmt_set_column (GMT, GMT_IN, GMT_X, save_coltype);
+	gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 
 	/* Return information structure array back to the calling environment */
 

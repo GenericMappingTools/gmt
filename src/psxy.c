@@ -1019,9 +1019,14 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		PH = gmt_get_C_hidden (P);
 		if (Ctrl->Z.active) {	/* Get color from cpt -Z and store in -G */
 			if (Ctrl->Z.file) {
+				/* Must temporarily let the x-column contain datavalues for the CPT lookup */
+				enum gmt_col_enum x_col_type = gmt_get_column_type (GMT, GMT_IN, GMT_X);
+				enum gmt_col_enum z_col_type = gmt_get_column_type (GMT, GMT_IN, GMT_Z);
+				gmt_set_column_type (GMT, GMT_IN, GMT_X, z_col_type);
 				if ((Zin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->Z.file, NULL)) == NULL) {
 					Return (API->error);
 				}
+				gmt_set_column_type (GMT, GMT_IN, GMT_X, x_col_type);
 			}
 			else {
 				double rgb[4];
@@ -1075,7 +1080,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	pos2y = ex2 - GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd latitude (for VECTORS with two sets of coordinates) */
 
 	if (Ctrl->E.active) {
-		if (S.read_size) gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_DIMENSION);	/* Must read symbol size from data record */
+		if (S.read_size) gmt_set_column_type (GMT, GMT_IN, ex1, GMT_IS_DIMENSION);	/* Must read symbol size from data record */
 		if (def_err_xy && GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* With -:, -E should become -Eyx */
 			gmt_M_uint_swap (xy_errors[GMT_X], xy_errors[GMT_Y]);
 			gmt_M_uint_swap (error_type[GMT_X], error_type[GMT_Y]);
@@ -1086,8 +1091,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		xy_errors[GMT_Y] += (S.read_size + rgb_from_z);
 	}
 	else if (not_line)	/* Here we have the usual x y [z] [size] [other args] [symbol] record */
-		for (j = n_cols_start; j < 6; j++) gmt_set_column (GMT, GMT_IN, j, GMT_IS_DIMENSION);		/* Since these may have units appended */
-	for (j = 0; j < S.n_nondim; j++) gmt_set_column (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles, not dimensions */
+		for (j = n_cols_start; j < 6; j++) gmt_set_column_type (GMT, GMT_IN, j, GMT_IS_DIMENSION);		/* Since these may have units appended */
+	for (j = 0; j < S.n_nondim; j++) gmt_set_column_type (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles, not dimensions */
 
 	if (gmt_is_barcolumn (GMT, &S)) {
 		n_z = gmt_get_columbar_bands (GMT, &S);	/* > 0 for multiband, else 0 */
@@ -1098,18 +1103,18 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	if (Ctrl->I.mode) {
 		n_needed++;	/* Read intensity from data file */
 		icol = n_needed - 1;
-		gmt_set_column (GMT, GMT_IN, icol, GMT_IS_FLOAT);
+		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_FLOAT);
 	}
 	if (GMT->common.t.variable) {	/* Need one or two transparencies from file */
 		if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {
 			n_needed++;	/* Read fill transparencies from data file */
 			tcol_f = n_needed - 1;
-			gmt_set_column (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
 		}
 		if (GMT->common.t.mode & GMT_SET_PEN_TRANSP) {
 			n_needed++;	/* Read stroke transparencies from data file */
 			tcol_s = n_needed - 1;
-			gmt_set_column (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
 		}
 	}
 	if (gmt_check_binary_io (GMT, n_needed))
@@ -1171,16 +1176,16 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	if (S.symbol == GMT_SYMBOL_BARY && !S.base_set) S.base = GMT->common.R.wesn[YLO];	/* Default to south level for vertical log10 bars */
 	if ((S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & PSL_VEC_JUST_S) {	/* One of the vector symbols, and require 2nd point */
 		/* Reading 2nd coordinate so must set column types */
-		gmt_set_column (GMT, GMT_IN, pos2x, gmt_M_type (GMT, GMT_IN, GMT_X));
-		gmt_set_column (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
+		gmt_set_column_type (GMT, GMT_IN, pos2x, gmt_M_type (GMT, GMT_IN, GMT_X));
+		gmt_set_column_type (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	}
 	if (S.symbol == PSL_RECT && S.diagonal) {	/* Getting lon1,lat1,lon2,lat2 of a diagonal and will draw the rectangle subject to -A */
 		/* Reading 2nd coordinate so must set column types */
-		gmt_set_column (GMT, GMT_IN, pos2x, gmt_M_type (GMT, GMT_IN, GMT_X));
-		gmt_set_column (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
+		gmt_set_column_type (GMT, GMT_IN, pos2x, gmt_M_type (GMT, GMT_IN, GMT_X));
+		gmt_set_column_type (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	}
 	if (S.symbol == PSL_VECTOR && S.v.status & PSL_VEC_COMPONENTS)
-		gmt_set_column (GMT, GMT_IN, pos2y, GMT_IS_FLOAT);	/* Just the users dy component, not length */
+		gmt_set_column_type (GMT, GMT_IN, pos2y, GMT_IS_FLOAT);	/* Just the users dy component, not length */
 	if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC ) {	/* One of the vector symbols */
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
 		if ((S.v.status & PSL_VEC_FILL) == 0 && !S.v.parsed_v4) Ctrl->G.active = false;	/* Want no fill so override -G */
@@ -1210,24 +1215,24 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 	}
 	bcol = (S.read_size) ? ex2 : ex1;
-	if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & GMT_BASE_READ)) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_X));
-	if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & GMT_BASE_READ)) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
+	if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & GMT_BASE_READ)) gmt_set_column_type (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_X));
+	if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & GMT_BASE_READ)) gmt_set_column_type (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0)
-		gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
+		gmt_set_column_type (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
 	else if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && S.convert_angles && !S.par_set) {
 		if (S.n_required == 1)
-			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
+			gmt_set_column_type (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
 		else {
-			gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
-			gmt_set_column (GMT, GMT_IN, ex3, GMT_IS_GEODIMENSION);
+			gmt_set_column_type (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
+			gmt_set_column_type (GMT, GMT_IN, ex3, GMT_IS_GEODIMENSION);
 		}
 	}
 	if (S.symbol == PSL_WEDGE) {
-		if (S.w_get_do && S.w_active) gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
+		if (S.w_get_do && S.w_active) gmt_set_column_type (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
 		if (S.w_get_di && S.w_active) {
 			unsigned int col = ex1 + 1;
 			if (S.w_get_a) col += 2;
-			gmt_set_column (GMT, GMT_IN, col, GMT_IS_GEODIMENSION);
+			gmt_set_column_type (GMT, GMT_IN, col, GMT_IS_GEODIMENSION);
 		}
 
 		if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge spider pen specified separately */
@@ -1304,7 +1309,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
-			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
 			if (S.u_set)	/* Specified a particular unit, so scale values unless we chose inches */
 				delayed_unit_scaling = (S.u != GMT_INCH);
 			else if (GMT->current.setting.proj_length_unit != GMT_INCH) {	/* Gave no unit but default unit is not inch so we must scale */

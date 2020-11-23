@@ -947,12 +947,12 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {
 				ncol++;	/* Read fill transparencies from data file */
 				tcol_f = ncol - 1;	/* If there is fill transparency then this is the column to use */
-				gmt_set_column (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
 			}
 			if (GMT->common.t.mode & GMT_SET_PEN_TRANSP) {
 				ncol++;	/* Read stroke transparencies from data file */
 				tcol_s = ncol - 1;
-				gmt_set_column (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
 			}
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Expects a %s record with %d leading numerical columns, followed by %d text parameters and %s trailing text\n",

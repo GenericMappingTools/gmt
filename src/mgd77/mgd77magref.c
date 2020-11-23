@@ -193,12 +193,12 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GM
 						case 't':
 							Ctrl->A.fixed_time = true;
 							strncpy (tfixed, &p[1], GMT_LEN64-1);
-							gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
+							gmt_set_column_type (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
 							break;
 						case 'y':
 							Ctrl->A.years = true;
-							gmt_set_column (GMT, GMT_IO, 2, GMT_IS_FLOAT);
-							gmt_set_column (GMT, GMT_IO, 3, GMT_IS_FLOAT);
+							gmt_set_column_type (GMT, GMT_IO, 2, GMT_IS_FLOAT);
+							gmt_set_column_type (GMT, GMT_IO, 3, GMT_IS_FLOAT);
 							break;
 						default:
 							break;
@@ -456,7 +456,7 @@ EXTERN_MSC int GMT_mgd77magref (void *V_API, int mode, void *args) {
 
 	Ctrl->CM4->CM4_D.dst = calloc (1U, sizeof(double));	/* We need at least a size of one in case a value is given in input */
 	if (!Ctrl->A.fixed_time)			/* Otherwise we don't print the time */
-		gmt_set_column (GMT, GMT_IO, t_col, GMT_IS_ABSTIME);
+		gmt_set_column_type (GMT, GMT_IO, t_col, GMT_IS_ABSTIME);
 
 	/* Shorthand for these */
 	nval = Ctrl->CM4->CM4_F.n_field_components;
@@ -534,12 +534,12 @@ EXTERN_MSC int GMT_mgd77magref (void *V_API, int mode, void *args) {
 		Ctrl->CM4->CM4_DATA.n_times = 1;
 	}
 	else	/* Make sure input time columns are encoded/decoded properly since here we know t_col is set. */
-		gmt_set_column (GMT, GMT_IO, t_col, (Ctrl->A.years) ? GMT_IS_FLOAT : GMT_IS_ABSTIME);
+		gmt_set_column_type (GMT, GMT_IO, t_col, (Ctrl->A.years) ? GMT_IS_FLOAT : GMT_IS_ABSTIME);
 
-	gmt_set_column (GMT, GMT_IO, t_col+1, GMT_IS_FLOAT);		/* Override any previous t_col = 3 settings */
+	gmt_set_column_type (GMT, GMT_IO, t_col+1, GMT_IS_FLOAT);		/* Override any previous t_col = 3 settings */
 	if (!Ctrl->copy_input) {	/* No time on output */
-		gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_FLOAT);
-		gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
+		gmt_set_column_type (GMT, GMT_OUT, 2, GMT_IS_FLOAT);
+		gmt_set_column_type (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
 	}
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
