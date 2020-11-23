@@ -1024,13 +1024,13 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Ensure proper formatting of geographic coordinates */
-				gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_FLOAT);
-				gmt_set_column (GMT, GMT_OUT, 1, GMT_IS_LON);
-				gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_LAT);
-				gmt_set_column (GMT, GMT_OUT, 6, GMT_IS_LON);
-				gmt_set_column (GMT, GMT_OUT, 7, GMT_IS_LAT);
-				gmt_set_column (GMT, GMT_OUT, 9, GMT_IS_LON);
-				gmt_set_column (GMT, GMT_OUT, 10, GMT_IS_LAT);
+				gmt_set_column_type (GMT, GMT_OUT, 0, GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_OUT, 1, GMT_IS_LON);
+				gmt_set_column_type (GMT, GMT_OUT, 2, GMT_IS_LAT);
+				gmt_set_column_type (GMT, GMT_OUT, 6, GMT_IS_LON);
+				gmt_set_column_type (GMT, GMT_OUT, 7, GMT_IS_LAT);
+				gmt_set_column_type (GMT, GMT_OUT, 9, GMT_IS_LON);
+				gmt_set_column_type (GMT, GMT_OUT, 10, GMT_IS_LAT);
 			}
 			Out = gmt_new_record (GMT, out, NULL);
 			for (tbl = prof = 0; tbl < Dout->n_tables; tbl++) {

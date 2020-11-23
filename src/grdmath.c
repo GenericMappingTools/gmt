@@ -773,7 +773,7 @@ GMT_LOCAL void grdmath_ACOS (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	uint64_t node;
 	float a = 0.0f;
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACOS!\n");
 	if (stack[last]->constant) a = (float)d_acos (stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : d_acosf (stack[last]->G->data[node]);
@@ -798,7 +798,7 @@ GMT_LOCAL void grdmath_ACOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	uint64_t node;
 	float a = 0.0f;
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0)
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACOT!\n");
 	if (stack[last]->constant) a = (float)atan (1.0 / stack[last]->factor);
@@ -823,7 +823,7 @@ GMT_LOCAL void grdmath_ACSC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	uint64_t node;
 	float a = 0.0f;
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0)
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACSC!\n");
 	if (stack[last]->constant) a = (float)d_asin (1.0 / stack[last]->factor);
@@ -887,7 +887,7 @@ GMT_LOCAL void grdmath_ARC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	double a, b;
 	gmt_M_unused(GMT);
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	for (node = 0; node < info->size; node++) {
 
 		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
@@ -912,7 +912,7 @@ GMT_LOCAL void grdmath_ASEC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	uint64_t node;
 	float a = 0.0f;
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ASEC!\n");
 	if (stack[last]->constant) a = (float)d_acos (1.0 / stack[last]->factor);
 	for (node = 0; node < info->size; node++)
@@ -937,7 +937,7 @@ GMT_LOCAL void grdmath_ASIN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	uint64_t node;
 	float a = 0.0f;
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ASIN!\n");
 	if (stack[last]->constant) a = (float)d_asin (stack[last]->factor);
 	for (node = 0; node < info->size; node++)
@@ -962,7 +962,7 @@ GMT_LOCAL void grdmath_ATAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	float a = 0.0f;
 	gmt_M_unused(GMT);
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant) a = (float)atan (stack[last]->factor);
 	for (node = 0; node < info->size; node++)
 		stack[last]->G->data[node] = (stack[last]->constant) ? a : atanf (stack[last]->G->data[node]);
@@ -975,7 +975,7 @@ GMT_LOCAL void grdmath_ATAN2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 	unsigned int prev = last - 1;
 	double a, b;
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for ATAN2!\n");
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for ATAN2!\n");
 	for (node = 0; node < info->size; node++) {
@@ -1336,7 +1336,7 @@ GMT_LOCAL void grdmath_CAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	double x, y, az;
 	gmt_M_unused(GMT);
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	grdmath_grd_padloop (GMT, info->G, row, col, node) {
 		x = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		y = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
@@ -1355,7 +1355,7 @@ GMT_LOCAL void grdmath_CBAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	double x, y, az;
 	gmt_M_unused(GMT);
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	grdmath_grd_padloop (GMT, info->G, row, col, node) {
 		x = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		y = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
@@ -1824,7 +1824,7 @@ GMT_LOCAL void grdmath_D2R (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	double a = 0.0;
 	gmt_M_unused(GMT);
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant) a = stack[last]->factor * D2R;
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : (stack[last]->G->data[node] * D2R));
 }
@@ -4272,7 +4272,7 @@ GMT_LOCAL void grdmath_R2D (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	double a = 0.0;
 	gmt_M_unused(GMT);
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant) a = R2D * stack[last]->factor;
 	for (node = 0; node < info->size; node++)
 		stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : R2D * stack[last]->G->data[node]);
@@ -4690,7 +4690,7 @@ GMT_LOCAL void grdmath_AZ_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 	unsigned int prev = last - 1;
 	double x0 = 0.0, y0 = 0.0, az;
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (gmt_init_distaz (GMT, 'd', gmt_M_sph_mode (GMT), GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) return;
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,x0,y0,az) shared(info,stack,prev,last,GMT,reverse)
@@ -6800,7 +6800,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 				stack[k]->G = grdmath_alloc_stack_grid (GMT, info.G);
 		}
 
-		gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
+		gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
 
 		pos = (consumed_operands[op]) ? nstack - 1 : nstack;
 		(*call_operator[op]) (GMT, &info, stack, pos);	/* Do it */

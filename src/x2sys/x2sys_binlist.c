@@ -241,9 +241,9 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	}
 	else
 		gmt_set_cartesian (GMT, GMT_OUT);
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
-	gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
-	if (Ctrl->D.active) gmt_set_column (GMT, GMT_OUT, 4, GMT_IS_FLOAT);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
+	gmt_set_column_type (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
+	if (Ctrl->D.active) gmt_set_column_type (GMT, GMT_OUT, 4, GMT_IS_FLOAT);
 	/* Ensure we write integers for the next two columns */
 	GMT->current.io.o_format[2] = GMT->current.io.o_format[3] = strdup ("%g");
 
