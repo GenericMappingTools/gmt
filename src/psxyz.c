@@ -111,7 +111,7 @@ enum Psxyz_cliptype {
 struct PSXYZ_DATA {
 	int symbol, outline;
 	unsigned int flag;	/* 1 = convert azimuth, 2 = use geo-functions, 4 = x-base in units, 8 y-base in units */
-	double x, y, z, dim[PSL_MAX_DIMS], dist[2], transparency;
+	double x, y, z, dim[PSL_MAX_DIMS], dist[2], transparency[2];
 	double *zz;	/* For column symbol if +z<n> in effect */
 	struct GMT_FILL f;
 	struct GMT_PEN p, h;
@@ -632,7 +632,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	bool polygon, penset_OK = true, not_line, old_is_world;
 	bool get_rgb = false, read_symbol, clip_set = false, fill_active, rgb_from_z = false, QR_symbol = false;
 	bool default_outline, outline_active, save_u = false, geovector = false, can_update_headpen = true;
-	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol = 0, tcol = 0, grid_order, frame_order;
+	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol = 0, tcol_f = 0, tcol_s = 0, grid_order, frame_order;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
 	unsigned int bcol, ex1, ex2, ex3, change = 0, n_needed, n_z = 0;
 	int error = GMT_NOERROR;
@@ -712,9 +712,14 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		get_rgb = not_line;	/* Need to assign color from either z or text from input data file */
 		if (Ctrl->Z.active) {	/* Get color from cpt -Z and store in -G */
 			if (Ctrl->Z.file) {
+				/* Must temporarily let the x-column contain datavalues for the CPT lookup */
+				enum gmt_col_enum x_col_type = gmt_get_column_type (GMT, GMT_IN, GMT_X);
+				enum gmt_col_enum v_col_type = gmt_get_column_type (GMT, GMT_IN, 3);
+				gmt_set_column_type (GMT, GMT_IN, GMT_X, v_col_type);
 				if ((Zin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->Z.file, NULL)) == NULL) {
 					Return (API->error);
 				}
+				gmt_set_column_type (GMT, GMT_IN, GMT_X, x_col_type);
 			}
 			else {
 				double rgb[4];
@@ -762,18 +767,25 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	else
 		n_needed = n_cols_start + S.n_required;
 	if (not_line) {
-		for (j = n_cols_start; j < 7; j++) gmt_set_column (GMT, GMT_IN, j, GMT_IS_DIMENSION);	/* Since these may have units appended */
-		for (j = 0; j < S.n_nondim; j++) gmt_set_column (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles or km, not dimensions */
+		for (j = n_cols_start; j < 7; j++) gmt_set_column_type (GMT, GMT_IN, j, GMT_IS_DIMENSION);	/* Since these may have units appended */
+		for (j = 0; j < S.n_nondim; j++) gmt_set_column_type (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles or km, not dimensions */
 	}
 	if (Ctrl->I.mode) {
 		n_needed++;	/* Read intensity from data file */
 		icol = n_needed - 1;
-		gmt_set_column (GMT, GMT_IN, icol, GMT_IS_FLOAT);
+		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_FLOAT);
 	}
-	if (GMT->common.t.variable) {
-		n_needed++;	/* Read transparency from data file */
-		tcol = n_needed - 1;
-		gmt_set_column (GMT, GMT_IN, tcol, GMT_IS_FLOAT);
+	if (GMT->common.t.variable) {	/* Need one or two transparencies from file */
+		if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {
+			n_needed++;	/* Read fill transparencies from data file */
+			tcol_f = n_needed - 1;
+			gmt_set_column_type (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
+		}
+		if (GMT->common.t.mode & GMT_SET_PEN_TRANSP) {
+			n_needed++;	/* Read stroke transparencies from data file */
+			tcol_s = n_needed - 1;
+			gmt_set_column_type (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
+		}
 	}
 
 	if (gmt_check_binary_io (GMT, n_needed))
@@ -850,11 +862,11 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	if (S.symbol == GMT_SYMBOL_TEXT) gmt_setfont (GMT, &S.font);		/* Set the required font */
 	if ((S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & PSL_VEC_JUST_S) {
 		/* Reading 2nd coordinate so must set column types */
-		gmt_set_column (GMT, GMT_IN, pos2x, gmt_M_type (GMT, GMT_IN, GMT_X));
-		gmt_set_column (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
+		gmt_set_column_type (GMT, GMT_IN, pos2x, gmt_M_type (GMT, GMT_IN, GMT_X));
+		gmt_set_column_type (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	}
 	if (S.symbol == PSL_VECTOR && S.v.status & PSL_VEC_COMPONENTS)
-		gmt_set_column (GMT, GMT_IN, pos2y, GMT_IS_FLOAT);	/* Just the users dy component, not length */
+		gmt_set_column_type (GMT, GMT_IN, pos2y, GMT_IS_FLOAT);	/* Just the users dy component, not length */
 	if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC ) {	/* One of the vector symbols */
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
 		if (S.v.status & PSL_VEC_FILL2) {	/* Gave +g<fill> to set head fill; odd, but overrides -G (and sets -G true) */
@@ -880,8 +892,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		}
 	}
 	bcol = (S.read_size) ? ex2 : ex1;
-	if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & GMT_BASE_READ)) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
-	if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & GMT_BASE_READ)) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
+	if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & GMT_BASE_READ)) gmt_set_column_type (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
+	if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & GMT_BASE_READ)) gmt_set_column_type (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	if (penset_OK) gmt_setpen (GMT, &current_pen);
 	QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
@@ -928,15 +940,15 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		gmt_set_meminc (GMT, GMT_BIG_CHUNK);	/* Only a sizeable amount of PSXZY_DATA structures when we initially allocate */
 		GMT->current.map.is_world = !(S.symbol == PSL_ELLIPSE && S.convert_angles);
 		if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0)
-			gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
+			gmt_set_column_type (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
 		else if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && S.convert_angles && !S.par_set) {
 			if (S.n_required == 1)  {
-				gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
+				gmt_set_column_type (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
 				p_in = in2;
 			}
 			else {
-				gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
-				gmt_set_column (GMT, GMT_IN, ex3, GMT_IS_GEODIMENSION);
+				gmt_set_column_type (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
+				gmt_set_column_type (GMT, GMT_IN, ex3, GMT_IS_GEODIMENSION);
 			}
 		}
 		else if (S.symbol == PSL_WEDGE) {
@@ -959,7 +971,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				PSL_command (PSL, "/QR_outline false def\n");
 		}
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
-			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
 			if (S.u_set)
 				delayed_unit_scaling[GMT_X] = (S.u != GMT_INCH);
 			else if (GMT->current.setting.proj_length_unit != GMT_INCH) {
@@ -968,7 +980,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 		}
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex2].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
-			gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_IN, ex2, GMT_IS_FLOAT);
 			delayed_unit_scaling[GMT_Y] = (S.u_set && S.u != GMT_INCH);	/* Since S.u will be set under GMT_X if that else branch kicked in */
 		}
 
@@ -1183,7 +1195,20 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			data[n].p = current_pen;
 			data[n].h = last_headpen;
 			data[n].outline = outline_active ? 1 : 0;
-			if (GMT->common.t.variable) data[n].transparency = 0.01 * in[tcol];	/* Specific transparency for current symbol if -t was given */
+			if (GMT->common.t.variable) {
+				if (GMT->common.t.n_transparencies == 2) {	/* Requested two separate values to be read from file */
+					data[n].transparency[GMT_FILL_TRANSP] = 0.01 * in[tcol_f];
+					data[n].transparency[GMT_PEN_TRANSP]  = 0.01 * in[tcol_s];
+				}
+				else if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {	/* Gave fill transparency */
+					data[n].transparency[GMT_FILL_TRANSP] = 0.01 * in[tcol_f];
+					if (GMT->common.t.n_transparencies == 0) data[n].transparency[GMT_PEN_TRANSP] = data[n].transparency[GMT_FILL_TRANSP];	/* Implied to be used for stroke also */
+				}
+				else {	/* Gave stroke transparency */
+					data[n].transparency[GMT_PEN_TRANSP] = 0.01 * in[tcol_s];
+					if (GMT->common.t.n_transparencies == 0) data[n].transparency[GMT_FILL_TRANSP] = data[n].transparency[GMT_PEN_TRANSP];	/* Implied to be used for fill also */
+				}
+			}
 			data[n].string = NULL;
 			/* Next two are for sorting:
 			   dist[0] is layer "height": objects closer to the viewer have higher numbers
@@ -1491,7 +1516,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					PSL_command (PSL, "/QR_outline false def\n");
 			}
 			if (GMT->common.t.variable)	/* Update the transparency for current symbol */
-				PSL_settransparency (PSL, data[i].transparency);
+				PSL_settransparencies (PSL, data[i].transparency);
 
 			/* For global periodic maps, symbols plotted close to a periodic boundary may be clipped and should appear
 			 * at the other periodic boundary.  We try to handle this below */
@@ -1733,6 +1758,10 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 						break;
 				}
 			}
+		}
+		if (GMT->common.t.variable) {	/* Reset the transparencies */
+			double transp[2] = {0.0, 0.0};	/* None selected */
+			PSL_settransparencies (PSL, transp);
 		}
 		PSL_command (GMT->PSL, "U\n");
 		if (n_warn[1]) GMT_Report (API, GMT_MSG_INFORMATION, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);

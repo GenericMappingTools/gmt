@@ -12844,8 +12844,8 @@ int GMT_Get_Common (void *V_API, unsigned int option, double par[]) {
 		case 's':	if (GMT->common.s.active) ret = 0; break;
 		case 't':
 			if (GMT->common.t.active) {
-				ret = 1;
-				if (par) par[0] = GMT->common.t.value;
+				ret = 2;
+				if (par) gmt_M_memcpy (par, GMT->common.t.value, 2, double);
 			}
 			break;
 		case ':':	if (GMT->common.colon.toggle[GMT_IN]) ret = GMT_IN; else if (GMT->common.colon.toggle[GMT_OUT]) ret = GMT_OUT; break;

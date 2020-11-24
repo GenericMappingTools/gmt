@@ -1051,10 +1051,10 @@ GMT_LOCAL void earthtide_sun_moon_track (struct GMT_CTRL *GMT, struct GMT_GCAL *
 
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
-	gmt_set_column (GMT, GMT_OUT, 1, GMT_IS_LON);
-	gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_LAT);
-	gmt_set_column (GMT, GMT_OUT, 4, GMT_IS_LON);
-	gmt_set_column (GMT, GMT_OUT, 5, GMT_IS_LAT);
+	gmt_set_column_type (GMT, GMT_OUT, 1, GMT_IS_LON);
+	gmt_set_column_type (GMT, GMT_OUT, 2, GMT_IS_LAT);
+	gmt_set_column_type (GMT, GMT_OUT, 4, GMT_IS_LON);
+	gmt_set_column_type (GMT, GMT_OUT, 5, GMT_IS_LAT);
 
 	if (T.count){
 		tdel2 = (T.max-T.min) / ( (T.inc - 1) * 24 * 3600);
@@ -1538,7 +1538,7 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) 	/* Sets output geometry */
 			Return (API->error);
 
-		gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_ABSTIME);	/* Common for both tables; other column types set in the two functions */
+		gmt_set_column_type (GMT, GMT_OUT, 0, GMT_IS_ABSTIME);	/* Common for both tables; other column types set in the two functions */
 
 		if (Ctrl->S.active)
 			earthtide_sun_moon_track (GMT, &cal_start, Ctrl->T.T);

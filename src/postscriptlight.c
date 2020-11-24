@@ -417,7 +417,15 @@ typedef struct {
 	unsigned char *buffer;
 } *psl_byte_stream_t;
 
-/* These are used when the PDF pdfmark extension for transparency is used. */
+/* These are used when the PDF pdfmark or Ghostscript extensions for transparency is used:
+ * Adobe:       https://www.adobe.com/content/dam/acom/en/devnet/acrobat/pdfs/pdfmarkReference_v9.pdf
+ * Ghostscript: https://www.ghostscript.com/doc/current/Language.htm#Transparency
+ *
+ * From gs 9.53 their transparency model takes two transparencies (stroke and fill) while before
+ * it only took one.  The pdfmark took two but we simply duplicated it since GMT itself only dealt
+ * with one transparency for both.  From GMT 6.2.0 we will allow these two transparencies to be set
+ * individually if the user so selects.  Note: We do not support any of the soft masks/shapes stuff.
+ */
 
 #define N_PDF_TRANSPARENCY_MODES	16
 static const char *PDF_transparency_modes[N_PDF_TRANSPARENCY_MODES] = {
@@ -863,7 +871,9 @@ static int psl_shorten_path_old (struct PSL_CTRL *PSL, double *x, double *y, int
 	return (k);
 }
 
-#define N_LENGTH_THRESHOLD 100000000
+/* Addressing issue https://github.com/GenericMappingTools/gmt/issues/439 for long DCW polygons.
+   #define N_LENGTH_THRESHOLD 100000000 meant we only did new path but now we try 50000 as cutoff */
+#define N_LENGTH_THRESHOLD 50000
 static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
 	if (n > N_LENGTH_THRESHOLD)
 		return psl_shorten_path_old (PSL, x, y, n, ix, iy, mode);
@@ -3461,7 +3471,7 @@ static char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]) {
 	}
 	if (!PSL_eq (rgb[3], 0.0)) {
 		/* Transparency */
-		sprintf (&text[strlen(text)], " %.12g /%s PSL_transp", 1.0 - rgb[3], PSL->current.transparency_mode);
+		sprintf (&text[strlen(text)], " %.12g %.12g /%s PSL_transp", 1.0 - rgb[3], 1.0 - rgb[3], PSL->current.transparency_mode);
 	}
 	return (text);
 }
@@ -3972,15 +3982,33 @@ int PSL_setcurrentpoint (struct PSL_CTRL *PSL, double x, double y) {
 }
 
 int PSL_settransparency (struct PSL_CTRL *PSL, double transparency) {
-	/* Updates the current PDF transparency only */
+	/* Updates the current PDF transparency only (for both fill and stroke transparency) */
 	if (transparency < 0.0 || transparency > 1.0) {
 		PSL_message (PSL, PSL_MSG_ERROR, "Error: Bad transparency value [%g] - ignored\n", transparency);
 		return (PSL_BAD_RANGE);
 	}
 	if (transparency == PSL->current.transparency) return (PSL_NO_ERROR);	/* Quietly return if same as before */
 
-	PSL_command (PSL, "%.12g /%s PSL_transp\n", 1.0 - transparency, PSL->current.transparency_mode);
+	PSL_command (PSL, "%.12g %.12g /%s PSL_transp\n", 1.0 - transparency, 1.0 - transparency, PSL->current.transparency_mode);
 	PSL->current.transparency = transparency;	/* Remember current setting */
+	return (PSL_NO_ERROR);
+}
+
+int PSL_settransparencies (struct PSL_CTRL *PSL, double *transparencies) {
+	/* Updates the current PDF transparencies only (fill and stroke separately) */
+	if (transparencies[0] < 0.0 || transparencies[0] > 1.0) {
+		PSL_message (PSL, PSL_MSG_ERROR, "Error: Bad fill transparency value [%g] - ignored\n", transparencies[0]);
+		return (PSL_BAD_RANGE);
+	}
+	if (transparencies[1] < 0.0 || transparencies[1] > 1.0) {
+		PSL_message (PSL, PSL_MSG_ERROR, "Error: Bad stroke transparency value [%g] - ignored\n", transparencies[1]);
+		return (PSL_BAD_RANGE);
+	}
+	if (transparencies[0] == PSL->current.transparencies[0] && transparencies[1] == PSL->current.transparencies[1]) return (PSL_NO_ERROR);	/* Quietly return if same as before */
+
+	PSL_command (PSL, "%.12g %.12g /%s PSL_transp\n", 1.0 - transparencies[0], 1.0 - transparencies[1], PSL->current.transparency_mode);
+	PSL->current.transparencies[0] = transparencies[0];	/* Remember current settings */
+	PSL->current.transparencies[1] = transparencies[1];	/* Remember current settings */
 	return (PSL_NO_ERROR);
 }
 
@@ -4017,7 +4045,7 @@ int PSL_setfill (struct PSL_CTRL *PSL, double rgb[], int outline) {
 	}
 	else if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) {
 		/* If stroke color is transparent and fill is not, explicitly set transparency for fill */
-		PSL_command (PSL, "{%s 1 /Normal PSL_transp} FS\n", psl_putcolor (PSL, rgb));
+		PSL_command (PSL, "{%s 1 1 /Normal PSL_transp} FS\n", psl_putcolor (PSL, rgb));
 		PSL_rgb_copy (PSL->current.rgb[PSL_IS_FILL], rgb);
 	}
 	else {	/* Set new r/g/b fill, after possibly changing fill transparency */
@@ -4342,7 +4370,7 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 		memset (PSL->internal.pattern, 0, 2*PSL_N_PATTERNS*sizeof (struct PSL_PATTERN));	/* Reset all pattern info since the file is now closed */
 	}
 	PSL_setdash (PSL, NULL, 0.0);
-	if (!PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) PSL_command (PSL, "1 /Normal PSL_transp\n");
+	if (!PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) PSL_command (PSL, "1 1 /Normal PSL_transp\n");
 
 	if (lastpage) {
 		PSL_command (PSL, "\ngrestore\n");	/* End encapsulation of main body for this plot */
@@ -4775,7 +4803,7 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode) {
 	if (PSL_same_rgb (rgb, PSL->current.rgb[mode])) return (PSL_NO_ERROR);	/* Same color as already set */
 
 	/* Because psl_putcolor does not set transparency if it is 0%, we reset it here when needed */
-	if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[mode][3], 0.0)) PSL_command (PSL, "1 /Normal PSL_transp ");
+	if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[mode][3], 0.0)) PSL_command (PSL, "1 1 /Normal PSL_transp ");
 
 	/* Then, finally, set the color using psl_putcolor */
 	PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb));

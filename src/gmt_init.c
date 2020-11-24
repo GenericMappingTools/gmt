@@ -172,7 +172,6 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "FORMAT_TIME_SECONDARY_MAP"},
 	{ 0, "FORMAT_TIME_STAMP"},
 	{ 1, "GMT Miscellaneous Parameters"},
-	{ 0, "GMT_AUTO_DOWNLOAD"},
 	{ 0, "GMT_DATA_SERVER"},
 	{ 0, "GMT_DATA_SERVER_LIMIT"},
 	{ 0, "GMT_DATA_UPDATE_INTERVAL"},
@@ -1434,7 +1433,7 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		/* Now set the code for these columns */
 
 		for (i = start; i <= stop; i += inc)
-			gmt_set_column (GMT, dir, (unsigned int)i, code);
+			gmt_set_column_type (GMT, dir, (unsigned int)i, code);
 	}
 	return (GMT_NOERROR);
 }
@@ -2400,6 +2399,74 @@ bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 	if (cr) cr[0] = '+';	/* Restore string */
 
 	return (false);
+}
+
+bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
+	/* Parse -t[<filltransparency>[/<stroketransparency>]][+f][+s]
+	 * Note: The transparency is optional (read from file) only for plot, plot3d, and text */
+	unsigned int n_errors = 0, nt = 0;
+	char *c = NULL;
+
+	GMT->common.t.mode = GMT->common.t.n_transparencies = 0;	/* Initialize */
+	if (item[0] && (c = gmt_first_modifier (GMT, item, "fs"))) {	/* Got modifiers */
+		unsigned int pos = 0;
+		char txt[GMT_LEN16] = {""};
+		while (gmt_getmodopt (GMT, 't', c, "fs", &pos, txt, &n_errors) && n_errors == 0) {
+			switch (txt[0]) {
+				case 'f': GMT->common.t.mode |= GMT_SET_FILL_TRANSP;	nt++;	break;	/* Set fill transparency */
+				case 's': GMT->common.t.mode |= GMT_SET_PEN_TRANSP;		nt++;	break;	/* Set stroke transparency */
+				default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+			}
+		}
+		c[0] = '\0';	/* Chop off the modifiers */
+	}
+
+	if (item[0]) {
+		if (strchr (item, '/')) {	/* Got two transparencies */
+			sscanf (item, "%lg/%lg", &GMT->common.t.value[GMT_FILL_TRANSP], &GMT->common.t.value[GMT_PEN_TRANSP]);
+			if (GMT->common.t.mode) {
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -t: If both filltrans/stroketrans are given the +f+s modifiers are ignored\n");
+				GMT->common.t.mode = 0;
+			}
+		}
+		else if (GMT->common.t.mode == 0)	/* No modifiers specified so set both transparencies */
+			GMT->common.t.value[GMT_FILL_TRANSP] = GMT->common.t.value[GMT_PEN_TRANSP] = atof (item);
+		else {	/* Must check if modifiers selected one or both of the transparencies */
+			if (GMT->common.t.mode & GMT_SET_FILL_TRANSP)
+				GMT->common.t.value[GMT_FILL_TRANSP] = atof (item);
+			if (GMT->common.t.mode & GMT_SET_PEN_TRANSP)
+				GMT->common.t.value[GMT_PEN_TRANSP] = atof (item);
+		}
+		if (GMT->common.t.value[GMT_FILL_TRANSP] < 0.0 || GMT->common.t.value[GMT_FILL_TRANSP] > 100.0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -t: Fill transparency must be in (0-100]%% range!\n");
+			GMT->common.t.value[GMT_FILL_TRANSP] = 0.0;
+			n_errors++;
+		}
+		else if (GMT->common.t.value[GMT_FILL_TRANSP] > 0.0 && GMT->common.t.value[GMT_FILL_TRANSP] <= 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Fill transparency is expected in percentage.  Did you mean %g?\n", GMT->common.t.value[GMT_FILL_TRANSP] * 100.0);
+		}
+		if (GMT->common.t.value[GMT_PEN_TRANSP] < 0.0 || GMT->common.t.value[GMT_PEN_TRANSP] > 100.0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -t: Stroke transparency must be in (0-100]%% range!\n");
+			GMT->common.t.value[GMT_PEN_TRANSP] = 0.0;
+			n_errors++;
+		}
+		else if (GMT->common.t.value[GMT_PEN_TRANSP] > 0.0 && GMT->common.t.value[GMT_PEN_TRANSP] <= 1.0) {
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Stroke transparency is expected in percentage.  Did you mean %g?\n", GMT->common.t.value[GMT_PEN_TRANSP] * 100.0);
+		}
+		GMT->common.t.active = true;
+	}
+	else if (!strncmp (GMT->init.module_name, "psxy", 4U) || !strncmp (GMT->init.module_name, "pstext", 6U)) {	/* Only modules psxy, psxyz, and pstext can do variable transparency */
+		GMT->common.t.active = GMT->common.t.variable = true;
+		GMT->common.t.n_transparencies = (nt) ? nt : 1;	/* If we gave -t+f+s then we need to read two transparencies, else just 1 */
+		if (GMT->common.t.mode== 0) GMT->common.t.mode = GMT_SET_FILL_TRANSP;	/* For these modules, plain -t means -t+f */
+	}
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -t was not given any argument (please add transparency in (0-100]0%% range)!\n");
+		n_errors++;
+	}
+	if (c) c[0] = '+';	/* Restore the modifiers */
+	if (!GMT->common.t.variable && GMT->common.t.mode == 0) GMT->common.t.mode = GMT_SET_FILL_TRANSP | GMT_SET_PEN_TRANSP;	/* Sets both fill and stroke transparencies unless when we read from files */
+	return (n_errors > 0);
 }
 
 /*! Check that special map-related codes are present - if not give warning */
@@ -4681,8 +4748,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			GMT->current.proj.compute_scale[GMT_X] = GMT->current.proj.compute_scale[GMT_Y] = width_given;
 
 			/* Default is not involving geographical coordinates */
-			gmt_set_column (GMT, GMT_IO, GMT_X, GMT_IS_UNKNOWN);
-			gmt_set_column (GMT, GMT_IO, GMT_Y, GMT_IS_UNKNOWN);
+			gmt_set_column_type (GMT, GMT_IO, GMT_X, GMT_IS_UNKNOWN);
+			gmt_set_column_type (GMT, GMT_IO, GMT_Y, GMT_IS_UNKNOWN);
 
 			error += (n_slashes > 1) ? 1 : 0;
 
@@ -4741,10 +4808,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			}
 			else if (t_pos[GMT_X] > 0) {	/* Add option to append time_systems or epoch/unit later */
 				GMT->current.proj.xyz_projection[GMT_X] = GMT_TIME;
-				gmt_set_column (GMT, GMT_IN, GMT_X, (args[t_pos[GMT_X]] == 'T') ?  GMT_IS_ABSTIME : GMT_IS_RELTIME);
+				gmt_set_column_type (GMT, GMT_IN, GMT_X, (args[t_pos[GMT_X]] == 'T') ?  GMT_IS_ABSTIME : GMT_IS_RELTIME);
 			}
 
-			if (d_pos[GMT_X] > 0) gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_LON);
+			if (d_pos[GMT_X] > 0) gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_LON);
 
 			if (slash) {	/* Separate y-scaling desired */
 				strncpy (args_cp, &args[slash+1], GMT_BUFSIZ-1);	/* Since gmt_M_to_inch modifies the string */
@@ -4776,16 +4843,16 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				}
 				else if (t_pos[GMT_Y] > 0) {	/* Add option to append time_systems or epoch/unit later */
 					GMT->current.proj.xyz_projection[GMT_Y] = GMT_TIME;
-					gmt_set_column (GMT, GMT_IN, GMT_Y, (args[t_pos[GMT_Y]] == 'T') ?  GMT_IS_ABSTIME : GMT_IS_RELTIME);
+					gmt_set_column_type (GMT, GMT_IN, GMT_Y, (args[t_pos[GMT_Y]] == 'T') ?  GMT_IS_ABSTIME : GMT_IS_RELTIME);
 				}
-				if (d_pos[GMT_Y] > 0) gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
+				if (d_pos[GMT_Y] > 0) gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
 			}
 			else {	/* Just copy x parameters */
 				GMT->current.proj.xyz_projection[GMT_Y] = GMT->current.proj.xyz_projection[GMT_X];
 				GMT->current.proj.pars[1] = GMT->current.proj.pars[0];
 				GMT->current.proj.pars[3] = GMT->current.proj.pars[2];
 				/* Assume -JX<width>d means a linear geographic plot so x = lon and y = lat */
-				if (gmt_M_type (GMT, GMT_IN, GMT_X) & GMT_IS_LON) gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
+				if (gmt_M_type (GMT, GMT_IN, GMT_X) & GMT_IS_LON) gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
 			}
 			/* Not both sizes can be zero, but if one is, we will adjust to the scale of the other */
 			if (GMT->current.proj.pars[GMT_X] == 0.0 && GMT->current.proj.pars[GMT_Y] == 0.0) error++;
@@ -4794,7 +4861,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 		case GMT_ZAXIS:	/* 3D plot */
 			GMT->current.proj.compute_scale[GMT_Z] = width_given;
 			error += (n_slashes > 0) ? 1 : 0;
-			gmt_set_column (GMT, GMT_IN, GMT_Z, GMT_IS_UNKNOWN);
+			gmt_set_column_type (GMT, GMT_IN, GMT_Z, GMT_IS_UNKNOWN);
 
 			/* Find occurrences of l, p, or t */
 			for (j = 0; args[j]; j++) {
@@ -4832,15 +4899,15 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			}
 			else if (t_pos[GMT_Z] > 0) {
 				GMT->current.proj.xyz_projection[GMT_Z] = GMT_TIME;
-				gmt_set_column (GMT, GMT_IN, GMT_Z, (args[t_pos[GMT_Z]] == 'T') ?  GMT_IS_ABSTIME : GMT_IS_RELTIME);
+				gmt_set_column_type (GMT, GMT_IN, GMT_Z, (args[t_pos[GMT_Z]] == 'T') ?  GMT_IS_ABSTIME : GMT_IS_RELTIME);
 			}
 			if (GMT->current.proj.z_pars[0] == 0.0) error++;
 			GMT->current.proj.JZ_set = true;
 			break;
 
 		case GMT_POLAR:		/* Polar (theta,r) */
-			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_LON);
-			gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_LON);
+			gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);
 			GMT->current.proj.got_azimuths = GMT->current.proj.got_elevations = false;
 			GMT->current.proj.z_down = GMT_ZDOWN_R;
 			if ((d = gmt_first_modifier (GMT, args, "afrtz"))) {	/* Process all modifiers */
@@ -6081,7 +6148,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 
 	/* GMT_COMPATIBILITY */
 	GMT->current.setting.compatibility = (GMT->current.setting.run_mode == GMT_CLASSIC) ? 4 : 6;
-	/* GMTCASE_GMT_AUTO_DOWNLOAD */
+	/* GMTCASE_GMT_AUTO_DOWNLOAD [Deprecated] */
 	GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
 	/* GMTCASE_GMT_DATA_SERVER_LIMIT */
 	GMT->current.setting.url_size_limit = 0;
@@ -8197,9 +8264,9 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			if (gmt_M_type (GMT, GMT_IN, icol) == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
 				got = gmt_scanf_arg (GMT, X[icol], gmt_M_type (GMT, GMT_IN, icol), true, &orig[icol]);
 				if (got & GMT_IS_GEO)
-					gmt_set_column (GMT, GMT_IN, icol, got);
+					gmt_set_column_type (GMT, GMT_IN, icol, got);
 				else if (got & GMT_IS_RATIME) {
-					gmt_set_column (GMT, GMT_IN, icol, got);
+					gmt_set_column_type (GMT, GMT_IN, icol, got);
 					GMT->current.proj.xyz_projection[icol] = GMT_TIME;
 				}
 			}
@@ -8389,18 +8456,18 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 				if (no_T) strcat (text, "T");	/* Add the missing trailing 'T' in an ISO date */
 				got = gmt_scanf_arg (GMT, text, GMT_IS_UNKNOWN, true, &p[i]);
 				if (got == GMT_IS_LON || got == GMT_IS_LAT)	/* If clearly lon or lat we say so */
-					gmt_set_column (GMT, GMT_IN, icol, got), done[icol] = true;
+					gmt_set_column_type (GMT, GMT_IN, icol, got), done[icol] = true;
 				else if (got == GMT_IS_GEO)	/* If clearly geographical we say so */
-					gmt_set_column (GMT, GMT_IN, icol, got), done[icol] = true;
+					gmt_set_column_type (GMT, GMT_IN, icol, got), done[icol] = true;
 				else if ((got & GMT_IS_RATIME) || got == GMT_IS_ARGTIME) {	/* If we got time then be specific */
 					if (got == GMT_IS_ARGTIME) got = GMT_IS_ABSTIME;
 					/* While the -R arg may be abstime, -J or -f may have indicated that data are relative time, so we must check before imposing our got: */
-					if (!(gmt_M_type (GMT, GMT_IN, icol) & GMT_IS_RATIME)) gmt_set_column (GMT, GMT_IN, icol, got), done[icol] = true;	/* Only set if not already set to a time flavor */
+					if (!(gmt_M_type (GMT, GMT_IN, icol) & GMT_IS_RATIME)) gmt_set_column_type (GMT, GMT_IN, icol, got), done[icol] = true;	/* Only set if not already set to a time flavor */
 					GMT->current.proj.xyz_projection[icol] = GMT_TIME;
 				}
 				else if (got == GMT_IS_FLOAT) {	/* Don't want to set col type prematurely ince -R0/13:30E/... would first find Cartesian and then fail on 13:30E */
 					if (done[icol] && gmt_M_type (GMT, GMT_IN, icol) == GMT_IS_UNKNOWN)	/* 2nd time for this column and still not set, then FLOAT is OK */
-						gmt_set_column (GMT, GMT_IN, icol, got);
+						gmt_set_column_type (GMT, GMT_IN, icol, got);
 				}
 				else {	/* Testing this, could we ever get here with sane data? */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not parse %s into Geographical, Cartesian, or Temporal coordinates!\n", text);
@@ -8436,8 +8503,8 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		for (pos = 0; pos < 4; pos++) p[pos] *= inv_scale;
 	}
 	if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_GEO && gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_GEO) {	/* Two geographical coordinates means lon,lat */
-		gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_LON);
-		gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
+		gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_LON);
+		gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
 	}
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Arrange so geographic region always has w < e */
 		double w = p[0], e = p[1];
@@ -11953,6 +12020,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 
 		/* GMT GROUP */
 
+		case GMTCASE_GMT_AUTO_DOWNLOAD:
+			/* Deprecated as of 6.2: we only use GMT_DATA_UPDATE_INTERVAL to control this feature now, so just break here */
+			break;
 		case GMTCASE_GMT_COMPATIBILITY:
 			snprintf (value, GMT_LEN256, "%u", GMT->current.setting.compatibility);
 			break;
@@ -16464,26 +16534,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 't':
-			error += GMT_more_than_once (GMT, GMT->common.t.active);
-			if (item[0]) {
-				GMT->common.t.value = atof (item);
-				if (GMT->common.t.value < 0.0 || GMT->common.t.value > 100.0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -t: Transparency must be in (0-100]%% range!\n");
-					GMT->common.t.value = 0.0;
-					error++;
-				}
-				else if (GMT->common.t.value <= 1.0) {
-					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Transparency is expected in percentage.  Did you mean %g?\n", GMT->common.t.value * 100.0);
-				}
-				GMT->common.t.active = true;
-			}
-			else if (!strncmp (GMT->init.module_name, "psxy", 4U) || !strncmp (GMT->init.module_name, "pstext", 6U)) {	/* Modules psxy, psxyz, and pstext can do variable transparency */
-				GMT->common.t.active = GMT->common.t.variable = true;
-			}
-			else {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -t was not given any value (please add transparency in (0-100]0%% range)!\n");
-				error++;
-			}
+			error += GMT_more_than_once (GMT, GMT->common.t.active) || gmtinit_parse_t_option (GMT, item);
 			break;
 
 #ifdef GMT_MP_ENABLED
