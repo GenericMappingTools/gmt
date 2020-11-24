@@ -42,8 +42,8 @@ extern "C" {
 #endif
 
 enum GMT_enum_apidim {
-	GMTAPI_N_GRID_ARGS	= 4,	/* Minimum size of information array used to specify grid parameters */
-	GMTAPI_N_ARRAY_ARGS	= 8	/* Minimum size of information array used to specify array parameters */
+	GMTAPI_N_GRID_ARGS	= 6,	/* Minimum size of information array used to specify grid parameters */
+	GMTAPI_N_ARRAY_ARGS	= 8		/* Minimum size of information array used to specify array parameters */
 };
 
 /*! p_func_uint64_t is used as a pointer to functions that returns a uint64_t index */
@@ -114,6 +114,7 @@ struct GMTAPI_DATA_OBJECT {
 	struct GMT_MATRIX *M;
 	struct GMT_VECTOR *V;
 	struct GMT_IMAGE *I;
+	struct GMT_CUBE *U;
 	/* End of temporary variables for API debug - will be removed eventually */
 #endif
 };

@@ -239,14 +239,14 @@ API that are not backwards compatible with GMT 5:
 GMT resources
 -------------
 
-The GMT API knows how to create, duplicate, read and write five types of data objects common to
-GMT operations: Pure data tables (ASCII or binary), grids, images, color
+The GMT API knows how to create, duplicate, read and write six types of data objects common to
+GMT operations: Pure data tables (ASCII or binary), grids, images, cubes, color
 palette tables (also known as CPT), PostScript documents, and text tables (ASCII,
 usually a mix of data and free-form text).  In addition, we
 provide two data objects to facilitate the passing of simple user arrays
 (one or more equal-length data columns of any data type, e.g., double,
 char) and 2-D or 3-D user matrices (of any data type and column/row
-organization [3]_). We refer to these data types as GMT *resources*.
+organization). We refer to these data types as GMT *resources*.
 There are many attributes for each of these resources and therefore we
 use a top-level structure for each object to keep them all within one
 container. These containers are given or returned by GMT API
@@ -254,7 +254,7 @@ functions using opaque pointers (``void *``). Below we provide a brief
 overview of these containers, listing only the most critical members.
 For complete details, see Appendix A.  We will later present how they are used when
 importing or exporting them to or from files, memory locations, or
-streams. The first five are the standard GMT objects, while the latter
+streams. The first six are the standard GMT objects, while the latter
 two are special data containers to facilitate the passing of user
 data in and out of GMT modules. These resources are defined in the include
 file ``gmt_resources.h``; please consult this file to ensure correctness
@@ -390,7 +390,7 @@ Both image and header information are passed via a ``struct`` :ref:`GMT_IMAGE <s
 which is a container that holds both items. Thus, the arguments to
 GMT API functions that handle GMT images expect this type of
 variable. Unlike the other objects, writing images has only partial
-support via :doc:`grdimage` [4]_.
+support via :doc:`grdimage` [3]_.
 For the full definition, see :ref:`GMT_IMAGE <struct-image>`.
 
 .. _struct-image2:
@@ -403,6 +403,35 @@ For the full definition, see :ref:`GMT_IMAGE <struct-image>`.
       int                     n_indexed_colors; /* Number of colors in a color-mapped image */
       struct GMT_GRID_HEADER *header;           /* Pointer to full GMT header for the image */
       unsigned char          *data;             /* Pointer to actual image */
+  };
+
+
+GMT cubes
+~~~~~~~~~
+
+GMT cubes are used to represent 3-D grids where all the horizontal layers
+are represented by a single grid header.  Thus, all nodes along the third
+dimension are coregistered and in the horizontal plane they are, like all
+GMT grids, equidistant.  However, the spacing in the third dimension (which
+is typically depth or time) does not have to be equidistant.  At this moment,
+only :doc:`greenspline` and :doc:`grdinterpolate` can produce 3-D cubes while
+the latter can also read them (other grid modules can read individual layers
+of a cube as a single grid).
+We use the same header structure as for grids. However, some
+additional metadata attributes are needed for the third dimension.
+Both the cube and header information are passed via a ``struct`` :ref:`GMT_CUBE <struct-cube>`,
+which is a container that holds all items. Thus, the arguments to
+GMT API functions that handle GMT cubes expect this type of
+variable. 
+For the full definition, see :ref:`GMT_CUBE <struct-cube>`.
+
+.. _struct-cube2:
+
+.. code-block:: c
+
+  struct GMT_CUBE {     /* A GMT 3-D cube in one container */
+       struct GMT_GRID_HEADER *header;      /* The full GMT header for the grid */
+       float                  *data;        /* Pointer to the float 3-D array */
   };
 
 Color palette tables (CPT)
@@ -763,7 +792,9 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_FilePath_        | Verify input file exist and replace with full path    |
     +--------------------------+-------------------------------------------------------+
-    | GMT_Get_Index_           | Convert row, col into a grid or image index           |
+    | GMT_Get_Index_           | Convert row, col into a grid or image 1-D index       |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Get_Index3_          | Convert row, col, layer into a cube 1-D index         |
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_Info_            | Obtain meta data (range, dimension), ... from object  |
     +--------------------------+-------------------------------------------------------+
@@ -858,7 +889,7 @@ likely to only initialize one session even though they may call many
 GMT modules. However, the GMT API supports any number of
 simultaneous sessions should the programmer wish to take advantage of
 it. This might be useful when you have access to several CPUs and want
-to spread the computing load [5]_. In the following discussion we will
+to spread the computing load [4]_. In the following discussion we will
 simplify our treatment to the use of a single session only.
 
 To initiate the new GMT session we use
@@ -1095,6 +1126,8 @@ unique resource ID, or ``GMT_NOTSET`` if there was an error.
     +-------------------+---------------------------------+
     | GMT_IS_IMAGE      | An image                        |
     +-------------------+---------------------------------+
+    | GMT_IS_CUBE       | A 3-D cube                      |
+    +-------------------+---------------------------------+
     | GMT_IS_PALETTE    | A color palette table [CPT]     |
     +-------------------+---------------------------------+
     | GMT_IS_POSTSCRIPT | A GMT PostScript object         |
@@ -1144,6 +1177,8 @@ unique resource ID, or ``GMT_NOTSET`` if there was an error.
     | GMT_IS_PLP     | Either points, lines, or polygons       |
     +----------------+-----------------------------------------+
     | GMT_IS_SURFACE | 2-D gridded surface                     |
+    +----------------+-----------------------------------------+
+    | GMT_IS_VOLUME  | 3-D gridded volume                      |
     +----------------+-----------------------------------------+
 
     GMT constants used to specify the geometry of the data object.
@@ -1214,6 +1249,11 @@ and pass the ``par`` array with contents as indicated below:
   **GMT_IS_IMAGE**.
     Same procedure as for **GMT_IS_GRID** but we return an empty :ref:`GMT_IMAGE <struct-image>` object.  In either
     way of specification you may use ``par[2]`` to pass the number of image bands [1].
+
+  **GMT_IS_CUBE**.
+    Same procedure as for **GMT_IS_GRID** but both ``wesn``, ``inc`` and ``par`` have one extra
+    dimension for the depth or time axis.  For non-equidistant layers you need to use
+    ``par[2]`` to sets the number of layers, otherwise ``wesn`` and ``inc`` can set it all.
 
   **GMT_IS_DATASET**.
     We allocate an empty :ref:`GMT_DATASET <struct-dataset>` structure consisting of ``par[0]`` tables,
@@ -1491,12 +1531,12 @@ etc.
 Import Data Sets
 ----------------
 
-If your program needs to import any of the five recognized data types
-(data table, grid, image, CPT, or PostScript) you will use
+If your program needs to import any of the six recognized data types
+(data table, grid, image, cube, CPT, or PostScript) you will use
 the GMT_Read_Data_ or GMT_Read_VirtualFile_ functions. The former
 is typically used when reading from files, streams (e.g., ``stdin``), or
 an open file handle, while the latter is only used to read from memory.
-Because of the similarities of these five
+Because of the similarities of these six
 import functions we use an generic form that covers all of them.
 
 All input functions takes a parameter called ``mode``. The ``mode``
@@ -1987,7 +2027,7 @@ the relationship is not straightforward, hence we supply
 
   ::
 
-    int64_t GMT_Get_Index (struct GMT_GRID_HEADER *header, int row, int col);
+    uint64_t GMT_Get_Index (struct GMT_GRID_HEADER *header, int row, int col);
 
 where the ``header`` is the header of either a grid or image, and ``row`` and
 ``col`` is the 2-D position in the grid or image.  We return the 1-D array
@@ -1998,11 +2038,22 @@ with many layers we also define
 
   ::
 
-    int64_t GMT_Get_Pixel (struct GMT_GRID_HEADER *header, int row,
+    uint64_t GMT_Get_Pixel (struct GMT_GRID_HEADER *header, int row,
     	int col, int layer);
 
 where the ``header`` is the header of an image, and ``row``, ``col`` and
 ``layer`` (= 1 for grids) is the position in the grid or image.
+
+For data cubes we need to also supply the ``level`` in the cube. Because
+each layer is basically a padded grid, we supply
+
+.. _GMT_Get_Index3:
+
+  ::
+
+    uint64_t GMT_Get_Index3 (struct GMT_GRID_HEADER *header, int row, int col, int level);
+
+where we return the 1-D array position.
 
 Manipulate grids
 ~~~~~~~~~~~~~~~~
@@ -2263,8 +2314,8 @@ encoded in the headers.
 Export Data Sets
 ----------------
 
-If your program needs to write any of the five recognized data types
-(CPTs, data tables, grids, images, or PostScript) you can use the
+If your program needs to write any of the six recognized data types
+(CPTs, data tables, grids, images, cubes or PostScript) you can use the
 GMT_Write_Data_ function.
 
 Both of these output functions takes a parameter called ``mode``. The
@@ -2303,7 +2354,7 @@ The prototype for writing to a file (via name, stream, or file handle) is
 * mode -- specific to each data type (\ *see below*)
 * :ref:`wesn <tbl-wesn>`
 * output --
-* data -- A pointer to any of the five families.
+* data -- A pointer to any of the six families.
 * Return: 0 on success, otherwise return -1 and set API->error to reflect to cause.
 
 where ``data`` is a pointer to any of the four structures discussed previously.
@@ -3467,10 +3518,10 @@ Data containers
 ---------------
 
 The external interface developer will need to create native data classes or structures that are capable of
-containing the information associated with the 5 GMT objects: data tables, grids, images, color palette tables,
+containing the information associated with the six GMT objects: data tables, grids, images, cubes, color palette tables,
 and PostScript documents.  In other words, how your external environment will represent these
 data in memory.  Some of these "containers" may already exist, while others may need to be designed.  Most likely, you will end up with
-a set of five containers that can hold the various GMT data objects and related metadata.  In addition, it may
+a set of six containers that can hold the various GMT data objects and related metadata.  In addition, it may
 be convenient to also consider the two GMT helper objects MATRIX and VECTOR, which may be closer to the native
 representation of your data than, for instance, the native GMT_DATASET.
 
@@ -3528,7 +3579,7 @@ We have built a MATLAB/Octave interface to GMT called the toolbox.  It was our f
 external environment and its development influenced
 how we designed the final GMT C API.  MATLAB represents most data as matrices but there are also structures that
 can hold many different items, including several matrices and text strings.  Thus, we designed several native mex structures
-that represent the five GMT objects.  The main **gmt** function available in MATLAB derives from a small MATLAB script
+that represent the six GMT objects.  The main **gmt** function available in MATLAB derives from a small MATLAB script
 (gmt.m) which handles basic argument testing and then passes the arguments to our C function gmtmex.c.
 Most of the high-level parsing of options and arguments is done in this function, but we also rely on
 a C library (gmtmex_parser.c) that hides the details of the implementation.  It is this library that
@@ -3539,17 +3590,17 @@ by GMT_Encode_Options_.
 The Julia interface
 ~~~~~~~~~~~~~~~~~~~
 
-Unlike the MATLAB interface, the Julia interface is written entirely in the Julia language.
+Unlike the MATLAB interface, the Julia interface GMT.jl is written entirely in the Julia language.
 
 The Python interface
 ~~~~~~~~~~~~~~~~~~~~
 
-To be defined shortly.
+Unlike the MATLAB interface, the Python interface PyGMT is written entirely in the Python language.
 
 Appendix A: GMT resources
 -------------------------
 
-We earlier introduced the five standard GMT resources (dataset, grid, image, color palette table, PostScript)
+We earlier introduced the six standard GMT resources (dataset, grid, image, cube, color palette table, PostScript)
 as well as the user vector and matrix.  Here are the complete definitions of these structures, including
 all variables accessible via the structures.
 
@@ -3711,6 +3762,32 @@ allocated will be *size * n_bands*.
       double                 *x, *y;            /* Vector of coordinates */
       void                   *hidden;           /* ---- Variables "hidden" from the API ---- */
   };
+
+GMT cube
+~~~~~~~~
+
+A 3-D cube is similar to a grid but typically has more than one layer.
+It is represented by a :ref:`GMT_CUBE <struct-cube>` structure that consists of the
+:ref:`GMT_GRID_HEADER <struct-gridheader>` structure and an float array ``data`` that
+contains the cube values.
+**Note**: The header *size* value reflects number of nodes per layer, so the actual memory
+allocated will be *size * n_bands*, where the latter is one of the parameters in the header.
+
+.. _struct-cube:
+
+.. code-block:: c
+
+  struct GMT_CUBE {
+       struct GMT_GRID_HEADER *header;      /* The full GMT header for the grid */
+       float                  *data;        /* Pointer to the float 3-D array */
+       unsigned int           mode;         /* Indicates input was list of 2-D grids rather than a cube */
+       double                 z_range[2];   /* Minimum/max z values (complements header->wesn) */
+       double                 z_inc;        /* z increment (complements header->inc) (0 if variable z spacing) */
+       double                 *x, *y, *z;   /* Arrays of x,y,z coordinates */
+       char name[GMT_GRID_UNIT_LEN80];      /* Name of variable, if read from file (empty if default) */
+       char units[GMT_GRID_UNIT_LEN80];     /* Units in 3rd direction (complements x_units, y_units, z_units)  */
+       void                   *hidden;      /* ---- Variables "hidden" from the API ---- */
+ };
 
 CPT palette table
 ~~~~~~~~~~~~~~~~~
@@ -3979,12 +4056,9 @@ Footnotes
    Currently, C/C++, FORTRAN, MATLAB and Julia are being tested.
 
 .. [3]
-   At the moment, GMT does not have native support for 3-D grids.
-
-.. [4]
    This may change in later releases.
 
-.. [5]
+.. [4]
    However, there is no thread-support yet, so you will need to manage your
    own threads.
 

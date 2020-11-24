@@ -52,6 +52,13 @@ struct GMT_XINGS {
 EXTERN_MSC char *dlerror (void);
 #endif
 
+EXTERN_MSC struct GMT_CUBE *gmtlib_create_cube (struct GMT_CTRL *GMT);
+EXTERN_MSC struct GMT_CUBE *gmtlib_duplicate_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *U, unsigned int mode);
+EXTERN_MSC void gmt_free_cube (struct GMT_CTRL *GMT, struct GMT_CUBE **U, bool free_cube);
+EXTERN_MSC unsigned int gmtlib_free_cube_ptr (struct GMT_CTRL *GMT, struct GMT_CUBE *U, bool free_cube);
+EXTERN_MSC void gmtlib_free_cube (struct GMT_CTRL *GMT, struct GMT_CUBE **U, bool free_cube);
+EXTERN_MSC uint64_t gmtlib_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array);
+EXTERN_MSC bool gmtlib_var_inc (double *x, uint64_t n);
 EXTERN_MSC char *gmtlib_dataserver_url (struct GMTAPI_CTRL *API);
 EXTERN_MSC char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, const char *mods);
 EXTERN_MSC char *gmtlib_valid_filemodifiers (struct GMT_CTRL *GMT);
