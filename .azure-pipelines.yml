@@ -17,25 +17,6 @@ variables:
 
 jobs:
 
-# Lint Checker
-- job:
-  displayName: 'Lint Checker'
-  timeoutInMinutes: 360
-  condition: eq(variables['Build.Reason'], 'Schedule')
-
-  pool:
-    vmImage: 'ubuntu-18.04'
-
-  steps:
-  - bash: |
-      set -x -e
-      sudo snap install cppcheck
-      cppcheck --version
-    displayName: Install cppcheck
-
-  - bash: bash admin/run_cppcheck.sh src
-    displayName: Run cppcheck
-
 # Linux - Compile only
 ########################################################################################
 - job:
