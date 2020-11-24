@@ -13804,6 +13804,24 @@ void gmtinit_complete_RJ (struct GMT_CTRL *GMT, char *codes, struct GMT_OPTION *
 	}
 }
 
+GMT_LOCAL bool gmtinit_mapproject_needs_RJ (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
+	struct GMT_OPTION *opt = NULL;
+	if ((opt = GMT_Find_Option (API, 'E', options))) return false;	/* The -E option means conversion to/from Earth Centered Earth Fixed so no projection */
+	if ((opt = GMT_Find_Option (API, 'N', options))) return false;	/* The -N option means conversion of auxiliary latitudes so no projection */
+	if ((opt = GMT_Find_Option (API, 'Q', options))) return false;	/* The -Q option just dumps information about datums and ellipsoids and then exits */
+	if ((opt = GMT_Find_Option (API, 'T', options))) return false;	/* The -T option means we want to change datums which uses no projection */
+	if ((opt = GMT_Find_Option (API, 'W', options))) return true;	/* The -W option means we must project to plot coordinates so -R -J are required */
+	if ((opt = GMT_Find_Option (API, 'I', options))) return true;	/* The -I option (with no -E or -N) means we must inversely project so -R -J are required */
+	if ((opt = GMT_Find_Option (API, 'C', options))) return true;	/* The -C option means we want to change projection offsets so -R -J are required */
+	/* The above are straightforward, the next set may or may not use -R -J so hence not required by themselves */
+	if ((opt = GMT_Find_Option (API, 'A', options))) return false;	/* The -A option computes azimuths and does not require -R -J */
+	if ((opt = GMT_Find_Option (API, 'G', options))) return false;	/* The -G option computes distances between points and does not require -R -J */
+	if ((opt = GMT_Find_Option (API, 'L', options))) return false;	/* The -L option computes distances to lines and does not require -R -J */
+	if ((opt = GMT_Find_Option (API, 'Z', options))) return false;	/* The -Z option computes distances and times = speeds and does not require -R -J */
+
+	return (true);	/* We get here when a classic command like "gmt mapproject -R -J file" in modern mode looks like "gmt mapproject file" and thus -R -J is required */
+}
+
 GMT_LOCAL bool gmtinit_might_be_remotefile (char *file) {
 	bool quote = false;	/* We are outside any quoted text */
 	size_t k;
@@ -13888,7 +13906,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		if (strchr ("jJg", opt->arg[0])) /* Must turn jr into JR, but will revisit this case later when we know if we have subplots or not */
 			required = "JR";
 	}
-	if (options && !strcmp (mod_name, "mapproject") && (opt = GMT_Find_Option (API, 'W', *options))) /* Must turn on JR */
+	if (options && !strcmp (mod_name, "mapproject") && gmtinit_mapproject_needs_RJ (API, *options))	/* mapproject is a complicated beast that needs some help here */
 		required = "JR";
 	if (options && !strcmp (mod_name, "psxy") && (opt = GMT_Find_Option (API, 'T', *options)) && (opt = GMT_Find_Option (API, 'B', *options)) == NULL) { /* Can turn off JR if -T and no -B as long as -X -Y do not contain c */
 		if (!(((opt = GMT_Find_Option (API, 'X', *options)) && opt->arg[0] == 'c') || ((opt = GMT_Find_Option (API, 'Y', *options)) && opt->arg[0] == 'c')))
