@@ -3782,7 +3782,7 @@ allocated will be *size * n_bands*, where the latter is one of the parameters in
        float                  *data;        /* Pointer to the float 3-D array */
        unsigned int           mode;         /* Indicates input was list of 2-D grids rather than a cube */
        double                 z_range[2];   /* Minimum/max z values (complements header->wesn) */
-       double                 z_inc;        /* z increment (complements header->inc) (0 if variable z spacing */
+       double                 z_inc;        /* z increment (complements header->inc) (0 if variable z spacing) */
        double                 *x, *y, *z;   /* Arrays of x,y,z coordinates */
        char name[GMT_GRID_UNIT_LEN80];      /* Name of variable, if read from file (empty if default) */
        char units[GMT_GRID_UNIT_LEN80];     /* Units in 3rd direction (complements x_units, y_units, z_units)  */
