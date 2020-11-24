@@ -246,7 +246,7 @@ usually a mix of data and free-form text).  In addition, we
 provide two data objects to facilitate the passing of simple user arrays
 (one or more equal-length data columns of any data type, e.g., double,
 char) and 2-D or 3-D user matrices (of any data type and column/row
-organization ). We refer to these data types as GMT *resources*.
+organization). We refer to these data types as GMT *resources*.
 There are many attributes for each of these resources and therefore we
 use a top-level structure for each object to keep them all within one
 container. These containers are given or returned by GMT API
