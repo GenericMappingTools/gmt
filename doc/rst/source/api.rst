@@ -3767,7 +3767,7 @@ GMT cube
 ~~~~~~~~
 
 A 3-D cube is similar to a grid but typically has more than one layer.
-It is represented by a :ref:`GMT_CUBE <struct-image>` structure that consists of the
+It is represented by a :ref:`GMT_CUBE <struct-cube>` structure that consists of the
 :ref:`GMT_GRID_HEADER <struct-gridheader>` structure and an float array ``data`` that
 contains the cube values.
 **Note**: The header *size* value reflects number of nodes per layer, so the actual memory
