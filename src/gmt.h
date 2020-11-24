@@ -107,7 +107,7 @@ EXTERN_MSC int GMT_Put_Matrix          (void *API, struct GMT_MATRIX *M, unsigne
 EXTERN_MSC int GMT_Put_Strings         (void *API, unsigned int family, void *object, char **array);
 EXTERN_MSC char ** GMT_Get_Strings     (void *API, unsigned int family, void *object);
 
-/* 5 functions to relate (row,col) to a 1-D index for grids,cubes and images and to precompute equidistant coordinates for grids and images */
+/* 5 functions to relate (row,col) to a 1-D index for grids, cubes and images and to precompute equidistant coordinates for grids and images */
 
 EXTERN_MSC uint64_t GMT_Get_Index      (void *API, struct GMT_GRID_HEADER *header, int row, int col);
 EXTERN_MSC double * GMT_Get_Coord      (void *API, unsigned int family, unsigned int dim, void *container);
