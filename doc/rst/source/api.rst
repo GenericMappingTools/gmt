@@ -1126,7 +1126,7 @@ unique resource ID, or ``GMT_NOTSET`` if there was an error.
     +-------------------+---------------------------------+
     | GMT_IS_IMAGE      | An image                        |
     +-------------------+---------------------------------+
-    | GMT_IS_CUBE       | An 3-D cube                     |
+    | GMT_IS_CUBE       | A 3-D cube                      |
     +-------------------+---------------------------------+
     | GMT_IS_PALETTE    | A color palette table [CPT]     |
     +-------------------+---------------------------------+
