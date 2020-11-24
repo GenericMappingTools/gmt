@@ -580,7 +580,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				}
 			}
 			for (col = GMT_Z; col < Si->n_columns; col++)
-				gmt_set_column (GMT, GMT_OUT, col, GMT_IS_FLOAT);	/* These are data columns */
+				gmt_set_column_type (GMT, GMT_OUT, col, GMT_IS_FLOAT);	/* These are data columns */
 			if (GMT_Close_VirtualFile (API, i_file) != GMT_NOERROR) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to close input virtual dataset for time-series\n");
 				Return (API->error);
@@ -594,7 +594,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		}
-		gmt_set_column (GMT, GMT_OUT, col, level_type);	/* This is the grid-level data type which on output is in this column */
+		gmt_set_column_type (GMT, GMT_OUT, col, level_type);	/* This is the grid-level data type which on output is in this column */
 
 		if (Ctrl->T.active) {	/* Want to interpolate through the sampled points using the specified spline */
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, Out, i_file) != GMT_NOERROR) {
@@ -647,9 +647,9 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			wesn[YLO] = Out->table[0]->segment[0]->data[4][0];	wesn[YHI] = Out->table[0]->segment[0]->data[4][dim[GMT_ROW]-1];
 			inc[GMT_X] = gmt_M_get_inc (GMT, wesn[XLO], wesn[XHI], Out->n_segments, GMT_GRID_NODE_REG);
 			inc[GMT_Y] = gmt_M_get_inc (GMT, wesn[YLO], wesn[YHI], Out->table[0]->segment[0]->n_rows, GMT_GRID_NODE_REG);
-			gmt_set_column (GMT, GMT_OUT, GMT_X, dtype);	/* This is data type of the distances */
-			gmt_set_column (GMT, GMT_OUT, GMT_Y, GMT_IS_FLOAT);	/* This is data type of depth or time */
-			gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);	/* This is data type of the cube values */
+			gmt_set_column_type (GMT, GMT_OUT, GMT_X, dtype);	/* This is data type of the distances */
+			gmt_set_column_type (GMT, GMT_OUT, GMT_Y, GMT_IS_FLOAT);	/* This is data type of depth or time */
+			gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);	/* This is data type of the cube values */
 			if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc, GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a grid for slice\n");
 				Return (API->error);
@@ -715,7 +715,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	}
 	GMT_Report (API, GMT_MSG_INFORMATION, "Interpolate %" PRIu64 " new layers (%g to %g in steps of %g).\n", Ctrl->T.T.n, Ctrl->T.T.array[0], Ctrl->T.T.array[Ctrl->T.T.n-1]);
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);	/* The 3rd dimension is not time in the grids, but we may have read time via -Z with -f2T */
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);	/* The 3rd dimension is not time in the grids, but we may have read time via -Z with -f2T */
 
 	/* Create grid layers for each output level */
 

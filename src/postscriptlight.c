@@ -871,7 +871,9 @@ static int psl_shorten_path_old (struct PSL_CTRL *PSL, double *x, double *y, int
 	return (k);
 }
 
-#define N_LENGTH_THRESHOLD 100000000
+/* Addressing issue https://github.com/GenericMappingTools/gmt/issues/439 for long DCW polygons.
+   #define N_LENGTH_THRESHOLD 100000000 meant we only did new path but now we try 50000 as cutoff */
+#define N_LENGTH_THRESHOLD 50000
 static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
 	if (n > N_LENGTH_THRESHOLD)
 		return psl_shorten_path_old (PSL, x, y, n, ix, iy, mode);
