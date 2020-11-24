@@ -189,6 +189,7 @@ EXTERN_MSC bool gmt_file_is_cache (struct GMTAPI_CTRL *API, const char *file);
 
 /* gmt_grdio.c: */
 
+EXTERN_MSC uint64_t gmt_get_active_layers (struct GMT_CTRL *GMT, struct GMT_CUBE *U, double *range, uint64_t *start_k, uint64_t *stop_k);
 EXTERN_MSC void gmt_grd_set_datapadding (struct GMT_CTRL *GMT, bool set);
 EXTERN_MSC void gmt_grd_set_cartesian (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int direction);
 EXTERN_MSC int gmt_img_sanitycheck (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
@@ -210,6 +211,7 @@ EXTERN_MSC void gmt_set_grdinc (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 EXTERN_MSC void gmt_set_grddim (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
 EXTERN_MSC void gmt_grd_pad_on (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int *pad);
 EXTERN_MSC void gmt_grd_pad_off (struct GMT_CTRL *GMT, struct GMT_GRID *G);
+EXTERN_MSC void gmt_cube_pad_off (struct GMT_CTRL *GMT, struct GMT_CUBE *U);
 EXTERN_MSC void gmt_grd_pad_zero (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 EXTERN_MSC void gmt_grd_zminmax (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, gmt_grdfloat *z);
 EXTERN_MSC int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header);
@@ -374,6 +376,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC double * gmt_duplicate_array (struct GMT_CTRL *GMT, double *array, uint64_t n);
 EXTERN_MSC bool gmt_is_barcolumn (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S);
 EXTERN_MSC unsigned int gmt_get_columbar_bands (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S);
 EXTERN_MSC char ** gmt_cat_cpt_strings (struct GMT_CTRL *GMT, char *label, unsigned int n);
@@ -463,6 +466,7 @@ EXTERN_MSC bool gmt_x_is_outside (struct GMT_CTRL *GMT, double *x, double left, 
 EXTERN_MSC void gmt_set_xy_domain (struct GMT_CTRL *GMT, double wesn_extended[], struct GMT_GRID_HEADER *h);
 EXTERN_MSC int gmt_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
 EXTERN_MSC int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction);
+EXTERN_MSC int gmt_cube_BC_set (struct GMT_CTRL *GMT, struct GMT_CUBE *U, unsigned int direction);
 EXTERN_MSC unsigned int gmt_parse_inv_cpt (struct GMT_CTRL *GMT, char *arg);
 EXTERN_MSC struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high);
 EXTERN_MSC void gmt_free_int_selection (struct GMT_CTRL *GMT, struct GMT_INT_SELECTION **S);

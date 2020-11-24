@@ -42,6 +42,7 @@ static inline struct GMT_MATRIX_HIDDEN      * gmt_get_M_hidden (struct GMT_MATRI
 static inline struct GMT_GRID_HIDDEN        * gmt_get_G_hidden (struct GMT_GRID *p)         {return (p->hidden);}
 static inline struct GMT_IMAGE_HIDDEN       * gmt_get_I_hidden (struct GMT_IMAGE *p)        {return (p->hidden);}
 static inline struct GMT_GRID_HEADER_HIDDEN * gmt_get_H_hidden (struct GMT_GRID_HEADER *p)  {return (p->hidden);}
+static inline struct GMT_CUBE_HIDDEN    * gmt_get_U_hidden (struct GMT_CUBE *p)     {return (p->hidden);}
 
 /* Here are the GMT data types used for tables */
 
@@ -202,6 +203,14 @@ struct GMT_IMAGE_HIDDEN {	/* Supporting information hidden from the API */
 	unsigned int alloc_level;       /* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 };
+
+struct GMT_CUBE_HIDDEN {	/* Supporting information hidden from the API */
+	unsigned int id;                /* The internal number of the grid */
+	unsigned int alloc_level;       /* The level it was allocated at */
+	enum GMT_enum_alloc alloc_mode; /* Allocation mode [GMT_ALLOC_INTERNALLY] */
+	enum GMT_enum_alloc xyz_alloc_mode[3];	 /* Stores how the x, y and z arrays were allocated (external or internal) */
+};
+
 
 /* Get the segments next segment (for holes in perimeters */
 static inline struct GMT_DATASEGMENT * gmt_get_next_S (struct GMT_DATASEGMENT *S) {struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S); return (SH->next);}
