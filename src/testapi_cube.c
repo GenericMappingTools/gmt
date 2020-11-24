@@ -1,4 +1,4 @@
-#include "gmt_dev.h"
+#include "gmt.h"
 /*
  * Testing the use of user cubes
  * For now we can only write grid layers on output, not a single 3-D cube.
@@ -7,7 +7,7 @@
 
 int main () {
 	/* Run the test using the specified in and out types */
-	char input[GMT_VF_LEN] = {""}, output[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
+	char input[GMT_VF_LEN] = {""}, output[GMT_VF_LEN] = {""}, cmd[256] = {""};
 	unsigned int mode = GMT_SESSION_EXTERNAL;
 	double range[6] = {3.0, 8.0, 4.0, 6.0, 2.0, 4.0};
 	struct GMT_CUBE *C = NULL, *C2 = NULL;     /* Structure to hold cubes */
