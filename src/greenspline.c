@@ -1438,7 +1438,6 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		"Continuous curvature spherical spline in tension",
 		"Linear Cartesian spline [1-D]",
 		"Bilinear Cartesian spline [2-D]"};
-	char *this_env = NULL;
 
 	gmt_grdfloat *data = NULL;
 
