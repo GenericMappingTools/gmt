@@ -4,6 +4,8 @@
 /*
  * Replicate issue raised in https://forum.generic-mapping-tools.org/t/api-for-spectrum1d/1072.
  * Per OP it yields memory trespassing when valgrind is run and crashes on second run.
+ * Problem was for GMT_IS_DATASET and GMT_IS_DUPLICATE we did not register the duplicate container
+ * so it got lost in the shuffle.
  */
 
 int main () {
@@ -26,7 +28,7 @@ int main () {
 	for (i = 0; i < 512; i++) 
 		S->data[0][i] = sin(2.*(double)i) + 2.*cos((double)i); // stupid data, just for testing
 	/* Open a virtual file to hold the data */
-	GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, Din, input);
+	GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, Din, input);
 	/* Open a virtual file to hold the result */
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, NULL, output);
 	/* Create the parameters string */
