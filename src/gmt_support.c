@@ -12650,7 +12650,7 @@ int gmt_cube_BC_set (struct GMT_CTRL *GMT, struct GMT_CUBE *U, unsigned int dire
 
 	for (k = 0; k < U->header->n_bands; k++) {	/* Do each layer BC separately */
 		G->data = &(U->data[k*U->header->size]);	/* Start of next 2-D layer */
-		if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G, GMT_OUT), "Cube memory")) {	/* Set boundary conditions */
+		if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G, direction), "Cube memory")) {	/* Set boundary conditions */
 			error = GMT_GRID_BC_ERROR;
 			goto cube_clean_up;
 		}

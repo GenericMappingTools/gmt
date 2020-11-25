@@ -5332,10 +5332,9 @@ GMT_LOCAL struct GMT_CUBE * gmtapi_import_cube (struct GMTAPI_CTRL *API, int obj
 
 	char file[PATH_MAX] = {""}, **files = NULL;
 	int item, new_item, new_ID;
-	bool done = true, new = false;
- 	uint64_t row, col, kol, layer, row_out, i0, i1, j0, j1, k0, k1, ij, ij_orig;
+	bool done = true;
+ 	uint64_t row, col, kol, row_out, i0, i1, j0, j1, k0, k1, ij, ij_orig;
 	uint64_t n_layers = 0, k, n_layers_used, here;
-	size_t size;
 	unsigned int both_set = (GMT_CONTAINER_ONLY | GMT_DATA_ONLY);
 	unsigned int method, start_over_method = 0;
 	double dx, dy, d;
@@ -5840,10 +5839,10 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_CUBE *U_obj) {
 	char file[PATH_MAX] = {""};
 	int item, error;
-	bool done = true, row_by_row;
+	bool done = true;
 	unsigned int method;
 	uint64_t row, col, i0, i1, j0, j1, k0, k1, ij, ijp, ij_orig;
-	uint64_t k, n_layers_used, here, save_n_bands;
+	uint64_t k, n_layers_used, here = 0, save_n_bands;
 	size_t size;
 	double dx, dy;
 	p_func_uint64_t GMT_2D_to_index = NULL;
