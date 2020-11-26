@@ -5319,8 +5319,8 @@ int GMT_Put_Levels (void *V_API, struct GMT_CUBE *C, double *levels, uint64_t n_
 
 	/* Check for NULL and void arguments */
 	if (V_API == NULL) return_error (API, GMT_NOT_A_SESSION);
-	if (levels == NULL) return (GMT_PTR_IS_NULL);
-	if (n_levels == 0) return (GMT_DIM_TOO_SMALL);
+	if (levels == NULL) return_error (API, GMT_PTR_IS_NULL);
+	if (n_levels == 0) return_error (API, GMT_DIM_TOO_SMALL);
 	if (C == NULL) return_error (API, GMT_PTR_IS_NULL);
 	if (C->z) return_error (API, GMT_PTR_NOT_NULL);
 	if (C->header == NULL) return_error (API, GMT_PTR_IS_NULL);
@@ -5328,9 +5328,9 @@ int GMT_Put_Levels (void *V_API, struct GMT_CUBE *C, double *levels, uint64_t n_
 		if ((uint64_t)C->header->n_bands < n_levels) return_error (API, GMT_DIM_TOO_SMALL);
 		if ((uint64_t)C->header->n_bands > n_levels) return_error (API, GMT_DIM_TOO_LARGE);
 	}
-	if ((CU = gmt_get_U_hidden (C)) == NULL) return (GMT_PTR_IS_NULL);
+	if ((CU = gmt_get_U_hidden (C)) == NULL) return_error (API, GMT_PTR_IS_NULL);
 	API = gmtapi_get_api_ptr (V_API);
-	if ((C->z = gmt_duplicate_array (API->GMT, levels, n_levels)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((C->z = gmt_duplicate_array (API->GMT, levels, n_levels)) == NULL) return_error (API, GMT_MEMORY_ERROR);
 	CU->xyz_alloc_mode[GMT_Z] = GMT_ALLOC_INTERNALLY;	/* Since allocated by GMT */
 	C->header->n_bands = (uint32_t)n_levels;
 
