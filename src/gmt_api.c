@@ -7183,7 +7183,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			file = strdup (resource);
 			if (direction == GMT_IN) {	/* For input we can check if the file exists and can be read. */
 				char *p = NULL;
-				bool not_url = true;
+				bool not_url = true, is_plus_sign = false;
 				if (a_grid_or_image (family) && !gmtlib_remote_file_is_tiled (API, file, NULL) && (p = strchr (file, '='))) *p = '\0';	/* Chop off any =<stuff> for grids and images so access can work */
 				else if (family == GMT_IS_IMAGE && (p = strchr (file, '+'))) {
 					char *c = strchr (file, '.');	/* The period before an extension */
@@ -7191,6 +7191,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 					if (c && c < p && p[1] == 'b' && isdigit (p[2])) {
 						GMT_Report (API, GMT_MSG_DEBUG, "Truncating +b modifier for image filename %s\n", file);
 						*p = '\0';	/* Chop off any +b<band> for images at end of extension so access can work */
+						is_plus_sign = true;
 					}
 					else	/* Make sure p is NULL so we don't restore a character below */
 						p = NULL;
@@ -7208,7 +7209,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 					gmt_M_str_free (file);
 					return_value (API, GMT_BAD_PERMISSION, GMT_NOTSET);
 				}
-				if (p) p[0] = '=';	/* Restore the extensions */
+				if (p) p[0] = (is_plus_sign) ? '+' : '=';	/* Restore the extensions */
 			}
 			else if (resource == NULL) {	/* No file given [should this mean stdin/stdout?] */
 				gmt_M_str_free (file);
