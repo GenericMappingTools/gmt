@@ -832,6 +832,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Parse_Common_        | Parse the GMT common options                          |
     +--------------------------+-------------------------------------------------------+
+    | GMT_Put_Levels_          | Put user level coordinates into cube container        |
+    +--------------------------+-------------------------------------------------------+
     | GMT_Put_Matrix_          | Put user matrix into container                        |
     +--------------------------+-------------------------------------------------------+
     | GMT_Put_Record_          | Export a data record                                  |
@@ -1371,6 +1373,18 @@ To extract a custom vector from an output :ref:`GMT_VECTOR <struct-vector>` you 
     void *GMT_Get_Vector (void *API, struct GMT_VECTOR *V, unsigned int col);
 
 where ``col`` is the vector number you wish to obtain a pointer to.
+
+.. _GMT_Put_Levels:
+
+  ::
+
+    int GMT_Put_Levels (void *API, struct GMT_CUBE *C, double *levels,
+  uint64_t n_levels);
+
+where ``C`` is the :ref:`GMTCUBE <struct-cube>` created by GMT_Create_Data_, ``levels'' is an array
+with the (probably) non-equidistant coordinates for the third cube dimension, and ``n_levels'' is their number.
+This function is typically used when we are creating a cube whose spacing between layers is not equidistant
+and hence cannot be computed internally from range and increments.
 
 .. _GMT_Get_Version:
 

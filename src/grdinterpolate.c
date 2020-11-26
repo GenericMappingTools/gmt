@@ -727,7 +727,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	gmt_M_memcpy (wesn, C[GMT_IN]->header->wesn, 4, double);	/* This is the output common x/y region now */
 	inc[GMT_X] = C[GMT_IN]->header->inc[GMT_X];	inc[GMT_Y] = C[GMT_IN]->header->inc[GMT_Y];	/* And common x/y increments */
-	if (Ctrl->T.T.var_inc) {	/* Not equidistant output levels selected via -T so must pass the number of output levels instead of increment */
+	if (Ctrl->T.T.var_inc || Ctrl->T.T.n == 1) {	/* Not equidistant output levels selected via -T so must pass the number of output levels instead of increment */
 		dims[GMT_Z] = Ctrl->T.T.n;	/* Number of output levels */
 		this_dim = dims;	/* Pointer to the dims instead of NULL */
 	}
@@ -738,7 +738,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		Return (GMT_MEMORY_ERROR);
 
 	/* If not equidistant we must add in the level array manually */
-	if (Ctrl->T.T.var_inc) C[GMT_OUT]->z = gmt_duplicate_array (GMT, Ctrl->T.T.array, Ctrl->T.T.n);
+	if (C[GMT_OUT]->z == NULL)
+		GMT_Put_Levels (API, C[GMT_OUT], Ctrl->T.T.array, Ctrl->T.T.n);
 
 	/* Allocate input and output arrays for the 1-D spline */
 	if ((i_value = gmt_M_memory (GMT, NULL, C[GMT_IN]->header->n_bands, double)) == NULL) Return (GMT_MEMORY_ERROR);
@@ -764,7 +765,6 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	/* Done with everything; free up remaining memory */
 
-	gmt_M_free (GMT, level);
 	gmt_M_free (GMT, i_value);
 	gmt_M_free (GMT, o_value);
 
