@@ -1381,7 +1381,7 @@ where ``col`` is the vector number you wish to obtain a pointer to.
     int GMT_Put_Levels (void *API, struct GMT_CUBE *C, double *levels,
   uint64_t n_levels);
 
-where ``C`` is the :ref:`GMTCUBE <struct-cube>` created by GMT_Create_Data_, ``levels'' is an array
+where ``C`` is the :ref:`GMT_CUBE <struct-cube>` created by GMT_Create_Data_, ``levels'' is an array
 with the (probably) non-equidistant coordinates for the third cube dimension, and ``n_levels'' is their number.
 This function is typically used when we are creating a cube whose spacing between layers is not equidistant
 and hence cannot be computed internally from range and increments.
