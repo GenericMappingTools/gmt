@@ -738,8 +738,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		Return (GMT_MEMORY_ERROR);
 
 	/* If not equidistant we must add in the level array manually */
-	if (C[GMT_OUT]->z == NULL)
-		GMT_Put_Levels (API, C[GMT_OUT], Ctrl->T.T.array, Ctrl->T.T.n);
+	if (C[GMT_OUT]->z == NULL && GMT_Put_Levels (API, C[GMT_OUT], Ctrl->T.T.array, Ctrl->T.T.n))
+		Return (API->error);
 
 	/* Allocate input and output arrays for the 1-D spline */
 	if ((i_value = gmt_M_memory (GMT, NULL, C[GMT_IN]->header->n_bands, double)) == NULL) Return (GMT_MEMORY_ERROR);
