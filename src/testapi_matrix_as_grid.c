@@ -1,4 +1,4 @@
-#include "gmt_dev.h"
+#include "gmt.h"
 
 /* Test passing a gridline and pixel-registered matrix as grids to grdimage.
  * the two plots should be identical.  This tests was made to demonstrate a
