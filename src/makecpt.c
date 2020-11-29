@@ -23,7 +23,7 @@
  * Brief synopsis: Reads an existing CPT and desired output grid
  * and produces a GMT CPT.  Can be inverted [-I] or made to be
  * continuous [-Z].  Discrete color jumps in CPTs are handled
- * correctly.  Default color table is GMT_DEFAULT_CPT_NAME.
+ * correctly.  Default color table is in GMT->current.setting.cpt [GMT_DEFAULT_CPT_NAME].
  *
  */
 
@@ -456,7 +456,7 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->C.active) {	/* No table specified; set default table */
 		Ctrl->C.active = true;
-		Ctrl->C.file = strdup (GMT_DEFAULT_CPT_NAME);
+		Ctrl->C.file = strdup (GMT->current.setting.cpt);
 	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Prepare CPT via the master file %s\n", Ctrl->C.file);

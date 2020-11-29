@@ -12,6 +12,7 @@
 #-------------------------------------------------------
 COLOR_BACKGROUND		# Color used for data below the current color table range
 COLOR_FOREGROUND		# Color used for data above the current color table range
+COLOR_CPT			# Default CPT
 COLOR_MODEL			# Color model in use (RGB, HSV, CMYK)
 COLOR_NAN			# Color used for data whose value is NaN
 COLOR_HSV_MAX_S			# Maximum saturation assigned for most positive intensity value
