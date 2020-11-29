@@ -1243,6 +1243,9 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char *f
 
 	be_fussy = ((mode & 4) == 0);	if (!be_fussy) mode -= 4;	/* Handle the optional 4 value */
 
+	if (file[0] == '@')	/* Make sure we have a refreshed server this session */
+		gmt_refresh_server (GMT->parent);
+
 	if (gmt_set_remote_and_local_filenames (GMT, file, local_path, remote_path, mode)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot find file %s\n", file);
 		return GMT_NOERROR;
