@@ -75,9 +75,13 @@ Optional Arguments
 **-W**\ [**a**\ [**+u**\ *unit*]\|\ *weight*]
     Write out *x,y,z,w*\ , where *w* is the supplied *weight* (or 1 if not
     supplied) [Default writes *x,y,z* only].  Choose **-Wa** to compute
-    weights equal to the area each node represents.  For geographic grids
-    we default to a length unit of **k** (hence area is in km^2). Change
-    this by appending **+u**\ *unit* (see `Units`_).
+    weights equal to the area each node represents.  For Cartesian grids this
+    is simply the product of the *x* and *y* increments (except for
+    gridline-registered grids at all sides [half] and corners [quarter]).
+    For geographic grids we default to a length unit of **k** (hence area is in km^2). Change
+    this by appending **+u**\ *unit* (see `Units`_). For such grids, the area
+    varies with latitude and also sees special cases for gridline-registered layouts
+    at sides and at poles.
 
 .. _-Z:
 
@@ -131,6 +135,8 @@ Optional Arguments
 .. include:: explain_-s.rst_
 
 .. include:: explain_help.rst_
+
+.. include:: explain_distunits.rst_
 
 .. include:: explain_precision.rst_
 
