@@ -2539,19 +2539,6 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL void gmtgrdio_pad_cube_off_sub (struct GMT_GRID *G, gmt_grdfloat *data, uint64_t start) {
-	/* Remove the current cube pad and shuffle all rows to the left */
-	uint64_t ijp, ij0;
-	unsigned int row;
-
-	for (row = 0; row < G->header->n_rows; row++) {
-		ijp = gmt_M_ijp (G->header, row, 0);	/* Index of start of this row's first column in padded grid  */
-		ij0 = gmt_M_ij0 (G->header, row, 0);	/* Index of start of this row's first column in unpadded grid */
-		gmt_M_memcpy (&(data[ij0]), &(data[ijp]), G->header->n_columns, gmt_grdfloat);	/* Only copy the n_columns data values */
-	}
-}
-
-
 void gmt_cube_pad_off (struct GMT_CTRL *GMT, struct GMT_CUBE *U) {
 	/* Shifts the cube contents so there is no pad.  The remainder of
 	 * the array is not reset and should not be addressed, but

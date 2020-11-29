@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.2.0_7cec4b2_2020.10.04 [64-bit] Document from psxy
+%%Title: GMT v6.2.0_b1364c2_2020.11.28 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Oct  4 22:39:04 2020
+%%CreationDate: Sat Nov 28 15:00:55 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -112,9 +112,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -676,6 +678,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 67 W
 clipsave
 0 0 M
@@ -697,6 +700,7 @@ S
 9720 0 D
 S
 PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -861,7 +865,9 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 8 W
+0 A
 {0.741 0.878 0.875 C} FS
+O0
 1628 0 M
 352 113 D
 264 88 D
@@ -6425,7 +6431,6 @@ S
 811 1355 M
 1633 0 D
 S
-0 A [] 0 B
 9 W
 1628 0 M
 P
@@ -6679,6 +6684,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 4 W
 clipsave
 1628 0 M
@@ -6785,7 +6791,7 @@ clipsave
 351 -113 D
 P
 PSL_clip N
-{0.361 0.4 0.518 C 0.6 /Normal PSL_transp} FS
+{0.361 0.4 0.518 C 0.6 0.6 /Normal PSL_transp} FS
 /FO {P}!
 1313 437 M
 -35 71 D
@@ -7111,6 +7117,7 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -7124,6 +7131,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 9 W
 0.439 A
 clipsave
@@ -7705,6 +7713,7 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 %%EndObject
 U
 %%EndObject
@@ -7871,7 +7880,9 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 8 W
+0 A
 {0.741 0.878 0.875 C} FS
+O0
 1628 0 M
 352 113 D
 264 88 D
@@ -13435,7 +13446,6 @@ S
 811 1355 M
 1633 0 D
 S
-0 A [] 0 B
 9 W
 1628 0 M
 P
@@ -13689,6 +13699,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 4 W
 clipsave
 1628 0 M
@@ -13795,7 +13806,7 @@ clipsave
 351 -113 D
 P
 PSL_clip N
-{0.361 0.4 0.518 C 0.6 /Normal PSL_transp} FS
+{0.361 0.4 0.518 C 0.6 0.6 /Normal PSL_transp} FS
 /FO {P}!
 1313 437 M
 -35 71 D
@@ -14121,6 +14132,7 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -14134,6 +14146,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 9 W
 0.439 A
 clipsave
@@ -14715,6 +14728,7 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 %%EndObject
 U
 %%EndObject
@@ -14879,7 +14893,9 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 8 W
+0 A
 {0.741 0.878 0.875 C} FS
+O0
 1628 0 M
 352 113 D
 264 88 D
@@ -20443,7 +20459,6 @@ S
 811 1355 M
 1633 0 D
 S
-0 A [] 0 B
 9 W
 1628 0 M
 P
@@ -20697,6 +20712,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 4 W
 clipsave
 1628 0 M
@@ -20803,7 +20819,7 @@ clipsave
 351 -113 D
 P
 PSL_clip N
-{0.361 0.4 0.518 C 0.6 /Normal PSL_transp} FS
+{0.361 0.4 0.518 C 0.6 0.6 /Normal PSL_transp} FS
 /FO {P}!
 1313 437 M
 -35 71 D
@@ -21129,6 +21145,7 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -21142,6 +21159,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 9 W
 0.439 A
 clipsave
@@ -21723,6 +21741,7 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 %%EndObject
 U
 %%EndObject
@@ -21888,7 +21907,9 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 8 W
+0 A
 {0.741 0.878 0.875 C} FS
+O0
 1628 0 M
 352 113 D
 264 88 D
@@ -27452,7 +27473,6 @@ S
 811 1355 M
 1633 0 D
 S
-0 A [] 0 B
 9 W
 1628 0 M
 P
@@ -27706,6 +27726,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 4 W
 clipsave
 1628 0 M
@@ -27812,7 +27833,7 @@ clipsave
 351 -113 D
 P
 PSL_clip N
-{0.361 0.4 0.518 C 0.6 /Normal PSL_transp} FS
+{0.361 0.4 0.518 C 0.6 0.6 /Normal PSL_transp} FS
 /FO {P}!
 1313 437 M
 -35 71 D
@@ -28138,6 +28159,7 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -28151,6 +28173,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 9 W
 0.439 A
 clipsave
@@ -28732,6 +28755,7 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 %%EndObject
 U
 %%EndObject
@@ -28896,7 +28920,9 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 8 W
+0 A
 {0.741 0.878 0.875 C} FS
+O0
 1628 0 M
 352 113 D
 264 88 D
@@ -34460,7 +34486,6 @@ S
 811 1355 M
 1633 0 D
 S
-0 A [] 0 B
 9 W
 1628 0 M
 P
@@ -34714,6 +34739,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 4 W
 clipsave
 1628 0 M
@@ -34820,7 +34846,7 @@ clipsave
 351 -113 D
 P
 PSL_clip N
-{0.361 0.4 0.518 C 0.6 /Normal PSL_transp} FS
+{0.361 0.4 0.518 C 0.6 0.6 /Normal PSL_transp} FS
 /FO {P}!
 1313 437 M
 -35 71 D
@@ -35146,6 +35172,7 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -35159,6 +35186,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 9 W
 0.439 A
 clipsave
@@ -35740,6 +35768,7 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 %%EndObject
 U
 %%EndObject
@@ -35902,7 +35931,9 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 8 W
+0 A
 {0.741 0.878 0.875 C} FS
+O0
 1628 0 M
 352 113 D
 264 88 D
@@ -41466,7 +41497,6 @@ S
 811 1355 M
 1633 0 D
 S
-0 A [] 0 B
 9 W
 1628 0 M
 P
@@ -41720,6 +41750,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 4 W
 clipsave
 1628 0 M
@@ -41826,7 +41857,7 @@ clipsave
 351 -113 D
 P
 PSL_clip N
-{0.361 0.4 0.518 C 0.6 /Normal PSL_transp} FS
+{0.361 0.4 0.518 C 0.6 0.6 /Normal PSL_transp} FS
 /FO {P}!
 1313 437 M
 -35 71 D
@@ -42152,6 +42183,7 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -42165,6 +42197,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 9 W
 0.439 A
 clipsave
@@ -42746,6 +42779,7 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 %%EndObject
 U
 %%EndObject
@@ -42906,7 +42940,9 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 8 W
+0 A
 {0.741 0.878 0.875 C} FS
+O0
 1628 0 M
 352 113 D
 264 88 D
@@ -48470,7 +48506,6 @@ S
 811 1355 M
 1633 0 D
 S
-0 A [] 0 B
 9 W
 1628 0 M
 P
@@ -48724,6 +48759,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 4 W
 clipsave
 1628 0 M
@@ -48830,7 +48866,7 @@ clipsave
 351 -113 D
 P
 PSL_clip N
-{0.361 0.4 0.518 C 0.6 /Normal PSL_transp} FS
+{0.361 0.4 0.518 C 0.6 0.6 /Normal PSL_transp} FS
 /FO {P}!
 1313 437 M
 -35 71 D
@@ -49156,6 +49192,7 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -49169,6 +49206,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 9 W
 0.439 A
 clipsave
@@ -49750,6 +49788,7 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 %%EndObject
 U
 %%EndObject
@@ -49759,7 +49798,7 @@ O0
 5100 0 TM
 
 % PostScript produced by:
-%@GMT: gmt gmtlogo -Dx0/0+w3.5i -O -K -F -X4.25i
+%@GMT: gmt gmtlogo -Dx0/0+w3.5i -O -F -X4.25i
 %@PROJ: xy 0.00000000 3.50000000 0.00000000 1.75000000 0.000 3.500 0.000 1.750 +xy
 %%BeginObject PSL_Layer_44
 0 setlinecap
@@ -49913,7 +49952,9 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 8 W
+0 A
 {0.741 0.878 0.875 C} FS
+O0
 1628 0 M
 352 113 D
 264 88 D
@@ -55477,7 +55518,6 @@ S
 811 1355 M
 1633 0 D
 S
-0 A [] 0 B
 9 W
 1628 0 M
 P
@@ -55731,6 +55771,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 4 W
 clipsave
 1628 0 M
@@ -55837,7 +55878,7 @@ clipsave
 351 -113 D
 P
 PSL_clip N
-{0.361 0.4 0.518 C 0.6 /Normal PSL_transp} FS
+{0.361 0.4 0.518 C 0.6 0.6 /Normal PSL_transp} FS
 /FO {P}!
 1313 437 M
 -35 71 D
@@ -56163,6 +56204,7 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -56176,6 +56218,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 9 W
 0.439 A
 clipsave
@@ -56757,21 +56800,9 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
-%%EndObject
 U
 %%EndObject
-0 A
-FQ
-O0
-0 0 TM
-
-% PostScript produced by:
-%@GMT: gmt psxy -R0/8.5/0/11 -Jx1i -O -T
-%@PROJ: xy 0.00000000 8.50000000 0.00000000 11.00000000 0.000 8.500 0.000 11.000 +xy
-%%BeginObject PSL_Layer_50
-0 setlinecap
-0 setlinejoin
-3.32550952342 setmiterlimit
+U
 %%EndObject
 
 grestore
