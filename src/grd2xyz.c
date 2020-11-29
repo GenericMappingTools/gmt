@@ -428,9 +428,9 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 					}
 					first_geo = false;
 					if (GMT->current.map.dist[GMT_MAP_DIST].arc)	/* Wants a squared steradian-type area measure, so undo km^2 first by dividing by r^2, then scale to new arc unit^2 */
-						A_scale = pow (GMT->current.map.dist[GMT_MAP_DIST].scale, 2.0) / pow (0.001 * GMT->current.proj.mean_radius, 2.0);
+						A_scale = pow (1000.0 * GMT->current.map.dist[GMT_MAP_DIST].scale / GMT->current.proj.mean_radius, 2.0);
 					else
-						A_scale = pow (1000.0 / GMT->current.map.dist[GMT_MAP_DIST].scale, 2.0);	/* Get final measure unit for area after converting back to m^2 first */
+						A_scale = pow (1000.0 * GMT->current.map.dist[GMT_MAP_DIST].scale, 2.0);	/* Get final measure unit for area after converting back to m^2 first */
 				}
 			}
 
