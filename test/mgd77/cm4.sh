@@ -58,7 +58,7 @@ m1=($(gmt info zz1.dat -C -f0T))
 m2=($(gmt info zz2.dat -C -f0T))
 
 # Compute limits such that both Y axes have the same scale
-max_Y=$(gmt math -Q ${m1[3]} ${m1[2]} SUB STO@D1 POP ${m2[3]} ${m2[2]} SUB STO@D2 POP RCL@D2 RCL@D1 GT @D2 @D1 IFELSE =)
+max_Y=$(gmt math -Q ${m1[3]} ${m1[2]} SUB STO@D1 POP ${m2[3]} ${m2[2]} SUB STO@D2 POP @D2 @D1 GT @D2 @D1 IFELSE =)
 y1_max=$(gmt math -Q ${m1[2]} $max_Y ADD =)
 y2_max=$(gmt math -Q ${m2[2]} $max_Y ADD =)
 gmt psxy zz1.dat -R${m1[0]}/${m1[1]}/${m1[2]}/$y1_max -JX16c/6c -Bpxa6Hf1h -By10 -BWSn -W1p -Y5.0c -P -K > $ps
