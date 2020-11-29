@@ -257,7 +257,7 @@ struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle hea
 	double lon[2], lat[2];	/* Coordinates of arc end points */
 	double A[3], B[3];	/* Cartesian vector of arc end points */
 	double P[3];		/* Cartesian vector of the pole */
-	bool longway;		/* True if the arc > 180 degres */
+	bool longway;		/* True if the arc > 180 degrees */
 	double r0;		/* Arc length in degrees */
 	double r;		/* Will be 180 less if longway is true, otherwise r == r0 */
 	double colat;		/* Colatitude of circle relative to pole */
@@ -5672,7 +5672,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	gmtplot_map_griditems (GMT);
 
 	/* 2. Next is tick marks */
-	
+
 	gmtplot_map_tick_marks (GMT);
 
 	/* 3. Next is map frame */
@@ -7202,7 +7202,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 				strncat(opt_J, &token[6], GMT_LEN256-1);	strcat (opt_J, "/");
 			}
 		}
-		//if (opt_J[strlen(opt_J)-1] != '/')		/* Not stricly needed by GMT but needed in gmt_parse_common_options() */
+		//if (opt_J[strlen(opt_J)-1] != '/')		/* Not strictly needed by GMT but needed in gmt_parse_common_options() */
 			//strcat(opt_J, "0/");
 	}
 
