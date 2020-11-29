@@ -61,6 +61,9 @@ COLOR Parameters
         Color used for the foreground of images (i.e., when z > highest
         color table entry) [white].
 
+    **COLOR_CPT**
+        Default CPT table when none is selected [turbo].
+
     **COLOR_HSV_MAX_S**
         Maximum saturation (0-1) assigned for most positive intensity value [0.1].
 
