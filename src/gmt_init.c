@@ -6033,7 +6033,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	/* COLOR_FOREGROUND */
 	error += gmt_getrgb (GMT, "white", GMT->current.setting.color_patch[GMT_FGD]);
 	/* COLOR_CPT */
-	strcpy (GMT->current.setting.cpt, GMT_DEFAULT_CPT_NAME);
+	strncpy (GMT->current.setting.cpt, GMT_DEFAULT_CPT_NAME, GMT_LEN64-1);
 	/* COLOR_MODEL */
 	GMT->current.setting.color_model = GMT_RGB;
 	/* COLOR_NAN */
