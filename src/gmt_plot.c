@@ -8121,7 +8121,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			plot_y -= (P->dy);
 			PSL_command (PSL, "/PSL_plot_completion {\nV\n");
 			PSL_comment (PSL, "Start of panel tag for panel (%d,%d)\n", P->row, P->col);
-			PSL_comment (PSL, "Will not execute until end of panel\nFQ O0\n");
+			PSL_comment (PSL, "Will not execute until end of panel\n");
 			PSL_setorigin (PSL, GMT->current.setting.map_origin[GMT_X] - P->gap[XLO], GMT->current.setting.map_origin[GMT_Y] - P->gap[YLO], 0.0, PSL_FWD);
 			justify = gmt_just_decode (GMT, P->justify, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */
 			gmt_smart_justify (GMT, justify, 0.0, P->off[GMT_X], P->off[GMT_Y], &plot_x, &plot_y, 1);	/* Shift as requested */
