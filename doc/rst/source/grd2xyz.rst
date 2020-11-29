@@ -81,7 +81,7 @@ Optional Arguments
     For geographic grids we default to a length unit of **k** (hence area is in km^2). Change
     this by appending **+u**\ *unit* (see `Units`_). For such grids, the area
     varies with latitude and also sees special cases for gridline-registered layouts
-    at sides and at poles.
+    at sides, corners, and poles.
 
 .. _-Z:
 
