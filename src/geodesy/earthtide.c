@@ -1265,7 +1265,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-G<outgrid>] [-C<comp>] [-L<lon>/<lat>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T[<min>/<max>/][-|+]<inc>[+n]]\n\t[%s] [-S]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T[<min>/<max>/][-|+]<inc>[+i|n]]\n\t[%s] [-S]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_bo_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -1287,6 +1287,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   moon_lon, moon_lat, moon_dist.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <min> to <max> by <inc>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of t-values to produce over the range instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append +i to indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a valid time unit (%s) to the increment and add +t.\n", GMT_TIME_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no -T is provided get current time in UTC from the computer clock.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no -G or -S are provided then -T is interpreted to mean compute a time-series\n");

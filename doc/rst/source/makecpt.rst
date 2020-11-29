@@ -25,7 +25,7 @@ Synopsis
 [ |-N| ]
 [ |-Q| ]
 [ |-S|\ *mode* ]
-[ |-T|\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*] ]
+[ |-T|\ [*min*/*max*/*inc*\ [**+b**\|\ **+i**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*] ]
 [ |-V|\ [*level*] ]
 [ |-W|\ [**w**] ]
 [ |-Z| ]
@@ -192,7 +192,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
+**-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **+i**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
     Defines the range of the new CPT by giving the lowest and
     highest z-value (and optionally an interval).  If **-T** is
     not given, the existing range in the master CPT will be used intact.

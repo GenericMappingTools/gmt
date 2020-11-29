@@ -14,7 +14,7 @@ Synopsis
 
 **gmt grdinterpolate** *3Dgrid* | *grd1 grd2 ...*
 |-G|\ *outfile*
-|-T|\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
+|-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
 [ |-E|\ *table*\|\ *line* ]
 [ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**] ]
 [ |SYN_OPT-R| ]
@@ -68,7 +68,7 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     For details on array creation, see `Generate 1D Array`_.
 

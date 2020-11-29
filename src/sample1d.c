@@ -99,7 +99,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[f|m|p|r|R][+d][+l]] [-Fl|a|c|n|s<p>][+d1|2] [-N<time_col>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t-T[<min>/<max>/]<inc>[+n|a] [%s] [-W<w_col>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t-T[<min>/<max>/]<inc>[+i|n][+a] [%s] [-W<w_col>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 	             GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -126,6 +126,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Give column number of the independent variable (time) [Default is 0 (first)].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <min> to <max> by <inc>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of t-values to produce over the range instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append +i to indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For absolute time resampling, append a valid time unit (%s) to the increment and add +t.\n", GMT_TIME_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   For spatial resampling with distance computed from the first two columns, specify increment as\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <inc> and append a geospatial distance unit (%s) or c (for Cartesian distances).\n", GMT_LEN_UNITS_DISPLAY);
