@@ -2,7 +2,8 @@
 #
 # Observatory magnetic data dl from ottawa.intermagnet.org/apps/dl_data_prel_e.php
 # The first 30 lines of this file looks like this (so you understand the commands below):
-#Format                 IAGA-2002                                    |
+#
+# Format                 IAGA-2002                                    |
 # Source of Data         Institut de Physique du Globe de Paris (IPGP)|
 # Station Name           Chambon la Foret                             |
 # IAGA CODE              CLF                                          |
@@ -33,7 +34,8 @@
 #2001-05-01 00:02:00.000 121     20995.10   -617.00  42533.10  47436.70
 #2001-05-01 00:03:00.000 121     20995.10   -617.00  42533.00  47436.50
 #
-# We need to pull out items such as lon,lat,altitude and the first time.
+# We need to pull out items such as lon,lat,altitude and the first time,
+# which are lines 6,5,7 and 27, respectively.
 
 ps=cm4.ps
 
@@ -46,7 +48,7 @@ lat=$(sed -n 5p $dia   | $AWK '{print $3}')
 alt=$(sed -n 7p $dia   | $AWK '{print $2/1000}')
 data=$(sed -n 27p $dia | $AWK '{print $1}')
 
-IGRF=$(echo $lon $lat $alt $data | gmt mgd77magref -Fxyz/0)
+IGRF=$(echo $lon $lat $alt ${data}T | gmt mgd77magref -Fxyz/0)
 
 # Create ISO datetime from date and time spread across two columns...
 tail -n +27 $dia | $AWK '{print $1"T"$2, sqrt($4*$4+$5*$5+$6*$6)}' > zz1.dat
