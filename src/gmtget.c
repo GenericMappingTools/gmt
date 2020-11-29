@@ -203,7 +203,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the gmtget main code ----------------------------*/
 
 
-	if (Ctrl->D.active) {	/* Data download */
+	if (Ctrl->D.active) {	/* Remote data download */
 		if (!strncmp (Ctrl->D.dir, "all", 3U) || !strncmp (Ctrl->D.dir, "data", 4U)) {	/* Want data */
 			bool found;
 			int k;
