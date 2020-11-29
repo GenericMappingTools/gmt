@@ -82,7 +82,7 @@
     spacing [Default], **f** for minor tick spacing, and **g** for
     gridline spacing. *stride* is the desired stride interval. The
     optional *phase* shifts the annotation interval by that amount
-    (positive or negative). The optional *unit* indicates the unit of
+    (positive or negative, and the sign is *require*). The optional *unit* indicates the unit of
     the *stride* and are particularly important for time-axes as they
     can be any of the ones listed below:
 
