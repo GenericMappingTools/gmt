@@ -7361,7 +7361,7 @@ void gmtlib_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P) {
 
 /*! Adds listing of available GMT cpt choices to a program's usage message */
 int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
-	gmt_message (GMT, "\t-%c Specify a colortable [Default is %s]:\n", option, GMT_DEFAULT_CPT_NAME);
+	gmt_message (GMT, "\t-%c Specify a colortable [Default is %s]:\n", option, GMT->current.setting.cpt);
 	gmt_message (GMT, "\t   [Legend: R = Default z-range, H = Hard Hinge, S = Soft Hinge, C = Colormodel]\n");
 	gmt_message (GMT, "\t   ---------------------------------------------------------------------------------------\n");
 	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) gmt_message (GMT, "\t   %s\n", GMT_CPT_master[k]);
@@ -7376,7 +7376,7 @@ int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 GMT_LOCAL bool gmtsupport_cpt_master_index (struct GMT_CTRL *GMT, char *name) {
 	size_t len;
 	gmt_M_unused(GMT);
-	if (name == NULL) return true;	/* true, because no name means we default to GMT_DEFAULT_CPT_NAME */
+	if (name == NULL) return true;	/* true, because no name means we default to GMT->current.setting.cpt */
 	len = strlen (name);	/* Length of the master table name so we can limit comparison to just those characters */
 	/* Note: THere are near-duplicate names like broc and brocO, but since they are ordered alphabetically our
 	 * search for broc will first compare with broc before broc0 so not an issue. */
@@ -7984,7 +7984,7 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file) {
 	 * If cpt is specified then that is what we will use. If not, then
 	 * we determine if file is a remote data set, and if it is and has a
 	 * default CPT then we use that, else we return NULL which means use
-	 * the GMT default CPT given by GMT_DEFAULT_CPT_NAME */
+	 * the GMT default CPT given by GMT->current.setting.cpt */
 	int k_data;
 	static char *srtm_cpt = "srtm";
 	char *curr_cpt = NULL;
@@ -8008,7 +8008,7 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file) {
 bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	/* Return true if cpt is the name of a GMT CPT master table and not a local file */
 	char *c = NULL, *f = NULL;
-	if (cpt == NULL) return true;	/* No cpt given means use GMT_DEFAULT_CPT_NAME master */
+	if (cpt == NULL) return true;	/* No cpt given means use GMT->current.setting.cpt master */
 	if (gmt_M_file_is_memory (cpt)) return false;	/* A CPT was given via memory location so cannot be a master reference */
 	if ((f = gmt_strrstr (cpt, GMT_CPT_EXTENSION)))	/* Only examine modifiers from there onwards */
 		c = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
@@ -8168,7 +8168,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			return (P);
 		}
 
-		master = (file && file[0]) ? file : GMT_DEFAULT_CPT_NAME;	/* Set master CPT prefix */
+		master = (file && file[0]) ? file : GMT->current.setting.cpt;	/* Set master CPT prefix */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|GMT_CPT_CONTINUOUS, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
 		/* Stretch to fit the data range */

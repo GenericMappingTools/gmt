@@ -137,6 +137,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 1, "COLOR Parameters"},
 	{ 0, "COLOR_BACKGROUND"},
 	{ 0, "COLOR_FOREGROUND"},
+	{ 0, "COLOR_CPT"},
 	{ 0, "COLOR_NAN"},
 	{ 0, "COLOR_MODEL"},
 	{ 0, "COLOR_HSV_MIN_S"},
@@ -6070,6 +6071,8 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	error += gmt_getrgb (GMT, "black", GMT->current.setting.color_patch[GMT_BGD]);
 	/* COLOR_FOREGROUND */
 	error += gmt_getrgb (GMT, "white", GMT->current.setting.color_patch[GMT_FGD]);
+	/* COLOR_CPT */
+	strncpy (GMT->current.setting.cpt, GMT_DEFAULT_CPT_NAME, GMT_LEN64-1);
 	/* COLOR_MODEL */
 	GMT->current.setting.color_model = GMT_RGB;
 	/* COLOR_NAN */
@@ -6821,7 +6824,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     The <intervals> setting controls the annotation spacing and is a textstring made up of one or\n");
 			gmt_message (GMT, "\t     more substrings of the form [a|f|g][<stride>[+-<phase>]], where the (optional) a\n");
 			gmt_message (GMT, "\t     indicates annotation and major tick interval, f minor tick interval, and g grid interval.\n");
-			gmt_message (GMT, "\t     Here, <stride> is the spacing between ticks or annotations, the (optional)\n");
+			gmt_message (GMT, "\t     Here, <stride> is the spacing between ticks or annotations, the (optional, and with required sign)\n");
 			gmt_message (GMT, "\t     <phase> specifies phase-shifted annotations/ticks by that amount, and the (optional)\n");
 			gmt_message (GMT, "\t     <unit> specifies the <stride> unit [Default is the unit implied in -R]. There can be\n");
 			gmt_message (GMT, "\t     no spaces between the substrings; just append items to make one very long string.\n");
@@ -10403,6 +10406,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_COLOR_FOREGROUND:
 			error = gmt_getrgb (GMT, value, GMT->current.setting.color_patch[GMT_FGD]);
 			break;
+		case GMTCASE_COLOR_CPT:
+			if (strlen (value) >= GMT_LEN64) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "COLOR_CPT = %s exceeds max name length of %d\n", value, GMT_LEN64);
+				error = true;
+			}
+			else
+				strncpy (GMT->current.setting.cpt, value, GMT_LEN64-1);
+			break;
 		case GMTCASE_COLOR_MODEL:
 			if (!strcmp (lower_value, "none"))
 				GMT->current.setting.color_model = GMT_RGB;
@@ -11873,6 +11884,9 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			break;
 		case GMTCASE_COLOR_FOREGROUND:
 			snprintf (value, GMT_LEN256, "%s", gmt_putcolor (GMT, GMT->current.setting.color_patch[GMT_FGD]));
+			break;
+		case GMTCASE_COLOR_CPT:
+			snprintf (value, GMT_LEN64, "%s", GMT->current.setting.cpt);
 			break;
 		case GMTCASE_COLOR_MODEL:
 			if (GMT->current.setting.color_model == GMT_RGB)

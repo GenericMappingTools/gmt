@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt earthtide**
-|-T|\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
+|-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
 |-G|\ *grdfile*
 [ |-C|\ *x|e,y|n,z|v* ]
 [ |SYN_OPT-I| ]
@@ -88,7 +88,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc*. Append +n to indicate *inc* is the number of t-values
     to produce over the range instead. Append a valid time unit (d|h|m|s) to the increment. If only *min* is given then
     we use that date and time for the calculations.  If no **-T** is provided get

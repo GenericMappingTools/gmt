@@ -7656,7 +7656,7 @@ uint64_t gmtlib_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double l
 GMT_LOCAL bool gmtmap_accept_the_jump (struct GMT_CTRL *GMT, double lon1, double lon0, double xx[], bool cartesian) {
 	/* Carefully examine if we really want to draw line from left to right boundary.
 	 * We want to avoid E-W wrapping lines for near-global areas where points simply move
-	 * from being > 180 degres from the map area to < -180 even though the points do not
+	 * from being > 180 degrees from the map area to < -180 even though the points do not
 	 * really reflect motion across the area */
 	double dlon0, dlon1, dlon;
 	int xm, ym;
@@ -7919,7 +7919,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 		if ((I2 = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, I)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_grd_project: Unable to duplicate grid\n");
 			return GMT_RUNTIME_ERROR;
-		}	
+		}
 		gmt_grd_pad_on (GMT, I2, pad2);	/* Add pad */
 		gmt_BC_init (GMT, I2->header);	/* Initialize grid interpolation and boundary condition parameters */
 		gmt_grd_BC_set (GMT, I2, GMT_IN);	/* Set boundary conditions */

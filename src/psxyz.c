@@ -296,8 +296,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is the required number of columns.\n");
 	GMT_Option (API, "c,di,e,f,g,h,i,p,qi,t");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For separate transparency for fill and stroke, append /<transp2> as well.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For plotting symbols with variable transparency read from file, append no value\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and give the transparency as the last numerical value in the data record.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use the +f and +s modifiers to indicate which one or if we expect one or two transparencies.\n");
 	GMT_Option (API, ":,.");
 
 	return (GMT_MODULE_USAGE);
