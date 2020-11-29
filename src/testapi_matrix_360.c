@@ -1,4 +1,4 @@
-#include "gmt_dev.h"
+#include "gmt.h"
 
 /* Testing the passing of a matrix to grdimage for global projection
  * when the central meridian changes. This currently fails as in
