@@ -229,7 +229,7 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 	char header[GMT_BUFSIZ];
 
-	double wesn[4], d_value, A_scale = 1.0, out[4], *x = NULL, *y = NULL;
+	double wesn[4], d_value, A_scale = 1.0, A_geo = 0.0, out[4], *x = NULL, *y = NULL;
 
 	struct GMT_GRID *G = NULL, *W = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *H = NULL;
@@ -421,17 +421,22 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			if (Ctrl->W.area) {	/* calculate area per node */
 				W = gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_ALLOC);
 				gmt_get_cellarea (GMT, W);
-				if (gmt_M_is_geographic (GMT, GMT_IN) && first_geo) {	/* Initialize the distance unit machinery */
-					if (gmt_init_distaz (GMT, Ctrl->W.unit, gmt_M_sph_mode (GMT), GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) {
-						gmt_free_grid (GMT, &W, true);
-						Return (GMT_NOT_A_VALID_TYPE);
+				if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Need geographic area scaling  */
+					if (first_geo) {	/* Initialize the distance unit machinery once */
+						if (gmt_init_distaz (GMT, Ctrl->W.unit, gmt_M_sph_mode (GMT), GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) {
+							gmt_free_grid (GMT, &W, true);
+							Return (GMT_NOT_A_VALID_TYPE);
+						}
+						first_geo = false;
+						if (GMT->current.map.dist[GMT_MAP_DIST].arc)	/* Wants a squared steradian-type area measure, so undo km^2 first by dividing by r^2, then scale to new arc unit^2 */
+							A_geo = pow (1000.0 * GMT->current.map.dist[GMT_MAP_DIST].scale / GMT->current.proj.mean_radius, 2.0);
+						else
+							A_geo = pow (1000.0 * GMT->current.map.dist[GMT_MAP_DIST].scale, 2.0);	/* Get final measure unit for area after converting back to m^2 first */
 					}
-					first_geo = false;
-					if (GMT->current.map.dist[GMT_MAP_DIST].arc)	/* Wants a squared steradian-type area measure, so undo km^2 first by dividing by r^2, then scale to new arc unit^2 */
-						A_scale = pow (1000.0 * GMT->current.map.dist[GMT_MAP_DIST].scale / GMT->current.proj.mean_radius, 2.0);
-					else
-						A_scale = pow (1000.0 * GMT->current.map.dist[GMT_MAP_DIST].scale, 2.0);	/* Get final measure unit for area after converting back to m^2 first */
+					A_scale = A_geo;
 				}
+				else	/* Back to Cartesian grids */
+					A_scale = 1.0;
 			}
 
 			/* Compute grid node positions once only */
