@@ -125,7 +125,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|f|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h>[<col>]] [-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..][+e|r|R<incs>]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|t|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h>[<col>]] [-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..][+e|r|R<incs>]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-S[x][y]] [-T<dz>[+c<col>]] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -133,7 +133,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Select reports for (a)ll [Default], per (f)ile, or per (s)egment.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Select reports for (a)ll [Default], per (t)able, or per (s)egment.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Format the min and max into separate columns; -o may be used to limit output.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Modifies results obtained by -I by shifting the region to better align with\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the data center.  Optionally, append granularity for this shift [exact].\n");
@@ -203,7 +203,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 					case 'a':
 						Ctrl->A.mode = REPORT_PER_DATASET;
 						break;
-					case 'f':
+					case 't': case 'f':	/* Keep f (file) for backwards compatibility, but "table" is used in all similar situations */
 						Ctrl->A.mode = REPORT_PER_TABLE;
 						break;
 					case 's':
