@@ -8923,7 +8923,10 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 		if (family == GMT_IS_PALETTE && !just_get_data) { /* CPTs must be handled differently since the master files live in share/cpt and filename is missing .cpt */
 			int c_err = 0;
 			char CPT_file[PATH_MAX] = {""}, *file = NULL, *m = NULL, *f = NULL;
-			if (input[0] == '@') first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable CPTs */
+			if (input[0] == '@') {
+				gmt_refresh_server (API);
+				first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable CPTs */
+			}
 			file = strdup (&input[first]);
 			if ((c_err = gmtapi_colors2cpt (API, &file, &mode)) < 0) { /* Maybe converted colors to new CPT */
 				gmt_M_str_free (input);
