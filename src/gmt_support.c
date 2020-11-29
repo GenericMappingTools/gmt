@@ -16664,9 +16664,10 @@ double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, 
 uint64_t gmtlib_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
 	/* Just makes an equidistant array given vetted input parameters */
 	uint64_t k, n;
-	double *val = gmt_M_memory (GMT, NULL, n, double);
+	double *val = NULL;
 
 	n = (doubleAlmostEqualZero (min, max) || gmt_M_is_zero (inc)) ? 1 : lrint ((max - min) / fabs (inc)) + 1;
+	val = gmt_M_memory (GMT, NULL, n, double);
 	if (inc < 0.0) {	/* Reverse direction max:inc:min */
 		for (k = 0; k < n; k++) val[k] = max + k * inc;
 		val[n-1] = min;	/* To avoid round-off all the way to the end */
