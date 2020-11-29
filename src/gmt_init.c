@@ -6692,7 +6692,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     The <intervals> setting controls the annotation spacing and is a textstring made up of one or\n");
 			gmt_message (GMT, "\t     more substrings of the form [a|f|g][<stride>[+-<phase>]], where the (optional) a\n");
 			gmt_message (GMT, "\t     indicates annotation and major tick interval, f minor tick interval, and g grid interval.\n");
-			gmt_message (GMT, "\t     Here, <stride> is the spacing between ticks or annotations, the (optional)\n");
+			gmt_message (GMT, "\t     Here, <stride> is the spacing between ticks or annotations, the (optional, and with required sign)\n");
 			gmt_message (GMT, "\t     <phase> specifies phase-shifted annotations/ticks by that amount, and the (optional)\n");
 			gmt_message (GMT, "\t     <unit> specifies the <stride> unit [Default is the unit implied in -R]. There can be\n");
 			gmt_message (GMT, "\t     no spaces between the substrings; just append items to make one very long string.\n");

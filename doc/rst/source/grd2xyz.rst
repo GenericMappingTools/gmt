@@ -16,7 +16,7 @@ Synopsis
 [ |-C|\ [**f**\|\ **i**] ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**a**\|\ *weight*] ] [ |-Z|\ [*flags*] ]
+[ |-W|\ [**a**\ [**+u**\ *unit*]\|\ *weight*] ] [ |-Z|\ [*flags*] ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
@@ -72,10 +72,16 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**a**\|\ *weight*]
+**-W**\ [**a**\ [**+u**\ *unit*]\|\ *weight*]
     Write out *x,y,z,w*\ , where *w* is the supplied *weight* (or 1 if not
     supplied) [Default writes *x,y,z* only].  Choose **-Wa** to compute
-    weights equal to the area each node represents.
+    weights equal to the area each node represents.  For Cartesian grids this
+    is simply the product of the *x* and *y* increments (except for
+    gridline-registered grids at all sides [half] and corners [quarter]).
+    For geographic grids we default to a length unit of **k** (hence area is in km^2). Change
+    this by appending **+u**\ *unit* (see `Units`_). For such grids, the area
+    varies with latitude and also sees special cases for gridline-registered layouts
+    at sides, corners, and poles.
 
 .. _-Z:
 
@@ -130,6 +136,8 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
+.. include:: explain_distunits.rst_
+
 .. include:: explain_precision.rst_
 
 .. include:: explain_grd_inout_short.rst_
@@ -166,6 +174,11 @@ To write a single precision binary file without the x,y positions from
 the remote file @AFR.nc file, using scanline orientation, run::
 
     gmt grd2xyz @AFR.nc -ZTLf > AFR.b
+
+To write out *lon, lat, topo, area* from the @AFR.nc file, selecting meter^2 as the area unit,
+and where *area* reflects the size of each grid box, run::
+
+    gmt grd2xyz @AFR.nc -Wa+ue > AFR.txt
 
 See Also
 --------

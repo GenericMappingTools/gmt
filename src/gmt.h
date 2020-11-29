@@ -106,6 +106,8 @@ EXTERN_MSC int GMT_Put_Matrix          (void *API, struct GMT_MATRIX *M, unsigne
 /* These 2 functions are new in 6.0 and are being considered beta */
 EXTERN_MSC int GMT_Put_Strings         (void *API, unsigned int family, void *object, char **array);
 EXTERN_MSC char ** GMT_Get_Strings     (void *API, unsigned int family, void *object);
+/* This function is new in 6.2 and is being considered beta */
+EXTERN_MSC int GMT_Put_Levels          (void *API, struct GMT_CUBE *C, double *levels, uint64_t n_levels);
 
 /* 5 functions to relate (row,col) to a 1-D index for grids, cubes and images and to precompute equidistant coordinates for grids and images */
 

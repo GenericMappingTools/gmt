@@ -257,7 +257,7 @@ struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle hea
 	double lon[2], lat[2];	/* Coordinates of arc end points */
 	double A[3], B[3];	/* Cartesian vector of arc end points */
 	double P[3];		/* Cartesian vector of the pole */
-	bool longway;		/* True if the arc > 180 degres */
+	bool longway;		/* True if the arc > 180 degrees */
 	double r0;		/* Arc length in degrees */
 	double r;		/* Will be 180 less if longway is true, otherwise r == r0 */
 	double colat;		/* Colatitude of circle relative to pole */
@@ -2597,7 +2597,7 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
 	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
 
 	PSL_comment (PSL, "Start of map frame\n");
-	PSL_command (PSL, "0 A [] 0 B\n");	/* Also ensure full reset to black solid pen color */
+
 	gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 
@@ -5652,6 +5652,11 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 	PSL_setdash (PSL, NULL, 0);	/* To ensure no dashed pens are set prior */
 
+	/* These three commands resets the memory of PSL regarding pen width, color, and outline */
+	gmt_M_memcpy (PSL->current.rgb[PSL_IS_STROKE], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 so it can be reset below */
+	PSL->current.linewidth = -1.0;	/* For a reset of internal setting in PSL */
+	PSL->current.outline = -1;		/* Will now be changed by first PSL_setfill */
+
 	if (GMT->current.proj.three_D && GMT->current.map.frame.drawz) GMT->current.map.frame.plotted_header = true;	/* Just so it is not plotted by gmtplot_map_boundary first */
 
 	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Temporary swap to trick justify machinery */
@@ -5667,7 +5672,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	gmtplot_map_griditems (GMT);
 
 	/* 2. Next is tick marks */
-	
+
 	gmtplot_map_tick_marks (GMT);
 
 	/* 3. Next is map frame */
@@ -7197,7 +7202,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 				strncat(opt_J, &token[6], GMT_LEN256-1);	strcat (opt_J, "/");
 			}
 		}
-		//if (opt_J[strlen(opt_J)-1] != '/')		/* Not stricly needed by GMT but needed in gmt_parse_common_options() */
+		//if (opt_J[strlen(opt_J)-1] != '/')		/* Not strictly needed by GMT but needed in gmt_parse_common_options() */
 			//strcat(opt_J, "0/");
 	}
 
@@ -8129,6 +8134,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				int outline = 0;
 				struct GMT_FILL fill;
 				gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* No fill */
+				PSL_command (PSL, "FQ O0\n");	/* Ensure fill/pen have been reset */
 				if (P->pen[0]) {	/* Want to draw outline of tag box */
 					struct GMT_PEN pen;
 					gmt_M_memset (&pen, 1, struct GMT_PEN);
@@ -8194,6 +8200,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			if (!(PP[0] == '-' && FF[0] == '-')) {	/* Requested textbox fill and/or outline */
 				int outline = 0;	/* No outline */
 				struct GMT_FILL fill;
+				PSL_command (PSL, "FQ O0\n");	/* Ensure fill/pen have been reset */
 				gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* Initialize to no fill */
 				if (PP[0] != '-') {	/* Want to draw outline of tag box */
 					struct GMT_PEN pen;

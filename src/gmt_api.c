@@ -39,7 +39,7 @@
  * GMT_Message		       : Report an message given a verbosity level
  * GMT_Report		       : Report an error given an error code
  *
- * There are 32 further public functions used for GMT i/o activities:
+ * There are 33 further public functions used for GMT i/o activities:
  *
  * GMT_Alloc_Segment       : Allocate a single DATASET segment
  * GMT_Begin_IO	           : Allow i/o to take place for rec-by-rec operations
@@ -61,6 +61,7 @@
  * GMT_Init_VirtualFile    : Reset a virtual file for reuse
  * GMT_Inquire_VirtualFile : Determine family of a virtual file
  * GMT_Open_VirtualFile    : Open a memory location for reading or writing by a module
+ * GMT_Put_Levels          : Place an array with 3rd dimension coordinates for a cube
  * GMT_Put_Record          : Send the next output record to its destination
  * GMT_Put_Row             : Write one row to a grid
  * GMT_Put_Matrix          : Hook user matrix to GMT_MATRIX array
@@ -5311,6 +5312,39 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 	return (GMT_NOERROR);
 }
 
+int GMT_Put_Levels (void *V_API, struct GMT_CUBE *C, double *levels, uint64_t n_levels) {
+	/* Duplicate and assign a level array to the cube for its 3rd dimension coordinates */
+	struct GMT_CUBE_HIDDEN *CU;
+	struct GMTAPI_CTRL *API = NULL;
+
+	/* Check for NULL and void arguments */
+	if (V_API == NULL) return_error (API, GMT_NOT_A_SESSION);
+	if (levels == NULL) return_error (API, GMT_PTR_IS_NULL);
+	if (n_levels == 0) return_error (API, GMT_DIM_TOO_SMALL);
+	if (C == NULL) return_error (API, GMT_PTR_IS_NULL);
+	if (C->z) return_error (API, GMT_PTR_NOT_NULL);
+	if (C->header == NULL) return_error (API, GMT_PTR_IS_NULL);
+	if (C->header->n_bands > 0) {	/* If set then it better match */
+		if ((uint64_t)C->header->n_bands < n_levels) return_error (API, GMT_DIM_TOO_SMALL);
+		if ((uint64_t)C->header->n_bands > n_levels) return_error (API, GMT_DIM_TOO_LARGE);
+	}
+	if ((CU = gmt_get_U_hidden (C)) == NULL) return_error (API, GMT_PTR_IS_NULL);
+	API = gmtapi_get_api_ptr (V_API);
+	if ((C->z = gmt_duplicate_array (API->GMT, levels, n_levels)) == NULL) return_error (API, GMT_MEMORY_ERROR);
+	CU->xyz_alloc_mode[GMT_Z] = GMT_ALLOC_INTERNALLY;	/* Since allocated by GMT */
+	C->header->n_bands = (uint32_t)n_levels;
+
+	return (GMT_NOERROR);
+}
+
+#ifdef FORTRAN_API
+int GMT_Put_Levels_ (struct GMT_CUBE *C, double *level, uint64_t *n) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Put_Levels (GMT_FORTRAN, C, level, *n));
+}
+#endif
+
+
 GMT_LOCAL uint64_t gmtapi_get_file_count (char **list) {
 	/* Determine how many entries before trailing NULL entry */
 	uint64_t k = 0;
@@ -5488,7 +5522,11 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					U_obj->header->n_bands = n_layers_used;
 					U_obj->z_range[0] = U_obj->z[k0];
 					U_obj->z_range[1] = U_obj->z[k1];
-					if (k0) memmove (U_obj->z, &U_obj->z[k0], n_layers_used * sizeof(double));	/* Eliminate entries not included */
+					if (k0) {	/* Eliminate entries not included and shrink array */
+						memmove (U_obj->z, &U_obj->z[k0], n_layers_used * sizeof(double));
+						gmt_M_memset (&U_obj->z[n_layers_used], n_layers-n_layers_used, double);
+						U_obj->z = gmt_M_memory (API->GMT, U_obj->z, n_layers_used, double);
+					}
 					U_obj->data = gmt_M_memory_aligned (API->GMT, NULL, U_obj->header->size * n_layers_used, gmt_grdfloat);
 					z_min = U_obj->header->z_min;	/* Initialize cube min/max values based on this first layer */
 					z_max = U_obj->header->z_max;
@@ -8024,7 +8062,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			file = strdup (resource);
 			if (direction == GMT_IN) {	/* For input we can check if the file exists and can be read. */
 				char *p = NULL;
-				bool not_url = true;
+				bool not_url = true, is_plus_sign = false;
 				if (a_grid_or_image_or_cube (family) && !gmtlib_remote_file_is_tiled (API, file, NULL) && (p = strchr (file, '='))) *p = '\0';	/* Chop off any =<stuff> for grids and images so access can work */
 				else if (family == GMT_IS_IMAGE && (p = strchr (file, '+'))) {
 					char *c = strchr (file, '.');	/* The period before an extension */
@@ -8032,6 +8070,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 					if (c && c < p && p[1] == 'b' && isdigit (p[2])) {
 						GMT_Report (API, GMT_MSG_DEBUG, "Truncating +b modifier for image filename %s\n", file);
 						*p = '\0';	/* Chop off any +b<band> for images at end of extension so access can work */
+						is_plus_sign = true;
 					}
 					else	/* Make sure p is NULL so we don't restore a character below */
 						p = NULL;
@@ -8049,7 +8088,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 					gmt_M_str_free (file);
 					return_value (API, GMT_BAD_PERMISSION, GMT_NOTSET);
 				}
-				if (p) p[0] = '=';	/* Restore the extensions */
+				if (p) p[0] = (is_plus_sign) ? '+' : '=';	/* Restore the extensions */
 			}
 			else if (resource == NULL) {	/* No file given [should this mean stdin/stdout?] */
 				gmt_M_str_free (file);
@@ -8884,7 +8923,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 		if (family == GMT_IS_PALETTE && !just_get_data) { /* CPTs must be handled differently since the master files live in share/cpt and filename is missing .cpt */
 			int c_err = 0;
 			char CPT_file[PATH_MAX] = {""}, *file = NULL, *m = NULL, *f = NULL;
-			if (input[0] == '@') first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable CPTs */
+			first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable CPTs */
 			file = strdup (&input[first]);
 			if ((c_err = gmtapi_colors2cpt (API, &file, &mode)) < 0) { /* Maybe converted colors to new CPT */
 				gmt_M_str_free (input);
@@ -8925,7 +8964,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 		else {	/* Not a CPT file but could be remote */
 			int k_data;
 			char file[PATH_MAX] = {""};
-			if (API->remote_info == NULL && !API->GMT->current.io.internet_error) {
+			if (API->remote_info == NULL && !API->GMT->current.io.internet_error && input[0] == '@') {
 				/* Maybe using the API without a module call first so server has not been refreshed yet */
 				gmt_refresh_server (API);
 			}
