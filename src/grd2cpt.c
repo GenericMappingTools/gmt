@@ -506,9 +506,9 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grd2cpt main code ----------------------------*/
 
-	if (!Ctrl->C.active) {	/* No table specified; set GMT_DEFAULT_CPT_NAME table */
+	if (!Ctrl->C.active) {	/* No table specified; set GMT->current.setting.cpt table */
 		Ctrl->C.active = true;
-		Ctrl->C.file = strdup (GMT_DEFAULT_CPT_NAME);
+		Ctrl->C.file = strdup (GMT->current.setting.cpt);
 	}
 
 	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->T.n_levels > 0) ? Ctrl->T.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */
