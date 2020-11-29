@@ -46,9 +46,9 @@ dia=$(gmt which -G @clf20010501d.min)
 lon=$(sed -n 6p $dia   | $AWK '{print $3}')
 lat=$(sed -n 5p $dia   | $AWK '{print $3}')
 alt=$(sed -n 7p $dia   | $AWK '{print $2/1000}')
-data=$(sed -n 27p $dia | $AWK '{print $1}')
+time=$(sed -n 27p $dia | $AWK '{print $1}')
 
-IGRF=$(echo $lon $lat $alt ${data}T | gmt mgd77magref -Fxyz/0)
+IGRF=$(echo $lon $lat $alt ${time}T | gmt mgd77magref -Fxyz/0)
 
 # Create ISO datetime from date and time spread across two columns...
 tail -n +27 $dia | $AWK '{print $1"T"$2, sqrt($4*$4+$5*$5+$6*$6)}' > zz1.dat
@@ -72,12 +72,12 @@ mean=$(gmt math dif_T.dat MEAN -S = --FORMAT_FLOAT_OUT=%.2lf)
 t=($(echo ${m2[2]} | $AWK '{print $1 + 4, $1 + 7, $1+12}'))
 echo ${m1[0]} ${t[1]} Mean = $mean | gmt pstext -F+f11p,Bookman-Demi+jLB -R -J -N -X0.5c -O -K >> $ps
 echo ${m1[0]} ${t[0]} STD = $std | gmt pstext -F+f11p,Bookman-Demi+jLB -R -J -N -O -K >> $ps
-echo ${m1[0]} ${t[2]} $data | gmt pstext -F+f12p,Bookman-Demi+jLB -R -J -N -O -K >> $ps
+echo ${m1[0]} ${t[2]} $time | gmt pstext -F+f12p,Bookman-Demi+jLB -R -J -N -O -K >> $ps
 station=$(tail -n +4 $dia | head -1 | $AWK '{print $3}')
 echo ${m1[0]} ${t[0]} Station -- $station | gmt pstext -F+f14p,Bookman-Demi+jLB -R -J -N -Xa7.5c -Ya4.7c -O -K >> $ps
 
 # Compute and write the IGRF for this day
-IGRF=$(echo $lon $lat $alt $data | gmt mgd77magref -Ft/0 --FORMAT_FLOAT_OUT=%.2lf)
+IGRF=$(echo $lon $lat $alt ${time}T | gmt mgd77magref -Ft/0 --FORMAT_FLOAT_OUT=%.2lf)
 echo ${m1[0]} ${t[0]} IGRF = $IGRF | gmt pstext -F+f15p,Bookman-Demi+jCT -R -J -N -Xa7.5c -Ya3.0c -O -K >> $ps
 
 # Plot histogram of differences with mean removed
