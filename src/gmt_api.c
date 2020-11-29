@@ -5315,7 +5315,7 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 int GMT_Put_Levels (void *V_API, struct GMT_CUBE *C, double *levels, uint64_t n_levels) {
 	/* Duplicate and assign a level array to the cube for its 3rd dimension coordinates */
 	struct GMT_CUBE_HIDDEN *CU;
-	struct GMTAPI_CTRL *API;
+	struct GMTAPI_CTRL *API = NULL;
 
 	/* Check for NULL and void arguments */
 	if (V_API == NULL) return_error (API, GMT_NOT_A_SESSION);
