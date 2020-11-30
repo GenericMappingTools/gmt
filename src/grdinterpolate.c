@@ -320,7 +320,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int int_mode, row, col, level_type, dtype = 0, file_mode = GMT_CONTAINER_AND_DATA;
 	uint64_t n_layers = 0, k, node, start_k, stop_k, n_layers_used, *this_dim = NULL, dims[3] = {0, 0, 0};
-	double wesn[6], inc[3], *level = NULL, *i_value = NULL, *o_value = NULL;
+	double wesn[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, inc[3] = {0.0, 0.0, 0.0}, *level = NULL, *i_value = NULL, *o_value = NULL;
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_CUBE *C[2] = {NULL, NULL};     /* Structures to hold input/output cubes */
 
@@ -731,6 +731,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	if (Ctrl->T.T.var_inc || Ctrl->T.T.n == 1) {	/* Not equidistant output levels selected via -T so must pass the number of output levels instead of increment */
 		dims[GMT_Z] = Ctrl->T.T.n;	/* Number of output levels */
 		this_dim = dims;	/* Pointer to the dims instead of NULL */
+		inc[GMT_Z] = 0.0;
 	}
 	else	/* Normal equidistant output levels lets us pass z-inc */
 		inc[GMT_Z] = Ctrl->T.T.inc;	
