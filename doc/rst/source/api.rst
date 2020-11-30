@@ -1730,7 +1730,7 @@ The full syntax is
 
   ::
 
-    void *GMT_Open_VirtualFile (void *API, unsigned int family, unsigned int geometry,
+    int GMT_Open_VirtualFile (void *API, unsigned int family, unsigned int geometry,
 		unsigned int direction, void *data, char *filename);
 
 Here, ``data`` is the pointer to your memory object.  The function returns the
