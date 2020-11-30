@@ -1260,7 +1260,8 @@ and pass the ``par`` array with contents as indicated below:
   **GMT_IS_DATASET**.
     We allocate an empty :ref:`GMT_DATASET <struct-dataset>` structure consisting of ``par[0]`` tables,
     each with ``par[1]`` segments, each with ``par[2]`` rows, all with ``par[3]`` columns.
-    The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL.
+    The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL. As an option, 
+    add ``GMT_WITH_STRINGS`` to ``mode`` and we also allocate the segments' *text* field.
 
   **GMT_IS_PALETTE**.
     We allocate an empty :ref:`GMT_PALETTE <struct-palette>` structure with ``par[0]`` palette entries.
