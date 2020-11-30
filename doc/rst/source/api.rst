@@ -1274,7 +1274,8 @@ set to ``GMT_OUT``.   Such empty containers are requested by passing mode = ``GM
 and setting all dimension arguments to 0 or NULL.
 The function returns a pointer to the
 data container. In case of an error we return a NULL pointer and pass an
-error code via ``API->error``.
+error code via ``API->error``. Your C code will have to include "gmt_private.h" to be able to
+dereference the API pointer.
 
 Hooking user arrays to objects
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
