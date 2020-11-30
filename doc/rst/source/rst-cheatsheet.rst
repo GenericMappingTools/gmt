@@ -9,7 +9,7 @@ and the rendered web page on the left.
 
 .. note::
 
-    Try a online reStructuredText editor (e.g. http://rst.ninjs.org/),
+    Try a online reStructuredText editor (e.g. https://livesphinx.herokuapp.com/),
     if you want to preview texts written in ReST.
 
     For a more complete description of ReST syntax, please visit

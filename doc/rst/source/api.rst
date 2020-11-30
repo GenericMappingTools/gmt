@@ -422,7 +422,7 @@ additional metadata attributes are needed for the third dimension.
 Both the cube and header information are passed via a ``struct`` :ref:`GMT_CUBE <struct-cube>`,
 which is a container that holds all items. Thus, the arguments to
 GMT API functions that handle GMT cubes expect this type of
-variable. 
+variable.
 For the full definition, see :ref:`GMT_CUBE <struct-cube>`.
 
 .. _struct-cube2:
@@ -1260,7 +1260,8 @@ and pass the ``par`` array with contents as indicated below:
   **GMT_IS_DATASET**.
     We allocate an empty :ref:`GMT_DATASET <struct-dataset>` structure consisting of ``par[0]`` tables,
     each with ``par[1]`` segments, each with ``par[2]`` rows, all with ``par[3]`` columns.
-    The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL.
+    The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL. As an option,
+    add ``GMT_WITH_STRINGS`` to ``mode`` and we also allocate the segments' *text* field.
 
   **GMT_IS_PALETTE**.
     We allocate an empty :ref:`GMT_PALETTE <struct-palette>` structure with ``par[0]`` palette entries.
@@ -1318,7 +1319,8 @@ set to ``GMT_OUT``.   Such empty containers are requested by passing mode = ``GM
 and setting all dimension arguments to 0 or NULL.
 The function returns a pointer to the
 data container. In case of an error we return a NULL pointer and pass an
-error code via ``API->error``.
+error code via ``API->error``. Your C code will have to include "gmt_private.h" to be able to
+dereference the API pointer.
 
 Hooking user arrays to objects
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1378,11 +1380,10 @@ where ``col`` is the vector number you wish to obtain a pointer to.
 
   ::
 
-    int GMT_Put_Levels (void *API, struct GMT_CUBE *C, double *levels,
-  uint64_t n_levels);
+    int GMT_Put_Levels (void *API, struct GMT_CUBE *C, double *levels, uint64_t n_levels);
 
-where ``C`` is the :ref:`GMT_CUBE <struct-cube>` created by GMT_Create_Data_, ``levels'' is an array
-with the (probably) non-equidistant coordinates for the third cube dimension, and ``n_levels'' is their number.
+where ``C`` is the :ref:`GMT_CUBE <struct-cube>` created by GMT_Create_Data_, ``levels`` is an array
+with the (probably) non-equidistant coordinates for the third cube dimension, and ``n_levels`` is their number.
 This function is typically used when we are creating a cube whose spacing between layers is not equidistant
 and hence cannot be computed internally from range and increment.
 
@@ -1730,7 +1731,7 @@ The full syntax is
 
   ::
 
-    void *GMT_Open_VirtualFile (void *API, unsigned int family, unsigned int geometry,
+    int GMT_Open_VirtualFile (void *API, unsigned int family, unsigned int geometry,
 		unsigned int direction, void *data, char *filename);
 
 Here, ``data`` is the pointer to your memory object.  The function returns the
