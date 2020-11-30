@@ -236,6 +236,7 @@
 [ <strong>-b</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
@@ -341,7 +342,8 @@ which mix which Core field from IGRF and other sources from CM4.
 <strong>-Ft</strong>/<strong>934</strong> computes Core field due to IGRF plus terms 3 and 4
 from CM4 (but you can add others). <strong>-Ft</strong>/<strong>934</strong> the same as above
 but output the field components. The data is written out in the
-order they appear in <em>flags</em> [Default is <strong>-Frthxyzdi</strong>/<strong>1</strong>].</p>
+order they appear in <em>flags</em> [Default is <strong>-Frthxyzdi</strong>/<strong>1</strong>]. <strong>Note</strong>:
+You can further select a subset of fields via <strong>-o</strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
@@ -370,7 +372,7 @@ indicated by the low and high spherical harmonic order [1/13].</p>
 band indicated by the low and high spherical harmonic order [14/65].</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -384,6 +386,10 @@ band indicated by the low and high spherical harmonic order [14/65].</p>
 </dl>
 <dl class="simple">
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+m</strong><em>segheader</em>][<strong>+r</strong><em>remark</em>][<strong>+t</strong><em>title</em>] <a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Skip or produce header record(s).  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-o</strong><em>cols</em>[,…][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns (0 is first column; <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -466,7 +472,7 @@ lithospheric and toroidal field at a one point location and decimal time
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

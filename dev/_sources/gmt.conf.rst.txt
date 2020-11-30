@@ -61,6 +61,9 @@ COLOR Parameters
         Color used for the foreground of images (i.e., when z > highest
         color table entry) [white].
 
+    **COLOR_CPT**
+        Default CPT table when none is selected [turbo].
+
     **COLOR_HSV_MAX_S**
         Maximum saturation (0-1) assigned for most positive intensity value [0.1].
 
@@ -180,7 +183,11 @@ FORMAT Parameters
         without leading zeros (default uses fixed width formats). As
         examples, try hh:mm, hh.mm.ss, hh:mm:ss.xxxx, hha.m., etc.
         [hh:mm:ss]. If the format is simply - then no clock is output and
-        the ISO T divider between date and clock is omitted.
+        the ISO T divider between date and clock is omitted.  **Note**: When
+        high-precision time-series are written to ASCII output the default
+        format may not be adequate.  Many modules automatically handle
+        this by extending the format, but you should be alert of unusual
+        situations where data may appear truncated to nearest second.
 
     **FORMAT_DATE_IN**
         Formatting template that indicates how an input date string is
@@ -304,11 +311,6 @@ GMT Miscellaneous Parameters
 
 .. glossary::
 
-    **GMT_AUTO_DOWNLOAD**
-        Determines if GMT is allowed to automatically download datasets and
-        files from the remote server selected via :term:`GMT_DATA_SERVER`.  Default
-        is *on* but you can turn this off by setting it to *off*.
-
     **GMT_COMPATIBILITY**
         Determines if the current GMT version should be able to parse command-line
         options for a prior major release.  Specify the major release version number,
@@ -317,7 +319,10 @@ GMT Miscellaneous Parameters
         for 6: obsolete syntax from early GMT 5 will be considered errors.
 
     **GMT_DATA_SERVER**
-        Address of the data directory on the remote server [The SOEST server].
+        Name (or URL) of a GMT data server [**oceania**]. Please set to the
+        data server closest to your location for faster data download.  See
+        `Data Server Mirrors <https://www.generic-mapping-tools.org/mirrors/>`_
+        for a list of the currently available mirrors.
 
     **GMT_DATA_SERVER_LIMIT**
         Upper limit on the size of remote file to download [unlimited].  Give
@@ -328,6 +333,8 @@ GMT Miscellaneous Parameters
         Specifies how often we update the local catalog of data available on
         the remote server and pruning expired data sets [1d].  Allowable time
         units are **d** (days), **w** (week), **o** (month, here 30 days).
+        To turn off periodic updates entirely, specify interval as "off", "never",
+        "infinity", or just 0.
 
     **GMT_EXPORT_TYPE**
         This setting is only used by external interfaces and controls the
@@ -784,7 +791,7 @@ Projection Parameters
     **PROJ_AUX_LATITUDE**
         Only applies when geodesics are approximated by great circle
         distances on an equivalent sphere. Select from authalic, geocentric,
-        conformal, meridional, parametric, or none [authalic]. When not none
+        conformal, meridional, parametric, or none (i.e., geodetic) [authalic]. When not none
         we convert any latitude used in the great circle calculation to the
         chosen auxiliary latitude before doing the distance calculation. See
         also :term:`PROJ_MEAN_RADIUS`.

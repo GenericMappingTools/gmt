@@ -14,7 +14,7 @@ Synopsis
 
 **gmt grdedit** *grid* [ |-A| ] [ |-C| ]
 [ |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*] ]
-[ |-E|\ [**a**\|\ **h**\|\ **l**\|\ **r**\|\ **t**\|\ **v**] ]
+[ |-E|\ [**a**\|\ **e**\|\ **h**\|\ **l**\|\ **r**\|\ **t**\|\ **v**] ]
 [ |-G|\ *outgrid* ]
 [ |-J|\ *parameters* ]
 [ |-L|\ [**+n**\|\ **p**] ]
@@ -74,10 +74,11 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**a**\|\ **h**\|\ **l**\|\ **r**\|\ **t**\|\ **v**]
+**-E**\ [**a**\|\ **e**\|\ **h**\|\ **l**\|\ **r**\|\ **t**\|\ **v**]
     Transform the grid in one of six ways and (for **l**\|\ **r**\|\ **t**)
     interchange the *x* and *y* information:
     **-Ea** will rotate the grid around 180 degrees,
+    **-Ee** will exchange the x (longitude) and y (latitude) dimensions,
     **-Eh** will flip the grid horizontally (left-to-right),
     **-El** will rotate the grid 90 degrees counter-clockwise (left),
     **-Er** will rotate the grid 90 degrees clockwise (right),
@@ -195,9 +196,15 @@ the rotated grid to a new file, run::
 
     gmt grdedit oblique.nc -El -Goblique_rot.nc
 
+
 To ensure that the grid depths.nc only has positive longitude values, run::
 
     gmt grdedit depths.nc -L+p
+
+The grid bad.nc has latitude as x-coordinates an longitude as y-coordinates.
+We can exchange the two dimension by running::
+
+    gmt grdedit bad.nc -Ee -Gnew.nc
 
 Notes:
 ------

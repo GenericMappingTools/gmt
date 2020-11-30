@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt psternary** [ *table* ]
-[ **-JX**\ *width* ]
+[ **-JX**\ [-]\ *width* ]
 [ |-R|\ *amin/amax/bmin/bmax/cmin/cmax* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]

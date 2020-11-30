@@ -251,6 +251,12 @@ terms in f(x) which significantly reduce the variance in y.</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>One or more ASCII [or binary, see <strong>-bi</strong>]
+files containing x,y [w] values in the first 2 [3] columns. If no
+files are specified, <strong>trend1d</strong> will read from standard input.</p>
+</dd>
+</dl>
 <dl class="simple" id="f">
 <dt><strong>-F</strong><strong>xymrw</strong>|<strong>p</strong>|<strong>P</strong>|<strong>c</strong></dt><dd><p>Specify up to five letters from the set {<strong>x y m r w</strong>} in any
 order to create columns of ASCII [or binary] output. <strong>x</strong> = x,
@@ -285,12 +291,6 @@ a plain-text representation of the y(x) model specified in <strong>-N</strong>.<
 </div>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt><em>table</em></dt><dd><p>One or more ASCII [or binary, see <strong>-bi</strong>]
-files containing x,y [w] values in the first 2 [3] columns. If no
-files are specified, <strong>trend1d</strong> will read from standard input.</p>
-</dd>
-</dl>
 <dl class="simple" id="c">
 <dt><strong>-C</strong><em>condition_number</em></dt><dd><p>Set the maximum allowed condition number for the matrix solution.
 <strong>trend1d</strong> fits a damped least squares model, retaining only that
@@ -310,7 +310,7 @@ model terms are added in the order they were given in <strong>-N</strong> so you
 should place the most important terms first.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -490,7 +490,7 @@ Revised Edition, Academic Press, San Diego.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

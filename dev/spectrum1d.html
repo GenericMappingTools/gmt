@@ -280,6 +280,12 @@ be written to <em>stdout</em> (unless disabled via <strong>-T</strong>).</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>)
+files holding X(t) [Y(t)] samples in the first 1 [or 2] columns. If
+no files are specified, <strong>spectrum1d</strong> will read from standard input.</p>
+</dd>
+</dl>
 <dl class="simple" id="s">
 <dt><strong>-S</strong><em>segment_size</em></dt><dd><p><em>segment_size</em> is a radix-2 number of samples per window for
 ensemble averaging. The smallest frequency estimated is
@@ -294,12 +300,6 @@ function also of the coherency.</p>
 </div>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>)
-files holding X(t) [Y(t)] samples in the first 1 [or 2] columns. If
-no files are specified, <strong>spectrum1d</strong> will read from standard input.</p>
-</dd>
-</dl>
 <dl class="simple" id="c">
 <dt><strong>-C</strong>[<strong>xycnpago</strong>]</dt><dd><p>Read the first two columns of input as samples of two time-series,
 X(t) and Y(t). Consider Y(t) to be the output and X(t) the input in
@@ -328,7 +328,7 @@ If <strong>-N</strong> is given with no argument then we disable the writing of 
 output files and instead write a single composite results table to standard output.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -536,7 +536,7 @@ periodograms, IEEE Transactions on Audio and Electroacoustics, Vol AU-15, No 2.<
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

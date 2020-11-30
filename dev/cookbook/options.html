@@ -432,10 +432,10 @@ indicates which point on a rectangular grid region the <em>x0</em>/<em>y0</em> c
 refer to, and the grid dimensions <em>nx</em> and <em>ny</em> are used with grid spacings given
 via <strong>-I</strong> to create the corresponding region.</p></li>
 </ol>
-<div class="figure align-center" id="id11">
+<div class="figure align-center" id="id13">
 <span id="gmt-region"></span><a class="reference internal image-reference" href="../_images/GMT_-R.png"><img alt="../_images/GMT_-R.png" src="../_images/GMT_-R.png" style="width: 500px;" /></a>
 <p class="caption"><span class="caption-text">The plot region can be specified in two different ways. (a) Extreme values
-for each dimension, or (b) coordinates of lower left and upper right corners.</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+for each dimension, or (b) coordinates of lower left and upper right corners.</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
 </div>
 <p>For rectilinear projections the first two forms give identical results.
 Depending on the selected map projection (or the kind of expected input
@@ -490,7 +490,7 @@ calendar date-clock strings are internally represented as double
 precision seconds since proleptic Gregorian date Monday January 1
 00:00:00 0001. Proleptic means we assume that the modern calendar
 can be extrapolated forward and backward; a year zero is used, and
-Gregory’s reforms <a class="footnote-reference brackets" href="#id7" id="id1">11</a> are extrapolated backward. Note that this is
+Gregory’s reforms <a class="footnote-reference brackets" href="#id8" id="id1">11</a> are extrapolated backward. Note that this is
 not historical.</p>
 </dd>
 <dt>Relative time coordinates:</dt><dd><p>These are coordinates which count seconds, hours, days or years
@@ -520,7 +520,7 @@ floating point values such as
 i.e., regular or exponential notations, with the enhancement to understand
 FORTRAN double precision output which may use <strong>D</strong> instead of <strong>E</strong> for
 exponents. These values are simply converted as they are to internal
-representation. <a class="footnote-reference brackets" href="#id8" id="id2">12</a></p>
+representation. <a class="footnote-reference brackets" href="#id9" id="id2">12</a></p>
 </dd>
 </dl>
 </div>
@@ -560,16 +560,16 @@ computed from the implied map scale and region).</p></li>
 parameters, see the <a class="reference internal" href="../basemap.html"><span class="doc">basemap</span></a> man page. We will also show examples of
 every projection in the next Chapters, and a quick summary of projection
 syntax is listed in <a class="reference internal" href="../proj-codes.html"><span class="doc">Projection Specifications</span></a>.</p>
-<div class="figure align-center" id="id12">
+<div class="figure align-center" id="id14">
 <span id="gmt-projections"></span><a class="reference internal image-reference" href="../_images/GMT_-J.png"><img alt="../_images/GMT_-J.png" src="../_images/GMT_-J.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">The over-30 map projections and coordinate transformations available in GMT</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">The over-30 map projections and coordinate transformations available in GMT</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="map-frame-and-axes-annotations-the-b-option">
 <span id="option-b"></span><h2><span class="section-number">4.3. </span>Map frame and axes annotations: The <strong>-B</strong> option<a class="headerlink" href="#map-frame-and-axes-annotations-the-b-option" title="Permalink to this headline">¶</a></h2>
 <p>This is potentially the most complicated option in GMT,
 but most examples of its usage are actually quite simple. We distinguish
-between to sets of information: Frame settings and Axes parameters.  These
+between two sets of information: Frame settings and Axes parameters.  These
 are set separately by their own <strong>-B</strong> invocations; hence multiple <strong>-B</strong>
 specifications may be specified. The frame settings covers things such
 as which axes should be plotted, canvas fill, plot title, and what type
@@ -800,11 +800,11 @@ projections support a “fancy” form of axis and is selected by the
 according to the <a class="reference internal" href="../gmt.conf.html#term-FORMAT_GEO_MAP"><span class="xref std std-term">FORMAT_GEO_MAP</span></a> template and
 <a class="reference internal" href="../gmt.conf.html#term-MAP_DEGREE_SYMBOL"><span class="xref std std-term">MAP_DEGREE_SYMBOL</span></a> setting. A simple example of part of a basemap
 is shown in Figure <a class="reference internal" href="#basemap-border"><span class="std std-ref">Geographic map border</span></a>.</p>
-<div class="figure align-center" id="id13">
+<div class="figure align-center" id="id15">
 <span id="basemap-border"></span><a class="reference internal image-reference" href="../_images/GMT_-B_geo_1.png"><img alt="../_images/GMT_-B_geo_1.png" src="../_images/GMT_-B_geo_1.png" style="width: 500px;" /></a>
 <p class="caption"><span class="caption-text">Geographic map border using separate selections for annotation,
 frame, and grid intervals.  Formatting of the annotation is controlled by
-the parameter <a class="reference internal" href="../gmt.conf.html#term-FORMAT_GEO_MAP"><span class="xref std std-term">FORMAT_GEO_MAP</span></a> in your <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a>.</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+the parameter <a class="reference internal" href="../gmt.conf.html#term-FORMAT_GEO_MAP"><span class="xref std std-term">FORMAT_GEO_MAP</span></a> in your <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a>.</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
 </div>
 <p>The machinery for primary and secondary annotations introduced for
 time-series axes can also be utilized for geographic basemaps. This may
@@ -812,9 +812,9 @@ be used to separate degree annotations from minutes- and
 seconds-annotations. For a more complicated basemap example using
 several sets of intervals, including different intervals and pen
 attributes for grid lines and grid crosses, see Figure <a class="reference internal" href="#complex-basemap"><span class="std std-ref">Complex basemap</span></a>.</p>
-<div class="figure align-center" id="id14">
+<div class="figure align-center" id="id16">
 <span id="complex-basemap"></span><a class="reference internal image-reference" href="../_images/GMT_-B_geo_2.png"><img alt="../_images/GMT_-B_geo_2.png" src="../_images/GMT_-B_geo_2.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Geographic map border with both primary (P) and secondary (S) components.</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Geographic map border with both primary (P) and secondary (S) components.</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="cartesian-linear-axes">
@@ -823,28 +823,28 @@ attributes for grid lines and grid crosses, see Figure <a class="reference inter
 set to plain. Other than that, cartesian linear axes are very similar to
 geographic axes. The annotation format may be controlled with the
 <a class="reference internal" href="../gmt.conf.html#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a> parameter. By default, it is set to “%g”, which
-is a C language format statement for floating point numbers <a class="footnote-reference brackets" href="#id9" id="id3">13</a>, and
+is a C language format statement for floating point numbers <a class="footnote-reference brackets" href="#id10" id="id3">13</a>, and
 with this setting the various axis routines will automatically determine
 how many decimal points should be used by inspecting the <em>stride</em>
 settings. If <a class="reference internal" href="../gmt.conf.html#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a> is set to another format it will be
 used directly (e.g., “%.2f” for a fixed, two decimals format). Note that
 for these axes you may use the <em>unit</em> setting to add a unit string to
 each annotation (see Figure <a class="reference internal" href="#axis-label-basemap"><span class="std std-ref">Axis label</span></a>).</p>
-<div class="figure align-center" id="id15">
+<div class="figure align-center" id="id17">
 <span id="axis-label-basemap"></span><a class="reference internal image-reference" href="../_images/GMT_-B_linear.png"><img alt="../_images/GMT_-B_linear.png" src="../_images/GMT_-B_linear.png" style="width: 500px;" /></a>
 <p class="caption"><span class="caption-text">Linear Cartesian projection axis.  Long tick-marks accompany
 annotations, shorter ticks indicate frame interval. The axis label is
-optional. For this example we used <code class="docutils literal notranslate"><span class="pre">-R0/12/0/0.95</span> <span class="pre">-JX7.5c/0.75c</span> <span class="pre">-Ba4f2g1+lFrequency+u&quot;</span> <span class="pre">%&quot;</span> <span class="pre">-BS</span></code></span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
+optional. For this example we used <code class="docutils literal notranslate"><span class="pre">-R0/12/0/0.95</span> <span class="pre">-JX7.5c/0.75c</span> <span class="pre">-Ba4f2g1+lFrequency+u&quot;</span> <span class="pre">%&quot;</span> <span class="pre">-BS</span></code></span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
 </div>
 <p>There are occasions when the length of the annotations are such that placing them
 horizontally (which is the default) may lead to overprinting or too few annotations.
 One solution is to request slanted annotations for the x-axis (e.g., Figure <a class="reference internal" href="#axis-slanted-basemap"><span class="std std-ref">Axis label</span></a>)
 via the <strong>+a</strong><em>angle</em> modifier.</p>
-<div class="figure align-center" id="id16">
+<div class="figure align-center" id="id18">
 <span id="axis-slanted-basemap"></span><a class="reference internal image-reference" href="../_images/GMT_-B_slanted.png"><img alt="../_images/GMT_-B_slanted.png" src="../_images/GMT_-B_slanted.png" style="width: 500px;" /></a>
 <p class="caption"><span class="caption-text">Linear Cartesian projection axis with slanted annotations.
 For this example we used <code class="docutils literal notranslate"><span class="pre">-R2000/2020/35/45</span> <span class="pre">-JX12c</span> <span class="pre">-Bxa2f+a-30</span> <span class="pre">-BS</span></code>.
-For the y-axis only the modifier <strong>+ap</strong> for parallel is allowed.</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+For the y-axis only the modifier <strong>+ap</strong> for parallel is allowed.</span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="cartesian-log10-axes">
@@ -863,7 +863,7 @@ is plotted at every integer log<sub>10</sub> value (e.g.,
 <li><p>Append <strong>p</strong> to <em>stride</em>. Then, annotations appear as 10 raised to
 log<sub>10</sub> of the value (e.g., 10<sup>-5</sup>).</p></li>
 </ul>
-<div class="figure align-center" id="id17">
+<div class="figure align-center" id="id19">
 <span id="log-projection"></span><a class="reference internal image-reference" href="../_images/GMT_-B_log.png"><img alt="../_images/GMT_-B_log.png" src="../_images/GMT_-B_log.png" style="width: 500px;" /></a>
 <p class="caption"><span class="caption-text">Logarithmic projection axis using separate values for annotation,
 frame, and grid intervals.  (top) Here, we have chosen to annotate the actual
@@ -872,7 +872,7 @@ powers of 10, and 3 means every 0.1 times powers of 10.  We used
 -R1/1000/0/1 -JX7.5cl/0.6c -Ba1f2g3. (middle) Here, we have chosen to
 annotate <span class="math notranslate nohighlight">\(\log_{10}\)</span> of the actual values, with -Ba1f2g3l.
 (bottom) We annotate every power of 10 using <span class="math notranslate nohighlight">\(\log_{10}\)</span> of the actual
-values as exponents, with -Ba1f2g3p.</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
+values as exponents, with -Ba1f2g3p.</span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="cartesian-exponential-axes">
@@ -886,13 +886,13 @@ annotation itself will be plotted as un-transformed units (see Figure
 <a class="reference internal" href="#pow-projection"><span class="std std-ref">Power projection axis</span></a>). E.g., if
 <em>stride</em> = 1 and power = 0.5 (i.e., sqrt), then equidistant annotations
 labeled 1, 4, 9, … will appear.</p>
-<div class="figure align-center" id="id18">
+<div class="figure align-center" id="id20">
 <span id="pow-projection"></span><a class="reference internal image-reference" href="../_images/GMT_-B_pow.png"><img alt="../_images/GMT_-B_pow.png" src="../_images/GMT_-B_pow.png" style="width: 500px;" /></a>
 <p class="caption"><span class="caption-text">Exponential or power projection axis. (top) Using an exponent of 0.5
 yields a <span class="math notranslate nohighlight">\(sqrt(x)\)</span> axis.  Here, intervals refer to actual data values,
 in -R0/100/0/0.9 -JX3ip0.5/0.25i -Ba20f10g5.
 (bottom) Here, intervals refer to projected values, although the annotation
-uses the corresponding unprojected values, as in -Ba3f2g1p.</span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
+uses the corresponding unprojected values, as in -Ba3f2g1p.</span><a class="headerlink" href="#id20" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="cartesian-time-axes">
@@ -916,9 +916,9 @@ gmt end show
 <p>These commands result in Figure <a class="reference internal" href="#cartesian-axis1"><span class="std std-ref">Cartesian time axis</span></a>.
 Note the leading hyphen in the <a class="reference internal" href="../gmt.conf.html#term-FORMAT_DATE_MAP"><span class="xref std std-term">FORMAT_DATE_MAP</span></a>
 removes leading zeros from calendar items (e.g., 02 becomes 2).</p>
-<div class="figure align-center" id="id19">
+<div class="figure align-center" id="id21">
 <span id="cartesian-axis1"></span><a class="reference internal image-reference" href="../_images/GMT_-B_time1.png"><img alt="../_images/GMT_-B_time1.png" src="../_images/GMT_-B_time1.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Cartesian time axis, example 1</span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Cartesian time axis, example 1</span><a class="headerlink" href="#id21" title="Permalink to this image">¶</a></p>
 </div>
 <p>The next example shows two different ways to annotate an axis portraying 2 days in July 1969:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_-B_time2
@@ -933,9 +933,9 @@ specifying <strong>a</strong>1<strong>K</strong>) while the upper example choses
 specifying <strong>a</strong>1<strong>D</strong>). Note how the clock format only selects
 hours and minutes (no seconds) and the date format selects a month name,
 followed by one space and a two-digit day-of-month number.</p>
-<div class="figure align-center" id="id20">
+<div class="figure align-center" id="id22">
 <span id="cartesian-axis2"></span><a class="reference internal image-reference" href="../_images/GMT_-B_time2.png"><img alt="../_images/GMT_-B_time2.png" src="../_images/GMT_-B_time2.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Cartesian time axis, example 2</span><a class="headerlink" href="#id20" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Cartesian time axis, example 2</span><a class="headerlink" href="#id22" title="Permalink to this image">¶</a></p>
 </div>
 <p>The third example (Figure <a class="reference internal" href="#cartesian-axis3"><span class="std std-ref">Cartesian time axis, example 3</span></a>) presents two years, annotating
 both the years and every 3rd month.</p>
@@ -951,9 +951,9 @@ the month annotations must be centered on the corresponding month and
 only and <a class="reference internal" href="../gmt.conf.html#term-FORMAT_TIME_PRIMARY_MAP"><span class="xref std std-term">FORMAT_TIME_PRIMARY_MAP</span></a> selects the 1-character, upper
 case abbreviation of month names using the current language (selected by
 <a class="reference internal" href="../gmt.conf.html#term-GMT_LANGUAGE"><span class="xref std std-term">GMT_LANGUAGE</span></a>).</p>
-<div class="figure align-center" id="id21">
+<div class="figure align-center" id="id23">
 <span id="cartesian-axis3"></span><a class="reference internal image-reference" href="../_images/GMT_-B_time3.png"><img alt="../_images/GMT_-B_time3.png" src="../_images/GMT_-B_time3.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Cartesian time axis, example 3</span><a class="headerlink" href="#id21" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Cartesian time axis, example 3</span><a class="headerlink" href="#id23" title="Permalink to this image">¶</a></p>
 </div>
 <p>The fourth example (Figure <a class="reference internal" href="#cartesian-axis4"><span class="std std-ref">Cartesian time axis, example 4</span></a>) only shows a few hours of a day, using
 relative time by specifying <strong>t</strong> in the <strong>-R</strong> option while the
@@ -965,9 +965,9 @@ annotations, ask for a 12-hour clock, and let time go from right to left:</p>
 gmt end show
 </pre></div>
 </div>
-<div class="figure align-center" id="id22">
+<div class="figure align-center" id="id24">
 <span id="cartesian-axis4"></span><a class="reference internal image-reference" href="../_images/GMT_-B_time4.png"><img alt="../_images/GMT_-B_time4.png" src="../_images/GMT_-B_time4.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Cartesian time axis, example 4</span><a class="headerlink" href="#id22" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Cartesian time axis, example 4</span><a class="headerlink" href="#id24" title="Permalink to this image">¶</a></p>
 </div>
 <p>The fifth example shows a few weeks of time (Figure <a class="reference internal" href="#cartesian-axis5"><span class="std std-ref">Cartesian time axis, example 5</span></a>). The lower axis
 shows ISO weeks with week numbers and abbreviated names of the weekdays.
@@ -981,9 +981,9 @@ The upper uses Gregorian weeks (which start at the day chosen by
 gmt end show
 </pre></div>
 </div>
-<div class="figure align-center" id="id23">
+<div class="figure align-center" id="id25">
 <span id="cartesian-axis5"></span><a class="reference internal image-reference" href="../_images/GMT_-B_time5.png"><img alt="../_images/GMT_-B_time5.png" src="../_images/GMT_-B_time5.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Cartesian time axis, example 5</span><a class="headerlink" href="#id23" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Cartesian time axis, example 5</span><a class="headerlink" href="#id25" title="Permalink to this image">¶</a></p>
 </div>
 <p>Our sixth example (Figure <a class="reference internal" href="#cartesian-axis6"><span class="std std-ref">Cartesian time axis, example 6</span></a>) shows the first five months of
 1996, and we have annotated each month with an abbreviated, upper case name and
@@ -994,9 +994,9 @@ gmt end show
 gmt end show
 </pre></div>
 </div>
-<div class="figure align-center" id="id24">
+<div class="figure align-center" id="id26">
 <span id="cartesian-axis6"></span><a class="reference internal image-reference" href="../_images/GMT_-B_time6.png"><img alt="../_images/GMT_-B_time6.png" src="../_images/GMT_-B_time6.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Cartesian time axis, example 6</span><a class="headerlink" href="#id24" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Cartesian time axis, example 6</span><a class="headerlink" href="#id26" title="Permalink to this image">¶</a></p>
 </div>
 <p>Our seventh and final example (Figure <a class="reference internal" href="#cartesian-axis7"><span class="std std-ref">Cartesian time axis, example 7</span></a>) illustrates
 annotation of year-days. Unless we specify the formatting with a leading hyphen
@@ -1010,9 +1010,9 @@ least half of a full interval.</p>
 gmt end show
 </pre></div>
 </div>
-<div class="figure align-center" id="id25">
+<div class="figure align-center" id="id27">
 <span id="cartesian-axis7"></span><a class="reference internal image-reference" href="../_images/GMT_-B_time7.png"><img alt="../_images/GMT_-B_time7.png" src="../_images/GMT_-B_time7.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Cartesian time axis, example 7</span><a class="headerlink" href="#id25" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Cartesian time axis, example 7</span><a class="headerlink" href="#id27" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="custom-axes">
@@ -1060,9 +1060,9 @@ gmt begin GMT_-B_custom
 gmt end show
 </pre></div>
 </div>
-<div class="figure align-center" id="id26">
+<div class="figure align-center" id="id28">
 <span id="custom-annotations"></span><a class="reference internal image-reference" href="../_images/GMT_-B_custom.png"><img alt="../_images/GMT_-B_custom.png" src="../_images/GMT_-B_custom.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Custom and irregular annotations, tick-marks, and gridlines.</span><a class="headerlink" href="#id26" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Custom and irregular annotations, tick-marks, and gridlines.</span><a class="headerlink" href="#id28" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 </div>
@@ -1076,9 +1076,9 @@ For example, +jBL+o0/0 will align the lower left corner of the time stamp
 with the bottom left corner of the plot [BL]. Optionally, append  an
 arbitrary text string (surrounded by double quotes), or give <strong>+c</strong>,
 which will plot the current command string (Figure <a class="reference internal" href="#fig-u"><span class="std std-ref">Time stamp</span></a>).</p>
-<div class="figure align-center" id="id27">
+<div class="figure align-center" id="id29">
 <span id="fig-u"></span><a class="reference internal image-reference" href="../_images/GMT_-U.png"><img alt="../_images/GMT_-U.png" src="../_images/GMT_-U.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">The -U option makes it easy to date a plot.</span><a class="headerlink" href="#id27" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">The -U option makes it easy to date a plot.</span><a class="headerlink" href="#id29" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="verbose-feedback-the-v-option">
@@ -1099,7 +1099,7 @@ option can also be set by specifying the default <a class="reference internal" h
 <p>The <strong>-X</strong> and <strong>-Y</strong> options shift plot origin relative to the current origin by
 (<em>xshift</em>,<em>yshift</em>); optionally append the length unit
 (<strong>c</strong>, <strong>i</strong>, or <strong>p</strong>). Default is (<a class="reference internal" href="../gmt.conf.html#term-MAP_ORIGIN_X"><span class="xref std std-term">MAP_ORIGIN_X</span></a>,
-<a class="reference internal" href="../gmt.conf.html#term-MAP_ORIGIN_Y"><span class="xref std std-term">MAP_ORIGIN_Y</span></a>) for new plots <a class="footnote-reference brackets" href="#id10" id="id6">15</a>. Subsequent overlays will
+<a class="reference internal" href="../gmt.conf.html#term-MAP_ORIGIN_Y"><span class="xref std std-term">MAP_ORIGIN_Y</span></a>) for new plots <a class="footnote-reference brackets" href="#id11" id="id6">14</a>. Subsequent overlays will
 be co-registered with the previous plot unless the origin is shifted using
 these options.  You can prepend <strong>a</strong> to shift the origin
 back to the original position after the plot module completes, prepend <strong>c</strong> to
@@ -1113,9 +1113,9 @@ Note that <strong>-X</strong> and <strong>-Y</strong> can also access the previo
 <em>w</em> and <em>h</em> and construct offsets that involves them.  For instance, to move the origin
 up 2 cm beyond the height of the previous plot, use <strong>-Y</strong><em>h</em>+2c.
 To move the origin half the width to the right, use <strong>-X</strong><em>w</em>/2.</p>
-<div class="figure align-center" id="id28">
+<div class="figure align-center" id="id30">
 <span id="xy-options"></span><a class="reference internal image-reference" href="../_images/GMT_-XY.png"><img alt="../_images/GMT_-XY.png" src="../_images/GMT_-XY.png" style="width: 300px;" /></a>
-<p class="caption"><span class="caption-text">Plot origin can be translated freely with -X -Y.</span><a class="headerlink" href="#id28" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Plot origin can be translated freely with -X -Y.</span><a class="headerlink" href="#id30" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="ogr-gmt-gis-i-o-the-a-option">
@@ -1351,7 +1351,7 @@ by requesting column <strong>t</strong>, otherwise we ignore trailing text.  If 
 want to select one word from the trailing text, then append the word number
 (0 is the first word).  Finally, to use the entire numerical record and
 ignore all trailing text, use <strong>-in</strong>.</p>
-<div class="figure align-center" id="id29">
+<div class="figure align-center" id="id31">
 <span id="gmt-record"></span><a class="reference internal image-reference" href="../_images/GMT_record.png"><img alt="../_images/GMT_record.png" src="../_images/GMT_record.png" style="width: 600px;" /></a>
 <p class="caption"><span class="caption-text">The physical, logical (input) and output record in GMT.  Here, we are
 reading a file with 5 numerical columns plus some free-form text at the
@@ -1368,7 +1368,7 @@ you may use the corresponding <strong>-o</strong> option to select desired colum
 the trailing text column <strong>t</strong>.  If you only want to output one word from the
 trailing text, then append the word number (0 is the first word).  Note that
 these column numbers now refer to the logical record, not the physical, since
-after reading the data there is no physical record, only the logical record in memory.</span><a class="headerlink" href="#id29" title="Permalink to this image">¶</a></p>
+after reading the data there is no physical record, only the logical record in memory.</span><a class="headerlink" href="#id31" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="spherical-distance-calculations-the-j-option">
@@ -1408,10 +1408,10 @@ gmt end show
 </div>
 <p>As the script shows, when no <em>specfile</em> is given to <a class="reference internal" href="../legend.html"><span class="doc">legend</span></a> then we
 look for the automatically generated on in the session directory.</p>
-<div class="figure align-center" id="id30">
+<div class="figure align-center" id="id32">
 <span id="auto-legend"></span><a class="reference internal image-reference" href="../_images/GMT_autolegend.png"><img alt="../_images/GMT_autolegend.png" src="../_images/GMT_autolegend.png" style="width: 500px;" /></a>
 <p class="caption"><span class="caption-text">Each of the two <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> commands use <strong>-l</strong> to add a symbol to the
-auto legend; the first also sets a legend header of given size and draws a horizontal line.</span><a class="headerlink" href="#id30" title="Permalink to this image">¶</a></p>
+auto legend; the first also sets a legend header of given size and draws a horizontal line.</span><a class="headerlink" href="#id32" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="grid-interpolation-parameters-the-n-option">
@@ -1519,10 +1519,10 @@ between grid lines, and the data points represent the average values
 within each cell (right side of Figure <a class="reference internal" href="#grid-registration"><span class="std std-ref">Grid registration</span></a>). In the case of
 pixel registration the number of nodes are related to region and grid
 spacing by</p>
-<div class="figure align-center" id="id31">
+<div class="figure align-center" id="id33">
 <span id="grid-registration"></span><a class="reference internal image-reference" href="../_images/GMT_registration.png"><img alt="../_images/GMT_registration.png" src="../_images/GMT_registration.png" style="width: 500px;" /></a>
 <p class="caption"><span class="caption-text">Gridline- and pixel-registration of data nodes.  The red shade indicates the
-areas represented by the value at the node (solid circle).</span><a class="headerlink" href="#id31" title="Permalink to this image">¶</a></p>
+areas represented by the value at the node (solid circle).</span><a class="headerlink" href="#id33" title="Permalink to this image">¶</a></p>
 </div>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{array}{ccl}
@@ -1542,7 +1542,7 @@ but it does change the domain which may not be desirable depending on applicatio
 The other is to <em>resample</em> the grid at the other set of nodes via <a class="reference internal" href="../grdsample.html"><span class="doc">grdsample</span></a> <strong>-T</strong>.
 This approach leaves the region exactly the same but is <em>destructive</em> due to the loss
 of the higher data frequencies, as shown in Figure <a class="reference internal" href="#grid-grid2pix"><span class="std std-ref">Registration resampling</span></a>.</p>
-<div class="figure align-center" id="id32">
+<div class="figure align-center" id="id34">
 <span id="grid-grid2pix"></span><a class="reference internal image-reference" href="../_images/GMT_grid2pix.png"><img alt="../_images/GMT_grid2pix.png" src="../_images/GMT_grid2pix.png" style="width: 500px;" /></a>
 <p class="caption"><span class="caption-text">a) Cross-section of a grid along the <em>x</em>-axis for a constant value of <em>y</em>, showing just the Nyquist
 <em>x</em>-component (heavy line) at its grid nodes (red circles).  Resampling this component half-way
@@ -1551,7 +1551,7 @@ unlike long wavelength components (thin line), which can be interpolated (blue t
 Intermediate wavelengths will experience attenuated amplitudes as well. b) Transfer function for
 resampling data from a pixel-registered to a gridline-registered grid format illustrates the loss
 of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
-function of wavenumber <span class="math notranslate nohighlight">\(k_j\)</span> [Marks and Smith, 2007].</span><a class="headerlink" href="#id32" title="Permalink to this image">¶</a></p>
+function of wavenumber <span class="math notranslate nohighlight">\(k_j\)</span> [Marks and Smith, 2007 <a class="footnote-reference brackets" href="#id12" id="id7">15</a>.</span><a class="headerlink" href="#id34" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 </div>
@@ -1601,7 +1601,7 @@ grids are expected to have the longitude as first (minor) dimension.</p>
 <div class="section" id="footnotes">
 <h2><span class="section-number">4.27. </span>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">¶</a></h2>
 <dl class="footnote brackets">
-<dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id1">11</a></span></dt>
+<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id1">11</a></span></dt>
 <dd><p>The Gregorian Calendar is a revision of the Julian Calendar which was
 instituted in a papal bull by Pope Gregory XIII in 1582. The reason
 for the calendar change was to correct for drift in the dates of
@@ -1619,16 +1619,20 @@ came because the old and new calendars disagreed on whether 1700 was
 a leap year, so the Julian calendar had to be adjusted by one more
 day.</p>
 </dd>
-<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id2">12</a></span></dt>
+<dt class="label" id="id9"><span class="brackets"><a class="fn-backref" href="#id2">12</a></span></dt>
 <dd><p>While UTM coordinates clearly refer to points on the Earth, in this
 context they are considered “other”. Thus, when we refer to
 “geographical” coordinates herein we imply longitude, latitude.</p>
 </dd>
-<dt class="label" id="id9"><span class="brackets"><a class="fn-backref" href="#id3">13</a></span></dt>
+<dt class="label" id="id10"><span class="brackets"><a class="fn-backref" href="#id3">13</a></span></dt>
 <dd><p>Please consult the man page for <em>printf</em> or any book on C.</p>
 </dd>
-<dt class="label" id="id10"><span class="brackets"><a class="fn-backref" href="#id6">15</a></span></dt>
+<dt class="label" id="id11"><span class="brackets"><a class="fn-backref" href="#id6">14</a></span></dt>
 <dd><p>Ensures that boundary annotations do not fall off the page.</p>
+</dd>
+<dt class="label" id="id12"><span class="brackets"><a class="fn-backref" href="#id7">15</a></span></dt>
+<dd><p>Marks, K. M., and W. H. F. Smith, 2007, Some remarks on resolving seamounts in satellite gravity, Geophys. Res. Lett., 34 (L03307),
+<a class="reference external" href="http://doi.org/10.1029/2006GL028857">http://doi.org/10.1029/2006GL028857</a>.</p>
 </dd>
 </dl>
 </div>
@@ -1657,7 +1661,7 @@ context they are considered “other”. Thus, when we refer to
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

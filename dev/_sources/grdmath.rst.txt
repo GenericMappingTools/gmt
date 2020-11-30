@@ -31,7 +31,7 @@ Synopsis
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 *operand* [ *operand* ] **OPERATOR** [ *operand* ]
-**OPERATOR** ... **=** *outgrdfile*
+**OPERATOR** ... **=** *outgrid*
 
 |No-spaces|
 
@@ -46,7 +46,7 @@ final result is written to an output grid file. Grid operations are
 element-by-element, not matrix manipulations. Some operators only
 require one operand (see below). If no grid files are used in the
 expression then options **-R**, **-I** must be set (and optionally
-|SYN_OPT-r|). The expression **=** *outgrdfile* can occur as many times as
+|SYN_OPT-r|). The expression **=** *outgrid* can occur as many times as
 the depth of the stack allows in order to save intermediate results.
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations.
@@ -59,7 +59,7 @@ Required Arguments
     If not a file, it is interpreted as a numerical constant or a
     special symbol (see below).
 
-*outgrdfile*
+*outgrid*
     The name of a 2-D grid file that will hold the final result. (See
     GRID FILE FORMATS below).
 

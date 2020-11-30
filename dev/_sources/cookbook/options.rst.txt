@@ -278,7 +278,7 @@ Map frame and axes annotations: The **-B** option
 
 This is potentially the most complicated option in GMT,
 but most examples of its usage are actually quite simple. We distinguish
-between to sets of information: Frame settings and Axes parameters.  These
+between two sets of information: Frame settings and Axes parameters.  These
 are set separately by their own **-B** invocations; hence multiple **-B**
 specifications may be specified. The frame settings covers things such
 as which axes should be plotted, canvas fill, plot title, and what type
@@ -806,7 +806,7 @@ Plot positioning and layout: The **-X** **-Y** options
 The **-X** and **-Y** options shift plot origin relative to the current origin by
 (*xshift*,\ *yshift*); optionally append the length unit
 (**c**, **i**, or **p**). Default is (:term:`MAP_ORIGIN_X`,
-:term:`MAP_ORIGIN_Y`) for new plots [15]_. Subsequent overlays will
+:term:`MAP_ORIGIN_Y`) for new plots [14]_. Subsequent overlays will
 be co-registered with the previous plot unless the origin is shifted using
 these options.  You can prepend **a** to shift the origin
 back to the original position after the plot module completes, prepend **c** to
@@ -1344,7 +1344,7 @@ of the higher data frequencies, as shown in Figure :ref:`Registration resampling
    Intermediate wavelengths will experience attenuated amplitudes as well. b) Transfer function for
    resampling data from a pixel-registered to a gridline-registered grid format illustrates the loss
    of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
-   function of wavenumber :math:`k_j` [Marks and Smith, 2007].
+   function of wavenumber :math:`k_j` [Marks and Smith, 2007 [15]_.
 
 .. _option_-s:
 
@@ -1430,5 +1430,9 @@ Footnotes
 .. [13]
    Please consult the man page for *printf* or any book on C.
 
-.. [15]
+.. [14]
    Ensures that boundary annotations do not fall off the page.
+   
+.. [15]
+   Marks, K. M., and W. H. F. Smith, 2007, Some remarks on resolving seamounts in satellite gravity, Geophys. Res. Lett., 34 (L03307), 
+   http://doi.org/10.1029/2006GL028857.

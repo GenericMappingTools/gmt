@@ -141,6 +141,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#data-tables">Data tables</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gmt-grids">GMT grids</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gmt-images">GMT images</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gmt-cubes">GMT cubes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#color-palette-tables-cpt">Color palette tables (CPT)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#postscript-document">PostScript document</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#user-data-matrices">User data matrices</a></li>
@@ -251,7 +252,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#taking-the-2-d-fft">Taking the 2-D FFT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#wavenumber-calculations">Wavenumber calculations</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#d-fft-manipulation">1-D FFT manipulation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id6">2-D FFT manipulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">2-D FFT manipulation</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#destroying-the-fft-machinery">Destroying the FFT machinery</a></li>
@@ -276,6 +277,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#data-set">Data set</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gmt-grid">GMT grid</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gmt-image">GMT image</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gmt-cube">GMT cube</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#cpt-palette-table">CPT palette table</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#postscript-text">PostScript text</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#matrix">Matrix</a></li>
@@ -380,9 +382,9 @@
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="preamble">
 <span id="index-0"></span><h3>Preamble<a class="headerlink" href="#preamble" title="Permalink to this headline">¶</a></h3>
-<div class="figure align-center" id="id12">
+<div class="figure align-center" id="id14">
 <a class="reference internal image-reference" href="_images/GMT4_mode.png"><img alt="_images/GMT4_mode.png" src="_images/GMT4_mode.png" style="width: 561.0px; height: 277.0px;" /></a>
-<p class="caption"><span class="caption-text">GMT 4 programs contain all the high-level functionality.</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">GMT 4 programs contain all the high-level functionality.</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
 </div>
 <p>Prior to version 5, the bulk of GMT functionality was coded directly
 in the standard GMT C program modules (e.g., <code class="docutils literal notranslate"><span class="pre">surface.c</span></code>, <code class="docutils literal notranslate"><span class="pre">grdimage.c</span></code>, etc.). The
@@ -392,7 +394,7 @@ have been very successful, with tens of thousands of users world-wide.
 However, the design of the main programs prevented developers from
 leveraging GMT functionality from within other programming
 environments since access to GMT tools could only be achieved via
-system calls <a class="footnote-reference brackets" href="#id7" id="id1">1</a>. Consequently, all data i/o had to be done via
+system calls <a class="footnote-reference brackets" href="#id10" id="id1">1</a>. Consequently, all data i/o had to be done via
 temporary files. The design also prevented the GMT developers
 themselves from taking advantage of these modules directly. For
 instance, the tool <a class="reference internal" href="legend.html"><span class="doc">legend</span></a> needed to
@@ -400,9 +402,9 @@ make extensive use of system calls to <a class="reference internal" href="plot.h
 <a class="reference internal" href="text.html"><span class="doc">text</span></a> in order to plot the lines,
 symbols and text that make up a map legend, making it a very awkward
 program to maintain.</p>
-<div class="figure align-center" id="id13">
+<div class="figure align-center" id="id15">
 <a class="reference internal image-reference" href="_images/GMT5_mode.png"><img alt="_images/GMT5_mode.png" src="_images/GMT5_mode.png" style="width: 558.0px; height: 199.5px;" /></a>
-<p class="caption"><span class="caption-text">GMT 5 programs contain all the high-level functionality.</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">GMT 5 programs contain all the high-level functionality.</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
 </div>
 <p>Starting with GMT version 5, all standard GMT programs have been
 rewritten into separate function “modules” invoked by a single
@@ -411,7 +413,7 @@ The <a class="reference internal" href="gmt.html"><span class="doc">gmt</span></
 GMT modules; it is these modules that do all the work. These new
 functions have been placed in a new GMT high-level API library and can
 be called from a variety of environments (C/C++, Fortran, Julia, Python,
-MATLAB, Visual Basic, R, etc.) <a class="footnote-reference brackets" href="#id8" id="id2">2</a>. For example, the main
+MATLAB, Visual Basic, R, etc.) <a class="footnote-reference brackets" href="#id11" id="id2">2</a>. For example, the main
 program <code class="docutils literal notranslate"><span class="pre">blockmean.c</span></code> has been reconfigured as a high-level function
 <code class="docutils literal notranslate"><span class="pre">GMT_blockmean()</span></code>, which does the actual spatial averaging and can
 pass the result back to the calling program (or write it to file). The
@@ -424,9 +426,9 @@ understand when it is being invoked via one of these links and then knows
 which module to call upon.
 Consequently, <code class="docutils literal notranslate"><span class="pre">blockmean.c</span></code> and other files do in
 fact no longer exist.</p>
-<div class="figure align-center" id="id14">
+<div class="figure align-center" id="id16">
 <a class="reference internal image-reference" href="_images/GMT5_external.png"><img alt="_images/GMT5_external.png" src="_images/GMT5_external.png" style="width: 596.5px; height: 308.0px;" /></a>
-<p class="caption"><span class="caption-text">GMT 5 API showing current and future external environments.</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">GMT 5 API showing current and future external environments.</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="the-i-o-abstraction-layer">
@@ -575,14 +577,14 @@ longer any TEXTSET settings), with what used to be flag3 now being given as flag
 </div>
 <div class="section" id="gmt-resources">
 <h3>GMT resources<a class="headerlink" href="#gmt-resources" title="Permalink to this headline">¶</a></h3>
-<p>The GMT API knows how to create, duplicate, read and write five types of data objects common to
-GMT operations: Pure data tables (ASCII or binary), grids, images, color
+<p>The GMT API knows how to create, duplicate, read and write six types of data objects common to
+GMT operations: Pure data tables (ASCII or binary), grids, images, cubes, color
 palette tables (also known as CPT), PostScript documents, and text tables (ASCII,
 usually a mix of data and free-form text).  In addition, we
 provide two data objects to facilitate the passing of simple user arrays
 (one or more equal-length data columns of any data type, e.g., double,
 char) and 2-D or 3-D user matrices (of any data type and column/row
-organization <a class="footnote-reference brackets" href="#id9" id="id3">3</a>). We refer to these data types as GMT <em>resources</em>.
+organization). We refer to these data types as GMT <em>resources</em>.
 There are many attributes for each of these resources and therefore we
 use a top-level structure for each object to keep them all within one
 container. These containers are given or returned by GMT API
@@ -590,7 +592,7 @@ functions using opaque pointers (<code class="docutils literal notranslate"><spa
 overview of these containers, listing only the most critical members.
 For complete details, see Appendix A.  We will later present how they are used when
 importing or exporting them to or from files, memory locations, or
-streams. The first five are the standard GMT objects, while the latter
+streams. The first six are the standard GMT objects, while the latter
 two are special data containers to facilitate the passing of user
 data in and out of GMT modules. These resources are defined in the include
 file <code class="docutils literal notranslate"><span class="pre">gmt_resources.h</span></code>; please consult this file to ensure correctness
@@ -705,7 +707,7 @@ Both image and header information are passed via a <code class="docutils literal
 which is a container that holds both items. Thus, the arguments to
 GMT API functions that handle GMT images expect this type of
 variable. Unlike the other objects, writing images has only partial
-support via <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> <a class="footnote-reference brackets" href="#id10" id="id4">4</a>.
+support via <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> <a class="footnote-reference brackets" href="#id12" id="id3">3</a>.
 For the full definition, see <a class="reference internal" href="#struct-image"><span class="std std-ref">GMT_IMAGE</span></a>.</p>
 <div class="highlight-c notranslate" id="struct-image2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_IMAGE</span> <span class="p">{</span>     <span class="cm">/* A GMT char image, header, and colormap in one container */</span>
     <span class="k">enum</span> <span class="n">GMT_enum_type</span>      <span class="n">type</span><span class="p">;</span>             <span class="cm">/* Data type, e.g. GMT_FLOAT */</span>
@@ -713,6 +715,30 @@ For the full definition, see <a class="reference internal" href="#struct-image">
     <span class="kt">int</span>                     <span class="n">n_indexed_colors</span><span class="p">;</span> <span class="cm">/* Number of colors in a color-mapped image */</span>
     <span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">;</span>           <span class="cm">/* Pointer to full GMT header for the image */</span>
     <span class="kt">unsigned</span> <span class="kt">char</span>          <span class="o">*</span><span class="n">data</span><span class="p">;</span>             <span class="cm">/* Pointer to actual image */</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="gmt-cubes">
+<h4>GMT cubes<a class="headerlink" href="#gmt-cubes" title="Permalink to this headline">¶</a></h4>
+<p>GMT cubes are used to represent 3-D grids where all the horizontal layers
+are represented by a single grid header.  Thus, all nodes along the third
+dimension are coregistered and in the horizontal plane they are, like all
+GMT grids, equidistant.  However, the spacing in the third dimension (which
+is typically depth or time) does not have to be equidistant.  At this moment,
+only <a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a> and <a class="reference internal" href="grdinterpolate.html"><span class="doc">grdinterpolate</span></a> can produce 3-D cubes while
+the latter can also read them (other grid modules can read individual layers
+of a cube as a single grid).
+We use the same header structure as for grids. However, some
+additional metadata attributes are needed for the third dimension.
+Both the cube and header information are passed via a <code class="docutils literal notranslate"><span class="pre">struct</span></code> <a class="reference internal" href="#struct-cube"><span class="std std-ref">GMT_CUBE</span></a>,
+which is a container that holds all items. Thus, the arguments to
+GMT API functions that handle GMT cubes expect this type of
+variable.
+For the full definition, see <a class="reference internal" href="#struct-cube"><span class="std std-ref">GMT_CUBE</span></a>.</p>
+<div class="highlight-c notranslate" id="struct-cube2"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">GMT_CUBE</span> <span class="p">{</span>     <span class="cm">/* A GMT 3-D cube in one container */</span>
+     <span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">;</span>      <span class="cm">/* The full GMT header for the grid */</span>
+     <span class="kt">float</span>                  <span class="o">*</span><span class="n">data</span><span class="p">;</span>        <span class="cm">/* Pointer to the float 3-D array */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -1070,61 +1096,67 @@ any of them to see the full syntax of each function.</p>
 <td><p>Verify input file exist and replace with full path</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gmt-get-index">GMT_Get_Index</a></p></td>
-<td><p>Convert row, col into a grid or image index</p></td>
+<td><p>Convert row, col into a grid or image 1-D index</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gmt-get-info">GMT_Get_Info</a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gmt-get-index3">GMT_Get_Index3</a></p></td>
+<td><p>Convert row, col, layer into a cube 1-D index</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-get-info">GMT_Get_Info</a></p></td>
 <td><p>Obtain meta data (range, dimension), … from object</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-get-matrix">GMT_Get_Matrix</a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gmt-get-matrix">GMT_Get_Matrix</a></p></td>
 <td><p>Obtain pointer to user matrix from container</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gmt-get-pixel">GMT_Get_Pixel</a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-get-pixel">GMT_Get_Pixel</a></p></td>
 <td><p>Get grid or image node</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-get-record">GMT_Get_Record</a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gmt-get-record">GMT_Get_Record</a></p></td>
 <td><p>Import a single data record</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gmt-get-row">GMT_Get_Row</a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-get-row">GMT_Get_Row</a></p></td>
 <td><p>Import a single grid row</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-get-status">GMT_Get_Status</a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gmt-get-status">GMT_Get_Status</a></p></td>
 <td><p>Check status of record-by-record i/o</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gmt-get-strings">GMT_Get_Strings</a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-get-strings">GMT_Get_Strings</a></p></td>
 <td><p>Obtain pointer to user strings from matrix or vector</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-get-values">GMT_Get_Values</a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gmt-get-values">GMT_Get_Values</a></p></td>
 <td><p>Convert string into coordinates or dimensions</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gmt-get-vector">GMT_Get_Vector</a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-get-vector">GMT_Get_Vector</a></p></td>
 <td><p>Obtain pointer to user vector from container</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-get-version">GMT_Get_Version</a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gmt-get-version">GMT_Get_Version</a></p></td>
 <td><p>Return the current lib version as a float</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gmt-init-io">GMT_Init_IO</a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-init-io">GMT_Init_IO</a></p></td>
 <td><p>Initialize i/o given registered resources</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-init-virtualfile">GMT_Init_VirtualFile</a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gmt-init-virtualfile">GMT_Init_VirtualFile</a></p></td>
 <td><p>Reset a virtual file for reuse</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gmt-inquire-virtualfile">GMT_Inquire_VirtualFile</a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-inquire-virtualfile">GMT_Inquire_VirtualFile</a></p></td>
 <td><p>Get family of a virtual file</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-make-option">GMT_Make_Option</a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gmt-make-option">GMT_Make_Option</a></p></td>
 <td><p>Create an option structure</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gmt-message">GMT_Message</a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-message">GMT_Message</a></p></td>
 <td><p>Issue a message, optionally with time stamp</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-open-virtualfile">GMT_Open_VirtualFile</a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gmt-open-virtualfile">GMT_Open_VirtualFile</a></p></td>
 <td><p>Select memory location as input or output for module</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gmt-option">GMT_Option</a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-option">GMT_Option</a></p></td>
 <td><p>Explain one or more GMT common options</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-parse-common">GMT_Parse_Common</a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gmt-parse-common">GMT_Parse_Common</a></p></td>
 <td><p>Parse the GMT common options</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gmt-put-levels">GMT_Put_Levels</a></p></td>
+<td><p>Put user level coordinates into cube container</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gmt-put-matrix">GMT_Put_Matrix</a></p></td>
 <td><p>Put user matrix into container</p></td>
@@ -1200,7 +1232,7 @@ likely to only initialize one session even though they may call many
 GMT modules. However, the GMT API supports any number of
 simultaneous sessions should the programmer wish to take advantage of
 it. This might be useful when you have access to several CPUs and want
-to spread the computing load <a class="footnote-reference brackets" href="#id11" id="id5">5</a>. In the following discussion we will
+to spread the computing load <a class="footnote-reference brackets" href="#id13" id="id4">4</a>. In the following discussion we will
 simplify our treatment to the use of a single session only.</p>
 <p>To initiate the new GMT session we use</p>
 <blockquote id="gmt-create-session">
@@ -1425,22 +1457,25 @@ unique resource ID, or <code class="docutils literal notranslate"><span class="p
 <tr class="row-even"><td><p>GMT_IS_IMAGE</p></td>
 <td><p>An image</p></td>
 </tr>
-<tr class="row-odd"><td><p>GMT_IS_PALETTE</p></td>
+<tr class="row-odd"><td><p>GMT_IS_CUBE</p></td>
+<td><p>A 3-D cube</p></td>
+</tr>
+<tr class="row-even"><td><p>GMT_IS_PALETTE</p></td>
 <td><p>A color palette table [CPT]</p></td>
 </tr>
-<tr class="row-even"><td><p>GMT_IS_POSTSCRIPT</p></td>
+<tr class="row-odd"><td><p>GMT_IS_POSTSCRIPT</p></td>
 <td><p>A GMT PostScript object</p></td>
 </tr>
-<tr class="row-odd"><td><p>GMT_IS_MATRIX</p></td>
+<tr class="row-even"><td><p>GMT_IS_MATRIX</p></td>
 <td><p>A custom user data matrix</p></td>
 </tr>
-<tr class="row-even"><td><p>GMT_IS_VECTOR</p></td>
+<tr class="row-odd"><td><p>GMT_IS_VECTOR</p></td>
 <td><p>A custom user data vector</p></td>
 </tr>
-<tr class="row-odd"><td><p>GMT_VIA_MATRIX</p></td>
+<tr class="row-even"><td><p>GMT_VIA_MATRIX</p></td>
 <td><p>Modifier for grids and datasets</p></td>
 </tr>
-<tr class="row-even"><td><p>GMT_VIA_VECTOR</p></td>
+<tr class="row-odd"><td><p>GMT_VIA_VECTOR</p></td>
 <td><p>Modifier for grids and datasets</p></td>
 </tr>
 </tbody>
@@ -1507,6 +1542,9 @@ unique resource ID, or <code class="docutils literal notranslate"><span class="p
 </tr>
 <tr class="row-odd"><td><p>GMT_IS_SURFACE</p></td>
 <td><p>2-D gridded surface</p></td>
+</tr>
+<tr class="row-even"><td><p>GMT_IS_VOLUME</p></td>
+<td><p>3-D gridded volume</p></td>
 </tr>
 </tbody>
 </table>
@@ -1587,6 +1625,10 @@ and we also allocate the grids’s <em>x</em> and <em>y</em> coordinate vectors.
 </dd>
 <dt><strong>GMT_IS_IMAGE</strong>.</dt><dd><p>Same procedure as for <strong>GMT_IS_GRID</strong> but we return an empty <a class="reference internal" href="#struct-image"><span class="std std-ref">GMT_IMAGE</span></a> object.  In either
 way of specification you may use <code class="docutils literal notranslate"><span class="pre">par[2]</span></code> to pass the number of image bands [1].</p>
+</dd>
+<dt><strong>GMT_IS_CUBE</strong>.</dt><dd><p>Same procedure as for <strong>GMT_IS_GRID</strong> but both <code class="docutils literal notranslate"><span class="pre">wesn</span></code>, <code class="docutils literal notranslate"><span class="pre">inc</span></code> and <code class="docutils literal notranslate"><span class="pre">par</span></code> have one extra
+dimension for the depth or time axis.  For non-equidistant layers you need to use
+<code class="docutils literal notranslate"><span class="pre">par[2]</span></code> to sets the number of layers, otherwise <code class="docutils literal notranslate"><span class="pre">wesn</span></code> and <code class="docutils literal notranslate"><span class="pre">inc</span></code> can set it all.</p>
 </dd>
 <dt><strong>GMT_IS_DATASET</strong>.</dt><dd><p>We allocate an empty <a class="reference internal" href="#struct-dataset"><span class="std std-ref">GMT_DATASET</span></a> structure consisting of <code class="docutils literal notranslate"><span class="pre">par[0]</span></code> tables,
 each with <code class="docutils literal notranslate"><span class="pre">par[1]</span></code> segments, each with <code class="docutils literal notranslate"><span class="pre">par[2]</span></code> rows, all with <code class="docutils literal notranslate"><span class="pre">par[3]</span></code> columns.
@@ -1690,6 +1732,16 @@ To extract a custom vector from an output <a class="reference internal" href="#s
 </div>
 </div></blockquote>
 <p>where <code class="docutils literal notranslate"><span class="pre">col</span></code> is the vector number you wish to obtain a pointer to.</p>
+<blockquote id="gmt-put-levels">
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">GMT_Put_Levels</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">GMT_CUBE</span> <span class="o">*</span><span class="n">C</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">levels</span><span class="p">,</span>
+</pre></div>
+</div>
+<p>uint64_t n_levels);</p>
+</div></blockquote>
+<p>where <code class="docutils literal notranslate"><span class="pre">C</span></code> is the <a class="reference internal" href="#struct-cube"><span class="std std-ref">GMT_CUBE</span></a> created by <a class="reference internal" href="#gmt-create-data">GMT_Create_Data</a>, <a href="#id5"><span class="problematic" id="id6">``</span></a>levels’’ is an array
+with the (probably) non-equidistant coordinates for the third cube dimension, and <a href="#id7"><span class="problematic" id="id8">``</span></a>n_levels’’ is their number.
+This function is typically used when we are creating a cube whose spacing between layers is not equidistant
+and hence cannot be computed internally from range and increment.</p>
 <blockquote id="gmt-get-version">
 <div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="o">*</span><span class="nf">GMT_Get_Version</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="o">*</span><span class="n">major</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="o">*</span><span class="n">minor</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="o">*</span><span class="n">patch</span><span class="p">);</span>
 </pre></div>
@@ -1825,12 +1877,12 @@ etc.</p>
 </div>
 <div class="section" id="import-data-sets">
 <h3>Import Data Sets<a class="headerlink" href="#import-data-sets" title="Permalink to this headline">¶</a></h3>
-<p>If your program needs to import any of the five recognized data types
-(data table, grid, image, CPT, or PostScript) you will use
+<p>If your program needs to import any of the six recognized data types
+(data table, grid, image, cube, CPT, or PostScript) you will use
 the <a class="reference internal" href="#gmt-read-data">GMT_Read_Data</a> or <a class="reference internal" href="#gmt-read-virtualfile">GMT_Read_VirtualFile</a> functions. The former
 is typically used when reading from files, streams (e.g., <code class="docutils literal notranslate"><span class="pre">stdin</span></code>), or
 an open file handle, while the latter is only used to read from memory.
-Because of the similarities of these five
+Because of the similarities of these six
 import functions we use an generic form that covers all of them.</p>
 <p>All input functions takes a parameter called <code class="docutils literal notranslate"><span class="pre">mode</span></code>. The <code class="docutils literal notranslate"><span class="pre">mode</span></code>
 parameter generally has different meanings for the different data types
@@ -1989,7 +2041,7 @@ suitable container first (and pass the dimensions of the arrays) and then
 attach your array(s) using <a class="reference internal" href="#gmt-put-matrix">GMT_Put_Matrix</a> or <a class="reference internal" href="#gmt-put-vector">GMT_Put_Vector</a>.
 The full syntax is</p>
 <blockquote id="gmt-open-virtualfile">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="o">*</span><span class="nf">GMT_Open_VirtualFile</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">family</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">geometry</span><span class="p">,</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">GMT_Open_VirtualFile</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">API</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">family</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">geometry</span><span class="p">,</span>
             <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">direction</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -2277,7 +2329,7 @@ function will be used below in our example on grid manipulation.</p>
 2-D reference to our 1-D array index.  Because of grid and image boundary padding
 the relationship is not straightforward, hence we supply</p>
 <blockquote id="gmt-get-index">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int64_t</span> <span class="nf">GMT_Get_Index</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row</span><span class="p">,</span> <span class="kt">int</span> <span class="n">col</span><span class="p">);</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">uint64_t</span> <span class="nf">GMT_Get_Index</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row</span><span class="p">,</span> <span class="kt">int</span> <span class="n">col</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -2286,13 +2338,21 @@ the relationship is not straightforward, hence we supply</p>
 position; again this function is used below in our example.  Likewise, for images
 with many layers we also define</p>
 <blockquote id="gmt-get-pixel">
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int64_t</span> <span class="nf">GMT_Get_Pixel</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row</span><span class="p">,</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">uint64_t</span> <span class="nf">GMT_Get_Pixel</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">col</span><span class="p">,</span> <span class="kt">int</span> <span class="n">layer</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
 <p>where the <code class="docutils literal notranslate"><span class="pre">header</span></code> is the header of an image, and <code class="docutils literal notranslate"><span class="pre">row</span></code>, <code class="docutils literal notranslate"><span class="pre">col</span></code> and
 <code class="docutils literal notranslate"><span class="pre">layer</span></code> (= 1 for grids) is the position in the grid or image.</p>
+<p>For data cubes we need to also supply the <code class="docutils literal notranslate"><span class="pre">level</span></code> in the cube. Because
+each layer is basically a padded grid, we supply</p>
+<blockquote id="gmt-get-index3">
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">uint64_t</span> <span class="nf">GMT_Get_Index3</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row</span><span class="p">,</span> <span class="kt">int</span> <span class="n">col</span><span class="p">,</span> <span class="kt">int</span> <span class="n">level</span><span class="p">);</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>where we return the 1-D array position.</p>
 <div class="section" id="manipulate-grids">
 <h4>Manipulate grids<a class="headerlink" href="#manipulate-grids" title="Permalink to this headline">¶</a></h4>
 <p>Most applications wishing to manipulate grids will want to loop over all
@@ -2580,8 +2640,8 @@ encoded in the headers.</p>
 </div>
 <div class="section" id="export-data-sets">
 <h3>Export Data Sets<a class="headerlink" href="#export-data-sets" title="Permalink to this headline">¶</a></h3>
-<p>If your program needs to write any of the five recognized data types
-(CPTs, data tables, grids, images, or PostScript) you can use the
+<p>If your program needs to write any of the six recognized data types
+(CPTs, data tables, grids, images, cubes or PostScript) you can use the
 <a class="reference internal" href="#gmt-write-data">GMT_Write_Data</a> function.</p>
 <p>Both of these output functions takes a parameter called <code class="docutils literal notranslate"><span class="pre">mode</span></code>. The
 <code class="docutils literal notranslate"><span class="pre">mode</span></code> parameter generally takes on different meanings for the
@@ -2614,7 +2674,7 @@ separately requires you to use the <a class="reference internal" href="#gmt-writ
 <li><p>mode -- specific to each data type (<em>see below</em>)</p></li>
 <li><p><a class="reference internal" href="#tbl-wesn"><span class="std std-ref">wesn</span></a></p></li>
 <li><p>output --</p></li>
-<li><p>data -- A pointer to any of the five families.</p></li>
+<li><p>data -- A pointer to any of the six families.</p></li>
 <li><p>Return: 0 on success, otherwise return -1 and set API-&gt;error to reflect to cause.</p></li>
 </ul>
 <p>where <code class="docutils literal notranslate"><span class="pre">data</span></code> is a pointer to any of the four structures discussed previously.</p>
@@ -3038,6 +3098,8 @@ options are passed (i.e., the <code class="docutils literal notranslate"><span c
 </dd>
 </dl>
 </div></blockquote>
+<p>From external interfaces and with a debug verbosity level set, <code class="docutils literal notranslate"><span class="pre">GMT_Call_Module</span></code> will
+also print out the equivalent command line to standard error (or its substitute).</p>
 <div class="section" id="set-program-options-via-text-array-arguments">
 <h4>Set program options via text array arguments<a class="headerlink" href="#set-program-options-via-text-array-arguments" title="Permalink to this headline">¶</a></h4>
 <p>When <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> we expect an array <code class="docutils literal notranslate"><span class="pre">args</span></code> of character
@@ -3465,8 +3527,8 @@ vector created by <a class="reference internal" href="#gmt-fft-create">GMT_FFT_C
 <h4>1-D FFT manipulation<a class="headerlink" href="#d-fft-manipulation" title="Permalink to this headline">¶</a></h4>
 <p>[To be added after gmtfft has been added as new module, probably in 5.4.]</p>
 </div>
-<div class="section" id="id6">
-<h4>2-D FFT manipulation<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id9">
+<h4>2-D FFT manipulation<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
 <p>The number of complex pairs in the grid is given by the header’s <code class="docutils literal notranslate"><span class="pre">nm</span></code>
 variable, while <code class="docutils literal notranslate"><span class="pre">size</span></code> will be twice that value as it holds the number
 of components. To visit all the complex values and obtain the
@@ -3588,11 +3650,11 @@ or time, have done the i/o inside the modules.  While these steps are helped by 
 i/o activities all take place <em>inside</em> the modules.  This means that external environments in which the desired
 input data already reside in memory and the desired results should be returned back to memory pose a
 trickier challenge.  We will see the solution to this involves the concept of <em>virtual</em> files.</p>
-<div class="figure align-center" id="id15">
+<div class="figure align-center" id="id17">
 <a class="reference internal image-reference" href="_images/GMT_API_use.png"><img alt="_images/GMT_API_use.png" src="_images/GMT_API_use.png" style="width: 500px;" /></a>
 <p class="caption"><span class="caption-text">GMT Modules can read and write information in may ways.  The GMT command line modules
 can only access the methods in white, while all methods are available via the C API.
-External interfaces will preferentially want the methods in orange.</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
+External interfaces will preferentially want the methods in orange.</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
 </div>
 <div class="section" id="plain-interface">
 <h3>Plain interface<a class="headerlink" href="#plain-interface" title="Permalink to this headline">¶</a></h3>
@@ -3608,21 +3670,21 @@ must specify which one you want to call. The coding of the <strong>gmt</strong> 
 C, partly in C and the external scripting language, or entirely in the scripting language, depending on
 restrictions on what needs to be done and where this is most easily accomplished.
 How this is accomplished may vary from environment to environment.</p>
-<div class="figure align-center" id="id16">
+<div class="figure align-center" id="id18">
 <a class="reference internal image-reference" href="_images/GMT_API_flow.png"><img alt="_images/GMT_API_flow.png" src="_images/GMT_API_flow.png" style="width: 500px;" /></a>
 <p class="caption"><span class="caption-text">Data pass in and out of the <strong>gmt</strong> interface which may be written in the scripting language used
 by the external interface.  The native data will need to be encapsulated by GMT containers and this
 step may be done by a C <strong>parser</strong> but could also be done by the <strong>gmt</strong> interface directly.  Either
-of these communicate directly with the C functions in the GMT API.</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+of these communicate directly with the C functions in the GMT API.</span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="data-containers">
 <h3>Data containers<a class="headerlink" href="#data-containers" title="Permalink to this headline">¶</a></h3>
 <p>The external interface developer will need to create native data classes or structures that are capable of
-containing the information associated with the 5 GMT objects: data tables, grids, images, color palette tables,
+containing the information associated with the six GMT objects: data tables, grids, images, cubes, color palette tables,
 and PostScript documents.  In other words, how your external environment will represent these
 data in memory.  Some of these “containers” may already exist, while others may need to be designed.  Most likely, you will end up with
-a set of five containers that can hold the various GMT data objects and related metadata.  In addition, it may
+a set of six containers that can hold the various GMT data objects and related metadata.  In addition, it may
 be convenient to also consider the two GMT helper objects MATRIX and VECTOR, which may be closer to the native
 representation of your data than, for instance, the native GMT_DATASET.</p>
 </div>
@@ -3675,7 +3737,7 @@ used to replace these place-holder names with the virtual filenames you created 
 external environment and its development influenced
 how we designed the final GMT C API.  MATLAB represents most data as matrices but there are also structures that
 can hold many different items, including several matrices and text strings.  Thus, we designed several native mex structures
-that represent the five GMT objects.  The main <strong>gmt</strong> function available in MATLAB derives from a small MATLAB script
+that represent the six GMT objects.  The main <strong>gmt</strong> function available in MATLAB derives from a small MATLAB script
 (gmt.m) which handles basic argument testing and then passes the arguments to our C function gmtmex.c.
 Most of the high-level parsing of options and arguments is done in this function, but we also rely on
 a C library (gmtmex_parser.c) that hides the details of the implementation.  It is this library that
@@ -3685,16 +3747,16 @@ by <a class="reference internal" href="#gmt-encode-options">GMT_Encode_Options</
 </div>
 <div class="section" id="the-julia-interface">
 <h4>The Julia interface<a class="headerlink" href="#the-julia-interface" title="Permalink to this headline">¶</a></h4>
-<p>Unlike the MATLAB interface, the Julia interface is written entirely in the Julia language.</p>
+<p>Unlike the MATLAB interface, the Julia interface GMT.jl is written entirely in the Julia language.</p>
 </div>
 <div class="section" id="the-python-interface">
 <h4>The Python interface<a class="headerlink" href="#the-python-interface" title="Permalink to this headline">¶</a></h4>
-<p>To be defined shortly.</p>
+<p>Unlike the MATLAB interface, the Python interface PyGMT is written entirely in the Python language.</p>
 </div>
 </div>
 <div class="section" id="appendix-a-gmt-resources">
 <h3>Appendix A: GMT resources<a class="headerlink" href="#appendix-a-gmt-resources" title="Permalink to this headline">¶</a></h3>
-<p>We earlier introduced the five standard GMT resources (dataset, grid, image, color palette table, PostScript)
+<p>We earlier introduced the six standard GMT resources (dataset, grid, image, cube, color palette table, PostScript)
 as well as the user vector and matrix.  Here are the complete definitions of these structures, including
 all variables accessible via the structures.</p>
 <div class="section" id="data-set">
@@ -3828,6 +3890,28 @@ allocated will be <em>size * n_bands</em>.</p>
     <span class="k">const</span> <span class="kt">char</span>             <span class="o">*</span><span class="n">color_interp</span><span class="p">;</span>     <span class="cm">/* Color interpretation name */</span>
     <span class="kt">double</span>                 <span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">y</span><span class="p">;</span>            <span class="cm">/* Vector of coordinates */</span>
     <span class="kt">void</span>                   <span class="o">*</span><span class="n">hidden</span><span class="p">;</span>           <span class="cm">/* ---- Variables &quot;hidden&quot; from the API ---- */</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="gmt-cube">
+<h4>GMT cube<a class="headerlink" href="#gmt-cube" title="Permalink to this headline">¶</a></h4>
+<p>A 3-D cube is similar to a grid but typically has more than one layer.
+It is represented by a <a class="reference internal" href="#struct-cube"><span class="std std-ref">GMT_CUBE</span></a> structure that consists of the
+<a class="reference internal" href="#struct-gridheader"><span class="std std-ref">GMT_GRID_HEADER</span></a> structure and an float array <code class="docutils literal notranslate"><span class="pre">data</span></code> that
+contains the cube values.
+<strong>Note</strong>: The header <em>size</em> value reflects number of nodes per layer, so the actual memory
+allocated will be <em>size * n_bands</em>, where the latter is one of the parameters in the header.</p>
+<div class="highlight-c notranslate" id="struct-cube"><div class="highlight"><pre><span></span> <span class="k">struct</span> <span class="nc">GMT_CUBE</span> <span class="p">{</span>
+      <span class="k">struct</span> <span class="nc">GMT_GRID_HEADER</span> <span class="o">*</span><span class="n">header</span><span class="p">;</span>      <span class="cm">/* The full GMT header for the grid */</span>
+      <span class="kt">float</span>                  <span class="o">*</span><span class="n">data</span><span class="p">;</span>        <span class="cm">/* Pointer to the float 3-D array */</span>
+      <span class="kt">unsigned</span> <span class="kt">int</span>           <span class="n">mode</span><span class="p">;</span>         <span class="cm">/* Indicates input was list of 2-D grids rather than a cube */</span>
+      <span class="kt">double</span>                 <span class="n">z_range</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>   <span class="cm">/* Minimum/max z values (complements header-&gt;wesn) */</span>
+      <span class="kt">double</span>                 <span class="n">z_inc</span><span class="p">;</span>        <span class="cm">/* z increment (complements header-&gt;inc) (0 if variable z spacing) */</span>
+      <span class="kt">double</span>                 <span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">y</span><span class="p">,</span> <span class="o">*</span><span class="n">z</span><span class="p">;</span>   <span class="cm">/* Arrays of x,y,z coordinates */</span>
+      <span class="kt">char</span> <span class="n">name</span><span class="p">[</span><span class="n">GMT_GRID_UNIT_LEN80</span><span class="p">];</span>      <span class="cm">/* Name of variable, if read from file (empty if default) */</span>
+      <span class="kt">char</span> <span class="n">units</span><span class="p">[</span><span class="n">GMT_GRID_UNIT_LEN80</span><span class="p">];</span>     <span class="cm">/* Units in 3rd direction (complements x_units, y_units, z_units)  */</span>
+      <span class="kt">void</span>                   <span class="o">*</span><span class="n">hidden</span><span class="p">;</span>      <span class="cm">/* ---- Variables &quot;hidden&quot; from the API ---- */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -4092,20 +4176,17 @@ default data types [float for matrix and double for vector].</p>
 <div class="section" id="footnotes">
 <h3>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">¶</a></h3>
 <dl class="footnote brackets">
-<dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dt class="label" id="id10"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
 <dd><p>or via a very confusing and ever-changing myriad of low-level library
 functions for bold programmers.</p>
 </dd>
-<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dt class="label" id="id11"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
 <dd><p>Currently, C/C++, FORTRAN, MATLAB and Julia are being tested.</p>
 </dd>
-<dt class="label" id="id9"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
-<dd><p>At the moment, GMT does not have native support for 3-D grids.</p>
-</dd>
-<dt class="label" id="id10"><span class="brackets"><a class="fn-backref" href="#id4">4</a></span></dt>
+<dt class="label" id="id12"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
 <dd><p>This may change in later releases.</p>
 </dd>
-<dt class="label" id="id11"><span class="brackets"><a class="fn-backref" href="#id5">5</a></span></dt>
+<dt class="label" id="id13"><span class="brackets"><a class="fn-backref" href="#id4">4</a></span></dt>
 <dd><p>However, there is no thread-support yet, so you will need to manage your
 own threads.</p>
 </dd>
@@ -4137,7 +4218,7 @@ own threads.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

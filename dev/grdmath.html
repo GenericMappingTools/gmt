@@ -243,7 +243,7 @@
 [ <strong>-x</strong>[[-]<em>n</em>] ]
 [ <strong>--PAR</strong>=<em>value</em> ]
 <em>operand</em> [ <em>operand</em> ] <strong>OPERATOR</strong> [ <em>operand</em> ]
-<strong>OPERATOR</strong> … <strong>=</strong> <em>outgrdfile</em></p>
+<strong>OPERATOR</strong> … <strong>=</strong> <em>outgrid</em></p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </div>
 <div class="section" id="description">
@@ -256,7 +256,7 @@ final result is written to an output grid file. Grid operations are
 element-by-element, not matrix manipulations. Some operators only
 require one operand (see below). If no grid files are used in the
 expression then options <strong>-R</strong>, <strong>-I</strong> must be set (and optionally
-<strong>-r</strong><a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">reg</span></a>). The expression <strong>=</strong> <em>outgrdfile</em> can occur as many times as
+<strong>-r</strong><a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">reg</span></a>). The expression <strong>=</strong> <em>outgrid</em> can occur as many times as
 the depth of the stack allows in order to save intermediate results.
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations.</p>
@@ -268,14 +268,14 @@ for future use or stored and recalled via named memory locations.</p>
 If not a file, it is interpreted as a numerical constant or a
 special symbol (see below).</p>
 </dd>
-<dt><em>outgrdfile</em></dt><dd><p>The name of a 2-D grid file that will hold the final result. (See
+<dt><em>outgrid</em></dt><dd><p>The name of a 2-D grid file that will hold the final result. (See
 GRID FILE FORMATS below).</p>
 </dd>
 </dl>
 </div>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple" id="a">
+<span class="target" id="a"></span><dl class="simple">
 <dt><strong>-A</strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+a</strong>[<strong>g</strong>|<strong>i</strong>][<strong>s</strong>|<strong>S</strong>]][<strong>+l</strong>|<strong>r</strong>][<strong>+p</strong><em>percent</em>]</dt><dd><p>Features with an area smaller than <em>min_area</em> in km^2 or of
 hierarchical level that is lower than <em>min_level</em> or higher than
 <em>max_level</em> will not be plotted [Default is 0/0/4 (all features)].
@@ -337,7 +337,7 @@ manipulated [Default will insist that each grid domain is within
 1e-4 * grid_spacing of the domain of the first grid listed].</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest.  </p>
 </dd>
 </dl>
@@ -349,7 +349,7 @@ follow <strong>-S</strong> with a reducing operator, i.e., from the list ADD, AN
 LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, SUB, VAR or XOR.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -1660,7 +1660,7 @@ Publishing Corp.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

@@ -224,7 +224,7 @@
 <p>Forward and inverse map transformation of grids</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt grdproject</strong> <em>in_grdfile</em> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>out_grdfile</em> <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em>
+<p><strong>gmt grdproject</strong> <em>ingrid</em> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outgrid</em> <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em>
 [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong>[<em>dx/dy</em>] ]
 [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>xinc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<strong>+e</strong>|<strong>n</strong>]] ]
 [ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>dpi</em> ] [ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>|<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>] ] [ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong> ] [ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong><strong>c</strong>|<strong>i</strong>|<strong>p</strong> ]
@@ -258,14 +258,14 @@ than that implied by the extent of the grid file.</p>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
-<dt><em>in_grdfile</em></dt><dd><p>2-D binary grid file to be transformed. (See GRID FILE FORMATS below.)</p>
+<dt><em>ingrid</em></dt><dd><p>2-D binary grid file to be transformed. (See GRID FILE FORMATS below.)</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
-<dt><strong>-G</strong><em>out_grdfile</em></dt><dd><p>Specify the name of the output grid file. (See GRID FILE FORMATS below.)</p>
+<dt><strong>-G</strong><em>outgrid</em></dt><dd><p>Specify the name of the output grid file. (See GRID FILE FORMATS below.)</p>
 </dd>
 </dl>
-<dl class="simple" id="j">
+<span class="target" id="j"></span><dl class="simple">
 <dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select map projection.  </p>
 </dd>
 </dl>
@@ -328,13 +328,13 @@ should be the projected measure unit [Default is set by
 <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> in <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>]. Cannot be used with <strong>-F</strong>.</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest. You may ask to project only
 a subset of the grid by specifying a smaller input <em>w/e/s/n</em> region
 [Default is the region given by the grid file].</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -443,7 +443,7 @@ than you are interested in.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

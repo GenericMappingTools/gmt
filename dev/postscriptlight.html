@@ -677,7 +677,13 @@ minus character is typeset as a hyphen in the current char set.</p>
 <p><strong>long PSL_settransparency</strong> (<strong>struct PSL_CTRL</strong> <em>*P</em>, <strong>double</strong>
 <em>*transparency</em>)</p>
 <blockquote>
-<div><p>Changes the current PDF transparency value.</p>
+<div><p>Changes the current PDF transparency value for both fill and stroke.</p>
+</div></blockquote>
+<p><strong>long PSL_settransparencies</strong> (<strong>struct PSL_CTRL</strong> <em>*P</em>, <strong>double</strong>
+<em>transparencies</em>)</p>
+<blockquote>
+<div><p>Changes the current PDF transparency values for fill and stroke
+separately.</p>
 </div></blockquote>
 <p><strong>long PSL_settransparencymode</strong> (<strong>struct PSL_CTRL</strong> <em>*P</em>, <strong>char</strong>
 <em>*mode</em>)</p>
@@ -1188,7 +1194,7 @@ edition, Addison-Wesley, (ISBN 0-201-18127-4).</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

@@ -444,7 +444,11 @@ for normal (i.e., <strong>+a</strong>90) and <strong>+ap</strong> for parallel (
 [Default].  For the y- and z-axes, arbitrary angles are not allowed but <strong>+an</strong> and <strong>+ap</strong>
 specify annotations normal [Default] and parallel to the axis, respectively. Note that
 these defaults can be changed via <a class="reference internal" href="gmt.conf.html#term-MAP_ANNOT_ORTHO"><span class="xref std std-term">MAP_ANNOT_ORTHO</span></a>. Geographic axes can
-take <strong>+f</strong> which will give fancy annotations with W|E|S|N suffices encoding the sign.</p>
+take <strong>+f</strong> which will give fancy annotations with W|E|S|N suffices encoding the sign.
+<strong>Note</strong>: Text items such as <em>title</em>, <em>label</em> and <em>seclabel</em> are seen by GMT as part of
+a long string containing everything passed to <strong>-B</strong>. Therefore, they cannot contain substrings
+that looks like other modifiers.  If you need to embed such sequences (e.g., <strong>+t</strong>“Solving a+b=c”)
+you need to replace those + symbols with their octal equivalent \053, (e.g., <strong>+t</strong>“Solving a\053b=c”).</p>
 <p>The <em>intervals</em> specification is a concatenated string made up of substrings
 of the form</p>
 <p>[<strong>a</strong>|<strong>f</strong>|<strong>g</strong>]<em>stride</em>[<em>±phase</em>][<em>unit</em>].</p>
@@ -452,7 +456,7 @@ of the form</p>
 spacing [Default], <strong>f</strong> for minor tick spacing, and <strong>g</strong> for
 gridline spacing. <em>stride</em> is the desired stride interval. The
 optional <em>phase</em> shifts the annotation interval by that amount
-(positive or negative). The optional <em>unit</em> indicates the unit of
+(positive or negative, and the sign is <em>require</em>). The optional <em>unit</em> indicates the unit of
 the <em>stride</em> and are particularly important for time-axes as they
 can be any of the ones listed below:</p>
 <ul class="simple">
@@ -932,9 +936,7 @@ refers to, and the grid dimensions <em>nx</em> and <em>ny</em> with grid spacing
 <strong>-I</strong> is used to create the corresponding region.
 Alternatively, specify the name of an existing grid file and the
 <strong>-R</strong> settings (and grid spacing and registration, if applicable) are copied from
-the grid. When <strong>-R</strong> is used without any further arguments, the
-values from the last use of <strong>-R</strong> in a previous GMT command
-will be used.
+the grid.
 For calendar time coordinates you may either give (a) relative time
 (relative to the selected <a class="reference internal" href="gmt.conf.html#term-TIME_EPOCH"><span class="xref std std-term">TIME_EPOCH</span></a> and in the selected
 <a class="reference internal" href="gmt.conf.html#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a>; append <strong>t</strong> to <strong>-JX</strong>|<strong>x</strong>), or (b) absolute
@@ -954,7 +956,10 @@ on the projection center (0, 0). These coordinates are internally
 converted to the corresponding geographic (longitude, latitude)
 coordinates for the lower left and upper right corners. This form is
 convenient when you want to specify a region directly in the
-projected units (e.g., UTM meters).  For Cartesian data in radians you
+projected units (e.g., UTM meters).  This modifier also applies if you give
+the region via a grid file.  <strong>Note</strong>: For the UTM, TM and Stereographic projections
+we will guess the units in your grid to be meter if the domain exceeds the range of geographical
+longitude and latitude.  For Cartesian data in radians you
 can also use [±][<em>s</em>]<strong>pi</strong>[<em>f</em>], for optional integer
 scales <em>s</em> and fractions <em>f</em>.</p>
 </dd>
@@ -1139,7 +1144,7 @@ not specified).  Append <strong>T</strong> (absolute calendar time), <strong>t</
 x,y map coordinates in given <em>unit</em> [meter]) or <strong>f</strong> (floating point)
 to each column or column range item. Shorthands
 <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<strong>g</strong> means
-<strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]0<strong>x</strong>,1<strong>y</strong> (geographic coordinates)
+<strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]0<strong>x</strong>,1<strong>y</strong> (geographic, i.e., longitude, latitude coordinates)
 and <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<strong>c</strong> means
 <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]0:1<strong>f</strong> (Cartesian coordinates)</p>
 </dd>
@@ -1365,9 +1370,12 @@ Append <strong>+r</strong> to reverse the decision, i.e., only output records th
 </dd>
 </dl>
 <dl class="simple" id="t-full">
-<dt><strong>-t</strong>[<em>transp</em>]</dt><dd><p>Set transparency level for an overlay, in [0-100] percent range. [Default
+<dt><strong>-t</strong><em>transp</em>[/<em>transp2</em>][<strong>+f</strong>|<strong>s</strong>]</dt><dd><p>Set transparency level(s) for an overlay, in [0-100] percent range. [Default
 is 0, i.e., opaque].  Only visible when PDF or raster format output is selected.
-Only the PNG format selection adds a transparency layer in the image (for further processing).</p>
+Only the PNG format selection adds a transparency layer in the image (for further processing).
+Normally, <em>transp</em> applies to both fill and stroke, but you can limit the transparency to
+one of them by appending <strong>+f</strong> or <strong>+s</strong> for fill or stroke, respectively.  Alternatively,
+append /<em>transp2</em> to set separate transparencies for fills and strokes.</p>
 </dd>
 </dl>
 <dl class="simple" id="core-full">
@@ -1615,7 +1623,7 @@ GMT documentation site <a class="reference external" href="https://docs.generic-
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

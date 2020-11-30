@@ -247,7 +247,7 @@
 [ <strong>-it</strong><em>word</em> ]
 [ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-qi</strong><a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">flags</span></a> ]
-[ <strong>-t</strong><a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">transp</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="text.html#tv-full"><span class="std std-ref">transp</span></a> ]
 [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
@@ -278,11 +278,11 @@ characters, except in paragraph mode (<strong>-M</strong>)).</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple" id="j">
+<span class="target" id="j"></span><dl class="simple">
 <dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select map projection.  </p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest.  </p>
 </dd>
 </dl>
@@ -387,7 +387,7 @@ To <strong>not</strong> plot the text but activate clipping, use <strong>-G+n</s
 <dl class="simple" id="m">
 <dt><strong>-M</strong></dt><dd><p>Paragraph mode. Files must be multiple segment files. Segments are
 separated by a special record whose first character must be <em>flag</em>
-[Default is <strong>&gt;</strong>]. Starting in the 3rd column, we expect to find
+[Default is <strong>&gt;</strong>]. Starting in the 3rd field, we expect to find
 information pertaining to the typesetting of a text paragraph (the
 remaining lines until next segment header). The information expected
 is (<em>x y</em> [<em>font angle justify</em>] <em>linespace parwidth parjust</em>),
@@ -398,8 +398,9 @@ The justification of the text paragraph is governed by <em>parjust</em>
 which may be <strong>l</strong>(eft), <strong>c</strong>(enter), <strong>r</strong>(ight), or
 <strong>j</strong>(ustified). The segment header is followed by one or more
 lines with paragraph text. Text may contain the escape sequences
-discussed above. Separate paragraphs with a blank line.  Note that
-here, the justification set via <strong>-F+j</strong> applies to the box alignment
+discussed above, although composite characters are not supported.
+Separate paragraphs with a blank line.  Note that here,
+the justification set via <strong>-F+j</strong> applies to the box alignment
 since the text justification is set by <em>parjust</em>.</p>
 </dd>
 </dl>
@@ -416,7 +417,7 @@ leaves all text as is].</p>
 <dt><strong>-U</strong>[<em>label</em>][<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>] <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Draw GMT time stamp logo on plot.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -470,13 +471,19 @@ the word order, with the first word being 0.  No numerical columns can be specif
 <dt><strong>-qi</strong>[~]<em>rows</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data range(s) [all].</p>
 </dd>
 </dl>
-<dl class="simple">
-<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level in percent.</p>
+<dl class="simple" id="tv-full">
+<dt><strong>-t</strong>[<em>transp</em>[/<em>transp2</em>]][<strong>+f</strong>][<strong>+s</strong>]</dt><dd><p>Set transparency level for an overlay, in [0-100] percent range. [Default
+is 0, i.e., opaque].  Only visible when PDF or raster format output is selected.
+Only the PNG format selection adds a transparency layer in the image (for further processing).
+If given, <em>transp</em> applies to both fill and stroke, but you can limit the transparency to
+one of them by appending <strong>+f</strong> or <strong>+s</strong> for fill or stroke, respectively.  Alternatively,
+append /<em>transp2</em> to set separate transparencies for fills and strokes.  If no transparencies
+are given then we expect to read them from the last numerical column(s).  Use the modifiers
+to indicate which one(s) we should be reading (if both are requested, fill transparency is
+expected before stroke transparency in the column order).  If just <strong>-t</strong> is given then we
+interpret it to mean <strong>-t+f</strong> for fill transparency only.</p>
 </dd>
 </dl>
-<blockquote>
-<div><p>If no transparency is appended then we will read it from the last numerical column per data record instead.</p>
-</div></blockquote>
 <dl class="simple">
 <dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
 </dd>
@@ -623,7 +630,7 @@ trailing text.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

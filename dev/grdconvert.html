@@ -224,7 +224,7 @@
 <p>Convert between different grid formats</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt grdconvert</strong> <em>ingrdfile</em> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outgrdfile</em>
+<p><strong>gmt grdconvert</strong> <em>ingrid</em> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outgrid</em>
 [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ]
 [ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
 [ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
@@ -242,7 +242,7 @@ be written and to specify scaling, translation, and NaN-value.</p>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
-<dt><em>ingrdfile</em>[=id[<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>]]</dt><dd><p>The grid file to be read. Append format =<em>id</em> code if not a
+<dt><em>ingrid</em>[=id[<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>]]</dt><dd><p>The grid file to be read. Append format =<em>id</em> code if not a
 standard COARDS-compliant netCDF grid file. If =<em>id</em> is set (see
 below), you may optionally append any of <strong>+s</strong><em>scale</em>, <strong>+o</strong><em>offset</em>,
 and <strong>+n</strong><em>invalid</em>. The first two options will scale the data
@@ -260,7 +260,7 @@ See Section <a class="reference internal" href="cookbook/features.html#grid-file
 </dd>
 </dl>
 <dl id="g">
-<dt><strong>-G</strong><em>outgrdfile</em>[=id[<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>]][<em>:driver</em>[/<em>datatype</em>]]]</dt><dd><p>The grid file to be written. Append format =<em>id</em> code if not a
+<dt><strong>-G</strong><em>outgrid</em>[=id[<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>]][<em>:driver</em>[/<em>datatype</em>]]]</dt><dd><p>The grid file to be written. Append format =<em>id</em> code if not a
 standard COARDS-compliant netCDF grid file. If =<em>id</em> is set (see
 below), you may optionally append  any of <strong>+s</strong><em>scale</em>,
 <strong>+o</strong><em>offset</em>, and <strong>+n</strong><em>invalid</em>.  These modifiers are
@@ -299,11 +299,11 @@ that do not recognize GMT headers. It
 only applies to native grids and is ignored for netCDF output.</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest.  </p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -342,10 +342,10 @@ format is conform the COARDS conventions. GMT versions prior to 4.1
 produced netCDF files that did not conform to these conventions.
 Although these files are still supported, their use is deprecated. To
 write other than floating point COARDS-compliant netCDF files, append
-the =<em>id</em> suffix to the filename <em>outgrdfile</em>.</p>
+the =<em>id</em> suffix to the filename <em>outgrid</em>.</p>
 <p>When reading files, <strong>grdconvert</strong> and other GMT programs will try
 to automatically recognize the type of the input grid file. If this
-fails you may append the =<em>id</em> suffix to the filename <em>ingrdfile</em>.</p>
+fails you may append the =<em>id</em> suffix to the filename <em>ingrid</em>.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 14%" />
@@ -442,7 +442,7 @@ without loss of data range or significance. For more details, see
 <p><strong>Multi-variable grid files</strong></p>
 <p>By default, GMT programs will read the first 2-dimensional grid
 contained in a COARDS-compliant netCDF file. Alternatively, use
-<em>ingrdfile</em><strong>?</strong><em>varname</em> (ahead of any optional suffix <strong>=</strong><em>id</em>)
+<em>ingrid</em><strong>?</strong><em>varname</em> (ahead of any optional suffix <strong>=</strong><em>id</em>)
 to specify the requested variable <em>varname</em>. Since <strong>?</strong> has special
 meaning as a wildcard, escape this meaning by placing the full filename
 and suffix between quotes.</p>
@@ -450,7 +450,7 @@ and suffix between quotes.</p>
 <p>To extract one <em>layer</em> or <em>level</em> from a 3-dimensional grid stored in a
 COARDS-compliant netCDF file, append both the name of the variable and
 the index associated with the layer (starting at zero) in the form:
-<em>ingrdfile</em><strong>?</strong><em>varname</em><strong>[</strong><em>layer</em><strong>]</strong>. Alternatively,
+<em>ingrid</em><strong>?</strong><em>varname</em><strong>[</strong><em>layer</em><strong>]</strong>. Alternatively,
 specify the value associated with that layer using parentheses in stead
 of brackets:
 <em>ingridfile</em><strong>?</strong><em>varname</em><strong>(</strong><em>layer</em><strong>)</strong>.</p>
@@ -556,7 +556,7 @@ image.nc, assuming the range in image.nc is 0-1 and we need 0-255, run</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

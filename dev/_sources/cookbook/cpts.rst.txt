@@ -6,11 +6,10 @@ Of Colors and Color Legends
 Built-in color palette tables (CPT)
 -----------------------------------
 
-Figures :ref:`CPTs a <CPT_files_a>`, :ref:`b <CPT_files_b>` and
-:ref:`b <CPT_files_c>` show the built-in
-color palettes, stored in so-called CPTs [35]_. The programs
-:doc:`/makecpt` and
-:doc:`/grd2cpt` are used to access these
+Figures :ref:`CPTs a <CPT_files_a>`, :ref:`b <CPT_files_b>`,
+:ref:`c <CPT_files_c>` and :ref:`d <CPT_files_d>` show the built-in
+color palettes, stored in so-called CPTs. The programs
+:doc:`/makecpt` and :doc:`/grd2cpt` are used to access these
 master CPTs and translate/scale them to fit the user's range of
 *z*-values. The top half of the color bars in the Figure shows the
 original color scale, which can be either discrete or continuous, though
@@ -26,7 +25,7 @@ respectively.
    :width: 500 px
    :align: center
 
-   The first 24 of the standard CPTs supported by GMT.
+   The standard 44 CPTs supported by GMT.
 
 .. _CPT_files_b:
 
@@ -34,7 +33,7 @@ respectively.
    :width: 500 px
    :align: center
 
-   The second 22 of the standard CPTs supported by GMT.
+   The 24 scientific color maps by Fabio Crameri supported by GMT.
 
 .. _CPT_files_c:
 
@@ -42,7 +41,19 @@ respectively.
    :width: 500 px
    :align: center
 
-   The 24 (plus 4 cyclic) scientific color maps by Fabio Crameri supported by GMT.
+   The 18 categorical CPTs (those ending in "S" are the categorical
+   scientific color maps by Fabio Crameri) supported by GMT.
+
+
+.. _CPT_files_d:
+
+.. figure:: /_images/GMT_App_M_1d.*
+   :width: 500 px
+   :align: center
+
+   The 4 cyclic scientific color maps by Fabio Crameri supported by GMT.
+   **Note**: Any GMT CPT can be made cyclic by running :doc:`/makecpt`
+   with the **-Ww** option (wrapped = cyclic).
 
 For additional color tables, visit
 `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_ and
@@ -71,10 +82,3 @@ and how to switch the color bar around (by using a negative length).
 .. figure:: /_images/GMT_App_M_2.*
    :width: 600 px
    :align: center
-
-Footnote
---------
-
-.. [35]
-   The 3rd palette is called *categorical* and produces a set of
-   colors suitable for categorical plots.

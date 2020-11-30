@@ -278,6 +278,12 @@ boundary conditions in the longitude direction.</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </p>
+</dd>
+</dl>
 <dl class="simple" id="g">
 <dt><strong>-G</strong><em>outputfile.nc</em></dt><dd><p>Output file name. Output is a binary 2-D <em>.nc</em> file. Note that the
 smallest grid dimension must be at least 4.</p>
@@ -306,19 +312,13 @@ details. <strong>Note</strong>: If <strong>-R</strong><em>grdfile</em> is used t
 already been initialized; use <strong>-I</strong> (and <strong>-r</strong>) to override the values.</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest.  </p>
 </dd>
 </dl>
 </div>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
-table file(s) holding a number of data columns. If no tables are given
-then we read from standard input.  </p>
-</dd>
-</dl>
 <dl class="simple" id="a">
 <dt><strong>-A</strong><em>aspect_ratio</em>|<strong>m</strong></dt><dd><p>Aspect ratio. If desired, grid anisotropy can be added to the
 equations. Enter <em>aspect_ratio</em>, where dy = dx / <em>aspect_ratio</em>
@@ -414,7 +414,7 @@ set to the same value. [Default = 0 for both gives minimum curvature
 solution.]</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>]. <strong>-V3</strong> will report the convergence after each iteration;
 <strong>-V</strong> will report only after each regional grid is converged.</p>
 </dd>
@@ -617,7 +617,7 @@ splines in tension, <em>Geophysics</em>, 55, 293-305.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

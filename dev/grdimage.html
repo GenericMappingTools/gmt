@@ -252,14 +252,14 @@
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p><strong>grdimage</strong> reads a 2-D grid file and produces a gray-shaded (or
-colored) map by by building a rectangular image and assigning pixels
+colored) map by building a rectangular image and assigning pixels
 a gray-shade (or color) based on the z-value and the CPT file.
 Optionally, illumination may be added by providing a file with
 intensities in the (-1,+1) range or instructions to derive intensities
 from the input data grid. Values outside this range will be
 clipped. Such intensity files can be created from the grid using
 <a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a> and, optionally, modified by <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> or
-<a class="reference internal" href="grdhisteq.html"><span class="doc">grdhisteq</span></a>. A third alternative is available when GMT is build
+<a class="reference internal" href="grdhisteq.html"><span class="doc">grdhisteq</span></a>. A third alternative is available when GMT is built
 with GDAL support. Pass <em>image</em> which can be an image file (geo-referenced or not).
 In this case the image can optionally be illuminated with the
 file provided via the <strong>-I</strong> option. Here, if image has no coordinates
@@ -284,7 +284,7 @@ than that implied by the extent of the grid.</p>
 GRID FILE FORMATS below.)</p>
 </dd>
 </dl>
-<dl class="simple" id="j">
+<span class="target" id="j"></span><dl class="simple">
 <dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select map projection.  </p>
 </dd>
 </dl>
@@ -310,7 +310,7 @@ otherwise a plain tiff file is produced. (2) Any vector elements will be lost.</
 </dd>
 </dl>
 <dl class="simple" id="c">
-<dt><strong>-C</strong>[<em>cpt</em>|<em>master</em>[<strong>+h</strong>[<em>hinge</em>]][<strong>+i</strong><em>zinc</em>][<strong>+u</strong>|<strong>U</strong><em>unit</em>] |<em>color1,color2</em>[,<em>color3</em>,…]]</dt><dd><p>Name of the CPT. Alternatively, supply the name of a GMT color master
+<dt><strong>-C</strong>[<em>cpt</em>|<em>master</em>[<strong>+h</strong>[<em>hinge</em>]][<strong>+i</strong><em>zinc</em>][<strong>+u</strong>|<strong>U</strong><em>unit</em>] |<em>color1,color2</em>[,<em>color3</em>,…]]</dt><dd><p>Name of a CPT file. Alternatively, supply the name of a GMT color master
 dynamic CPT [<em>turbo</em>, but we use <em>geo</em> for &#64;earth_relief and <em>srtm</em> for &#64;srtm_relief data] to
 automatically determine a continuous CPT from the grid’s <em>z</em>-range; you may round the range
 to the nearest multiple of <em>zinc</em> by adding <strong>+i</strong><em>zinc</em>. If given a GMT Master soft-hinge CPT
@@ -381,7 +381,7 @@ non-rectangular maps).</p>
 feature in PostScript Level 3 (the PS device must support PS Level 3).</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest.  </p>
 </dd>
 </dl>
@@ -393,7 +393,7 @@ subset of the grid [Default is the region given by the grid file].</p>
 <dt><strong>-U</strong>[<em>label</em>][<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>] <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Draw GMT time stamp logo on plot.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -415,7 +415,7 @@ subset of the grid [Default is the region given by the grid file].</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level in percent.</p>
+<dt><strong>-t</strong><em>transp</em>[/<em>transp2</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level(s) in percent.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -590,6 +590,18 @@ extrema (reported with <strong>-V</strong>) or (2) Impose clipping of resampled 
 so they do not exceed the input min/max values (add <strong>+c</strong> to your <strong>-n</strong>
 option).</p>
 </div>
+<div class="section" id="imaging-categorical-grids">
+<h2>Imaging Categorical Grids<a class="headerlink" href="#imaging-categorical-grids" title="Permalink to this headline">¶</a></h2>
+<p>Geographical categorical grids have values at the nodes that should not
+be interpolated (i.e., categories 4 and 5 should never be averaged to give
+a new category 4.5).  However, imaging such grids using map projections
+requires a resampling onto an equidistant Cartesian lattice that usually
+will result in such blending.  We do not know if a grid is categorical but
+if the CPT provided via <strong>-C</strong> is categorical we will override any <strong>-n</strong> setting you
+have chosen (perhaps implicitly) with <strong>-nn+a</strong> that turns <em>on</em> nearest neighbor
+gridding and turns <em>off</em> anti-aliasing.  Alternatively, use <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a> <strong>-T</strong>
+instead to plot individual polygons centered on each node.</p>
+</div>
 <div class="section" id="image-formats-recognized">
 <h2>Image formats recognized<a class="headerlink" href="#image-formats-recognized" title="Permalink to this headline">¶</a></h2>
 <p>We automatically recognize image formats via their magic bytes.  For formats
@@ -701,7 +713,7 @@ CPTs.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

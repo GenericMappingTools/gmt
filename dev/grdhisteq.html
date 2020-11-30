@@ -224,7 +224,7 @@
 <p>Perform histogram equalization for a grid</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt grdhisteq</strong> <em>in_grdfile</em> [ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>out_grdfile</em> ]
+<p><strong>gmt grdhisteq</strong> <em>ingrid</em> [ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outgrid</em> ]
 [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>n_cells</em> ] [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<em>file</em>] ] [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong>[<em>norm</em>] ]
 [ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong> ]
 <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
@@ -268,7 +268,7 @@ location of the most negative input value, and so on.</p>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
-<dt><em>in_grdfile</em></dt><dd><p>2-D grid file to be equalized. (See GRID FILE FORMATS below).</p>
+<dt><em>ingrid</em></dt><dd><p>2-D grid file to be equalized. (See GRID FILE FORMATS below).</p>
 </dd>
 </dl>
 </div>
@@ -283,7 +283,7 @@ location of the most negative input value, and so on.</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
-<dt><strong>-G</strong><em>out_grdfile</em></dt><dd><p>Name of output 2-D grid file. Used with <strong>-N</strong> only. (See GRID FILE FORMATS below).</p>
+<dt><strong>-G</strong><em>outgrid</em></dt><dd><p>Name of output 2-D grid file. Used with <strong>-N</strong> only. (See GRID FILE FORMATS below).</p>
 </dd>
 </dl>
 <dl class="simple" id="n">
@@ -296,13 +296,13 @@ the &lt;-1,+1&gt; range [Default is standard normal scores].</p>
 <dt><strong>-Q</strong></dt><dd><p>Quadratic output. Selects quadratic histogram equalization. [Default is linear].</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest. Using the <strong>-R</strong> option
-will select a subsection of <em>in_grdfile</em> grid. If this subsection
+will select a subsection of <em>ingrid</em> grid. If this subsection
 exceeds the boundaries of the grid, only the common region will be extracted.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -402,7 +402,7 @@ range [-1, 1]. Alternatively, supply a normalization factor with <strong>-N</str
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

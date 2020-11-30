@@ -293,6 +293,8 @@ table entry) [black].</p>
 <dt id="term-COLOR_FOREGROUND"><strong>COLOR_FOREGROUND</strong></dt><dd><p>Color used for the foreground of images (i.e., when z &gt; highest
 color table entry) [white].</p>
 </dd>
+<dt id="term-COLOR_CPT"><strong>COLOR_CPT</strong></dt><dd><p>Default CPT table when none is selected [turbo].</p>
+</dd>
 <dt id="term-COLOR_HSV_MAX_S"><strong>COLOR_HSV_MAX_S</strong></dt><dd><p>Maximum saturation (0-1) assigned for most positive intensity value [0.1].</p>
 </dd>
 <dt id="term-COLOR_HSV_MIN_S"><strong>COLOR_HSV_MIN_S</strong></dt><dd><p>Minimum saturation (0-1) assigned for most negative intensity value [1.0].</p>
@@ -384,7 +386,11 @@ leading hyphen (-) then each integer item (y,m,d) will be printed
 without leading zeros (default uses fixed width formats). As
 examples, try hh:mm, hh.mm.ss, hh:mm:ss.xxxx, hha.m., etc.
 [hh:mm:ss]. If the format is simply - then no clock is output and
-the ISO T divider between date and clock is omitted.</p>
+the ISO T divider between date and clock is omitted.  <strong>Note</strong>: When
+high-precision time-series are written to ASCII output the default
+format may not be adequate.  Many modules automatically handle
+this by extending the format, but you should be alert of unusual
+situations where data may appear truncated to nearest second.</p>
 </dd>
 <dt id="term-FORMAT_DATE_IN"><strong>FORMAT_DATE_IN</strong></dt><dd><p>Formatting template that indicates how an input date string is
 formatted. This template is then used to guide the reading of date
@@ -523,17 +529,16 @@ information) [%Y %b %d %H:%M:%S].</p>
 <div class="section" id="gmt-miscellaneous-parameters">
 <span id="id5"></span><h3>GMT Miscellaneous Parameters<a class="headerlink" href="#gmt-miscellaneous-parameters" title="Permalink to this headline">¶</a></h3>
 <dl class="glossary">
-<dt id="term-GMT_AUTO_DOWNLOAD"><strong>GMT_AUTO_DOWNLOAD</strong></dt><dd><p>Determines if GMT is allowed to automatically download datasets and
-files from the remote server selected via <a class="reference internal" href="#term-GMT_DATA_SERVER"><span class="xref std std-term">GMT_DATA_SERVER</span></a>.  Default
-is <em>on</em> but you can turn this off by setting it to <em>off</em>.</p>
-</dd>
 <dt id="term-GMT_COMPATIBILITY"><strong>GMT_COMPATIBILITY</strong></dt><dd><p>Determines if the current GMT version should be able to parse command-line
 options for a prior major release.  Specify the major release version number,
 e.g., 4-6. If 4 is set we will parse obsolete GMT 4 options and issue warnings; if 5
 is set then parsing GMT 4 only syntax will result in errors [4]; likewise
 for 6: obsolete syntax from early GMT 5 will be considered errors.</p>
 </dd>
-<dt id="term-GMT_DATA_SERVER"><strong>GMT_DATA_SERVER</strong></dt><dd><p>Address of the data directory on the remote server [The SOEST server].</p>
+<dt id="term-GMT_DATA_SERVER"><strong>GMT_DATA_SERVER</strong></dt><dd><p>Name (or URL) of a GMT data server [<strong>oceania</strong>]. Please set to the
+data server closest to your location for faster data download.  See
+<a class="reference external" href="https://www.generic-mapping-tools.org/mirrors/">Data Server Mirrors</a>
+for a list of the currently available mirrors.</p>
 </dd>
 <dt id="term-GMT_DATA_SERVER_LIMIT"><strong>GMT_DATA_SERVER_LIMIT</strong></dt><dd><p>Upper limit on the size of remote file to download [unlimited].  Give
 the maximum file size in bytes, or append k, m, or g for kilo-, mega-,
@@ -541,7 +546,9 @@ or giga-bytes.</p>
 </dd>
 <dt id="term-GMT_DATA_UPDATE_INTERVAL"><strong>GMT_DATA_UPDATE_INTERVAL</strong></dt><dd><p>Specifies how often we update the local catalog of data available on
 the remote server and pruning expired data sets [1d].  Allowable time
-units are <strong>d</strong> (days), <strong>w</strong> (week), <strong>o</strong> (month, here 30 days).</p>
+units are <strong>d</strong> (days), <strong>w</strong> (week), <strong>o</strong> (month, here 30 days).
+To turn off periodic updates entirely, specify interval as “off”, “never”,
+“infinity”, or just 0.</p>
 </dd>
 <dt id="term-GMT_EXPORT_TYPE"><strong>GMT_EXPORT_TYPE</strong></dt><dd><p>This setting is only used by external interfaces and controls the
 data type used for table entries.  Choose from double,
@@ -933,7 +940,7 @@ to -2) are allowed as well [0].</p>
 <dl class="glossary">
 <dt id="term-PROJ_AUX_LATITUDE"><strong>PROJ_AUX_LATITUDE</strong></dt><dd><p>Only applies when geodesics are approximated by great circle
 distances on an equivalent sphere. Select from authalic, geocentric,
-conformal, meridional, parametric, or none [authalic]. When not none
+conformal, meridional, parametric, or none (i.e., geodetic) [authalic]. When not none
 we convert any latitude used in the great circle calculation to the
 chosen auxiliary latitude before doing the distance calculation. See
 also <a class="reference internal" href="#term-PROJ_MEAN_RADIUS"><span class="xref std std-term">PROJ_MEAN_RADIUS</span></a>.</p>
@@ -1433,7 +1440,7 @@ correspond to 1800 through 1828. [1950].</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

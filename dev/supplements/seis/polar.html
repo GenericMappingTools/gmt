@@ -279,11 +279,11 @@ table file(s) holding a number of data columns. If no tables are given
 then we read from standard input.  </p>
 </dd>
 </dl>
-<dl class="simple" id="j">
+<span class="target" id="j"></span><dl class="simple">
 <dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="../../gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select map projection.  </p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
 and you may specify them in decimal degrees or in
 [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
@@ -407,7 +407,7 @@ append <strong>+o</strong> to offset the text string by <em>dx</em>/<em>dy</em>.
 <dt><strong>-U</strong>[<em>label</em>][<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>] <a class="reference internal" href="../../gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Draw GMT time stamp logo on plot.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -437,7 +437,7 @@ append <strong>+o</strong> to offset the text string by <em>dx</em>/<em>dy</em>.
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="../../gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level in percent.</p>
+<dt><strong>-t</strong><em>transp</em>[/<em>transp2</em>] <a class="reference internal" href="../../gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level(s) in percent.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -462,9 +462,9 @@ any module-specific option (but not the GMT common options), then exit.</p>
 <a class="reference internal image-reference" href="../../_images/GMT_vector.png"><img alt="../../_images/GMT_vector.png" src="../../_images/GMT_vector.png" style="width: 600px;" /></a>
 <p class="caption"><span class="caption-text">Vector attributes are controlled by options and modifiers.  We will refer to
 this figure and the labels therein when introducing the corresponding modifiers.
-All vectors require you specify the begin point <span class="math notranslate nohighlight">\(x_b, y_b\)</span> and typically
-direction <em>d</em> and length <em>L</em>, but for map projections we usually specify the
-azimuth <span class="math notranslate nohighlight">\(\alpha\)</span> instead.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+All vectors require you to specify the <strong>b</strong>egin point <span class="math notranslate nohighlight">\(x_b, y_b\)</span> and
+the <strong>e</strong>nd point <span class="math notranslate nohighlight">\(x_e, y_e\)</span>, or alternatively the direction <em>d</em> and length
+<em>L</em>, while for map projections we usually specify the azimuth <span class="math notranslate nohighlight">\(\alpha\)</span> instead.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
 <p>Several modifiers may be appended to vector-producing options for
 specifying the placement of vector heads, their shapes, and the
@@ -537,7 +537,7 @@ uses the <em>scale</em> to convert to polar coordinates with length in given uni
 from the vector stem (a line).  In GMT4, the entire vector was a polygon and it could only
 be a straight Cartesian vector. Yes, the old GMT4 vector shape remains accessible if
 you specify a vector (<strong>-Sv</strong>|<strong>V</strong>) using the GMT4 syntax, explained here: <em>size</em>, if present, will
-be interpreted as <em>arrowwidth/headlength/headwidth</em> [Default is 0.075c/0.3c/0.25c (or
+be interpreted as <span class="math notranslate nohighlight">\(t_w/h_l/h_w\)</span> or <em>tailwidth/headlength/halfheadwidth</em> [Default is 0.075c/0.3c/0.25c (or
 0.03i/0.12i/0.1i)]. By default, arrow attributes remain invariant to the length of the
 arrow. To have the size of the vector scale down with decreasing size, append <strong>+n</strong><em>norm</em>,
 where vectors shorter than <em>norm</em> will have their attributes scaled by <em>length</em>/<em>norm</em>.
@@ -545,6 +545,15 @@ To center the vector on the balance point, use <strong>-Svb</strong>; to align p
 use <strong>-Svh</strong>; to align point with the vector tail, use <strong>-Svt</strong> [Default]. To give the
 head point’s coordinates instead of direction and length, use <strong>-Svs</strong>. Upper case
 <strong>B</strong>, <strong>H</strong>, <strong>T</strong>, <strong>S</strong> will draw a double-headed vector [Default is single head].</p>
+<div class="figure align-center" id="id2">
+<a class="reference internal image-reference" href="../../_images/GMT_vector4.png"><img alt="../../_images/GMT_vector4.png" src="../../_images/GMT_vector4.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">A GMT 4 vector has no separate pen for the stem -- it is all part of a Cartesian polygon.
+You may optionally fill and draw its outline.  The modifiers listed above generally do
+not apply.  <strong>Note</strong>: While the <em>tailwidth</em> (<span class="math notranslate nohighlight">\(t_w\)</span>) and <em>headlength</em> (<span class="math notranslate nohighlight">\(h_l\)</span>)
+parameters are given as indicated, the <em>halfheadwidth</em> (<span class="math notranslate nohighlight">\(h_w\)</span>) is oddly given as the
+half-width in GMT 4 so we retain that convention here (but have updated the documentation;
+blue lines indicate these three parameters).</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
@@ -618,7 +627,7 @@ Institut de Physique du Globe de Paris, Departement de Sismologie, Paris, France
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

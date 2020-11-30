@@ -60,7 +60,7 @@ own server directory:
 
 #. You can select the GMT data server closest to you to minimize download time [:term:`GMT_DATA_SERVER`].
 #. You can set an upper limit on the file sizes that may be downloaded [:term:`GMT_DATA_SERVER_LIMIT`].
-#. You can turn off the automatic download temporarily [:term:`GMT_AUTO_DOWNLOAD`].
+#. You can turn off the automatic download temporarily [:term:`GMT_DATA_UPDATE_INTERVAL`].
 #. You can control how often GMT will refresh the catalog of information on your computer
    [:term:`GMT_DATA_UPDATE_INTERVAL`]
 #. You can clear the *server* directory, or perhaps just some subsets, any time via gmt :doc:`/clear`.

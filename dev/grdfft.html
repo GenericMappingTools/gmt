@@ -233,6 +233,7 @@
 [ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>r</strong>|<strong>x</strong>|<strong>y</strong>]<em>params</em> ]
 [ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong>[<em>scale</em>|<strong>g</strong>] ]
 [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>params</em> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong>]
 [ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>scale</em> ]
 [ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
@@ -255,7 +256,7 @@ to meters using <a class="reference internal" href="grdedit.html"><span class="d
 <dl class="simple">
 <dt><em>ingrid</em></dt><dd><p>2-D binary grid file to be operated on. (See GRID FILE FORMATS
 below). For cross-spectral operations, also give the second grid
-file <em>ingrd2</em>.</p>
+file <em>ingrid2</em>.</p>
 </dd>
 <dt><strong>-G</strong><em>outfile</em></dt><dd><p>Specify the name of the output grid file or the 1-D spectrum table
 (see <strong>-E</strong>). (See GRID FILE FORMATS below).</p>
@@ -400,12 +401,18 @@ default we write the real and imaginary components to
 <em>ingrid</em>_mag.<em>ext</em> and <em>ingrid</em>_phase.<em>ext</em>.</p>
 </dd>
 </dl>
+<dl class="simple" id="q">
+<dt><strong>-Q</strong></dt><dd><p>Selects no wavenumber operations. Useful in conjunction with <strong>-N</strong> modifiers
+when you wish to write out the 2-D spectrum (or other intermediate grid products)
+only.</p>
+</dd>
+</dl>
 <dl class="simple" id="s">
 <dt><strong>-S</strong><em>scale</em></dt><dd><p>Multiply each element by <em>scale</em> in the space domain (after the
 frequency domain operations). [Default is 1.0].</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 <dt><strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a></dt><dd><p>Geographic grids (dimensions of longitude, latitude) will be converted to
@@ -493,28 +500,21 @@ and finally scale radians to micro-radians:</p>
 </div>
 </div></blockquote>
 <p>Second vertical derivatives of gravity anomalies are related to the
-curvature of the field. We can compute these as mGal/m^2 by
-differentiating twice:</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfft gravity.nc -D -D -V -Ggrav_2nd_derivative.nc
+curvature of the field. We can compute these as mGal/m^2 by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfft gravity.nc -D -D -V -Ggrav_2nd_derivative.nc
 </pre></div>
 </div>
-</div></blockquote>
 <p>To compute cross-spectral estimates for co-registered bathymetry and
-gravity grids, and report result as functions of wavelengths in km, try</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfft bathymetry.nc gravity.grd -E+wk -fg -V &gt; cross_spectra.txt
+gravity grids, and report result as functions of wavelengths in km, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfft bathymetry.nc gravity.grd -E+wk -fg -V &gt; cross_spectra.txt
 </pre></div>
 </div>
-</div></blockquote>
 <p>To examine the pre-FFT grid after detrending, point-symmetry reflection,
 and tapering has been applied, as well as saving the real and imaginary
-components of the raw spectrum of the data in topo.nc, try</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfft topo.nc -N+w+z -fg -V
+components of the raw spectrum of the data in topo.nc, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfft topo.nc -N+w+z -fg -V -Q
 </pre></div>
 </div>
-</div></blockquote>
 <p>You can now make plots of the data in topo_taper.nc, topo_real.nc, and topo_imag.nc.</p>
 </div>
 <div class="section" id="see-also">
@@ -550,7 +550,7 @@ components of the raw spectrum of the data in topo.nc, try</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

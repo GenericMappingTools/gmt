@@ -263,11 +263,11 @@ table file(s) holding a number of data columns. If no tables are given
 then we read from standard input.  </p>
 </dd>
 </dl>
-<dl class="simple" id="j">
+<span class="target" id="j"></span><dl class="simple">
 <dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="../../gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select map projection.  </p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
 and you may specify them in decimal degrees or in
 [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
@@ -354,7 +354,7 @@ strike, dip, and rake of plane 2</p>
 mantissa and exponent of moment in dyne-cm</p>
 <p><strong>12</strong>,<strong>13</strong>:
 longitude, latitude at which to place beachball if <strong>-C</strong> is used (optional).
-Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+Using 0,0 in columns 12 and 13 will plot the beach ball at the longitude,
 latitude given in columns 1 and 2. The <strong>-:</strong> option will interchange the order of
 columns (1,2) and (12,13).</p>
 <p><strong>14</strong>:
@@ -377,7 +377,7 @@ mrr, mtt, mff, mrt, mrf, mtf in 10*exponent dynes-cm</p>
 exponent</p>
 <p><strong>11</strong>,<strong>12</strong>:
 longitude, latitude at which to place beachball if <strong>-C</strong> is used (optional).
-Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+Using 0,0 in columns 11 and 12 will plot the beach ball at the longitude,
 latitude given in columns 1 and 2. The <strong>-:</strong> option will interchange the order of
 columns (1,2) and (11,12).</p>
 <p><strong>13</strong>:
@@ -399,7 +399,7 @@ must be -1/+1 for a normal/inverse fault</p>
 magnitude</p>
 <p><strong>9</strong>,<strong>10</strong>:
 longitude, latitude at which to place beachball if <strong>-C</strong> is used (optional).
-Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+Using 0,0 in columns 9 and 10 will plot the beach ball at the longitude,
 latitude given in columns 1 and 2. The <strong>-:</strong> option will interchange the order of
 columns (1,2) and (9,10).</p>
 <p><strong>11</strong>:
@@ -420,7 +420,7 @@ value (in 10*exponent dynes-cm), azimuth, plunge of T, N, P axis.</p>
 exponent</p>
 <p><strong>14</strong>,<strong>15</strong>:
 longitude, latitude at which to place beachball if <strong>-C</strong> is used (optional).
-Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
+Using 0,0 in columns 14 and 15 will plot the beach ball at the longitude,
 latitude given in columns 1 and 2. The <strong>-:</strong> option will interchange the order of
 columns (1,2) and (14,15).</p>
 <p><strong>16</strong>:
@@ -516,7 +516,7 @@ For non-double couple mechanisms, <strong>-T</strong><em>0</em> option overlays 
 <dt><strong>-U</strong>[<em>label</em>][<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>] <a class="reference internal" href="../../gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Draw GMT time stamp logo on plot.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -562,7 +562,7 @@ determined by the z-value in the third column.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="../../gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level in percent.</p>
+<dt><strong>-t</strong><em>transp</em>[/<em>transp2</em>] <a class="reference internal" href="../../gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level(s) in percent.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -653,7 +653,7 @@ Institut de Physique du Globe de Paris, Departement de Sismologie, Paris, France
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

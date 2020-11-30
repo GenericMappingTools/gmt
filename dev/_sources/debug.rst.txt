@@ -9,7 +9,9 @@ an issue.  Often there is a bit of detective work involved to find out where a m
 crashes and then step carefully through that section, examining variables etc., to learn
 why something fails.  This process depends on the particular debug tool one uses.  This page
 will explain the steps a developer must take to build gmt so it is suitable for your debug
-tool and how to use that tool.
+tool and how to use that tool.  **Note**: If the offending script is coming from PyGMT,
+GMT.jl, or GMT/MEX there are instructions below on how to connect your debugger to that
+process and have you land in the debugger when the script is run.
 
 Xcode on macOS
 --------------
@@ -119,3 +121,60 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    .. figure:: /_images/xcode-8.*
       :width: 100%
       :align: center
+
+Debug PyGMT in Xcode on macOS
+------------------------------
+
+**Note**: Tested with Xcode 12.0.  Install PyGMT following the official instructions at https://www.pygmt.org/dev/install.
+If you already have the dev version then you may just need to `cd` into your pygmt dir and call git pull:
+
+#. Add conda-forge channel and activate virtual environment (optional)::
+
+    conda config --prepend channels conda-forge
+    **Note**: The next step is different from the PyGMT official instructions, because we want to use the GMT dev version
+    conda create --name pygmt python=3.8 pip numpy pandas xarray netcdf4 packaging
+
+    # Activate the PyGMT environment
+    conda activate pygmt
+
+#. Install PyGMT in editable/development mode::
+
+    cd pygmt
+    pip install --editable .
+
+#. Compile GMT using Xcode (see `Xcode on macOS`_), then let $GMT_LIBRARY_PATH point to the full path that contains the src/Debug
+   directory created by xcodebuild so that PyGMT can find the GMT library, and set $GMT_SHAREDIR to point to the full path that
+   contains the share directory.
+
+#. Open Xcode, select scheme "gmt", navigate to gmt_api.c in the source listing, and set a stop point in the editor,
+   say in *GMT_Call_Module* or *GMT_Create_Session* and Xcode will stop at the breakpoint when it is reached.
+
+#. Type python in the terminal to get a python console, attach the process id or name to Xcode (menu item Debug->Attach to Process by PID or Name),
+   and run PyGMT codes in the Python console. Execution should
+   stop at your stop point after the first GMT library call takes place from your python script. You are now in Xcode
+   and can follow strategies outlined above (`Xcode on macOS`_).
+
+
+Debug GMT.jl in Xcode on macOS
+------------------------------
+
+**Note**: Tested with Xcode 11.7. First install Julia from your distribution if you have not done so already (e.g., via brew or port).  Once that is
+done you can proceed to installing the master GMT.jl:
+
+#. Compile GMT using Xcode (see `Xcode on macOS`_), then let $GMT_LIBRARY point to the full path to the libgmt.* file in the src/Debug
+   directory created by xcodebuild so that GMT.jl can find the GMT library.
+
+#. Type julia in a terminal to get a Julia console, and in that console, update to latest GMT.jl master version by typing::
+
+    ]
+    add GMT#master
+
+#. When done, end package install mode by hitting backspace.
+
+#. Open Xcode, select scheme "gmt", navigate to gmt_api.c in the source listing, and set a stop point in the editor,
+   say in *GMT_Call_Module* or *GMT_Create_Session* and Xcode will stop at the breakpoint when it is reached.
+
+#. Attach the Julia process id or name in Xcode (menu item Debug->Attach to Process by PID or Name), and run GMT.jl
+   codes in the Julia console. Execution should
+   stop at your stop point after the first GMT library call takes place from your Julia script. You are now in Xcode
+   and can follow strategies outlined above (`Xcode on macOS`_).

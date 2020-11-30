@@ -449,7 +449,7 @@ Three classes of files are given special treatment in GMT.
    parameter GMT_DATA_SERVER at compile time.
 #. If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
    limit the size of the largest datafile to download via :term:`GMT_DATA_SERVER_LIMIT` or
-   you can temporarily turn off such downloads by setting :term:`GMT_AUTO_DOWNLOAD` off.
+   you can temporarily turn off such downloads by setting :term:`GMT_DATA_UPDATE_INTERVAL` to "off".
 
 The user cache (:term:`DIR_CACHE`) and all its contents can be cleared any time
 via the command **gmt clear cache**, while the server directory with downloaded data
@@ -1025,6 +1025,12 @@ modifiers to your CPT names when used in GMT commands.  The **+u**\ *unit*
 modifier will scale z *from unit to* meters, while **+U**\ *unit* does
 the inverse (scale z *from meters to unit*).
 
+**Note**: Users are allowed to name their CPT files anything they want, but
+we recommend the use of the file extension ".cpt".  This allows us to prevent
+any confusion when parsing filenames that may have sequences that otherwise
+might look like a file *modifier* (e.g., data.my+u5.cpt). Since valid modifiers
+are *appended* to a file name, finding such an extension simplifies parsing.
+
 Since GMT supports several coordinate systems for color specification,
 many master (or user) CPTs will contain the special comment
 
@@ -1050,8 +1056,8 @@ etc) it would be meaningless to compute average values (what would 1.5
 mean?). For such data a special format of the CPTs are provided.
 Here, each category is assigned a unique key, a color or pattern, and an
 optional label (usually the category name) marked by a leading
-semi-colon. Keys must be monotonically increasing but do not need to be
-consecutive. The format is
+semi-colon. Keys (if numerical) must be monotonically increasing but do
+not need to be consecutive. The format is
 
 +-----------------+--------+--------------+
 | key\ :sub:`1`   | *Fill* | [;\ *label*] |
@@ -1075,6 +1081,9 @@ overridden by the statement
 +-----+---------------------+
 | N   | Fill\ :sub:`nan`    |
 +-----+---------------------+
+
+While you can make such categorical CPTs by hand, both :doc:`/makecpt` and :doc:`/grd2cpt` have options to
+simplify adding string keys and labels from comma-separated arguments.
 
 Regular CPTs
 ~~~~~~~~~~~~
@@ -2103,6 +2112,12 @@ NaN (not-a-number) you must append **+n**\ *invalid* modifier to file name.
 You may the scale as *a* for auto-adjusting the scale and/or offset of
 packed integer grids (=\ *ID*\ **+s**\ *a* is a shorthand for
 =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).
+
+**Note**: Users are allowed to name their grid files anything they want.  However,
+if you tend to use what *could* look like modifier-sequences to GMT (e.g., using
+filenames like data.grid+o4) you can prevent any confusion by using either the
+GMT-recommended ".grd" or ".nc" as grid file extensions (e.g., data.my+o4.grd).
+Since valid modifiers are *appended* to a file name, finding such an extension simplifies parsing.
 
 Note that the GMT netCDF and native binary grids store the grid scale and offset
 in the file, hence if you specify these attributes when writing a file then upon reading the grid

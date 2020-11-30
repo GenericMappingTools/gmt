@@ -126,7 +126,6 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">16. Of Colors and Color Legends</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#built-in-color-palette-tables-cpt">16.1. Built-in color palette tables (CPT)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#labeled-and-non-equidistant-color-legends">16.2. Labeled and non-equidistant color legends</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#footnote">16.3. Footnote</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="custom-symbols.html">17. Custom Plot Symbols</a></li>
@@ -250,11 +249,10 @@
 <span id="id1"></span><h1><span class="section-number">16. </span>Of Colors and Color Legends<a class="headerlink" href="#of-colors-and-color-legends" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="built-in-color-palette-tables-cpt">
 <h2><span class="section-number">16.1. </span>Built-in color palette tables (CPT)<a class="headerlink" href="#built-in-color-palette-tables-cpt" title="Permalink to this headline">¶</a></h2>
-<p>Figures <a class="reference internal" href="#cpt-files-a"><span class="std std-ref">CPTs a</span></a>, <a class="reference internal" href="#cpt-files-b"><span class="std std-ref">b</span></a> and
-<a class="reference internal" href="#cpt-files-c"><span class="std std-ref">b</span></a> show the built-in
-color palettes, stored in so-called CPTs <a class="footnote-reference brackets" href="#id3" id="id2">35</a>. The programs
-<a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a> and
-<a class="reference internal" href="../grd2cpt.html"><span class="doc">grd2cpt</span></a> are used to access these
+<p>Figures <a class="reference internal" href="#cpt-files-a"><span class="std std-ref">CPTs a</span></a>, <a class="reference internal" href="#cpt-files-b"><span class="std std-ref">b</span></a>,
+<a class="reference internal" href="#cpt-files-c"><span class="std std-ref">c</span></a> and <a class="reference internal" href="#cpt-files-d"><span class="std std-ref">d</span></a> show the built-in
+color palettes, stored in so-called CPTs. The programs
+<a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a> and <a class="reference internal" href="../grd2cpt.html"><span class="doc">grd2cpt</span></a> are used to access these
 master CPTs and translate/scale them to fit the user’s range of
 <em>z</em>-values. The top half of the color bars in the Figure shows the
 original color scale, which can be either discrete or continuous, though
@@ -263,17 +261,24 @@ bar are built by using <a class="reference internal" href="../makecpt.html"><spa
 <strong>-T</strong>-1/1/0.25, thus splitting the color scale into 8 discrete colors.
 Black and white triangles indicate which tables have hard or soft hinges,
 respectively.</p>
-<div class="figure align-center" id="id4">
+<div class="figure align-center" id="id2">
 <span id="cpt-files-a"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1a.png"><img alt="../_images/GMT_App_M_1a.png" src="../_images/GMT_App_M_1a.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">The first 24 of the standard CPTs supported by GMT.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">The standard 44 CPTs supported by GMT.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id3">
+<span id="cpt-files-b"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1b.png"><img alt="../_images/GMT_App_M_1b.png" src="../_images/GMT_App_M_1b.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">The 24 scientific color maps by Fabio Crameri supported by GMT.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-center" id="id4">
+<span id="cpt-files-c"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1c.png"><img alt="../_images/GMT_App_M_1c.png" src="../_images/GMT_App_M_1c.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">The 18 categorical CPTs (those ending in “S” are the categorical
+scientific color maps by Fabio Crameri) supported by GMT.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </div>
 <div class="figure align-center" id="id5">
-<span id="cpt-files-b"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1b.png"><img alt="../_images/GMT_App_M_1b.png" src="../_images/GMT_App_M_1b.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">The second 22 of the standard CPTs supported by GMT.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
-</div>
-<div class="figure align-center" id="id6">
-<span id="cpt-files-c"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1c.png"><img alt="../_images/GMT_App_M_1c.png" src="../_images/GMT_App_M_1c.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">The 24 (plus 4 cyclic) scientific color maps by Fabio Crameri supported by GMT.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+<span id="cpt-files-d"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1d.png"><img alt="../_images/GMT_App_M_1d.png" src="../_images/GMT_App_M_1d.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">The 4 cyclic scientific color maps by Fabio Crameri supported by GMT.
+<strong>Note</strong>: Any GMT CPT can be made cyclic by running <a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a>
+with the <strong>-Ww</strong> option (wrapped = cyclic).</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
 </div>
 <p>For additional color tables, visit
 <a class="reference external" href="http://soliton.vm.bytemark.co.uk/pub/cpt-city/">cpt-city</a> and
@@ -300,15 +305,6 @@ and how to switch the color bar around (by using a negative length).</p>
 <a class="reference internal image-reference" href="../_images/GMT_App_M_2.png"><img alt="../_images/GMT_App_M_2.png" src="../_images/GMT_App_M_2.png" style="width: 600px;" /></a>
 </div>
 </div>
-<div class="section" id="footnote">
-<h2><span class="section-number">16.3. </span>Footnote<a class="headerlink" href="#footnote" title="Permalink to this headline">¶</a></h2>
-<dl class="footnote brackets">
-<dt class="label" id="id3"><span class="brackets"><a class="fn-backref" href="#id2">35</a></span></dt>
-<dd><p>The 3rd palette is called <em>categorical</em> and produces a set of
-colors suitable for categorical plots.</p>
-</dd>
-</dl>
-</div>
 </div>
 
 
@@ -334,7 +330,7 @@ colors suitable for categorical plots.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

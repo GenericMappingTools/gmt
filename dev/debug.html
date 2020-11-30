@@ -131,6 +131,8 @@
 <li class="toctree-l1"><a class="reference internal" href="rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Debugging GMT</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#xcode-on-macos">Xcode on macOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debug-pygmt-in-xcode-on-macos">Debug PyGMT in Xcode on macOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debug-gmt-jl-in-xcode-on-macos">Debug GMT.jl in Xcode on macOS</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
@@ -227,7 +229,9 @@ an issue.  Often there is a bit of detective work involved to find out where a m
 crashes and then step carefully through that section, examining variables etc., to learn
 why something fails.  This process depends on the particular debug tool one uses.  This page
 will explain the steps a developer must take to build gmt so it is suitable for your debug
-tool and how to use that tool.</p>
+tool and how to use that tool.  <strong>Note</strong>: If the offending script is coming from PyGMT,
+GMT.jl, or GMT/MEX there are instructions below on how to connect your debugger to that
+process and have you land in the debugger when the script is run.</p>
 <div class="section" id="xcode-on-macos">
 <h2>Xcode on macOS<a class="headerlink" href="#xcode-on-macos" title="Permalink to this headline">¶</a></h2>
 <p>Developers on macOS are most likely to want to use Xcode for this purpose. Chances are they
@@ -326,6 +330,60 @@ advance to the next stop point, examine variables, and so on.</p>
 </li>
 </ol>
 </div>
+<div class="section" id="debug-pygmt-in-xcode-on-macos">
+<h2>Debug PyGMT in Xcode on macOS<a class="headerlink" href="#debug-pygmt-in-xcode-on-macos" title="Permalink to this headline">¶</a></h2>
+<p><strong>Note</strong>: Tested with Xcode 12.0.  Install PyGMT following the official instructions at <a class="reference external" href="https://www.pygmt.org/dev/install">https://www.pygmt.org/dev/install</a>.
+If you already have the dev version then you may just need to <cite>cd</cite> into your pygmt dir and call git pull:</p>
+<ol class="arabic">
+<li><p>Add conda-forge channel and activate virtual environment (optional):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda config --prepend channels conda-forge
+**Note**: The next step is different from the PyGMT official instructions, because we want to use the GMT dev version
+conda create --name pygmt <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8 pip numpy pandas xarray netcdf4 packaging
+
+<span class="c1"># Activate the PyGMT environment</span>
+conda activate pygmt
+</pre></div>
+</div>
+</li>
+<li><p>Install PyGMT in editable/development mode:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> pygmt
+pip install --editable .
+</pre></div>
+</div>
+</li>
+<li><p>Compile GMT using Xcode (see <a class="reference internal" href="#xcode-on-macos">Xcode on macOS</a>), then let $GMT_LIBRARY_PATH point to the full path that contains the src/Debug
+directory created by xcodebuild so that PyGMT can find the GMT library, and set $GMT_SHAREDIR to point to the full path that
+contains the share directory.</p></li>
+<li><p>Open Xcode, select scheme “gmt”, navigate to gmt_api.c in the source listing, and set a stop point in the editor,
+say in <em>GMT_Call_Module</em> or <em>GMT_Create_Session</em> and Xcode will stop at the breakpoint when it is reached.</p></li>
+<li><p>Type python in the terminal to get a python console, attach the process id or name to Xcode (menu item Debug-&gt;Attach to Process by PID or Name),
+and run PyGMT codes in the Python console. Execution should
+stop at your stop point after the first GMT library call takes place from your python script. You are now in Xcode
+and can follow strategies outlined above (<a class="reference internal" href="#xcode-on-macos">Xcode on macOS</a>).</p></li>
+</ol>
+</div>
+<div class="section" id="debug-gmt-jl-in-xcode-on-macos">
+<h2>Debug GMT.jl in Xcode on macOS<a class="headerlink" href="#debug-gmt-jl-in-xcode-on-macos" title="Permalink to this headline">¶</a></h2>
+<p><strong>Note</strong>: Tested with Xcode 11.7. First install Julia from your distribution if you have not done so already (e.g., via brew or port).  Once that is
+done you can proceed to installing the master GMT.jl:</p>
+<ol class="arabic">
+<li><p>Compile GMT using Xcode (see <a class="reference internal" href="#xcode-on-macos">Xcode on macOS</a>), then let $GMT_LIBRARY point to the full path to the libgmt.* file in the src/Debug
+directory created by xcodebuild so that GMT.jl can find the GMT library.</p></li>
+<li><p>Type julia in a terminal to get a Julia console, and in that console, update to latest GMT.jl master version by typing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">]</span>
+add GMT#master
+</pre></div>
+</div>
+</li>
+<li><p>When done, end package install mode by hitting backspace.</p></li>
+<li><p>Open Xcode, select scheme “gmt”, navigate to gmt_api.c in the source listing, and set a stop point in the editor,
+say in <em>GMT_Call_Module</em> or <em>GMT_Create_Session</em> and Xcode will stop at the breakpoint when it is reached.</p></li>
+<li><p>Attach the Julia process id or name in Xcode (menu item Debug-&gt;Attach to Process by PID or Name), and run GMT.jl
+codes in the Julia console. Execution should
+stop at your stop point after the first GMT library call takes place from your Julia script. You are now in Xcode
+and can follow strategies outlined above (<a class="reference internal" href="#xcode-on-macos">Xcode on macOS</a>).</p></li>
+</ol>
+</div>
 </div>
 
 
@@ -351,7 +409,7 @@ advance to the next stop point, examine variables, and so on.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

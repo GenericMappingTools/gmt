@@ -42,6 +42,11 @@ terms in f(x) which significantly reduce the variance in y.
 Required Arguments
 ------------------
 
+*table*
+    One or more ASCII [or binary, see **-bi**]
+    files containing x,y [w] values in the first 2 [3] columns. If no
+    files are specified, **trend1d** will read from standard input.
+
 .. _-F:
 
 **-F**\ **xymrw**\|\ **p**\|\ **P**\|\ **c**
@@ -77,11 +82,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-*table*
-    One or more ASCII [or binary, see **-bi**]
-    files containing x,y [w] values in the first 2 [3] columns. If no
-    files are specified, **trend1d** will read from standard input.
 
 .. _-C:
 

@@ -225,7 +225,7 @@
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt psternary</strong> [ <em>table</em> ]
-[ <strong>-JX</strong><em>width</em> ]
+[ <strong>-JX</strong>[-]<em>width</em> ]
 [ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>amin/amax/bmin/bmax/cmin/cmax</em> ]
 [ <a class="reference internal" href="#b"><span> <strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>cpt</em> ]
@@ -258,25 +258,25 @@
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p>Reads (<em>a</em>,<em>b</em>,<em>c</em>[,<em>z</em>]) records from <em>table</em> [or standard input] and
-plots symbols
-at those locations on a ternary diagram. If a symbol is selected and no symbol size
-given, then we will interpret the fourth column of the input data
+plots symbols at those locations on a ternary diagram. If a symbol is selected
+and no symbol size given, then we will interpret the fourth column of the input data
 as symbol size. Symbols whose <em>size</em> is &lt;= 0 are skipped. If no symbols
 are specified then the symbol code (see <strong>-S</strong> below) must be present as
-last column in the input.</p>
+last column in the input.  If <strong>-S</strong> is not specified then we instead plot
+lines or polygons.</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
 <p>Either <strong>-M</strong> (for dumping data) or <strong>-R</strong> and <strong>-J</strong> must be selected.</p>
-</div>
-<div class="section" id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
 then we read from standard input.  </p>
 </dd>
 </dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="b">
 <dt><strong>-B</strong>[<strong>a</strong>|<strong>b</strong>|<strong>c</strong>]<em>args</em></dt><dd><p>For ternary diagrams the three sides are referred to as <strong>a</strong>, <strong>b</strong>, and <strong>c</strong>.  Thus,
 to give specific settings for one of these axis you must include the
@@ -303,13 +303,16 @@ segment headers and let any values thus found over-ride the command line setting
 </dd>
 </dl>
 <dl class="simple" id="j">
-<dt><strong>-JX</strong><em>width</em></dt><dd><p>The only valid projection is linear plot with specified ternary width.</p>
+<dt><strong>-JX</strong>[-]<em>width</em></dt><dd><p>The only valid projection is linear plot with specified ternary width.
+Use a negative <em>width</em> to indicate that positive axes directions be clock-wise
+[Default lets the <em>a, b, c</em> axes be positive in a counter-clockwise direction].</p>
 </dd>
 </dl>
 <dl class="simple" id="l">
-<dt><strong>-L</strong><em>a</em>/<em>b</em>/<em>c</em></dt><dd><p>Set the labels for the three diagram vertices [none].  These are placed a
-distance of 3 times the <a class="reference internal" href="gmt.conf.html#term-MAP_LABEL_OFFSET"><span class="xref std std-term">MAP_LABEL_OFFSET</span></a>
-setting from their respective corners.</p>
+<dt><strong>-L</strong><em>a</em>/<em>b</em>/<em>c</em></dt><dd><p>Set the labels for the three diagram vertices where the component is 100% [none].
+These are placed a distance of three times the <a class="reference internal" href="gmt.conf.html#term-MAP_LABEL_OFFSET"><span class="xref std std-term">MAP_LABEL_OFFSET</span></a>
+setting from their respective corners.  To skip any one of then, specify that
+label as -.</p>
 </dd>
 </dl>
 <dl class="simple" id="m">
@@ -328,7 +331,8 @@ whose coordinates are strictly inside the map border only].</p>
 </dd>
 </dl>
 <dl id="s">
-<dt><strong>-S</strong>[<em>symbol</em>][<em>size</em>]</dt><dd><p>Plot individual symbols in a ternary diagram.
+<dt><strong>-S</strong>[<em>symbol</em>][<em>size</em>]</dt><dd><p>Plot individual symbols in a ternary diagram.  If <strong>-S</strong> is not given then
+we will instead plot lines (requires <strong>-W</strong>) or polygons (requires <strong>-C</strong> or <strong>-G</strong>).
 If present, <em>size</em> is symbol size in the unit set by
 <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> (unless <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> is appended). If the symbol
 code (see below) is not given it will be read from the last column in
@@ -435,7 +439,7 @@ These spider-web lines are drawn using the current pen unless <strong>+p</strong
 <dt><strong>-U</strong>[<em>label</em>][<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>] <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Draw GMT time stamp logo on plot.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -489,7 +493,7 @@ These spider-web lines are drawn using the current pen unless <strong>+p</strong
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level in percent.</p>
+<dt><strong>-t</strong><em>transp</em>[/<em>transp2</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level(s) in percent.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -571,7 +575,7 @@ gmt psternary @ternary.txt -R0/100/0/100/0/100 -JX6i -P -Sc0.1c -Ct.cpt -LWater/
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

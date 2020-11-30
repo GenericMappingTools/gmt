@@ -224,8 +224,10 @@
 <p>Create Voronoi distance, node, or natural nearest-neighbor grid on a sphere</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt sphdistance</strong> [ <em>table</em> ] <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>grdfile</em>
+<p><strong>gmt sphdistance</strong> [ <em>table</em> ]
+<a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>grdfile</em>
 [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong> ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong> ]
 [ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><strong>d</strong>|<strong>n</strong>|<strong>z</strong>[<em>dist</em>] ]
 [ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>increment</em> ]
 [ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>unit</em> ]
@@ -258,6 +260,12 @@ triangularization.</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </p>
+</dd>
+</dl>
 <dl class="simple" id="g">
 <dt><strong>-G</strong><em>grdfile</em></dt><dd><p>Name of the output grid to hold the computed distances (but see <strong>-E</strong>
 for other node value options).</p>
@@ -266,18 +274,17 @@ for other node value options).</p>
 </div>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
-table file(s) holding a number of data columns. If no tables are given
-then we read from standard input.  </p>
-</dd>
-</dl>
 <dl class="simple" id="c">
 <dt><strong>-C</strong></dt><dd><p>For large data sets you can save some memory (at the expense of more
 processing) by only storing one form of location coordinates
 (geographic or Cartesian 3-D vectors) at any given time, translating
 from one form to the other when necessary [Default keeps both arrays
 in memory]. Not applicable with <strong>-Q</strong>.</p>
+</dd>
+</dl>
+<dl class="simple" id="d">
+<dt><strong>-D</strong></dt><dd><p>Used to skip duplicate points since the algorithm cannot handle them.
+[Default assumes there are no duplicates].</p>
 </dd>
 </dl>
 <dl class="simple" id="e">
@@ -333,7 +340,7 @@ binary data <strong>-bi</strong> you must specify the node
 information separately (via <strong>-N</strong>).</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
 and you may specify them in decimal degrees or in
 [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
@@ -372,7 +379,7 @@ done only when using the <strong>-Jz</strong> option, not when using only the
 plotted, with no third dimension.  </p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -484,6 +491,15 @@ gmt sphdistance -Qvoronoi.txt -Rg -I1 -Gglobedist.nc
 </div>
 </div></blockquote>
 </div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>The STRIPACK algorithm and implementation expect that there are no duplicate points
+in the input.  It is best that the user ensures that this is the case.  GMT has tools,
+such as <a class="reference internal" href="blockmean.html"><span class="doc">blockmean</span></a> and others, to combine close points into single entries.
+Also, <strong>sphdistance</strong> has a <strong>-D</strong> option to determine and exclude duplicates, but
+it is a very brute-force yet exact comparison that is very slow for large data sets.
+Detection of duplicates in the STRIPACK library will exit the module.</p>
+</div>
 <div class="section" id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
@@ -521,7 +537,7 @@ Voronoi Diagram on the Surface of a Sphere, <em>AMC Trans. Math. Software</em>,
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

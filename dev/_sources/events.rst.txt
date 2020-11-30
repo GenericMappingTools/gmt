@@ -1,9 +1,9 @@
 .. index:: ! events
 .. include:: module_core_purpose.rst_
 
-********
+******
 events
-********
+******
 
 |events_purpose|
 
@@ -12,8 +12,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt events** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-S|\ *symbol*\ [*size*]
+**gmt events**
+|-J|\ *parameters*
+|SYN_OPT-Rz|
 |-T|\ *now*
+[ *table* ]
+[ |-A|\ **r**\ [*dpu*][**c**\|\ **i**]\|\ **s** ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]] ]
@@ -22,7 +26,9 @@ Synopsis
 [ |-G|\ *color* ]
 [ |-L|\ [*length*\|\ **t**] ]
 [ |-M|\ **i**\|\ **s**\|\ **t**\ [*val1*]\ [**+c**\ *val2*] ]
+[ |-N|\ [**c**\|\ **r**] ]
 [ |-Q|\ *prefix* ]
+[ |-S|\ *symbol*\ [*size*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -58,6 +64,15 @@ color, we may try
       gmt makecpt -Cred,green,blue -T0,70,300,10000
       gmt events -Rg -JG200/5/6i -Baf q.txt -SE- -C --TIME_UNIT=d -T2018-05-01T -Es+r2+d6 -Ms5+c0.5 -Mi1+c-0.6 -Mt+c0
     gmt end show
+
+To convert the time-series seismic_trace.txt (time, amplitude) into a (time, amplitude, time) file that **events** can plot
+with a variable pen (by plotting densely placed circles), we use **-i** to ensure we read the time-column twice and then use
+a *dpu* of 80 pixels per cm (HD movie) and the projection parameters we will use when making the plot, e.g.,::
+
+      gmt events seismic_trace.txt -R1984-09-10T03:15/1984-09-10T03:45/-15/15 -JX20cT/10c -Ar80c -i0,1,0 > seismic_trace_pts.txt
+
+**Note**: If your :term:`PROJ_LENGTH_UNIT` is set to inch then you need to use the equivalent *dpu* of 200 pixels per inch for HD,
+or you specify **-Ar**\ 200\ **i**.
 
 See Also
 --------

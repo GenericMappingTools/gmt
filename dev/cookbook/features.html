@@ -739,7 +739,7 @@ the default setting for <a class="reference internal" href="../gmt.conf.html#ter
 parameter GMT_DATA_SERVER at compile time.</p></li>
 <li><p>If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
 limit the size of the largest datafile to download via <a class="reference internal" href="../gmt.conf.html#term-GMT_DATA_SERVER_LIMIT"><span class="xref std std-term">GMT_DATA_SERVER_LIMIT</span></a> or
-you can temporarily turn off such downloads by setting <a class="reference internal" href="../gmt.conf.html#term-GMT_AUTO_DOWNLOAD"><span class="xref std std-term">GMT_AUTO_DOWNLOAD</span></a> off.</p></li>
+you can temporarily turn off such downloads by setting <a class="reference internal" href="../gmt.conf.html#term-GMT_DATA_UPDATE_INTERVAL"><span class="xref std std-term">GMT_DATA_UPDATE_INTERVAL</span></a> to “off”.</p></li>
 </ol>
 <p>The user cache (<a class="reference internal" href="../gmt.conf.html#term-DIR_CACHE"><span class="xref std std-term">DIR_CACHE</span></a>) and all its contents can be cleared any time
 via the command <strong>gmt clear cache</strong>, while the server directory with downloaded data
@@ -1312,6 +1312,11 @@ be scaled by using the <strong>+u</strong>|<strong>U</strong><em>unit</em> mecha
 modifiers to your CPT names when used in GMT commands.  The <strong>+u</strong><em>unit</em>
 modifier will scale z <em>from unit to</em> meters, while <strong>+U</strong><em>unit</em> does
 the inverse (scale z <em>from meters to unit</em>).</p>
+<p><strong>Note</strong>: Users are allowed to name their CPT files anything they want, but
+we recommend the use of the file extension “.cpt”.  This allows us to prevent
+any confusion when parsing filenames that may have sequences that otherwise
+might look like a file <em>modifier</em> (e.g., data.my+u5.cpt). Since valid modifiers
+are <em>appended</em> to a file name, finding such an extension simplifies parsing.</p>
 <p>Since GMT supports several coordinate systems for color specification,
 many master (or user) CPTs will contain the special comment</p>
 <div class="line-block">
@@ -1335,8 +1340,8 @@ etc) it would be meaningless to compute average values (what would 1.5
 mean?). For such data a special format of the CPTs are provided.
 Here, each category is assigned a unique key, a color or pattern, and an
 optional label (usually the category name) marked by a leading
-semi-colon. Keys must be monotonically increasing but do not need to be
-consecutive. The format is</p>
+semi-colon. Keys (if numerical) must be monotonically increasing but do
+not need to be consecutive. The format is</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 44%" />
@@ -1379,6 +1384,8 @@ overridden by the statement</p>
 </tr>
 </tbody>
 </table>
+<p>While you can make such categorical CPTs by hand, both <a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a> and <a class="reference internal" href="../grd2cpt.html"><span class="doc">grd2cpt</span></a> have options to
+simplify adding string keys and labels from comma-separated arguments.</p>
 </div>
 <div class="section" id="regular-cpts">
 <h3><span class="section-number">3.20.2. </span>Regular CPTs<a class="headerlink" href="#regular-cpts" title="Permalink to this headline">¶</a></h3>
@@ -2420,6 +2427,11 @@ NaN (not-a-number) you must append <strong>+n</strong><em>invalid</em> modifier 
 You may the scale as <em>a</em> for auto-adjusting the scale and/or offset of
 packed integer grids (=<em>ID</em><strong>+s</strong><em>a</em> is a shorthand for
 =<em>ID</em><strong>+s</strong><em>a</em><strong>+o</strong><em>a</em>).</p>
+<p><strong>Note</strong>: Users are allowed to name their grid files anything they want.  However,
+if you tend to use what <em>could</em> look like modifier-sequences to GMT (e.g., using
+filenames like data.grid+o4) you can prevent any confusion by using either the
+GMT-recommended “.grd” or “.nc” as grid file extensions (e.g., data.my+o4.grd).
+Since valid modifiers are <em>appended</em> to a file name, finding such an extension simplifies parsing.</p>
 <p>Note that the GMT netCDF and native binary grids store the grid scale and offset
 in the file, hence if you specify these attributes when writing a file then upon reading the grid
 these settings will automatically take effect.  You can override them by supplying different scales
@@ -2993,7 +3005,7 @@ off; see <a class="reference internal" href="../gmt.conf.html#term-PS_COMMENTS">
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

@@ -262,7 +262,7 @@ on intensities provided in a separate grid file.</p>
 GRID FILE FORMAT below.)</p>
 </dd>
 </dl>
-<dl class="simple" id="j">
+<span class="target" id="j"></span><dl class="simple">
 <dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select map projection.  </p>
 </dd>
 </dl>
@@ -278,7 +278,7 @@ GRID FILE FORMAT below.)</p>
 </dd>
 </dl>
 <dl class="simple" id="c">
-<dt><strong>-C</strong>[<em>cpt</em>|<em>master</em>[<strong>+h</strong>[<em>hinge</em>]][<strong>+i</strong><em>zinc</em>][<strong>+u</strong>|<strong>U</strong><em>unit</em>] |<em>color1,color2</em>[,<em>color3</em>,…]]</dt><dd><p>Name of the CPT. Alternatively, supply the name of a GMT color master
+<dt><strong>-C</strong>[<em>cpt</em>|<em>master</em>[<strong>+h</strong>[<em>hinge</em>]][<strong>+i</strong><em>zinc</em>][<strong>+u</strong>|<strong>U</strong><em>unit</em>] |<em>color1,color2</em>[,<em>color3</em>,…]]</dt><dd><p>Name of a CPT file. Alternatively, supply the name of a GMT color master
 dynamic CPT [<em>turbo</em>, but we use <em>geo</em> for &#64;earth_relief and <em>srtm</em> for &#64;srtm_relief data] to
 automatically determine a continuous CPT from the grid’s <em>z</em>-range; you may round the range
 to the nearest multiple of <em>zinc</em> by adding <strong>+i</strong><em>zinc</em>. If given a GMT Master soft-hinge CPT
@@ -327,7 +327,7 @@ the frontal facade between the plane and the data perimeter is
 colored. See <strong>-Wf</strong> for setting the pen used for the outline.</p>
 </dd>
 </dl>
-<dl class="simple" id="q">
+<dl id="q">
 <dt><strong>-Q</strong><em>args</em>[<strong>+m</strong>]</dt><dd><p>Select one of following settings. For any of these choices, you may force
 a monochrome image by appending the modifier <strong>+m</strong>. Colors are then
 converted to shades of gray using the (monochrome television) YIQ transformation</p>
@@ -339,9 +339,10 @@ converted to shades of gray using the (monochrome television) YIQ transformation
 <li><p>Specify <strong>c</strong>. Same as <strong>-Qi</strong> but will make nodes with z = NaN transparent, using the colormasking
 feature in PostScript Level 3 (the PS device must support PS Level 3). .</p></li>
 </ol>
+<p><strong>Note</strong>: If the CPT is categorical then only <strong>-Qm</strong> is available (but see <strong>-T</strong>).</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest.  </p>
 </dd>
 </dl>
@@ -357,8 +358,9 @@ specified in the <em>reliefgrid</em> will result in a subset of the grid.</p>
 <dl class="simple" id="t">
 <dt><strong>-T</strong>[<strong>+o</strong>[<em>pen</em>]][<strong>+s</strong>]</dt><dd><p>Plot image without any interpolation. This involves converting each
 node-centered bin into a polygon which is then painted separately.
-Append <strong>+s</strong> to skip nodes with z = NaN. This option is useful for
-categorical data where interpolating between values is meaningless.
+Append <strong>+s</strong> to skip nodes with z = NaN. This option is suitable for
+categorical data where interpolating between values is meaningless
+and a categorical CPT has been provided via <strong>-C</strong>.
 Optionally, append <strong>+o</strong> to draw the tile outlines, and specify a
 custom pen if the default pen is not to your liking. As this option
 produces a flat surface it cannot be combined with <strong>-JZ</strong> or <strong>-Jz</strong>.</p>
@@ -368,7 +370,7 @@ produces a flat surface it cannot be combined with <strong>-JZ</strong> or <stro
 <dt><strong>-U</strong>[<em>label</em>][<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>] <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Draw GMT time stamp logo on plot.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -403,7 +405,7 @@ for the facade outline to be drawn.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level in percent.</p>
+<dt><strong>-t</strong><em>transp</em>[/<em>transp2</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level(s) in percent.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -535,7 +537,7 @@ variations within polygons by using scanline conversion to image the polygons.</
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

@@ -224,11 +224,12 @@
 <p>Make GMT color palette tables</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt makecpt</strong> [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>transparency</em>[<strong>+a</strong>] ]
+<p><strong>gmt makecpt</strong>
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>transparency</em>[<strong>+a</strong>] ]
 [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>cpt</em> ]
 [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<strong>i</strong>|<strong>o</strong>] ]
 [ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<em>nlevels</em>] ]
-[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>R</strong>|<strong>r</strong>|<strong>h</strong>|<strong>c</strong>][<strong>+c</strong>]]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>R</strong>|<strong>r</strong>|<strong>h</strong>|<strong>c</strong>][<strong>+c</strong>[<em>label</em>]][<strong>+k</strong><em>keys</em>] ]
 [ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>zlo</em>/<em>zhi</em> ]
 [ <a class="reference internal" href="#h"><span> <strong>-H</strong></span></a></strong> ]
 [ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong>[<strong>c</strong>][<strong>z</strong>] ]
@@ -236,7 +237,7 @@
 [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ]
 [ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong> ]
 [ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>mode</em> ]
-[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong>[<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+b</strong>|<strong>l</strong>|<strong>n</strong>]|<em>file</em>|<em>list</em>] ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong>[<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+b</strong>|<strong>i</strong>|<strong>l</strong>|<strong>n</strong>]|<em>file</em>|<em>list</em>] ]
 [ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<strong>w</strong>] ]
 [ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong> ]
@@ -288,7 +289,7 @@ Append <strong>+a</strong> to also affect the fore-, back-, and nan-colors
 </dd>
 </dl>
 <dl class="simple" id="c">
-<dt><strong>-C</strong>[<em>cpt</em>|<em>master</em>[<strong>+h</strong>[<em>hinge</em>]][<strong>+i</strong><em>zinc</em>][<strong>+u</strong>|<strong>U</strong><em>unit</em>] |<em>color1,color2</em>[,<em>color3</em>,…]]</dt><dd><p>Name of the CPT. If given a GMT Master soft-hinge CPT (see <a class="reference internal" href="cookbook/cpts.html#of-colors-and-color-legends"><span class="std std-ref">Of Colors and Color Legends</span></a>) then
+<dt><strong>-C</strong>[<em>cpt</em>|<em>master</em>[<strong>+h</strong>[<em>hinge</em>]][<strong>+u</strong>|<strong>U</strong><em>unit</em>] |<em>color1,color2</em>[,<em>color3</em>,…]]</dt><dd><p>Name of a CPT file. If given a GMT Master soft-hinge CPT (see <a class="reference internal" href="cookbook/cpts.html#of-colors-and-color-legends"><span class="std std-ref">Of Colors and Color Legends</span></a>) then
 you can enable the hinge at data value <em>hinge</em> [0] via <strong>+h</strong>, whereas for hard-hinge CPTs you
 can adjust the location of the hinge [0].  For other CPTs, you may convert their <em>z</em>-values
 from meter to another distance unit (append <strong>+U</strong><em>unit</em>) or from another unit to meter (append <strong>+u</strong><em>unit</em>),
@@ -302,8 +303,8 @@ or an HTML hexadecimal color (e.g. #aabbcc).</p>
 </dl>
 <dl class="simple" id="d">
 <dt><strong>-D</strong>[<strong>i</strong>|<strong>o</strong>]</dt><dd><p>Select the back- and foreground colors to match the colors for
-lowest and highest <em>z</em>-values in the output CPT [Default uses
-the colors specified in the master file, or those defined by the
+lowest and highest <em>z</em>-values in the output CPT [Default (<strong>-D</strong> or <strong>-Do</strong>)
+uses the colors specified in the master file, or those defined by the
 parameters <a class="reference internal" href="gmt.conf.html#term-COLOR_BACKGROUND"><span class="xref std std-term">COLOR_BACKGROUND</span></a>, <a class="reference internal" href="gmt.conf.html#term-COLOR_FOREGROUND"><span class="xref std std-term">COLOR_FOREGROUND</span></a>, and
 <a class="reference internal" href="gmt.conf.html#term-COLOR_NAN"><span class="xref std std-term">COLOR_NAN</span></a>]. Append <strong>i</strong> to match the colors for the lowest and
 highest values in the input (instead of the output) CPT.</p>
@@ -320,10 +321,20 @@ the number of levels in the chosen CPT.</p>
 </dd>
 </dl>
 <dl class="simple" id="f">
-<dt><strong>-F</strong>[<strong>R</strong>|<strong>r</strong>|<strong>h</strong>|<strong>c</strong>][<strong>+c</strong>]]</dt><dd><p>Force output CPT to be written with r/g/b codes, gray-scale values
+<dt><strong>-F</strong>[<strong>R</strong>|<strong>r</strong>|<strong>h</strong>|<strong>c</strong>][<strong>+c</strong>[<em>label</em>]][<strong>+k</strong><em>keys</em>]</dt><dd><p>Force output CPT to be written with r/g/b codes, gray-scale values
 or color name (<strong>R</strong>, default) or r/g/b codes only (<strong>r</strong>), or h-s-v
 codes (<strong>h</strong>), or c/m/y/k codes (<strong>c</strong>).  Optionally or alternatively,
-append <strong>+c</strong> to write discrete palettes in categorical format.</p>
+append <strong>+c</strong> to write discrete palettes in categorical format.
+If <em>label</em> is appended then we create labels for each category to be used
+when the CPT is plotted. The <em>label</em> may be a comma-separated list of
+category names (you can skip a category by not giving a name), or give
+<em>start</em>[-], where we automatically build monotonically increasing labels
+from <em>start</em> (a single letter or an integer). Append - to build ranges
+<em>start</em>-<em>start+1</em> instead.  If the categorical CPT should have string
+keys instead of numerical entries then append <strong>+k</strong><em>keys</em>, where
+<em>keys</em> is either a file with one key per record or a single letter (e.g., D),
+then we build sequential letter keys (e.g., D, E, F, …) starting at that point.
+For comma-separated lists of keys, use <strong>-T</strong> instead.</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
@@ -383,15 +394,17 @@ use <strong>i</strong> if you need to adjust the column orders.</p>
 </dd>
 </dl>
 <dl class="simple" id="t">
-<dt><strong>-T</strong>[<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+b</strong>|<strong>l</strong>|<strong>n</strong>]|<em>file</em>|<em>list</em>]</dt><dd><p>Defines the range of the new CPT by giving the lowest and
+<dt><strong>-T</strong>[<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+b</strong>|<strong>i</strong>|<strong>l</strong>|<strong>n</strong>]|<em>file</em>|<em>list</em>]</dt><dd><p>Defines the range of the new CPT by giving the lowest and
 highest z-value (and optionally an interval).  If <strong>-T</strong> is
 not given, the existing range in the master CPT will be used intact.
 The values produces defines the color slice boundaries.  If <strong>+n</strong> is
 used it refers to the number of such boundaries and not the number of slices.
-For details on array creation, see <a class="reference internal" href="#generate-1d-array">Generate 1D Array</a>.</p>
+For details on array creation, see <a class="reference internal" href="#generate-1d-array">Generate 1D Array</a>.  <strong>Note</strong>: To set
+up categorical CPTs with string keys you can also give a comma-separated
+list of your keys.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -489,6 +502,17 @@ array where <em>inc</em> can be 1 (every magnitude), 2, (1, 2, 5 times magnitude
 <span class="m">1</span>
 <span class="m">100</span>
 <span class="m">10000</span>
+</pre></div>
+</div>
+<p>Append <strong>+i</strong> if <em>inc</em> is a fractional number and it is cleaner to give its reciprocal
+value instead.  To set up times for a 24-frames per second animation lasting 1 minute, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T0/60/24+i <span class="nv">T</span> <span class="o">=</span>
+<span class="m">0</span>
+<span class="m">0</span>.0416666666667
+<span class="m">0</span>.0833333333333
+<span class="m">0</span>.125
+<span class="m">0</span>.166666666667
+...
 </pre></div>
 </div>
 <p>Append <strong>+n</strong> if <em>inc</em> is meant to indicate the <em>number</em> of equidistant coordinates
@@ -625,6 +649,19 @@ we always get a color regardless of the <em>z</em> value, try</p>
 </pre></div>
 </div>
 </div></blockquote>
+<p>To build a categorical table with 3 categories and add specific category
+names to them, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt makecpt -Ccubhelix -T0/3/1 -F+cClouds,Trees,Water &gt; cat.cpt
+</pre></div>
+</div>
+<p>To instead add unique category labels A, B, C, … to a 10-item categorical CPT, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt makecpt -Cjet -T0/10/1 -F+cA
+</pre></div>
+</div>
+<p>To make a categorical CPT with string keys instead of numerical lookup values, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt makecpt -Ccategorical -Twood,water,gold
+</pre></div>
+</div>
 </div>
 <div class="section" id="note-on-cpts-in-modern-mode">
 <h2>Note on CPTs in Modern Mode<a class="headerlink" href="#note-on-cpts-in-modern-mode" title="Permalink to this headline">¶</a></h2>
@@ -697,7 +734,7 @@ directory.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

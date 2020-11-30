@@ -224,7 +224,7 @@
 <p>Compute directional gradients from a grid</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt grdgradient</strong> <em>in_grdfile</em> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>out_grdfile</em>
+<p><strong>gmt grdgradient</strong> <em>ingrid</em> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outgrid</em>
 [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>azim</em>[/<em>azim2</em>] ] [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<strong>a</strong>][<strong>c</strong>][<strong>o</strong>][<strong>n</strong>] ]
 [ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<strong>m</strong>|<strong>s</strong>|<strong>p</strong>]<em>azim/elev</em>[<strong>+a</strong><em>ambient</em>][<strong>+d</strong><em>diffuse</em>][<strong>+p</strong><em>specular</em>][<strong>+s</strong><em>shine</em>] ]
 [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong>[<strong>e</strong>|<strong>t</strong>][<em>amp</em>][<strong>+a</strong><em>ambient</em>][<strong>+s</strong><em>sigma</em>][<strong>+o</strong><em>offset</em>] ]
@@ -246,11 +246,11 @@ boundary conditions (see <strong>-n</strong>).</p>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
-<dt><em>in_grdfile</em></dt><dd><p>2-D grid file from which to compute directional derivative. (See GRID FILE FORMATS below).</p>
+<dt><em>ingrid</em></dt><dd><p>2-D grid file from which to compute directional derivative. (See GRID FILE FORMATS below).</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
-<dt><strong>-G</strong><em>out_grdfile</em></dt><dd><p>Name of the output grid file for the directional derivative. (See
+<dt><strong>-G</strong><em>outgrid</em></dt><dd><p>Name of the output grid file for the directional derivative. (See
 GRID FILE FORMATS below).</p>
 </dd>
 </dl>
@@ -272,7 +272,7 @@ directions are calculated and the one larger in magnitude is
 retained; this is useful for illuminating data with two directions
 of lineated structures, e.g., <strong>-A</strong><em>0</em>/<em>270</em> illuminates from the
 north (top) and west (left).  Finally, if <em>azim</em> is a file it must
-be a grid of the same domain, spacing and registration as <em>in_grdfile</em>
+be a grid of the same domain, spacing and registration as <em>ingrid</em>
 and we will update the azimuth at each output node when computing the
 directional derivatives.</p>
 </dd>
@@ -335,7 +335,7 @@ for this run then do not specify <strong>-G</strong>. For subsequent runs, just 
 statistics file. See TILES for more information.</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest. Using the <strong>-R</strong> option
 will select a subsection of <em>in_grdfile</em> grid. If this subsection
 exceeds the boundaries of the grid, only the common region will be extracted.</p>
@@ -346,7 +346,7 @@ exceeds the boundaries of the grid, only the common region will be extracted.</p
 Requires <strong>-D</strong> but makes <strong>-G</strong> optional.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 <dt><strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a></dt><dd><p>Geographic grids (dimensions of longitude, latitude) will be converted to
@@ -380,7 +380,7 @@ specified unit to meter.  If your grid is geographic, convert distances to meter
 for <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> or <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>, a good first try is <strong>-Ne</strong>0.6.</p>
 <p>Usually 255 shades are more than enough for visualization purposes. You
 can save 75% disk space by appending =nb/a to the output filename
-<em>out_grdfile</em>.</p>
+<em>outgrid</em>.</p>
 <p>If you want to make several illuminated maps of subregions of a large
 data set, and you need the illumination effects to be consistent across
 all the maps, use the <strong>-N</strong> option and supply the same value of <em>sigma</em>
@@ -494,7 +494,7 @@ IEEE, Vol. 69, No. 1, January 1981, pp. 14-47.
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

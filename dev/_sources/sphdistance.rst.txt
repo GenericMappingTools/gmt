@@ -12,8 +12,10 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt sphdistance** [ *table* ] |-G|\ *grdfile*
+**gmt sphdistance** [ *table* ]
+|-G|\ *grdfile*
 [ |-C| ]
+[ |-D| ]
 [ |-E|\ **d**\|\ **n**\|\ **z**\ [*dist*] ]
 [ |SYN_OPT-I| ]
 [ |-L|\ *unit* ]
@@ -49,6 +51,9 @@ triangularization.
 Required Arguments
 ------------------
 
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
+
 .. _-G:
 
 **-G**\ *grdfile*
@@ -58,9 +63,6 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
-
 .. _-C:
 
 **-C**
@@ -69,6 +71,12 @@ Optional Arguments
     (geographic or Cartesian 3-D vectors) at any given time, translating
     from one form to the other when necessary [Default keeps both arrays
     in memory]. Not applicable with **-Q**.
+
+.. _-D:
+
+**-D**
+    Used to skip duplicate points since the algorithm cannot handle them.
+    [Default assumes there are no duplicates].
 
 .. _-E:
 
@@ -175,6 +183,16 @@ To generate the same grid in two steps using :doc:`sphtriangulate` separately, t
 
     gmt sphtriangulate testdata.txt -Qv > voronoi.txt
     gmt sphdistance -Qvoronoi.txt -Rg -I1 -Gglobedist.nc
+
+Notes
+-----
+
+The STRIPACK algorithm and implementation expect that there are no duplicate points
+in the input.  It is best that the user ensures that this is the case.  GMT has tools,
+such as :doc:`blockmean` and others, to combine close points into single entries.
+Also, **sphdistance** has a **-D** option to determine and exclude duplicates, but
+it is a very brute-force yet exact comparison that is very slow for large data sets.
+Detection of duplicates in the STRIPACK library will exit the module.
 
 See Also
 --------

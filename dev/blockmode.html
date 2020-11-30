@@ -266,6 +266,13 @@ choose binary input and/or output to avoid loss of precision.</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>3 (or 4, see <strong>-W</strong>) column ASCII data table file(s) (or binary, see
+<strong>-bi</strong>) holding (<em>x</em>,<em>y</em>,<em>z</em>[,<em>w</em>])
+data values, where [<em>w</em>] is an optional weight for the data.
+If no file is specified, <strong>blockmode</strong> will read from standard input.</p>
+</dd>
+</dl>
 <dl class="simple" id="i">
 <dt><strong>-I</strong><em>xinc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<strong>+e</strong>|<strong>n</strong>]]</dt><dd><p><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
 append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>: Append
@@ -296,13 +303,6 @@ already been initialized; use <strong>-I</strong> (and <strong>-r</strong>) to o
 </div>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt><em>table</em></dt><dd><p>3 (or 4, see <strong>-W</strong>) column ASCII data table file(s) (or binary, see
-<strong>-bi</strong>) holding (<em>x</em>,<em>y</em>,<em>z</em>[,<em>w</em>])
-data values, where [<em>w</em>] is an optional weight for the data.
-If no file is specified, <strong>blockmode</strong> will read from standard input.</p>
-</dd>
-</dl>
 <dl class="simple" id="a">
 <dt><strong>-A</strong><em>fields</em></dt><dd><p>Select which fields to write to individual grids.  Requires <strong>-G</strong>.
 Append the codes for available fields: <strong>z</strong> (the modal
@@ -359,7 +359,7 @@ code in the file names.</p>
 <em>x</em>, mode <em>y</em>, mode <em>z</em>].</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -500,7 +500,7 @@ called field_z.nc and field_s.nc, run:</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

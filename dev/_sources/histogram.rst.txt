@@ -13,11 +13,12 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt histogram** [ *table* ] |-J|\ **x**\|\ **X**\ *parameters*
-|-T|\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
+|-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
 [ |-A| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**] ]
+[ |-E|\ *width*\ [**+o**\ *offset*] ]
 [ |-F| ]
 [ |-G|\ *fill* ] [ |-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |-I|\ [**o**\|\ **O**] ]

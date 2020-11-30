@@ -225,11 +225,12 @@
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt histogram</strong> [ <em>table</em> ] <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><strong>x</strong>|<strong>X</strong><em>parameters</em>
-<a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong>[<em>min/max</em>/]<em>inc</em>[<strong>+n</strong>] |<a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>file</em>|<em>list</em>
+<a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong>[<em>min/max</em>/]<em>inc</em>[<strong>+i</strong>|<strong>n</strong>] |<a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>file</em>|<em>list</em>
 [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong> ]
 [ <a class="reference internal" href="#b"><span> <strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>cpt</em> ]
 [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<strong>+b</strong>][<strong>+f</strong><em>font</em>][<strong>+o</strong><em>off</em>][<strong>+r</strong>] ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>width</em>[<strong>+o</strong><em>offset</em>] ]
 [ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong> ]
 [ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>fill</em> ] [ <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><strong>z</strong>|<strong>Z</strong><em>parameters</em> ]
 [ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong>[<strong>o</strong>|<strong>O</strong>] ]
@@ -266,6 +267,12 @@ range parameters it will plot the histogram. A cumulative histogram may also be 
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </p>
+</dd>
+</dl>
 <dl class="simple" id="j">
 <dt><strong>-Jx</strong></dt><dd><p><em>xscale</em>[/<em>yscale</em>] (Linear scale(s) in distance unit/data unit), or
 <strong>-JX</strong> with <em>width</em>[/<em>height</em>] dimensions.</p>
@@ -280,12 +287,6 @@ For details on array creation, see <a class="reference internal" href="#generate
 </div>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
-table file(s) holding a number of data columns. If no tables are given
-then we read from standard input.  </p>
-</dd>
-</dl>
 <dl class="simple" id="a">
 <dt><strong>-A</strong></dt><dd><p>Plot the histogram horizontally from x = 0 [Default is vertically
 from y = 0].  The plot dimensions remain the same, but the two
@@ -297,9 +298,11 @@ axes are flipped.</p>
 </dd>
 </dl>
 <dl class="simple" id="c">
-<dt><strong>-C</strong><em>cpt</em></dt><dd><p>Give a CPT. The mid x-value for each bar is used to
+<dt><strong>-C</strong><em>cpt</em></dt><dd><p>Give a CPT. The bar-value for each bar is used to
 look-up the bar color.  If modern mode and no argument is given
-then we select the current CPT.</p>
+then we select the current CPT.  <strong>Note</strong>: We use the <em>count</em> in
+each bin as the look-up value, unless <strong>-Z</strong> involves percentages,
+in which case the look-up value is the <em>percentage</em> computed.</p>
 </dd>
 </dl>
 <dl class="simple" id="d">
@@ -308,6 +311,16 @@ following modifiers: Use <strong>+b</strong> to place the labels beneath the bar
 instead of above; use <strong>+f</strong> to change to another font than the default
 annotation font; use <strong>+o</strong> to change the offset between bar and label [6p];
 use <strong>+r</strong> to rotate the labels from horizontal to vertical.</p>
+</dd>
+</dl>
+<dl class="simple" id="e">
+<dt><strong>-E</strong><em>width</em>[<strong>+o</strong><em>offset</em>]</dt><dd><p>Use an alternative histogram bar width than the default set via <strong>-T</strong>,
+and optionally shift all bars by an <em>offset</em>.  Here <em>width</em> is either
+an alternative width in data units, or the user may append a valid plot
+dimension unit (<strong>c</strong>|<strong>i</strong>|<strong>p</strong>) for a fixed dimension instead.
+Optionally, all bins may be shifted along the axis by <em>offset</em>. As for
+<em>width</em>, it may be given in data units of plot dimension units by appending
+the relevant unit.</p>
 </dd>
 </dl>
 <dl class="simple" id="f">
@@ -350,7 +363,7 @@ The <em>mode</em> selects which central location and scale to use:</p>
 reverse cumulative histogram.</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest.  </p>
 </dd>
 </dl>
@@ -364,7 +377,7 @@ of the default histogram.</p>
 <dt><strong>-U</strong>[<em>label</em>][<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>] <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Draw GMT time stamp logo on plot.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -416,7 +429,7 @@ append <strong>+w</strong>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-l</strong>[<em>label</em>][<strong>+D</strong><em>pen</em>][<strong>+G</strong><em>gap</em>][<strong>+H</strong><em>header</em>][<strong>+L</strong>[<em>code</em>/]<em>txt</em>][<strong>+N</strong><em>cols</em>][<strong>+S</strong><em>size</em>[/<em>height</em>]][<strong>+V</strong>[<em>pen</em>]][<strong>+f</strong><em>font</em>][<strong>+g</strong><em>fill</em>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>off</em>][<strong>+p</strong><em>pen</em>][<strong>+s</strong><em>scale</em>][<strong>+w</strong><em>width</em>] <a class="reference internal" href="gmt.html#l-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Add a legend entry for the symbol or line being plotted. Symbol is a rectangle with width-to-height ratio of 3:2.  Use <strong>+S</strong><em>width*[/*height</em>] to overwrite with custom width and optionally height.</p>
+<dt><strong>-l</strong>[<em>label</em>][<strong>+D</strong><em>pen</em>][<strong>+G</strong><em>gap</em>][<strong>+H</strong><em>header</em>][<strong>+L</strong>[<em>code</em>/]<em>txt</em>][<strong>+N</strong><em>cols</em>][<strong>+S</strong><em>size</em>[/<em>height</em>]][<strong>+V</strong>[<em>pen</em>]][<strong>+f</strong><em>font</em>][<strong>+g</strong><em>fill</em>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>off</em>][<strong>+p</strong><em>pen</em>][<strong>+s</strong><em>scale</em>][<strong>+w</strong><em>width</em>] <a class="reference internal" href="gmt.html#l-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Add a legend entry for the symbol or line being plotted. Symbol is a rectangle with width-to-height ratio of 3:2.  Use <strong>+S</strong><em>width</em>[/<em>height</em>] to overwrite with custom width and optionally height.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -428,7 +441,7 @@ append <strong>+w</strong>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-t</strong>[<em>transp</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level in percent.</p>
+<dt><strong>-t</strong><em>transp</em>[/<em>transp2</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level(s) in percent.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -483,6 +496,17 @@ array where <em>inc</em> can be 1 (every magnitude), 2, (1, 2, 5 times magnitude
 <span class="m">1</span>
 <span class="m">100</span>
 <span class="m">10000</span>
+</pre></div>
+</div>
+<p>Append <strong>+i</strong> if <em>inc</em> is a fractional number and it is cleaner to give its reciprocal
+value instead.  To set up times for a 24-frames per second animation lasting 1 minute, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T0/60/24+i <span class="nv">T</span> <span class="o">=</span>
+<span class="m">0</span>
+<span class="m">0</span>.0416666666667
+<span class="m">0</span>.0833333333333
+<span class="m">0</span>.125
+<span class="m">0</span>.166666666667
+...
 </pre></div>
 </div>
 <p>Append <strong>+n</strong> if <em>inc</em> is meant to indicate the <em>number</em> of equidistant coordinates
@@ -594,7 +618,7 @@ increments of 100.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

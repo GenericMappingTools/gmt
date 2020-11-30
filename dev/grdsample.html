@@ -224,7 +224,7 @@
 <p>Resample a grid onto a new lattice</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt grdsample</strong> <em>in_grdfile</em> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>out_grdfile</em>
+<p><strong>gmt grdsample</strong> <em>ingrid</em> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outgrid</em>
 [ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>increment</em> ]
 [ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
 [ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong> ]
@@ -255,11 +255,11 @@ have the same registration as the input grid.</p>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
-<dt><em>in_grdfile</em></dt><dd><p>The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)</p>
+<dt><em>ingrid</em></dt><dd><p>The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
-<dt><strong>-G</strong><em>out_grdfile</em></dt><dd><p>The name of the output grid file. (See GRID FILE FORMAT below.)</p>
+<dt><strong>-G</strong><em>outgrid</em></dt><dd><p>The name of the output grid file. (See GRID FILE FORMAT below.)</p>
 </dd>
 </dl>
 </div>
@@ -288,7 +288,7 @@ details. <strong>Note</strong>: If <strong>-R</strong><em>grdfile</em> is used t
 already been initialized; use <strong>-I</strong> (and <strong>-r</strong>) to override the values.</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest.  </p>
 </dd>
 </dl>
@@ -298,7 +298,7 @@ grid-registered, the output will be pixel-registered and vice-versa.
 This is a <em>destructive</em> grid change; see <a class="reference internal" href="cookbook/options.html#switch-registrations"><span class="std std-ref">Switching registrations</span></a>.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -438,7 +438,7 @@ registration while keeping the same region and grid interval:</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

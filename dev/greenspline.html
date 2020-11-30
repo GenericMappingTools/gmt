@@ -274,16 +274,15 @@ when evaluating the output.</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<p>None.</p>
-</div>
-<div class="section" id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>The name of one or more ASCII [or binary, see
 <strong>-bi</strong>] files holding the <strong>x</strong>, <em>w</em> data
 points. If no file is given then we read standard input instead.</p>
 </dd>
 </dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong><em>gradfile</em><strong>+f</strong><strong>1</strong>|<strong>2</strong>|<strong>3</strong>|<strong>4</strong>|<strong>5</strong></dt><dd><p>The solution will partly be constrained by surface gradients <strong>v</strong> =
 <em>v</em>*<strong>n</strong>, where <em>v</em> is the gradient magnitude and <strong>n</strong> its
@@ -354,7 +353,11 @@ possibly <strong>-r</strong> are set we produce an equidistant output table. Thi
 will be written to stdout unless <strong>-G</strong> is specified. <strong>Note</strong>: For 2-D
 grids the <strong>-G</strong> option is required. (2) If option <strong>-T</strong> is
 selected then <strong>-G</strong> is required and the output file is a 2-D binary
-grid file. Applies to 2-D interpolation only. (3) If <strong>-N</strong> is
+grid file. Applies to 2-D interpolation only. (3) For 3-D cubes
+the <strong>-G</strong> option is optional.  If set, it can be the name of a 3-D
+cube file or a filename template with a floating-point C-format identifier
+in it so that each layer is written to a 2-D grid file; otherwise
+we write (<em>x, y, z, w</em>) records to stdout. (4) If <strong>-N</strong> is
 selected then the output is an ASCII (or binary; see
 <strong>-bo</strong>) table; if <strong>-G</strong> is not given then
 this table is written to standard output. Ignored if <strong>-C</strong> or
@@ -438,7 +441,7 @@ in the <em>maskgrid</em> that are not equal to NaN. This option eliminates
 the need to specify options <strong>-R</strong>, <strong>-I</strong>, and <strong>-r</strong>.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -567,7 +570,15 @@ remaining constraints specify only the surface slope and direction
 <p>To create a uniform 3-D Cartesian grid table based on the data in
 Table 5.23 in Davis (1986) that contains <em>x</em>,<em>y</em>,<em>z</em> locations and
 a measure of uranium oxide concentrations (in percent), try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D_UO2.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 &gt; 3D_UO2.txt
+</pre></div>
+</div>
+<p>To instead write the results as a series of 2-D layer grids called layer_*z*.grd, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D_UO2_%g.grd
+</pre></div>
+</div>
+<p>Finally, to write the result to a 3-D netCDF grid, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D_UO2.nc
 </pre></div>
 </div>
 </div>
@@ -687,7 +698,7 @@ Int</em>, <strong>174</strong>, 21-28.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

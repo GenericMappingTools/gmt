@@ -224,7 +224,8 @@
 <p>Get information about data tables</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt info</strong> [ <em>table</em> ] [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><strong>a</strong>|<strong>f</strong>|<strong>s</strong> ]
+<p><strong>gmt info</strong> [ <em>table</em> ]
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><strong>a</strong>|<strong>t</strong>|<strong>s</strong> ]
 [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong> ]
 [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<em>dx</em>[/<em>dy</em>]] ]
 [ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><strong>L</strong>|<strong>l</strong>|<strong>H</strong>|<strong>h</strong>[<em>col</em>] ]
@@ -267,21 +268,20 @@ will provide a <strong>-T</strong><em>zmin/zmax/dz</em> string for makecpt.</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<p>None.</p>
-</div>
-<div class="section" id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
 then we read from standard input.  </p>
 </dd>
 </dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="a">
-<dt><strong>-A</strong><strong>a</strong>|<strong>f</strong>|<strong>s</strong></dt><dd><p>Specify how the range should be reported. Choose <strong>-Aa</strong> for the
-range of all files combined, <strong>-Af</strong> to report the range for each
-file separately, and <strong>-As</strong> to report the range for each segment
-(in multisegment files) separately. [Default is <strong>-Aa</strong>].</p>
+<dt><strong>-A</strong><strong>a</strong>|<strong>t</strong>|<strong>s</strong></dt><dd><p>Specify how the range should be reported. Choose <strong>-Aa</strong> for the
+range of all tables combined, <strong>-At</strong> to report the range for each
+table separately, and <strong>-As</strong> to report the range for each segment
+(in multisegment tables) separately. [Default is <strong>-Aa</strong>].</p>
 </dd>
 </dl>
 <dl class="simple" id="c">
@@ -341,7 +341,7 @@ it ensures that the bounding box extends by at least 0.25 times the increment [n
 </dd>
 </dl>
 <dl class="simple" id="l">
-<dt><strong>-L</strong></dt><dd><p>Determines common limits across tables (<strong>-Af</strong>) or segments (<strong>-As</strong>).
+<dt><strong>-L</strong></dt><dd><p>Determines common limits across tables (<strong>-At</strong>) or segments (<strong>-As</strong>).
 If used with <strong>-I</strong> it will round inwards so that the resulting bounds
 lie within the actual data domain.</p>
 </dd>
@@ -361,7 +361,7 @@ third and fourth (2 and 3) columns.</p>
 string <strong>-T</strong><em>zmin/zmax/dz</em>. To use another column, append <strong>+c</strong><em>col</em>. Cannot be used together with <strong>-I</strong>.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -528,7 +528,7 @@ the current setting of <a class="reference internal" href="gmt.conf.html#term-TI
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

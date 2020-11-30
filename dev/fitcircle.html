@@ -270,6 +270,12 @@ represented factor in the data and is not easily estimated by either method.</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>One or more ASCII [or binary, see <strong>-bi</strong>] files containing lon,lat [or lat,lon; see
+<strong>-:</strong>[<strong>i</strong>|<strong>o</strong>]] values in the first 2 columns. If no
+file is specified, <strong>fitcircle</strong> will read from standard input.</p>
+</dd>
+</dl>
 <dl class="simple" id="l">
 <dt><strong>-L</strong><em>norm</em></dt><dd><p>Specify the desired <em>norm</em> as 1 or 2, or use <strong>-L</strong> or <strong>-L3</strong> to
 see both solutions.</p>
@@ -278,12 +284,6 @@ see both solutions.</p>
 </div>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt><em>table</em></dt><dd><p>One or more ASCII [or binary, see <strong>-bi</strong>] files containing lon,lat [or lat,lon; see
-<strong>-:</strong>[<strong>i</strong>|<strong>o</strong>]] values in the first 2 columns. If no
-file is specified, <strong>fitcircle</strong> will read from standard input.</p>
-</dd>
-</dl>
 <dl class="simple" id="f">
 <dt><strong>-F</strong><em>flags</em></dt><dd><p>Traditionally, <strong>fitcircle</strong> will write its results in the form of a text report, with
 the values intermingled with report sentences.  Use <strong>-F</strong> to only return data
@@ -301,7 +301,7 @@ Optionally append the desired fixed latitude of the small circle
 [Default will determine the optimal latitude].</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -441,7 +441,7 @@ hemisphere great circle pole location using the L2 norm, try</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

@@ -259,6 +259,12 @@ see <strong>surface</strong>, <strong>greenspline</strong>, <strong>nearneighbor
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>One or more ASCII [or binary, see <strong>-bi</strong>]
+files holding z or (x,y,z) values. The xyz triplets do not have to
+be sorted. One-column z tables must be sorted and the <strong>-Z</strong> must be set.</p>
+</dd>
+</dl>
 <dl class="simple" id="g">
 <dt><strong>-G</strong><em>grdfile</em></dt><dd><p><em>grdfile</em> is the name of the binary output grid file. (See GRID FILE
 FORMAT below.)</p>
@@ -287,19 +293,13 @@ details. <strong>Note</strong>: If <strong>-R</strong><em>grdfile</em> is used t
 already been initialized; use <strong>-I</strong> (and <strong>-r</strong>) to override the values.</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest.  </p>
 </dd>
 </dl>
 </div>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt><em>table</em></dt><dd><p>One or more ASCII [or binary, see <strong>-bi</strong>]
-files holding z or (x,y,z) values. The xyz triplets do not have to
-be sorted. One-column z tables must be sorted and the <strong>-Z</strong> must be set.</p>
-</dd>
-</dl>
 <dl class="simple" id="a">
 <dt><strong>-A</strong>[<strong>d</strong>|<strong>f</strong>|<strong>l</strong>|<strong>m</strong>|<strong>n</strong>|<strong>r</strong>|<strong>S</strong>|<strong>s</strong>|<strong>u</strong>|<strong>z</strong>]</dt><dd><p>By default we will calculate mean values if multiple entries fall on
 the same node. Use <strong>-A</strong> to change this behavior, except it is
@@ -329,7 +329,7 @@ you can escape the plus symbols in a variable using constructs like ${variable/+
 Note that for geographic grids (<strong>-fg</strong>) <em>xname</em> and <em>yname</em> are set automatically.</p>
 </dd>
 </dl>
-<dl class="simple" id="j">
+<span class="target" id="j"></span><dl class="simple">
 <dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select map projection. Use the <strong>-J</strong> syntax to save the georeferencing info as CF-1 compliant metadata in
 netCDF grids. Remember also that PROJ syntax can be used directly in <strong>-J</strong>. This referencing will be
 recognized by GDAL and increasingly also by GMT.</p>
@@ -341,7 +341,7 @@ must also supply the <strong>-Z</strong> option. The output is written to <em>zf
 (or stdout if not supplied).</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -570,7 +570,7 @@ that is assigned to each node in a cartesian data set, use</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

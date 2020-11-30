@@ -248,6 +248,13 @@ L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the specified
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>One or more ASCII [or binary, see <strong>-bi</strong>]
+files holding the spherical harmonic coefficients. We expect the
+first four columns to hold the degree L, the order M, followed by
+the cosine and sine coefficients.</p>
+</dd>
+</dl>
 <dl class="simple" id="g">
 <dt><strong>-G</strong><em>grdfile</em></dt><dd><p><em>grdfile</em> is the name of the binary output grid file. (See GRID FILE FORMAT below.)</p>
 </dd>
@@ -275,20 +282,13 @@ details. <strong>Note</strong>: If <strong>-R</strong><em>grdfile</em> is used t
 already been initialized; use <strong>-I</strong> (and <strong>-r</strong>) to override the values.</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest.  </p>
 </dd>
 </dl>
 </div>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt><em>table</em></dt><dd><p>One or more ASCII [or binary, see <strong>-bi</strong>]
-files holding the spherical harmonic coefficients. We expect the
-first four columns to hold the degree L, the order M, followed by
-the cosine and sine coefficients.</p>
-</dd>
-</dl>
 <dl class="simple" id="d">
 <dt><strong>-D</strong>[<strong>g</strong>|<strong>n</strong>]</dt><dd><p>Will evaluate a derived field from a geopotential model.  Choose
 between <strong>Dg</strong> which will compute the gravitational field or <strong>Dn</strong>
@@ -318,7 +318,7 @@ normalization - inner products summed over surface equal 1 [Default].
 equal 4pi. <strong>s</strong>: Schmidt normalization - as used in geomagnetism.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -448,7 +448,7 @@ degree and order normalized associated Legendre functions:
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

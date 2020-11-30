@@ -39,6 +39,12 @@ L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the specified
 Required Arguments
 ------------------
 
+*table*
+    One or more ASCII [or binary, see **-bi**]
+    files holding the spherical harmonic coefficients. We expect the
+    first four columns to hold the degree L, the order M, followed by
+    the cosine and sine coefficients.
+
 .. _-G:
 
 **-G**\ *grdfile*
@@ -55,12 +61,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-*table*
-    One or more ASCII [or binary, see **-bi**]
-    files holding the spherical harmonic coefficients. We expect the
-    first four columns to hold the degree L, the order M, followed by
-    the cosine and sine coefficients.
 
 .. _-D:
 

@@ -224,7 +224,7 @@
 <p>Sample grids at specified (x,y) locations</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt grdtrack</strong> [ <em>trackfile</em> ] <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>grd1</em> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>grd2</em> …
+<p><strong>gmt grdtrack</strong> [ <em>table</em> ] <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>grd1</em> <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>grd2</em> …
 [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><strong>f</strong>|<strong>p</strong>|<strong>m</strong>|<strong>r</strong>|<strong>R</strong>[<strong>+l</strong>] ]
 [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>length</em>/<em>ds</em>[<em>/spacing</em>][<strong>+a</strong>|<strong>+v</strong>][<strong>l</strong>|<strong>r</strong>] ]
 [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>dfile</em> ]
@@ -270,6 +270,12 @@ edge is zero) unless the grid is automatically recognized as periodic.)</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>This is an ASCII (or binary, see <strong>-bi</strong>)
+file where the first 2 columns hold the (x,y) positions where the
+user wants to sample the 2-D data set.</p>
+</dd>
+</dl>
 <dl class="simple" id="g">
 <dt><strong>-G</strong><em>gridfile</em></dt><dd><p><em>grdfile</em> is a 2-D binary grid file with the function f(x,y). If the
 specified grid is in Sandwell/Smith Mercator format you must append
@@ -290,12 +296,6 @@ The grids are sampled and results are output in the order given.
 </div>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt><em>trackfile</em></dt><dd><p>This is an ASCII (or binary, see <strong>-bi</strong>)
-file where the first 2 columns hold the (x,y) positions where the
-user wants to sample the 2-D data set.</p>
-</dd>
-</dl>
 <dl class="simple" id="a">
 <dt><strong>-Af</strong>|<strong>p</strong>|<strong>m</strong>|<strong>r</strong>|<strong>R</strong>[<strong>+l</strong>]</dt><dd><p>For track resampling (if <strong>-C</strong> or <strong>-E</strong> are set) we can select how this is to
 be performed. Append <strong>f</strong> to keep original points, but add
@@ -396,7 +396,7 @@ distance nodes along the cross-profiles.  We write 13 output columns per track:
 [Default only output points within grid domain].</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest.  </p>
 </dd>
 </dl>
@@ -440,7 +440,7 @@ and give <em>radius</em> = 0 if you do not want to limit the radius search.
 To instead replace the input point with the coordinates of the nearest node, append <strong>+p</strong>.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -648,7 +648,7 @@ try:</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

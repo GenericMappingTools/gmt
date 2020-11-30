@@ -224,8 +224,8 @@
 <p>Finite rotation reconstruction of geographic grid</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt grdrotater</strong> <em>ingrdfile</em> <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>rot_file</em>|<em>lon</em>/<em>lat</em>/<em>angle</em>
-<a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outgrdfile</em>
+<p><strong>gmt grdrotater</strong> <em>ingrid</em> <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>rot_file</em>|<em>lon</em>/<em>lat</em>/<em>angle</em>
+<a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outgrid</em>
 [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>region</em> ]
 [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>rotoutline</em> ]
 [ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>polygonfile</em> ]
@@ -254,7 +254,7 @@ rotated region is not the entire globe.</p>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
-<dt><em>ingrdfile</em></dt><dd><p>Name of a grid file in geographical (lon, lat) coordinates.</p>
+<dt><em>ingrid</em></dt><dd><p>Name of a grid file in geographical (lon, lat) coordinates.</p>
 </dd>
 </dl>
 <dl id="e">
@@ -286,9 +286,9 @@ a single total reconstruction rotation.</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
-<dt><strong>-G</strong><em>outgrdfile</em></dt><dd><p>Name of output grid. This is the grid with the data reconstructed
+<dt><strong>-G</strong><em>outgrid</em></dt><dd><p>Name of output grid. This is the grid with the data reconstructed
 according to the specified rotation. If more than one reconstruction
-time is implied then <em>outgrdfile</em> must contain a C-format specifier
+time is implied then <em>outgrid</em> must contain a C-format specifier
 to format a floating point number (reconstruction time) to text.</p>
 </dd>
 </dl>
@@ -321,7 +321,7 @@ area of the grid that should be projected [Default projects entire grid].</p>
 stdout, or to a file via <strong>-D</strong>].</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
 and you may specify them in decimal degrees or in
 [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
@@ -376,7 +376,7 @@ option is given and <strong>-E</strong> specified a rotation file then we equate
 the rotation file times with the reconstruction times.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -526,7 +526,7 @@ To use an alternate rotation file, create an environmental parameters named
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

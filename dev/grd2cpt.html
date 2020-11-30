@@ -224,10 +224,12 @@
 <p>Make linear or histogram-equalized color palette table from grid</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt grd2cpt</strong> <em>grid</em> [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>transparency</em>[<strong>+a</strong>] ]
-[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>cpt</em> ] [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<strong>i</strong>] ]
+<p><strong>gmt grd2cpt</strong> <em>grid</em>
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>transparency</em>[<strong>+a</strong>] ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>cpt</em> ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<strong>i</strong>|<strong>o</strong>] ]
 [ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<em>nlevels</em>][<strong>+c</strong>][<strong>+f</strong><em>file</em>] ]
-[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>R</strong>|<strong>r</strong>|<strong>h</strong>|<strong>c</strong>][<strong>+c</strong>] ]
+[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>R</strong>|<strong>r</strong>|<strong>h</strong>|<strong>c</strong>][<strong>+c</strong>[<em>label</em>]] ]
 [ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>zlo</em>/<em>zhi</em> ]
 [ <a class="reference internal" href="#h"><span> <strong>-H</strong></span></a></strong> ]
 [ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong>[<strong>c</strong>][<strong>z</strong>] ]
@@ -298,7 +300,7 @@ Append <strong>+a</strong> to also affect the fore-, back-, and nan-colors
 </dd>
 </dl>
 <dl class="simple" id="c">
-<dt><strong>-C</strong>[<em>cpt</em>|<em>master</em>[<strong>+h</strong>[<em>hinge</em>]][<strong>+i</strong><em>zinc</em>][<strong>+u</strong>|<strong>U</strong><em>unit</em>] |<em>color1,color2</em>[,<em>color3</em>,…]]</dt><dd><p>Name of the CPT. If given a GMT Master soft-hinge CPT (see <a class="reference internal" href="cookbook/cpts.html#of-colors-and-color-legends"><span class="std std-ref">Of Colors and Color Legends</span></a>) then
+<dt><strong>-C</strong>[<em>cpt</em>|<em>master</em>[<strong>+h</strong>[<em>hinge</em>]][<strong>+u</strong>|<strong>U</strong><em>unit</em>] |<em>color1,color2</em>[,<em>color3</em>,…]]</dt><dd><p>Name of a CPT file. If given a GMT Master soft-hinge CPT (see <a class="reference internal" href="cookbook/cpts.html#of-colors-and-color-legends"><span class="std std-ref">Of Colors and Color Legends</span></a>) then
 you can enable the hinge at data value <em>hinge</em> [0] via <strong>+h</strong>, whereas for hard-hinge CPTs you
 can adjust the location of the hinge [0].  For other CPTs, you may convert their <em>z</em>-values
 from meter to another distance unit (append <strong>+U</strong><em>unit</em>) or from another unit to meter (append <strong>+u</strong><em>unit</em>),
@@ -311,9 +313,9 @@ or an HTML hexadecimal color (e.g. #aabbcc).</p>
 </dd>
 </dl>
 <dl class="simple" id="d">
-<dt><strong>-D</strong>[<strong>i</strong>]</dt><dd><p>Select the back- and foreground colors to match the colors for
-lowest and highest <em>z</em>-values in the output CPT [Default uses
-the colors specified in the master file, or those defined by the
+<dt><strong>-D</strong>[<strong>i</strong>|<strong>o</strong>]</dt><dd><p>Select the back- and foreground colors to match the colors for
+lowest and highest <em>z</em>-values in the output CPT [Default (<strong>-D</strong> or <strong>-Do</strong>)
+uses the colors specified in the master file, or those defined by the
 parameters <a class="reference internal" href="gmt.conf.html#term-COLOR_BACKGROUND"><span class="xref std std-term">COLOR_BACKGROUND</span></a>, <a class="reference internal" href="gmt.conf.html#term-COLOR_FOREGROUND"><span class="xref std std-term">COLOR_FOREGROUND</span></a>, and
 <a class="reference internal" href="gmt.conf.html#term-COLOR_NAN"><span class="xref std std-term">COLOR_NAN</span></a>]. Append <strong>i</strong> to match the colors for the lowest and
 highest values in the input (instead of the output) CPT.</p>
@@ -330,10 +332,16 @@ see <strong>-bo</strong> and <strong>-o</strong> for output formatting.</p>
 </dd>
 </dl>
 <dl class="simple" id="f">
-<dt><strong>-F</strong>[<strong>R</strong>|<strong>r</strong>|<strong>h</strong>|<strong>c</strong>][<strong>+c</strong>]</dt><dd><p>Force output CPT to written with r/g/b codes, gray-scale values
+<dt><strong>-F</strong>[<strong>R</strong>|<strong>r</strong>|<strong>h</strong>|<strong>c</strong>][<strong>+c</strong>[<em>label</em>]]</dt><dd><p>Force output CPT to written with r/g/b codes, gray-scale values
 or color name (<strong>R</strong>, default) or r/g/b codes only (<strong>r</strong>), or h-s-v
 codes (<strong>h</strong>), or c/m/y/k codes (<strong>c</strong>).  Optionally or alternatively,
-append <strong>+c</strong> to write discrete palettes in categorical format.</p>
+append <strong>+c</strong> to write discrete palettes in categorical format.
+If <em>label</em> is appended then we create labels for each category to be used
+when the CPT is plotted. The <em>label</em> may be a comma-separated list of
+category names (you can skip a category by not giving a name), or give
+<em>start*[-], where we automatically build monotonically increasing labels
+from *start</em> (a single letter or an integer). Append - to build ranges
+<em>start</em>-<em>start+1</em> instead.</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
@@ -385,7 +393,7 @@ writes out z [Default]. <strong>-Qo</strong> takes log10(z) first, assigns
 colors, and writes out z.</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest.  </p>
 </dd>
 </dl>
@@ -586,7 +594,7 @@ CPTs.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

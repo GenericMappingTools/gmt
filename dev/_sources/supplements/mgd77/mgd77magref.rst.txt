@@ -24,6 +24,7 @@ Synopsis
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
+[ |SYN_OPT-o| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -157,7 +158,8 @@ Optional Arguments
     **-Ft**/**934** computes Core field due to IGRF plus terms 3 and 4
     from CM4 (but you can add others). **-Ft**/**934** the same as above
     but output the field components. The data is written out in the
-    order they appear in *flags* [Default is **-Frthxyzdi**/**1**].
+    order they appear in *flags* [Default is **-Frthxyzdi**/**1**]. **Note**:
+    You can further select a subset of fields via **-o**.
 
 .. _-G:
 
@@ -212,6 +214,8 @@ Optional Arguments
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_-ocols.rst_
 
 .. include:: ../../explain_colon.rst_
 

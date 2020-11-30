@@ -65,15 +65,13 @@ when evaluating the output.
 Required Arguments
 ------------------
 
-None.
-
-Optional Arguments
-------------------
-
 *table*
     The name of one or more ASCII [or binary, see
     **-bi**] files holding the **x**, *w* data
     points. If no file is given then we read standard input instead.
+
+Optional Arguments
+------------------
 
 .. _-A:
 
@@ -115,7 +113,7 @@ Optional Arguments
     one per eigenvalue, and thus require a file name template with a C-format
     integer specification to be given via **-G**.  The **+m** modifier will
     write the contributions to the grid for each eigenvalue, while **+M**
-    will instead produce the cumulative sum of these contributions. 
+    will instead produce the cumulative sum of these contributions.
 
 .. _-D:
 
@@ -151,7 +149,11 @@ Optional Arguments
     will be written to stdout unless **-G** is specified. **Note**: For 2-D
     grids the **-G** option is required. (2) If option **-T** is
     selected then **-G** is required and the output file is a 2-D binary
-    grid file. Applies to 2-D interpolation only. (3) If **-N** is
+    grid file. Applies to 2-D interpolation only. (3) For 3-D cubes
+    the **-G** option is optional.  If set, it can be the name of a 3-D
+    cube file or a filename template with a floating-point C-format identifier
+    in it so that each layer is written to a 2-D grid file; otherwise
+    we write (*x, y, z, w*) records to stdout. (4) If **-N** is
     selected then the output is an ASCII (or binary; see
     **-bo**) table; if **-G** is not given then
     this table is written to standard output. Ignored if **-C** or
@@ -352,7 +354,15 @@ To create a uniform 3-D Cartesian grid table based on the data in
 Table 5.23 in Davis (1986) that contains *x*,\ *y*,\ *z* locations and
 a measure of uranium oxide concentrations (in percent), try::
 
-    gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D_UO2.txt
+    gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 > 3D_UO2.txt
+
+To instead write the results as a series of 2-D layer grids called layer_*z*.grd, try::
+
+    gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D_UO2_%g.grd
+
+Finally, to write the result to a 3-D netCDF grid, try::
+
+    gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D_UO2.nc
 
 2-d Spherical Surface Examples
 ------------------------------

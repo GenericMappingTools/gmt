@@ -255,9 +255,8 @@ gmt begin ex33
 	<span class="c1"># Show upper/lower values encountered as an envelope</span>
 	gmt convert stack.txt -o0,5 &gt; env.txt
 	gmt convert stack.txt -o0,6 -I -T &gt;&gt; env.txt
-	gmt plot -R-200/200/-3500/-2000 -Bxafg1000+l<span class="s2">&quot;Distance from ridge (km)&quot;</span> -Byaf+l<span class="s2">&quot;Depth (m)&quot;</span> -BWSne <span class="se">\</span>
-		-JX15c/7.5c -Glightgray env.txt -Yh+3c
-	gmt plot -W3p stack.txt
+	gmt plot -R-200/200/-3500/-2000 -JX15c/7.5c -Glightgray env.txt -Yh+3c
+	gmt plot -W3p stack.txt -Bxafg1000+l<span class="s2">&quot;Distance from ridge (km)&quot;</span> -Byaf+l<span class="s2">&quot;Depth (m)&quot;</span> -BWSne
 	<span class="nb">echo</span> <span class="s2">&quot;0 -2000 MEDIAN STACKED PROFILE&quot;</span> <span class="p">|</span> gmt text -Gwhite -F+jTC+f14p -Dj8p
 	<span class="c1"># cleanup</span>
 	rm -f ridge.txt table.txt env.txt stack.txt spac_33.nc
@@ -293,7 +292,7 @@ gmt end show
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

@@ -271,7 +271,7 @@ are doing; see the examples for further guidance.</p>
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
 <dt><em>ingrid</em></dt><dd><p>2-D binary grid file to be operated on. (See GRID FILE FORMATS below).
-For cross-spectral operations, also give the second grid file <em>ingrd2</em>.</p>
+For cross-spectral operations, also give the second grid file <em>ingrid2</em>.</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
@@ -320,9 +320,9 @@ This requires zero topography to mean no mass anomaly.</p>
 </dd>
 </dl>
 <dl class="simple" id="i">
-<dt><strong>-I</strong><strong>w</strong>|<strong>b</strong>|<strong>c</strong>|<strong>t</strong>|<strong>k</strong></dt><dd><p>Use <em>ingrd2</em> and <em>ingrd1</em> (a grid with topography/bathymetry) to estimate admittance|coherence and
+<dt><strong>-I</strong><strong>w</strong>|<strong>b</strong>|<strong>c</strong>|<strong>t</strong>|<strong>k</strong></dt><dd><p>Use <em>ingrid2</em> and <em>ingrid1</em> (a grid with topography/bathymetry) to estimate admittance|coherence and
 write it to stdout (<strong>-G</strong> ignored if set). This grid should contain
-gravity or geoid for the same region of <em>ingrd1</em>. Default
+gravity or geoid for the same region of <em>ingrid1</em>. Default
 computes admittance. Output contains 3 or 4 columns. Frequency
 (wavelength), admittance (coherence) one sigma error bar and,
 optionally, a theoretical admittance. Append dataflags (one to
@@ -415,7 +415,7 @@ If <em>te</em> = 0 then the Airy response is returned. <strong>-T+m</strong> imp
 top” model you only have to provide <em>zm</em>, but for the “loading from below” don’t forget <em>zl</em>.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 <dt><strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a></dt><dd><p>Geographic grids (dimensions of longitude, latitude) will be converted to
@@ -616,7 +616,7 @@ J. Geophys. Res., 106(B9), 19,431–19,441,
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

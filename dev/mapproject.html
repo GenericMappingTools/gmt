@@ -224,7 +224,7 @@
 <p>Forward and inverse map transformations, datum conversions and geodesy</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt mapproject</strong> [ <em>tables</em> ] <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em>
+<p><strong>gmt mapproject</strong> [ <em>table</em> ] <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em>
 <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
 [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><strong>b</strong>|<strong>B</strong>|<strong>f</strong>|<strong>F</strong>|<strong>o</strong>|<strong>O</strong>[<em>lon0</em>/<em>lat0</em>][<strong>+v</strong>] ]
 [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong>[<em>dx</em>/<em>dy</em>][<strong>+m</strong>] ]
@@ -278,11 +278,17 @@ along lines can all be computed by using one or more of the options
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple" id="j">
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </p>
+</dd>
+</dl>
+<span class="target" id="j"></span><dl class="simple">
 <dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select map projection.  </p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest. Special case for the UTM
 projection: If <strong>-C</strong> is used and <strong>-R</strong> is not given then the
 region is set to coincide with the given UTM zone so as to preserve
@@ -292,12 +298,6 @@ the full ellipsoidal solution (See RESTRICTIONS for more information).</p>
 </div>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
-table file(s) holding a number of data columns. If no tables are given
-then we read from standard input.  </p>
-</dd>
-</dl>
 <dl class="simple" id="a">
 <dt><strong>-Ab</strong>|<strong>B</strong>|<strong>f</strong>|<strong>F</strong>|<strong>o</strong>|<strong>O</strong>[<em>lon0</em>/<em>lat0</em>][<strong>+v</strong>]</dt><dd><p>Calculate azimuth along track <em>or</em> to the optional <em>fixed</em> point set
 with <em>lon0/lat0</em>.  <strong>-Af</strong> calculates the (forward) azimuth
@@ -309,7 +309,9 @@ geodetic to geocentric latitudes and estimate azimuth of geodesics
 is given then we compute the azimuth (or back-azimuth) from the
 previous point.  Alternatively, append <strong>+v</strong> to obtain a
 <em>variable</em> 2nd point (<em>lon0</em>/<em>lat0</em>) via columns 3-4 in the input file.
-See <a class="reference internal" href="#output-order">Output Order</a> for how <strong>-A</strong> affects the output record.</p>
+See <a class="reference internal" href="#output-order">Output Order</a> for how <strong>-A</strong> affects the output record.  If <strong>-R</strong>
+and <strong>-J*</strong> are given the we project the coordinates first and then
+compute Cartesian angles instead.</p>
 </dd>
 </dl>
 <dl class="simple" id="c">
@@ -353,7 +355,8 @@ with <strong>-G</strong><em>lon0</em>/<em>lat0</em>. Append the distance unit wi
 for available units and how distances are computed [great circle using authalic
 radius]), including <strong>c</strong> (Cartesian distance using input coordinates) or <strong>C</strong>
 (Cartesian distance using projected coordinates). The <strong>C</strong> unit
-requires <strong>-R</strong> and <strong>-J</strong> to be set. If no fixed point is given
+requires <strong>-R</strong> and <strong>-J</strong> to be set and all output coordinates will be
+reported as projected. If no fixed point is given
 we calculate <em>accumulated</em> distances whereas if a fixed point is given
 we calculate <em>incremental</em> distances.  You can override these defaults
 by adding <strong>+a</strong> for accumulated or <strong>+i</strong> for incremental distances.
@@ -416,7 +419,7 @@ after the inverse projection). Make sure that the
 <a class="reference internal" href="gmt.conf.html#term-PROJ_ELLIPSOID"><span class="xref std std-term">PROJ_ELLIPSOID</span></a> setting is correct for your case.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -710,7 +713,7 @@ North-Holland Publ., ISBN: 0 444 86149 1.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

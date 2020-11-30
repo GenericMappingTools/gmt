@@ -227,7 +227,7 @@
 <p><strong>gmt grdpmodeler</strong> <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>rot_file</em> <strong>-S</strong><em>flags</em>
 [ <em>agegrdfile</em> ]
 [ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>polygonfile</em> ]
-[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outgrdfile</em> ]
+[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outgrid</em> ]
 [ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
 [ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>age</em> ]
 [ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
@@ -293,7 +293,7 @@ If no arguments are given we default to all [<strong>adsvwxyXY</strong>].</p>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
-<dt><em>ingrdfile</em></dt><dd><p>Name of a grid file in geographical (lon, lat) coordinates with ages in Myr.
+<dt><em>ingrid</em></dt><dd><p>Name of a grid file in geographical (lon, lat) coordinates with ages in Myr.
 If no grid is provided then you may define the domain via <strong>-R</strong>, <strong>-I</strong>, and optionally <strong>-r</strong>.</p>
 </dd>
 </dl>
@@ -304,7 +304,7 @@ will be set to NaN [Default evaluates model on the entire grid].</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
-<dt><strong>-G</strong><em>outgrdfile</em></dt><dd><p>Name of output grid. This is the grid with the model predictions
+<dt><strong>-G</strong><em>outgrid</em></dt><dd><p>Name of output grid. This is the grid with the model predictions
 given the specified rotations. <strong>Note</strong>: If you specified more than one
 model prediction in <strong>-S</strong> then the filename <em>must</em> be a template
 that contains the format %s; this will be replaced with the corresponding
@@ -319,7 +319,7 @@ age grid). This lets you evaluate the model at a snapshot in time.
 Required if no age grid was provided.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -459,7 +459,7 @@ To use an alternate rotation file, create an environmental parameters named
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

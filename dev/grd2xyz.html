@@ -228,7 +228,7 @@
 [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong>[<strong>f</strong>|<strong>i</strong>] ]
 [ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
 [ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
-[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<strong>a</strong>|<em>weight</em>] ] [ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong>[<em>flags</em>] ]
+[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<strong>a</strong>[<strong>+u</strong><em>unit</em>]|<em>weight</em>] ] [ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong>[<em>flags</em>] ]
 [ <strong>-bo</strong><a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
@@ -267,20 +267,26 @@ column and row numbers. These start at 0 (C-style counting); append
 is the 1-D indexing that GMT uses when referring to grid nodes.</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest. Using the <strong>-R</strong> option
 will select a subsection of the grid. If this subsection exceeds the
 boundaries of the grid, only the common region will be output.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
 <dl class="simple" id="w">
-<dt><strong>-W</strong>[<strong>a</strong>|<em>weight</em>]</dt><dd><p>Write out <em>x,y,z,w</em>, where <em>w</em> is the supplied <em>weight</em> (or 1 if not
+<dt><strong>-W</strong>[<strong>a</strong>[<strong>+u</strong><em>unit</em>]|<em>weight</em>]</dt><dd><p>Write out <em>x,y,z,w</em>, where <em>w</em> is the supplied <em>weight</em> (or 1 if not
 supplied) [Default writes <em>x,y,z</em> only].  Choose <strong>-Wa</strong> to compute
-weights equal to the area each node represents.</p>
+weights equal to the area each node represents.  For Cartesian grids this
+is simply the product of the <em>x</em> and <em>y</em> increments (except for
+gridline-registered grids at all sides [half] and corners [quarter]).
+For geographic grids we default to a length unit of <strong>k</strong> (hence area is in km^2). Change
+this by appending <strong>+u</strong><em>unit</em> (see <a class="reference internal" href="#units">Units</a>). For such grids, the area
+varies with latitude and also sees special cases for gridline-registered layouts
+at sides, corners, and poles.</p>
 </dd>
 </dl>
 <dl id="z">
@@ -354,6 +360,18 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dd>
 </dl>
 </div>
+<div class="section" id="units">
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
+<p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
+and <strong>u</strong> for US survey foot. By default we compute such distances using
+a spherical approximation with great circles (<strong>-jg</strong>) using the authalic radius
+(see <a class="reference internal" href="gmt.conf.html#term-PROJ_MEAN_RADIUS"><span class="xref std std-term">PROJ_MEAN_RADIUS</span></a>). You can use <strong>-jf</strong> to perform
+“Flat Earth” calculations (quicker but less accurate) or <strong>-je</strong> to perform
+exact geodesic calculations (slower but more accurate; see
+<a class="reference internal" href="gmt.conf.html#term-PROJ_GEODESIC"><span class="xref std std-term">PROJ_GEODESIC</span></a> for method used).</p>
+</div>
 <div class="section" id="ascii-format-precision">
 <h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
 <p>The ASCII output formats of numerical data are controlled by parameters
@@ -405,6 +423,11 @@ the remote file &#64;AFR.nc file, using scanline orientation, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grd2xyz @AFR.nc -ZTLf &gt; AFR.b
 </pre></div>
 </div>
+<p>To write out <em>lon, lat, topo, area</em> from the &#64;AFR.nc file, selecting meter^2 as the area unit,
+and where <em>area</em> reflects the size of each grid box, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grd2xyz @AFR.nc -Wa+ue &gt; AFR.txt
+</pre></div>
+</div>
 </div>
 <div class="section" id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
@@ -437,7 +460,7 @@ the remote file &#64;AFR.nc file, using scanline orientation, run:</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

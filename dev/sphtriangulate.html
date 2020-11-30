@@ -224,9 +224,16 @@
 <p>Delaunay or Voronoi construction of spherical data</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt sphtriangulate</strong> [ <em>table</em> ] [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong> ] [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong> ] [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong> ]
-[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>unit</em> ] [ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>file</em> ] [ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><strong>d</strong>|<strong>v</strong> ]
-[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong> ] [ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+<p><strong>gmt sphtriangulate</strong>
+[ <em>table</em> ]
+[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong> ]
+[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong> ]
+[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong> ]
+[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>unit</em> ]
+[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>file</em> ]
+[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><strong>d</strong>|<strong>v</strong> ]
+[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong> ]
+[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
 [ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
@@ -252,16 +259,15 @@ is STRIPACK.</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<p>None.</p>
-</div>
-<div class="section" id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
 then we read from standard input.  </p>
 </dd>
 </dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong></dt><dd><p>Compute the area of the spherical triangles (<strong>-Qd</strong>) or polygons
 (<strong>-Qv</strong>) and write the areas (in chosen units; see <strong>-L</strong>) in the
@@ -311,7 +317,7 @@ triangles or polygons]. When used with <strong>-A</strong> we store arc length i
 the segment header in chosen unit (see <strong>-L</strong>).</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -407,6 +413,15 @@ in the header record, try</p>
 </div>
 </div></blockquote>
 </div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>The STRIPACK algorithm and implementation expect that there are no duplicate points
+in the input.  It is best that the user ensures that this is the case.  GMT has tools,
+such as <a class="reference internal" href="blockmean.html"><span class="doc">blockmean</span></a> and others, to combine close points into single entries.
+Also, <strong>sphtriangulate</strong> has a <strong>-D</strong> option to determine and exclude duplicates, but
+it is a very brute-force yet exact comparison that is very slow for large data sets.
+Detection of duplicates in the STRIPACK library will exit the module.</p>
+</div>
 <div class="section" id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
@@ -444,7 +459,7 @@ Voronoi Diagram on the Surface of a Sphere, <em>AMC Trans. Math. Software</em>,
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

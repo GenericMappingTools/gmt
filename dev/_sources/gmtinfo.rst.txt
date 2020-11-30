@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt info** [ *table* ] [ |-A|\ **a**\|\ **f**\|\ **s** ]
+**gmt info** [ *table* ]
+[ |-A|\ **a**\|\ **t**\|\ **s** ]
 [ |-C| ]
 [ |-D|\ [*dx*\ [/*dy*]] ]
 [ |-E|\ **L**\|\ **l**\|\ **H**\|\ **h**\ [*col*] ]
@@ -58,21 +59,19 @@ will provide a **-T**\ *zmin/zmax/dz* string for makecpt.
 Required Arguments
 ------------------
 
-None.
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
 
 Optional Arguments
 ------------------
 
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
-
 .. _-A:
 
-**-A**\ **a**\|\ **f**\|\ **s**
+**-A**\ **a**\|\ **t**\|\ **s**
     Specify how the range should be reported. Choose **-Aa** for the
-    range of all files combined, **-Af** to report the range for each
-    file separately, and **-As** to report the range for each segment
-    (in multisegment files) separately. [Default is **-Aa**].
+    range of all tables combined, **-At** to report the range for each
+    table separately, and **-As** to report the range for each segment
+    (in multisegment tables) separately. [Default is **-Aa**].
 
 .. _-C:
 
@@ -138,7 +137,7 @@ Optional Arguments
 .. _-L:
 
 **-L**
-    Determines common limits across tables (**-Af**) or segments (**-As**).
+    Determines common limits across tables (**-At**) or segments (**-As**).
     If used with **-I** it will round inwards so that the resulting bounds
     lie within the actual data domain.
 

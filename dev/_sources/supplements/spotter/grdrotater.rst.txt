@@ -12,8 +12,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdrotater** *ingrdfile* |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*
-|-G|\ *outgrdfile*
+**gmt grdrotater** *ingrid* |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*
+|-G|\ *outgrid*
 [ |-A|\ *region* ]
 [ |-D|\ *rotoutline* ]
 [ |-F|\ *polygonfile* ]
@@ -44,17 +44,17 @@ rotated region is not the entire globe.
 Required Arguments
 ------------------
 
-*ingrdfile*
+*ingrid*
     Name of a grid file in geographical (lon, lat) coordinates.
 
 .. include:: explain_rots.rst_
 
 .. _-G:
 
-**-G**\ *outgrdfile*
+**-G**\ *outgrid*
     Name of output grid. This is the grid with the data reconstructed
     according to the specified rotation. If more than one reconstruction
-    time is implied then *outgrdfile* must contain a C-format specifier
+    time is implied then *outgrid* must contain a C-format specifier
     to format a floating point number (reconstruction time) to text.
 
 Optional Arguments

@@ -250,9 +250,9 @@ gmt begin ex50
 	gmt math -T-4/4/0.1 T <span class="nv">ZPDF</span> <span class="o">=</span> p.txt
 	gmt plot -R-4/4/0/0.4 p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y2.25c
 	<span class="c1"># Plot t distribution</span>
-	gmt plot -R-4/4/0/0.4 p.txt -W1p,lightgray -BWS -Bxa1 -Byaf -Y2.25c
+	gmt plot -R-4/4/0/0.4 p.txt -W1p,lightgray -Y2.25c
 	gmt math -T-4/4/0.1 T <span class="m">3</span> <span class="nv">TPDF</span> <span class="o">=</span> p.txt
-	gmt plot p.txt -L+yb -Glightgreen -W1p
+	gmt plot p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf
 	<span class="c1"># Plot F distribution</span>
 	gmt math -T0/6/0.02 T <span class="m">20</span> <span class="m">12</span> <span class="nv">FPDF</span> <span class="o">=</span> p.txt
 	gmt plot -R0/6/0/1.02 p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y2.25c
@@ -282,9 +282,9 @@ gmt begin ex50
 	gmt math -T-4/4/0.1 T <span class="nv">ZCDF</span> <span class="o">=</span> p.txt
 	gmt plot -R-4/4/0/1.02 p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y2.25c
 	<span class="c1"># Plot t cumulative distribution</span>
-	gmt plot -R-4/4/0/1.02 p.txt -W1p,lightgray -BES -Bxa1 -Byaf -Y2.25c
+	gmt plot -R-4/4/0/1.02 p.txt -W1p,lightgray -Y2.25c
 	gmt math -T-4/4/0.1 T <span class="m">3</span> <span class="nv">TCDF</span> <span class="o">=</span> p.txt
-	gmt plot p.txt -L+yb -Glightred -W1p
+	gmt plot p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf
 	<span class="c1"># Plot F cumulative distribution</span>
 	gmt math -T0/6/0.02 T <span class="m">20</span> <span class="m">12</span> <span class="nv">FCDF</span> <span class="o">=</span> p.txt
 	gmt plot -R0/6/0/1.02 p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y2.25c
@@ -349,7 +349,7 @@ gmt end show
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

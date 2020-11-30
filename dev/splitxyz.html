@@ -259,10 +259,6 @@ divide a large x,y[,z] dataset into segments.</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<p>none.</p>
-</div>
-<div class="section" id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII [or binary, see <strong>-bi</strong>]
 files with 2, 3, or 5 columns holding (x,y,[z[,d,h]])
@@ -272,6 +268,9 @@ only. If no files are specified, <strong>splitxyz</strong> will read from
 standard input.</p>
 </dd>
 </dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong><em>azimuth</em>/<em>tolerance</em></dt><dd><p>Write out only those segments which are within ±<em>tolerance</em>
 degrees of <em>azimuth</em> in heading, measured clockwise from North, [0 -
@@ -338,7 +337,7 @@ distances are Cartesian in same units as x,y and angles are
 counter-clockwise from horizontal].</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -480,7 +479,7 @@ profiles named <em>survey</em>_<em>###.txt</em> (when gap exceeds 100 km). Try t
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>

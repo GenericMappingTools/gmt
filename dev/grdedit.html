@@ -226,7 +226,7 @@
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt grdedit</strong> <em>grid</em> [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong> ] [ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong> ]
 [ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<strong>+x</strong><em>xname</em>][<strong>+y</strong><em>yname</em>][<strong>+z</strong><em>zname</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>][<strong>+t</strong><em>title</em>][<strong>+r</strong><em>remark</em>] ]
-[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<strong>a</strong>|<strong>h</strong>|<strong>l</strong>|<strong>r</strong>|<strong>t</strong>|<strong>v</strong>] ]
+[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<strong>a</strong>|<strong>e</strong>|<strong>h</strong>|<strong>l</strong>|<strong>r</strong>|<strong>t</strong>|<strong>v</strong>] ]
 [ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outgrid</em> ]
 [ <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em> ]
 [ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong>[<strong>+n</strong>|<strong>p</strong>] ]
@@ -292,9 +292,10 @@ Note that for geographic grids (<strong>-fg</strong>) <em>xname</em> and <em>yna
 </dd>
 </dl>
 <dl class="simple" id="e">
-<dt><strong>-E</strong>[<strong>a</strong>|<strong>h</strong>|<strong>l</strong>|<strong>r</strong>|<strong>t</strong>|<strong>v</strong>]</dt><dd><p>Transform the grid in one of six ways and (for <strong>l</strong>|<strong>r</strong>|<strong>t</strong>)
+<dt><strong>-E</strong>[<strong>a</strong>|<strong>e</strong>|<strong>h</strong>|<strong>l</strong>|<strong>r</strong>|<strong>t</strong>|<strong>v</strong>]</dt><dd><p>Transform the grid in one of six ways and (for <strong>l</strong>|<strong>r</strong>|<strong>t</strong>)
 interchange the <em>x</em> and <em>y</em> information:
 <strong>-Ea</strong> will rotate the grid around 180 degrees,
+<strong>-Ee</strong> will exchange the x (longitude) and y (latitude) dimensions,
 <strong>-Eh</strong> will flip the grid horizontally (left-to-right),
 <strong>-El</strong> will rotate the grid 90 degrees counter-clockwise (left),
 <strong>-Er</strong> will rotate the grid 90 degrees clockwise (right),
@@ -308,7 +309,7 @@ Incompatible with the other options (except <strong>-G</strong>).</p>
 Use <strong>-G</strong> to write the modified grid to the file <em>outgrid</em> instead.</p>
 </dd>
 </dl>
-<dl class="simple" id="j">
+<span class="target" id="j"></span><dl class="simple">
 <dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select map projection. Use the <strong>-J</strong> syntax to save the georeferencing info as CF-1 compliant
 metadata in netCDF grids. This metadata will be recognized by GDAL.</p>
 </dd>
@@ -326,7 +327,7 @@ force positive longitude values.</p>
 these <em>x</em>,<em>y</em>,<em>z</em> values.</p>
 </dd>
 </dl>
-<dl class="simple" id="r">
+<span class="target" id="r"></span><dl class="simple">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest. The new w/e/s/n values will
 replace those in the grid, and the <em>x_inc</em>, <em>y_inc</em> values are
 adjusted, if necessary.</p>
@@ -346,7 +347,7 @@ have their domain shrunk by the same amount.
 This is a <em>non-destructive</em> grid change; see <a class="reference internal" href="cookbook/options.html#switch-registrations"><span class="std std-ref">Switching registrations</span></a>.</p>
 </dd>
 </dl>
-<dl class="simple" id="v">
+<span class="target" id="v"></span><dl class="simple">
 <dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
 </dd>
 </dl>
@@ -445,6 +446,11 @@ the rotated grid to a new file, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdedit depths.nc -L+p
 </pre></div>
 </div>
+<p>The grid bad.nc has latitude as x-coordinates an longitude as y-coordinates.
+We can exchange the two dimension by running:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdedit bad.nc -Ee -Gnew.nc
+</pre></div>
+</div>
 </div>
 <div class="section" id="notes">
 <h2>Notes:<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
@@ -487,7 +493,7 @@ any revised output.</p>
         
         &copy; Copyright 2020, The GMT Team.
       <span class="lastupdated">
-        Last updated on Sep 20, 2020.
+        Last updated on Nov 30, 2020.
       </span>
 
     </p>
