@@ -731,6 +731,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	if (Ctrl->T.T.var_inc || Ctrl->T.T.n == 1) {	/* Not equidistant output levels selected via -T so must pass the number of output levels instead of increment */
 		dims[GMT_Z] = Ctrl->T.T.n;	/* Number of output levels */
 		this_dim = dims;	/* Pointer to the dims instead of NULL */
+		inc[GMT_Z] = 0.0;
 	}
 	else	/* Normal equidistant output levels lets us pass z-inc */
 		inc[GMT_Z] = Ctrl->T.T.inc;	
