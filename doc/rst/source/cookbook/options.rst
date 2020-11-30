@@ -359,7 +359,11 @@ but you may also split this into two separate invocations for clarity, i.e.,
 
 The *intervals* specification is a concatenated string made up of substrings of the form
 
-[**t**]\ *stride*\ [*phase*][*unit*].
+[**t**]\ *stride*\ [*+/-phase*][*unit*].
+*e.g, to shift 10º longitudinal annotations by 2 degrees westward (-) (so 10, 20, 30,... become 8, 18, 28...) :*
+> -Ba10-2
+*or, to shift x-ticks 3º eastward (+) (so 10, 20, 30,... become 13, 23, 33...), but not the annotations stay the same :*
+> -Bxa10f10+3
 
 The **t** flag sets the axis
 item of interest; the available items are listed in Table :ref:`inttype <tbl-inttype>`.
