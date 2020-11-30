@@ -3,7 +3,7 @@
  * Give an argument to replicate that, otherwise we make a PS that can be
  * compared with the original PS so the test can run as normal.
  */
-int main (char **argv, int argc) {
+int main (int argc, char *argv[]) {
 	void *API;
 
 	/* Initialize the GMT session */
