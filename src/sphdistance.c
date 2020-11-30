@@ -580,7 +580,7 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 					col = p_col;
 				side = gmt_inonout (GMT, grid_lon[col], grid_lat[row], P);
 
-				if (side == 0) continue;	/* Outside spherical polygon */
+				if (side == GMT_OUTSIDE) continue;	/* Outside spherical polygon */
 				ij = gmt_M_ijp (Grid->header, row, col);
 				if (Ctrl->E.mode == SPHD_DIST)
 					f_val = (gmt_grdfloat)gmt_distance (GMT, grid_lon[col], grid_lat[row], lon[node], lat[node]);

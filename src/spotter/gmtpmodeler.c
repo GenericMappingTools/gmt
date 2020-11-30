@@ -368,7 +368,7 @@ EXTERN_MSC int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		if (Ctrl->F.active) {	/* Use the bounding polygon */
 			for (seg = inside = 0; seg < pol->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
 				if (gmt_polygon_is_hole (GMT, pol->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
-				inside = (gmt_inonout (GMT, in[GMT_X], in[GMT_Y], pol->segment[seg]) > 0);
+				inside = (gmt_inonout (GMT, in[GMT_X], in[GMT_Y], pol->segment[seg]) > GMT_OUTSIDE);
 			}
 			if (!inside) {
 				n_outside++;	/* Outside the polygon(s), continue */
