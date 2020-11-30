@@ -2817,7 +2817,7 @@ GMT_LOCAL void grdmath_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 				if (gmt_polygon_is_hole (GMT, S)) continue;	/* Holes are handled within gmt_inonout */
 				inside = gmt_inonout (GMT, info->d_grd_x[col], info->d_grd_y[row], S);
 			}
-			stack[last]->G->data[node] = (inside) ? 1.0f : 0.0f;
+			stack[last]->G->data[node] = (inside > GMT_OUTSIDE) ? 1.0f : 0.0f;
 		}
 	}
 
