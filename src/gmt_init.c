@@ -17264,19 +17264,20 @@ GMT_LOCAL int gmtinit_get_graphics_formats (struct GMT_CTRL *GMT, char *formats,
 }
 
 GMT_LOCAL bool gmtinit_check_if_autosize (struct GMTAPI_CTRL *API, int ID) {
-	/* Check if the BoundingBox line in the half-baked PostScript file has max dimension (32767x32767)
+	/* Check if the BoundingBox line in the half-baked PostScript file has max dimension (GMT_PAPER_DIM x GMT_PAPER_DIM)
 	 * which we used to enforce automatic cropping to actual size [and possible extra margins] */
-	char file[PATH_MAX] = {""};
+	char file[PATH_MAX] = {""}, def_dim[GMT_LEN32] = {""};
 	FILE *fp;
 	snprintf (file, PATH_MAX, "%s/gmt_%d.ps-", API->gwf_dir, ID);	/* Current half-baked PostScript file */
 	if ((fp = fopen (file, "r")) == NULL) {	/* This is an unmitigated disaster */
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to open half-baked PostScript file %s\n", file);
 		return false;
 	}
+	sprintf (def_dim, "%d %d", GMT_PAPER_DIM, GMT_PAPER_DIM);	/* Create the comparison string */
 	gmt_fgets (API->GMT, file, PATH_MAX, fp);	/* Skip first line */
 	gmt_fgets (API->GMT, file, PATH_MAX, fp);	/* Get second line with BoundingBox code */
 	fclose (fp);
-	if (strstr (file, "32767 32767")) return true;	/* Max paper size means auto-sized media */
+	if (strstr (file, def_dim)) return true;	/* Max paper size means auto-sized media */
 	return false;
 }
 
