@@ -583,7 +583,7 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 					if (yy[k] < P->min[GMT_Y] || yy[k] > P->max[GMT_Y]) continue;
 					if (xx[k] < P->min[GMT_X] || xx[k] > P->max[GMT_X]) continue;
 					side = gmt_inonout (GMT, xx[k], yy[k], P);
-					if (side) node = k;	/* Found the data node */
+					if (side != GMT_OUTSIDE) node = k;	/* Found the data node */
 				}
 				zpol[seg] = zz[node];
 				sprintf (header, "%s -Z%g", P->header, zpol[seg]);
@@ -664,7 +664,7 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 						if (!gmt_M_is_fnan (Grid->data[p])) continue;
 					}
 					side = gmt_inonout (GMT, grid_lon[col], grid_lat[row], P);
-					if (side == 0) continue;	/* Outside polygon */
+					if (side == GMT_OUTSIDE) continue;	/* Outside polygon */
 					p = gmt_M_ijp (Grid->header, row, col);
 					Grid->data[p] = (gmt_grdfloat)zpol[seg];
 					n_set++;
