@@ -92,7 +92,6 @@ struct GRD_PAD {	/* Local structure */
 	unsigned int pad[4];
 };
 
-/* These functions live in other files and are extern'ed in here */
 /* Local functions */
 
 GMT_LOCAL inline struct GMT_GRID    * gmtgrdio_get_grid_data (struct GMT_GRID *ptr) {return (ptr);}
@@ -831,15 +830,15 @@ void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 
 		if ((!strncmp (string[i], "longitude", 9U) || strstr (string[i], "degrees_e")) && (header->wesn[XLO] > -360.0 && header->wesn[XHI] <= 360.0)) {
 			/* Input data type is longitude */
-			gmt_set_column (GMT, GMT_IN, i, GMT_IS_LON);
+			gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_LON);
 		}
 		else if ((!strncmp (string[i], "latitude", 8U) || strstr (string[i], "degrees_n")) && (header->wesn[YLO] >= -90.0 && header->wesn[YHI] <= 90.0)) {
 			/* Input data type is latitude */
-			gmt_set_column (GMT, GMT_IN, i, GMT_IS_LAT);
+			gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_LAT);
 		}
 		else if (!strcmp (string[i], "time") || !strncmp (string[i], "time [", 6U)) {
 			/* Input data type is time */
-			gmt_set_column (GMT, GMT_IN, i, GMT_IS_RELTIME);
+			gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_RELTIME);
 			GMT->current.proj.xyz_projection[i] = GMT_TIME;
 
 			/* Determine coordinates epoch and units (default is internal system) */
@@ -1196,12 +1195,12 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	/* Catch some anomalies */
 	if (gmt_M_type (GMT, GMT_OUT, GMT_X) == GMT_IS_LAT && gmt_M_type (GMT, GMT_OUT, GMT_Y) == GMT_IS_LAT) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Output type for X-coordinate of grid %s is LAT. Replaced by LON.\n", HH->name);
-		gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_LON);
+		gmt_set_column_type (GMT, GMT_OUT, GMT_X, GMT_IS_LON);
 
 	}
 	if (gmt_M_type (GMT, GMT_OUT, GMT_Y) == GMT_IS_LON && gmt_M_type (GMT, GMT_OUT, GMT_X) == GMT_IS_LON) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Output type for Y-coordinate of grid %s is LON. Replaced by LAT.\n", HH->name);
-		gmt_set_column (GMT, GMT_OUT, GMT_Y, GMT_IS_LAT);
+		gmt_set_column_type (GMT, GMT_OUT, GMT_Y, GMT_IS_LAT);
 	}
 
 	/* Set unit strings one by one based on output type */
@@ -2540,6 +2539,41 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	return (GMT_NOERROR);
 }
 
+void gmt_cube_pad_off (struct GMT_CTRL *GMT, struct GMT_CUBE *U) {
+	/* Shifts the cube contents so there is no pad.  The remainder of
+	 * the array is not reset and should not be addressed, but
+	 * we set it to zero just in case.
+	 * If pad is zero then we do nothing.
+	 */
+	uint64_t k, ijp, ij0, nm, here_p = 0, here_0 = 0;
+	unsigned int row;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (U->header);
+
+	if (HH->arrangement == GMT_GRID_IS_INTERLEAVED) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Calling gmt_cube_pad_off on interleaved complex grid! Programming error?\n");
+		return;
+	}
+	if (!gmt_grd_pad_status (GMT, U->header, NULL)) return;	/* No pad so nothing to do */
+
+	/* Here, U has a pad which we need to eliminate */
+	nm = U->header->nm;	/* Number of nodes in one component */
+	for (k = 0; k < U->header->n_bands; k++) {
+		for (row = 0; row < U->header->n_rows; row++) {
+			ijp = gmt_M_ijp (U->header, row, 0) + here_p;	/* Index of start of this row's first column in padded cube  */
+			ij0 = gmt_M_ij0 (U->header, row, 0) + here_0;	/* Index of start of this row's first column in unpadded cube */
+			gmt_M_memcpy (&(U->data[ij0]), &(U->data[ijp]), U->header->n_columns, gmt_grdfloat);	/* Only copy the n_columns data values */
+		}
+		here_p += U->header->size;
+		here_0 += nm;
+	}
+	if (here_p > here_0) {	/* Just wipe the remainder of the array to be sure */
+		size_t n_to_cleen = here_p - here_0;
+		gmt_M_memset (&(U->data[nm*U->header->n_bands]), n_to_cleen, gmt_grdfloat);	/* nm*U->header->n_bands is 1st position after last row in cube */
+	}
+	gmt_M_memset (U->header->pad, 4, int);	/* Pad is no longer active */
+	gmt_set_grddim (GMT, U->header);		/* Update all dimensions to reflect the padding */
+}
+
 void gmt_grd_pad_off (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	/* Shifts the grid contents so there is no pad.  The remainder of
 	 * the array is not reset and should not be addressed, but
@@ -3276,6 +3310,126 @@ int gmt_img_sanitycheck (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	if (GMT->current.proj.projection == GMT_LINEAR) return GMT_NOERROR;	/* Only linear projection is allowed with this projected grid */
 	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot use a map projection with an already projected grid (spherical Mercator img grid).  Use -Jx or -JX.\n");
 	return GMT_PROJECTION_ERROR;
+}
+
+/* 3-D GMT_CUBE handling is here */
+
+GMT_LOCAL struct GMT_CUBE *gmtgrdio_get_cube (struct GMT_CTRL *GMT) {
+	struct GMT_CUBE *C = NULL;
+	C = gmt_M_memory (GMT, NULL, 1, struct GMT_CUBE);
+	C->hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_CUBE_HIDDEN);
+	return (C);
+}
+
+struct GMT_CUBE *gmtlib_create_cube (struct GMT_CTRL *GMT) {
+	/* Allocates space for a new cube container.  No space allocated for the gmt_grdfloat cube itself */
+	struct GMT_CUBE *C = NULL;
+	struct GMT_CUBE_HIDDEN *GU = NULL;
+
+	C = gmtgrdio_get_cube (GMT);
+	GU = gmt_get_U_hidden (C);
+	C->header = gmt_get_header (GMT);
+	gmt_grd_init (GMT, C->header, NULL, false); /* Set default values */
+	GMT_Set_Index (GMT->parent, C->header, GMT_GRID_LAYOUT);
+	GU->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
+	GU->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	GU->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
+	return (C);
+}
+
+struct GMT_CUBE *gmtlib_duplicate_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *U, unsigned int mode) {
+	/* Duplicates an entire grid, including data if requested. */
+	struct GMT_CUBE *Unew = NULL;
+
+	Unew = gmtlib_create_cube (GMT);
+	gmt_copy_gridheader (GMT, Unew->header, U->header);
+	gmt_M_memcpy (Unew->z_range, U->z_range, 2U, double);
+	Unew->z_inc = U->z_inc;
+	Unew->mode = U->mode;
+	strncpy (Unew->name, U->name, GMT_GRID_UNIT_LEN80-1);
+	strncpy (Unew->units, U->units, GMT_GRID_UNIT_LEN80-1);
+
+	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possibly duplicate data array */
+		struct GMT_CUBE_HIDDEN *UH = gmt_get_U_hidden (Unew);
+		if ((mode & GMT_DUPLICATE_RESET) && !gmt_grd_pad_status (GMT, U->header, GMT->current.io.pad)) {
+			/* Pads differ and we requested resetting the pad */
+			gmt_M_grd_setpad (GMT, Unew->header, GMT->current.io.pad);	/* Set default pad size */
+			gmt_set_grddim (GMT, Unew->header);	/* Update size dimensions given the change of pad */
+			if (mode & GMT_DUPLICATE_DATA) {	/* Per row since grid sizes will not the same */
+				uint64_t node_in, node_out, k, off_in = 0, off_out = 0;
+				unsigned int row;
+				Unew->data = gmt_M_memory_aligned (GMT, NULL, Unew->header->size * Unew->header->n_bands, gmt_grdfloat);
+				for (k = 0; k < U->header->n_bands; k++, off_in += U->header->size, off_out += Unew->header->size) {
+					for (row = 0; row < U->header->n_rows; row++) {
+						node_in  = gmt_M_ijp (U->header, row, 0)    + off_in;
+						node_out = gmt_M_ijp (Unew->header, row, 0) + off_out;
+						gmt_M_memcpy (&Unew->data[node_out], &U->data[node_in], U->header->n_columns, gmt_grdfloat);
+					}
+				}
+			}
+		}
+		else {	/* Can do fast copy of the whole cube */
+			Unew->data = gmt_M_memory_aligned (GMT, NULL, U->header->size * U->header->n_bands, gmt_grdfloat);
+			if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Unew->data, U->data, U->header->size * U->header->n_bands, gmt_grdfloat);
+		}
+
+		Unew->x = gmt_grd_coord (GMT, Unew->header, GMT_X);	/* Get array of x coordinates */
+		Unew->y = gmt_grd_coord (GMT, Unew->header, GMT_Y);	/* Get array of y coordinates */
+		UH->xyz_alloc_mode[GMT_X] = UH->xyz_alloc_mode[GMT_Y] = GMT_ALLOC_INTERNALLY;
+		if (U->z) {
+			Unew->z = gmt_duplicate_array (GMT, U->z, U->header->n_bands);
+			UH->xyz_alloc_mode[GMT_Z] = GMT_ALLOC_INTERNALLY;
+		}
+	}
+	return (Unew);
+}
+
+unsigned int gmtlib_free_cube_ptr (struct GMT_CTRL *GMT, struct GMT_CUBE *U, bool free_cube) {
+	/* By taking a reference to the grid pointer we can set it to NULL when done */
+	struct GMT_CUBE_HIDDEN *UH = NULL;
+	enum GMT_enum_alloc alloc_mode;
+	if (!U) return 0;	/* Nothing to deallocate */
+	/* Only free G->data if allocated by GMT AND free_grid is true */
+	UH = gmt_get_U_hidden (U);
+	if (U->data && free_cube) {
+		if (UH->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free_aligned (GMT, U->data);
+		U->data = NULL;	/* This will remove reference to external memory since gmt_M_free_aligned would not have been called */
+	}
+	if (U->x && UH->xyz_alloc_mode[GMT_X] == GMT_ALLOC_INTERNALLY)
+		gmt_M_free (GMT, U->x);
+	if (U->y && UH->xyz_alloc_mode[GMT_Y] == GMT_ALLOC_INTERNALLY)
+		gmt_M_free (GMT, U->y);
+	if (U->z && UH->xyz_alloc_mode[GMT_Z] == GMT_ALLOC_INTERNALLY)
+		gmt_M_free (GMT, U->z);
+	U->x = U->y = U->z = NULL;	/* This will remove reference to external memory since gmt_M_free would not have been called */
+	alloc_mode = UH->alloc_mode;
+	gmt_M_free (GMT, U->hidden);
+	gmt_free_header (GMT, &(U->header));	/* Free the header structure and anything allocated by it */
+	return (alloc_mode);
+}
+
+void gmtlib_free_cube (struct GMT_CTRL *GMT, struct GMT_CUBE **U, bool free_cube) {
+	/* By taking a reference to the grid pointer we can set it to NULL when done */
+	(void)gmtlib_free_cube_ptr (GMT, *U, free_cube);
+	gmt_M_free (GMT, *U);
+}
+
+uint64_t gmt_get_active_layers (struct GMT_CTRL *GMT, struct GMT_CUBE *U, double *range, uint64_t *start_k, uint64_t *stop_k) {
+	/* Return via start_k, stop_k the first and last index of the selected layers */
+	uint64_t n_layers = U->header->n_bands, n_layers_used;
+	if (range[0] > U->z[n_layers-1] || range[1] < U->z[0]) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_get_active_layers: Requested range is outside the valid cube range.\n");
+		return 0;
+	}
+	*start_k = 0; *stop_k = n_layers - 1;	/* We first assume all layers are needed */
+	while (*start_k < n_layers && range[0] > U->z[*start_k])	/* Find the first layer that is inside the selected range */
+		(*start_k)++;
+	if (*start_k && range[0] < U->z[*start_k]) (*start_k)--;		/* Go back one if start is less than first layer */
+	while (*stop_k && range[1] < U->z[*stop_k])	/* Find the last layer that is inside the output time range */
+		(*stop_k)--;
+	if (*stop_k < (n_layers - 1) && range[1] > U->z[*stop_k]) (*stop_k)++;	/* Go forward one if stop is larger than last layer */
+	n_layers_used = *stop_k - *start_k + 1;	/* Total number of input layers needed */
+	return (n_layers_used);
 }
 
 #ifdef HAVE_GDAL

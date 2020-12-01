@@ -248,7 +248,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* Get CPT */
 				Ctrl->C.active = true;
-				Ctrl->C.file = strdup (opt->arg);
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Set fore/back-ground to match end-colors */
 				Ctrl->D.active = true;
@@ -422,9 +422,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 	}
 
 	if (Ctrl->H.active && GMT->current.setting.run_mode == GMT_CLASSIC) {
-		n_errors++;
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option -H\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -H: Only available in modern mode - ignored in classic mode\n");
+		Ctrl->H.active = false;
 	}
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file == NULL,
+			"Options -C: No CPT argument given\n");
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] < 1, "No grid name(s) specified.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
 					"Options -W and -Z cannot be used simultaneously\n");
@@ -504,9 +506,9 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grd2cpt main code ----------------------------*/
 
-	if (!Ctrl->C.active) {	/* No table specified; set GMT_DEFAULT_CPT_NAME table */
+	if (!Ctrl->C.active) {	/* No table specified; set GMT->current.setting.cpt table */
 		Ctrl->C.active = true;
-		Ctrl->C.file = strdup (GMT_DEFAULT_CPT_NAME);
+		Ctrl->C.file = strdup (GMT->current.setting.cpt);
 	}
 
 	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->T.n_levels > 0) ? Ctrl->T.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */

@@ -1437,10 +1437,10 @@ GMT_LOCAL int psconvert_make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) 
 
 EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
-	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
+	int sys_retval = 0, r, pos_file, pos_ext, error = 0, trans_line;
 	size_t len, line_size = 0U, half_baked_size = 0;
 	uint64_t pos = 0;
-	bool got_BB, got_HRBB, file_has_HRBB, got_end, landscape, landscape_orig, set_background = false;
+	bool got_BB, got_HRBB, file_has_HRBB, got_end, landscape, landscape_orig, set_background = false, old_transparency_code_needed;
 	bool excessK, setup, found_proj = false, isGMT_PS = false, return_image = false, delete = false, file_processing = true;
 	bool transparency = false, look_for_transparency, BeginPageSetup_here = false, has_transparency, add_grestore = false;
 
@@ -1543,6 +1543,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
+	old_transparency_code_needed = (gsVersion.major == 9 && gsVersion.minor < 53);
+
 	if (Ctrl->T.device == GS_DEV_SVG && (gsVersion.major > 9 || (gsVersion.major == 9 && gsVersion.minor >= 16))) {
 		GMT_Report (API, GMT_MSG_ERROR, "Your Ghostscript version (%s) no longer supports the SVG device.\n", GSstring);
 		GMT_Report (API, GMT_MSG_ERROR, "We recommend converting to PDF and then installing the pdf2svg package.\n");
@@ -1580,7 +1582,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
    	   will be the default in a future release. Since it was introduced in 9.21 we start using it
    	   right now and remove this conditional once it becomes the default */
 
-	/* INitial assignment of gs_params. Note: If we detect transparency then we must select the PDF settings since we must convert to PDF first */
+	/* Initial assignment of gs_params. Note: If we detect transparency then we must select the PDF settings since we must convert to PDF first */
 	if (Ctrl->T.device == GS_DEV_PDF)	/* For PDF (and PNG via PDF) we want a bunch of prepress and other settings to maximize quality */
 		gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
 	else	/* For rasters */
@@ -2024,6 +2026,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		look_for_transparency = Ctrl->T.device != GS_DEV_PDF && Ctrl->T.device != -GS_DEV_PDF;
 		has_transparency = transparency = add_grestore = false;
 		set_background = (Ctrl->A.paint || Ctrl->A.outline);
+		trans_line = 0;
 
 		while (psconvert_file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing setpagedevice in the Setup block */
@@ -2034,7 +2037,24 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				}
 				if (setup && strstr(line,"setpagedevice") != NULL)	/* This is a "setpagedevice" command that should be avoided */
 					continue;
-				fprintf (fpo, "%s\n", line);
+				if (old_transparency_code_needed && strstr (line, ".setfillconstantalpha")) {
+					/* Our gs is too old so we must switch the modern transparency command to the older .setopacityalpha command.
+					 * At some point in the future we will abandon support for 9.52 and older and remove this entire if-test */
+					if (trans_line == 0) {	/* First time we warn and deal with line number one in PSL_transp function */
+						GMT_Report (API, GMT_MSG_DEBUG, "Your gs is older than 9.53 so we must replace .setfillconstantalpha with .setopacityalpha.\n");
+						fprintf (fpo, "  /.setopacityalpha where\n");	/* Look for old .setopacityalpha instead */
+					}
+					else
+						fprintf (fpo, "  { pop PSL_BM_arg .setblendmode PSL_F_arg .setopacityalpha }\n");	/* Ignore the setstrokeconstantalpha value */
+					trans_line++;
+				}
+				else if (!old_transparency_code_needed && strstr (line, ".setopacityalpha")) {
+					/* Our PostScript file was made before 6.2 master was updated to deal with new gs settings */
+					GMT_Report (API, GMT_MSG_DEBUG, "Your gs is newer than 9.52 so we must replace .setopacityalpha in old PS files with .setfillconstantalpha.\n");
+					fprintf (fpo, "/.setfillconstantalpha where {pop .setblendmode dup .setstrokeconstantalpha .setfillconstantalpha }{\n");	/* Use the transparency for both fill and stroke */
+				}
+				else
+					fprintf (fpo, "%s\n", line);
 				continue;
 			}
 			else if (!found_proj && !strncmp (&line[2], "PROJ", 4)) {	/* Search for the PROJ tag in the ps file */
@@ -2230,7 +2250,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				/* Place a transparent black rectangle over everything, at level of transparency */
 				char *ptr = PSL_makecolor (GMT->PSL, Ctrl->A.fill.rgb);
 				GMT_Report (API, GMT_MSG_INFORMATION, "Append fading to %s at %d%%.\n", gmt_putrgb (GMT, Ctrl->A.fill.rgb), irint (100.0*Ctrl->A.fade_level));
-				fprintf (fpo, "V clippath %s %g /Normal PSL_transp F N U\n", ptr, Ctrl->A.fade_level);
+				fprintf (fpo, "V clippath %s %g %g /Normal PSL_transp F N U\n", ptr, Ctrl->A.fade_level, Ctrl->A.fade_level);
 				transparency = true;
 			}
 #ifdef HAVE_GDAL

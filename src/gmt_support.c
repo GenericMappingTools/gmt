@@ -7345,7 +7345,7 @@ void gmtlib_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P) {
 
 /*! Adds listing of available GMT cpt choices to a program's usage message */
 int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
-	gmt_message (GMT, "\t-%c Specify a colortable [Default is %s]:\n", option, GMT_DEFAULT_CPT_NAME);
+	gmt_message (GMT, "\t-%c Specify a colortable [Default is %s]:\n", option, GMT->current.setting.cpt);
 	gmt_message (GMT, "\t   [Legend: R = Default z-range, H = Hard Hinge, S = Soft Hinge, C = Colormodel]\n");
 	gmt_message (GMT, "\t   ---------------------------------------------------------------------------------------\n");
 	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) gmt_message (GMT, "\t   %s\n", GMT_CPT_master[k]);
@@ -7360,7 +7360,7 @@ int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 GMT_LOCAL bool gmtsupport_cpt_master_index (struct GMT_CTRL *GMT, char *name) {
 	size_t len;
 	gmt_M_unused(GMT);
-	if (name == NULL) return true;	/* true, because no name means we default to GMT_DEFAULT_CPT_NAME */
+	if (name == NULL) return true;	/* true, because no name means we default to GMT->current.setting.cpt */
 	len = strlen (name);	/* Length of the master table name so we can limit comparison to just those characters */
 	/* Note: THere are near-duplicate names like broc and brocO, but since they are ordered alphabetically our
 	 * search for broc will first compare with broc before broc0 so not an issue. */
@@ -7968,7 +7968,7 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file) {
 	 * If cpt is specified then that is what we will use. If not, then
 	 * we determine if file is a remote data set, and if it is and has a
 	 * default CPT then we use that, else we return NULL which means use
-	 * the GMT default CPT given by GMT_DEFAULT_CPT_NAME */
+	 * the GMT default CPT given by GMT->current.setting.cpt */
 	int k_data;
 	static char *srtm_cpt = "srtm";
 	char *curr_cpt = NULL;
@@ -7992,7 +7992,7 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file) {
 bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	/* Return true if cpt is the name of a GMT CPT master table and not a local file */
 	char *c = NULL, *f = NULL;
-	if (cpt == NULL) return true;	/* No cpt given means use GMT_DEFAULT_CPT_NAME master */
+	if (cpt == NULL) return true;	/* No cpt given means use GMT->current.setting.cpt master */
 	if (gmt_M_file_is_memory (cpt)) return false;	/* A CPT was given via memory location so cannot be a master reference */
 	if ((f = gmt_strrstr (cpt, GMT_CPT_EXTENSION)))	/* Only examine modifiers from there onwards */
 		c = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
@@ -8152,7 +8152,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			return (P);
 		}
 
-		master = (file && file[0]) ? file : GMT_DEFAULT_CPT_NAME;	/* Set master CPT prefix */
+		master = (file && file[0]) ? file : GMT->current.setting.cpt;	/* Set master CPT prefix */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|GMT_CPT_CONTINUOUS, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
 		/* Stretch to fit the data range */
@@ -12641,6 +12641,28 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 	}
 }
 
+int gmt_cube_BC_set (struct GMT_CTRL *GMT, struct GMT_CUBE *U, unsigned int direction) {
+	int error = GMT_NOERROR;
+	unsigned int k;
+	struct GMT_GRID *G = gmt_create_grid (GMT);	/* Create a dummy temporary grid structure */
+
+	gmt_copy_gridheader (GMT, G->header, U->header);
+
+	for (k = 0; k < U->header->n_bands; k++) {	/* Do each layer BC separately */
+		G->data = &(U->data[k*U->header->size]);	/* Start of next 2-D layer */
+		if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G, direction), "Cube memory")) {	/* Set boundary conditions */
+			error = GMT_GRID_BC_ERROR;
+			goto cube_clean_up;
+		}
+	}
+
+cube_clean_up:
+	G->data = NULL;
+	gmt_free_grid (GMT, &G, true);
+
+	return (GMT_NOERROR);
+}
+
 /*! . */
 bool gmt_y_out_of_bounds (struct GMT_CTRL *GMT, int *j, struct GMT_GRID_HEADER *h, bool *wrap_180) {
 	/* Adjusts the j (y-index) value if we are dealing with some sort of periodic boundary
@@ -16639,10 +16661,13 @@ double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, 
 	return (gmtsupport_unique_array (GMT, array, n));
 }
 
-GMT_LOCAL uint64_t gmtsupport_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
+uint64_t gmtlib_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
 	/* Just makes an equidistant array given vetted input parameters */
-	uint64_t k, n = lrint ((max - min) / fabs (inc)) + 1;
-	double *val = gmt_M_memory (GMT, NULL, n, double);
+	uint64_t k, n;
+	double *val = NULL;
+
+	n = (doubleAlmostEqualZero (min, max) || gmt_M_is_zero (inc)) ? 1 : lrint ((max - min) / fabs (inc)) + 1;
+	val = gmt_M_memory (GMT, NULL, n, double);
 	if (inc < 0.0) {	/* Reverse direction max:inc:min */
 		for (k = 0; k < n; k++) val[k] = max + k * inc;
 		val[n-1] = min;	/* To avoid round-off all the way to the end */
@@ -16653,6 +16678,13 @@ GMT_LOCAL uint64_t gmtsupport_make_equidistant_array (struct GMT_CTRL *GMT, doub
 	}
 	*array = val;
 	return (n);
+}
+
+double * gmt_duplicate_array (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	/* Simply duplicate the double array */
+	double *x = gmt_M_memory (GMT, NULL, n, double);
+	gmt_M_memcpy (x, array, n, double);
+	return (x);
 }
 
 unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument, struct GMT_ARRAY *T, unsigned int flags, unsigned int tcol) {
@@ -16747,9 +16779,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	if (strchr (argument, ',')) {
 		T->list = strdup (argument);
 		if (strchr (argument, 'T')) {	/* Gave list of absolute times */
-			gmt_set_column (GMT, GMT_IN,  tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
+			gmt_set_column_type (GMT, GMT_IN,  tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
 			/* Set output column type as time unless -fo has been set */
-			if (!GMT->common.f.active[GMT_OUT]) gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
+			if (!GMT->common.f.active[GMT_OUT]) gmt_set_column_type (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
 			T->temporal = true;
 		}
 		return (GMT_NOERROR);
@@ -16846,9 +16878,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		T->temporal = true;	/* May already be set but who cares */
 	}
 	if (T->temporal) {	/* Must set TIME_UNIT and update time system scalings */
-		gmt_set_column (GMT, GMT_IN, tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
+		gmt_set_column_type (GMT, GMT_IN, tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
 		/* Set output column type as time unless -fo has been set */
-		if (!GMT->common.f.active[GMT_OUT]) gmt_set_column (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
+		if (!GMT->common.f.active[GMT_OUT]) gmt_set_column_type (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
 		if (has_inc) {	/* Gave a time increment */
 			if (strchr (GMT_TIME_UNITS, T->unit))	/* Gave a valid time unit */
 				txt[ns][len] = '\0';	/* Chop off time unit since we are done with it */
@@ -16967,15 +16999,16 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL bool gmtsupport_var_inc (double *x, uint64_t n) {
+bool gmtlib_var_inc (double *x, uint64_t n) {
 	/* Determine if spacing in the array is variable or constant */
 	bool fixed = true;	/* Start with assumption of fixed increments */
 	uint64_t k;
-	double fix_inc;
+	double fix_inc, dx;
 	if (n <= 2) return false;	/* Strange, but a single point or pair do not imply variable increment for sure */
 	fix_inc = x[1] - x[0];
 	for (k = 2; fixed && k < n; k++) {
-		if (!doubleAlmostEqual (fabs (x[k] - x[k-1]), fix_inc))
+		dx = x[k] - x[k-1];
+		if (fabs ((fix_inc - dx) / fix_inc) > GMT_CONV8_LIMIT)
 			fixed = false;	/* Not equidistant */
 	}
 	return (!fixed);
@@ -17018,14 +17051,14 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		GMT_Destroy_Data (GMT->parent, &D);
 		if (T->unique)	/* Must sort and eliminate duplicates */
 			T->array = gmtsupport_unique_array (GMT, T->array, &(T->n));
-		T->var_inc = gmtsupport_var_inc (T->array, T->n);
+		T->var_inc = gmtlib_var_inc (T->array, T->n);
 		return GMT_NOERROR;
 	}
 
 	if (T->list) {	/* Got a list, parse and make array */
 		if ((T->array = gmt_list_to_array (GMT, T->list, gmt_M_type (GMT, GMT_IN, T->col), T->unique, &(T->n))) == NULL)
 			return GMT_PARSE_ERROR;
-		T->var_inc = gmtsupport_var_inc (T->array, T->n);
+		T->var_inc = gmtlib_var_inc (T->array, T->n);
 		T->min = T->array[0];	T->max = T->array[T->n-1];
 		if (T->n > 1) {	/* Got at least min/max */
 			if (!T->var_inc) {	/* Just did an alternate way to set an equidistant array */
@@ -17107,7 +17140,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 			default:	/* OK as is */
 				break;
 		}
-		T->n = gmtsupport_make_equidistant_array (GMT, t0, t1, inc, &(T->array));
+		T->n = gmtlib_make_equidistant_array (GMT, t0, t1, inc, &(T->array));
 	}
 	if (T->vartime && GMT->current.setting.time_system.unit != unit) {
 		uint64_t k;
@@ -17121,7 +17154,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Your min/max/inc arguments resulted in no items\n", option);
 		return (GMT_PARSE_ERROR);
 	}
-	T->var_inc = gmtsupport_var_inc (T->array, T->n);
+	T->var_inc = gmtlib_var_inc (T->array, T->n);
 	return (GMT_NOERROR);
 }
 
@@ -17234,7 +17267,7 @@ struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, cha
 	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_CONTOUR_INFO * cont = NULL;
 
-	gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Since x is likely longitude we must avoid 360 wrapping here */
+	gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Since x is likely longitude we must avoid 360 wrapping here */
 
 	if ((C = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, file, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to read contour information file %s - aborting\n", file);
@@ -17291,7 +17324,7 @@ struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, cha
 			if (got_angle) *type = 2;	/* Must set this directly if angles are provided */
 		}
 	}
-	gmt_set_column (GMT, GMT_IN, GMT_X, save_coltype);
+	gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 
 	/* Return information structure array back to the calling environment */
 

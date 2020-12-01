@@ -1,7 +1,9 @@
 %-----------------------------------------------------------------------------
-%- NOTE: No longer used as replaced by static string in PSL_strings.h.
-%- 	 We keep the file in the repository as it may be simpler to see and edit
-%-	 the logic in this file than in the static string.
+%-  PS dictionary written to header to all GMT PostScript plots
+%+  NOTE: No longer used directly as we build a static string in PSL_strings.h.
+%+    However, this file is the original source as it may be simpler to see and
+%+    edit the logic in this file than in the formatted static string.
+%+    Also, if PSL_transp is changed it may require edits to psconvert.c
 %-----------------------------------------------------------------------------
 % Begin pslib header
 250 dict begin
@@ -134,8 +136,10 @@
   countdictstack PSL_dict_count sub {end} repeat	% Clean up dict stack
   PSL_eps_state restore					% Restore saved state
 }!
-/PSL_transp {						% Set transparency
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{		% Using ghostscript
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}	% Or Adobe
-  {pop pop} ifelse} ifelse				% Or skip if neither are supported
+/PSL_transp {             % Changes the transparency settings
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }  % Ghostscript
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if } % Or Adobe
+  ifelse
 }!

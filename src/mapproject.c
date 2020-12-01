@@ -1034,8 +1034,8 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (Ctrl->L.unit == 'X') gmt_set_cartesian (GMT, GMT_IN);	/* Cartesian */
 
 	if (Ctrl->G.mode && proj_type != GMT_GEO2CART) {	/* Ensure we use the selected output coordinates */
-		gmt_set_column (GMT, GMT_OUT, GMT_X, save[GMT_X]);
-		gmt_set_column (GMT, GMT_OUT, GMT_Y, save[GMT_Y]);
+		gmt_set_column_type (GMT, GMT_OUT, GMT_X, save[GMT_X]);
+		gmt_set_column_type (GMT, GMT_OUT, GMT_Y, save[GMT_Y]);
 	}
 	if (datum_conv_only)	/* Both input and output is geographic */
 		gmt_set_geographic (GMT, GMT_OUT);
@@ -1178,7 +1178,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 	else if (datum_conv_only || Ctrl->N.active) {	/* Both in and out are geographic */
 		gmt_set_geographic (GMT, GMT_IN);
 		gmt_set_geographic (GMT, GMT_OUT);
-		gmt_set_column (GMT, GMT_IO, GMT_Z, GMT_IS_FLOAT);
+		gmt_set_column_type (GMT, GMT_IO, GMT_Z, GMT_IS_FLOAT);
 	}
 	else if (!gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->I.active) {	/* Must swap what the in and out types are for non-geographic transformations (like absolute time) */
 		gmt_M_uint_swap (GMT->current.io.col_type[GMT_IN][GMT_X], GMT->current.io.col_type[GMT_OUT][GMT_X]);
@@ -1538,7 +1538,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 					if (geodetic_calc) {	/* Update the output column types to the extra items we added */
 						for (col = 0, k = n_fields; col < MP_COL_N; col++) {
 							if (Ctrl->used[col]) {
-								gmt_set_column (GMT, GMT_OUT, (unsigned int)k, ecol_type[col]);
+								gmt_set_column_type (GMT, GMT_OUT, (unsigned int)k, ecol_type[col]);
 								k++;
 							}
 						}

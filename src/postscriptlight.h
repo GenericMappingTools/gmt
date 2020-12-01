@@ -294,7 +294,8 @@ struct PSL_CTRL {
 		double linewidth;		/* Current pen thickness			*/
 		double rgb[3][4];		/* Current stroke, fill, and fs fill rgb	*/
 		double offset;			/* Current setdash offset			*/
-		double transparency;		/* Current transparency				*/
+		double transparency;		/* Current transparency	[deprecated]			*/
+		double transparencies[2];		/* Current transparencies				*/
 		double fontsize;		/* Current font size				*/
 		double subsupsize;		/* Fractional size of super/sub-scripts		*/
 		double scapssize;		/* Fractional size of small caps		*/
@@ -437,7 +438,7 @@ EXTERN_MSC int PSL_setorigin (struct PSL_CTRL *PSL, double x, double y, double a
 EXTERN_MSC int PSL_setparagraph (struct PSL_CTRL *PSL, double line_space, double par_width, int par_just);
 EXTERN_MSC int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int image_dpi, double f_rgb[], double b_rgb[]);
 EXTERN_MSC int PSL_settextmode (struct PSL_CTRL *PSL, int mode);
-EXTERN_MSC int PSL_settransparency (struct PSL_CTRL *PSL, double transparency);
+EXTERN_MSC int PSL_settransparencies (struct PSL_CTRL *PSL, double *transparencies);
 EXTERN_MSC int PSL_settransparencymode (struct PSL_CTRL *PSL, const char *mode);
 EXTERN_MSC int PSL_definteger (struct PSL_CTRL *PSL, const char *param, int value);
 EXTERN_MSC int PSL_defpen (struct PSL_CTRL *PSL, const char *param, double width, char *style, double offset, double rgb[]);
@@ -469,6 +470,9 @@ EXTERN_MSC int PSL_fclose (struct PSL_CTRL *C);
 /* Backwards compatible vector symbol from GMT 4 days */
 EXTERN_MSC void psl_vector_v4 (struct PSL_CTRL *PSL, double x, double y, double param[], double rgb[], int outline);
 #endif
+
+/* Deprecated */
+EXTERN_MSC int PSL_settransparency (struct PSL_CTRL *PSL, double transparency);
 
 /*! Macro for free that explicitly checks for NULL pointer and sets freed pointer to NULL */
 #define PSL_free(ptr) (free((void *)(ptr)),(ptr)=NULL)
