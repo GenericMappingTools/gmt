@@ -4,8 +4,9 @@
 #
 # Environmental variables that can control the installation:
 #
-# - BUILD_DOCS: Build GMT documentations [false]
-# - RUN_TESTS:	Run GMT tests            [false]
+# - BUILD_DOCS: Build GMT documentation                 [false]
+# - RUN_TESTS: Run GMT tests                            [false]
+# - EXCLUDE_OPTIONAL: Exclude optional dependencies     [false]
 #
 set -x -e
 
@@ -17,12 +18,13 @@ EXCLUDE_OPTIONAL=${EXCLUDE_OPTIONAL:-false}
 # required packages for compiling GMT
 packages="build-essential cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev \
           ghostscript curl git"
-#
+
+# optional packages
 if [ "$EXCLUDE_OPTIONAL" = "false" ]; then
 	packages+=" libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev"
 fi
 
-# packages for building documentations
+# packages for building documentation
 if [ "$BUILD_DOCS" = "true" ]; then
     packages+=" python3-pip python3-setuptools python3-wheel graphicsmagick ffmpeg"
 fi
@@ -40,3 +42,5 @@ if [ "$BUILD_DOCS" = "true" ]; then
     sudo snap install pngquant
     pip3 install --user sphinx
 fi
+
+set +x +e

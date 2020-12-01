@@ -4,7 +4,7 @@
 #
 # Environmental variables that can control the installation:
 #
-# - BUILD_DOCS: Build GMT documentations [false]
+# - BUILD_DOCS: Build GMT documentation  [false]
 # - RUN_TESTS:  Run GMT tests            [false]
 # - PACKAGE:    Create GMT packages      [false]
 #
@@ -33,11 +33,6 @@ if [ "$PACKAGE" = "true" ]; then
 	packages+=" gnu-tar"
 fi
 
-# Remove unused taps and packages (pre-installed in Azure Pipelines)
-brew untap homebrew/cask-versions homebrew/cask homebrew/bundle \
-           homebrew/services mongodb/brew aws/tap adoptopenjdk/openjdk
-brew uninstall php
-
 # Install GMT dependencies
 #brew update
 brew install ${packages}
@@ -45,3 +40,5 @@ brew install ${packages}
 if [ "$BUILD_DOCS" = "true" ]; then
 	pip3 install --user sphinx
 fi
+
+set +x +e
