@@ -16865,8 +16865,28 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 		return NULL;
 	}
 
+	/* Set up hash table for GMT_keywords (used in gmt_conf) */
+
+	if (gmt_hash_init (GMT, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS)) {	/* Initialize hash table for GMT defaults */
+		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
+		return NULL;
+	}
+
+	/* Set up hash table for colornames (used to convert <colorname> to <r/g/b>) */
+
+	if (gmt_hash_init (GMT, GMT->session.rgb_hashnode, gmt_M_color_name, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES)) {
+		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
+		return NULL;
+	}
+
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmt_manage_workflow\n");
-	mode = (API->external && API->runmode) ? GMT_BEGIN_WORKFLOW : GMT_USE_WORKFLOW;	/* IF external then no gmt.c driver and only one Create_Session so must init a new session here, if requested */
+	if (API->runmode && !API->external && !API->cmdline) {	/* Special case */
+		/* If external C call then there is no gmt.c driver and only one GMT_Create_Session, so we must init a new session here, if in modern mode */
+		mode = GMT_BEGIN_WORKFLOW;
+		GMT->current.setting.run_mode = GMT_MODERN;	/* Set here so we get the benefits of a "gmt module" initialization for PSL */
+	}
+	else	/* Regular use */
+		mode = GMT_USE_WORKFLOW;
 	if (gmt_manage_workflow (API, mode, NULL)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Could not initialize the GMT workflow - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
@@ -16891,18 +16911,6 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	GMT_Report (API, GMT_MSG_DEBUG, "Exit : gmtlib_io_init\n");
 
 	gmtinit_init_unit_conversion (GMT);	/* Set conversion factors from various units to meters */
-
-	if (gmt_hash_init (GMT, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS)) {	/* Initialize hash table for GMT defaults */
-		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
-		return NULL;
-	}
-
-	/* Set up hash table for colornames (used to convert <colorname> to <r/g/b>) */
-
-	if (gmt_hash_init (GMT, GMT->session.rgb_hashnode, gmt_M_color_name, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES)) {
-		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
-		return NULL;
-	}
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmt_reload_settings\n");
 	gmt_reload_settings (GMT);	/* Initialize the standard GMT system default settings and overload with user's settings */

@@ -2,14 +2,15 @@
 /* Used to examine https://github.com/GenericMappingTools/gmt/issues/4518
  * Give an graphic extension to replicate that, otherwise we make a PS that can be
  * compared with the original PS so the test can run as normal.
+ * Run testapi_map jpg to show the result is properly cropped.
  */
 int main (int argc, char *argv[]) {
 	void *API;
 
 	/* Initialize the GMT session */
 	if ((API = GMT_Create_Session ("GMT_plot", 2, GMT_SESSION_RUNMODE | 458752, NULL)) == NULL)
-   	return EXIT_FAILURE;
-	if (argc > 1) {	/* Gave a particular graphics format */
+		return EXIT_FAILURE;
+	if (argc > 1) {	/* Gave a particular graphics format (we hope - no checking here) */
 		char string[64] = {""};
 		sprintf (string, "apimap %s", argv[1]);
 		GMT_Call_Module (API, "begin", GMT_MODULE_CMD, string);
