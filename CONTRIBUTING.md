@@ -149,7 +149,7 @@ Some things that will increase the chance that your pull request is accepted qui
   non-obvious things.
 * Include an example of new features in the gallery or tutorials.
 
-Pull requests will automatically have tests run by Azure Pipelines.
+Pull requests will automatically have tests run by GitHub Actions.
 Github will show the status of these checks on the pull request.
 Try to get them all passing (green).
 If you have any trouble, leave a comment in the PR or
