@@ -16780,7 +16780,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	char *path1 = NULL, *path2 = NULL, *paths[2] = {NULL, NULL};
 	int  local_count = 0;
 #endif
-
+	unsigned int mode;
 #ifdef __FreeBSD__
 #ifdef _i386_
 	/* allow divide by zero -- Inf */
@@ -16866,7 +16866,8 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	}
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmt_manage_workflow\n");
-	if (gmt_manage_workflow (API, GMT_USE_WORKFLOW, NULL)) {
+	mode = (API->external && API->runmode) ? GMT_BEGIN_WORKFLOW : GMT_USE_WORKFLOW;	/* IF external then no gmt.c driver and only one Create_Session so must init a new session here, if requested */
+	if (gmt_manage_workflow (API, mode, NULL)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Could not initialize the GMT workflow - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;

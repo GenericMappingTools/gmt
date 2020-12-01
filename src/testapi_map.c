@@ -7,7 +7,7 @@ int main (int argc, char *argv[]) {
 	void *API;
 
 	/* Initialize the GMT session */
-	if ((API = GMT_Create_Session ("GMT_plot", 2, GMT_SESSION_RUNMODE, NULL)) == NULL)
+	if ((API = GMT_Create_Session ("GMT_plot", 2, GMT_SESSION_RUNMODE | 458752, NULL)) == NULL)
    	return EXIT_FAILURE;
 	if (argc > 1) {	/* Gave a particular graphics format */
 		char string[64] = {""};
@@ -16,7 +16,7 @@ int main (int argc, char *argv[]) {
 	}
 	else	/* Default to PostScript */
 		GMT_Call_Module (API, "begin", GMT_MODULE_CMD, "apimap ps");
-	GMT_Call_Module (API, "basemap", GMT_MODULE_CMD, "-BWESN -Bxa30mg30m -Bya20mg20m -JM7.27/42.27/16.25c -R5.5/41.425/9.0/43.1r");
+	GMT_Call_Module (API, "basemap", GMT_MODULE_CMD, "-BWESN -Bxa30mg30m -Bya20mg20m -JM7.27/42.27/15c -R5.5/41.425/9.0/43.1r");
 	if (argc > 1)
 		GMT_Call_Module (API, "end", GMT_MODULE_CMD, "show");
 	else
