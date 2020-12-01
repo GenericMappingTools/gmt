@@ -18,7 +18,7 @@ Synopsis
 [ |-F|\ *flags* ]
 [ |-N|\ **1**\|\ **2**\|\ **r**\|\ **w** ]
 [ |-S|\ [**r**] ]
-[ |-T|\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list* ]
+[ |-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
 [ |-Z|\ [±]\ *limit* ]
@@ -53,15 +53,13 @@ the read phase by using the **-i** option.
 Required Arguments
 ------------------
 
-None
-
-Optional Arguments
-------------------
-
 .. |Add_intables| replace:: The first two columns are expected to contain the required *x* and *y* data.  Depending on
    your **-W** and **-E** settings we may expect an additional 1-3 columns with error estimates
    of one of both of the data coordinates, and even their correlation (see **-W** for details).
 .. include:: explain_intables.rst_
+
+Optional Arguments
+------------------
 
 .. _-A:
 
@@ -138,7 +136,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
     Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If only
     **-T**\ *inc* is given instead we will reset *min* and *max* to the extreme *x*-values for each segment.
     To skip the model evaluation entirely, simply provide **-T**\ 0.

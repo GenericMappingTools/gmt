@@ -677,7 +677,8 @@ GMT_LOCAL int pstext_validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEX
 		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
 		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
 		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_z)) nscan++;	/* Returns zcol and update pos */
-		if (GMT->common.t.variable && gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_t)) nscan++;	/* Returns tcol and update pos */
+		if (GMT->common.t.variable && gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_t)) nscan++;	/* Returns first tcol and update pos */
+		if (GMT->common.t.n_transparencies == 2 && gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_t)) nscan++;	/* Returns second tcol and update pos */
 		strcpy (buffer, &record[pos]);
 		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
 		if ((gmt_scanf (GMT, txt_z, gmt_M_type (GMT, GMT_IN, GMT_Z), &GMT->current.io.curr_rec[GMT_Z]) == GMT_IS_NAN)) {
@@ -698,7 +699,8 @@ GMT_LOCAL int pstext_validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEX
 	else {
 		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
 		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
-		if (GMT->common.t.variable && gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_t)) nscan++;	/* Returns tcol and update pos */
+		if (GMT->common.t.variable && gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_t)) nscan++;	/* Returns first tcol and update pos */
+		if (GMT->common.t.n_transparencies == 2 && gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_t)) nscan++;	/* Returns first tcol and update pos */
 		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 		if ((gmt_scanf (GMT, txt_t, GMT_IS_FLOAT, &GMT->current.io.curr_rec[2]) == GMT_IS_NAN)) {
@@ -753,8 +755,8 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 
 	bool master_record = false, skip_text_records = false, old_is_world, clip_set = false, no_in_txt, check_if_outside;
 
-	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col, rec_mode, a_col = 0, tcol;
-	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols, z_col = GMT_Z;
+	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col, rec_mode, a_col = 0, tcol_f = 0, tcol_s = 0;
+	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols, z_col = GMT_Z, n_skipped = 0;
 
 	size_t n_alloc = 0;
 
@@ -797,24 +799,27 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input text table data\n");
 	pstext_load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
-	tcol = 2 + Ctrl->Z.active;
+	tcol_f = 2 + Ctrl->Z.active;	tcol_s = tcol_f + 1;
 
-	n_expected_cols = 2 + Ctrl->Z.active + Ctrl->F.nread + GMT->common.t.variable;	/* Normal number of columns to read, plus any text. This includes x,y */
+	n_expected_cols = 2 + Ctrl->Z.active + Ctrl->F.nread + GMT->common.t.n_transparencies;	/* Normal number of columns to read, plus any text. This includes x,y */
 	if (Ctrl->M.active) n_expected_cols += 3;
 	no_in_txt = (Ctrl->F.get_text > 1);	/* No text in the input record */
 	add = !(T.x_offset == 0.0 && T.y_offset == 0.0);
 	if (add && Ctrl->D.justify) T.boxflag |= 64;
 
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->G.mode) GMT->current.ps.nclip = (Ctrl->N.active) ? +1 : +2;	/* Signal that this program initiates clipping that will outlive this process */
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	if (Ctrl->G.mode)	/* Delayed clipping so plot -B first */
+		gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
+	else
+		gmt_set_basemap_orders (GMT, Ctrl->N.active ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
-
-	if (Ctrl->G.mode) gmt_map_basemap (GMT);	/* Must lay down basemap before text clipping is activated, otherwise we do it at the end */
+	gmt_map_basemap (GMT);
 
 	if (!(Ctrl->N.active || Ctrl->Z.active)) {
 		gmt_BB_clip_on (GMT, GMT->session.no_rgb, 3);
@@ -895,7 +900,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 
 		if (clip_set)
 			gmt_map_clip_off (GMT);
-		if (!Ctrl->G.mode) gmt_map_basemap (GMT);	/* Normally we do basemap at the end, except when clipping (-Gc|C) interferes */
+		gmt_map_basemap (GMT);
 		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
 		gmt_M_str_free (use_text);
@@ -938,8 +943,18 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			geometry = (ncol) ? GMT_IS_NONE : GMT_IS_TEXT;
 		}
 		if (a_col) a_col = ncol - 1;	/* Now refers to numerical column with the angle */
-		if (GMT->common.t.variable) ncol++;	/* Will have transparency as well */
-		tcol = ncol - 1;	/* If there is transparency then this is the column to use */
+		if (GMT->common.t.variable) {
+			if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {
+				ncol++;	/* Read fill transparencies from data file */
+				tcol_f = ncol - 1;	/* If there is fill transparency then this is the column to use */
+				gmt_set_column_type (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
+			}
+			if (GMT->common.t.mode & GMT_SET_PEN_TRANSP) {
+				ncol++;	/* Read stroke transparencies from data file */
+				tcol_s = ncol - 1;
+				gmt_set_column_type (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
+			}
+		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Expects a %s record with %d leading numerical columns, followed by %d text parameters and %s trailing text\n",
 			rtype[rec_mode], ncol, Ctrl->F.nread - a_col, cmode_type[code]);
 		GMT_Set_Columns (API, GMT_IN, ncol, cmode);
@@ -1115,7 +1130,10 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_ERROR, "Text record line %d is NULL! Skipped but this is trouble)\n", n_read);
 					continue;
 				}
-				if (gmt_is_a_blank_line (line)) continue;	/* Skip blank lines or # comments */
+				if (gmt_is_a_blank_line (line)) {
+					n_skipped++;
+					continue;	/* Skip blank lines or # comments */
+				}
 				strncpy (cp_line, line, GMT_BUFSIZ-1);	/* Make a copy because in_line may be pointer to a strdup-ed line that we cannot enlarge */
 				line = cp_line;
 			}
@@ -1250,8 +1268,38 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			}
 			n_paragraphs++;
 
-			if (GMT->common.t.variable)	/* Update the transparency for current symbol (or -t was given) */
-				PSL_settransparency (PSL, 0.01 * in[tcol]);
+			if (GMT->common.t.variable)	{	/* Update the transparencies for current string (if -t was given) */
+				double transp[2] = {0.0, 0.0};	/* None selected */
+				if (GMT->common.t.n_transparencies == 2) {	/* Requested two separate values to be read from file */
+					transp[GMT_FILL_TRANSP] = 0.01 * in[tcol_f];
+					transp[GMT_PEN_TRANSP]  = 0.01 * in[tcol_s];
+				}
+				else if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {	/* Gave fill transparency */
+					transp[GMT_FILL_TRANSP] = 0.01 * in[tcol_f];
+					if (GMT->common.t.n_transparencies == 0) transp[GMT_PEN_TRANSP] = transp[GMT_FILL_TRANSP];	/* Implied to be used for stroke also */
+				}
+				else {	/* Gave stroke transparency */
+					transp[GMT_PEN_TRANSP] = 0.01 * in[tcol_s];
+					if (GMT->common.t.n_transparencies == 0) transp[GMT_FILL_TRANSP] = transp[GMT_PEN_TRANSP];	/* Implied to be used for fill also */
+				}
+				if (gmt_M_is_dnan (transp[GMT_FILL_TRANSP])) {
+					GMT_Report (API, GMT_MSG_WARNING, "Record %d had bad fill transparency (NaN) - set to 0.0\n", n_read);
+					transp[GMT_FILL_TRANSP] = 0.0;
+				}
+				else if (transp[GMT_FILL_TRANSP] < 0.0 || transp[GMT_FILL_TRANSP] > 100.0) {
+					GMT_Report (API, GMT_MSG_WARNING, "Record %d had fill transparency out of range (%g) - set to 0.0\n", n_read, transp[GMT_FILL_TRANSP]);
+					transp[GMT_FILL_TRANSP] = 0.0;
+				}
+				if (gmt_M_is_dnan (transp[GMT_PEN_TRANSP])) {
+					GMT_Report (API, GMT_MSG_WARNING, "Record %d had bad stroke transparency (NaN) - set to 0.0\n", n_read);
+					transp[GMT_PEN_TRANSP] = 0.0;
+				}
+				else if (transp[GMT_PEN_TRANSP] < 0.0 || transp[GMT_PEN_TRANSP] > 100.0) {
+					GMT_Report (API, GMT_MSG_WARNING, "Record %d had stroke transparency out of range (%g) - set to 0.0\n", n_read, transp[GMT_PEN_TRANSP]);
+					transp[GMT_PEN_TRANSP] = 0.0;
+				}
+				PSL_settransparencies (PSL, transp);
+			}
 			PSL_setfont (PSL, T.font.id);
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, in[GMT_Z]);
 			if (T.boxflag & 32) {	/* Draw line from original point to shifted location */
@@ -1303,10 +1351,14 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	if (n_skipped && n_read == 0)
+		GMT_Report (API, GMT_MSG_WARNING, "Skipped %u records as blank - please check input data.\n", n_skipped);
 	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 
-	if (GMT->common.t.variable)	/* Reset the transparency */
-		PSL_settransparency (PSL, 0.0);
+	if (GMT->common.t.variable) {	/* Reset the transparencies */
+		double transp[2] = {0.0, 0.0};	/* None selected */
+		PSL_settransparencies (PSL, transp);
+	}
 
 	if (Ctrl->M.active) {
 		if (n_processed) {	/* Must output the last paragraph */
@@ -1363,7 +1415,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	GMT->current.map.is_world = old_is_world;
 	GMT->current.io.scan_separators = GMT_TOKEN_SEPARATORS;		/* Reset */
 
-	if (!Ctrl->G.mode) gmt_map_basemap (GMT);	/* Normally we do basemap at the end, except when clipping (-Gc|C) interferes */
+	gmt_map_basemap (GMT);
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 

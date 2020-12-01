@@ -6,15 +6,17 @@
 #
 # - BUILD_DOCS: Build GMT documentations [false]
 # - RUN_TESTS:  Run GMT tests            [false]
+# - PACKAGE:    Create GMT packages      [false]
 #
 set -x -e
 
 # set defaults to false
 BUILD_DOCS="${BUILD_DOCS:-false}"
 RUN_TESTS="${RUN_TESTS:-false}"
+PACKAGE="${PACKAGE:-false}"
 
 # packages for compiling GMT
-# cmake is pre-installed on GitHub Actions
+# cmake is pre-installed on Azure Pipelines
 packages="ninja curl pcre2 netcdf gdal fftw ghostscript"
 
 # packages for build documentations
@@ -31,8 +33,13 @@ if [ "$PACKAGE" = "true" ]; then
 	packages+=" gnu-tar"
 fi
 
-# Install packages
-brew update
+# Remove unused taps and packages (pre-installed in Azure Pipelines)
+brew untap homebrew/cask-versions homebrew/cask homebrew/bundle \
+           homebrew/services mongodb/brew aws/tap adoptopenjdk/openjdk
+brew uninstall php
+
+# Install GMT dependencies
+#brew update
 brew install ${packages}
 
 if [ "$BUILD_DOCS" = "true" ]; then

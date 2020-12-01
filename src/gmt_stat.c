@@ -2750,13 +2750,14 @@ GMT_LOCAL void gmtstat_get_geo_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *
 	 * P.Wessel, July 2016.
 	 */
 	uint64_t node;
-	unsigned int row, col, j, first_row = 0, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1;
+	unsigned int row, col, j, first_row = 0, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1, ltype;
 	double lat, area, f, row_weight, col_weight = 1.0, R2 = pow (0.001 * GMT->current.proj.mean_radius, 2.0);	/* squared mean radius in km */
 	char *aux[6] = {"geodetic", "authalic", "conformal", "meridional", "geocentric", "parametric"};
 	char *rad[5] = {"mean (R_1)", "authalic (R_2)", "volumetric (R_3)", "meridional", "quadratic"};
 
+	ltype = (GMT->current.setting.proj_aux_latitude == GMT_LATSWAP_NONE) ? 0 : 1+GMT->current.setting.proj_aux_latitude/2;
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Compute spherical gridnode areas using %s radius [R = %.12g km] and %s latitudes\n",
-		rad[GMT->current.setting.proj_mean_radius], GMT->current.proj.mean_radius, aux[1+GMT->current.setting.proj_aux_latitude/2]);
+		rad[GMT->current.setting.proj_mean_radius], GMT->current.proj.mean_radius, aux[ltype]);
 	/* May need special treatment of pole points */
 	f = (G->header->registration == GMT_GRID_NODE_REG) ? 0.5 : 1.0;	/* Half pizza-slice for gridline regs with node at pole, full slice for grids */
 	area = R2 * (G->header->inc[GMT_X] * D2R);
@@ -2805,7 +2806,7 @@ GMT_LOCAL void gmtstat_get_cart_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID 
 }
 
 void gmt_get_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
-	/* Calculate geographic spherical in km^2 or plain Cartesian area in suer_unit^2 and place in grid G. */
+	/* Calculate geographic spherical in km^2 or plain Cartesian area in user_unit^2 and place in grid G. */
 	if (gmt_M_is_geographic (GMT, GMT_IN))
 		gmtstat_get_geo_cellarea (GMT, G);
 	else

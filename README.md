@@ -38,7 +38,7 @@ hobbyists.
 
 ## Installation
 
-GMT has been installed successfully under UNIX/Linux/macOS on workstations.  It
+GMT has been installed successfully under UNIX/Linux/macOS/FreeBSD on workstations. It
 also installs under Windows and in UNIX emulators such as Cygwin or on virtual
 machines.  We anticipate few problems if you are installing the package on
 other platforms.
@@ -91,9 +91,10 @@ version 3 or any later version. See [LICENSE.TXT](LICENSE.TXT) for full details.
 
 ## Acknowledgment
 
-GMT relies on several other Open Source software libraries and programs for its
+GMT relies on several other Open Source software libraries, programs and data for its
 operation.  We gratefully acknowledge the importance to GMT of these products.
 GMT may be linked with these libraries (* means optional):
+
 [Network Common Data Form (netCDF)](https://www.unidata.ucar.edu/software/netcdf/),
 [Geospatial Data Abstraction Library (GDAL*)](https://gdal.org),
 [Perl Compatible Regular Expressions (PCRE*)](https://www.pcre.org),
@@ -106,3 +107,12 @@ GDAL (ogr2ogr, gdal_translate), [Ghostscript](https://www.ghostscript.com),
 [FFmpeg](https://www.ffmpeg.org),
 [xdg-open](https://www.freedesktop.org/wiki/Software/xdg-utils/), and
 [GraphicsMagick](http://www.graphicsmagick.org).
+
+GMT uses (or can access) data derived from these sources:
+
+- [Scientific Color Maps (CPT)](http://www.fabiocrameri.ch/visualisation.php)
+- [Earth 15" DEM](http://dx.doi.org/10.1029/2019EA000658)
+- [Earth 1" SRTM DEM](https://lpdaac.usgs.gov/products/srtmgl3v003)
+- [Earth 1' crustal age](http://dx.doi.org/10.1029/2020GC009214)
+- [Earth 30" Blue Marble images](https://visibleearth.nasa.gov/images/57752/blue-marble-land-surface-shallow-water-and-shaded-topography)
+- [Earth 30" Black Marble images](https://earthobservatory.nasa.gov/features/NightLights/page3.php)

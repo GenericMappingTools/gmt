@@ -19,6 +19,9 @@ respectively.
 Required Arguments
 ------------------
 
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
+
 .. _-J:
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
@@ -36,9 +39,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
 
 .. _-A:
 
@@ -195,8 +195,7 @@ Optional Arguments
 
 .. include:: explain_-qi.rst_
 
-.. include:: explain_-t.rst_
-If no transparency is appended then we will read it from the last column per data record instead.
+.. include:: explain_-tv_full.rst_
 
 .. include:: explain_colon.rst_
 

@@ -145,7 +145,8 @@ enum GMT_enum_array {
 	GMT_ARRAY_NOINC = 8,
 	GMT_ARRAY_SCALAR = 16,
 	GMT_ARRAY_NOMINMAX = 32,
-	GMT_ARRAY_ROUND = 64};
+	GMT_ARRAY_ROUND = 64,
+	GMT_ARRAY_UNIQUE = 128};
 
 /*! Handling of swap/no swap in i/o */
 enum GMT_swap_direction {
@@ -157,6 +158,17 @@ enum GMT_swap_direction {
 enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 	GMT_CSH_MODE,			/* Write C-shell script */
 	GMT_DOS_MODE};			/* Write DOS script */
+
+/*! Various mode for basemap order */
+enum GMT_enum_basemap {
+	GMT_BASEMAP_BEFORE			= 0,
+	GMT_BASEMAP_AFTER			= 1,
+	GMT_BASEMAP_FRAME_BEFORE	= 0,
+	GMT_BASEMAP_FRAME_AFTER		= 1,
+	GMT_BASEMAP_GRID_BEFORE		= 0,
+	GMT_BASEMAP_GRID_AFTER		= 2,
+	GMT_BASEMAP_ANNOT_BEFORE	= 0,
+	GMT_BASEMAP_ANNOT_AFTER		= 4};
 
 /* Since -I is not a global option but we almost use it as such, we define the long-option for it here.
  * Modules that need it in their module_kw[] array can just add it to their list. */
@@ -227,9 +239,14 @@ enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 #define GMT_CPT_Z_REVERSE	2	/* Reverse CPT z-values */
 #define GMT_CPT_L_ANNOT		1	/* Annotate lower slice boundary */
 #define GMT_CPT_U_ANNOT		2	/* Annotate upper slice boundary */
+#define GMT_CPT_CATEGORICAL_VAL		1	/* Categorical CPT with numerical value */
+#define GMT_CPT_CATEGORICAL_KEY		2	/* Categorical CPT with text key */
 
 /* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"
+/* CPT extension is pretty fixed */
+#define GMT_CPT_EXTENSION	".cpt"
+#define GMT_CPT_EXTENSION_LEN	4U
 
 #define GMT_IS_ROMAN_LCASE	1	/* For converting Arabic numerals to Roman */
 #define GMT_IS_ROMAN_UCASE	2
@@ -250,6 +267,28 @@ enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 
 /* Modifiers for contour -A option */
 #define GMT_CONTSPEC_MODS "acdefghijklLnNoprstuvwxX="
+
+/* Valid modifiers for various input files */
+
+/* Valid modifiers for -Tmin/max/inc array creator */
+#define GMT_ARRAY_MODIFIERS "abeilnt"
+
+/* Modifiers for grid files:
+ * +o<offset>  adds this offset to all grid values
+ * +n<nodata> sets what the no-data value is
+ * +s<scl> scales all grid values by this scale
+ * +u<unit> converts Cartesian x/y coordinates from given unit to meters
+ * +U<unit> converts Cartesian x/y coordinates from meter to given unit
+ */
+#define GMT_GRIDFILE_MODIFIERS "onsuU"
+
+/* Modifiers for CPT files:
+ * +h[<hinge>] to override soft-hinge value in CPT
+ * +i<dz> is used to round auto-determined min/max range to a multiple of dz.
+ * +u<unit> converts z-values from given unit to meters
+ * +U<unit> converts z-values from meter to given unit
+ */
+#define GMT_CPTFILE_MODIFIERS "hiuU"
 
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
@@ -379,6 +418,14 @@ enum GMT_enum_workflowmode {
 enum GMT_enum_colorswap {
 	GMT_USE_FILL_RGB  = 1,	/* Take pen color from that of the current fill */
 	GMT_USE_PEN_RGB = 2};	/* Take fill color from that of the current pen */
+
+/*! Index for fill/stroke transparency value */
+enum GMT_enum_transp {
+	GMT_FILL_TRANSP     = 0,	/* transp[GMT_FILL_TRANSP] is used for filling */
+	GMT_PEN_TRANSP      = 1,	/* transp[GMT_PEN_TRANSP] is used for stroking */
+	GMT_SET_FILL_TRANSP = 1,	/* Bit-flag for fill transparency */
+	GMT_SET_PEN_TRANSP  = 2,	/* Bit-flag for stroke transparency */
+	GMT_SET_ALL_TRANSP  = 3};	/* Bit-flag for both transparencies */
 
 /*! Various algorithms for triangulations */
 enum GMT_enum_tri {

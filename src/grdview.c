@@ -273,8 +273,12 @@ GMT_LOCAL double grdview_get_z_ave (double v[], double next_up, uint64_t n) {
 	return (z_ave / n);
 }
 
-GMT_LOCAL void grdview_add_node (double x[], double y[], double z[], double v[], uint64_t *k, unsigned int node, double X_vert[], double Y_vert[], gmt_grdfloat topo[], gmt_grdfloat zgrd[], uint64_t ij) {
+GMT_LOCAL void grdview_add_node (bool used[], double x[], double y[], double z[], double v[], uint64_t *k, unsigned int node, double X_vert[], double Y_vert[], gmt_grdfloat topo[], gmt_grdfloat zgrd[], uint64_t ij) {
 	/* Adds a corner node to list of points and increments *k */
+	if (used) {	/* If we keep track of which nodes we have used then we do not want to use one twice */
+		if (used[node]) return;
+		used[node] = true;
+	}
 	x[*k] = X_vert[node];
 	y[*k] = Y_vert[node];
 	z[*k] = topo[ij];
@@ -292,6 +296,7 @@ GMT_LOCAL void grdview_paint_it (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, str
 	index = gmt_get_rgb_from_z (GMT, P, z, rgb);	/* This sets P->skip as well */
 	if (PH->skip) return;	/* Skip this z-slice */
 
+	PSL_comment (PSL, "Paint polygon z = %g\n", z);
 	/* Now we must paint, with colors or patterns */
 
 	if ((index >= 0 && (f = P->data[index].fill) != NULL) || (index < 0 && (f = P->bfn[index+3].fill) != NULL))	/* Pattern */
@@ -427,7 +432,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert grid values to colors. Optionally, name a master cpt\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [%s]; if so,\n", GMT_DEFAULT_CPT_NAME);
+	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [%s]; if so,\n", API->GMT->current.setting.cpt);
 	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append +i<dz> to quantize the range [the exact grid range].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
@@ -799,7 +804,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 	gmt_grdfloat *saved_data_pointer = NULL;
 
-	double cval, x_left, x_right, y_top, y_bottom, small = GMT_CONV4_LIMIT, z_ave;
+	double cval, x_left, x_right, y_top, y_bottom, small = FLT_EPSILON, z_ave;
 	double inc2[2], wesn[4] = {0.0, 0.0, 0.0, 0.0}, z_val, x_pixel_size, y_pixel_size;
 	double this_intensity = 0.0, next_up = 0.0, xmesh[4], ymesh[4], rgb[4];
 	double *x_imask = NULL, *y_imask = NULL, x_inc[4], y_inc[4], *x = NULL, *y = NULL;
@@ -853,7 +858,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->C.active && Ctrl->Q.cpt && Ctrl->G.n != 3)
-		Ctrl->C.active = true;	/* Use default CPT (GMT_DEFAULT_CPT_NAME) and autostretch or under modern reuse current CPT */
+		Ctrl->C.active = true;	/* Use default CPT (GMT->current.setting.cpt) and autostretch or under modern reuse current CPT */
 
 	/* Determine what wesn to pass to map_setup */
 
@@ -869,7 +874,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		if (Ctrl->N.active && Ctrl->N.level > GMT->common.R.wesn[ZHI]) GMT->common.R.wesn[ZHI] = Ctrl->N.level;
 	}
 
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	/* Determine the wesn to be used to read the grid file */
 
@@ -882,6 +887,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		/* No grid to plot; just do empty map and bail */
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 		GMT->current.plot.mode_3D |= 2;	/* Ensure that foreground axis is drawn */
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 		gmt_map_basemap (GMT);
@@ -945,8 +951,9 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (P->is_bw) Ctrl->Q.monochrome = true;
-		if (P->categorical && Ctrl->W.active) {
-			GMT_Report (API, GMT_MSG_ERROR, "Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
+		if (P->categorical && !(Ctrl->Q.mode == GRDVIEW_MESH || Ctrl->T.active)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Categorical data (as implied by CPT) cannot be interpolated and require -T or just -Qm.\n");
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (cpt) gmt_M_str_free (cpt);
 	}
@@ -1061,8 +1068,6 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		n_edges = Z->header->n_rows * (urint (ceil (Z->header->n_columns / 16.0)));
 		edge = gmt_M_memory (GMT, NULL, n_edges, unsigned int);
 		binij = gmt_M_memory (GMT, NULL, Topo->header->nm, struct GRDVIEW_BIN);
-		small = GMT_CONV4_LIMIT * (Z->header->z_max - Z->header->z_min);
-		if (small < 1.0e-7) small = 1.0e-7;	/* Make sure it is not smaller than single-precision EPS */
 		if ((Z_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, Z)) == NULL) {
 			gmt_M_free (GMT, edge);		gmt_M_free (GMT, binij);
 			Return (API->error);	/* Original copy of Z grid used for contouring */
@@ -1178,8 +1183,9 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	PSL_setformat (PSL, 3);
 
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
-	if (GMT->current.proj.three_D) gmt_map_basemap (GMT); /* Plot basemap first if 3-D */
+	gmt_map_basemap (GMT);
 	if (GMT->current.proj.z_pars[0] == 0.0) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	gmt_plane_perspective (GMT, -1, 0.0);
 
@@ -1721,6 +1727,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 						this_intensity = Ctrl->I.value;
 				}
 
+				PSL_comment (PSL, "Filled surface bin (%d, %d)\n", j, i);
 				/* Get mesh polygon */
 
 				X_vert[0] = X_vert[3] = x_left;		X_vert[1] = X_vert[2] = x_right;
@@ -1792,7 +1799,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 							low = corner[p];
 							n = 0;
-							grdview_add_node (x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
+							grdview_add_node (NULL, x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
 							next_side = low;
 							way = 0;
 
@@ -1854,8 +1861,8 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 								p1 = (next_side % 3) ? 2 : 0;
 								p2 = (next_side % 3) ? 0 : 2;
 							}
-							grdview_add_node (x, y, z, v, &n, p1, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p1]);
-							grdview_add_node (x, y, z, v, &n, p2, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p2]);
+							grdview_add_node (NULL, x, y, z, v, &n, p1, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p1]);
+							grdview_add_node (NULL, x, y, z, v, &n, p2, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p2]);
 
 							/* Compute the xy from the xyz triplets */
 
@@ -1871,6 +1878,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 					} /* End Saddle section */
 					else {
+						bool nused[4] = {false, false, false, false};	/* PW: Used to avoid using nodes twice - I did not extend this to the saddle case as not sure if it is needed */
 						/* Ok, here we do not have to worry about saddles */
 
 						/* Find lowest corner (id = low) */
@@ -1880,7 +1888,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 						/* Set this points as the start anchor */
 
 						n = 0;
-						grdview_add_node (x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
+						grdview_add_node (nused, x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
 						start_side = next_side = low;
 						way = 1;
 
@@ -1905,7 +1913,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 							while (!(next_side == entry_side || next_side == exit_side)) {	/* Must add intervening corner */
 								if (way == 1) next_side = (next_side + 1) % 4;
-								grdview_add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
+								grdview_add_node (nused, x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
 								if (way == -1) next_side = (next_side - 1 + 4) % 4;
 							}
 							if (next_side == entry_side) {	/* Just hook up */
@@ -1920,7 +1928,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 							while (!(start_side == next_side)) {	/* Must add intervening corner */
 								if (way == 1) next_side = (next_side + 1) % 4;
-								grdview_add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
+								grdview_add_node (nused, x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
 								if (way == -1) next_side = (next_side - 1 + 4) % 4;
 							}
 
@@ -1948,7 +1956,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 						while (!(start_side == next_side)) {	/* Must add intervening corner */
 							if (way == 1) next_side = (next_side +1) % 4;
-							grdview_add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
+							grdview_add_node (nused, x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
 							if (way == -1) next_side = (next_side - 1 + 4) % 4;
 						}
 
@@ -2056,10 +2064,11 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		}
 	}
 
+	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_map_basemap (GMT);	/* Plot basemap last if not 3-D */
 	if (GMT->current.proj.three_D)
 		gmt_vertical_axis (GMT, 2);	/* Draw foreground axis */
-	else
-		gmt_map_basemap (GMT);	/* Plot basemap last if not 3-D */
+	gmt_plane_perspective (GMT, -1, 0.0);
 
 	gmt_plotend (GMT);
 

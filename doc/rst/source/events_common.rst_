@@ -4,17 +4,20 @@ Description
 -----------
 
 Reads (*x*, *y*\ [, *z*] [, *size*], *time* [, *length*] [, *label*]) data from *table* [or standard
-input] and plots how the symbol for each event should look for the specified *now* time.
-The reason they may differ is that events may have different lengths and we may
-wish to accentuate the symbol attributes in ways to draw attention to an event when
-it first happens and perhaps tone it down after a while to reduce clutter and focus
+input] and plots how the symbol for each event should look for the specified time *now*.
+The reason they may differ is that events may have different *durations* and we may
+wish to *accentuate* the symbol attributes in ways to draw attention to an event when
+it first appears and perhaps tone it down after a while to reduce clutter and focus
 on more recent events. Optionally, each symbol may have a label that can be displayed at the
 same time or delayed with respect to the symbol. This module is typically used in conjunction with :doc:`movie`
-where the implicit loop over time is used to call it over a time-sequence and
-thus plot symbols as events unfold.
+where the implicit loop over time is used to call **events** over a time-sequence and
+thus plot symbols as the events unfold.
 
 Required Arguments
 ------------------
+
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
 
 .. _-J:
 
@@ -29,18 +32,6 @@ Required Arguments
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
-.. _-S:
-
-**-S**\ *symbol*\ [*size*]
-    Specify the symbol to use for the event.  Optionally, append symbol *size* with unit from
-    (**c**\|\ **i**\|\ **p**\ ).  If no *size* is given then we read an event-specific size
-    from the data file's third column (fourth if **-C** is used). **Note**: Not all the symbols that
-    are available in :doc:`psxy` can be used here.  At the moment we only support the basic
-    symbols and custom symbols; bars, vectors, ellipses, fronts, decorated and quoted lines cannot
-    be specified.  Symbols sizes read from a data file will be assumed to be in the unit controlled
-    by :term:`PROJ_LENGTH_UNIT` unless they have **c**, **i**, or **p** appended.  If you are only
-    plotting labels then **-S** is not required.
-
 .. _-T:
 
 **-T**\ *now*
@@ -51,8 +42,27 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
+.. _-A:
+
+**-A**\ **r**\ [*dpu*][**c**\|\ **i**]\|\ **s**
+    When no **-S** is given we expect to read lines or polygons.  Two different forms for input are
+    supported and specified via the **-A**\ directive: (1) Choose **-Ar** if your input data are *lines*, the data
+    format is given as *x, y, time*, and the "event" is the portion of that line limited by the current
+    time (*now*), event duration (via **-L**) and rise/fade periods (via **-Es**), or (2) choose **-As**
+    to read each complete segment (i.e., a polygon or line with just *x, y* coordinates) from a multisegment
+    file and get a common *time* for each segment via a required **-T**\ *string* specified in the segment
+    header.  Here, the entire polygon is the "event" if inside the limits of current time (*now*), event
+    duration (via **-L**) and rise/fade periods (via **-Es**).  If **-L**\ [**t**] is set then the *string*
+    must be either of the format *begin*/*length*\|\ *end* or *begin*,\ *length*\|\ *end*.  Use a comma to
+    separate absolute time specifications, otherwise a slash is also supported. **Note**:
+    Neither lines nor polygons allow for any labels to be placed. Finally, you can use **-Ar**\ *dpu* to
+    perform no plotting but instead convert your *x, y\[, *zcols* ], time* data into *densely sampled points* so that
+    later calls to **events** may use this sampled data set instead and plot it as circles with **-Sc**\ [*width*].
+    This way you can plot "lines" that can have variable pen color and fixed or variable pen width as well as
+    taking advantage of the full machinery of **-Es** and **-Et** and all the effects controlled by **-M** for symbols.
+    The *dpu* must match the intended dpu when running :doc:`movie`. Note *dpu* means pixels per cm if you are using
+    SI units and pixels per inch if you are using US units (hence it depends on your :term:`PROJ_LENGTH_UNIT` setting).
+    Alternatively, append **c** or **i** to set the unit used explicitly.
 
 .. _-B:
 
@@ -61,7 +71,8 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *cpt*
-    Use the *cpt* to convert *z* values given in the optional third column to assign symbol colors.
+    Use the *cpt* to convert *z* values given in the optional third column to assign symbol or polygon colors.
+    Not allowed if **-Ar** is used.
 
 .. _-D:
 
@@ -85,10 +96,11 @@ Optional Arguments
     duration of the rise phase, **+p** to set the duration of the plateau phase, **+d**
     to specify the duration of the decay phase, and **+f** to set the duration of the
     fade phase.  These are all optional [and default to zero], and can be set separately for symbols and texts.
-    If neither **s** or **t** is given then we set the time knots for both features. **Note**: The **+l** modifier is
+    If neither **s** or **t** is given then we set the time knots for both features. **Note 1**: The **+l** modifier is
     restricted to **-Et** and specifies an alternative duration (visibility) of the text [same duration as symbol].
-    Furthermore, the **+p** and **+d** periods do not apply to text labels.  **Note**: The **-Et** option is
-    required if you wish to plot labels [plot symbols only].
+    Furthermore, the **+p** and **+d** periods do not apply to text labels.  **Note 2**: The **-Et** option is
+    required if you wish to plot labels [plot symbols only].  **Note 3**: For lines or polygons the the **+p**
+    and **+d** periods do not apply., and for lines none of the modifiers apply.
 
 .. _-F:
 
@@ -105,7 +117,7 @@ Optional Arguments
 .. _-G:
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
-    Set constant shade or color for all symbols.
+    Set constant shade or color for all symbols or polygons.
 
 .. include:: explain_-Jz.rst_
 
@@ -115,7 +127,8 @@ Optional Arguments
     Specify the length (i.e., duration) of the event.  Append a *length* if all events have the same length,
     append **t** if end-times instead of lengths are given in the file after the *time* column,
     or leave blank if lengths can be read from the input file after the *time* column.  If **-L** is not
-    given we assume events have an infinite duration.
+    given we assume events have an infinite duration. See **-A** for how duration is handled for lines and
+    polygons.
 
 .. _-M:
 
@@ -123,13 +136,37 @@ Optional Arguments
     Modify the initial **i**\ ntensity, **s**\ ize magnification, or **t**\ ransparency of the symbol during
     the *rise* interval [1, 1, and 100, respectively].  Repeatable for the different attributes.
     Optionally, for finite-duration events you may append **+c** to set the corresponding terminal value
-    during the coda [0, 0, 100, respectively].
+    during the coda [0, 0, 100, respectively].  Polygons can only use **-Mt**.
+
+.. _-N:
+
+**-N**\ [**c**\|\ **r**]
+    Do NOT clip symbols that fall outside map border [Default plots points
+    whose coordinates are strictly inside the map border only]. For periodic (360-longitude)
+    maps we must plot all symbols twice in case they are clipped by the repeating
+    boundary. The **-N** will turn off clipping and not plot repeating symbols.
+    Use **-Nr** to turn off clipping but retain the plotting of such repeating symbols, or
+    use **-Nc** to retain clipping but turn off plotting of repeating symbols. If set, **-N**
+    will also apply to any labels.
 
 .. _-Q:
 
 **-Q**\ *prefix*
     Save the intermediate event symbols and labels to permanent files instead of removing them when done.
     Files will be named *prefix*\ _symbols.txt and *prefix*\ _labels.txt.
+
+.. _-S:
+
+**-S**\ *symbol*\ [*size*]
+    Specify the symbol to use for the event [Default plots lines or polygons; see **-A**].
+    Optionally, append symbol *size* with unit from
+    (**c**\|\ **i**\|\ **p**\ ).  If no *size* is given then we read an event-specific size
+    from the data file's third column (fourth if **-C** is used). **Note**: Not all the symbols that
+    are available in :doc:`plot` can be used here.  At the moment we only support the basic
+    symbols and custom symbols; bars, vectors, ellipses, fronts, decorated and quoted lines cannot
+    be specified.  Symbols sizes read from a data file will be assumed to be in the unit controlled
+    by :term:`PROJ_LENGTH_UNIT` unless they have **c**, **i**, or **p** appended.  If you are only
+    plotting labels then **-S** is not required.
 
 .. _-U:
 

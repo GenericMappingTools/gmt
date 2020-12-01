@@ -12,6 +12,7 @@
 #-------------------------------------------------------
 COLOR_BACKGROUND		# Color used for data below the current color table range
 COLOR_FOREGROUND		# Color used for data above the current color table range
+COLOR_CPT			# Default CPT
 COLOR_MODEL			# Color model in use (RGB, HSV, CMYK)
 COLOR_NAN			# Color used for data whose value is NaN
 COLOR_HSV_MAX_S			# Maximum saturation assigned for most positive intensity value
@@ -57,7 +58,6 @@ FORMAT_TIME_STAMP		# How to format time for GMT time-stamps
 #-------------------------------------------------------
 # GMT Group:	Misc. GMT settings
 #-------------------------------------------------------
-GMT_AUTO_DOWNLOAD		# Download GMT-known files or not
 GMT_COMPATIBILITY		# Oldest GMT version syntax to parse without error [4 and up]
 GMT_CUSTOM_LIBS			# List of custom GMT-compliant shared libraries
 GMT_DATA_SERVER			# Where to download from [SOEST]

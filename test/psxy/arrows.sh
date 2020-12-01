@@ -39,5 +39,4 @@ echo 0 2.8 0 3i | gmt psxy -R -J -O -K -Sv1i+bA+jc+h0.5 -W6p -Gred --PS_LINE_CAP
 echo 0 2.2 0 3i | gmt psxy -R -J -O -K -Sv1i+eA+bI+jc+h0.5 -W6p -Gred --PS_LINE_CAP=round >> $ps
 echo 0 1.6 0 3i | gmt psxy -R -J -O -K -Sv1i+bA+eI+jc+h0.5 -W6p -Gred --PS_LINE_CAP=round >> $ps
 echo 0 1.0 0 3i | gmt psxy -R -J -O -K -Sv1i+bI+eI+jc+h0.5 -W6p -Gred --PS_LINE_CAP=round >> $ps
-echo 0 0.4 0 3i | gmt psxy -R -J -O -K -Sv1i+bA+eA+jc+h0.5 -W6p -Gred --PS_LINE_CAP=round >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo 0 0.4 0 3i | gmt psxy -R -J -O -Sv1i+bA+eA+jc+h0.5 -W6p -Gred --PS_LINE_CAP=round >> $ps

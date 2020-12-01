@@ -517,6 +517,7 @@ int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, unsigned i
 			if (nf == 4 || nf == 13) {	/* total reconstruction format: Got lon lat t0 omega [covars], must shift the K's by one */
 				if (i && !total_in) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Rotation file mixes total reconstruction and stage rotation format\n");
+					gmt_M_free(GMT, e);
 					return -GMT_PARSE_ERROR;
 				}
 				total_in = true;

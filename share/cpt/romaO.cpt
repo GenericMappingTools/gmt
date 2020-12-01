@@ -4,13 +4,14 @@
 #	www.fabiocrameri.ch/visualisation
 #
 # License: Creative Commons Attribution 4.0 International License
-# Copyright (c) 2018, Fabio Crameri All rights reserved.
-# Crameri, F., (2018). Scientific colour-maps. Zenodo. http://doi.org/10.5281/zenodo.1243862
+# Copyright (c) 2020, Fabio Crameri All rights reserved.
+# Crameri, F., (2020). Scientific colour maps. Zenodo. https://zenodo.org/record/4153113
 # This is Scientific Colour Maps version 6.0.4
 # Note: Original file converted to GMT version >= 5 CPT format.
 #
 #----------------------------------------------------------
 # COLOR_MODEL = RGB
+# CYCLIC
 #----------------------------------------------------------
 0.000000	115/57/87	0.003922	116/57/86
 0.003922	116/57/86	0.007843	117/57/84
@@ -268,5 +269,3 @@
 0.992157	113/58/92	0.996078	114/58/90
 0.996078	114/58/90	1.000000	114/57/89
 N	255/255/255
-B	115/57/87
-F	114/57/89

@@ -54,5 +54,4 @@ echo "100 250 VGG" | gmt pstext -R -J -O -K -F+jTR+f12p,Helvetica,red -Dj0.1i >>
 gmt psxy -R-100/100/-120/120 -JX3i/2.5i -O -K -W1p,blue -i0,3 def_e.trk -Bafg1000 -BwsN -X3.5i >> $ps
 echo "-100 120 @~h@~" | gmt pstext -R -J -O -K -F+jTL+f12p,Helvetica,blue -Dj0.1i >> $ps
 gmt psxy -R -J -O -K -W1p,orange -i1,3 def_n.trk -Baf -BE >> $ps
-echo "100 120 @~x@~" | gmt pstext -R -J -O -K -F+jTR+f12p,Helvetica,orange -Dj0.1i >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo "100 120 @~x@~" | gmt pstext -R -J -O -F+jTR+f12p,Helvetica,orange -Dj0.1i >> $ps

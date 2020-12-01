@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from grdimage
+%%Title: GMT v6.2.0_3ddcf0e-dirty_2020.11.03 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:50:46 2018
+%%CreationDate: Tue Nov  3 12:29:19 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -651,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -662,8 +658,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -672,13 +669,29 @@ O0
 1200 900 TM
 
 % PostScript produced by:
-%@GMT: gmt grdimage n.nc -Ct.cpt -R0/360/-90/0 -JA0/-90/6i -Baf -P -K -nn -Y0.75i
-%@PROJ: laea 0.00000000 360.00000000 -90.00000000 0.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=-90 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdimage n.nc -Ct.cpt -R0/360/-90/0 -JA0/-90/6i -Baf -P -K -nn+a -Y0.75i
+%@PROJ: laea 0.00000000 360.00000000 -90.00000000 0.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=-90 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %GMTBoundingBox: 72 54 432 432
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+8 W
+N 3600 7200 M 0 83 D S
+N 6718 5400 M 72 42 D S
+N 6718 1800 M 72 -42 D S
+N 3600 0 M 0 -83 D S
+N 482 1800 M -72 -42 D S
+N 482 5400 M -72 42 D S
+N 3600 7200 M 0 83 D S
+3600 7367 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(0è) bc Z
+6862 5483 M V -60 R (60è) bc Z U
+6862 1717 M V 60 R (120è) tc Z U
+3600 -167 M (180è) tc Z
+338 1717 M V -60 R (î120è) tc Z U
+338 5483 M V 60 R (î60è) bc Z U
 clipsave
 3600 3600 M
 0 3600 D
@@ -891,85 +904,66 @@ clipsave
 -118 2 D
 P
 PSL_clip N
-V N -5 -20 T 7210 7240 scale [/Indexed /DeviceRGB 51 <
-808080990000FF0000FFDD66FF0077FF8800AABB77FFAA779977990088CC223366FF5555006600FF99AA00BB880000FF
-7700990055669911EEAA5544AA1144000066DD66EEBB0099FFDD00BB99888866FF44110077449922330088DDFF9999FF
-AA550055444455887777660099FF440044BB0011BBDDFF00DDCCFFCC990000BB22DDFF77BBFFDDBB558866004488AA00
-00FF00FF11FF88FF9900FFFF>] setcolorspace
+V N -5 -20 T 7210 7240 scale [/Indexed /DeviceRGB 39 <
+808080FF0000FF0077990000FF8800223366FF55550000FF770099DD66EEFFDD008866FFAA55449999FF554444558877
+005566776600AABB77CC990000BB229911EE77449944110000FF00DDFF77006600FF99AABBFFDD0044BBFFAA7700FFFF
+BB998888FF9966004488DDFFDDCCFFAA55000011BB99FF44>] setcolorspace
 << /ImageType 1 /Decode [0 255] /Width 721 /Height 181 /BitsPerComponent 8
    /ImageMatrix [721 0 0 -181 0 181] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-G[BdmCNnLB(4bAj8I-\s1mae?Jq4J*-6YB@L\^uMmFVVp0="nUQ=Lm26D9r-+"$2SHT$W/PERU8p!Wa2WGp`XF`fRuQhW2t
-Y:lenB?A&*YMZBb#J\Go1:lRB`LWRnc3^X[oUjsiPsf"+<ERO*3$kQDd>uk$,S="P:B*\GZ^nXoft$=%mQ.GjVbV`@c":CE
-=`:#NUT:5R9V^llrli5`8%%P,l3b;49a&ojEiPaeH$qE[8>;HQ/$.%e&P`3V*H9ltEaB:"d7`0CBP/%l:q[ihhF09/'3O[-
-LKbL(#FpXFbq*/_)ifI?5'ip7ga7fhO-D-V@5O=OVtu9_ZT*9i].?I(F-0DOLn;Kg"BQSRV<Ac-C.ENf&QOk0GtI0.,?`QR
-%].>k10`G`HsaU8-+q28fec<,?cVnh2nS6Zn(&fI9QW[.M@nOa^8aT:XaGA&g;W<!mohMf=YDh;/m0H#&ig_/e9lR4jIA%h
-^&CK=jcR`TdD9r?,HoPp95^$kidZ$`aDD[b\g<U6UI4B?,HgTnWEpjsAj_KF59lBbUZ4K!#V/>+N?X.c]/\>IPI8!pTXnW=
-N3$LLdQ@SFg@4aa`Cq'0"a-_h'2_bc9\,5ClD9!l_Et'G<cm,P*D'7e/DBBQj"NiAR/(%]T3$/4pZb2\#c"NcfFK`hb'gHA
-p%JQ9C@uZ?e"C(</K8^$;.fP>84;0f!$"m)<M:neU:u*T:1PmPn[3tL6);b,pM(.mpOnhV#_rs_`JC]qj>cN3$.Y$2q2-Rn
-)^]clS;BM<3229B;mV,Zgh=gF8=H^fX^2@0S7o8_ZHA;&$]Vp![Y\RT8=I!nBrqjd2-Ha]U;]Z6m7<\T8>V<'URRp`+i4Qu
-5cYJd)j)q+O[e(G!,Br>O[,Cu6u*Ak?P,PI[1bE+V$NaM8>4!.R_K-"bD8qr&QX_[fo6!cO.c<,fXZtY"VPg?8,V^Dr2`E2
-Hq*7'8!k3U]L%:tG%Aor`6;j^c?VgX_2,/)M"Fi1e2`MUq2;o]LgW(QH'RM2oCmu&GG'j+0@(54Bgg99"O;"2I<+I'U?4$o
-jt-WbMr6UP\2eDH2n@[c4cOAS2G59/rZZ(u,-g]pSq@<=X7!9VF7nR_l]F>gm68a+he(lFoD*V`BJQ4;cgR(pq#5_/*3DWe
-S46h]OZY!'4"#k*M^"LfIG53<ogGB_NAoY]kK1&9mDR:M,ZY\sEtc[%>ieYVbk@.`!Na`0j!,FBBtTkup[_S0M4T>jX=SDT
-..V#WWQ&&Cl<:c,c`Zr=E+P*bqW-2*<4HfKctXh,(9qop$+(L/eL]$-hLfUg@:B,TI3[0C[r`ir)rAN[<^]t,_/g85[*[=F
-<3D*Pf''@UOgN\!h+a=b9k%[r4'*$6\f%Zn)NdY0"sqNC8S;dm1l2rh^AH0>fXZl!en[knm6idj&p$fgZV7F]ch(\OOKlL0
-8UfJhDe/g,L&E?M2C"='9n/U<`%[$aC6r4r!u&@b^PrduZPI6m^,8Pc08X2p8>THQ-#Y$#R`RGU,'"_CcQ/-SA0S%bV%_U?
-D3Cl*".%D,W(%M[Z_.<<oOe;+Y:O>PSp0l):Z&q]qqkk=hajbFKN#4S/>nV.ogj'T@cfI5WnnpA_),o`(\V^@SEL;(Slu^b
-pCU?Ce>MnNjNM*:<@o;_POYa&;rW-[`'&+3rgYl-R<OcmKa]X_KsZ&++MB0m1<h#b_Of3GrT)81bE#7P,HVs%Psrt\7URAm
-Sg0E!dSm1#SnA\u\%dbMA2p-(Kf#W_XK3%I-_?0p6$)$8C[0lB5OD"CUiYOq(.%O.Z)u.ZB,@0"88Vq055EZE88P>Y%oAJu
-Bh4_U/pgne&PeOGVKnVOH5b^LhF262WjugX,A7!"]]B9d(G806Trd!E2:Vi0l&m'5^ABd[4[3kWk8UqWo9Yg>m,`Ndo!8)/
-C``Ubp,F7jH4_s*&`>t\_E"`RqZh+U]GL0g`MdRa?@>;gr'c:F#s#I1[#B+JCW8P)X3`LT>AX!-3*;"^C;(n3T2g-E%[nBk
-Xk-=l<]GRuN%5KQ]=km(CORJKS#SGPpZrc>g*^K1'M9l"C/SIJ).[puKl.9\4,4F1'8^AVQT3'XUO"LoR6Pc0Gup_BAKVd=
-Ec.1#EN]"OGsIQTQP#uhElsg*<`TC8+kXf+%nZCV;$nJES4u;5k"I&J<ag5"EfN3hT(IOueqr$O,0&^MAF7T#gBB_bE?6<%
-NTP7D^Cj^AUpmY?9A#5NDL+Qd,#lhKOu&5c6td;ZRYD])[L/J%q.W*s)Tq0MnO@2'O]L"gVa1N[m>30'rZYN?'J/Db3Rs%D
-lID]nO@4joRS;;2(2%FC3L@G(>2-APd=f_^,g:%F6>7KlPt*Uq1q2JUo=XCJPkjUG7js@tF($;M9\P<@;OX2ZM'cU/$fmcK
-"0",<]L#$6?F<810'L1f*<PI[Teu1ej;"uuAe62rQ$&\mfigJc.tR/24n*pl^"'sW4ajn_aLSHcO41WNnJ.k_g![@sLfRHN
-#T%]C`Ei*W5>9oMdG88V(WClq]LTkJ'R`B5@IfoH7hgrXBG@:=d;\\6:*.WKh^lmH6*GEtNTN@$Ol0\pTWO/dEn+8;c;1W@
-FRq_+WZ5`lHuBt`M"*YlcNc%jUj:8&\:,X(>`YiZMBIDG#F__D7C!hgHo9<rbKD]8XmEUtFDc?X&4DuM>L;Fj'5?Qa<YH(I
--MnfP0/()^Dn]j'dlBP:[jn3H5a,6/Cc)fm$DNkk@_?J6,H;*)Yrl)u%s36IKZe_[G'HdZq(3f8(,h.PR):qN'JpuY7U@h?
-jZ>43>ed&#AMn6BX2aE_,#;WH-(5D.,I-g\Qg]`+\G[t.NG2-ceKRKaAH=WEKqbeBPFBjF\_.MZLnLb:L&u-s;QU8:2JFr/
-YOSRJB7#4%.pBY<mB"U6&bua>4D4e$Nm,WiAR7D>DjulT[U`rnDVK9i=&1Z@Pt'?[[d&o<0cq7s-lS:NLt%*Ll,p907@M<.
-/&j+iRM(i#ANm%s\npFh)UQI.>\J9l]C`P^3S>-h&=h2X2NBV7>8c,#git6D]IQ%9bp/,GT;.73PdDnrdH%_s,%rW-S<&oA
-X:ZW47m^CFai]`6E2t1;Fs=YPY/j/g>,f/-,Tc?r53UP[mE_ChIt-<5^%\]9A$&dh984i-d_9>a6/@jQ\@"'q]i]*)DJt%$
-YIg9M^%h:>1UMd^7:N6s"#PF+Grb=)2;]aR%7Lq2PBuJqh]J!:6E@ir>V8E0g6chS'9&6Sq=W-`ACF#]f-n@=orh[JQq=6*
-jJ.]/O$`H?0kd<FXN^m/pQV%j4I3)Yk'Y+B9hhA*a^rm4BYN;Qee_'I]L45b781Se/@msU/9\W$E<Mm+5p([AG$`-,`el,F
-aLMRFS(%=_%+8`5btB=fI\\?Y-;j+hOt4g:,T&-#`!A1so+Q,N;:&g!15TBQ90,ns-RPQZR[55(BWJq_jY;^g_.<]DOiUu:
-B_l6].GdSE]_"Z'm56(t55K8E((3#BaMNCfO1(>DX:C\t\Si0P$LQEg=/M1r+*.-i@hr-i=Aq6g>$3\%F4hrT+gdcKD0h;&
-@],%R&X!oPP)gld&NNpP7Sfda"OMV#`q3dqI#M_.g$f7"EtpuT8LMI_F4/h/SF"q3A@XGC2TPI:nig<^6hm6NaYSj(gI),1
-<Fr]acXR?YM3e1-QQOCf[h#8]g]X4FT\g*=`O]&9DAMkHBD"6R%+!A*;$8b9Z[H(271l+&'7m;!?,Z)31f<*unsh!Ie!#H(
-/3)3BGmp!X-DBNp2f4-uoILV,`9^6AonlV,gc=`d.[ec-FgYm:M(X:b_/D6;S;AMF;2+07BfY<m6rZ;N>`@1CD*_i%lpJs:
-VQct@2<VYdEh&,bau`BC]Ri\Elhk$<[a^,_WcUV<)G'-R&P[cZOkNLlji2sT*0G<siZAdI9NES)$OAY84uje!<E3>!SgJ&.
-Ntmf4MMRegaAELs/DWeNS4B)FbXHFSou<pEE$9g;)2WE?fJD6t>a@eG>Xb#=&R8JW[iDr\N52ub:c6[Aq;E.]52p3:K)?Lc
-Pt-FIO]koKc$a"0l,FiY,D6gW`n:X"4Aq]+d)mPMm[K:mDhVRZQh/PNM/XUn$^'ITA6'aso+44Z&CG5NEbQEm/k9M._L,\A
-EtG&bqM6GRog0nH(]"E@0ETF[kLuRr&Db8p/8aF[cOOcc>8;_.VLY,JEbk7.+l[.:O3;*M,o<Sf@M;sK,ZZ&nT;cX1s1<,1
-4sP,DF1l^D[!3cnKXVq`Knud-=4TZe@c#]^C*He*f:V^>&L#Ff?ocZ8Qs`bVHs:^AF>R0c.0kBl=R%e*R,((dg-O;Rg\#ke
-=OeUrWhk@E=%`:T@\nQO`jnsr6r^:Ljmc3nQ$^t>:*=0nW9OspeO4#W,0g"t]<6:a,@2p]g2X+6\eH=<Ml8*p?m/EQaR:Dd
-,LIOm;U_p_l^X0[W_t*C*W[%bp,8t:YBG:uIN6=R4ek,Z:*Qf4&R&n%[lVB>,o5;GA8+BSXuIek<e\Vr/5hCgaP)L&NmX!(
-do36_Z;]%_"I:7=P)-/R/pED9kiK'VYu#=Dc'^QFLr`KT[]0X"<U5(jJ9VtHNL/I-Ti7e!:RmW)/4F["O]:b@GA)@i?84LU
-Y"UUpr]$g<=_U9*(ho90:Mr"i2,8Sc(oIK&aqTs"9uL'JknQTsAJ&4U#4F;7pp#..di!=GP$;flEuM<K7!qXifnp'7Ka*D(
-6#<'OZ"qIIf?J;1,IiH)RA/r1'^$[P`<`4:kV/(0C&",U&`T&FgY:2aU)ln_7"4`i4ZCcV*cV<CNMq-'_XX+KE@G+`mms"e
-kZ!Tu;S7pLH#BOi2r2biZYG=DDsjC<4g*A!:J;*-Y=;E^`n7J%;4dB#gqWl\#H^"CcM2W._O1[1K+V)-SgF?I\HbKI(EN/,
-7t1%AWQ$0Y>002$,@b&lH(Y7(g^%gI_A#PZ<%#PqO/0>T@J6qkREkfY,.`A^;-4E0eVJ3"6Kb5r6b2<@TI..bLej+p<Q0c5
-.FMk88S0F[4(-Wm[PEFJEhl\a&mXiRgF@W!O.Y=ej6,f^Fr.cgj>V+uKanMKH'Lj,g(8PKLp*I!QT]^@_STL&R]oZmV*tu!
-MYn7drL6J!Ak4r2%B0XiZH<cAp-iZVOl<+nfuU%>oegZ'ad'QI%EE0NUW&@"8a;UIQmSW_Krg_nC.'0S+d-'#^p094?.!2h
-:1VO\KMsg]E(CSsMI7\;,-:?kUUA13_hb-l"Q1CI^7s++D^2U=&OQBj\IPoO:)te?7)sc/&R[mm\.m%:7daMorOVYYI9`sW
-A?g<"gd_thc:<=V&`?oic!U/#2QkL6O3o*m?0$5P!A8SsJGLE7bh:KR-e$\n'J;mGHd!)a9a"R[*-3(QYYFkI7bETmj6TA_
-cUe7A<(eP+,$fYm6gQ;bQo+=>/)oYH3k-eFQ:8hW]X8.=\kg2U7>KEiQpoHA-aZ5!9LmTD:gMS(-a^$IR?-Q.\nYk+ReR"$
-6$"(f6^Qmk8/%T1,&3.5(V\(0Cmk?Xe5^R[l%SQr>A)VCH==E(D/]6I4e/"H9J9sY=HT=SnpE0E?FI$+,>q6)p+/Zd;--C8
-A%m9[Tp]5GY/?.D\LFER5n[s$5BPM>6k6=e)U4uuXfEt/FD>?-.arlj=-mq<g<AkfO?5JeoQCDc6[CsW:Iu>i-QQ01r?'Ob
-n`^~>
+G[BdmIrj(.!ls9,f7S*?BV7Ag[$6:qfD#:T0=I'HQ<3sbZp,hhqM_LLprhO_1E$eJE-&@n[<9`B([_+_rfNi0b1>.2icP'G
+5Esf\9lGAoCS/NT2e`"D8Y);6f[dGUW(Dhc+:6:b++!7YP0\-)DCim\O:Gc9V9.i;6oH3N/=)<0C\dpJ81^YaVrJH3!r__P
+NbrQ?rG[p5:.[Dm-^$L'3(jLe2/b\f,bAM0b3VN;FQ\rKfF)R&EWsa_=>i06$CJHiTXX2%LO;cfP7t_]$#D^A%]4m9.\$X6
+,c.IH?HpDHSD5U=Ya(dKL(dQ7E(uMQDR);MNNtDfTcNF[C#=@5;L$NOZkiW8j22V11?N'bBIbs&*UI?0_E9X;+Q@'dR?tqI
+MC#Nij>bq(/5*+.bKMfu<^1kh-FRX5i`T)J,aA+=`3"II)Ga&I-%BJ>d0[p*I[]ks'36ENPENca8S)cp=WgFcFic+sbNXjn
+:81iCM(FcY^61lA+dpPL0ZPJe<Kb@"C$s/>;A554;FtS+@TPKs/<sh^a9:&,)Fu^*pTGct>FU;N=9<G5M/#@ERR=c9R=ea>
+P7t?9]h[n4Mq::r"Q9uV<$o=N8b!r9*Lik48sH*afNjZq8K_'(W%p)u<q$,BS!+JlAdRk7&g$//Z+ac!a^pV.[cK7h8SaWR
+Ap*XBAQ=Rq_'Cct8SaVkQDjiI(6g[%X@N>L-B'76ZZ\oMkq2tDZn_q=R3WP@crq`Goi`_X@9!A21a+E<TX@G^C*l-f8m%5N
+Pt_8%-YVl[]=NjH65%mpi`A>6/"W!59]g(;9X?+M8GGe)H^,5MQAJl>6u'`[24j<&:?ni+B'kbj((&PCa_N`lX,tEQ:!D<;
+ClK(2`X-H<dArDF<US*N3GXt[2+u#Z-*XWWY=deT[5XXeXa35!PI,Li>(\(YT'00Fi+hoha^/:<4kP2D)sZfUYBSUaa/_o9
+=#G8_-@&T(].1qn0tC!FV]R.0_[W#o[,_/^mD41l`3*,R)b]\c,^G(WhneA2SB/]sp[4RP-ardJ2@I(Z<CgS/a^(b(YA?Pk
+^c.a%VftoCl_Gjj_$.&V&fXL1.OBT+P1,Qd*S9N21#^>o`7Ju`/=":G'>-@4@A/?qH6Sd)]7(r,Yh.ebMC"G<=E7In6-N%C
+o97=RSRHD2qRLlB95L]%`NE8$R$fLk8MhePi-?s(O0pclH[?\Hqt'6P*eZDI/WUbU@EE&$HkFUZMgk$fD+$(UFh=ip2`FSb
+O\AMCqC3b^,D5.!7'9+H8DeTReBs-7j<SeoJlaH/*K_1_'"3N$kd\3obBn^)rVQ>m?L;'q'$cW]>h,W,4X!!\bZZ?hl.qpX
+R$2h<maXV6kaj/mitAitM.pE#*(\?n-E(Xdi&h9+:sq^96H:?e9p4"Z,^1XkCRME<gO>;G/L__lq"PWPo]3)Vdd#mOQCKg+
+?r7lh;O^i]cP"egECCM@`2mAk)s`H((!g>M+_aBn2+%uq8QZW>[!%;n:i/2DnGGJ*ZtR^KfFB7,WJOd$6oWc/k;@hI-+a%c
+C<!&m+<_bnS@)"7cO4]p,$HC9'B7%8CA(DrIe`F-oBH#JT6tn]naoIgcO0e;Re2;QIVe\I5@c%9.K/h-S@)"C]*13u(j(G<
+-nQX29hAsorR,8)R]*VdN1V'Y>TC*b(2f\1bA_o&N!Br=]=Y\%HREY^'')DIS;V`3%=6X[0ULo!<$-+Kj6,iVa^)l=q50iu
+frNY\0\>:]e2YFnof:@A>+C@2(BuI723XcR,a(10m9i;SB7`;"o-V%k,+4eQL6LapP$"_qGS[jD$.JeYA56SQ8W:t/aR#dD
+/dkk>=sQu:-BgFrD'\?dXQj/NbjK`gTU.35,Vp(d84&f-BMNAqkG"V<X\D\N>;DV/bXRfIeAQDp'0qlt/SOO7XBC_.N$L<Q
+S;p61a#0dX-&GqLBpm19@,hRWUrn+l*ppM2BH_/\KJcIN1D8>bP*seR]+WHUc1?!Seh!65877QR(.i&a8C,7CMc]f:XALa@
+Oh;l0/6CD(OKkH3=7d\-$g$HfPt>ECjE@cPF!kt.SQ&?Y=IJqa97-i$o3;R.ABiZPf"W;FqeLD&\2Qr8V^8N=m-5q6rPjC@
+,$M-]9A\AKUZk@NPIMrrnZd)*03Y`I2,7*aP1>42X]^8Rgc3ZdRZq@-P'kN;`5WHk-Y:Pdk-pDEjg^M]3mjB@adP6;%4%u'
+M:W`ho0K_t+-T_Q>B;&dMb&M^$#3Y<2.u#9kDL+Y)%rc7--^!\9@W;s5mqZkH"GFS3WWDl+$L+>QIM_+BdjLJ(?3dg2P,<(
+:3`(0--iR]Hl"+m'"#S4&SmiZ/A2Q7eoI4H$n\YFd+P4+XBco4IMA/lFOcn*jak]%/S.ZQpmeFe-:pp(E#)Y!BUOi,CUO&l
+:K#c-\14I\HBUX-OVYHqSRK5`d(=sS3,r(g<s(K3\RYK!<"!S';-?WB5\H1E]u#?k;c9p0jL:J?XK':5)iBs@dq!!#a`&U6
+=]s3=:F@`KAJ3ls1:"=kH(T>_YF;-a'1`gY'AH%jZGNb=oA+N8\$nN"^J7Kke!!l]+D^>D3:B+.'J663PM8osR[eW(ZKq'D
+%CB*#l[`iq\:fl<4BC-8BYKrE=pV2&!;tG@Q62<NFnP"G'kk<CJ0$@IjI.?Z=UE1gq@r-C4HB_q"esU@qU;>bjDI;hk/RBb
+#5\P*9`g`Tln#+=a5,fcXkdfdj2o]mamF&1Z-mNeLmGD+M.3GpC50_kN!C#V'm=XlMN:>4S)geYimf=5S<eQ(XcDRdd#qGE
+h]@rtZADf)A25qQ=]\nUaeHbVB"rI$_U;"^Z"1(X6F*>':6Xae,$1i&qT3+?">QZIL\k<_b"B80-d92OQb;m[=e:Up8^p)X
+3+5rUB:^^OpHoQqXs(u0H2a1,>-clVq;HWnAsQ];Etn98]jrk,R,p=oIiN6-Sn@D3.,e<<+j`TNqj8ml(?MFsY?o+m=$ZPk
+T]NSu%XJVA%UuT=>)9eI?.D[eY:`E7,Y?0m^iPQY*:mYaR[sNRPI\gBbsE*%TgWY@L,g>EbAfI4NVCIGi=.&O[?I-"-*h4k
+f*k)2mmIP&+K=c#a*FsPON>sIJejQ3:.`U^"j]+d_E1^rE6*#Okda.*d5$m/bf$W0id<OfoYL/A#2Djh#Eu[_$.Gu4@bKhF
+<l05TE+=anH#c!6][]fVB'JpM`gDgD?g.^h3N7uc_'_fk/9u#mFL=j$=sSb)'B<ss)c)>Q$#M5-X.P'Q9?rtRNS0/-0:>7L
+r05FFPIC`&>(]4YhW/]l!dpT`11C/,fCL1ScUD$!QBm&]96c'qXHVg`cq>K5GuYKLjX.!!M=+1ARo3hE?f\=TdT8,B=\U(Z
+95J*pCJ)!"IsFZEW[EPsaiA-0hXa,N8S_5c6%:mjl=qZ,3Jk[#,fH5Vek'XlkFDPdgL('*o:qVoYt;am--5iT&(eM!VBr7A
+*>Is\PDaFP't&iEVVNo>F3)B)2*Ff29jF)C*tuHLM/#0?Hu7]3-`#c8e\hS+8T?s</=Ocee$.G+!-;l"]4<cJM2`mti<6Dj
+db@Ks?>YZ]mul7dA2^%G%O[0GP2_I@]HH??S9Kg*68BKQC7.>![kXK.JE<f$pBdo6g.:4lRT/FV0qQbj0P>AVOiS`O*DTG[
+qV"M'-`-XI:)^LpM"<6e<K\:r;VbD#WsNLTX\LUpm5XQufk@*!9NpJ):#Of&G0eWf>FcP*q2j7KP28GJ)bY9OHSG?hEs%t1
+h"!"bpPE`4nNBNW#D1<CD4K(<jnnj5mh=J_s6]IA__idom3dMIe!O4/.,W@Pq2c0V)4t(r9p-%/mqK(/-OkC@$1^8WCY"$r
+hd_WB(%Wu!("90aR1qk3A;rZZ4Ml*A/CF#h5E1"qh+.I`UmH>NP-Bu1N:UBeIJNHcU,DDf`n-C[G7ptp'@`0C($Wp#=q'Mj
+2"]lW^Scq<lj;pT@\Sq*=OY!4e)6R^n=Cq"$V=%4,g=:SXa]/fC&3`\F9@BIZ4b[:`42Gd<U/=a,&f!QD(tK_A?qYk#bNDj
+712Z#(=kf6R,BMUBh_3OchlUF?[&]W]@Z#-QQ2VC)(S?dUC#-_P#j!EJHDRh-,9Thb2O(8,q(99A<m)dqYP3!S=%MI,W3b=
+<h5&J0;4@Q_n5p9-Ca$/eIfpL,.]GdGb8ZN34Y$5DRkL9&Y5"Kc'Ns@80BN.aW3"l3)$laBZ\Ii[TY#J@hXMg8ot<T,<:ji
+`Y6C%a]c[%E`rN`Obn"TFNTZdlu59n51qI8rT@@A%r(a\:4NG'n6(q/:[VsFOV8DH&o$ba8VBm'hm3I\,\_%^LrR$`h\rAS
+Y:_h!-GZ>9pd+JV0R"2e>rtu%"Wu4#f:4N:'&Prob\QFXp0$i.d[XP=jE['lLK^\<VkgA1)KDfbA^]SEXMh/N)K%'+@F5T;
+prd\3q.c;:g.JIeC%5>01=di_Zo+[beAAQ%`2lBGALkBLU8;L2$!R!Y_cG_cO;=FA-#/^o_/IlKV?LX9a]l/pcs(AA/5JqE
+]/=LsbA6)gFVW=jDCmCW>"k)\2BCQ'nrp#_P.cJ3Lpg?QN3u:]$`(\m\u\<&<cXRm54mF6,_dV.`_#EID/J[(c;@/EH@"=M
+>@WiOZNPA0]p5_%Xip/45da`k~>
 U
 PSL_cliprestore
+0 A [] 0 B
 25 W
-8 W
-N 3600 7200 M 0 83 D S
-N 6718 5400 M 72 42 D S
-N 6718 1800 M 72 -42 D S
-N 3600 0 M 0 -83 D S
-N 482 1800 M -72 -42 D S
-N 482 5400 M -72 42 D S
-N 3600 7200 M 0 83 D S
 83 W
 1 A
 0 A
@@ -1028,14 +1022,6 @@ N 3600 3600 3642 90 105 arc S
 8 W
 N 3600 3600 3600 0 360 arc S
 N 3600 3600 3683 0 360 arc S
-3600 7367 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(0è) bc Z
-6862 5483 M V -60 R (60è) bc Z U
-6862 1717 M V 60 R (120è) tc Z U
-3600 -167 M (180è) tc Z
-338 1717 M V -60 R (î120è) tc Z U
-338 5483 M V 60 R (î60è) bc Z U
 %%EndObject
 0 A
 FQ
@@ -1044,12 +1030,224 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R0/360/-90/0 -JA0/-90/6i -O -K tt.arcs -W1p
-%@PROJ: laea 0.00000000 360.00000000 -90.00000000 0.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=-90 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: laea 0.00000000 360.00000000 -90.00000000 0.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=-90 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 17 W
+clipsave
+3600 3600 M
+0 3600 D
+-39 0 D
+-40 -1 D
+-39 -1 D
+-39 -1 D
+-39 -2 D
+-39 -3 D
+-40 -2 D
+-39 -4 D
+-39 -3 D
+-39 -4 D
+-39 -5 D
+-39 -5 D
+-39 -5 D
+-39 -6 D
+-38 -6 D
+-39 -7 D
+-39 -7 D
+-38 -7 D
+-39 -8 D
+-38 -8 D
+-38 -9 D
+-39 -9 D
+-38 -10 D
+-38 -10 D
+-38 -10 D
+-37 -11 D
+-38 -11 D
+-38 -12 D
+-37 -12 D
+-37 -12 D
+-37 -13 D
+-37 -13 D
+-37 -14 D
+-37 -14 D
+-36 -14 D
+-37 -15 D
+-36 -15 D
+-36 -16 D
+-36 -16 D
+-35 -16 D
+-36 -17 D
+-70 -35 D
+-70 -36 D
+-69 -38 D
+-68 -39 D
+-67 -41 D
+-66 -42 D
+-98 -66 D
+-95 -69 D
+-93 -72 D
+-121 -101 D
+-87 -79 D
+-85 -82 D
+-82 -85 D
+-79 -87 D
+-101 -121 D
+-72 -93 D
+-91 -127 D
+-65 -99 D
+-42 -66 D
+-59 -102 D
+-56 -104 D
+-53 -105 D
+-65 -143 D
+-44 -109 D
+-41 -111 D
+-49 -149 D
+-32 -113 D
+-29 -115 D
+-25 -115 D
+-27 -154 D
+-21 -156 D
+-11 -117 D
+-8 -157 D
+-2 -157 D
+5 -157 D
+5 -79 D
+11 -117 D
+21 -156 D
+27 -154 D
+25 -115 D
+39 -153 D
+34 -113 D
+37 -111 D
+55 -147 D
+46 -109 D
+49 -107 D
+71 -140 D
+77 -137 D
+41 -67 D
+64 -99 D
+67 -97 D
+70 -95 D
+73 -92 D
+76 -90 D
+79 -87 D
+82 -85 D
+85 -82 D
+87 -79 D
+121 -101 D
+93 -72 D
+127 -91 D
+99 -65 D
+66 -42 D
+102 -59 D
+104 -56 D
+105 -53 D
+143 -65 D
+109 -44 D
+111 -41 D
+149 -49 D
+113 -32 D
+115 -29 D
+115 -25 D
+154 -27 D
+156 -21 D
+117 -11 D
+157 -8 D
+157 -2 D
+157 5 D
+79 5 D
+117 11 D
+156 21 D
+154 27 D
+115 25 D
+153 39 D
+113 34 D
+111 37 D
+147 55 D
+109 46 D
+107 49 D
+140 71 D
+137 77 D
+67 41 D
+99 64 D
+97 67 D
+95 70 D
+92 73 D
+90 76 D
+87 79 D
+85 82 D
+82 85 D
+79 87 D
+101 121 D
+72 93 D
+91 127 D
+65 99 D
+42 66 D
+59 102 D
+56 104 D
+53 105 D
+65 143 D
+44 109 D
+41 111 D
+49 149 D
+32 113 D
+29 115 D
+25 115 D
+27 154 D
+21 156 D
+11 117 D
+8 157 D
+2 157 D
+-5 157 D
+-5 79 D
+-11 117 D
+-21 156 D
+-27 154 D
+-25 115 D
+-39 153 D
+-34 113 D
+-37 111 D
+-55 147 D
+-46 109 D
+-49 107 D
+-71 140 D
+-77 137 D
+-41 67 D
+-64 99 D
+-67 97 D
+-70 95 D
+-73 92 D
+-76 90 D
+-79 87 D
+-82 85 D
+-85 82 D
+-87 79 D
+-121 101 D
+-93 72 D
+-127 91 D
+-99 65 D
+-66 42 D
+-102 59 D
+-104 56 D
+-105 53 D
+-143 65 D
+-109 44 D
+-111 41 D
+-149 49 D
+-113 32 D
+-115 29 D
+-115 25 D
+-154 27 D
+-156 21 D
+-117 11 D
+-157 8 D
+-118 2 D
+P
+PSL_clip N
 5187 5648 M
 119 -2 D
 159 -9 D
@@ -1065,7 +1263,7 @@ O0
 112 -55 D
 97 -52 D
 9 -6 D
-S
+0 0 D S
 5652 4775 M
 125 -57 D
 130 -64 D
@@ -1087,15 +1285,15 @@ S
 67 -88 D
 71 -100 D
 35 -54 D
-S
+0 0 D S
 6638 2007 M
 75 27 D
 95 37 D
 64 28 D
-S
+0 0 D S
 4946 6909 M
 80 -3 D
-S
+0 0 D S
 4969 6265 M
 92 -1 D
 121 -5 D
@@ -1109,7 +1307,7 @@ S
 131 -49 D
 103 -44 D
 16 -7 D
-S
+17 -8 D S
 1906 6312 M
 121 132 D
 64 65 D
@@ -1336,7 +1534,7 @@ S
 -9 -3 D
 -8 -3 D
 -4 -2 D
-S
+-2 -1 D S
 455 2851 M
 -7 -8 D
 -23 -21 D
@@ -1347,7 +1545,7 @@ S
 -54 -63 D
 -64 -80 D
 -1 0 D
-S
+0 0 D S
 5167 2832 M
 -63 -55 D
 -19 -15 D
@@ -1516,7 +1714,7 @@ S
 524 5263 M
 -58 42 D
 -26 20 D
-S
+-1 0 D S
 3751 5714 M
 143 -71 D
 72 -38 D
@@ -2282,7 +2480,7 @@ S
 -84 -101 D
 -60 -69 D
 -6 -6 D
-S
+0 0 D S
 1761 879 M
 44 -106 D
 43 -93 D
@@ -2291,10 +2489,10 @@ S
 46 -79 D
 62 -100 D
 1 0 D
-S
+0 0 D S
 4946 6909 M
 -20 38 D
-S
+0 0 D S
 4634 6607 M
 63 66 D
 105 106 D
@@ -2454,6 +2652,7 @@ S
 -55 115 D
 -25 58 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -2461,12 +2660,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -R0/360/-90/0 -JA0/-90/6i -O -K -SE-250 -Gwhite -Wfaint @hotspots.txt
-%@PROJ: laea 0.00000000 360.00000000 -90.00000000 0.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=-90 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R0/360/-90/0 -JA0/-90/6i -O -K -SE-250 -Gwhite -Wfaint /Users/pwessel/.gmt/cache/hotspots.txt
+%@PROJ: laea 0.00000000 360.00000000 -90.00000000 0.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=-90 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 3600 3600 M
 0 3600 D
@@ -2685,6 +2884,7 @@ V
 FQ
 O1
 {1 A} FS
+O0
 /FO {P}!
 2302 6383 M
 -21 -13 D
@@ -2713,6 +2913,34 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+2302 6383 M
+-21 -13 D
+-8 -9 D
+-11 -18 D
+-2 -9 D
+1 -8 D
+3 -8 D
+5 -6 D
+7 -5 D
+20 -5 D
+23 2 D
+23 9 D
+19 15 D
+8 8 D
+5 9 D
+3 9 D
+1 9 D
+-5 15 D
+-7 6 D
+-17 7 D
+-11 1 D
+-12 -2 D
+-12 -2 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 2783 6878 M
 -12 -3 D
@@ -2739,6 +2967,32 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+2783 6878 M
+-12 -3 D
+-21 -11 D
+-15 -13 D
+-8 -15 D
+0 -7 D
+2 -7 D
+4 -6 D
+13 -9 D
+20 -5 D
+35 3 D
+32 14 D
+15 13 D
+8 15 D
+1 7 D
+-2 7 D
+-4 6 D
+-13 9 D
+-20 5 D
+-11 1 D
+-12 -1 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 1917 1596 M
 10 -7 D
@@ -2765,14 +3019,40 @@ P
 FO
 /FO {fs os}!
 FO
-O0
 FQ
 O1
+1917 1596 M
+10 -7 D
+23 -9 D
+21 1 D
+17 9 D
+5 8 D
+3 9 D
+1 10 D
+-2 11 D
+-10 21 D
+-8 9 D
+-10 8 D
+-21 11 D
+-22 2 D
+-10 -3 D
+-9 -4 D
+-6 -7 D
+-7 -18 D
+4 -21 D
+5 -11 D
+7 -10 D
+P S
 {1 A} FS
 O0
 FQ
 O1
 {1 A} FS
+O0
+FQ
+O1
+{1 A} FS
+O0
 /FO {P}!
 3877 2587 M
 12 4 D
@@ -2804,10 +3084,41 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+3877 2587 M
+12 4 D
+10 7 D
+8 9 D
+5 11 D
+3 12 D
+0 12 D
+-3 11 D
+-6 10 D
+-9 9 D
+-10 6 D
+-11 4 D
+-13 1 D
+-12 -2 D
+-11 -4 D
+-10 -7 D
+-8 -10 D
+-6 -10 D
+-2 -12 D
+0 -12 D
+3 -11 D
+6 -10 D
+8 -9 D
+10 -6 D
+12 -4 D
+12 -1 D
+P S
+{1 A} FS
 O0
 FQ
 O1
 {1 A} FS
+O0
 /FO {P}!
 3713 5222 M
 -12 -1 D
@@ -2838,9 +3149,34 @@ P
 FO
 /FO {fs os}!
 FO
-O0
 FQ
 O1
+3713 5222 M
+-12 -1 D
+-12 -2 D
+-19 -13 D
+-7 -9 D
+-4 -11 D
+-2 -11 D
+2 -11 D
+4 -10 D
+7 -9 D
+9 -8 D
+10 -6 D
+12 -3 D
+12 -1 D
+12 2 D
+11 4 D
+10 6 D
+8 8 D
+5 10 D
+3 11 D
+0 11 D
+-2 11 D
+-6 10 D
+-17 15 D
+-12 5 D
+P S
 {1 A} FS
 O0
 FQ
@@ -2850,6 +3186,11 @@ O0
 FQ
 O1
 {1 A} FS
+O0
+FQ
+O1
+{1 A} FS
+O0
 /FO {P}!
 3256 6792 M
 -12 -3 D
@@ -2880,10 +3221,40 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+3256 6792 M
+-12 -3 D
+-12 -3 D
+-11 -5 D
+-9 -6 D
+-7 -7 D
+-5 -7 D
+-3 -8 D
+2 -15 D
+4 -7 D
+7 -6 D
+19 -8 D
+11 -3 D
+24 0 D
+13 2 D
+22 8 D
+9 6 D
+7 7 D
+5 7 D
+4 15 D
+-2 8 D
+-4 7 D
+-7 6 D
+-19 9 D
+-23 3 D
+P S
+{1 A} FS
 O0
 FQ
 O1
 {1 A} FS
+O0
 /FO {P}!
 5854 5934 M
 -10 8 D
@@ -2911,6 +3282,33 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+5854 5934 M
+-10 8 D
+-20 12 D
+-10 3 D
+-18 1 D
+-8 -2 D
+-6 -4 D
+-5 -6 D
+-3 -7 D
+-1 -9 D
+4 -19 D
+11 -19 D
+16 -18 D
+20 -13 D
+20 -7 D
+9 -1 D
+8 1 D
+13 8 D
+4 7 D
+2 7 D
+-2 19 D
+-9 20 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 4978 4978 M
 -10 8 D
@@ -2939,6 +3337,34 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+4978 4978 M
+-10 8 D
+-23 9 D
+-11 0 D
+-11 -2 D
+-10 -5 D
+-8 -7 D
+-6 -9 D
+-4 -11 D
+2 -23 D
+4 -11 D
+7 -10 D
+9 -9 D
+10 -7 D
+11 -4 D
+23 -2 D
+11 4 D
+9 6 D
+7 8 D
+5 10 D
+2 11 D
+0 11 D
+-9 23 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 2238 1296 M
 22 -9 D
@@ -2967,10 +3393,38 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+2238 1296 M
+22 -9 D
+12 -1 D
+20 3 D
+9 5 D
+6 6 D
+5 8 D
+2 8 D
+0 10 D
+-3 10 D
+-11 19 D
+-19 15 D
+-22 9 D
+-22 1 D
+-10 -3 D
+-9 -4 D
+-6 -6 D
+-5 -8 D
+-2 -9 D
+2 -19 D
+5 -10 D
+7 -9 D
+9 -9 D
+P S
+{1 A} FS
 O0
 FQ
 O1
 {1 A} FS
+O0
 /FO {P}!
 1741 6576 M
 -11 -7 D
@@ -3000,6 +3454,35 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+1741 6576 M
+-11 -7 D
+-17 -16 D
+-11 -18 D
+-3 -15 D
+1 -7 D
+3 -6 D
+5 -5 D
+7 -3 D
+17 -2 D
+20 4 D
+22 10 D
+10 6 D
+18 16 D
+13 16 D
+6 17 D
+0 7 D
+-2 6 D
+-4 6 D
+-6 4 D
+-16 3 D
+-9 0 D
+-11 -2 D
+-11 -3 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 2 3467 M
 7 1 D
@@ -3018,9 +3501,21 @@ P
 FO
 /FO {fs os}!
 FO
-O0
 FQ
 O1
+2 3467 M
+7 1 D
+5 3 D
+11 13 D
+7 19 D
+4 23 D
+-1 24 D
+-4 23 D
+-8 18 D
+-11 13 D
+-6 3 D
+-6 1 D
+0 0 D S
 {1 A} FS
 O0
 FQ
@@ -3038,6 +3533,11 @@ O0
 FQ
 O1
 {1 A} FS
+O0
+FQ
+O1
+{1 A} FS
+O0
 /FO {P}!
 1206 4065 M
 -1 -12 D
@@ -3067,6 +3567,35 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+1206 4065 M
+-1 -12 D
+3 -23 D
+5 -10 D
+7 -8 D
+8 -7 D
+8 -3 D
+10 -1 D
+9 1 D
+10 4 D
+16 15 D
+6 10 D
+4 12 D
+3 24 D
+-2 11 D
+-9 20 D
+-7 7 D
+-9 5 D
+-9 3 D
+-10 0 D
+-9 -3 D
+-9 -5 D
+-15 -17 D
+-6 -11 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 5235 4433 M
 -7 11 D
@@ -3099,6 +3628,38 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+5235 4433 M
+-7 11 D
+-8 8 D
+-11 7 D
+-10 4 D
+-12 1 D
+-11 -2 D
+-10 -4 D
+-8 -7 D
+-7 -9 D
+-4 -10 D
+-2 -12 D
+1 -12 D
+3 -12 D
+6 -11 D
+7 -9 D
+10 -8 D
+10 -5 D
+11 -3 D
+11 0 D
+11 3 D
+9 5 D
+8 8 D
+6 10 D
+3 11 D
+0 12 D
+-2 12 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 5681 6465 M
 -21 12 D
@@ -3126,6 +3687,33 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+5681 6465 M
+-21 12 D
+-21 7 D
+-18 1 D
+-8 -2 D
+-6 -4 D
+-4 -5 D
+-3 -13 D
+5 -17 D
+5 -9 D
+15 -17 D
+19 -15 D
+21 -11 D
+10 -4 D
+19 -3 D
+15 4 D
+5 4 D
+4 6 D
+1 14 D
+-2 9 D
+-10 17 D
+-7 9 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 1159 2372 M
 6 -10 D
@@ -3154,6 +3742,34 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+1159 2372 M
+6 -10 D
+8 -10 D
+18 -13 D
+19 -4 D
+9 2 D
+8 4 D
+7 6 D
+8 18 D
+1 11 D
+-4 23 D
+-11 22 D
+-8 9 D
+-8 7 D
+-10 6 D
+-9 3 D
+-10 1 D
+-9 -1 D
+-7 -4 D
+-7 -6 D
+-5 -9 D
+-5 -20 D
+1 -12 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 2427 2293 M
 10 -7 D
@@ -3184,6 +3800,36 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+2427 2293 M
+10 -7 D
+23 -8 D
+12 1 D
+11 3 D
+9 5 D
+8 8 D
+6 9 D
+3 11 D
+-2 23 D
+-5 11 D
+-7 10 D
+-10 8 D
+-10 6 D
+-12 4 D
+-11 1 D
+-12 -2 D
+-10 -4 D
+-9 -6 D
+-7 -9 D
+-4 -10 D
+-2 -11 D
+1 -12 D
+4 -11 D
+6 -11 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 1317 2293 M
 7 -11 D
@@ -3214,10 +3860,40 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+1317 2293 M
+7 -11 D
+9 -9 D
+9 -7 D
+21 -7 D
+9 1 D
+9 3 D
+8 5 D
+6 7 D
+4 9 D
+2 11 D
+-2 23 D
+-5 12 D
+-6 10 D
+-8 10 D
+-9 8 D
+-9 6 D
+-21 5 D
+-9 -2 D
+-8 -4 D
+-7 -6 D
+-6 -8 D
+-3 -10 D
+-1 -11 D
+1 -12 D
+P S
+{1 A} FS
 O0
 FQ
 O1
 {1 A} FS
+O0
 /FO {P}!
 4778 5124 M
 -23 11 D
@@ -3246,6 +3922,34 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+4778 5124 M
+-23 11 D
+-11 1 D
+-12 -1 D
+-11 -3 D
+-9 -6 D
+-7 -8 D
+-5 -10 D
+-2 -11 D
+4 -23 D
+6 -10 D
+8 -10 D
+21 -13 D
+12 -3 D
+12 0 D
+11 2 D
+10 5 D
+8 7 D
+6 9 D
+4 10 D
+-2 23 D
+-4 11 D
+-7 10 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 1306 1097 M
 20 -15 D
@@ -3274,6 +3978,34 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+1306 1097 M
+20 -15 D
+10 -5 D
+20 -5 D
+9 0 D
+13 5 D
+5 6 D
+3 6 D
+1 8 D
+-1 9 D
+-7 18 D
+-6 10 D
+-16 18 D
+-19 14 D
+-20 9 D
+-19 2 D
+-7 -2 D
+-7 -3 D
+-4 -5 D
+-5 -14 D
+1 -9 D
+7 -19 D
+6 -10 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 2294 980 M
 11 -5 D
@@ -3303,10 +4035,39 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+2294 980 M
+11 -5 D
+23 -4 D
+21 3 D
+8 5 D
+6 6 D
+4 7 D
+2 8 D
+0 9 D
+-3 9 D
+-5 9 D
+-15 17 D
+-21 12 D
+-23 6 D
+-11 0 D
+-10 -1 D
+-17 -9 D
+-5 -6 D
+-3 -8 D
+-1 -8 D
+1 -10 D
+4 -9 D
+6 -9 D
+17 -16 D
+P S
+{1 A} FS
 O0
 FQ
 O1
 {1 A} FS
+O0
 /FO {P}!
 3731 3031 M
 12 4 D
@@ -3337,6 +4098,36 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+3731 3031 M
+12 4 D
+11 7 D
+8 10 D
+6 11 D
+2 12 D
+0 13 D
+-4 12 D
+-6 10 D
+-9 9 D
+-11 6 D
+-12 4 D
+-13 0 D
+-12 -3 D
+-11 -6 D
+-10 -8 D
+-7 -10 D
+-4 -12 D
+-1 -13 D
+2 -12 D
+5 -12 D
+8 -9 D
+10 -8 D
+11 -5 D
+13 -2 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 740 1929 M
 15 -20 D
@@ -3365,6 +4156,34 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+740 1929 M
+15 -20 D
+9 -8 D
+17 -10 D
+17 -2 D
+7 2 D
+6 5 D
+7 13 D
+2 10 D
+-2 21 D
+-9 22 D
+-6 11 D
+-15 18 D
+-9 7 D
+-17 9 D
+-9 1 D
+-7 -1 D
+-7 -3 D
+-5 -5 D
+-4 -7 D
+-3 -18 D
+1 -11 D
+7 -23 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 1447 1787 M
 9 -9 D
@@ -3391,10 +4210,36 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+1447 1787 M
+9 -9 D
+10 -7 D
+21 -9 D
+10 -1 D
+17 5 D
+7 6 D
+5 7 D
+3 9 D
+-1 21 D
+-4 11 D
+-13 21 D
+-8 9 D
+-20 13 D
+-21 4 D
+-9 -1 D
+-15 -9 D
+-5 -8 D
+-3 -9 D
+-1 -10 D
+5 -22 D
+P S
+{1 A} FS
 O0
 FQ
 O1
 {1 A} FS
+O0
 /FO {P}!
 6013 5258 M
 -8 10 D
@@ -3425,6 +4270,36 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+6013 5258 M
+-8 10 D
+-18 15 D
+-20 7 D
+-9 0 D
+-8 -2 D
+-7 -4 D
+-6 -7 D
+-4 -8 D
+-2 -9 D
+2 -21 D
+3 -11 D
+13 -21 D
+8 -9 D
+18 -13 D
+10 -4 D
+10 -1 D
+8 1 D
+8 3 D
+7 5 D
+5 7 D
+3 9 D
+1 10 D
+-3 21 D
+-5 12 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 5799 4088 M
 -3 11 D
@@ -3457,6 +4332,38 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+5799 4088 M
+-3 11 D
+-6 11 D
+-8 9 D
+-9 7 D
+-9 5 D
+-11 2 D
+-10 -1 D
+-9 -4 D
+-8 -6 D
+-7 -8 D
+-5 -10 D
+-3 -11 D
+-1 -13 D
+5 -24 D
+6 -10 D
+8 -9 D
+8 -7 D
+10 -5 D
+10 -2 D
+10 1 D
+10 3 D
+8 6 D
+7 8 D
+5 11 D
+3 11 D
+1 12 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 1041 2719 M
 11 -22 D
@@ -3486,6 +4393,35 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+1041 2719 M
+11 -22 D
+17 -15 D
+9 -4 D
+9 -2 D
+9 0 D
+9 3 D
+7 5 D
+6 8 D
+7 19 D
+1 12 D
+-5 24 D
+-4 11 D
+-14 18 D
+-9 7 D
+-9 5 D
+-9 2 D
+-9 -1 D
+-9 -2 D
+-7 -6 D
+-6 -7 D
+-5 -9 D
+-3 -22 D
+1 -12 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 3028 483 M
 25 -1 D
@@ -3512,6 +4448,32 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+3028 483 M
+25 -1 D
+21 5 D
+9 4 D
+7 6 D
+5 7 D
+3 15 D
+-7 15 D
+-16 14 D
+-21 10 D
+-12 3 D
+-24 1 D
+-11 -1 D
+-11 -3 D
+-16 -10 D
+-7 -14 D
+0 -8 D
+2 -8 D
+4 -8 D
+15 -14 D
+22 -10 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 935 4070 M
 -1 -24 D
@@ -3541,6 +4503,35 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+935 4070 M
+-1 -24 D
+7 -22 D
+6 -8 D
+7 -6 D
+8 -4 D
+9 -2 D
+9 1 D
+9 4 D
+8 6 D
+8 8 D
+6 9 D
+7 23 D
+2 12 D
+-1 12 D
+-7 21 D
+-6 9 D
+-7 6 D
+-8 4 D
+-8 2 D
+-9 -1 D
+-18 -9 D
+-7 -8 D
+-11 -21 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 1992 1029 M
 23 -10 D
@@ -3568,6 +4559,33 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+1992 1029 M
+23 -10 D
+22 -3 D
+19 5 D
+7 5 D
+7 15 D
+-2 18 D
+-4 9 D
+-6 9 D
+-8 9 D
+-20 15 D
+-11 5 D
+-23 5 D
+-10 -1 D
+-10 -2 D
+-7 -4 D
+-6 -6 D
+-4 -7 D
+-2 -8 D
+1 -10 D
+8 -19 D
+7 -9 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 2052 972 M
 23 -9 D
@@ -3594,6 +4612,32 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+2052 972 M
+23 -9 D
+23 -3 D
+9 2 D
+9 4 D
+7 5 D
+4 7 D
+3 16 D
+-7 19 D
+-15 18 D
+-20 14 D
+-23 8 D
+-11 1 D
+-11 -1 D
+-9 -2 D
+-8 -5 D
+-9 -13 D
+-1 -8 D
+4 -19 D
+5 -9 D
+8 -9 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 4477 1602 M
 11 6 D
@@ -3624,10 +4668,40 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+4477 1602 M
+11 6 D
+9 8 D
+8 9 D
+5 10 D
+2 21 D
+-3 10 D
+-5 9 D
+-8 7 D
+-9 5 D
+-11 3 D
+-12 1 D
+-12 -2 D
+-11 -4 D
+-11 -6 D
+-9 -7 D
+-8 -10 D
+-5 -10 D
+-3 -10 D
+0 -10 D
+3 -10 D
+5 -9 D
+8 -7 D
+20 -9 D
+24 1 D
+P S
+{1 A} FS
 O0
 FQ
 O1
 {1 A} FS
+O0
 /FO {P}!
 2163 6192 M
 -19 -14 D
@@ -3655,6 +4729,33 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+2163 6192 M
+-19 -14 D
+-8 -9 D
+-6 -10 D
+-3 -9 D
+-1 -9 D
+1 -9 D
+9 -13 D
+8 -5 D
+9 -3 D
+10 -1 D
+23 4 D
+11 4 D
+21 13 D
+15 18 D
+7 18 D
+0 9 D
+-7 15 D
+-15 9 D
+-21 3 D
+-11 -2 D
+-12 -4 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 3117 5870 M
 -12 -3 D
@@ -3686,6 +4787,37 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+3117 5870 M
+-12 -3 D
+-10 -6 D
+-10 -8 D
+-7 -8 D
+-5 -10 D
+-2 -10 D
+1 -10 D
+4 -10 D
+6 -8 D
+8 -7 D
+10 -5 D
+11 -3 D
+25 1 D
+23 9 D
+9 8 D
+7 8 D
+5 10 D
+2 10 D
+-1 10 D
+-3 10 D
+-6 8 D
+-8 7 D
+-10 5 D
+-12 3 D
+-12 1 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 4294 6019 M
 -25 2 D
@@ -3713,14 +4845,41 @@ P
 FO
 /FO {fs os}!
 FO
-O0
 FQ
 O1
+4294 6019 M
+-25 2 D
+-11 -1 D
+-11 -4 D
+-9 -6 D
+-11 -15 D
+-2 -10 D
+4 -19 D
+6 -9 D
+8 -8 D
+10 -7 D
+23 -9 D
+12 -1 D
+22 3 D
+10 5 D
+8 6 D
+6 8 D
+3 9 D
+1 10 D
+-2 9 D
+-5 10 D
+-15 16 D
+P S
 {1 A} FS
 O0
 FQ
 O1
 {1 A} FS
+O0
+FQ
+O1
+{1 A} FS
+O0
 /FO {P}!
 4835 4696 M
 -9 9 D
@@ -3751,6 +4910,34 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+4835 4696 M
+-9 9 D
+-11 6 D
+-11 3 D
+-12 1 D
+-11 -2 D
+-10 -4 D
+-9 -7 D
+-7 -9 D
+-4 -10 D
+-2 -11 D
+1 -12 D
+4 -11 D
+6 -11 D
+8 -9 D
+10 -7 D
+11 -5 D
+11 -3 D
+12 1 D
+10 3 D
+10 5 D
+8 8 D
+9 21 D
+-2 23 D
+-5 11 D
+P S
 U
 PSL_cliprestore
 %%EndObject
@@ -3760,12 +4947,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -R0/360/-90/0 -JA0/-90/6i -O -K -SE-100 -Gblack @hotspots.txt
-%@PROJ: laea 0.00000000 360.00000000 -90.00000000 0.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=-90 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R0/360/-90/0 -JA0/-90/6i -O -K -SE-100 -Gblack /Users/pwessel/.gmt/cache/hotspots.txt
+%@PROJ: laea 0.00000000 360.00000000 -90.00000000 0.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=-90 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 3600 3600 M
 0 3600 D
@@ -3987,14 +5174,61 @@ FQ
 -10 1 -7 5 -2 7 4 9 8 8 11 5 11 1 9 -3 4 -6 -1 -8 -6 -9 -9 -6 12 2312 6361 SP
 /FO {fs os}!
 FO
+FQ
+2312 6361 M
+-9 -6 D
+-6 -9 D
+-1 -8 D
+4 -6 D
+9 -3 D
+11 1 D
+11 5 D
+8 8 D
+4 9 D
+-2 7 D
+-7 5 D
+-10 1 D
+P S
+{0 A} FS
 /FO {P}!
 -11 2 -6 6 0 7 6 8 10 6 12 3 12 -1 8 -4 3 -6 -2 -8 -8 -7 -12 -5 12 2788 6857 SP
 /FO {fs os}!
 FO
+FQ
+2788 6857 M
+-12 -5 D
+-8 -7 D
+-2 -8 D
+3 -6 D
+8 -4 D
+12 -1 D
+12 3 D
+10 6 D
+6 8 D
+0 7 D
+-6 6 D
+-11 2 D
+P S
+{0 A} FS
 /FO {P}!
 2 -11 -3 -8 -8 -5 -10 1 -11 6 -7 9 -2 10 3 9 8 4 10 0 11 -6 11 1933 1616 SP
 /FO {fs os}!
 FO
+FQ
+1933 1616 M
+11 -6 D
+10 0 D
+8 4 D
+3 9 D
+-2 10 D
+-7 9 D
+-11 6 D
+-10 1 D
+-8 -5 D
+-3 -8 D
+2 -11 D
+P S
+{0 A} FS
 FQ
 {0 A} FS
 FQ
@@ -4004,11 +5238,38 @@ FQ
 /FO {fs os}!
 FO
 FQ
+3869 2615 M
+11 7 D
+5 11 D
+-4 12 D
+-9 7 D
+-13 1 D
+-11 -7 D
+-4 -11 D
+3 -12 D
+10 -8 D
+P S
+{0 A} FS
+FQ
 {0 A} FS
 /FO {P}!
 -7 9 -1 11 6 9 10 5 12 -1 10 -6 4 -10 -3 -11 -8 -7 -11 -3 10 3711 5194 SP
 /FO {fs os}!
 FO
+FQ
+3711 5194 M
+-11 -3 D
+-8 -7 D
+-3 -11 D
+4 -10 D
+10 -6 D
+12 -1 D
+10 5 D
+6 9 D
+-1 11 D
+-7 9 D
+P S
+{0 A} FS
 FQ
 {0 A} FS
 FQ
@@ -4020,29 +5281,118 @@ FQ
 /FO {fs os}!
 FO
 FQ
+3259 6768 M
+-12 -3 D
+-9 -6 D
+-3 -7 D
+2 -7 D
+8 -5 D
+11 -3 D
+12 2 D
+10 4 D
+7 7 D
+0 8 D
+-5 6 D
+-9 4 D
+P S
+{0 A} FS
+FQ
 {0 A} FS
 /FO {P}!
 -3 10 1 8 7 5 9 -1 10 -5 9 -8 5 -11 1 -9 -4 -6 -8 -2 -10 3 -10 7 12 5838 5917 SP
 /FO {fs os}!
 FO
+FQ
+5838 5917 M
+-10 7 D
+-10 3 D
+-8 -2 D
+-4 -6 D
+1 -9 D
+5 -11 D
+9 -8 D
+10 -5 D
+9 -1 D
+7 5 D
+1 8 D
+-3 10 D
+P S
+{0 A} FS
 /FO {P}!
 0 11 6 9 10 3 11 -3 9 -9 3 -11 -3 -10 -9 -6 -11 0 -10 6 10 4958 4958 SP
 /FO {fs os}!
 FO
+FQ
+4958 4958 M
+-10 6 D
+-11 0 D
+-9 -6 D
+-3 -10 D
+3 -11 D
+9 -9 D
+11 -3 D
+10 3 D
+6 9 D
+0 11 D
+P S
+{0 A} FS
 /FO {P}!
 4 -10 -1 -9 -7 -6 -11 -1 -11 4 -9 8 -4 10 2 9 7 6 10 1 11 -4 11 2251 1318 SP
 /FO {fs os}!
 FO
+FQ
+2251 1318 M
+11 -4 D
+10 1 D
+7 6 D
+2 9 D
+-4 10 D
+-9 8 D
+-11 4 D
+-11 -1 D
+-7 -6 D
+-1 -9 D
+4 -10 D
+P S
+{0 A} FS
 FQ
 {0 A} FS
 /FO {P}!
 -10 -2 -8 2 -3 6 1 7 6 9 10 7 10 5 11 2 7 -2 4 -6 -2 -7 -6 -9 -9 -7 13 1752 6557 SP
 /FO {fs os}!
 FO
+FQ
+1752 6557 M
+-9 -7 D
+-6 -9 D
+-2 -7 D
+4 -6 D
+7 -2 D
+11 2 D
+10 5 D
+10 7 D
+6 9 D
+1 7 D
+-3 6 D
+-8 2 D
+-10 -2 D
+P S
+{0 A} FS
 /FO {P}!
 0 -9 0 -9 1 -9 0 -10 0 -9 -3 0 -6 6 -4 9 -2 13 2 12 3 10 6 5 3 0 13 1 3510 SP
 /FO {fs os}!
 FO
+FQ
+1 3510 M
+3 0 D
+6 5 D
+5 22 D
+-2 13 D
+-4 9 D
+-6 6 D
+-3 0 D
+0 0 D S
+{0 A} FS
 FQ
 {0 A} FS
 FQ
@@ -4057,102 +5407,443 @@ FQ
 -9 -7 -10 1 -8 6 -3 12 2 13 8 9 10 4 9 -4 6 -10 0 -12 10 1232 4060 SP
 /FO {fs os}!
 FO
+FQ
+1232 4060 M
+0 -12 D
+6 -10 D
+9 -4 D
+10 4 D
+8 9 D
+2 13 D
+-3 12 D
+-8 6 D
+-10 1 D
+-9 -7 D
+P S
+{0 A} FS
 /FO {P}!
 4 11 8 6 11 0 10 -6 5 -11 0 -12 -6 -8 -10 -4 -11 4 -8 9 10 5210 4420 SP
 /FO {fs os}!
 FO
+FQ
+5210 4420 M
+-8 9 D
+-11 4 D
+-10 -4 D
+-6 -8 D
+0 -12 D
+5 -11 D
+10 -6 D
+11 0 D
+8 6 D
+4 11 D
+P S
+{0 A} FS
 /FO {P}!
 -6 9 -1 8 4 5 8 1 10 -2 10 -6 9 -8 6 -9 0 -8 -3 -5 -8 -1 -10 2 -11 6 13 5669 6447 SP
 /FO {fs os}!
 FO
+FQ
+5669 6447 M
+-11 6 D
+-10 2 D
+-8 -1 D
+-3 -5 D
+0 -8 D
+6 -9 D
+9 -8 D
+10 -6 D
+10 -2 D
+8 1 D
+4 5 D
+-1 8 D
+-6 9 D
+P S
+{0 A} FS
 /FO {P}!
 -2 -11 -6 -6 -9 -1 -9 5 -8 9 -3 12 2 10 6 7 9 1 9 -5 8 -10 11 1181 2384 SP
 /FO {fs os}!
 FO
+FQ
+1181 2384 M
+8 -10 D
+9 -5 D
+9 1 D
+6 7 D
+2 10 D
+-3 12 D
+-8 9 D
+-9 5 D
+-9 -1 D
+-6 -6 D
+-2 -11 D
+P S
+{0 A} FS
 /FO {P}!
 1 -11 -6 -9 -10 -4 -11 3 -9 7 -4 11 3 11 8 7 11 0 11 -5 10 2446 2314 SP
 /FO {fs os}!
 FO
+FQ
+2446 2314 M
+11 -5 D
+11 0 D
+8 7 D
+3 11 D
+-4 11 D
+-9 7 D
+-11 3 D
+-10 -4 D
+-6 -9 D
+1 -11 D
+P S
+{0 A} FS
 /FO {P}!
 -2 -11 -6 -7 -9 -1 -9 4 -8 9 -4 11 1 10 6 7 9 2 10 -4 8 -9 11 1339 2305 SP
 /FO {fs os}!
 FO
+FQ
+1339 2305 M
+8 -9 D
+10 -4 D
+9 2 D
+6 7 D
+1 10 D
+-4 11 D
+-8 9 D
+-9 4 D
+-9 -1 D
+-6 -7 D
+-2 -11 D
+P S
+{0 A} FS
 FQ
 {0 A} FS
 /FO {P}!
 -2 11 5 9 10 5 12 -2 9 -8 5 -10 -2 -11 -8 -7 -11 -2 -11 5 10 4761 5102 SP
 /FO {fs os}!
 FO
+FQ
+4761 5102 M
+-11 5 D
+-11 -2 D
+-8 -7 D
+-2 -11 D
+5 -10 D
+9 -8 D
+12 -2 D
+10 5 D
+5 9 D
+-2 11 D
+P S
+{0 A} FS
 /FO {P}!
 3 -10 -1 -8 -6 -4 -9 1 -11 5 -9 8 -6 10 -1 10 3 6 8 2 10 -3 11 -7 12 1321 1113 SP
 /FO {fs os}!
 FO
+FQ
+1321 1113 M
+11 -7 D
+10 -3 D
+8 2 D
+3 6 D
+-1 10 D
+-6 10 D
+-9 8 D
+-11 5 D
+-9 1 D
+-6 -4 D
+-1 -8 D
+3 -10 D
+P S
+{0 A} FS
 /FO {P}!
 6 -10 -1 -8 -7 -6 -10 -2 -12 4 -10 7 -5 9 0 9 7 6 11 2 11 -4 11 2305 1002 SP
 /FO {fs os}!
 FO
+FQ
+2305 1002 M
+11 -4 D
+11 2 D
+7 6 D
+0 9 D
+-5 9 D
+-10 7 D
+-12 4 D
+-10 -2 D
+-7 -6 D
+-1 -8 D
+6 -10 D
+P S
+{0 A} FS
 FQ
 {0 A} FS
 /FO {P}!
 9 -8 3 -12 -5 -11 -11 -7 -12 1 -10 8 -2 12 5 12 10 6 9 3725 3060 SP
 /FO {fs os}!
 FO
+FQ
+3725 3060 M
+10 6 D
+5 12 D
+-2 12 D
+-10 8 D
+-12 1 D
+-11 -7 D
+-5 -11 D
+3 -12 D
+9 -8 D
+P S
+{0 A} FS
 /FO {P}!
 0 -10 -4 -8 -7 -2 -8 3 -9 8 -6 11 -3 11 2 9 5 5 8 0 9 -6 8 -9 12 760 1940 SP
 /FO {fs os}!
 FO
+FQ
+760 1940 M
+8 -9 D
+9 -6 D
+8 0 D
+5 5 D
+2 9 D
+-3 11 D
+-6 11 D
+-9 8 D
+-8 3 D
+-7 -2 D
+-4 -8 D
+0 -10 D
+P S
+{0 A} FS
 /FO {P}!
 1 -11 -5 -7 -8 -3 -11 3 -9 7 -6 11 -1 10 4 8 9 3 10 -3 10 -7 11 1466 1803 SP
 /FO {fs os}!
 FO
+FQ
+1466 1803 M
+10 -7 D
+10 -3 D
+9 3 D
+4 8 D
+-1 10 D
+-6 11 D
+-9 7 D
+-11 3 D
+-8 -3 D
+-5 -7 D
+1 -11 D
+P S
+{0 A} FS
 FQ
 {0 A} FS
 /FO {P}!
 0 11 5 7 9 2 10 -4 8 -9 5 -11 1 -11 -5 -7 -9 -2 -10 4 -9 9 11 5993 5244 SP
 /FO {fs os}!
 FO
+FQ
+5993 5244 M
+-9 9 D
+-10 4 D
+-9 -2 D
+-5 -7 D
+1 -11 D
+5 -11 D
+8 -9 D
+10 -4 D
+9 2 D
+5 7 D
+0 11 D
+P S
+{0 A} FS
 /FO {P}!
 6 9 9 4 10 -3 8 -9 3 -12 -4 -12 -7 -7 -11 0 -9 6 -5 11 10 5773 4082 SP
 /FO {fs os}!
 FO
+FQ
+5773 4082 M
+-5 11 D
+-9 6 D
+-11 0 D
+-7 -7 D
+-4 -12 D
+3 -12 D
+8 -9 D
+10 -3 D
+9 4 D
+6 9 D
+P S
+{0 A} FS
 /FO {P}!
 -3 -10 -8 -6 -9 0 -8 6 -6 11 -2 12 3 10 7 5 9 0 9 -6 6 -10 11 1065 2727 SP
 /FO {fs os}!
 FO
+FQ
+1065 2727 M
+6 -10 D
+9 -6 D
+9 0 D
+7 5 D
+3 10 D
+-2 12 D
+-6 11 D
+-8 6 D
+-9 0 D
+-8 -6 D
+-3 -10 D
+P S
+{0 A} FS
 /FO {P}!
 8 -7 3 -8 -3 -7 -8 -4 -11 -2 -12 2 -10 6 -5 7 0 7 5 7 10 3 12 0 12 3032 506 SP
 /FO {fs os}!
 FO
+FQ
+3032 506 M
+12 0 D
+10 3 D
+5 7 D
+0 7 D
+-5 7 D
+-10 6 D
+-12 2 D
+-11 -2 D
+-8 -4 D
+-3 -7 D
+3 -8 D
+8 -7 D
+P S
+{0 A} FS
 /FO {P}!
 -8 -7 -9 -2 -7 5 -5 9 0 12 4 11 8 8 9 2 7 -5 5 -10 0 -12 11 960 4066 SP
 /FO {fs os}!
 FO
+FQ
+960 4066 M
+0 -12 D
+5 -10 D
+7 -5 D
+9 2 D
+8 8 D
+4 11 D
+0 12 D
+-5 9 D
+-7 5 D
+-9 -2 D
+-8 -7 D
+P S
+{0 A} FS
 /FO {P}!
 5 -10 -2 -8 -7 -5 -11 -1 -11 5 -10 8 -4 10 1 9 7 5 11 0 12 -5 11 2005 1050 SP
 /FO {fs os}!
 FO
+FQ
+2005 1050 M
+12 -5 D
+11 0 D
+7 5 D
+1 9 D
+-4 10 D
+-10 8 D
+-11 5 D
+-11 -1 D
+-7 -5 D
+-2 -8 D
+5 -10 D
+P S
+{0 A} FS
 /FO {P}!
 5 -10 -1 -9 -7 -5 -11 0 -12 4 -9 8 -5 10 1 9 7 5 11 0 12 -4 11 2064 993 SP
 /FO {fs os}!
 FO
+FQ
+2064 993 M
+12 -4 D
+11 0 D
+7 5 D
+1 9 D
+-5 10 D
+-9 8 D
+-12 4 D
+-11 0 D
+-7 -5 D
+-1 -9 D
+5 -10 D
+P S
+{0 A} FS
 /FO {P}!
 11 -4 5 -8 -1 -11 -7 -9 -11 -5 -12 1 -9 6 -2 10 4 11 10 7 10 4466 1627 SP
 /FO {fs os}!
 FO
+FQ
+4466 1627 M
+10 7 D
+4 11 D
+-2 10 D
+-9 6 D
+-12 1 D
+-11 -5 D
+-7 -9 D
+-1 -11 D
+5 -8 D
+11 -4 D
+P S
+{0 A} FS
 FQ
 {0 A} FS
 /FO {P}!
 -10 1 -7 6 -1 8 5 10 9 8 12 4 11 -1 6 -6 2 -8 -5 -10 -10 -8 11 2175 6171 SP
 /FO {fs os}!
 FO
+FQ
+2175 6171 M
+-10 -8 D
+-5 -10 D
+2 -8 D
+6 -6 D
+11 -1 D
+12 4 D
+9 8 D
+5 10 D
+-1 8 D
+-7 6 D
+-10 1 D
+P S
+{0 A} FS
 /FO {P}!
 -10 6 -4 9 3 10 10 8 12 2 11 -3 7 -8 1 -10 -7 -9 -11 -5 10 3123 5844 SP
 /FO {fs os}!
 FO
+FQ
+3123 5844 M
+-11 -5 D
+-7 -9 D
+1 -10 D
+7 -8 D
+11 -3 D
+12 2 D
+10 8 D
+3 10 D
+-4 9 D
+-10 6 D
+P S
+{0 A} FS
 /FO {P}!
 -6 8 -1 9 6 8 10 4 11 -1 11 -6 6 -8 0 -9 -5 -8 -10 -4 -11 1 11 4286 5994 SP
 /FO {fs os}!
 FO
+FQ
+4286 5994 M
+-11 1 D
+-10 -4 D
+-5 -8 D
+0 -9 D
+6 -8 D
+11 -6 D
+11 -1 D
+10 4 D
+6 8 D
+-1 9 D
+-6 8 D
+P S
+{0 A} FS
 FQ
 {0 A} FS
 FQ
@@ -4161,6 +5852,19 @@ FQ
 1 11 7 9 10 2 11 -3 8 -9 3 -11 -4 -11 -9 -5 -12 0 -9 7 10 4813 4677 SP
 /FO {fs os}!
 FO
+FQ
+4813 4677 M
+-9 7 D
+-12 0 D
+-9 -5 D
+-4 -11 D
+3 -11 D
+8 -9 D
+11 -3 D
+10 2 D
+7 9 D
+1 11 D
+P S
 U
 PSL_cliprestore
 %%EndObject
@@ -4171,11 +5875,12 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt grdimage z.nc -Ct.cpt -JH0/6i -B0 -O -K -Y6.5i -nn
-%@PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+8 W
 clipsave
 3600 0 M
 118 1 D
@@ -4545,8 +6250,7 @@ en9"n0N,0>d7pebp.39M6oV]#PTh];Nc&b%aS'k6B\-=t[MIA5AZq-GEa"@eea])SO/LOaI)34u8U@I&
 Ie3$Keuu6&$hXH")31X=~>
 U
 PSL_cliprestore
-25 W
-8 W
+0 A [] 0 B
 25 W
 3600 0 M
 0 0 D
@@ -5017,12 +6721,222 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -Rg -JH0/6i -O -K tt.arcs -W1p
-%@PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 17 W
+clipsave
+3600 0 M
+118 1 D
+197 6 D
+196 11 D
+194 17 D
+154 17 D
+190 26 D
+187 31 D
+183 37 D
+179 41 D
+174 46 D
+168 51 D
+99 32 D
+190 70 D
+151 63 D
+143 67 D
+110 56 D
+105 59 D
+75 45 D
+95 63 D
+89 64 D
+43 33 D
+81 67 D
+57 51 D
+71 70 D
+49 54 D
+59 72 D
+41 55 D
+37 56 D
+43 75 D
+29 57 D
+17 38 D
+28 77 D
+22 77 D
+9 39 D
+7 39 D
+7 59 D
+3 78 D
+-3 78 D
+-7 59 D
+-11 58 D
+-21 78 D
+-19 57 D
+-15 39 D
+-26 57 D
+-41 76 D
+-34 56 D
+-38 55 D
+-57 73 D
+-46 54 D
+-50 53 D
+-54 53 D
+-57 51 D
+-81 67 D
+-64 49 D
+-115 80 D
+-73 46 D
+-102 60 D
+-107 57 D
+-170 82 D
+-119 51 D
+-124 49 D
+-160 57 D
+-166 52 D
+-137 39 D
+-140 36 D
+-180 40 D
+-147 29 D
+-187 31 D
+-228 31 D
+-232 23 D
+-195 13 D
+-157 7 D
+-198 4 D
+-39 0 D
+-39 0 D
+-40 0 D
+-39 -1 D
+-40 -1 D
+-39 -1 D
+-40 -1 D
+-39 -1 D
+-39 -2 D
+-39 -2 D
+-40 -2 D
+-39 -2 D
+-39 -3 D
+-39 -2 D
+-39 -3 D
+-39 -3 D
+-39 -4 D
+-39 -3 D
+-38 -4 D
+-39 -4 D
+-39 -4 D
+-38 -4 D
+-38 -5 D
+-39 -5 D
+-38 -5 D
+-38 -5 D
+-38 -6 D
+-37 -5 D
+-38 -6 D
+-37 -6 D
+-38 -6 D
+-37 -7 D
+-37 -6 D
+-37 -7 D
+-37 -7 D
+-36 -8 D
+-37 -7 D
+-36 -8 D
+-36 -8 D
+-36 -8 D
+-36 -8 D
+-36 -8 D
+-35 -9 D
+-35 -9 D
+-35 -9 D
+-35 -9 D
+-35 -10 D
+-34 -9 D
+-34 -10 D
+-34 -10 D
+-34 -10 D
+-33 -10 D
+-33 -11 D
+-33 -11 D
+-33 -10 D
+-33 -11 D
+-32 -12 D
+-32 -11 D
+-32 -12 D
+-31 -11 D
+-32 -12 D
+-31 -12 D
+-30 -13 D
+-31 -12 D
+-30 -13 D
+-30 -12 D
+-30 -13 D
+-29 -13 D
+-29 -14 D
+-29 -13 D
+-28 -14 D
+-28 -13 D
+-56 -28 D
+-54 -28 D
+-53 -29 D
+-52 -30 D
+-50 -30 D
+-49 -31 D
+-71 -47 D
+-68 -48 D
+-64 -49 D
+-81 -67 D
+-57 -51 D
+-71 -70 D
+-49 -54 D
+-59 -72 D
+-41 -55 D
+-37 -56 D
+-43 -75 D
+-29 -57 D
+-17 -38 D
+-28 -77 D
+-22 -77 D
+-9 -39 D
+-7 -39 D
+-7 -59 D
+-3 -78 D
+3 -78 D
+7 -59 D
+11 -58 D
+21 -78 D
+19 -57 D
+15 -39 D
+26 -57 D
+41 -76 D
+34 -56 D
+38 -55 D
+57 -73 D
+46 -54 D
+50 -53 D
+54 -53 D
+57 -51 D
+81 -67 D
+64 -49 D
+115 -80 D
+73 -46 D
+102 -60 D
+107 -57 D
+170 -82 D
+119 -51 D
+124 -49 D
+160 -57 D
+166 -52 D
+137 -39 D
+140 -36 D
+180 -40 D
+147 -29 D
+187 -31 D
+228 -31 D
+232 -23 D
+195 -13 D
+157 -7 D
+198 -4 D
+P
+PSL_clip N
 5749 2178 M
 -9 -4 D
 -9 -4 D
@@ -5703,7 +7617,9 @@ S
 16 2 D
 16 2 D
 10 3 D
-1270 428 M
+113 39 D
+1269 427 M
+1 1 D
 2 3 D
 -7 8 D
 -6 8 D
@@ -5790,7 +7706,9 @@ S
 9 -6 D
 8 -6 D
 -10 -2 D
-4740 93 M
+-17 -5 D
+5202 161 M
+-462 -68 D
 -18 -3 D
 -12 2 D
 -12 3 D
@@ -6139,7 +8057,9 @@ S
 -5 4 D
 -6 3 D
 -7 1 D
-6253 3017 M
+-12 1 D
+6273 3015 M
+-20 2 D
 -6 1 D
 -7 -3 D
 -7 -3 D
@@ -6203,7 +8123,9 @@ S
 10 16 D
 10 16 D
 6 7 D
-6880 2542 M
+113 137 D
+6912 2519 M
+-32 23 D
 -11 8 D
 -17 14 D
 -18 15 D
@@ -6551,7 +8473,9 @@ S
 -5 -14 D
 -4 -14 D
 -2 -6 D
-7197 1730 M
+-7 -19 D
+7207 1749 M
+-10 -19 D
 -4 -8 D
 -7 -14 D
 -7 -14 D
@@ -6615,7 +8539,9 @@ S
 -19 9 D
 -19 8 D
 -8 7 D
-6647 842 M
+-125 88 D
+6646 833 M
+1 9 D
 1 5 D
 8 13 D
 8 12 D
@@ -7008,6 +8934,7 @@ S
 100 -88 D
 80 -62 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -7015,12 +8942,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -Rg -JH0/6i -O -K -SE-350 -Gwhite -Wfaint @hotspots.txt
-%@PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -Rg -JH0/6i -O -K -SE-350 -Gwhite -Wfaint /Users/pwessel/.gmt/cache/hotspots.txt
+%@PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 3600 0 M
 118 1 D
@@ -7234,71 +9161,412 @@ PSL_clip N
 0 W
 V
 {1 A} FS
+/FO {P}!
+-12 6 -9 11 -4 12 -1 13 5 12 8 8 11 5 13 0 12 -4 11 -9 7 -11 2 -13 -2 -13 -6 -10 -10 -7 -12 -3 16 4508 2105 SP
+/FO {fs os}!
+FO
+FQ
 O1
+4508 2105 M
+-12 -3 D
+-10 -7 D
+-6 -10 D
+-2 -13 D
+2 -13 D
+7 -11 D
+11 -9 D
+12 -4 D
+13 0 D
+11 5 D
+8 8 D
+5 12 D
+-1 13 D
+-4 12 D
+-9 11 D
+-12 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -12 6 -9 11 -4 12 -1 13 5 12 8 8 11 5 13 0 12 -4 11 -9 7 -11 2 -13 -2 -13 -6 -10 -10 -7 -12 -3 16 4508 2105 SP
 /FO {fs os}!
 FO
-/FO {P}!
--12 6 -9 11 -4 12 -1 13 5 12 8 8 11 5 13 0 12 -4 11 -9 7 -11 2 -13 -2 -13 -6 -10 -10 -7 -12 -3 16 4508 2105 SP
-/FO {fs os}!
-FO
+FQ
+O1
+4508 2105 M
+-12 -3 D
+-10 -7 D
+-6 -10 D
+-2 -13 D
+2 -13 D
+7 -11 D
+11 -9 D
+12 -4 D
+13 0 D
+11 5 D
+8 8 D
+5 12 D
+-1 13 D
+-4 12 D
+-9 11 D
+-12 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -9 9 -5 11 -1 12 3 12 7 9 10 6 11 2 13 -2 11 -5 9 -10 5 -11 1 -12 -3 -11 -7 -10 -10 -6 -12 -2 17 3061 1458 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3061 1458 M
+-12 -2 D
+-10 -6 D
+-7 -10 D
+-3 -11 D
+1 -12 D
+5 -11 D
+9 -10 D
+11 -5 D
+13 -2 D
+11 2 D
+10 6 D
+7 9 D
+3 12 D
+-1 12 D
+-5 11 D
+-9 9 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -9 9 -5 11 -1 12 3 12 7 9 10 6 11 2 13 -2 11 -5 9 -10 5 -11 1 -12 -3 -11 -7 -10 -10 -6 -12 -2 17 3061 1458 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3061 1458 M
+-12 -2 D
+-10 -6 D
+-7 -10 D
+-3 -11 D
+1 -12 D
+5 -11 D
+9 -10 D
+11 -5 D
+13 -2 D
+11 2 D
+10 6 D
+7 9 D
+3 12 D
+-1 12 D
+-5 11 D
+-9 9 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -10 6 -8 10 -5 11 0 12 4 11 7 10 11 6 12 2 12 -2 10 -6 8 -9 5 -12 0 -12 -4 -11 -7 -10 -11 -6 -12 -2 17 3291 1658 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3291 1658 M
+-12 -2 D
+-11 -6 D
+-7 -10 D
+-4 -11 D
+0 -12 D
+5 -12 D
+8 -9 D
+10 -6 D
+12 -2 D
+12 2 D
+11 6 D
+7 10 D
+4 11 D
+0 12 D
+-5 11 D
+-8 10 D
+-10 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -10 6 -8 10 -5 11 0 12 4 11 7 10 11 6 12 2 12 -2 10 -6 8 -9 5 -12 0 -12 -4 -11 -7 -10 -11 -6 -12 -2 17 3291 1658 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3291 1658 M
+-12 -2 D
+-11 -6 D
+-7 -10 D
+-4 -11 D
+0 -12 D
+5 -12 D
+8 -9 D
+10 -6 D
+12 -2 D
+12 2 D
+11 6 D
+7 10 D
+4 11 D
+0 12 D
+-5 11 D
+-8 10 D
+-10 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -19 10 -19 14 -15 18 -9 16 -1 12 8 6 16 -2 20 -10 20 -15 16 -17 8 -17 0 -12 -9 -5 13 976 1067 SP
 /FO {fs os}!
 FO
+FQ
+O1
+976 1067 M
+-9 -5 D
+0 -12 D
+8 -17 D
+16 -17 D
+20 -15 D
+20 -10 D
+16 -2 D
+8 6 D
+-1 12 D
+-9 16 D
+-15 18 D
+-19 14 D
+-19 10 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -19 10 -19 14 -15 18 -9 16 -1 12 8 6 16 -2 20 -10 20 -15 16 -17 8 -17 0 -12 -9 -5 13 976 1067 SP
 /FO {fs os}!
 FO
+FQ
+O1
+976 1067 M
+-9 -5 D
+0 -12 D
+8 -17 D
+16 -17 D
+20 -15 D
+20 -10 D
+16 -2 D
+8 6 D
+-1 12 D
+-9 16 D
+-15 18 D
+-19 14 D
+-19 10 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -9 6 -6 8 -2 10 2 11 5 11 9 9 11 6 13 3 12 0 10 -4 8 -6 4 -10 1 -10 -4 -11 -8 -10 -10 -8 -12 -5 -13 -2 18 3092 2665 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3092 2665 M
+-13 -2 D
+-12 -5 D
+-10 -8 D
+-8 -10 D
+-4 -11 D
+1 -10 D
+4 -10 D
+8 -6 D
+10 -4 D
+12 0 D
+13 3 D
+11 6 D
+9 9 D
+5 11 D
+2 11 D
+-2 10 D
+-6 8 D
+-9 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -9 6 -6 8 -2 10 2 11 5 11 9 9 11 6 13 3 12 0 10 -4 8 -6 4 -10 1 -10 -4 -11 -8 -10 -10 -8 -12 -5 -13 -2 18 3092 2665 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3092 2665 M
+-13 -2 D
+-12 -5 D
+-10 -8 D
+-8 -10 D
+-4 -11 D
+1 -10 D
+4 -10 D
+8 -6 D
+10 -4 D
+12 0 D
+13 3 D
+11 6 D
+9 9 D
+5 11 D
+2 11 D
+-2 10 D
+-6 8 D
+-9 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -4 9 1 13 8 14 12 14 15 12 15 7 13 2 10 -4 5 -9 -1 -12 -7 -15 -13 -14 -15 -12 -16 -7 -14 -2 15 1435 2504 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1435 2504 M
+-14 -2 D
+-16 -7 D
+-15 -12 D
+-13 -14 D
+-7 -15 D
+-1 -12 D
+5 -9 D
+10 -4 D
+13 2 D
+15 7 D
+15 12 D
+12 14 D
+8 14 D
+1 13 D
+-4 9 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -4 9 1 13 8 14 12 14 15 12 15 7 13 2 10 -4 5 -9 -1 -12 -7 -15 -13 -14 -15 -12 -16 -7 -14 -2 15 1435 2504 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1435 2504 M
+-14 -2 D
+-16 -7 D
+-15 -12 D
+-13 -14 D
+-7 -15 D
+-1 -12 D
+5 -9 D
+10 -4 D
+13 2 D
+15 7 D
+15 12 D
+12 14 D
+8 14 D
+1 13 D
+-4 9 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 30 13 47 12 49 9 35 1 8 -6 -21 -11 -41 -13 -49 -11 -41 -5 -21 2 10 5028 202 SP
 /FO {fs os}!
 FO
+FQ
+O1
+5028 202 M
+-21 2 D
+-41 -5 D
+-49 -11 D
+-41 -13 D
+-21 -11 D
+8 -6 D
+35 1 D
+49 9 D
+47 12 D
+30 13 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 30 13 47 12 49 9 35 1 8 -6 -21 -11 -41 -13 -49 -11 -41 -5 -21 2 10 5028 202 SP
 /FO {fs os}!
 FO
+FQ
+O1
+5028 202 M
+-21 2 D
+-41 -5 D
+-49 -11 D
+-41 -13 D
+-21 -11 D
+8 -6 D
+35 1 D
+49 9 D
+47 12 D
+30 13 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -7 7 -4 9 1 12 5 12 9 11 11 9 13 5 13 2 11 -3 8 -6 4 -9 -1 -12 -5 -12 -9 -11 -12 -9 -13 -6 -13 -1 17 2436 2512 SP
 /FO {fs os}!
 FO
+FQ
+O1
+2436 2512 M
+-13 -1 D
+-13 -6 D
+-12 -9 D
+-9 -11 D
+-5 -12 D
+-1 -12 D
+4 -9 D
+8 -6 D
+11 -3 D
+13 2 D
+13 5 D
+11 9 D
+9 11 D
+5 12 D
+1 12 D
+-4 9 D
+-7 7 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -7 7 -4 9 1 12 5 12 9 11 11 9 13 5 13 2 11 -3 8 -6 4 -9 -1 -12 -5 -12 -9 -11 -12 -9 -13 -6 -13 -1 17 2436 2512 SP
 /FO {fs os}!
 FO
+FQ
+O1
+2436 2512 M
+-13 -1 D
+-13 -6 D
+-12 -9 D
+-9 -11 D
+-5 -12 D
+-1 -12 D
+4 -9 D
+8 -6 D
+11 -3 D
+13 2 D
+13 5 D
+11 9 D
+9 11 D
+5 12 D
+1 12 D
+-4 9 D
+-7 7 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 3661 678 M
 -13 -2 D
@@ -7324,6 +9592,31 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+3661 678 M
+-13 -2 D
+-11 -4 D
+-9 -7 D
+-6 -8 D
+-3 -10 D
+2 -9 D
+5 -9 D
+8 -7 D
+11 -5 D
+12 -1 D
+12 1 D
+12 5 D
+9 7 D
+6 8 D
+2 10 D
+-1 10 D
+-6 8 D
+-8 7 D
+-10 4 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 3661 678 M
 -13 -2 D
@@ -7349,110 +9642,695 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+3661 678 M
+-13 -2 D
+-11 -4 D
+-9 -7 D
+-6 -8 D
+-3 -10 D
+2 -9 D
+5 -9 D
+8 -7 D
+11 -5 D
+12 -1 D
+12 1 D
+12 5 D
+9 7 D
+6 8 D
+2 10 D
+-1 10 D
+-6 8 D
+-8 7 D
+-10 4 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 7 10 16 12 24 13 27 12 25 7 20 3 11 -3 0 -7 -10 -12 -21 -13 -26 -13 -28 -10 -24 -5 -16 0 14 1865 3136 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1865 3136 M
+-16 0 D
+-24 -5 D
+-28 -10 D
+-26 -13 D
+-21 -13 D
+-10 -12 D
+0 -7 D
+11 -3 D
+20 3 D
+25 7 D
+27 12 D
+24 13 D
+16 12 D
+7 10 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 7 10 16 12 24 13 27 12 25 7 20 3 11 -3 0 -7 -10 -12 -21 -13 -26 -13 -28 -10 -24 -5 -16 0 14 1865 3136 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1865 3136 M
+-16 0 D
+-24 -5 D
+-28 -10 D
+-26 -13 D
+-21 -13 D
+-10 -12 D
+0 -7 D
+11 -3 D
+20 3 D
+25 7 D
+27 12 D
+24 13 D
+16 12 D
+7 10 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -7 9 -3 12 2 11 5 11 9 9 12 6 12 2 12 -2 10 -6 7 -9 4 -11 -2 -12 -5 -11 -9 -9 -12 -6 -12 -2 17 3260 2449 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3260 2449 M
+-12 -2 D
+-12 -6 D
+-9 -9 D
+-5 -11 D
+-2 -12 D
+4 -11 D
+7 -9 D
+10 -6 D
+12 -2 D
+12 2 D
+12 6 D
+9 9 D
+5 11 D
+2 11 D
+-3 12 D
+-7 9 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -7 9 -3 12 2 11 5 11 9 9 12 6 12 2 12 -2 10 -6 7 -9 4 -11 -2 -12 -5 -11 -9 -9 -12 -6 -12 -2 17 3260 2449 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3260 2449 M
+-12 -2 D
+-12 -6 D
+-9 -9 D
+-5 -11 D
+-2 -12 D
+4 -11 D
+7 -9 D
+10 -6 D
+12 -2 D
+12 2 D
+12 6 D
+9 9 D
+5 11 D
+2 11 D
+-3 12 D
+-7 9 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -10 6 -7 9 -4 12 2 12 5 11 8 9 11 6 12 2 12 -2 10 -6 7 -9 4 -12 -1 -12 -6 -11 -8 -9 -11 -6 -12 -2 17 3084 2167 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3084 2167 M
+-12 -2 D
+-11 -6 D
+-8 -9 D
+-6 -11 D
+-1 -12 D
+4 -12 D
+7 -9 D
+10 -6 D
+12 -2 D
+12 2 D
+11 6 D
+8 9 D
+5 11 D
+2 12 D
+-4 12 D
+-7 9 D
+-10 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -10 6 -7 9 -4 12 2 12 5 11 8 9 11 6 12 2 12 -2 10 -6 7 -9 4 -12 -1 -12 -6 -11 -8 -9 -11 -6 -12 -2 17 3084 2167 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3084 2167 M
+-12 -2 D
+-11 -6 D
+-8 -9 D
+-6 -11 D
+-1 -12 D
+4 -12 D
+7 -9 D
+10 -6 D
+12 -2 D
+12 2 D
+11 6 D
+8 9 D
+5 11 D
+2 12 D
+-4 12 D
+-7 9 D
+-10 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -8 10 -5 11 0 12 4 11 8 9 10 6 12 3 12 -2 11 -6 8 -10 5 -11 0 -12 -4 -11 -8 -10 -10 -6 -12 -2 17 3465 1548 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3465 1548 M
+-12 -2 D
+-10 -6 D
+-8 -10 D
+-4 -11 D
+0 -12 D
+5 -11 D
+8 -10 D
+11 -6 D
+12 -2 D
+12 3 D
+10 6 D
+8 9 D
+4 11 D
+0 12 D
+-5 11 D
+-8 10 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -8 10 -5 11 0 12 4 11 8 9 10 6 12 3 12 -2 11 -6 8 -10 5 -11 0 -12 -4 -11 -8 -10 -10 -6 -12 -2 17 3465 1548 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3465 1548 M
+-12 -2 D
+-10 -6 D
+-8 -10 D
+-4 -11 D
+0 -12 D
+5 -11 D
+8 -10 D
+11 -6 D
+12 -2 D
+12 3 D
+10 6 D
+8 9 D
+4 11 D
+0 12 D
+-5 11 D
+-8 10 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -12 14 -8 21 -2 22 4 19 10 10 13 1 12 -10 9 -18 5 -22 0 -21 -7 -15 -11 -6 12 6953 1994 SP
 /FO {fs os}!
 FO
+FQ
+O1
+6953 1994 M
+-11 -6 D
+-7 -15 D
+0 -21 D
+5 -22 D
+9 -18 D
+12 -10 D
+13 1 D
+10 10 D
+4 19 D
+-2 22 D
+-8 21 D
+-12 14 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -12 14 -8 21 -2 22 4 19 10 10 13 1 12 -10 9 -18 5 -22 0 -21 -7 -15 -11 -6 12 6953 1994 SP
 /FO {fs os}!
 FO
+FQ
+O1
+6953 1994 M
+-11 -6 D
+-7 -15 D
+0 -21 D
+5 -22 D
+9 -18 D
+12 -10 D
+13 1 D
+10 10 D
+4 19 D
+-2 22 D
+-8 21 D
+-12 14 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -10 7 -6 10 -2 13 3 13 7 11 10 9 13 5 12 -1 12 -4 8 -9 4 -12 0 -13 -5 -12 -9 -10 -12 -7 -12 -2 16 4559 1565 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4559 1565 M
+-12 -2 D
+-12 -7 D
+-9 -10 D
+-5 -12 D
+0 -13 D
+4 -12 D
+8 -9 D
+12 -4 D
+12 -1 D
+13 5 D
+10 9 D
+7 11 D
+3 13 D
+-2 13 D
+-6 10 D
+-10 7 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -10 7 -6 10 -2 13 3 13 7 11 10 9 13 5 12 -1 12 -4 8 -9 4 -12 0 -13 -5 -12 -9 -10 -12 -7 -12 -2 16 4559 1565 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4559 1565 M
+-12 -2 D
+-12 -7 D
+-9 -10 D
+-5 -12 D
+0 -13 D
+4 -12 D
+8 -9 D
+12 -4 D
+12 -1 D
+13 5 D
+10 9 D
+7 11 D
+3 13 D
+-2 13 D
+-6 10 D
+-10 7 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -9 5 -4 8 0 10 5 11 8 10 12 9 13 6 14 3 12 0 9 -4 6 -8 2 -9 -2 -10 -7 -11 -10 -9 -12 -8 -14 -4 -12 -1 18 4362 819 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4362 819 M
+-12 -1 D
+-14 -4 D
+-12 -8 D
+-10 -9 D
+-7 -11 D
+-2 -10 D
+2 -9 D
+6 -8 D
+9 -4 D
+12 0 D
+14 3 D
+13 6 D
+12 9 D
+8 10 D
+5 11 D
+0 10 D
+-4 8 D
+-9 5 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -9 5 -4 8 0 10 5 11 8 10 12 9 13 6 14 3 12 0 9 -4 6 -8 2 -9 -2 -10 -7 -11 -10 -9 -12 -8 -14 -4 -12 -1 18 4362 819 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4362 819 M
+-12 -1 D
+-14 -4 D
+-12 -8 D
+-10 -9 D
+-7 -11 D
+-2 -10 D
+2 -9 D
+6 -8 D
+9 -4 D
+12 0 D
+14 3 D
+13 6 D
+12 9 D
+8 10 D
+5 11 D
+0 10 D
+-4 8 D
+-9 5 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -21 12 -20 17 -15 19 -8 17 3 11 13 2 19 -7 22 -15 19 -19 11 -19 2 -14 -9 -6 12 797 1087 SP
 /FO {fs os}!
 FO
+FQ
+O1
+797 1087 M
+-9 -6 D
+2 -14 D
+11 -19 D
+19 -19 D
+22 -15 D
+19 -7 D
+13 2 D
+3 11 D
+-8 17 D
+-15 19 D
+-20 17 D
+-21 12 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -21 12 -20 17 -15 19 -8 17 3 11 13 2 19 -7 22 -15 19 -19 11 -19 2 -14 -9 -6 12 797 1087 SP
 /FO {fs os}!
 FO
+FQ
+O1
+797 1087 M
+-9 -6 D
+2 -14 D
+11 -19 D
+19 -19 D
+22 -15 D
+19 -7 D
+13 2 D
+3 11 D
+-8 17 D
+-15 19 D
+-20 17 D
+-21 12 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -12 5 -9 8 -6 10 -2 10 2 10 6 9 10 6 11 4 13 0 12 -3 11 -7 8 -8 4 -10 0 -11 -4 -9 -8 -8 -11 -5 -13 -2 18 3708 2905 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3708 2905 M
+-13 -2 D
+-11 -5 D
+-8 -8 D
+-4 -9 D
+0 -11 D
+4 -10 D
+8 -8 D
+11 -7 D
+12 -3 D
+13 0 D
+11 4 D
+10 6 D
+6 9 D
+2 10 D
+-2 10 D
+-6 10 D
+-9 8 D
+-12 5 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -12 5 -9 8 -6 10 -2 10 2 10 6 9 10 6 11 4 13 0 12 -3 11 -7 8 -8 4 -10 0 -11 -4 -9 -8 -8 -11 -5 -13 -2 18 3708 2905 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3708 2905 M
+-13 -2 D
+-11 -5 D
+-8 -8 D
+-4 -9 D
+0 -11 D
+4 -10 D
+8 -8 D
+11 -7 D
+12 -3 D
+13 0 D
+11 4 D
+10 6 D
+6 9 D
+2 10 D
+-2 10 D
+-6 10 D
+-9 8 D
+-12 5 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -8 11 -4 12 1 13 5 11 9 9 12 5 12 0 12 -5 10 -8 6 -12 2 -13 -3 -12 -8 -11 -10 -6 -13 -3 16 2892 1746 SP
 /FO {fs os}!
 FO
+FQ
+O1
+2892 1746 M
+-13 -3 D
+-10 -6 D
+-8 -11 D
+-3 -12 D
+2 -13 D
+6 -12 D
+10 -8 D
+12 -5 D
+12 0 D
+12 5 D
+9 9 D
+5 11 D
+1 13 D
+-4 12 D
+-8 11 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -8 11 -4 12 1 13 5 11 9 9 12 5 12 0 12 -5 10 -8 6 -12 2 -13 -3 -12 -8 -11 -10 -6 -13 -3 16 2892 1746 SP
 /FO {fs os}!
 FO
+FQ
+O1
+2892 1746 M
+-13 -3 D
+-10 -6 D
+-8 -11 D
+-3 -12 D
+2 -13 D
+6 -12 D
+10 -8 D
+12 -5 D
+12 0 D
+12 5 D
+9 9 D
+5 11 D
+1 13 D
+-4 12 D
+-8 11 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -10 8 -7 13 -2 14 2 14 7 13 10 8 12 3 13 -3 10 -8 7 -13 3 -14 -3 -14 -7 -13 -10 -8 -13 -3 15 1632 1838 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1632 1838 M
+-13 -3 D
+-10 -8 D
+-7 -13 D
+-3 -14 D
+3 -14 D
+7 -13 D
+10 -8 D
+13 -3 D
+12 3 D
+10 8 D
+7 13 D
+2 14 D
+-2 14 D
+-7 13 D
+-10 8 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -10 8 -7 13 -2 14 2 14 7 13 10 8 12 3 13 -3 10 -8 7 -13 3 -14 -3 -14 -7 -13 -10 -8 -13 -3 15 1632 1838 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1632 1838 M
+-13 -3 D
+-10 -8 D
+-7 -13 D
+-3 -14 D
+3 -14 D
+7 -13 D
+10 -8 D
+13 -3 D
+12 3 D
+10 8 D
+7 13 D
+2 14 D
+-2 14 D
+-7 13 D
+-10 8 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -1 13 6 18 12 19 16 16 16 11 14 3 9 -6 3 -12 -6 -18 -12 -19 -17 -17 -17 -11 -14 -3 13 616 2402 SP
 /FO {fs os}!
 FO
+FQ
+O1
+616 2402 M
+-14 -3 D
+-17 -11 D
+-17 -17 D
+-12 -19 D
+-6 -18 D
+3 -12 D
+9 -6 D
+14 3 D
+16 11 D
+16 16 D
+12 19 D
+6 18 D
+-1 13 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -1 13 6 18 12 19 16 16 16 11 14 3 9 -6 3 -12 -6 -18 -12 -19 -17 -17 -17 -11 -14 -3 13 616 2402 SP
 /FO {fs os}!
 FO
+FQ
+O1
+616 2402 M
+-14 -3 D
+-17 -11 D
+-17 -17 D
+-12 -19 D
+-6 -18 D
+3 -12 D
+9 -6 D
+14 3 D
+16 11 D
+16 16 D
+12 19 D
+6 18 D
+-1 13 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -9 9 -4 11 -1 12 4 11 8 10 11 5 12 3 12 -2 11 -6 8 -9 5 -11 0 -12 -4 -12 -7 -9 -11 -6 -12 -2 17 3724 2340 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3724 2340 M
+-12 -2 D
+-11 -6 D
+-7 -9 D
+-4 -12 D
+0 -12 D
+5 -11 D
+8 -9 D
+11 -6 D
+12 -2 D
+12 3 D
+11 5 D
+8 10 D
+4 11 D
+-1 12 D
+-4 11 D
+-9 9 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -9 9 -4 11 -1 12 4 11 8 10 11 5 12 3 12 -2 11 -6 8 -9 5 -11 0 -12 -4 -12 -7 -9 -11 -6 -12 -2 17 3724 2340 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3724 2340 M
+-12 -2 D
+-11 -6 D
+-7 -9 D
+-4 -12 D
+0 -12 D
+5 -11 D
+8 -9 D
+11 -6 D
+12 -2 D
+12 3 D
+11 5 D
+8 10 D
+4 11 D
+-1 12 D
+-4 11 D
+-9 9 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 3381 3180 M
 -12 -1 D
@@ -7479,6 +10357,32 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+3381 3180 M
+-12 -1 D
+-13 -4 D
+-11 -6 D
+-9 -8 D
+-6 -8 D
+-2 -9 D
+1 -8 D
+5 -7 D
+9 -5 D
+11 -3 D
+12 0 D
+12 2 D
+12 4 D
+10 7 D
+8 8 D
+4 9 D
+0 8 D
+-3 8 D
+-6 7 D
+-10 4 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 3381 3180 M
 -12 -1 D
@@ -7505,262 +10409,1624 @@ P
 FO
 /FO {fs os}!
 FO
+FQ
+O1
+3381 3180 M
+-12 -1 D
+-13 -4 D
+-11 -6 D
+-9 -8 D
+-6 -8 D
+-2 -9 D
+1 -8 D
+5 -7 D
+9 -5 D
+11 -3 D
+12 0 D
+12 2 D
+12 4 D
+10 7 D
+8 8 D
+4 9 D
+0 8 D
+-3 8 D
+-6 7 D
+-10 4 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -9 9 -5 11 -1 12 4 12 7 9 10 6 12 2 12 -2 11 -6 8 -9 5 -11 1 -12 -3 -12 -7 -9 -10 -6 -12 -2 17 4119 2123 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4119 2123 M
+-12 -2 D
+-10 -6 D
+-7 -9 D
+-3 -12 D
+1 -12 D
+5 -11 D
+8 -9 D
+11 -6 D
+12 -2 D
+12 2 D
+10 6 D
+7 9 D
+4 12 D
+-1 12 D
+-5 11 D
+-9 9 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -9 9 -5 11 -1 12 4 12 7 9 10 6 12 2 12 -2 11 -6 8 -9 5 -11 1 -12 -3 -12 -7 -9 -10 -6 -12 -2 17 4119 2123 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4119 2123 M
+-12 -2 D
+-10 -6 D
+-7 -9 D
+-3 -12 D
+1 -12 D
+5 -11 D
+8 -9 D
+11 -6 D
+12 -2 D
+12 2 D
+10 6 D
+7 9 D
+4 12 D
+-1 12 D
+-5 11 D
+-9 9 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 3 10 12 13 19 14 23 13 23 9 19 4 11 -3 3 -7 -7 -12 -15 -14 -22 -14 -24 -11 -22 -7 -16 -1 14 1678 2965 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1678 2965 M
+-16 -1 D
+-22 -7 D
+-24 -11 D
+-22 -14 D
+-15 -14 D
+-7 -12 D
+3 -7 D
+11 -3 D
+19 4 D
+23 9 D
+23 13 D
+19 14 D
+12 13 D
+3 10 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 3 10 12 13 19 14 23 13 23 9 19 4 11 -3 3 -7 -7 -12 -15 -14 -22 -14 -24 -11 -22 -7 -16 -1 14 1678 2965 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1678 2965 M
+-16 -1 D
+-22 -7 D
+-24 -11 D
+-22 -14 D
+-15 -14 D
+-7 -12 D
+3 -7 D
+11 -3 D
+19 4 D
+23 9 D
+23 13 D
+19 14 D
+12 13 D
+3 10 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -14 6 -14 10 -11 12 -7 13 -2 11 3 10 9 5 12 1 15 -4 15 -8 13 -11 9 -13 4 -13 -1 -10 -7 -7 -10 -3 16 2094 1051 SP
 /FO {fs os}!
 FO
+FQ
+O1
+2094 1051 M
+-10 -3 D
+-7 -7 D
+-1 -10 D
+4 -13 D
+9 -13 D
+13 -11 D
+15 -8 D
+15 -4 D
+12 1 D
+9 5 D
+3 10 D
+-2 11 D
+-7 13 D
+-11 12 D
+-14 10 D
+-14 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -14 6 -14 10 -11 12 -7 13 -2 11 3 10 9 5 12 1 15 -4 15 -8 13 -11 9 -13 4 -13 -1 -10 -7 -7 -10 -3 16 2094 1051 SP
 /FO {fs os}!
 FO
+FQ
+O1
+2094 1051 M
+-10 -3 D
+-7 -7 D
+-1 -10 D
+4 -13 D
+9 -13 D
+13 -11 D
+15 -8 D
+15 -4 D
+12 1 D
+9 5 D
+3 10 D
+-2 11 D
+-7 13 D
+-11 12 D
+-14 10 D
+-14 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -6 6 -3 8 3 10 8 11 11 10 13 9 15 6 14 2 12 -1 9 -4 4 -7 -1 -10 -5 -10 -10 -10 -12 -10 -14 -7 -14 -4 -13 -1 18 4615 747 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4615 747 M
+-13 -1 D
+-14 -4 D
+-14 -7 D
+-22 -20 D
+-5 -10 D
+-1 -10 D
+4 -7 D
+9 -4 D
+12 -1 D
+14 2 D
+15 6 D
+13 9 D
+11 10 D
+8 11 D
+3 10 D
+-3 8 D
+-6 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -6 6 -3 8 3 10 8 11 11 10 13 9 15 6 14 2 12 -1 9 -4 4 -7 -1 -10 -5 -10 -10 -10 -12 -10 -14 -7 -14 -4 -13 -1 18 4615 747 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4615 747 M
+-13 -1 D
+-14 -4 D
+-14 -7 D
+-22 -20 D
+-5 -10 D
+-1 -10 D
+4 -7 D
+9 -4 D
+12 -1 D
+14 2 D
+15 6 D
+13 9 D
+11 10 D
+8 11 D
+3 10 D
+-3 8 D
+-6 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -10 7 -8 10 -3 13 1 13 6 11 10 9 12 5 13 0 11 -5 10 -9 5 -11 1 -13 -4 -13 -8 -10 -11 -7 -12 -2 16 4396 1768 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4396 1768 M
+-12 -2 D
+-11 -7 D
+-8 -10 D
+-4 -13 D
+1 -13 D
+5 -11 D
+10 -9 D
+11 -5 D
+13 0 D
+12 5 D
+10 9 D
+6 11 D
+1 13 D
+-3 13 D
+-8 10 D
+-10 7 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -10 7 -8 10 -3 13 1 13 6 11 10 9 12 5 13 0 11 -5 10 -9 5 -11 1 -13 -4 -13 -8 -10 -11 -7 -12 -2 16 4396 1768 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4396 1768 M
+-12 -2 D
+-11 -7 D
+-8 -10 D
+-4 -13 D
+1 -13 D
+5 -11 D
+10 -9 D
+11 -5 D
+13 0 D
+12 5 D
+10 9 D
+6 11 D
+1 13 D
+-3 13 D
+-8 10 D
+-10 7 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -16 9 -16 13 -12 15 -6 16 0 12 7 8 13 1 16 -6 17 -11 14 -14 9 -16 3 -14 -4 -11 -11 -4 14 1308 1183 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1308 1183 M
+-11 -4 D
+-4 -11 D
+3 -14 D
+9 -16 D
+14 -14 D
+17 -11 D
+16 -6 D
+13 1 D
+7 8 D
+0 12 D
+-6 16 D
+-12 15 D
+-16 13 D
+-16 9 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -16 9 -16 13 -12 15 -6 16 0 12 7 8 13 1 16 -6 17 -11 14 -14 9 -16 3 -14 -4 -11 -11 -4 14 1308 1183 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1308 1183 M
+-11 -4 D
+-4 -11 D
+3 -14 D
+9 -16 D
+14 -14 D
+17 -11 D
+16 -6 D
+13 1 D
+7 8 D
+0 12 D
+-6 16 D
+-12 15 D
+-16 13 D
+-16 9 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -27 8 -30 13 -27 16 -16 14 -3 11 12 3 25 -5 31 -11 30 -15 21 -15 9 -13 -6 -6 12 1622 573 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1622 573 M
+-6 -6 D
+9 -13 D
+21 -15 D
+30 -15 D
+31 -11 D
+25 -5 D
+12 3 D
+-3 11 D
+-16 14 D
+-27 16 D
+-30 13 D
+-27 8 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -27 8 -30 13 -27 16 -16 14 -3 11 12 3 25 -5 31 -11 30 -15 21 -15 9 -13 -6 -6 12 1622 573 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1622 573 M
+-6 -6 D
+9 -13 D
+21 -15 D
+30 -15 D
+31 -11 D
+25 -5 D
+12 3 D
+-3 11 D
+-16 14 D
+-27 16 D
+-30 13 D
+-27 8 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -17 8 -16 13 -14 16 -8 15 -1 12 7 8 12 1 17 -5 18 -11 15 -14 11 -16 4 -14 -4 -10 -10 -5 14 1299 1113 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1299 1113 M
+-10 -5 D
+-4 -10 D
+4 -14 D
+11 -16 D
+15 -14 D
+18 -11 D
+17 -5 D
+12 1 D
+7 8 D
+-1 12 D
+-8 15 D
+-14 16 D
+-16 13 D
+-17 8 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -17 8 -16 13 -14 16 -8 15 -1 12 7 8 12 1 17 -5 18 -11 15 -14 11 -16 4 -14 -4 -10 -10 -5 14 1299 1113 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1299 1113 M
+-10 -5 D
+-4 -10 D
+4 -14 D
+11 -16 D
+15 -14 D
+18 -11 D
+17 -5 D
+12 1 D
+7 8 D
+-1 12 D
+-8 15 D
+-14 16 D
+-16 13 D
+-17 8 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -10 6 -7 10 -2 11 1 11 6 11 9 9 12 5 13 2 12 -2 10 -6 7 -9 3 -11 -2 -11 -5 -11 -10 -9 -12 -6 -12 -2 17 3274 2556 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3274 2556 M
+-12 -2 D
+-12 -6 D
+-10 -9 D
+-5 -11 D
+-2 -11 D
+3 -11 D
+7 -9 D
+10 -6 D
+12 -2 D
+13 2 D
+12 5 D
+9 9 D
+6 11 D
+1 11 D
+-2 11 D
+-7 10 D
+-10 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -10 6 -7 10 -2 11 1 11 6 11 9 9 12 5 13 2 12 -2 10 -6 7 -9 3 -11 -2 -11 -5 -11 -10 -9 -12 -6 -12 -2 17 3274 2556 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3274 2556 M
+-12 -2 D
+-12 -6 D
+-10 -9 D
+-5 -11 D
+-2 -11 D
+3 -11 D
+7 -9 D
+10 -6 D
+12 -2 D
+13 2 D
+12 5 D
+9 9 D
+6 11 D
+1 11 D
+-2 11 D
+-7 10 D
+-10 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -9 6 -5 8 0 10 3 10 8 10 11 9 13 6 13 4 12 -1 10 -4 7 -7 3 -9 -2 -11 -6 -10 -9 -10 -12 -7 -13 -5 -13 -1 18 4236 813 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4236 813 M
+-13 -1 D
+-13 -5 D
+-12 -7 D
+-9 -10 D
+-6 -10 D
+-2 -11 D
+3 -9 D
+7 -7 D
+10 -4 D
+12 -1 D
+13 4 D
+13 6 D
+11 9 D
+8 10 D
+3 10 D
+0 10 D
+-5 8 D
+-9 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -9 6 -5 8 0 10 3 10 8 10 11 9 13 6 13 4 12 -1 10 -4 7 -7 3 -9 -2 -11 -6 -10 -9 -10 -12 -7 -13 -5 -13 -1 18 4236 813 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4236 813 M
+-13 -1 D
+-13 -5 D
+-12 -7 D
+-9 -10 D
+-6 -10 D
+-2 -11 D
+3 -9 D
+7 -7 D
+10 -4 D
+12 -1 D
+13 4 D
+13 6 D
+11 9 D
+8 10 D
+3 10 D
+0 10 D
+-5 8 D
+-9 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -12 12 -9 16 -4 19 2 17 7 12 12 5 13 -4 13 -11 9 -17 4 -19 -2 -17 -8 -12 -12 -4 13 739 1641 SP
 /FO {fs os}!
 FO
+FQ
+O1
+739 1641 M
+-12 -4 D
+-8 -12 D
+-2 -17 D
+4 -19 D
+9 -17 D
+13 -11 D
+13 -4 D
+12 5 D
+7 12 D
+2 17 D
+-4 19 D
+-9 16 D
+-12 12 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -12 12 -9 16 -4 19 2 17 7 12 12 5 13 -4 13 -11 9 -17 4 -19 -2 -17 -8 -12 -12 -4 13 739 1641 SP
 /FO {fs os}!
 FO
+FQ
+O1
+739 1641 M
+-12 -4 D
+-8 -12 D
+-2 -17 D
+4 -19 D
+9 -17 D
+13 -11 D
+13 -4 D
+12 5 D
+7 12 D
+2 17 D
+-4 19 D
+-9 16 D
+-12 12 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -19 12 -16 19 -12 20 -5 17 5 11 13 2 18 -8 18 -16 16 -20 7 -20 -1 -14 -9 -6 12 602 1259 SP
 /FO {fs os}!
 FO
+FQ
+O1
+602 1259 M
+-9 -6 D
+-1 -14 D
+7 -20 D
+16 -20 D
+18 -16 D
+18 -8 D
+13 2 D
+5 11 D
+-5 17 D
+-12 20 D
+-16 19 D
+-19 12 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -19 12 -16 19 -12 20 -5 17 5 11 13 2 18 -8 18 -16 16 -20 7 -20 -1 -14 -9 -6 12 602 1259 SP
 /FO {fs os}!
 FO
+FQ
+O1
+602 1259 M
+-9 -6 D
+-1 -14 D
+7 -20 D
+16 -20 D
+18 -16 D
+18 -8 D
+13 2 D
+5 11 D
+-5 17 D
+-12 20 D
+-16 19 D
+-19 12 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -8 9 -4 11 0 13 4 11 8 9 10 6 12 2 12 -2 11 -6 8 -9 4 -11 0 -13 -4 -11 -8 -9 -10 -6 -12 -2 17 3799 1923 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3799 1923 M
+-12 -2 D
+-10 -6 D
+-8 -9 D
+-4 -11 D
+0 -13 D
+4 -11 D
+8 -9 D
+11 -6 D
+12 -2 D
+12 2 D
+10 6 D
+8 9 D
+4 11 D
+0 13 D
+-4 11 D
+-8 9 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -8 9 -4 11 0 13 4 11 8 9 10 6 12 2 12 -2 11 -6 8 -9 4 -11 0 -13 -4 -11 -8 -9 -10 -6 -12 -2 17 3799 1923 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3799 1923 M
+-12 -2 D
+-10 -6 D
+-8 -9 D
+-4 -11 D
+0 -13 D
+4 -11 D
+8 -9 D
+11 -6 D
+12 -2 D
+12 2 D
+10 6 D
+8 9 D
+4 11 D
+0 13 D
+-4 11 D
+-8 9 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 50 11 66 8 50 -1 7 -8 -40 -12 -62 -9 -57 -4 -27 4 8 4432 74 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4432 74 M
+-27 4 D
+-57 -4 D
+-62 -9 D
+-40 -12 D
+7 -8 D
+50 -1 D
+66 8 D
+50 11 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 50 11 66 8 50 -1 7 -8 -40 -12 -62 -9 -57 -4 -27 4 8 4432 74 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4432 74 M
+-27 4 D
+-57 -4 D
+-62 -9 D
+-40 -12 D
+7 -8 D
+50 -1 D
+66 8 D
+50 11 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -13 9 -10 15 -5 16 0 16 5 12 9 8 13 0 13 -6 12 -12 8 -16 3 -17 -3 -14 -8 -10 -11 -4 14 1071 1585 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1071 1585 M
+-11 -4 D
+-8 -10 D
+-3 -14 D
+3 -17 D
+8 -16 D
+12 -12 D
+13 -6 D
+13 0 D
+9 8 D
+5 12 D
+0 16 D
+-5 16 D
+-10 15 D
+-13 9 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -13 9 -10 15 -5 16 0 16 5 12 9 8 13 0 13 -6 12 -12 8 -16 3 -17 -3 -14 -8 -10 -11 -4 14 1071 1585 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1071 1585 M
+-11 -4 D
+-8 -10 D
+-3 -14 D
+3 -17 D
+8 -16 D
+12 -12 D
+13 -6 D
+13 0 D
+9 8 D
+5 12 D
+0 16 D
+-5 16 D
+-10 15 D
+-13 9 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -17 10 -16 15 -12 18 -5 16 2 12 10 5 15 -2 18 -10 17 -16 12 -17 4 -16 -3 -12 -10 -5 13 1041 1217 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1041 1217 M
+-10 -5 D
+-3 -12 D
+4 -16 D
+12 -17 D
+17 -16 D
+18 -10 D
+15 -2 D
+10 5 D
+2 12 D
+-5 16 D
+-12 18 D
+-16 15 D
+-17 10 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -17 10 -16 15 -12 18 -5 16 2 12 10 5 15 -2 18 -10 17 -16 12 -17 4 -16 -3 -12 -10 -5 13 1041 1217 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1041 1217 M
+-10 -5 D
+-3 -12 D
+4 -16 D
+12 -17 D
+17 -16 D
+18 -10 D
+15 -2 D
+10 5 D
+2 12 D
+-5 16 D
+-12 18 D
+-16 15 D
+-17 10 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -4 8 3 11 8 13 13 13 15 11 17 8 14 3 12 -1 7 -6 1 -9 -5 -12 -11 -13 -14 -13 -17 -9 -16 -6 -14 -1 16 1775 2719 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1775 2719 M
+-14 -1 D
+-16 -6 D
+-17 -9 D
+-14 -13 D
+-11 -13 D
+-5 -12 D
+1 -9 D
+7 -6 D
+12 -1 D
+14 3 D
+17 8 D
+15 11 D
+13 13 D
+8 13 D
+3 11 D
+-4 8 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -4 8 3 11 8 13 13 13 15 11 17 8 14 3 12 -1 7 -6 1 -9 -5 -12 -11 -13 -14 -13 -17 -9 -16 -6 -14 -1 16 1775 2719 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1775 2719 M
+-14 -1 D
+-16 -6 D
+-17 -9 D
+-14 -13 D
+-11 -13 D
+-5 -12 D
+1 -9 D
+7 -6 D
+12 -1 D
+14 3 D
+17 8 D
+15 11 D
+13 13 D
+8 13 D
+3 11 D
+-4 8 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -9 7 -5 10 -1 13 5 13 9 11 12 9 13 4 12 0 11 -5 7 -9 2 -12 -2 -13 -7 -12 -10 -10 -13 -7 -13 -2 16 4768 1360 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4768 1360 M
+-13 -2 D
+-13 -7 D
+-10 -10 D
+-7 -12 D
+-2 -13 D
+2 -12 D
+7 -9 D
+11 -5 D
+12 0 D
+13 4 D
+12 9 D
+9 11 D
+5 13 D
+-1 13 D
+-5 10 D
+-9 7 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -9 7 -5 10 -1 13 5 13 9 11 12 9 13 4 12 0 11 -5 7 -9 2 -12 -2 -13 -7 -12 -10 -10 -13 -7 -13 -2 16 4768 1360 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4768 1360 M
+-13 -2 D
+-13 -7 D
+-10 -10 D
+-7 -12 D
+-2 -13 D
+2 -12 D
+7 -9 D
+11 -5 D
+12 0 D
+13 4 D
+12 9 D
+9 11 D
+5 13 D
+-1 13 D
+-5 10 D
+-9 7 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -6 6 -1 10 4 11 8 12 13 11 14 9 15 5 13 1 10 -3 6 -7 1 -9 -4 -12 -9 -12 -12 -10 -14 -9 -14 -5 -13 -1 17 5012 949 SP
 /FO {fs os}!
 FO
+FQ
+O1
+5012 949 M
+-13 -1 D
+-14 -5 D
+-14 -9 D
+-12 -10 D
+-9 -12 D
+-4 -12 D
+1 -9 D
+6 -7 D
+10 -3 D
+13 1 D
+15 5 D
+14 9 D
+13 11 D
+8 12 D
+4 11 D
+-1 10 D
+-6 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -6 6 -1 10 4 11 8 12 13 11 14 9 15 5 13 1 10 -3 6 -7 1 -9 -4 -12 -9 -12 -12 -10 -14 -9 -14 -5 -13 -1 17 5012 949 SP
 /FO {fs os}!
 FO
+FQ
+O1
+5012 949 M
+-13 -1 D
+-14 -5 D
+-14 -9 D
+-12 -10 D
+-9 -12 D
+-4 -12 D
+1 -9 D
+6 -7 D
+10 -3 D
+13 1 D
+15 5 D
+14 9 D
+13 11 D
+8 12 D
+4 11 D
+-1 10 D
+-6 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -17 8 -15 13 -11 15 -6 15 1 12 7 8 13 1 17 -6 16 -10 14 -15 9 -16 2 -13 -5 -10 -11 -4 14 1455 1176 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1455 1176 M
+-11 -4 D
+-5 -10 D
+2 -13 D
+9 -16 D
+14 -15 D
+16 -10 D
+17 -6 D
+13 1 D
+7 8 D
+1 12 D
+-6 15 D
+-11 15 D
+-15 13 D
+-17 8 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -17 8 -15 13 -11 15 -6 15 1 12 7 8 13 1 17 -6 16 -10 14 -15 9 -16 2 -13 -5 -10 -11 -4 14 1455 1176 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1455 1176 M
+-11 -4 D
+-5 -10 D
+2 -13 D
+9 -16 D
+14 -15 D
+16 -10 D
+17 -6 D
+13 1 D
+7 8 D
+1 12 D
+-6 15 D
+-11 15 D
+-15 13 D
+-17 8 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -17 16 -14 23 -8 23 1 18 9 7 16 -4 18 -16 14 -23 8 -23 -2 -18 -10 -7 11 246 1424 SP
 /FO {fs os}!
 FO
+FQ
+O1
+246 1424 M
+-10 -7 D
+-2 -18 D
+8 -23 D
+14 -23 D
+18 -16 D
+16 -4 D
+9 7 D
+1 18 D
+-8 23 D
+-14 23 D
+-17 16 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -17 16 -14 23 -8 23 1 18 9 7 16 -4 18 -16 14 -23 8 -23 -2 -18 -10 -7 11 246 1424 SP
 /FO {fs os}!
 FO
+FQ
+O1
+246 1424 M
+-10 -7 D
+-2 -18 D
+8 -23 D
+14 -23 D
+18 -16 D
+16 -4 D
+9 7 D
+1 18 D
+-8 23 D
+-14 23 D
+-17 16 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -15 7 -12 11 -10 14 -4 14 1 11 7 9 12 3 14 -2 15 -7 13 -11 9 -14 4 -14 -2 -12 -7 -8 -11 -3 15 1992 1208 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1992 1208 M
+-11 -3 D
+-7 -8 D
+-2 -12 D
+4 -14 D
+9 -14 D
+13 -11 D
+15 -7 D
+14 -2 D
+12 3 D
+7 9 D
+1 11 D
+-4 14 D
+-10 14 D
+-12 11 D
+-15 7 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -15 7 -12 11 -10 14 -4 14 1 11 7 9 12 3 14 -2 15 -7 13 -11 9 -14 4 -14 -2 -12 -7 -8 -11 -3 15 1992 1208 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1992 1208 M
+-11 -3 D
+-7 -8 D
+-2 -12 D
+4 -14 D
+9 -14 D
+13 -11 D
+15 -7 D
+14 -2 D
+12 3 D
+7 9 D
+1 11 D
+-4 14 D
+-10 14 D
+-12 11 D
+-15 7 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -15 11 -15 17 -10 18 -4 18 2 12 10 6 14 -3 16 -11 15 -17 11 -19 4 -17 -4 -13 -10 -5 13 649 1347 SP
 /FO {fs os}!
 FO
+FQ
+O1
+649 1347 M
+-10 -5 D
+-4 -13 D
+4 -17 D
+11 -19 D
+15 -17 D
+16 -11 D
+14 -3 D
+10 6 D
+2 12 D
+-4 18 D
+-10 18 D
+-15 17 D
+-15 11 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -15 11 -15 17 -10 18 -4 18 2 12 10 6 14 -3 16 -11 15 -17 11 -19 4 -17 -4 -13 -10 -5 13 649 1347 SP
 /FO {fs os}!
 FO
+FQ
+O1
+649 1347 M
+-10 -5 D
+-4 -13 D
+4 -17 D
+11 -19 D
+15 -17 D
+16 -11 D
+14 -3 D
+10 6 D
+2 12 D
+-4 18 D
+-10 18 D
+-15 17 D
+-15 11 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -16 12 -15 19 -9 20 -3 17 7 11 13 1 17 -8 17 -16 12 -20 6 -20 -3 -14 -11 -6 12 617 1358 SP
 /FO {fs os}!
 FO
+FQ
+O1
+617 1358 M
+-11 -6 D
+-3 -14 D
+6 -20 D
+12 -20 D
+17 -16 D
+17 -8 D
+13 1 D
+7 11 D
+-3 17 D
+-9 20 D
+-15 19 D
+-16 12 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -16 12 -15 19 -9 20 -3 17 7 11 13 1 17 -8 17 -16 12 -20 6 -20 -3 -14 -11 -6 12 617 1358 SP
 /FO {fs os}!
 FO
+FQ
+O1
+617 1358 M
+-11 -6 D
+-3 -14 D
+6 -20 D
+12 -20 D
+17 -16 D
+17 -8 D
+13 1 D
+7 11 D
+-3 17 D
+-9 20 D
+-15 19 D
+-16 12 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 8 14 20 18 28 17 28 13 23 5 11 -3 -2 -11 -16 -16 -24 -18 -28 -15 -25 -9 -17 -2 12 6149 753 SP
 /FO {fs os}!
 FO
+FQ
+O1
+6149 753 M
+-17 -2 D
+-25 -9 D
+-28 -15 D
+-24 -18 D
+-16 -16 D
+-2 -11 D
+11 -3 D
+23 5 D
+28 13 D
+28 17 D
+20 18 D
+8 14 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 8 14 20 18 28 17 28 13 23 5 11 -3 -2 -11 -16 -16 -24 -18 -28 -15 -25 -9 -17 -2 12 6149 753 SP
 /FO {fs os}!
 FO
+FQ
+O1
+6149 753 M
+-17 -2 D
+-25 -9 D
+-28 -15 D
+-24 -18 D
+-16 -16 D
+-2 -11 D
+11 -3 D
+23 5 D
+28 13 D
+28 17 D
+20 18 D
+8 14 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -9 9 -5 12 -1 12 4 11 7 9 10 6 12 2 12 -2 11 -6 9 -9 5 -11 1 -12 -3 -11 -7 -9 -10 -6 -12 -3 17 3955 2298 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3955 2298 M
+-12 -3 D
+-10 -6 D
+-7 -9 D
+-3 -11 D
+1 -12 D
+5 -11 D
+9 -9 D
+11 -6 D
+12 -2 D
+12 2 D
+10 6 D
+7 9 D
+4 11 D
+-1 12 D
+-5 12 D
+-9 9 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -9 9 -5 12 -1 12 4 11 7 9 10 6 12 2 12 -2 11 -6 9 -9 5 -11 1 -12 -3 -11 -7 -9 -10 -6 -12 -3 17 3955 2298 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3955 2298 M
+-12 -3 D
+-10 -6 D
+-7 -9 D
+-3 -11 D
+1 -12 D
+5 -11 D
+9 -9 D
+11 -6 D
+12 -2 D
+12 2 D
+10 6 D
+7 9 D
+4 11 D
+-1 12 D
+-5 12 D
+-9 9 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -9 9 -6 11 -1 12 2 11 7 10 10 6 11 2 13 -2 11 -6 9 -9 6 -11 2 -12 -3 -11 -7 -10 -10 -6 -11 -2 17 2982 1391 SP
 /FO {fs os}!
 FO
+FQ
+O1
+2982 1391 M
+-11 -2 D
+-10 -6 D
+-7 -10 D
+-3 -11 D
+2 -12 D
+6 -11 D
+9 -9 D
+11 -6 D
+13 -2 D
+11 2 D
+10 6 D
+7 10 D
+2 11 D
+-1 12 D
+-6 11 D
+-9 9 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 6 -9 9 -6 11 -1 12 2 11 7 10 10 6 11 2 13 -2 11 -6 9 -9 6 -11 2 -12 -3 -11 -7 -10 -10 -6 -11 -2 17 2982 1391 SP
 /FO {fs os}!
 FO
+FQ
+O1
+2982 1391 M
+-11 -2 D
+-10 -6 D
+-7 -10 D
+-3 -11 D
+2 -12 D
+6 -11 D
+9 -9 D
+11 -6 D
+13 -2 D
+11 2 D
+10 6 D
+7 10 D
+2 11 D
+-1 12 D
+-6 11 D
+-9 9 D
+-11 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 5 -9 9 -6 11 -1 11 3 11 7 9 11 6 12 2 13 -2 12 -5 9 -9 5 -11 2 -12 -4 -10 -7 -9 -10 -6 -13 -2 17 3372 1027 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3372 1027 M
+-13 -2 D
+-10 -6 D
+-7 -9 D
+-4 -10 D
+2 -12 D
+5 -11 D
+9 -9 D
+12 -5 D
+13 -2 D
+12 2 D
+11 6 D
+7 9 D
+3 11 D
+-1 11 D
+-6 11 D
+-9 9 D
+-11 5 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -11 5 -9 9 -6 11 -1 11 3 11 7 9 11 6 12 2 13 -2 12 -5 9 -9 5 -11 2 -12 -4 -10 -7 -9 -10 -6 -13 -2 17 3372 1027 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3372 1027 M
+-13 -2 D
+-10 -6 D
+-7 -9 D
+-4 -10 D
+2 -12 D
+5 -11 D
+9 -9 D
+12 -5 D
+13 -2 D
+12 2 D
+11 6 D
+7 9 D
+3 11 D
+-1 11 D
+-6 11 D
+-9 9 D
+-11 5 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -10 6 -7 9 -3 11 1 12 6 11 9 9 12 5 13 2 12 -2 10 -6 7 -9 3 -11 -2 -12 -5 -11 -9 -8 -12 -6 -13 -2 17 3918 1133 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3918 1133 M
+-13 -2 D
+-12 -6 D
+-9 -8 D
+-5 -11 D
+-2 -12 D
+3 -11 D
+7 -9 D
+10 -6 D
+12 -2 D
+13 2 D
+12 5 D
+9 9 D
+6 11 D
+1 12 D
+-3 11 D
+-7 9 D
+-10 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -10 6 -7 9 -3 11 1 12 6 11 9 9 12 5 13 2 12 -2 10 -6 7 -9 3 -11 -2 -12 -5 -11 -9 -8 -12 -6 -13 -2 17 3918 1133 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3918 1133 M
+-13 -2 D
+-12 -6 D
+-9 -8 D
+-5 -11 D
+-2 -12 D
+3 -11 D
+7 -9 D
+10 -6 D
+12 -2 D
+13 2 D
+12 5 D
+9 9 D
+6 11 D
+1 12 D
+-3 11 D
+-7 9 D
+-10 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -2 8 6 11 12 12 16 12 19 10 18 7 16 3 11 -1 5 -6 -1 -9 -8 -12 -15 -13 -18 -11 -19 -9 -18 -6 -14 0 16 1866 2906 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1866 2906 M
+-14 0 D
+-18 -6 D
+-19 -9 D
+-18 -11 D
+-15 -13 D
+-8 -12 D
+-1 -9 D
+5 -6 D
+11 -1 D
+16 3 D
+18 7 D
+19 10 D
+16 12 D
+12 12 D
+6 11 D
+-2 8 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -2 8 6 11 12 12 16 12 19 10 18 7 16 3 11 -1 5 -6 -1 -9 -8 -12 -15 -13 -18 -11 -19 -9 -18 -6 -14 0 16 1866 2906 SP
 /FO {fs os}!
 FO
+FQ
+O1
+1866 2906 M
+-14 0 D
+-18 -6 D
+-19 -9 D
+-18 -11 D
+-15 -13 D
+-8 -12 D
+-1 -9 D
+5 -6 D
+11 -1 D
+16 3 D
+18 7 D
+19 10 D
+16 12 D
+12 12 D
+6 11 D
+-2 8 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -9 7 -6 9 -2 11 2 12 7 11 9 9 12 5 13 2 12 -2 9 -6 7 -9 2 -11 -3 -12 -6 -11 -10 -9 -12 -6 -13 -2 17 3038 2481 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3038 2481 M
+-13 -2 D
+-12 -6 D
+-10 -9 D
+-6 -11 D
+-3 -12 D
+2 -11 D
+7 -9 D
+9 -6 D
+12 -2 D
+13 2 D
+12 5 D
+9 9 D
+7 11 D
+2 12 D
+-2 11 D
+-6 9 D
+-9 7 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -9 7 -6 9 -2 11 2 12 7 11 9 9 12 5 13 2 12 -2 9 -6 7 -9 2 -11 -3 -12 -6 -11 -10 -9 -12 -6 -13 -2 17 3038 2481 SP
 /FO {fs os}!
 FO
+FQ
+O1
+3038 2481 M
+-13 -2 D
+-12 -6 D
+-10 -9 D
+-6 -11 D
+-3 -12 D
+2 -11 D
+7 -9 D
+9 -6 D
+12 -2 D
+13 2 D
+12 5 D
+9 9 D
+7 11 D
+2 12 D
+-2 11 D
+-6 9 D
+-9 7 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -8 6 -3 8 1 9 6 11 10 10 13 8 14 6 15 3 12 -1 9 -4 6 -7 0 -9 -4 -10 -8 -11 -11 -9 -14 -7 -14 -4 -13 -1 18 4331 671 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4331 671 M
+-13 -1 D
+-14 -4 D
+-14 -7 D
+-11 -9 D
+-8 -11 D
+-4 -10 D
+0 -9 D
+6 -7 D
+9 -4 D
+12 -1 D
+15 3 D
+14 6 D
+13 8 D
+10 10 D
+6 11 D
+1 9 D
+-3 8 D
+-8 6 D
+P S
+{1 A} FS
+O0
 /FO {P}!
 -8 6 -3 8 1 9 6 11 10 10 13 8 14 6 15 3 12 -1 9 -4 6 -7 0 -9 -4 -10 -8 -11 -11 -9 -14 -7 -14 -4 -13 -1 18 4331 671 SP
 /FO {fs os}!
 FO
+FQ
+O1
+4331 671 M
+-13 -1 D
+-14 -4 D
+-14 -7 D
+-11 -9 D
+-8 -11 D
+-4 -10 D
+0 -9 D
+6 -7 D
+9 -4 D
+12 -1 D
+15 3 D
+14 6 D
+13 8 D
+10 10 D
+6 11 D
+1 9 D
+-3 8 D
+-8 6 D
+P S
 U
 PSL_cliprestore
 %%EndObject
@@ -7770,12 +12036,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -Rg -JH0/6i -O -SE-150 -Gblack @hotspots.txt
-%@PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -Rg -JH0/6i -O -SE-150 -Gblack /Users/pwessel/.gmt/cache/hotspots.txt
+%@PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 3600 0 M
 118 1 D
@@ -7993,448 +12259,1552 @@ V
 -4 13 7 10 12 0 10 -10 -2 -13 -11 -5 6 4511 2084 SP
 /FO {fs os}!
 FO
+FQ
+4511 2084 M
+-11 -5 D
+-2 -13 D
+10 -10 D
+12 0 D
+7 10 D
+-4 13 D
+P S
+{0 A} FS
 /FO {P}!
 -4 13 7 10 12 0 10 -10 -2 -13 -11 -5 6 4511 2084 SP
 /FO {fs os}!
 FO
+FQ
+4511 2084 M
+-11 -5 D
+-2 -13 D
+10 -10 D
+12 0 D
+7 10 D
+-4 13 D
+P S
+{0 A} FS
 /FO {P}!
 -5 11 3 10 11 5 11 -5 5 -10 -3 -11 -11 -4 7 3063 1438 SP
 /FO {fs os}!
 FO
+FQ
+3063 1438 M
+-11 -4 D
+-3 -11 D
+5 -10 D
+11 -5 D
+11 5 D
+3 10 D
+-5 11 D
+P S
+{0 A} FS
 /FO {P}!
 -5 11 3 10 11 5 11 -5 5 -10 -3 -11 -11 -4 7 3063 1438 SP
 /FO {fs os}!
 FO
+FQ
+3063 1438 M
+-11 -4 D
+-3 -11 D
+5 -10 D
+11 -5 D
+11 5 D
+3 10 D
+-5 11 D
+P S
+{0 A} FS
 /FO {P}!
 -4 10 4 11 10 4 11 -4 5 -11 -5 -10 -10 -5 7 3291 1638 SP
 /FO {fs os}!
 FO
+FQ
+3291 1638 M
+-10 -5 D
+-5 -10 D
+5 -11 D
+11 -4 D
+10 4 D
+4 11 D
+-4 10 D
+P S
+{0 A} FS
 /FO {P}!
 -4 10 4 11 10 4 11 -4 5 -11 -5 -10 -10 -5 7 3291 1638 SP
 /FO {fs os}!
 FO
+FQ
+3291 1638 M
+-10 -5 D
+-5 -10 D
+5 -11 D
+11 -4 D
+10 4 D
+4 11 D
+-4 10 D
+P S
+{0 A} FS
 /FO {P}!
 -15 17 2 10 18 -7 15 -17 -3 -10 5 996 1045 SP
 /FO {fs os}!
 FO
+FQ
+996 1045 M
+-3 -10 D
+15 -17 D
+18 -7 D
+2 10 D
+-15 17 D
+P S
+{0 A} FS
 /FO {P}!
 -15 17 2 10 18 -7 15 -17 -3 -10 5 996 1045 SP
 /FO {fs os}!
 FO
+FQ
+996 1045 M
+-3 -10 D
+15 -17 D
+18 -7 D
+2 10 D
+-15 17 D
+P S
+{0 A} FS
 /FO {P}!
 -2 10 7 10 12 4 10 -5 2 -10 -7 -10 -12 -4 7 3086 2646 SP
 /FO {fs os}!
 FO
+FQ
+3086 2646 M
+-12 -4 D
+-7 -10 D
+2 -10 D
+10 -5 D
+12 4 D
+7 10 D
+-2 10 D
+P S
+{0 A} FS
 /FO {P}!
 -2 10 7 10 12 4 10 -5 2 -10 -7 -10 -12 -4 7 3086 2646 SP
 /FO {fs os}!
 FO
+FQ
+3086 2646 M
+-12 -4 D
+-7 -10 D
+2 -10 D
+10 -5 D
+12 4 D
+7 10 D
+-2 10 D
+P S
+{0 A} FS
 /FO {P}!
 6 14 15 10 11 -1 0 -11 -12 -13 -14 -6 6 1419 2483 SP
 /FO {fs os}!
 FO
+FQ
+1419 2483 M
+-14 -6 D
+-12 -13 D
+0 -11 D
+11 -1 D
+15 10 D
+6 14 D
+P S
+{0 A} FS
 /FO {P}!
 6 14 15 10 11 -1 0 -11 -12 -13 -14 -6 6 1419 2483 SP
 /FO {fs os}!
 FO
+FQ
+1419 2483 M
+-14 -6 D
+-12 -13 D
+0 -11 D
+11 -1 D
+15 10 D
+6 14 D
+P S
+{0 A} FS
 /FO {P}!
 44 9 7 -6 -39 -12 -31 -2 4 4979 190 SP
 /FO {fs os}!
 FO
+FQ
+4979 190 M
+-31 -2 D
+-39 -12 D
+7 -6 D
+44 9 D
+P S
+{0 A} FS
 /FO {P}!
 44 9 7 -6 -39 -12 -31 -2 4 4979 190 SP
 /FO {fs os}!
 FO
+FQ
+4979 190 M
+-31 -2 D
+-39 -12 D
+7 -6 D
+44 9 D
+P S
+{0 A} FS
 /FO {P}!
 1 11 8 10 13 4 8 -5 0 -10 -9 -11 -12 -4 7 2427 2493 SP
 /FO {fs os}!
 FO
+FQ
+2427 2493 M
+-12 -4 D
+-9 -11 D
+0 -10 D
+8 -5 D
+13 4 D
+8 10 D
+1 11 D
+P S
+{0 A} FS
 /FO {P}!
 1 11 8 10 13 4 8 -5 0 -10 -9 -11 -12 -4 7 2427 2493 SP
 /FO {fs os}!
 FO
+FQ
+2427 2493 M
+-12 -4 D
+-9 -11 D
+0 -10 D
+8 -5 D
+13 4 D
+8 10 D
+1 11 D
+P S
+{0 A} FS
 /FO {P}!
 -5 9 6 10 12 4 12 -4 4 -10 -5 -9 -13 -4 7 3660 660 SP
 /FO {fs os}!
 FO
+FQ
+3660 660 M
+-13 -4 D
+-5 -9 D
+4 -10 D
+12 -4 D
+12 4 D
+6 10 D
+-5 9 D
+P S
+{0 A} FS
 /FO {P}!
 -5 9 6 10 12 4 12 -4 4 -10 -5 -9 -13 -4 7 3660 660 SP
 /FO {fs os}!
 FO
+FQ
+3660 660 M
+-13 -4 D
+-5 -9 D
+4 -10 D
+12 -4 D
+12 4 D
+6 10 D
+-5 9 D
+P S
+{0 A} FS
 /FO {P}!
 25 13 23 4 -3 -9 -26 -13 -23 -4 5 1830 3118 SP
 /FO {fs os}!
 FO
+FQ
+1830 3118 M
+-23 -4 D
+-26 -13 D
+-3 -9 D
+23 4 D
+25 13 D
+P S
+{0 A} FS
 /FO {P}!
 25 13 23 4 -3 -9 -26 -13 -23 -4 5 1830 3118 SP
 /FO {fs os}!
 FO
+FQ
+1830 3118 M
+-23 -4 D
+-26 -13 D
+-3 -9 D
+23 4 D
+25 13 D
+P S
+{0 A} FS
 /FO {P}!
 -3 10 6 10 11 4 11 -4 3 -10 -6 -10 -11 -5 7 3258 2430 SP
 /FO {fs os}!
 FO
+FQ
+3258 2430 M
+-11 -5 D
+-6 -10 D
+3 -10 D
+11 -4 D
+11 4 D
+6 10 D
+-3 10 D
+P S
+{0 A} FS
 /FO {P}!
 -3 10 6 10 11 4 11 -4 3 -10 -6 -10 -11 -5 7 3258 2430 SP
 /FO {fs os}!
 FO
+FQ
+3258 2430 M
+-11 -5 D
+-6 -10 D
+3 -10 D
+11 -4 D
+11 4 D
+6 10 D
+-3 10 D
+P S
+{0 A} FS
 /FO {P}!
 -3 10 5 11 11 4 10 -4 4 -11 -6 -10 -11 -5 7 3083 2148 SP
 /FO {fs os}!
 FO
+FQ
+3083 2148 M
+-11 -5 D
+-6 -10 D
+4 -11 D
+10 -4 D
+11 4 D
+5 11 D
+-3 10 D
+P S
+{0 A} FS
 /FO {P}!
 -3 10 5 11 11 4 10 -4 4 -11 -6 -10 -11 -5 7 3083 2148 SP
 /FO {fs os}!
 FO
+FQ
+3083 2148 M
+-11 -5 D
+-6 -10 D
+4 -11 D
+10 -4 D
+11 4 D
+5 11 D
+-3 10 D
+P S
+{0 A} FS
 /FO {P}!
 -5 10 4 10 11 5 10 -4 5 -11 -4 -10 -11 -5 7 3466 1528 SP
 /FO {fs os}!
 FO
+FQ
+3466 1528 M
+-11 -5 D
+-4 -10 D
+5 -11 D
+10 -4 D
+11 5 D
+4 10 D
+-5 10 D
+P S
+{0 A} FS
 /FO {P}!
 -5 10 4 10 11 5 10 -4 5 -11 -4 -10 -11 -5 7 3466 1528 SP
 /FO {fs os}!
 FO
+FQ
+3466 1528 M
+-11 -5 D
+-4 -10 D
+5 -11 D
+10 -4 D
+11 5 D
+4 10 D
+-5 10 D
+P S
+{0 A} FS
 /FO {P}!
 -4 20 8 10 12 -9 3 -20 -8 -10 5 6958 1967 SP
 /FO {fs os}!
 FO
+FQ
+6958 1967 M
+-8 -10 D
+3 -20 D
+12 -9 D
+8 10 D
+-4 20 D
+P S
+{0 A} FS
 /FO {P}!
 -4 20 8 10 12 -9 3 -20 -8 -10 5 6958 1967 SP
 /FO {fs os}!
 FO
+FQ
+6958 1967 M
+-8 -10 D
+3 -20 D
+12 -9 D
+8 10 D
+-4 20 D
+P S
+{0 A} FS
 /FO {P}!
 -1 12 9 11 13 -1 6 -10 -4 -13 -12 -5 6 4557 1545 SP
 /FO {fs os}!
 FO
+FQ
+4557 1545 M
+-12 -5 D
+-4 -13 D
+6 -10 D
+13 -1 D
+9 11 D
+-1 12 D
+P S
+{0 A} FS
 /FO {P}!
 -1 12 9 11 13 -1 6 -10 -4 -13 -12 -5 6 4557 1545 SP
 /FO {fs os}!
 FO
+FQ
+4557 1545 M
+-12 -5 D
+-4 -13 D
+6 -10 D
+13 -1 D
+9 11 D
+-1 12 D
+P S
+{0 A} FS
 /FO {P}!
 1 10 9 9 14 4 9 -5 -1 -10 -10 -9 -13 -4 7 4353 801 SP
 /FO {fs os}!
 FO
+FQ
+4353 801 M
+-13 -4 D
+-10 -9 D
+-1 -10 D
+9 -5 D
+14 4 D
+9 9 D
+1 10 D
+P S
+{0 A} FS
 /FO {P}!
 1 10 9 9 14 4 9 -5 -1 -10 -10 -9 -13 -4 7 4353 801 SP
 /FO {fs os}!
 FO
+FQ
+4353 801 M
+-13 -4 D
+-10 -9 D
+-1 -10 D
+9 -5 D
+14 4 D
+9 9 D
+1 10 D
+P S
+{0 A} FS
 /FO {P}!
 -15 17 2 10 17 -7 16 -17 -3 -10 5 817 1064 SP
 /FO {fs os}!
 FO
+FQ
+817 1064 M
+-3 -10 D
+16 -17 D
+17 -7 D
+2 10 D
+-15 17 D
+P S
+{0 A} FS
 /FO {P}!
 -15 17 2 10 17 -7 16 -17 -3 -10 5 817 1064 SP
 /FO {fs os}!
 FO
+FQ
+817 1064 M
+-3 -10 D
+16 -17 D
+17 -7 D
+2 10 D
+-15 17 D
+P S
+{0 A} FS
 /FO {P}!
 -6 9 4 10 11 4 12 -4 6 -9 -4 -10 -11 -4 7 3709 2887 SP
 /FO {fs os}!
 FO
+FQ
+3709 2887 M
+-11 -4 D
+-4 -10 D
+6 -9 D
+12 -4 D
+11 4 D
+4 10 D
+-6 9 D
+P S
+{0 A} FS
 /FO {P}!
 -6 9 4 10 11 4 12 -4 6 -9 -4 -10 -11 -4 7 3709 2887 SP
 /FO {fs os}!
 FO
+FQ
+3709 2887 M
+-11 -4 D
+-4 -10 D
+6 -9 D
+12 -4 D
+11 4 D
+4 10 D
+-6 9 D
+P S
+{0 A} FS
 /FO {P}!
 -3 13 7 10 13 0 9 -10 -3 -13 -11 -6 6 2892 1726 SP
 /FO {fs os}!
 FO
+FQ
+2892 1726 M
+-11 -6 D
+-3 -13 D
+9 -10 D
+13 0 D
+7 10 D
+-3 13 D
+P S
+{0 A} FS
 /FO {P}!
 -3 13 7 10 13 0 9 -10 -3 -13 -11 -6 6 2892 1726 SP
 /FO {fs os}!
 FO
+FQ
+2892 1726 M
+-11 -6 D
+-3 -13 D
+9 -10 D
+13 0 D
+7 10 D
+-3 13 D
+P S
+{0 A} FS
 /FO {P}!
 -3 14 8 11 12 0 7 -11 -2 -14 -11 -6 6 1631 1816 SP
 /FO {fs os}!
 FO
+FQ
+1631 1816 M
+-11 -6 D
+-2 -14 D
+7 -11 D
+12 0 D
+8 11 D
+-3 14 D
+P S
+{0 A} FS
 /FO {P}!
 -3 14 8 11 12 0 7 -11 -2 -14 -11 -6 6 1631 1816 SP
 /FO {fs os}!
 FO
+FQ
+1631 1816 M
+-11 -6 D
+-2 -14 D
+7 -11 D
+12 0 D
+8 11 D
+-3 14 D
+P S
+{0 A} FS
 /FO {P}!
 12 18 16 8 4 -10 -12 -18 -16 -8 5 600 2377 SP
 /FO {fs os}!
 FO
+FQ
+600 2377 M
+-16 -8 D
+-12 -18 D
+4 -10 D
+16 8 D
+12 18 D
+P S
+{0 A} FS
 /FO {P}!
 12 18 16 8 4 -10 -12 -18 -16 -8 5 600 2377 SP
 /FO {fs os}!
 FO
+FQ
+600 2377 M
+-16 -8 D
+-12 -18 D
+4 -10 D
+16 8 D
+12 18 D
+P S
+{0 A} FS
 /FO {P}!
 -5 10 5 11 10 4 11 -4 5 -11 -4 -10 -11 -4 7 3725 2320 SP
 /FO {fs os}!
 FO
+FQ
+3725 2320 M
+-11 -4 D
+-4 -10 D
+5 -11 D
+11 -4 D
+10 4 D
+5 11 D
+-5 10 D
+P S
+{0 A} FS
 /FO {P}!
 -5 10 5 11 10 4 11 -4 5 -11 -4 -10 -11 -4 7 3725 2320 SP
 /FO {fs os}!
 FO
+FQ
+3725 2320 M
+-11 -4 D
+-4 -10 D
+5 -11 D
+11 -4 D
+10 4 D
+5 11 D
+-5 10 D
+P S
+{0 A} FS
 /FO {P}!
 -3 8 5 9 11 5 12 0 7 -6 -1 -9 -9 -7 -12 -3 8 3375 3163 SP
 /FO {fs os}!
 FO
+FQ
+3375 3163 M
+-12 -3 D
+-9 -7 D
+-1 -9 D
+7 -6 D
+12 0 D
+11 5 D
+5 9 D
+-3 8 D
+P S
+{0 A} FS
 /FO {P}!
 -3 8 5 9 11 5 12 0 7 -6 -1 -9 -9 -7 -12 -3 8 3375 3163 SP
 /FO {fs os}!
 FO
+FQ
+3375 3163 M
+-12 -3 D
+-9 -7 D
+-1 -9 D
+7 -6 D
+12 0 D
+11 5 D
+5 9 D
+-3 8 D
+P S
+{0 A} FS
 /FO {P}!
 -5 10 4 11 10 4 11 -4 5 -10 -4 -11 -10 -4 7 4121 2103 SP
 /FO {fs os}!
 FO
+FQ
+4121 2103 M
+-10 -4 D
+-4 -11 D
+5 -10 D
+11 -4 D
+10 4 D
+4 11 D
+-5 10 D
+P S
+{0 A} FS
 /FO {P}!
 -5 10 4 11 10 4 11 -4 5 -10 -4 -11 -10 -4 7 4121 2103 SP
 /FO {fs os}!
 FO
+FQ
+4121 2103 M
+-10 -4 D
+-4 -11 D
+5 -10 D
+11 -4 D
+10 4 D
+4 11 D
+-5 10 D
+P S
+{0 A} FS
 /FO {P}!
 16 13 21 8 10 -2 -7 -11 -21 -12 -17 -3 6 1649 2945 SP
 /FO {fs os}!
 FO
+FQ
+1649 2945 M
+-17 -3 D
+-21 -12 D
+-7 -11 D
+10 -2 D
+21 8 D
+16 13 D
+P S
+{0 A} FS
 /FO {P}!
 16 13 21 8 10 -2 -7 -11 -21 -12 -17 -3 6 1649 2945 SP
 /FO {fs os}!
 FO
+FQ
+1649 2945 M
+-17 -3 D
+-21 -12 D
+-7 -11 D
+10 -2 D
+21 8 D
+16 13 D
+P S
+{0 A} FS
 /FO {P}!
 -11 13 1 10 13 1 14 -9 5 -13 -7 -7 6 2106 1032 SP
 /FO {fs os}!
 FO
+FQ
+2106 1032 M
+-7 -7 D
+5 -13 D
+14 -9 D
+13 1 D
+1 10 D
+-11 13 D
+P S
+{0 A} FS
 /FO {P}!
 -11 13 1 10 13 1 14 -9 5 -13 -7 -7 6 2106 1032 SP
 /FO {fs os}!
 FO
+FQ
+2106 1032 M
+-7 -7 D
+5 -13 D
+14 -9 D
+13 1 D
+1 10 D
+-11 13 D
+P S
+{0 A} FS
 /FO {P}!
 3 10 13 10 14 3 7 -5 -3 -10 -12 -9 -14 -4 7 4601 729 SP
 /FO {fs os}!
 FO
+FQ
+4601 729 M
+-14 -4 D
+-12 -9 D
+-3 -10 D
+7 -5 D
+14 3 D
+13 10 D
+3 10 D
+P S
+{0 A} FS
 /FO {P}!
 3 10 13 10 14 3 7 -5 -3 -10 -12 -9 -14 -4 7 4601 729 SP
 /FO {fs os}!
 FO
+FQ
+4601 729 M
+-14 -4 D
+-12 -9 D
+-3 -10 D
+7 -5 D
+14 3 D
+13 10 D
+3 10 D
+P S
+{0 A} FS
 /FO {P}!
 -3 13 8 10 13 0 8 -11 -3 -12 -12 -6 6 4396 1748 SP
 /FO {fs os}!
 FO
+FQ
+4396 1748 M
+-12 -6 D
+-3 -12 D
+8 -11 D
+13 0 D
+8 10 D
+-3 13 D
+P S
+{0 A} FS
 /FO {P}!
 -3 13 8 10 13 0 8 -11 -3 -12 -12 -6 6 4396 1748 SP
 /FO {fs os}!
 FO
+FQ
+4396 1748 M
+-12 -6 D
+-3 -12 D
+8 -11 D
+13 0 D
+8 10 D
+-3 13 D
+P S
+{0 A} FS
 /FO {P}!
 -11 16 5 9 17 -7 11 -16 -6 -9 5 1322 1161 SP
 /FO {fs os}!
 FO
+FQ
+1322 1161 M
+-6 -9 D
+11 -16 D
+17 -7 D
+5 9 D
+-11 16 D
+P S
+{0 A} FS
 /FO {P}!
 -11 16 5 9 17 -7 11 -16 -6 -9 5 1322 1161 SP
 /FO {fs os}!
 FO
+FQ
+1322 1161 M
+-6 -9 D
+11 -16 D
+17 -7 D
+5 9 D
+-11 16 D
+P S
+{0 A} FS
 /FO {P}!
 -24 17 13 3 33 -14 6 -13 4 1655 555 SP
 /FO {fs os}!
 FO
+FQ
+1655 555 M
+6 -13 D
+33 -14 D
+13 3 D
+-24 17 D
+P S
+{0 A} FS
 /FO {P}!
 -24 17 13 3 33 -14 6 -13 4 1655 555 SP
 /FO {fs os}!
 FO
+FQ
+1655 555 M
+6 -13 D
+33 -14 D
+13 3 D
+-24 17 D
+P S
+{0 A} FS
 /FO {P}!
 -12 16 5 9 17 -7 13 -16 -6 -9 5 1315 1091 SP
 /FO {fs os}!
 FO
+FQ
+1315 1091 M
+-6 -9 D
+13 -16 D
+17 -7 D
+5 9 D
+-12 16 D
+P S
+{0 A} FS
 /FO {P}!
 -12 16 5 9 17 -7 13 -16 -6 -9 5 1315 1091 SP
 /FO {fs os}!
 FO
+FQ
+1315 1091 M
+-6 -9 D
+13 -16 D
+17 -7 D
+5 9 D
+-12 16 D
+P S
+{0 A} FS
 /FO {P}!
 -3 10 6 10 11 4 11 -4 3 -10 -6 -11 -12 -4 7 3272 2537 SP
 /FO {fs os}!
 FO
+FQ
+3272 2537 M
+-12 -4 D
+-6 -11 D
+3 -10 D
+11 -4 D
+11 4 D
+6 10 D
+-3 10 D
+P S
+{0 A} FS
 /FO {P}!
 -3 10 6 10 11 4 11 -4 3 -10 -6 -11 -12 -4 7 3272 2537 SP
 /FO {fs os}!
 FO
+FQ
+3272 2537 M
+-12 -4 D
+-6 -11 D
+3 -10 D
+11 -4 D
+11 4 D
+6 10 D
+-3 10 D
+P S
+{0 A} FS
 /FO {P}!
 0 10 9 10 13 3 9 -4 1 -10 -10 -10 -13 -3 7 4228 794 SP
 /FO {fs os}!
 FO
+FQ
+4228 794 M
+-13 -3 D
+-10 -10 D
+1 -10 D
+9 -4 D
+13 3 D
+9 10 D
+0 10 D
+P S
+{0 A} FS
 /FO {P}!
 0 10 9 10 13 3 9 -4 1 -10 -10 -10 -13 -3 7 4228 794 SP
 /FO {fs os}!
 FO
+FQ
+4228 794 M
+-13 -3 D
+-10 -10 D
+1 -10 D
+9 -4 D
+13 3 D
+9 10 D
+0 10 D
+P S
+{0 A} FS
 /FO {P}!
 -4 18 8 10 13 -9 4 -18 -9 -9 5 743 1617 SP
 /FO {fs os}!
 FO
+FQ
+743 1617 M
+-9 -9 D
+4 -18 D
+13 -9 D
+8 10 D
+-4 18 D
+P S
+{0 A} FS
 /FO {P}!
 -4 18 8 10 13 -9 4 -18 -9 -9 5 743 1617 SP
 /FO {fs os}!
 FO
+FQ
+743 1617 M
+-9 -9 D
+4 -18 D
+13 -9 D
+8 10 D
+-4 18 D
+P S
+{0 A} FS
 /FO {P}!
 -12 18 3 10 16 -8 13 -18 -4 -10 5 617 1235 SP
 /FO {fs os}!
 FO
+FQ
+617 1235 M
+-4 -10 D
+13 -18 D
+16 -8 D
+3 10 D
+-12 18 D
+P S
+{0 A} FS
 /FO {P}!
 -12 18 3 10 16 -8 13 -18 -4 -10 5 617 1235 SP
 /FO {fs os}!
 FO
+FQ
+617 1235 M
+-4 -10 D
+13 -18 D
+16 -8 D
+3 10 D
+-12 18 D
+P S
+{0 A} FS
 /FO {P}!
 -4 10 4 11 10 4 11 -4 4 -10 -4 -11 -10 -4 7 3799 1903 SP
 /FO {fs os}!
 FO
+FQ
+3799 1903 M
+-10 -4 D
+-4 -11 D
+4 -10 D
+11 -4 D
+10 4 D
+4 11 D
+-4 10 D
+P S
+{0 A} FS
 /FO {P}!
 -4 10 4 11 10 4 11 -4 4 -10 -4 -11 -10 -4 7 3799 1903 SP
 /FO {fs os}!
 FO
+FQ
+3799 1903 M
+-10 -4 D
+-4 -11 D
+4 -10 D
+11 -4 D
+10 4 D
+4 11 D
+-4 10 D
+P S
+{0 A} FS
 /FO {P}!
 46 0 -37 -10 -44 -1 3 4379 66 SP
 /FO {fs os}!
 FO
+FQ
+4379 66 M
+-44 -1 D
+-37 -10 D
+46 0 D
+P S
+{0 A} FS
 /FO {P}!
 46 0 -37 -10 -44 -1 3 4379 66 SP
 /FO {fs os}!
 FO
+FQ
+4379 66 M
+-44 -1 D
+-37 -10 D
+46 0 D
+P S
+{0 A} FS
 /FO {P}!
 -4 17 9 9 13 -8 5 -17 -10 -9 5 1077 1562 SP
 /FO {fs os}!
 FO
+FQ
+1077 1562 M
+-10 -9 D
+5 -17 D
+13 -8 D
+9 9 D
+-4 17 D
+P S
+{0 A} FS
 /FO {P}!
 -4 17 9 9 13 -8 5 -17 -10 -9 5 1077 1562 SP
 /FO {fs os}!
 FO
+FQ
+1077 1562 M
+-10 -9 D
+5 -17 D
+13 -8 D
+9 9 D
+-4 17 D
+P S
+{0 A} FS
 /FO {P}!
 -11 16 5 10 16 -7 12 -17 -5 -10 5 1055 1195 SP
 /FO {fs os}!
 FO
+FQ
+1055 1195 M
+-5 -10 D
+12 -17 D
+16 -7 D
+5 10 D
+-11 16 D
+P S
+{0 A} FS
 /FO {P}!
 -11 16 5 10 16 -7 12 -17 -5 -10 5 1055 1195 SP
 /FO {fs os}!
 FO
+FQ
+1055 1195 M
+-5 -10 D
+12 -17 D
+16 -7 D
+5 10 D
+-11 16 D
+P S
+{0 A} FS
 /FO {P}!
 9 13 17 9 12 -1 -2 -11 -14 -13 -16 -4 6 1756 2699 SP
 /FO {fs os}!
 FO
+FQ
+1756 2699 M
+-16 -4 D
+-14 -13 D
+-2 -11 D
+12 -1 D
+17 9 D
+9 13 D
+P S
+{0 A} FS
 /FO {P}!
 9 13 17 9 12 -1 -2 -11 -14 -13 -16 -4 6 1756 2699 SP
 /FO {fs os}!
 FO
+FQ
+1756 2699 M
+-16 -4 D
+-14 -13 D
+-2 -11 D
+12 -1 D
+17 9 D
+9 13 D
+P S
+{0 A} FS
 /FO {P}!
 1 13 11 10 13 0 5 -11 -6 -12 -13 -6 6 4762 1340 SP
 /FO {fs os}!
 FO
+FQ
+4762 1340 M
+-13 -6 D
+-6 -12 D
+5 -11 D
+13 0 D
+11 10 D
+1 13 D
+P S
+{0 A} FS
 /FO {P}!
 1 13 11 10 13 0 5 -11 -6 -12 -13 -6 6 4762 1340 SP
 /FO {fs os}!
 FO
+FQ
+4762 1340 M
+-13 -6 D
+-6 -12 D
+5 -11 D
+13 0 D
+11 10 D
+1 13 D
+P S
+{0 A} FS
 /FO {P}!
 3 11 12 10 13 4 8 -5 -4 -11 -11 -10 -14 -4 7 4999 930 SP
 /FO {fs os}!
 FO
+FQ
+4999 930 M
+-14 -4 D
+-11 -10 D
+-4 -11 D
+8 -5 D
+13 4 D
+12 10 D
+3 11 D
+P S
+{0 A} FS
 /FO {P}!
 3 11 12 10 13 4 8 -5 -4 -11 -11 -10 -14 -4 7 4999 930 SP
 /FO {fs os}!
 FO
+FQ
+4999 930 M
+-14 -4 D
+-11 -10 D
+-4 -11 D
+8 -5 D
+13 4 D
+12 10 D
+3 11 D
+P S
+{0 A} FS
 /FO {P}!
 -12 13 0 12 12 1 14 -11 6 -13 -6 -7 6 1468 1155 SP
 /FO {fs os}!
 FO
+FQ
+1468 1155 M
+-6 -7 D
+6 -13 D
+14 -11 D
+12 1 D
+0 12 D
+-12 13 D
+P S
+{0 A} FS
 /FO {P}!
 -12 13 0 12 12 1 14 -11 6 -13 -6 -7 6 1468 1155 SP
 /FO {fs os}!
 FO
+FQ
+1468 1155 M
+-6 -7 D
+6 -13 D
+14 -11 D
+12 1 D
+0 12 D
+-12 13 D
+P S
+{0 A} FS
 /FO {P}!
 -7 23 13 1 14 -21 -4 -15 4 258 1398 SP
 /FO {fs os}!
 FO
+FQ
+258 1398 M
+-4 -15 D
+14 -21 D
+13 1 D
+-7 23 D
+P S
+{0 A} FS
 /FO {P}!
 -7 23 13 1 14 -21 -4 -15 4 258 1398 SP
 /FO {fs os}!
 FO
+FQ
+258 1398 M
+-4 -15 D
+14 -21 D
+13 1 D
+-7 23 D
+P S
+{0 A} FS
 /FO {P}!
 -9 12 3 11 12 1 13 -10 4 -13 -9 -7 6 2002 1188 SP
 /FO {fs os}!
 FO
+FQ
+2002 1188 M
+-9 -7 D
+4 -13 D
+13 -10 D
+12 1 D
+3 11 D
+-9 12 D
+P S
+{0 A} FS
 /FO {P}!
 -9 12 3 11 12 1 13 -10 4 -13 -9 -7 6 2002 1188 SP
 /FO {fs os}!
 FO
+FQ
+2002 1188 M
+-9 -7 D
+4 -13 D
+13 -10 D
+12 1 D
+3 11 D
+-9 12 D
+P S
+{0 A} FS
 /FO {P}!
 -10 18 5 10 15 -8 10 -19 -5 -10 5 661 1323 SP
 /FO {fs os}!
 FO
+FQ
+661 1323 M
+-5 -10 D
+10 -19 D
+15 -8 D
+5 10 D
+-10 18 D
+P S
+{0 A} FS
 /FO {P}!
 -10 18 5 10 15 -8 10 -19 -5 -10 5 661 1323 SP
 /FO {fs os}!
 FO
+FQ
+661 1323 M
+-5 -10 D
+10 -19 D
+15 -8 D
+5 10 D
+-10 18 D
+P S
+{0 A} FS
 /FO {P}!
 -10 18 5 10 16 -8 9 -19 -5 -10 5 629 1334 SP
 /FO {fs os}!
 FO
+FQ
+629 1334 M
+-5 -10 D
+9 -19 D
+16 -8 D
+5 10 D
+-10 18 D
+P S
+{0 A} FS
 /FO {P}!
 -10 18 5 10 16 -8 9 -19 -5 -10 5 629 1334 SP
 /FO {fs os}!
 FO
+FQ
+629 1334 M
+-5 -10 D
+9 -19 D
+16 -8 D
+5 10 D
+-10 18 D
+P S
+{0 A} FS
 /FO {P}!
 24 15 20 6 -3 -10 -23 -16 -20 -6 5 6119 732 SP
 /FO {fs os}!
 FO
+FQ
+6119 732 M
+-20 -6 D
+-23 -16 D
+-3 -10 D
+20 6 D
+24 15 D
+P S
+{0 A} FS
 /FO {P}!
 24 15 20 6 -3 -10 -23 -16 -20 -6 5 6119 732 SP
 /FO {fs os}!
 FO
+FQ
+6119 732 M
+-20 -6 D
+-23 -16 D
+-3 -10 D
+20 6 D
+24 15 D
+P S
+{0 A} FS
 /FO {P}!
 -6 11 4 10 10 4 12 -4 5 -10 -4 -11 -10 -4 7 3957 2278 SP
 /FO {fs os}!
 FO
+FQ
+3957 2278 M
+-10 -4 D
+-4 -11 D
+5 -10 D
+12 -4 D
+10 4 D
+4 10 D
+-6 11 D
+P S
+{0 A} FS
 /FO {P}!
 -6 11 4 10 10 4 12 -4 5 -10 -4 -11 -10 -4 7 3957 2278 SP
 /FO {fs os}!
 FO
+FQ
+3957 2278 M
+-10 -4 D
+-4 -11 D
+5 -10 D
+12 -4 D
+10 4 D
+4 10 D
+-6 11 D
+P S
+{0 A} FS
 /FO {P}!
 -6 10 3 11 10 4 11 -4 6 -10 -3 -11 -10 -4 7 2985 1371 SP
 /FO {fs os}!
 FO
+FQ
+2985 1371 M
+-10 -4 D
+-3 -11 D
+6 -10 D
+11 -4 D
+10 4 D
+3 11 D
+-6 10 D
+P S
+{0 A} FS
 /FO {P}!
 -6 10 3 11 10 4 11 -4 6 -10 -3 -11 -10 -4 7 2985 1371 SP
 /FO {fs os}!
 FO
+FQ
+2985 1371 M
+-10 -4 D
+-3 -11 D
+6 -10 D
+11 -4 D
+10 4 D
+3 11 D
+-6 10 D
+P S
+{0 A} FS
 /FO {P}!
 -6 10 3 10 11 4 12 -4 5 -10 -3 -10 -11 -4 7 3374 1008 SP
 /FO {fs os}!
 FO
+FQ
+3374 1008 M
+-11 -4 D
+-3 -10 D
+5 -10 D
+12 -4 D
+11 4 D
+3 10 D
+-6 10 D
+P S
+{0 A} FS
 /FO {P}!
 -6 10 3 10 11 4 12 -4 5 -10 -3 -10 -11 -4 7 3374 1008 SP
 /FO {fs os}!
 FO
+FQ
+3374 1008 M
+-11 -4 D
+-3 -10 D
+5 -10 D
+12 -4 D
+11 4 D
+3 10 D
+-6 10 D
+P S
+{0 A} FS
 /FO {P}!
 -3 10 6 10 11 4 11 -4 3 -10 -6 -11 -11 -4 7 3915 1114 SP
 /FO {fs os}!
 FO
+FQ
+3915 1114 M
+-11 -4 D
+-6 -11 D
+3 -10 D
+11 -4 D
+11 4 D
+6 10 D
+-3 10 D
+P S
+{0 A} FS
 /FO {P}!
 -3 10 6 10 11 4 11 -4 3 -10 -6 -11 -11 -4 7 3915 1114 SP
 /FO {fs os}!
 FO
+FQ
+3915 1114 M
+-11 -4 D
+-6 -11 D
+3 -10 D
+11 -4 D
+11 4 D
+6 10 D
+-3 10 D
+P S
+{0 A} FS
 /FO {P}!
 12 12 19 9 12 -1 -5 -11 -18 -12 -17 -4 6 1842 2887 SP
 /FO {fs os}!
 FO
+FQ
+1842 2887 M
+-17 -4 D
+-18 -12 D
+-5 -11 D
+12 -1 D
+19 9 D
+12 12 D
+P S
+{0 A} FS
 /FO {P}!
 12 12 19 9 12 -1 -5 -11 -18 -12 -17 -4 6 1842 2887 SP
 /FO {fs os}!
 FO
+FQ
+1842 2887 M
+-17 -4 D
+-18 -12 D
+-5 -11 D
+12 -1 D
+19 9 D
+12 12 D
+P S
+{0 A} FS
 /FO {P}!
 -2 10 6 11 12 4 10 -5 3 -10 -7 -10 -12 -5 7 3034 2462 SP
 /FO {fs os}!
 FO
+FQ
+3034 2462 M
+-12 -5 D
+-7 -10 D
+3 -10 D
+10 -5 D
+12 4 D
+6 11 D
+-2 10 D
+P S
+{0 A} FS
 /FO {P}!
 -2 10 6 11 12 4 10 -5 3 -10 -7 -10 -12 -5 7 3034 2462 SP
 /FO {fs os}!
 FO
+FQ
+3034 2462 M
+-12 -5 D
+-7 -10 D
+3 -10 D
+10 -5 D
+12 4 D
+6 11 D
+-2 10 D
+P S
+{0 A} FS
 /FO {P}!
 2 9 11 10 14 3 9 -5 -2 -9 -11 -10 -14 -3 7 4319 653 SP
 /FO {fs os}!
 FO
+FQ
+4319 653 M
+-14 -3 D
+-11 -10 D
+-2 -9 D
+9 -5 D
+14 3 D
+11 10 D
+2 9 D
+P S
+{0 A} FS
 /FO {P}!
 2 9 11 10 14 3 9 -5 -2 -9 -11 -10 -14 -3 7 4319 653 SP
 /FO {fs os}!
 FO
+FQ
+4319 653 M
+-14 -3 D
+-11 -10 D
+-2 -9 D
+9 -5 D
+14 3 D
+11 10 D
+2 9 D
+P S
 U
 PSL_cliprestore
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U

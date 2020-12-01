@@ -582,12 +582,15 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		else
 			GMT_Report (API, GMT_MSG_WARNING, "No trialing text found in first record; -W will not have any effect.\n");
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+			if (Ctrl->W.mode) {gmt_M_free (GMT, nan); gmt_M_free (GMT, tmp);}
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+			if (Ctrl->W.mode) {gmt_M_free (GMT, nan); gmt_M_free (GMT, tmp);}
 			Return (API->error);
 		}
 		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)(n_cols_in + S->n_columns), GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			if (Ctrl->W.mode) {gmt_M_free (GMT, nan); gmt_M_free (GMT, tmp);}
 			Return (error);
 		}
 		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */

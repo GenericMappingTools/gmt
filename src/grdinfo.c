@@ -990,7 +990,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				         (G->header->z_max - G->header->z_add_offset) / G->header->z_scale_factor);
 			}
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			if (n_nan) {
+			if (n_nan || Ctrl->M.active) {
 				double percent = 100.0 * n_nan / G->header->nm;
 				sprintf (record, "%s: %" PRIu64 " nodes (%.1f%%) set to NaN", HH->name, n_nan, percent);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
@@ -1168,6 +1168,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	}
 
 	if (delay && GMT_Destroy_Data (API, &G) != GMT_NOERROR) {	/* Delayed destroy due to -D+n */
+		gmt_M_free (GMT, Out);
 		Return (API->error);
 	}
 
@@ -1177,11 +1178,11 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		gmt_M_str_free (projStr);
 	}
 
+	gmt_M_free (GMT, Out);
+
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
-
-	gmt_M_free (GMT, Out);
 
 	Return (GMT_NOERROR);
 }

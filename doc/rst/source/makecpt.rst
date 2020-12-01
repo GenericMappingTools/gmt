@@ -12,11 +12,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt makecpt** [ |-A|\ *transparency*\ [**+a**] ]
+**gmt makecpt**
+[ |-A|\ *transparency*\ [**+a**] ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]][**+k**\ *keys*] ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -24,7 +25,7 @@ Synopsis
 [ |-N| ]
 [ |-Q| ]
 [ |-S|\ *mode* ]
-[ |-T|\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*] ]
+[ |-T|\ [*min*/*max*/*inc*\ [**+b**\|\ **i**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*] ]
 [ |-V|\ [*level*] ]
 [ |-W|\ [**w**] ]
 [ |-Z| ]
@@ -91,8 +92,8 @@ Optional Arguments
 
 **-D**\ [**i**\|\ **o**]
     Select the back- and foreground colors to match the colors for
-    lowest and highest *z*-values in the output CPT [Default uses
-    the colors specified in the master file, or those defined by the
+    lowest and highest *z*-values in the output CPT [Default (**-D** or **-Do**)
+    uses the colors specified in the master file, or those defined by the
     parameters :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`, and
     :term:`COLOR_NAN`]. Append **i** to match the colors for the lowest and
     highest values in the input (instead of the output) CPT.
@@ -110,11 +111,21 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]][**+k**\ *keys*]
     Force output CPT to be written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
     append **+c** to write discrete palettes in categorical format.
+    If *label* is appended then we create labels for each category to be used
+    when the CPT is plotted. The *label* may be a comma-separated list of
+    category names (you can skip a category by not giving a name), or give
+    *start*\ [-], where we automatically build monotonically increasing labels
+    from *start* (a single letter or an integer). Append - to build ranges
+    *start*\ -*start+1* instead.  If the categorical CPT should have string
+    keys instead of numerical entries then append **+k**\ *keys*, where
+    *keys* is either a file with one key per record or a single letter (e.g., D),
+    then we build sequential letter keys (e.g., D, E, F, ...) starting at that point.
+    For comma-separated lists of keys, use **-T** instead.
 
 .. _-G:
 
@@ -181,13 +192,15 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
+**-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **i**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
     Defines the range of the new CPT by giving the lowest and
     highest z-value (and optionally an interval).  If **-T** is
     not given, the existing range in the master CPT will be used intact.
     The values produces defines the color slice boundaries.  If **+n** is
     used it refers to the number of such boundaries and not the number of slices.
-    For details on array creation, see `Generate 1D Array`_.
+    For details on array creation, see `Generate 1D Array`_.  **Note**: To set
+    up categorical CPTs with string keys you can also give a comma-separated
+    list of your keys.
 
 .. _-V:
 
@@ -311,6 +324,19 @@ we always get a color regardless of the *z* value, try
    ::
 
     gmt makecpt -Cjet -T0/500 -Ww > wrapped.cpt
+
+To build a categorical table with 3 categories and add specific category
+names to them, try::
+
+    gmt makecpt -Ccubhelix -T0/3/1 -F+cClouds,Trees,Water > cat.cpt
+
+To instead add unique category labels A, B, C, ... to a 10-item categorical CPT, try::
+
+    gmt makecpt -Cjet -T0/10/1 -F+cA
+
+To make a categorical CPT with string keys instead of numerical lookup values, try::
+
+    gmt makecpt -Ccategorical -Twood,water,gold 
 
 .. include:: cpt_notes.rst_
 

@@ -327,7 +327,7 @@ EXTERN_MSC int GMT_mgd77info (void *V_API, int mode, void *args) {
 
 	saved_range = GMT->current.io.geo.range;	/* We may have to reset thisso keep a copy */
 	gmt_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, M.time_format);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, M.time_format);
 	if (Ctrl->E.active) fprintf (GMT->session.std[GMT_OUT], "#Cruise %sID      %sWest    %sEast    %sSouth   %sNorth   %sStartTime%s%sEndTime%s%s%sDist%snRec",
 		GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator,
 		GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
@@ -344,10 +344,14 @@ EXTERN_MSC int GMT_mgd77info (void *V_API, int mode, void *args) {
 
 		if (read_file && MGD77_Read_File (GMT, list[argno], &M, D)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading header & data for cruise %s\n", list[argno]);
+			MGD77_Close_File (GMT, &M);
+			MGD77_Free_Dataset (GMT, &D);
 			Return (GMT_DATA_READ_ERROR);
 		}
 		if (!read_file && MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading header sequence for cruise %s\n", list[argno]);
+			MGD77_Close_File (GMT, &M);
+			MGD77_Free_Dataset (GMT, &D);
 			Return (GMT_DATA_READ_ERROR);
 		}
 

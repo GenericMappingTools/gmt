@@ -765,7 +765,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 	convert = (make_plot || (GMT->common.R.active[RSET] && GMT->common.J.active));
 	get_contours = (Ctrl->D.active || Ctrl->W.active);
 
-	if (GMT->common.J.active && gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT->common.J.active && gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	x = gmt_M_memory (GMT, NULL, n_alloc, double);
@@ -789,6 +789,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 		}
 		if (In->data == NULL) {
 			gmt_quit_bad_record (API, In);
+			gmt_M_free (GMT, x);	gmt_M_free (GMT, y);	gmt_M_free (GMT, z);
 			Return (API->error);
 		}
 
@@ -858,12 +859,12 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
   		/* Must switch to Cartesian input and save whatever original input type we have since we are reading integer triplets */
   		for (k = 0; k < 3; k++) {
   			save_col_type[k] = gmt_M_type (GMT, GMT_IN, k);	/* Remember what we have */
-			gmt_set_column (GMT, GMT_IN, (unsigned int)k, GMT_IS_FLOAT);	/* And temporarily set to FLOAT */
+			gmt_set_column_type (GMT, GMT_IN, (unsigned int)k, GMT_IS_FLOAT);	/* And temporarily set to FLOAT */
   		}
 		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->E.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		for (k = 0; k < 3; k++) gmt_set_column (GMT, GMT_IN, (unsigned int)k, save_col_type[k]);	/* Undo the damage above */
+		for (k = 0; k < 3; k++) gmt_set_column_type (GMT, GMT_IN, (unsigned int)k, save_col_type[k]);	/* Undo the damage above */
 
  		if (Tin->n_columns < 3) {	/* Trouble */
 			GMT_Report (API, GMT_MSG_ERROR, "Option -E: %s does not have at least 3 columns with indices\n", Ctrl->E.file);
@@ -958,11 +959,11 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 	else if ((Ctrl->A.info.file && strchr (Ctrl->A.info.file, ',')) || (Ctrl->C.info.file && strchr (Ctrl->C.info.file, ','))) {	/* Got a comma-separated list of contours */
 		uint64_t na = 0, nc = 0;
 		double *za = NULL, *zc = NULL;
-		if (Ctrl->A.info.file && strchr (Ctrl->A.info.file, ',') && (za = gmt_list_to_array (GMT, Ctrl->A.info.file, gmt_M_type (GMT, GMT_IN, GMT_Z), &na)) == NULL) {
+		if (Ctrl->A.info.file && strchr (Ctrl->A.info.file, ',') && (za = gmt_list_to_array (GMT, Ctrl->A.info.file, gmt_M_type (GMT, GMT_IN, GMT_Z), true, &na)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while parsing annotated contours from list %s\n", Ctrl->A.info.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (Ctrl->C.info.file && strchr (Ctrl->C.info.file, ',') && (zc = gmt_list_to_array (GMT, Ctrl->C.info.file, gmt_M_type (GMT, GMT_IN, GMT_Z), &nc)) == NULL) {
+		if (Ctrl->C.info.file && strchr (Ctrl->C.info.file, ',') && (zc = gmt_list_to_array (GMT, Ctrl->C.info.file, gmt_M_type (GMT, GMT_IN, GMT_Z), true, &nc)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while parsing regular contours from list %s\n", Ctrl->C.info.file);
 			if (za) gmt_M_free (GMT, za);
 			Return (GMT_RUNTIME_ERROR);
@@ -1101,10 +1102,14 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 	if (make_plot) {
 		if (Ctrl->contour.delay)	/* Signal that this program initiates clipping that will outlive this process */
 			GMT->current.ps.nclip = (Ctrl->N.active) ? +1 : +2;
-		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
+			gmt_M_free (GMT, cont);
+			Return (GMT_RUNTIME_ERROR);
+		}
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_set_basemap_orders (GMT, Ctrl->N.active ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, Ctrl->I.active ? GMT_BASEMAP_GRID_AFTER : GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
-		if (Ctrl->contour.delay) gmt_map_basemap (GMT);	/* If delayed clipping the basemap must be done before clipping */
+		gmt_map_basemap (GMT);	/* If delayed clipping the basemap must be done before clipping */
 		if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 		Ctrl->contour.line_pen = Ctrl->W.pen[PEN_CONT];
 		if (GMT->common.l.active) {	/* Add one or two contour entries to the auto-legend entry under modern mode; examine which pen & label we place */
@@ -1563,7 +1568,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 
 	if (make_plot) {
 		if (!(Ctrl->N.active || Ctrl->contour.delay)) gmt_map_clip_off (GMT);
-		if (!Ctrl->contour.delay) gmt_map_basemap (GMT);	/* If delayed clipping the basemap is done before plotting, else here */
+		gmt_map_basemap (GMT);	/* If delayed clipping the basemap is done before plotting, else here */
 		gmt_plane_perspective (GMT, -1, 0.0);
 		gmt_plotend (GMT);
 	}

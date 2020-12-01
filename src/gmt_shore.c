@@ -362,7 +362,7 @@ L1:
 		}
 		/* Must download it the first time */
 		if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to download the GSHHG for GMT since GMT_AUTO_DOWNLOAD is off\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to download the GSHHG for GMT since GMT_DATA_UPDATE_INTERVAL is off\n");
 			return NULL;
 		}
 		sprintf (path, "%s/geography/gshhg", GMT->session.USERDIR);	/* Local directory destination */
@@ -371,7 +371,7 @@ L1:
 			return NULL;
 		}
 		sprintf (path, "%s/geography/gshhg/%s.nc", GMT->session.USERDIR, stem);	/* Final local path */
-		snprintf (remote_path, PATH_MAX, "%s/geography/gshhg/%s.nc", GMT->session.DATASERVER, stem);	/* Unique remote path */
+		snprintf (remote_path, PATH_MAX, "%s/geography/gshhg/%s.nc", gmtlib_dataserver_url (GMT->parent), stem);	/* Unique remote path */
 		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Downloading %s.nc for the first time - be patient\n", stem);
 		if (gmt_download_file (GMT, stem, remote_path, path, true)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to obtain remote file %s.nc\n", stem);
@@ -1443,9 +1443,9 @@ struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 			gmt_M_free (GMT, p);
 			D->n_segments += D->table[tbl]->n_segments;	/* Sum up total number of segments across the data set */
 			D->n_records  += D->table[tbl]->n_records;	/* Sum up total number of records across the data set */
-			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Avoid longitude adjustments by next function: longitudes are guaranteed to be correct; rounding errors only messes things up */
+			gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Avoid longitude adjustments by next function: longitudes are guaranteed to be correct; rounding errors only messes things up */
 			gmt_set_tbl_minmax (GMT, GMT_IS_LINE, D->table[tbl++]);	/* Determine min/max extent for all segments and the table */
-			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_LON);	/* Reset X column to be longitudes */
+			gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_LON);	/* Reset X column to be longitudes */
 		}
 		gmt_free_shore (GMT, &c);	/* Done with this GSHHS bin */
 	}
@@ -1537,7 +1537,7 @@ int gmt_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 	 */
 
 	unsigned int k, np_new, n, n_use;
-	uint64_t start;
+	uint64_t start = 0;
 	bool close;
 	size_t n_alloc;
 	double *xtmp = NULL, *ytmp = NULL;

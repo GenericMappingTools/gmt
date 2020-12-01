@@ -55,6 +55,11 @@ a regional surface.
 Required Arguments
 ------------------
 
+*table*
+    One or more ASCII [or binary, see **-bi**]
+    files containing x,y,z [w] values in the first 3 [4] columns. If no
+    files are specified, **trend2d** will read from standard input.
+
 .. _-F:
 
 **-F**\ **xyzmrw**\|\ **p**
@@ -73,11 +78,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-*table*
-    One or more ASCII [or binary, see **-bi**]
-    files containing x,y,z [w] values in the first 3 [4] columns. If no
-    files are specified, **trend2d** will read from standard input.
 
 .. _-C:
 

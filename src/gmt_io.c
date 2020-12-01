@@ -552,13 +552,20 @@ GMT_LOCAL unsigned int gmtio_ogr_decode_aspatial_values (struct GMT_CTRL *GMT, c
 }
 
 /*! Duplicate in to out, then find the first space not inside quotes and truncate string there */
-GMT_LOCAL void gmtio_copy_and_truncate (char *out, char *in) {
+GMT_LOCAL void gmtio_copy_and_truncate_quotes (char *out, char *in) {
 	bool quote = false;
 	while (*in && (quote || *in != ' ')) {
 		*out++ = *in;	/* Copy char */
-		if (*in++ == ' ') quote = !quote;	/* Wind to next space except skip if inside double quotes */
+		if (*in++ == '\"') quote = !quote;	/* Wind to next space except skip if inside double quotes */
 	}
 	*out = '\0';	/* Terminate string */
+}
+
+GMT_LOCAL void gmtio_copy_and_truncate (char *out, char *in) {
+	if (strchr (in, ' ') && !strchr (in, '\"'))	/* Has spaces yet no quotes... assume we can get the line as is */
+		strcpy (out, in);
+	else
+		gmtio_copy_and_truncate_quotes (out, in);
 }
 
 /*! Parse @T aspatial types; this is done once per dataset and follows @N */
@@ -3277,17 +3284,17 @@ GMT_LOCAL void gmtio_assign_col_type_if_notset (struct GMT_CTRL *GMT, unsigned i
 		for (k = 0; k < GMT->common.i.n_cols; k++) {
 			if (GMT->current.io.col[GMT_IN][k].col == col) {	/* Found one of the physical columns that will be column = order */
 				if (!GMT->current.io.col_set[GMT_IN][GMT->current.io.col[GMT_IN][k].order])
-					gmt_set_column (GMT, GMT_IN, GMT->current.io.col[GMT_IN][k].order, type);
+					gmt_set_column_type (GMT, GMT_IN, GMT->current.io.col[GMT_IN][k].order, type);
 				if (!GMT->current.io.col_set[GMT_OUT][GMT->current.io.col[GMT_IN][k].order])
-					gmt_set_column (GMT, GMT_OUT, GMT->current.io.col[GMT_IN][k].order, type);
+					gmt_set_column_type (GMT, GMT_OUT, GMT->current.io.col[GMT_IN][k].order, type);
 			}
 		}
 	}
 	else {	/* logical equal physical, so no column shopping */
 		if (!GMT->current.io.col_set[GMT_IN][col])
-			gmt_set_column (GMT, GMT_IN, col, type);
+			gmt_set_column_type (GMT, GMT_IN, col, type);
 		if (!GMT->current.io.col_set[GMT_OUT][col])
-			gmt_set_column (GMT, GMT_OUT, col, type);
+			gmt_set_column_type (GMT, GMT_OUT, col, type);
 	}
 }
 
@@ -3346,8 +3353,10 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	else	/* No trailing text found, reset tpos */
 		*tpos = 0;
 	if (GMT->current.io.OGR) {	/* A few decision specific to OGR files */
-		if ((ret_val = gmtio_select_all_ogr_if_requested (GMT)))	/* Finalize choice of aspatial fields */
+		if ((ret_val = gmtio_select_all_ogr_if_requested (GMT))) {	/* Finalize choice of aspatial fields */
+			gmt_M_free (GMT, type);
 			return ret_val;
+		}
 		ret_val |= gmtio_reconsider_rectype (GMT);	/* Consider the nature of aspatial information */
 	}
 
@@ -4092,11 +4101,11 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 		if (gmt_M_type (GMT, GMT_IN, i) == GMT_IS_FLOAT)
 			{ /* Float type is preset, do not alter */ }
 		else if (!strcmp (long_name, "longitude") || strstr (units, "degrees_e"))
-			gmt_set_column (GMT, GMT_IN, i, GMT_IS_LON);
+			gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_LON);
 		else if (!strcmp (long_name, "latitude") || strstr (units, "degrees_n"))
-			gmt_set_column (GMT, GMT_IN, i, GMT_IS_LAT);
+			gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_LAT);
 		else if (!strcmp (long_name, "time") || !strcmp (varname, "time")) {
-			gmt_set_column (GMT, GMT_IN, i, GMT_IS_RELTIME);
+			gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_RELTIME);
 			gmt_M_memcpy (&time_system, &GMT->current.setting.time_system, 1, struct GMT_TIME_SYSTEM);
 			if (gmt_get_time_system (GMT, units, &time_system) || gmt_init_time_system_structure (GMT, &time_system))
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Time units [%s] in NetCDF file not recognized, defaulting to %s.\n",
@@ -4109,7 +4118,7 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 			GMT->current.io.add_offset[i] *= GMT->current.setting.time_system.i_scale;	/* Offset in internal time units */
 		}
 		else if (gmt_M_type (GMT, GMT_IN, i) == GMT_IS_UNKNOWN)
-			gmt_set_column (GMT, GMT_IN, i, GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_FLOAT);
 	}
 
 	GMT->current.io.input = gmtio_nc_input;
@@ -4222,16 +4231,16 @@ int gmtlib_scanf_geodim (struct GMT_CTRL *GMT, char *s, double *val) {
 /*! . */
 void gmt_set_geographic (struct GMT_CTRL *GMT, unsigned int dir) {
 	/* Eliminate lots of repeated statements to do this: */
-	gmt_set_column (GMT, dir, GMT_X, GMT_IS_LON);
-	gmt_set_column (GMT, dir, GMT_Y, GMT_IS_LAT);
+	gmt_set_column_type (GMT, dir, GMT_X, GMT_IS_LON);
+	gmt_set_column_type (GMT, dir, GMT_Y, GMT_IS_LAT);
 	if (dir == GMT_IN) (void) gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Default spherical distance calculations are in meters (cannot fail) */
 }
 
 /*! . */
 void gmt_set_cartesian (struct GMT_CTRL *GMT, unsigned int dir) {
 	/* Eliminate lots of repeated statements to do this: */
-	gmt_set_column (GMT, dir, GMT_X, GMT_IS_FLOAT);
-	gmt_set_column (GMT, dir, GMT_Y, GMT_IS_FLOAT);
+	gmt_set_column_type (GMT, dir, GMT_X, GMT_IS_FLOAT);
+	gmt_set_column_type (GMT, dir, GMT_Y, GMT_IS_FLOAT);
 }
 
 /*! Handles non-proxy checking for input z values.  If the input value equals
@@ -4570,6 +4579,83 @@ int gmtlib_nc_get_att_text (struct GMT_CTRL *GMT, int ncid, int varid, char *nam
 	return status;
 }
 
+GMT_LOCAL int gmtio_get_precision_width (struct GMT_CTRL *GMT, double x) {
+	/* Here, x < 1 seconds and we want to determine an approximate precision with max truncation error of GMT_CONV4_LIMIT */
+	int k = -1;
+	double trunc_err, inv_x = 1.0 / x;
+	static double power_U[9] = {1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9};
+	static double power_D[9] = {1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9};
+
+	gmt_M_unused(GMT);
+	/* Here we compute |D-T|/D, where D is the incoming dt and T is the value recovered if printed using k decimals.
+	 * We want this relative truncation error to be < 10^-4 */
+	do {
+		k++;	/* First time k becomes 0 */
+		trunc_err = fabs (x - rint (x * power_U[k]) * power_D[k]) * inv_x;
+		// fprintf (stderr, "k = %d x = %g trunc_err = %g\n", k, x, trunc_err);
+	} while (k < 8 && trunc_err > GMT_CONV4_LIMIT);	/* Stop at nanoseconds if things go off the rails */
+	return (k + 1);
+}
+
+GMT_LOCAL void gmtio_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
+	bool abstime_found = false;
+	unsigned int col, row;
+	int w_max = 0, this_w;
+	double sub;
+	struct GMT_DATASEGMENT *S = NULL;
+
+	if (GMT->common.b.active[GMT_OUT]) return;	/* Nothing to do if using binary i/o */
+	if (D == NULL || D->table == NULL || D->table[0]->segment == NULL || D->table[0]->segment[0] == NULL) return;	/* Nothing to work with */
+	if (GMT->current.setting.time_system.unit != 's') return;	/* Current unit is not second */
+	if (strcmp (GMT->current.setting.format_clock_out, "hh:mm:ss")) return;	/* User has changed from default format - do nothing */
+	for (col = 0; !abstime_found && col < D->n_columns; col++)
+		if (GMT->current.io.col_type[GMT_OUT][col] == GMT_IS_ABSTIME) abstime_found = true;
+	if (!abstime_found) return;	/* No absolute time columns to worry about */
+
+	/* If we get here we have ASCII absolute time output and the default FORMAT_CLOCK_OUT remains in effect.
+	 * To assist the user we will scan the first segment's rows up to MIN (20, n_rows) and make our best guess
+	 * from that subset.  We will give information messages about our decision but not a warning. */
+
+	S = D->table[0]->segment[0];	/* The first segment */
+	for (col = 0; col < D->n_columns; col++) {
+		if (GMT->current.io.col_type[GMT_OUT][col] != GMT_IS_ABSTIME) continue;	/* Not an abstime column */
+		for (row = 0; row < MIN (S->n_rows, 20); row++) {	/* Maximum 20 rows are examined */
+			sub = S->data[col][row] - floor (S->data[col][row]);	/* Fractional second */
+			if (gmt_M_is_zero (sub)) continue;	/* Not checking zeros for width */
+			if ((this_w = gmtio_get_precision_width (GMT, sub)) > w_max)
+				w_max = this_w;
+		}
+	}
+	if (w_max) {	/* Need to append w_max "x" to the default format */
+		strcat (GMT->current.setting.format_clock_out, ".");
+		while (w_max) {
+			strcat (GMT->current.setting.format_clock_out, "x");
+			w_max--;
+		}
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "To prevent loss of time-series precision we have changed FORMAT_CLOCK_OUT to %s\n", GMT->current.setting.format_clock_out);
+		gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
+	}
+}
+
+void gmt_increase_abstime_format_precision (struct GMT_CTRL *GMT, unsigned int col, double dt) {
+	/* Adjust output format for absolute time if we need more precision in the seconds */
+	double sub;
+	int w;
+	if (GMT->current.io.col_type[GMT_OUT][col] != GMT_IS_ABSTIME) return;	/* Not an abstime column */
+	if (GMT->current.setting.time_system.unit != 's') return;	/* Current unit is not second */
+	if (strcmp (GMT->current.setting.format_clock_out, "hh:mm:ss")) return;	/* User has changed from default format - do nothing */
+	sub = dt - floor (dt);	/* Fractional second */
+	if (gmt_M_is_zero (sub)) return;	/* Not checking zeros for width */
+	w = gmtio_get_precision_width (GMT, sub);	/* Get desired precision */
+	strcat (GMT->current.setting.format_clock_out, ".");
+	while (w) {
+		strcat (GMT->current.setting.format_clock_out, "x");
+		w--;
+	}
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "To prevent loss of time-series precision we have changed FORMAT_CLOCK_OUT to %s\n", GMT->current.setting.format_clock_out);
+	gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
+}
+
 /*! . */
 int gmtlib_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, struct GMT_DATASET *D, bool use_GMT_io, int table) {
 	/* Writes an entire data set to file or stream */
@@ -4588,6 +4674,8 @@ int gmtlib_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 	else			/* Force ASCII mode */
 		strcpy (open_mode, (append) ? "a" : "w");
 	GMT->current.io.record_type[GMT_OUT] = D->type;
+
+	gmtio_check_abstime_format (GMT, D);	/* If some columns are absolute time destined for ASCII formatting, we may need to change FORMAT_CLOCK_OUT template */
 
 	/* Convert any destination type to stream */
 
@@ -4995,7 +5083,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	unsigned int d, pos;
 	int t_data;
 	size_t L;
-	bool found;
+	bool found = false;
 	char *udir[4] = {GMT->session.USERDIR, GMT->session.DATADIR, GMT->session.CACHEDIR, NULL}, dir[PATH_MAX];
 	char path_separator[2] = {',', '\0'}, serverdir[PATH_MAX] = {""};
 #ifdef HAVE_DIRENT_H_
@@ -5163,24 +5251,48 @@ char *gmt_strncpy (char *dest, const char *source, size_t num) {
 	return dest;
 }
 
+char *gmtlib_valid_filemodifiers (struct GMT_CTRL *GMT) {
+	/* Returns a single string with all unique valid file modifiers.
+	 * We do this based on the individua modifier constants and assemble
+	 * one with the unique entries on the fly. */
+	char count[GMT_LEN128], *m = NULL;
+	static char string[GMT_LEN16];
+	unsigned int k, q;
+	gmt_M_unused (GMT);
+	gmt_M_memset (count, GMT_LEN128, char);
+	m = GMT_GRIDFILE_MODIFIERS;
+	for (k = 0; k < strlen (m); k++)
+		count[(int)m[k]]++;
+	m = GMT_CPTFILE_MODIFIERS;
+	for (k = 0; k < strlen (m); k++)
+		count[(int)m[k]]++;
+	for (k = q = 0; k < GMT_LEN128; k++)
+		if (count[k]) string[q++] = k;
+	string[q] = '\0';
+	return ((char *)string);
+}
+
 char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const char *mods) {
-	/* Need to strip off any modifiers and netCDF specifications that may be part of filename */
+	/* Need to strip off any valid, trailing modifiers and netCDF specifications that may be part of filename */
 	char file[PATH_MAX] = {""}, *c = NULL, *clean_file = NULL;
 
-	if (strstr (filename, "/=tiled_"))	/* Special list with remote tiles, use as is */
+	if (strstr (filename, "/=tiled_"))	/* Special list with remote tiles, use exactly as is */
 		strncpy (file, filename, PATH_MAX-1);
-	else	/* Exclude netCDF3-D grid extensions to make sure we get a valid file name */
+	else	/* Strip off netCDF3-D grid extensions to make sure we get a valid file name */
 		sscanf (filename, "%[^=?]", file);
 	if (file[0] == '\0')
-		return NULL;		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
-	if (mods) {	/* Given modifiers to chop off */
-		if (gmt_validate_modifiers (API->GMT, file, '-', mods, GMT_MSG_DEBUG)) {
-			GMT_Report (API, GMT_MSG_DEBUG, "Filename has invalid modifiers - probably not a file with modifiers (%s)\n", file);
+		return NULL;	/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
+	if (mods) {	/* Given modifiers to chop off if they are valid */
+		char *f = NULL;
+		/* If recognized file extension for grids (.grd, .nc) or cpt (.cpt) we must look after those */
+		if ((f = gmt_strrstr (file, ".grd")) || (f = gmt_strrstr (file, GMT_CPT_EXTENSION)) || (f = gmt_strrstr (file, ".nc")))
+			c = gmtlib_last_valid_file_modifier (API, f, mods);
+		else
+			c = gmtlib_last_valid_file_modifier (API, file, mods);
+
+		if (c == NULL)	/* Modifier free file name */
 			return (strdup (file));
-		}
-		/* See if we have any */
-		if ((c = gmt_first_modifier (API->GMT, file, mods)))
-			c[0] = '\0';	/* Begone with you */
+		c[0] = '\0';	/* Begone with you */
 	}
 	clean_file = strdup (file);
 
@@ -5201,8 +5313,8 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 	if (gmt_file_is_cache (GMT->parent, filename))			/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, filename, 0);
 
-	if ((cleanfile = gmt_get_filename (GMT->parent, &filename[first], "honsuU")) == NULL) return (-1);	/* Likely not a valid filename */
-	strcpy (file, cleanfile);
+	if ((cleanfile = gmt_get_filename (GMT->parent, &filename[first], gmtlib_valid_filemodifiers (GMT))) == NULL) return (-1);	/* Likely not a valid filename */
+	strncpy (file, cleanfile, PATH_MAX-1);
 	gmt_M_str_free (cleanfile);
 	if (mode == W_OK)
 		return (access (file, mode));	/* When writing, only look in current directory */
@@ -5513,8 +5625,8 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 	gmtio_init_io_columns (GMT, GMT_IN);	/* Set default input column order */
 	gmtio_init_io_columns (GMT, GMT_OUT);	/* Set default output column order */
 	for (i = 0; i < 2; i++) GMT->current.io.skip_if_NaN[i] = true;								/* x/y must be non-NaN */
-	for (i = 0; i < 2; i++) gmt_set_column (GMT, GMT_IO, i, GMT_IS_UNKNOWN);	/* Must be told [or find out] what x/y are */
-	for (i = 2; i < GMT_MAX_COLUMNS; i++) gmt_set_column (GMT, GMT_IO, i, GMT_IS_FLOAT);	/* Other columns default to floats */
+	for (i = 0; i < 2; i++) gmt_set_column_type (GMT, GMT_IO, i, GMT_IS_UNKNOWN);	/* Must be told [or find out] what x/y are */
+	for (i = 2; i < GMT_MAX_COLUMNS; i++) gmt_set_column_type (GMT, GMT_IO, i, GMT_IS_FLOAT);	/* Other columns default to floats */
 	gmt_M_memset (GMT->current.io.col_set[GMT_X], GMT_MAX_COLUMNS, char);	/* This is the initial state of input columns - all available to be changed by modules */
 	gmt_M_memset (GMT->current.io.col_set[GMT_Y], GMT_MAX_COLUMNS, char);	/* This is the initial state of output columns - all available to be changed by modules */
 	gmt_M_memset (GMT->current.io.curr_rec, GMT_MAX_COLUMNS, double);	/* Initialize current and previous records to zero */
@@ -5522,7 +5634,7 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 	GMT->current.io.record.data = GMT->current.io.curr_rec;
 }
 
-/*! Routine will temporarily suspend any -i, -h selections for secondary inputs */
+/*! Routine will temporarily suspend any -b, -i, -g, h selections for secondary inputs */
 void gmt_disable_bghi_opts (struct GMT_CTRL *GMT) {
 	/* Temporarily turn off any -i, -h selections */
 	GMT->common.i.select = false;
@@ -5530,14 +5642,14 @@ void gmt_disable_bghi_opts (struct GMT_CTRL *GMT) {
 	GMT->current.setting.io_header[GMT_IN] = false;
 	GMT->common.g.active = false;	/* Turn this off (if set) for now */
 	/* Then deal with primary binary input selection */
-	if (GMT->common.b.active[GMT_IN]) {	/* Secondary file input requires ascii */
+	if (GMT->common.b.active[GMT_IN]) {	/* Secondary file input requires ASCII */
 		GMT->common.b.active[GMT_IN] = false;
 		GMT->common.b.bin_primary = true;
 		GMT->current.io.input = &gmtio_ascii_input;
 	}
 }
 
-/*! Routine will re-enable any suspended -i, -h selections */
+/*! Routine will re-enable any suspended -b, -i, -g, -h selections */
 void gmt_reenable_bghi_opts (struct GMT_CTRL *GMT) {
 	/* Turn on again any -i, -h selections */
 	GMT->common.i.select = GMT->common.i.orig;
@@ -7036,6 +7148,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	 *	 -W		Revert to default pen [current.map_default_pen if not set on command line]
 	 * z:	-Z<zval>	Obtain fill via cpt lookup using this z value
 	 *	-ZNaN		Get the NaN color from the CPT
+	 *	-t<transp>		Apply this transparency to both fill and pen
 	 *
 	 * header is the text string to process
 	 * P is the color palette used for the -Z option
@@ -7057,8 +7170,9 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	 */
 
 	unsigned int processed = 0, change = 0, col, ogr_col;
+	bool got_transparency = false;
 	char line[GMT_BUFSIZ] = {""}, *txt = NULL;
-	double z;
+	double z, transparency = 0.0;
 	struct GMT_FILL test_fill;
 	struct GMT_PEN test_pen;
 
@@ -7094,7 +7208,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 					}
 					break;
 				case GMT_IS_Z:
-					if (P->categorical & 2)
+					if (P->categorical & GMT_CPT_CATEGORICAL_KEY)
 						gmt_get_fill_from_key (GMT, P, txt, fill);
 					else
 						gmt_get_fill_from_z (GMT, P, z, fill);
@@ -7111,6 +7225,10 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 
 	if (!header || !header[0]) return (0);
 
+	if (gmt_parse_segment_item (GMT, header, "-t", line)) {	/* Found a potential -t option for transparency */
+		transparency = atof (line) * 0.01;
+		got_transparency = true;	/* Must apply to any fill and pen settings */
+	}
 	if (gmt_parse_segment_item (GMT, header, "-G", line)) {	/* Found a potential -G option */
 		test_fill = *def_fill;
 		if (line[0] == '-') {	/* Turn fill OFF */
@@ -7126,6 +7244,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 		}
 		else if (!gmt_getfill (GMT, line, &test_fill)) {	/* Successfully processed a -G<fill> option */
 			*fill = test_fill;
+			if (got_transparency) fill->rgb[3] = transparency;
 			*use_fill = true;
 			change = 1;
 			processed++;	/* Processed one option */
@@ -7135,15 +7254,17 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	if (P && gmt_parse_segment_item (GMT, header, "-Z", line)) {	/* Found a potential -Z option to set symbol r/g/b via cpt-lookup */
 		if(!strncmp (line, "NaN", 3U))	{	/* Got -ZNaN */
 			gmt_get_fill_from_z (GMT, P, GMT->session.d_NaN, fill);
+			if (got_transparency) fill->rgb[3] = transparency;
 			*use_fill = true;
 			change |= 2;
 			processed++;	/* Processed one option */
 		}
 		else {
-			if (P->categorical & 2)
+			if (P->categorical & GMT_CPT_CATEGORICAL_KEY)
 				gmt_get_fill_from_key (GMT, P, line, fill);
 			else if (sscanf (line, "%lg", &z) == 1)
 				gmt_get_fill_from_z (GMT, P, z, fill);
+			if (got_transparency) fill->rgb[3] = transparency;
 			*use_fill = true;
 			change |= 2;
 			processed++;	/* Processed one option */
@@ -7166,6 +7287,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 		}
 		else if (!gmt_getpen (GMT, line, &test_pen)) {
 			*pen = test_pen;
+			if (got_transparency) pen->rgb[3] = transparency;
 			*use_pen = true;
 			change |= 4;
 		}
@@ -7756,7 +7878,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Mismatch between actual (%d) and expected (%d) fields near line %" PRIu64 " in file %s\n",
 				            status, n_expected_fields, n_read, file);
 				if (!use_GMT_io) GMT->current.io.input = psave;	/* Restore previous setting */
-				return (NULL);
+				return NULL;
 			}
 
 			gmt_prep_tmp_arrays (GMT, GMT_IN, row, S->n_columns);	/* Init or reallocate tmp read vectors */
@@ -8252,7 +8374,7 @@ void gmtlib_free_image (struct GMT_CTRL *GMT, struct GMT_IMAGE **I, bool free_im
 }
 
 /*! . */
-struct GMT_VECTOR * gmt_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns, unsigned int direction) {
+struct GMT_VECTOR *gmt_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns, unsigned int direction) {
 	/* Allocates space for a new vector container.  No space allocated for the vectors themselves */
 	uint64_t col;
 	struct GMT_VECTOR *V = NULL;
@@ -8295,7 +8417,7 @@ int gmtlib_alloc_vectors (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, uint64_t n
 }
 
 /*! . */
-struct GMT_VECTOR * gmtlib_duplicate_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR *V_in, unsigned int mode) {
+struct GMT_VECTOR *gmtlib_duplicate_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR *V_in, unsigned int mode) {
 	/* Duplicates a vector container - optionally allocates and duplicates the data vectors */
 	struct GMT_VECTOR *V = NULL;
 	unsigned int col;
@@ -8943,7 +9065,7 @@ void gmt_replace_backslash_in_path (char *dir) {
 }
 
 /*! . */
-void gmt_set_column (struct GMT_CTRL *GMT, unsigned int direction, unsigned int col, enum gmt_col_enum type) {
+void gmt_set_column_type (struct GMT_CTRL *GMT, unsigned int direction, unsigned int col, enum gmt_col_enum type) {
 	/* Sets the column type for this input or output column or both (dir == GMT_IO) */
 	unsigned int start = (direction == GMT_IO) ? GMT_IN : direction;
 	unsigned int stop  = (direction == GMT_IO) ? GMT_OUT : direction;
@@ -8951,6 +9073,12 @@ void gmt_set_column (struct GMT_CTRL *GMT, unsigned int direction, unsigned int 
 		GMT->current.io.col_type[dir][col] = type;
 		GMT->current.io.col_set[dir][col] = 1;	/* Flag as having been set and thus should not be automatically changed */
 	}
+}
+
+/*! . */
+enum gmt_col_enum gmt_get_column_type (struct GMT_CTRL *GMT, unsigned int direction, unsigned int col) {
+	/* Gets the column type for this input or output column */
+	return (GMT->current.io.col_type[direction][col]);	/* Flag as having been set and thus should not be automatically changed */
 }
 
 int gmt_mkdir (const char *path)

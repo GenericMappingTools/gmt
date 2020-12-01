@@ -52,6 +52,16 @@ struct GMT_XINGS {
 EXTERN_MSC char *dlerror (void);
 #endif
 
+EXTERN_MSC struct GMT_CUBE *gmtlib_create_cube (struct GMT_CTRL *GMT);
+EXTERN_MSC struct GMT_CUBE *gmtlib_duplicate_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *U, unsigned int mode);
+EXTERN_MSC void gmt_free_cube (struct GMT_CTRL *GMT, struct GMT_CUBE **U, bool free_cube);
+EXTERN_MSC unsigned int gmtlib_free_cube_ptr (struct GMT_CTRL *GMT, struct GMT_CUBE *U, bool free_cube);
+EXTERN_MSC void gmtlib_free_cube (struct GMT_CTRL *GMT, struct GMT_CUBE **U, bool free_cube);
+EXTERN_MSC uint64_t gmtlib_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array);
+EXTERN_MSC bool gmtlib_var_inc (double *x, uint64_t n);
+EXTERN_MSC char *gmtlib_dataserver_url (struct GMTAPI_CTRL *API);
+EXTERN_MSC char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, const char *mods);
+EXTERN_MSC char *gmtlib_valid_filemodifiers (struct GMT_CTRL *GMT);
 EXTERN_MSC int gmtlib_delete_virtualfile  (void *API, const char *string);
 EXTERN_MSC bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd);
 EXTERN_MSC bool gmtlib_file_unlock (struct GMT_CTRL *GMT, int fd);
@@ -198,7 +208,7 @@ EXTERN_MSC void gmtlib_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, d
 EXTERN_MSC bool gmtlib_found_url_for_gdal (char *fname);
 EXTERN_MSC int64_t gmtlib_splitinteger (double value, int epsilon, double *doublepart);
 EXTERN_MSC bool gmtlib_is_gleap (int gyear);
-EXTERN_MSC char * gmtlib_file_unitscale (char *name);
+EXTERN_MSC char * gmtlib_cptfile_unitscale (struct GMTAPI_CTRL *API, char *name);
 EXTERN_MSC void gmtlib_set_oblique_pole_and_origin (struct GMT_CTRL *GMT, double plon, double plat, double olon, double olat);
 EXTERN_MSC int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_GRID_HEADER *h);
 EXTERN_MSC void gmtlib_grd_real_interleave (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *data);

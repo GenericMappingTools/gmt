@@ -835,6 +835,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	if (error) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread failed to extract a Sub-region\n");
+		gmt_M_free (GMT, whichBands);
 		return (-1);
 	}
 
@@ -854,7 +855,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		OGRSpatialReferenceH  hSRS;
 		hSRS = OSRNewSpatialReference(NULL);
 
-		if (OSRImportFromProj4(hSRS, Ctrl->ProjRefPROJ4) == CE_None) {
+		if (Ctrl->ProjRefPROJ4 && OSRImportFromProj4(hSRS, Ctrl->ProjRefPROJ4) == CE_None) {	/* My be NULL if +unavailable */
 			char	*pszPrettyWkt = NULL;
 			OSRExportToPrettyWkt(hSRS, &pszPrettyWkt, false);
 			Ctrl->ProjRefWKT = strdup(pszPrettyWkt);
@@ -862,7 +863,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		}
 		else {
 			Ctrl->ProjRefWKT = NULL;
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_gdalread failed to convert the proj4 string\n%s\n to WKT\n",
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_gdalread failed to convert the proj4 string\n%s\nto WKT\nThis happens for example when no conversion between PROJ4 and the WKT is done by GDAL.",
 					Ctrl->ProjRefPROJ4);
 		}
 
@@ -1078,9 +1079,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	else
 		nX = nXSize,	nY = nYSize;
 
-	rowVec = gmt_M_memory(GMT, NULL, nRowsPerBlock*nBlocks, size_t);
+	/* Can't find why but have to multiply by nRGBA otherwise it crashes in win32 builds */
+	rowVec = gmt_M_memory(GMT, NULL, (nRowsPerBlock * nRGBA) * nBlocks, size_t);
 	for (m = 0; m < nY; m++) rowVec[m] = m * nX;
-	colVec = gmt_M_memory(GMT, NULL, nX+pad_w+pad_e, size_t);	/* For now this will be used only to select BIP ordering */
+	colVec = gmt_M_memory(GMT, NULL, (nX+pad_w+pad_e) * nRGBA, size_t);	/* For now this will be used only to select BIP ordering */
 	/* --------------------------------------------------------------------------------- */
 
 	gmt_M_tic (GMT);

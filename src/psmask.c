@@ -657,7 +657,7 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 		gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection */
 	}
 
-	if (!Ctrl->C.active && make_plot && gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (!Ctrl->C.active && make_plot && gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->D.active) {	/* Want to dump the x-y contour lines of the mask */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 2};
@@ -688,6 +688,8 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.active) {	/* Just undo previous polygon clip-path */
 		PSL_endclipping (PSL, 1);
+		gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
+		GMT->current.map.frame.order = GMT_BASEMAP_AFTER;	/* Move to last order */
 		gmt_map_basemap (GMT);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Clipping off!\n");
 	}
@@ -704,7 +706,9 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 
 		if (make_plot) {
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			gmt_set_basemap_orders (GMT, Ctrl->T.active ? GMT_BASEMAP_FRAME_AFTER : GMT_BASEMAP_FRAME_BEFORE, Ctrl->T.active ? GMT_BASEMAP_GRID_AFTER : GMT_BASEMAP_GRID_BEFORE, Ctrl->T.active ? GMT_BASEMAP_ANNOT_AFTER : GMT_BASEMAP_ANNOT_BEFORE);
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+			gmt_map_basemap (GMT);
 		}
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate memory, read and process data file\n");
@@ -872,8 +876,6 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 			n_edges = Grid->header->n_rows * (urint (ceil (Grid->header->n_columns / 16.0)));
 			edge = gmt_M_memory (GMT, NULL, n_edges, unsigned int);
 
-			if (make_plot) gmt_map_basemap (GMT);
-
 			GMT_Report (API, GMT_MSG_INFORMATION, "Tracing the clip path\n");
 
 			section = 0;
@@ -959,10 +961,12 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 					gmt_M_free (GMT, yp);
 				}
 			}
-			gmt_map_basemap (GMT);
 		}
 
-		if (make_plot) gmt_plane_perspective (GMT, -1, 0.0);
+		if (make_plot) {
+			gmt_map_basemap (GMT);
+			gmt_plane_perspective (GMT, -1, 0.0);
+		}
 
 		gmt_M_free (GMT, grd);
 		if (GMT_Destroy_Data (API, &Grid) != GMT_NOERROR) {
