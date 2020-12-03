@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000
-%%Title: GMT v6.2.0_fe19d5d-dirty_2020.11.09 [64-bit] Document from basemap
+%%Title: GMT v6.2.0_4001e2b-dirty_2020.11.30 [64-bit] Document from basemap
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Nov  9 13:33:29 2020
+%%CreationDate: Wed Dec  2 19:32:44 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,9 +111,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -667,8 +669,8 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
-0 A [] 0 B
 8 W
+0 A
 /PSL_slant_y 0 def
 2 setlinecap
 N 0 15960 M 0 -15960 D S
@@ -692,6 +694,7 @@ N 0 0 M 7320 0 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -15960 T
 0 setlinecap
+0 A
 %%EndObject
 0 A
 FQ
@@ -973,9 +976,24 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
-%@GMT: gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i -R0/6.1/0/13.3 -Jx1i
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
 %%BeginObject PSL_Layer_7
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+3480 480 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­7000/7000) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
+%@GMT: gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -986,9 +1004,9 @@ clipsave
 -7320 0 D
 P
 PSL_clip N
-0 W
 0 -348 T
 V
+0 W
 {0 A} FS
 O1
 47 1860 450 St
@@ -1003,7 +1021,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/0.975i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_8
+%%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1075,7 +1093,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/0.975i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_9
+%%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1132,7 +1150,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/0.85i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_10
+%%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1183,7 +1201,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/0.85i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_11
+%%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1234,7 +1252,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_12
+%%BeginObject PSL_Layer_13
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1258,7 +1276,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/1.575i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_13
+%%BeginObject PSL_Layer_14
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1326,7 +1344,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/1.575i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_14
+%%BeginObject PSL_Layer_15
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1392,7 +1410,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/1.45i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_15
+%%BeginObject PSL_Layer_16
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1443,7 +1461,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/1.45i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_16
+%%BeginObject PSL_Layer_17
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1494,7 +1512,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_17
+%%BeginObject PSL_Layer_18
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1516,9 +1534,24 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_19
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+3480 1920 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­7000/7000) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
 %@GMT: gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_18
+%%BeginObject PSL_Layer_20
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1529,9 +1562,9 @@ clipsave
 -7320 0 D
 P
 PSL_clip N
-0 W
 0 -348 T
 V
+0 W
 {0 A} FS
 O1
 47 1860 1890 St
@@ -1544,9 +1577,24 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_21
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+7020 1920 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­7000/7000) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
 %@GMT: gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_19
+%%BeginObject PSL_Layer_22
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1557,9 +1605,9 @@ clipsave
 -7320 0 D
 P
 PSL_clip N
-0 W
 0 -348 T
 V
+0 W
 {0 A} FS
 O1
 47 5400 1890 St
@@ -1574,7 +1622,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/2.175i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_20
+%%BeginObject PSL_Layer_23
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1642,7 +1690,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/2.175i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_21
+%%BeginObject PSL_Layer_24
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1704,7 +1752,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/2.05i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_22
+%%BeginObject PSL_Layer_25
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1755,7 +1803,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/2.05i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_23
+%%BeginObject PSL_Layer_26
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1806,7 +1854,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_24
+%%BeginObject PSL_Layer_27
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1830,7 +1878,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt plot -St0.2c -Gwhite -Wfaint -D0/-0.29i -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_25
+%%BeginObject PSL_Layer_28
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1841,9 +1889,9 @@ clipsave
 -7320 0 D
 P
 PSL_clip N
-0 W
 0 -348 T
 V
+0 W
 {1 A} FS
 O1
 47 5400 2610 St
@@ -1858,7 +1906,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/2.775i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_26
+%%BeginObject PSL_Layer_29
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1917,7 +1965,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/2.775i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_27
+%%BeginObject PSL_Layer_30
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -1971,7 +2019,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/2.65i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_28
+%%BeginObject PSL_Layer_31
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2022,7 +2070,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/2.65i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_29
+%%BeginObject PSL_Layer_32
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2073,7 +2121,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_30
+%%BeginObject PSL_Layer_33
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2095,9 +2143,39 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_34
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+3480 3360 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­6000/0) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_35
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+7020 3360 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­6000/3000) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
 %@GMT: gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_31
+%%BeginObject PSL_Layer_36
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2108,9 +2186,9 @@ clipsave
 -7320 0 D
 P
 PSL_clip N
-0 W
 0 -348 T
 V
+0 W
 {0 A} FS
 O1
 47 5400 3330 St
@@ -2125,7 +2203,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/3.375i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_32
+%%BeginObject PSL_Layer_37
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2187,7 +2265,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/3.375i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_33
+%%BeginObject PSL_Layer_38
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2260,7 +2338,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/3.25i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_34
+%%BeginObject PSL_Layer_39
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2311,7 +2389,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/3.25i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_35
+%%BeginObject PSL_Layer_40
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2362,7 +2440,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_36
+%%BeginObject PSL_Layer_41
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2386,7 +2464,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt plot -St0.2c -Gwhite -Wfaint -D0/-0.29i -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_37
+%%BeginObject PSL_Layer_42
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2397,9 +2475,9 @@ clipsave
 -7320 0 D
 P
 PSL_clip N
-0 W
 0 -348 T
 V
+0 W
 {1 A} FS
 O1
 47 1860 4050 St
@@ -2412,9 +2490,24 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_43
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+7020 4080 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­8000/8000) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
 %@GMT: gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_38
+%%BeginObject PSL_Layer_44
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2425,9 +2518,9 @@ clipsave
 -7320 0 D
 P
 PSL_clip N
-0 W
 0 -348 T
 V
+0 W
 {0 A} FS
 O1
 47 5400 4050 St
@@ -2442,7 +2535,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/3.975i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_39
+%%BeginObject PSL_Layer_45
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2500,7 +2593,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/3.975i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_40
+%%BeginObject PSL_Layer_46
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2554,7 +2647,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/3.85i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_41
+%%BeginObject PSL_Layer_47
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2605,7 +2698,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/3.85i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_42
+%%BeginObject PSL_Layer_48
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2656,7 +2749,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_43
+%%BeginObject PSL_Layer_49
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2680,7 +2773,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt plot -St0.2c -Gwhite -Wfaint -D0/-0.29i -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_44
+%%BeginObject PSL_Layer_50
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2691,9 +2784,9 @@ clipsave
 -7320 0 D
 P
 PSL_clip N
-0 W
 0 -348 T
 V
+0 W
 {1 A} FS
 O1
 47 1860 4770 St
@@ -2708,7 +2801,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/4.575i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_45
+%%BeginObject PSL_Layer_51
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2750,7 +2843,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/4.575i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_46
+%%BeginObject PSL_Layer_52
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2807,7 +2900,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/4.45i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_47
+%%BeginObject PSL_Layer_53
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2858,7 +2951,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/4.45i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_48
+%%BeginObject PSL_Layer_54
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2909,7 +3002,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_49
+%%BeginObject PSL_Layer_55
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2933,7 +3026,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/5.175i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_50
+%%BeginObject PSL_Layer_56
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -2992,7 +3085,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/5.175i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_51
+%%BeginObject PSL_Layer_57
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3053,7 +3146,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/5.05i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_52
+%%BeginObject PSL_Layer_58
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3104,7 +3197,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/5.05i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_53
+%%BeginObject PSL_Layer_59
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3155,7 +3248,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_54
+%%BeginObject PSL_Layer_60
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3179,7 +3272,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt plot -St0.2c -Gwhite -Wfaint -D0/-0.29i -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_55
+%%BeginObject PSL_Layer_61
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3190,9 +3283,9 @@ clipsave
 -7320 0 D
 P
 PSL_clip N
-0 W
 0 -348 T
 V
+0 W
 {1 A} FS
 O1
 47 1860 6210 St
@@ -3205,9 +3298,24 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_62
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+7020 6240 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­8000/0) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/5.775i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_56
+%%BeginObject PSL_Layer_63
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3266,7 +3374,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/5.775i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_57
+%%BeginObject PSL_Layer_64
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3324,7 +3432,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/5.65i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_58
+%%BeginObject PSL_Layer_65
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3375,7 +3483,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/5.65i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_59
+%%BeginObject PSL_Layer_66
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3426,7 +3534,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_60
+%%BeginObject PSL_Layer_67
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3450,7 +3558,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/6.375i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_61
+%%BeginObject PSL_Layer_68
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3520,7 +3628,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/6.375i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_62
+%%BeginObject PSL_Layer_69
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3588,7 +3696,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/6.25i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_63
+%%BeginObject PSL_Layer_70
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3639,7 +3747,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/6.25i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_64
+%%BeginObject PSL_Layer_71
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3716,7 +3824,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_65
+%%BeginObject PSL_Layer_72
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3738,9 +3846,24 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_73
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+7020 7680 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­2000/2000) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
 %@GMT: gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_66
+%%BeginObject PSL_Layer_74
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3751,9 +3874,9 @@ clipsave
 -7320 0 D
 P
 PSL_clip N
-0 W
 0 -348 T
 V
+0 W
 {0 A} FS
 O1
 47 5400 7650 St
@@ -3768,7 +3891,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/6.975i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_67
+%%BeginObject PSL_Layer_75
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3824,7 +3947,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/6.975i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_68
+%%BeginObject PSL_Layer_76
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3886,7 +4009,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/6.85i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_69
+%%BeginObject PSL_Layer_77
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -3951,7 +4074,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/6.85i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_70
+%%BeginObject PSL_Layer_78
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4002,7 +4125,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_71
+%%BeginObject PSL_Layer_79
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4024,9 +4147,24 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_80
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+3480 8400 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­12000/0) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/7.575i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_72
+%%BeginObject PSL_Layer_81
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4101,7 +4239,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/7.575i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_73
+%%BeginObject PSL_Layer_82
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4159,7 +4297,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/7.45i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_74
+%%BeginObject PSL_Layer_83
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4210,7 +4348,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/7.45i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_75
+%%BeginObject PSL_Layer_84
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4261,7 +4399,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_76
+%%BeginObject PSL_Layer_85
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4285,7 +4423,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/8.175i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_77
+%%BeginObject PSL_Layer_86
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4347,7 +4485,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/8.175i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_78
+%%BeginObject PSL_Layer_87
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4394,7 +4532,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/8.05i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_79
+%%BeginObject PSL_Layer_88
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4445,7 +4583,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/8.05i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_80
+%%BeginObject PSL_Layer_89
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4496,7 +4634,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_81
+%%BeginObject PSL_Layer_90
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4518,9 +4656,24 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_91
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+3480 9840 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­10000/10000) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
 %@GMT: gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_82
+%%BeginObject PSL_Layer_92
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4531,9 +4684,9 @@ clipsave
 -7320 0 D
 P
 PSL_clip N
-0 W
 0 -348 T
 V
+0 W
 {0 A} FS
 O1
 47 1860 9810 St
@@ -4548,7 +4701,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/8.775i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_83
+%%BeginObject PSL_Layer_93
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4602,7 +4755,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/8.775i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_84
+%%BeginObject PSL_Layer_94
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4682,7 +4835,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/8.65i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_85
+%%BeginObject PSL_Layer_95
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4745,7 +4898,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/8.65i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_86
+%%BeginObject PSL_Layer_96
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4796,7 +4949,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_87
+%%BeginObject PSL_Layer_97
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4818,9 +4971,39 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_98
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+3480 10560 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­7000/0) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_99
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+7020 10560 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­8000/8000) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
 %@GMT: gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_88
+%%BeginObject PSL_Layer_100
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4831,9 +5014,9 @@ clipsave
 -7320 0 D
 P
 PSL_clip N
-0 W
 0 -348 T
 V
+0 W
 {0 A} FS
 O1
 47 5400 10530 St
@@ -4848,7 +5031,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/9.375i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_89
+%%BeginObject PSL_Layer_101
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4899,7 +5082,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/9.375i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_90
+%%BeginObject PSL_Layer_102
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -4978,7 +5161,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/9.25i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_91
+%%BeginObject PSL_Layer_103
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5029,7 +5212,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/9.25i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_92
+%%BeginObject PSL_Layer_104
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5080,7 +5263,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_93
+%%BeginObject PSL_Layer_105
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5102,9 +5285,39 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_106
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+3480 11280 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(0/7000) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_107
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+7020 11280 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­11000/8500) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
 %@GMT: gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_94
+%%BeginObject PSL_Layer_108
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5115,9 +5328,9 @@ clipsave
 -7320 0 D
 P
 PSL_clip N
-0 W
 0 -348 T
 V
+0 W
 {0 A} FS
 O1
 47 5400 11250 St
@@ -5132,7 +5345,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/9.975i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_95
+%%BeginObject PSL_Layer_109
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5199,7 +5412,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/9.975i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_96
+%%BeginObject PSL_Layer_110
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5288,7 +5501,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/9.85i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_97
+%%BeginObject PSL_Layer_111
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5339,7 +5552,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/9.85i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_98
+%%BeginObject PSL_Layer_112
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5390,7 +5603,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_99
+%%BeginObject PSL_Layer_113
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5412,9 +5625,39 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_114
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+3480 12000 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(0/12) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_115
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+7020 12000 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­11000/9000) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
 %@GMT: gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_100
+%%BeginObject PSL_Layer_116
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5425,9 +5668,9 @@ clipsave
 -7320 0 D
 P
 PSL_clip N
-0 W
 0 -348 T
 V
+0 W
 {0 A} FS
 O1
 47 5400 11970 St
@@ -5442,7 +5685,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/10.575i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_101
+%%BeginObject PSL_Layer_117
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5508,7 +5751,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/10.575i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_102
+%%BeginObject PSL_Layer_118
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5591,7 +5834,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/10.45i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_103
+%%BeginObject PSL_Layer_119
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5642,7 +5885,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/10.45i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_104
+%%BeginObject PSL_Layer_120
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5693,7 +5936,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_105
+%%BeginObject PSL_Layer_121
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5715,9 +5958,39 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_122
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+3480 12720 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(0/6000) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_123
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+7020 12720 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(0/1500) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/11.175i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_106
+%%BeginObject PSL_Layer_124
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5796,7 +6069,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/11.175i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_107
+%%BeginObject PSL_Layer_125
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5865,7 +6138,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/11.05i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_108
+%%BeginObject PSL_Layer_126
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5916,7 +6189,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/11.05i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_109
+%%BeginObject PSL_Layer_127
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5967,7 +6240,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_110
+%%BeginObject PSL_Layer_128
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -5989,9 +6262,39 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_129
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+3480 13440 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(0/800) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_130
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+7020 13440 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(0/4900) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/11.775i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_111
+%%BeginObject PSL_Layer_131
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -6053,7 +6356,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/11.775i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_112
+%%BeginObject PSL_Layer_132
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -6107,7 +6410,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/11.65i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_113
+%%BeginObject PSL_Layer_133
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -6158,7 +6461,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/11.65i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_114
+%%BeginObject PSL_Layer_134
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -6209,7 +6512,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_115
+%%BeginObject PSL_Layer_135
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -6233,7 +6536,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/12.375i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_116
+%%BeginObject PSL_Layer_136
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -6297,7 +6600,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/12.375i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_117
+%%BeginObject PSL_Layer_137
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -6353,7 +6656,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/12.25i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_118
+%%BeginObject PSL_Layer_138
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -6404,7 +6707,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/12.25i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_119
+%%BeginObject PSL_Layer_139
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -6455,7 +6758,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_120
+%%BeginObject PSL_Layer_140
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -6479,7 +6782,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/12.975i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_121
+%%BeginObject PSL_Layer_141
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -6539,7 +6842,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/12.975i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_122
+%%BeginObject PSL_Layer_142
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -6601,7 +6904,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/12.85i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_123
+%%BeginObject PSL_Layer_143
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -6652,7 +6955,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/12.85i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
 %@PROJ: xy -1.00000000 1.00000000 0.00000000 0.12500000 -1.000 1.000 0.000 0.125 +xy
-%%BeginObject PSL_Layer_124
+%%BeginObject PSL_Layer_144
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -6703,7 +7006,7 @@ O0
 % PostScript produced by:
 %@GMT: gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -R0/6.1/0/13.3 -Jx1i
 %@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
-%%BeginObject PSL_Layer_125
+%%BeginObject PSL_Layer_145
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
@@ -6719,6 +7022,36 @@ PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold 
 (abyss) bc Z
 5400 15630 M (bathy) bc Z
 PSL_cliprestore
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_146
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+3480 15600 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­8000/0) br Z
+%%EndObject
+0 A
+FQ
+O0
+0 0 TM
+% PostScript produced by:
+%@GMT: gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N -R0/6.1/0/13.3 -Jx1i
+%@PROJ: xy 0.00000000 6.10000000 0.00000000 13.30000000 0.000 6.100 0.000 13.300 +xy
+%%BeginObject PSL_Layer_147
+0 setlinecap
+0 setlinejoin
+3.32550952342 setmiterlimit
+7020 15600 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+100 F0
+(­8000/0) br Z
 %%EndObject
 grestore
 PSL_movie_label_completion /PSL_movie_label_completion {} def
