@@ -170,6 +170,8 @@ enum GMT_enum_basemap {
 	GMT_BASEMAP_ANNOT_BEFORE	= 0,
 	GMT_BASEMAP_ANNOT_AFTER		= 4};
 
+#define GMT_SESSION_CMDLINE	64	/* Passed when GMT_Create_Session is called from the command-line gmt.c driver only */
+
 /* Since -I is not a global option but we almost use it as such, we define the long-option for it here.
  * Modules that need it in their module_kw[] array can just add it to their list. */
 #define GMT_INCREMENT_KW { '/', 'I', "increment", "", "", "e,n", "exact,number" }

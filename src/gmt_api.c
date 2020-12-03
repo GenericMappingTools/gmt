@@ -7739,14 +7739,16 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	char *dir = NULL;
 
 	if ((API = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
-	API->verbose = (mode >> 16);	/* Pick up any -V settings from gmt.c */
-	API->pad = pad;		/* Preserve the default pad value for this session */
-	API->print_func = (print_func == NULL) ? gmtapi_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
+	API->verbose     = (mode >> 16);	/* Pick up any -V settings from gmt.c */
+	API->pad         = pad;		/* Preserve the default pad value for this session */
+	API->print_func  = (print_func == NULL) ? gmtapi_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	API->do_not_exit = mode & GMT_SESSION_NOEXIT;	/* Deprecated, we no longer call exit anywhere in the API (gmt_api.c) */
-	API->external = mode & GMT_SESSION_EXTERNAL;	/* if false|0 then we don't list read and write as modules */
-	API->shape = (mode & GMT_SESSION_COLMAJOR) ? GMT_IS_COL_FORMAT : GMT_IS_ROW_FORMAT;		/* if set then we must use column-major format [row-major] */
-	API->runmode = mode & GMT_SESSION_RUNMODE;		/* If nonzero we set up modern GMT run-mode, else classic */
-	API->no_history = mode & GMT_SESSION_NOHISTORY;		/* If nonzero we disable the gmt.history mechanism (shorthands) entirely */
+	API->external    = mode & GMT_SESSION_EXTERNAL;	/* if false|0 then we don't list read and write as modules */
+	API->cmdline     = mode & GMT_SESSION_CMDLINE;	/* if false then we know gmt.c is not involved (external use, such as custom C code) */
+	API->shape       = (mode & GMT_SESSION_COLMAJOR) ? GMT_IS_COL_FORMAT : GMT_IS_ROW_FORMAT;		/* if set then we must use column-major format [row-major] */
+	API->runmode     = mode & GMT_SESSION_RUNMODE;		/* If nonzero we set up modern GMT run-mode, else classic */
+	API->no_history  = mode & GMT_SESSION_NOHISTORY;		/* If nonzero we disable the gmt.history mechanism (shorthands) entirely */
+
 	if (API->internal) API->leave_grid_scaled = 1;	/* Do NOT undo grid scaling after write since modules do not reuse grids we save some CPU */
 	if (session) {	/* Pick up a tag for this session */
 		char *tmptag = strdup (session);
@@ -15096,4 +15098,13 @@ int64_t gmt_eliminate_duplicates (struct GMTAPI_CTRL *API, struct GMT_DATASET *D
 	}
 
 	return (n_dup);
+}
+
+bool gmt_modern_in_classic_session (struct GMTAPI_CTRL *API, const char *module) {
+	/* If not commandline or external it means use of C API directly, so GMT_Create_Session needs to set modern mode first */
+	if (API->runmode) return false;		/* Already in modern mode */
+	if (API->external) return false;	/* An external call from MATLAB, Julia, or Python */
+	if (API->cmdline) return false;		/* A standard command-line call via gmt program */
+	GMT_Report (API, GMT_MSG_ERROR, "Cannot call module \"%s\" in a classic session created via a call to GMT_Create_Session\n", module);
+	return true;	/* Sorry, calling a modern-mode only module from a classic session started from GMT_Create_Session in a C/C++ program is not allowed */
 }
