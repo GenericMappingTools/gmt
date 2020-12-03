@@ -137,7 +137,7 @@ jobs:
           workflow: ci-caches.yml
           name: vcpkg-cache
           path: C:\vcpkg\installed\
-        if: runner.os == 'Windows' && matrix.run_in_pr == true || github.event_name != 'pull_request'
+        if: runner.os == 'Windows' && (matrix.run_in_pr == true || github.event_name != 'pull_request')
 
       - name: Install GMT dependencies
         run: |
@@ -162,7 +162,7 @@ jobs:
 
       - name: Download coastlines
         run: bash ci/download-coastlines.sh
-        if: steps.cache-coastline.outputs.cache-hit != 'true' && matrix.run_in_pr == true || github.event_name != 'pull_request'
+        if: steps.cache-coastline.outputs.cache-hit != 'true' && (matrix.run_in_pr == true || github.event_name != 'pull_request')
 
       - name: Configure GMT
         run: |
@@ -182,7 +182,7 @@ jobs:
           cd build
           cmake -G Ninja ..
           cmake --build .
-        if: runner.os != 'Windows' && matrix.run_in_pr == true || github.event_name != 'pull_request'
+        if: runner.os != 'Windows' && (matrix.run_in_pr == true || github.event_name != 'pull_request')
 
       - name: Compile GMT (Windows)
         shell: cmd
@@ -192,7 +192,7 @@ jobs:
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
           cmake --build .
-        if: runner.os == 'Windows' && matrix.run_in_pr == true || github.event_name != 'pull_request'
+        if: runner.os == 'Windows' && (matrix.run_in_pr == true || github.event_name != 'pull_request')
 
       - name: Download cached GMT remote data from GitHub Artifacts
         uses: dawidd6/action-download-artifact@v2.10.0
@@ -225,7 +225,7 @@ jobs:
           cmake --build . --target docs_man
           # if man.log isn't empty (i.e., sphinx raise warnings), return 1
           ! [ -s doc/rst/man.log ]
-        if: matrix.BUILD_DOCS == true && matrix.run_in_pr == true || github.event_name != 'pull_request'
+        if: matrix.BUILD_DOCS == true && (matrix.run_in_pr == true || github.event_name != 'pull_request')
 
       - name: Install GMT
         run: |
@@ -257,7 +257,7 @@ jobs:
           gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
           gmt grdimage @earth_relief_01d -JH10c -Baf -pdf map
           gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
-        if: runner.os == 'Windows' && matrix.run_in_pr == true || github.event_name != 'pull_request'
+        if: runner.os == 'Windows' && (matrix.run_in_pr == true || github.event_name != 'pull_request')
 
       # Run full tests and rerun failed tests
       - name: Run full tests
@@ -270,14 +270,14 @@ jobs:
           ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed || ctest ${CTEST_ARGS} --rerun-failed
         env:
           CTEST_ARGS : "--output-on-failure --force-new-ctest-process -j4 --timeout 480"
-        if: matrix.RUN_TESTS == true && matrix.run_in_pr == true || github.event_name != 'pull_request'
+        if: matrix.RUN_TESTS == true && (matrix.run_in_pr == true || github.event_name != 'pull_request')
 
       - name: Run DOS batch examples (Windows)
         shell: cmd
         run: |
           cd doc/examples
           call do_examples.bat
-        if: matrix.RUN_TESTS == true && runner.os == 'Windows' && matrix.run_in_pr == true || github.event_name != 'pull_request'
+        if: matrix.RUN_TESTS == true && runner.os == 'Windows' && (matrix.run_in_pr == true || github.event_name != 'pull_request')
 
       - name: Upload build directory if failed
         uses: actions/upload-artifact@v2
@@ -291,7 +291,7 @@ jobs:
         run: |
           set -x -e
           bash <(curl -s https://codecov.io/bash)
-        if: ${{ matrix.RUN_TESTS == true && matrix.run_in_pr == true || github.event_name != 'pull_request' && always() }}
+        if: matrix.RUN_TESTS == true && (matrix.run_in_pr == true || github.event_name != 'pull_request') && always()
 
       - name: Checkout the gh-pages branch in a separate folder
         uses: actions/checkout@28c7f3d2b5162b5ddd3dfd9a45aa55eaf396478b
@@ -301,11 +301,11 @@ jobs:
           path: deploy
           # Download the entire history
           fetch-depth: 0
-        if: matrix.DEPLOY_DOCS == true && matrix.run_in_pr == true || github.event_name != 'pull_request'
+        if: matrix.DEPLOY_DOCS == true && (matrix.run_in_pr == true || github.event_name != 'pull_request')
 
       - name: Deploy documentation to GitHub
         run: bash ci/deploy-gh-pages.sh
-        if: matrix.DEPLOY_DOCS == true && matrix.run_in_pr == true || github.event_name != 'pull_request'
+        if: matrix.DEPLOY_DOCS == true && (matrix.run_in_pr == true || github.event_name != 'pull_request')
 
       - name: Package GMT
         run: |
@@ -320,7 +320,7 @@ jobs:
             # Don't use cpack here. Chocolatey also provides a cpack command.
             cmake --build . --target package
           fi
-        if: matrix.PACKAGE == true && matrix.run_in_pr == true || github.event_name != 'pull_request'
+        if: matrix.PACKAGE == true && (matrix.run_in_pr == true || github.event_name != 'pull_request')
 
   # Building GMT in various Linux distros, using docker.
   docker:
