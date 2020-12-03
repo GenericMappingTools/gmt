@@ -193,7 +193,7 @@ int main (int argc, char *argv[]) {
 
 			/* Show URL of the remote GMT data server */
 			else if (!strncmp (argv[arg_n], "--show-dataserver", 17U)) {
-				fprintf(stdout, "%s\n", api_ctrl->GMT->session.DATASERVER);
+				fprintf(stdout, "%s\n", gmt_dataserver_url (api_ctrl));
 				status = GMT_NOERROR;
 			}
 
