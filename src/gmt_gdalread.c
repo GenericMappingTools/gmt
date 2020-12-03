@@ -1088,7 +1088,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	gmt_M_tic (GMT);
 
 	for (i = 0; i < nBands; i++) {
-		if (!nReqBands)		/* No band selection, read them sequentialy */
+		if (!nReqBands)		/* No band selection, read them sequentially */
 			hBand = GDALGetRasterBand(hDataset, i+1);
 		else			/* Band selection. Read only the requested ones */
 			hBand = GDALGetRasterBand(hDataset, (int)whichBands[i]);

@@ -1,5 +1,5 @@
 #
-# Backport a PR labled by "backport 6.1" into 6.1 branch
+# Backport PRs labeled by "backport 6.1" into 6.1 branch
 #
 
 name: Backport
