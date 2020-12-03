@@ -19,6 +19,7 @@ builder=ninja	# If ninja is not installed (please do), set to make
 Bname="Ninja"	# If ninja is not installed (please do), set to "Unix Makefiles"
 pngview=open	# Program that can open and display PNG files
 pdfview=open	# Program that can open and display PDF files
+ncores=4	# Number of cores for running tests
 MATLAB=/Applications/MATLAB_R2019a.app	# Path to the Matlab app
 REPO_DIR=<path to the local GMT repository>
 DATA_DIR=<path to directory containing GSHHG and DCW>
