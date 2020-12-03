@@ -6348,7 +6348,6 @@ void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr) {
 	struct GMT_MAP_PANEL *panel = mr->panel;
 	double dim[2];
 	if (!mr->plot) return;
-	if (gmt_M_is_cartesian (GMT, GMT_IN)) return;	/* Only for geographic projections */
 
 	dim[GMT_X] = dim[GMT_Y] = mr->size;
 	gmt_set_refpoint (GMT, mr->refpoint);	/* Finalize reference point plot coordinates, if needed */
