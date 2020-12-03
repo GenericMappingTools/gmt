@@ -56,6 +56,7 @@ jobs:
 
           - name: Linux - Build docs + Deploy docs + Package
             os: ubuntu-latest
+            if: github.event_name != 'pull_request'
             BUILD_DOCS  : true
             DEPLOY_DOCS : true
             PACKAGE     : true
@@ -63,6 +64,7 @@ jobs:
 
           - name: Linux - Tests
             os: ubuntu-latest
+            if: github.event_name != 'pull_request'
             BUILD_DOCS  : false
             DEPLOY_DOCS : false
             PACKAGE     : false
@@ -78,6 +80,7 @@ jobs:
 
           - name: macOS - Build docs + Deploy docs + Package
             os: macos-latest
+            if: github.event_name != 'pull_request'
             BUILD_DOCS  : true
             DEPLOY_DOCS : false
             PACKAGE     : true
@@ -85,6 +88,7 @@ jobs:
 
           - name: macOS - Tests
             os: macos-latest
+            if: github.event_name != 'pull_request'
             BUILD_DOCS  : false
             DEPLOY_DOCS : false
             PACKAGE     : false
@@ -100,6 +104,7 @@ jobs:
 
           - name: Windows - Build Docs + Package
             os: windows-latest
+            if: github.event_name != 'pull_request'
             BUILD_DOCS  : true
             DEPLOY_DOCS : false
             PACKAGE     : true
@@ -107,6 +112,7 @@ jobs:
 
           - name: Windows - Tests
             os: windows-latest
+            if: github.event_name != 'pull_request'
             BUILD_DOCS  : false
             DEPLOY_DOCS : false
             PACKAGE     : false
