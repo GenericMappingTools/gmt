@@ -17,7 +17,8 @@ some (like **globe**) are a mix of the two. The bottom half the color
 bar are built by using :doc:`/makecpt`
 **-T**-1/1/0.25, thus splitting the color scale into 8 discrete colors.
 Black and white triangles indicate which tables have hard or soft hinges,
-respectively.
+respectively. Some CPTs have a default *z*-range while others are dynamic.
+Default ranges, if available, are indicated on the top-right of the scales.
 
 .. _CPT_files_a:
 
