@@ -6,7 +6,6 @@ name: Build GMT in Docker
 
 # Only build the master and 6.x branches, and releases.
 on:
-  pull_request:
   push:
     branches:
       - master
