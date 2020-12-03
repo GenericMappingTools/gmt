@@ -1,22 +1,33 @@
 #
 # .bashrc include file for simplifying GMT building and testing
-# from the bash command line.  Include in your .bashrc via
-# source <path>/bashrc_for_gmt
+# from the bash command line for debug compiler settings
+# (dbuild directory), a release build (rbuild directory),
+# and XCode debugging (xbuild directory).
+#
+# Include in your .bashrc via source <path>/bashrc_for_gmt
+#
+# Examples:
+# Type "bnd" to pull the latest main, configure with cmake, and build
+# with debug settings, or "bnx" for the Xcode setup
+# Type "crb" to run all tests with the release build
+# Type "gmtfind 'pattern'" to find all files where 'pattern' occurs
+# Type "dlog" to open the latest test log
+# Type "vgd" to open all the failed test PNGs for build
 #
 # You must set these parameter to reflect your setup
-builder=ninja	# If ninja is not installed (please do) then set to make
-Bname="Ninja"	# If ninja is not installed (please do) then use "Unix Makefiles"
+builder=ninja	# If ninja is not installed (please do), set to make
+Bname="Ninja"	# If ninja is not installed (please do), set to "Unix Makefiles"
 pngview=open	# Program that can open and display PNG files
 pdfview=open	# Program that can open and display PDF files
 MATLAB=/Applications/MATLAB_R2019a.app	# Path to the Matlab app
-GMT_DEV=<path to GMT_dev directory containing all repos (such as gmt-dev)>
+REPO_DIR=<path to the local GMT repository>
+DATA_DIR=<path to directory containing GSHHG and DCW>
 EDITOR=subl		# Program that can open and display text files
 #--------------------------------------------------------------
 
 # These are needed to run admin/build-gmt-release.sh
-
-export GMT_GSHHG_SOURCE=${GMT_DEV}/gshhg-gmt-2.3.7
-export GMT_DCW_SOURCE=${GMT_DEV}/dcw-gmt-1.1.4
+export GMT_GSHHG_SOURCE=${DATA_DIR}/gshhg-gmt-2.3.7
+export GMT_DCW_SOURCE=${DATA_DIR}/dcw-gmt-1.1.4
 
 # To run matlab without the GUI:
 alias matlab='$MATLAB/bin/matlab -nojvm'
@@ -40,38 +51,37 @@ function gmtfind {
 # Various GMT building aliases
 
 # To run cmake for GMT for various setups
-alias cmakegmtd='cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug ..'
-alias cmakegmtr='cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release ..'
-alias cmakegmtx='cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..'
+alias cmakegmtd='cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug ..' # Configure cmake for debug
+alias cmakegmtr='cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release ..' # Configure cmake for release
+alias cmakegmtx='cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..' # Configure cmake for Xcode debug
 
-gmt6='cd $GMT_DEV/gmt-dev/src'	# Cd to the GMT source directory
-alias gtop='cd $GMT_DEV/gmt-dev'	# Cd to the top of the dev tree
-alias dlog='pushd .; gtop; ${EDITOR} dbuild/Testing/Temporary/LastTest.log; popd'
-alias rlog='pushd .; gtop; ${EDITOR} rbuild/Testing/Temporary/LastTest.log; popd'
+gmt6='cd ${REPO_DIR}/src'	# Cd to the GMT source directory
+alias gtop='cd ${REPO_DIR}'	# Cd to the top of the dev tree
+alias dlog='pushd .; gtop; ${EDITOR} dbuild/Testing/Temporary/LastTest.log; popd' # Open the dbuild check error log
+alias rlog='pushd .; gtop; ${EDITOR} rbuild/Testing/Temporary/LastTest.log; popd' # Open the rbuild check error log
 alias bdoc='pushd .; gmt6; cd ../dbuild; ${builder} -j${ncores} docs_html install; popd'
-alias buildd='pushd .; gtop; git pull; cd dbuild; ${builder} -j${ncores} install; popd'
-alias buildr='pushd .; gtop; git pull; cd rbuild; ${builder} -j${ncores} install; popd'
-alias buildnewd='pushd .; gtop; git pull; rm -rf dbuild; mkdir dbuild; cd dbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G ${Bname} ..; ${builder} -j${ncores} install; popd'
-alias buildnewr='pushd .; gtop; git pull; rm -rf rbuild; mkdir rbuild; cd rbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release -G ${Bname} ..; ${builder} -j${ncores} install; popd'
-alias buildnewx='pushd .; gtop; git pull; rm -rf xbuild; mkdir xbuild; cd xbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..; xcodebuild; popd'
-alias checkdbuild='pushd .; gtop; cd dbuild; ${builder} -j${ncores} check; popd'
-alias checkrbuild='pushd .; gtop; cd rbuild; ${builder} -j${ncores} check; popd'
+alias buildd='pushd .; gtop; git pull; cd dbuild; ${builder} -j${ncores} install; popd' # Pull changes and rebuild existing dbuild
+alias buildr='pushd .; gtop; git pull; cd rbuild; ${builder} -j${ncores} install; popd' # Pull changes and rebuild existing rbuild
+alias buildnewd='pushd .; gtop; git pull; rm -rf dbuild; mkdir dbuild; cd dbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G ${Bname} ..; ${builder} -j${ncores} install; popd' # Pull changes; delete and recreate build directory (debug)
+alias buildnewr='pushd .; gtop; git pull; rm -rf rbuild; mkdir rbuild; cd rbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release -G ${Bname} ..; ${builder} -j${ncores} install; popd' # Pull changes; delete and recreate build directory (release)
+alias buildnewx='pushd .; gtop; git pull; rm -rf xbuild; mkdir xbuild; cd xbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..; xcodebuild; popd' # Pull changes; delete and recreate build directory (XCode)
+alias checkdbuild='pushd .; gtop; cd dbuild; ${builder} -j${ncores} check; popd' # Run the tests for dbuild
+alias checkrbuild='pushd .; gtop; cd rbuild; ${builder} -j${ncores} check; popd' # Run the tests for rbuild
 # If gcc-mp is installed you can do OpenMP builds
 alias buildnewr-mp='pushd .; gtop; git pull; rm -rf rbuild-mp; mkdir rbuild-mp; cd rbuild-mp; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release -G ${Bname} -C ~/cache.cmake ..; ${builder} -j${ncores} install; popd'
 alias buildnewd-mp='pushd .; gtop; git pull; rm -rf dbuild-mp; mkdir dbuild-mp; cd dbuild-mp; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release -G ${Bname} -C ~/cache.cmake ..; ${builder} -j${ncores} install; popd'
 
 # Shorter aliases for the build aliases
-alias bd=buildd
-alias br=buildr
-alias bnd=buildnewd
-alias bnr=buildnewr
-alias bnx=buildnewx
-alias bnd-mp=buildnewd-mp
-alias bnr-mp=buildnewr-mp
-alias cdb=checkdbuild
-alias crb=checkrbuild
-# build new master debug and run all tests
-alias bmdc='buildnewd; checkdbuild'
+alias bd=buildd # Pull changes and rebuild existing dbuild
+alias br=buildr # Pull changes and rebuild existing rbuild
+alias bnd=buildnewd # Pull changes; delete and recreate dbuild
+alias bnr=buildnewr # Pull changes; delete and recreate rbuild
+alias bnx=buildnewx # Pull changes; delete and recreate xbuild
+alias bnd-mp=buildnewd-mp # Pull changes; delete and rebuild dbuild with OpenMP
+alias bnr-mp=buildnewr-mp # Pull changes; delete and rebuild rbuild with OpenMP
+alias cdb=checkdbuild # Run the tests for dbuild
+alias crb=checkrbuild # Run the tests for rbuild
+alias bmdc='buildnewd; checkdbuild' # build new master debug and run all tests
 
 # See test results
 alias vpngdbuild='pushd .; gtop; cd dbuild; $pngview */*/*/*.png; popd'
