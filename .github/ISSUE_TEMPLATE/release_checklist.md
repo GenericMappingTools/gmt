@@ -1,7 +1,7 @@
 ---
 name: GMT release checklist
 about: Checklist for a new GMT release.
-title: 'Release GMT x.x.x'
+title: Release GMT x.x.x
 labels: ''
 assignees: ''
 

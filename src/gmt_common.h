@@ -243,10 +243,12 @@ struct GMT_COMMON {
 		bool active;
 		char string[GMT_LEN64];
 	} s;
-	struct t {	/* -t[<transparency>] */
+	struct t {	/* -t[<filltransparency>[/<stroketransparency>]][+f][+s] */
 		bool active;
 		bool variable;
-		double value;
+		unsigned int mode;	/* 1 = fill, 2 = stroke, 3 for both */
+		unsigned int n_transparencies;	/* How many to read from file if no values given */
+		double value[2];
 	} t;
 	struct x {	/* -x[[-]<n>] */
 		bool active;

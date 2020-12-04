@@ -667,8 +667,8 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 			unsigned int col_type[2];
 			struct GMT_RECORD *Rec = gmt_new_record (GMT, out, NULL);
 			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 2U, unsigned int);	/* Save first 2 current output col types */
-			gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_FLOAT);
-			gmt_set_column (GMT, GMT_OUT, GMT_Y, GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_OUT, GMT_X, GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_OUT, GMT_Y, GMT_IS_FLOAT);
 			if ((error = GMT_Set_Columns (API, GMT_OUT, 7U, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 				gmt_M_free (GMT, sum);
 				gmt_M_free (GMT, xx);

@@ -409,9 +409,9 @@ EXTERN_MSC int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	both = Ctrl->S.both;		/* Usually false unless -S<track>+b is set */
 	if (!both) both = !Ctrl->S.active;	/* Two columns for many output choices */
 
-	gmt_set_column (GMT, GMT_OUT, GMT_X, (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT);
-	gmt_set_column (GMT, GMT_OUT, GMT_Y, (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT);
-	gmt_set_column (GMT, GMT_OUT, GMT_T, GMT_IS_ABSTIME);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_X, (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Y, (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_T, GMT_IS_ABSTIME);
 
 	n_items = strlen (Ctrl->F.flags);
 	for (i = j = 0; i < n_items; i++, j++) {	/* Overwrite the above settings */
@@ -422,25 +422,25 @@ EXTERN_MSC int GMT_x2sys_list (void *V_API, int mode, void *args) {
 			case 'i':	/* Time interval (signed) */
 			case 'v':	/* Speed along track */
 			case 'w':	/* Crossover composite weight */
-				gmt_set_column (GMT, GMT_OUT, (unsigned int)j, GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_OUT, (unsigned int)j, GMT_IS_FLOAT);
 				break;
 			case 'd':	/* Distance along track */
 			case 'h':	/* Heading along track */
 			case 'N':	/* ID numbers of tracks */
 			case 'T':	/* Time along track since beginning of the first year of the track */
 			case 'z':	/* Observed value along track */
-				gmt_set_column (GMT, GMT_OUT, (unsigned int)j, GMT_IS_FLOAT);
-				if (both) gmt_set_column (GMT, GMT_OUT, (unsigned int)(++j), GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_OUT, (unsigned int)j, GMT_IS_FLOAT);
+				if (both) gmt_set_column_type (GMT, GMT_OUT, (unsigned int)(++j), GMT_IS_FLOAT);
 				break;
 			case 't':	/* Time along track */
-				gmt_set_column (GMT, GMT_OUT, (unsigned int)j, GMT_IS_ABSTIME);
-				if (both) gmt_set_column (GMT, GMT_OUT, (unsigned int)(++j), GMT_IS_ABSTIME);
+				gmt_set_column_type (GMT, GMT_OUT, (unsigned int)j, GMT_IS_ABSTIME);
+				if (both) gmt_set_column_type (GMT, GMT_OUT, (unsigned int)(++j), GMT_IS_ABSTIME);
 				break;
 			case 'x':	/* x coordinate of crossover */
-				gmt_set_column (GMT, GMT_OUT, (unsigned int)j, (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_OUT, (unsigned int)j, (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT);
 				break;
 			case 'y':	/* y coordinate of crossover */
-				gmt_set_column (GMT, GMT_OUT, (unsigned int)j, (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_OUT, (unsigned int)j, (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT);
 				break;
 		}
 	}

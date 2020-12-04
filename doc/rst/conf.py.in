@@ -63,8 +63,8 @@ html_context = {
     "github_version": "master",
     "theme_vcs_pageview_mode": "edit",
     "conf_py_path": "/doc/rst/source/",
-    # Enable versions switch on Azure Pipelines.
-    "enable_versions_switch": True if os.getenv("BUILD_SOURCEBRANCHNAME") else False,
+    # Enable versions switch on GitHub Actions (`true`).
+    "enable_versions_switch": True if os.getenv("GITHUB_ACTIONS") else False,
 }
 # favicon of the docs
 html_favicon = "_static/favicon.png"

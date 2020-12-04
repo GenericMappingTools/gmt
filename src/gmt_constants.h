@@ -270,7 +270,7 @@ enum GMT_enum_basemap {
 
 /* Valid modifiers for various input files */
 
-/* Valid modifers for -Tmin/max/inc array creator */
+/* Valid modifiers for -Tmin/max/inc array creator */
 #define GMT_ARRAY_MODIFIERS "abeilnt"
 
 /* Modifiers for grid files:
@@ -418,6 +418,14 @@ enum GMT_enum_workflowmode {
 enum GMT_enum_colorswap {
 	GMT_USE_FILL_RGB  = 1,	/* Take pen color from that of the current fill */
 	GMT_USE_PEN_RGB = 2};	/* Take fill color from that of the current pen */
+
+/*! Index for fill/stroke transparency value */
+enum GMT_enum_transp {
+	GMT_FILL_TRANSP     = 0,	/* transp[GMT_FILL_TRANSP] is used for filling */
+	GMT_PEN_TRANSP      = 1,	/* transp[GMT_PEN_TRANSP] is used for stroking */
+	GMT_SET_FILL_TRANSP = 1,	/* Bit-flag for fill transparency */
+	GMT_SET_PEN_TRANSP  = 2,	/* Bit-flag for stroke transparency */
+	GMT_SET_ALL_TRANSP  = 3};	/* Bit-flag for both transparencies */
 
 /*! Various algorithms for triangulations */
 enum GMT_enum_tri {

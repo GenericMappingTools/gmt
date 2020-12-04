@@ -2806,7 +2806,7 @@ GMT_LOCAL void gmtstat_get_cart_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID 
 }
 
 void gmt_get_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
-	/* Calculate geographic spherical in km^2 or plain Cartesian area in suer_unit^2 and place in grid G. */
+	/* Calculate geographic spherical in km^2 or plain Cartesian area in user_unit^2 and place in grid G. */
 	if (gmt_M_is_geographic (GMT, GMT_IN))
 		gmtstat_get_geo_cellarea (GMT, G);
 	else

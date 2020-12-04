@@ -1051,10 +1051,10 @@ GMT_LOCAL void earthtide_sun_moon_track (struct GMT_CTRL *GMT, struct GMT_GCAL *
 
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
-	gmt_set_column (GMT, GMT_OUT, 1, GMT_IS_LON);
-	gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_LAT);
-	gmt_set_column (GMT, GMT_OUT, 4, GMT_IS_LON);
-	gmt_set_column (GMT, GMT_OUT, 5, GMT_IS_LAT);
+	gmt_set_column_type (GMT, GMT_OUT, 1, GMT_IS_LON);
+	gmt_set_column_type (GMT, GMT_OUT, 2, GMT_IS_LAT);
+	gmt_set_column_type (GMT, GMT_OUT, 4, GMT_IS_LON);
+	gmt_set_column_type (GMT, GMT_OUT, 5, GMT_IS_LAT);
 
 	if (T.count){
 		tdel2 = (T.max-T.min) / ( (T.inc - 1) * 24 * 3600);
@@ -1265,7 +1265,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-G<outgrid>] [-C<comp>] [-L<lon>/<lat>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T[<min>/<max>/][-|+]<inc>[+n]]\n\t[%s] [-S]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T[<min>/<max>/][-|+]<inc>[+i|n]]\n\t[%s] [-S]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_bo_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -1287,6 +1287,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   moon_lon, moon_lat, moon_dist.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <min> to <max> by <inc>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of t-values to produce over the range instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append +i to indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a valid time unit (%s) to the increment and add +t.\n", GMT_TIME_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no -T is provided get current time in UTC from the computer clock.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no -G or -S are provided then -T is interpreted to mean compute a time-series\n");
@@ -1538,7 +1539,7 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) 	/* Sets output geometry */
 			Return (API->error);
 
-		gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_ABSTIME);	/* Common for both tables; other column types set in the two functions */
+		gmt_set_column_type (GMT, GMT_OUT, 0, GMT_IS_ABSTIME);	/* Common for both tables; other column types set in the two functions */
 
 		if (Ctrl->S.active)
 			earthtide_sun_moon_track (GMT, &cal_start, Ctrl->T.T);

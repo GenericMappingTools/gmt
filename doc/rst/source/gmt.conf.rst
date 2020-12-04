@@ -61,6 +61,9 @@ COLOR Parameters
         Color used for the foreground of images (i.e., when z > highest
         color table entry) [white].
 
+    **COLOR_CPT**
+        Default CPT table when none is selected [turbo].
+
     **COLOR_HSV_MAX_S**
         Maximum saturation (0-1) assigned for most positive intensity value [0.1].
 
@@ -316,7 +319,7 @@ GMT Miscellaneous Parameters
         for 6: obsolete syntax from early GMT 5 will be considered errors.
 
     **GMT_DATA_SERVER**
-        URL of the GMT data server [The **Oceania** server]. Please set to the
+        Name (or URL) of a GMT data server [**oceania**]. Please set to the
         data server closest to your location for faster data download.  See
         `Data Server Mirrors <https://www.generic-mapping-tools.org/mirrors/>`_
         for a list of the currently available mirrors.

@@ -430,7 +430,7 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	}
 
 	for (k = 0; k < bin_expect; k++)	/* All input columns are floating point numbers here */
-		gmt_set_column (GMT, GMT_IN, k, GMT_IS_FLOAT);
+		gmt_set_column_type (GMT, GMT_IN, k, GMT_IS_FLOAT);
 
 	/* Open the crossover info */
 
