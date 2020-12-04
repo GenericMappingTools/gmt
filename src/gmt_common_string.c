@@ -77,7 +77,7 @@ char *gmt_chop_ext (char *string) {
 	 * '.' with '\0' and returns a pointer to the extension or NULL if not found. */
 	char *p;
 	assert (string != NULL); /* NULL pointer */
-	if ((p = strrchr(string, '.'))) {
+    if ((p = strrchr(string, '.')) && strchr (p, '/') == NULL) {
 		*p = '\0';
 		return (p + 1);
 	}
