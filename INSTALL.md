@@ -110,6 +110,9 @@ Install [MacPorts](https://www.macports.org) and then the required ports in this
 Optional FFTW-3 support and experimental OpenMP parallel acceleration can be
 enabled with the `+fftw3` and `+openmp` flags.
 
+GMT is installed in `/opt/local/lib/gmt6`. To use GMT in command line or scripts, 
+you need to add `/opt/local/lib/gmt6/bin` to your PATH. 
+
 You also need to install other GMT run-time dependencies separately:
 
     sudo port install graphicsmagick ffmpeg
