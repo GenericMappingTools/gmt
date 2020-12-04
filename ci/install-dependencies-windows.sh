@@ -30,7 +30,7 @@ vcpkg list
 
 # install more packages using chocolatey
 choco install ninja
-choco install ghostscript --version 9.50
+choco install ghostscript
 
 if [ "$BUILD_DOCS" = "true" ]; then
     pip install --user sphinx
