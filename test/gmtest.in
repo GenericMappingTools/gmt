@@ -27,7 +27,7 @@ if [ "@GMT_ENABLE_KNOWN2FAIL@" = "ON" ]; then
 		known2fail=$(grep "GMT_KNOWN_FAILURE_LINUX1" "$script" -c)
 	fi
 	# Check if the test is known to fail on all platforms
-	if [ ! -z "$know2fail" ]; then
+	if [ -z "$know2fail" ]; then
 		known2fail=$(grep "GMT_KNOWN_FAILURE" "$script" -c)
 	fi
 else
