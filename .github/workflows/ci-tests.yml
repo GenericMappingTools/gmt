@@ -114,7 +114,7 @@ jobs:
             RUN_TESTS   : false
 
           - name: Windows - Tests
-            run_in_pr : false
+            run_in_pr : true
             os: windows-latest
             BUILD_DOCS  : false
             DEPLOY_DOCS : false
