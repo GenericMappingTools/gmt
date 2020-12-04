@@ -27,7 +27,7 @@ cat << EOF > tridata.vrt
 </OGRVRTDataSource>
 EOF
 
-
+gmt set GMT_VERBOSE debugging
 gmt makecpt -Ccategorical -T0/10/1 > t.cpt
 gmt grdgdal tridata.csv -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest"
 gmt grdgdal tridata.vrt -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest" -M+r

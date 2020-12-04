@@ -65,7 +65,7 @@ jobs:
 
           - name: Linux - Tests
             os: ubuntu-latest
-            run_in_pr : false
+            run_in_pr : true
             BUILD_DOCS  : false
             DEPLOY_DOCS : false
             PACKAGE     : false
@@ -90,7 +90,7 @@ jobs:
 
           - name: macOS - Tests
             os: macos-latest
-            run_in_pr : false
+            run_in_pr : true
             BUILD_DOCS  : false
             DEPLOY_DOCS : false
             PACKAGE     : false
@@ -114,7 +114,7 @@ jobs:
             RUN_TESTS   : false
 
           - name: Windows - Tests
-            run_in_pr : false
+            run_in_pr : true
             os: windows-latest
             BUILD_DOCS  : false
             DEPLOY_DOCS : false
@@ -266,8 +266,9 @@ jobs:
           cd build
           # Disable MinGW's path conversion, see #1035.
           if [ "$RUNNER_OS" == "Windows" ]; then export MSYS_NO_PATHCONV=1; fi
+          ctest ${CTEST_ARGS} test/grdgdal/gdal_nn.sh
           # Run tests
-          ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed || ctest ${CTEST_ARGS} --rerun-failed
+          # ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed || ctest ${CTEST_ARGS} --rerun-failed
         env:
           CTEST_ARGS : "--output-on-failure --force-new-ctest-process -j4 --timeout 480"
         if: matrix.RUN_TESTS == true && (matrix.run_in_pr == true || github.event_name != 'pull_request')
