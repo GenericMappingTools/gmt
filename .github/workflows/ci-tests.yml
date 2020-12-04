@@ -266,7 +266,7 @@ jobs:
           cd build
           # Disable MinGW's path conversion, see #1035.
           if [ "$RUNNER_OS" == "Windows" ]; then export MSYS_NO_PATHCONV=1; fi
-          ctest ${CTEST_ARGS} test/grdgdal/gdal_nn.sh
+          ctest ${CTEST_ARGS} -R test/grdgdal/gdal_nn.sh
           # Run tests
           # ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed || ctest ${CTEST_ARGS} --rerun-failed
         env:
