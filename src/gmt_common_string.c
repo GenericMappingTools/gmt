@@ -77,11 +77,13 @@ char *gmt_chop_ext (char *string) {
 	 * '.' with '\0' and returns a pointer to the extension or NULL if not found. */
 	char *p;
 	assert (string != NULL); /* NULL pointer */
-	if ((p = strrchr(string, '.'))) {
-		*p = '\0';
-		return (p + 1);
-	}
-	return NULL;
+    if ((p = strrchr(string, '.')) == NULL) return NULL; /* No extension found */
+    if (strchr (p, '/')) return NULL; /* Found a directory with a period */
+#ifdef WIN32
+    if (strchr (p, '\\')) return NULL; /* Found a directory with a period */
+#endif
+    *p = '\0';
+    return (p + 1);
 }
 
 void gmt_chop (char *string) {
