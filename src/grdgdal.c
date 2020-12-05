@@ -113,7 +113,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 			/* Processes program-specific parameters */
 			case '<':	/* Input file(s) */
-				Ctrl->fname_in = opt->arg;
+				Ctrl->fname_in = strdup(opt->arg);
 				n_files++;
 				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) {	/* No grid found */
 					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) 	/* No dataset found */
@@ -222,8 +222,8 @@ EXTERN_MSC int GMT_grdgdal (void *V_API, int mode, void *args) {
 		Return (GMT_MEMORY_ERROR);
 	}
 	/* Populate GDAL control structure form user's selections */
-	st->fname_in  = Ctrl->fname_in;
-	st->fname_out = Ctrl->G.file;
+	st->fname_in  = strdup(Ctrl->fname_in);
+	st->fname_out = strdup(Ctrl->G.file);
 	st->opts = Ctrl->F.opts;
 	st->M.read_gdal  = Ctrl->M.read_gdal;
 	st->M.write_gdal = Ctrl->M.write_gdal;
