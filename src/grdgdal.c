@@ -73,6 +73,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *C) {	/* Deallo
 	if (!C) return;
 	if (C->A.dem_method) gmt_M_str_free (C->A.dem_method);
 	if (C->A.dem_cpt) gmt_M_str_free (C->A.dem_cpt);
+	if (C->fname_in) gmt_M_str_free (C->fname_in);
 	gmt_M_free (GMT, C);
 }
 
