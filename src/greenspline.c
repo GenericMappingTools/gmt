@@ -1896,6 +1896,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			Grid->header->n_rows = 1;	/* So that output logic will work for 1-D which only has columns */
 			n_ok = Grid->header->n_columns = gmt_M_grd_get_nx (GMT, Grid->header);
 			header = Grid->header;
+			data = gmt_M_memory (GMT, NULL, Grid->header->n_columns, gmt_grdfloat);
 		}
 		else if (dimension == 2) {	/* Need a full-fledged Grid creation since we are writing it to who knows where */
 			if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->R3.range, Ctrl->I.inc, \
@@ -2406,8 +2407,6 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, xp);
 				Return (API->error);
 			}
-			if (dimension == 1)
-				data = gmt_M_memory (GMT, NULL, Grid->header->n_columns, gmt_grdfloat);
 
 		} /* Else we are writing a grid or cube */
 		gmt_M_memset (V, 4, double);
@@ -2549,7 +2548,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 		}
 		if (delete_grid) /* No longer required for 1-D and 3-D */
-			gmt_free_grid (GMT, &Grid, dimension > 1);
+			gmt_free_grid (GMT, &Grid, false);
 		if (dimension == 3) GMT_Destroy_Data (API, &Cube);	/* Done with the output cube */
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
