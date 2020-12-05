@@ -1493,9 +1493,10 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	write_3D_records = (dimension == 3 && !Ctrl->G.active);	/* Just so it is only true if 3-D and no output filename was given */
 
+	/* As many S.mode reflects 1-D after parse, here we increment S.mode if dimension is 2 or 3 */
 	if (Ctrl->S.mode == SANDWELL_1987_1D || Ctrl->S.mode == WESSEL_BERCOVICI_1998_1D) Ctrl->S.mode += (dimension - 1);
 	if (Ctrl->S.mode == LINEAR_1D) Ctrl->S.mode += (dimension - 1);
-	if (Ctrl->S.mode == MITASOVA_MITAS_1993_2D ) Ctrl->S.mode += (dimension - 2);
+	if (Ctrl->S.mode == MITASOVA_MITAS_1993_2D) Ctrl->S.mode += (dimension - 2);
 
 	way = gmt_M_is_spherical (GMT) ? GMT_GREATCIRCLE : GMT_GEODESIC;
 	Ctrl->D.mode--;	/* Since I added 0 to be 1-D later so now it is -1 */
@@ -1537,7 +1538,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	if (Ctrl->D.mode <= 1 && Ctrl->L.active)
 		normalize = GREENSPLINE_NORM;	/* Do not de-plane, just remove mean and normalize */
 	else if (Ctrl->D.mode > 1 && Ctrl->L.active)
-		GMT_Report (API, GMT_MSG_ERROR, "-L ignored for -D modes 2 and 3\n");
+		GMT_Report (API, GMT_MSG_ERROR, "-L ignored for -D modes 3-5\n");
 
 	if (Ctrl->Q.active && dimension == 2) sincosd (Ctrl->Q.az, &Ctrl->Q.dir[GMT_X], &Ctrl->Q.dir[GMT_Y]);
 
@@ -2032,7 +2033,6 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 #endif
 
-
 	if (dimension == 1) gmt_increase_abstime_format_precision (GMT, GMT_X, Ctrl->I.inc[GMT_X]);	/* In case we need more sub-second precision output */
 
 	if (Ctrl->E.active) {	/* Need to duplicate the data since SVD destroys it */
@@ -2052,7 +2052,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	 * (except for terms involving gradients where A_ij = -A_ji).  So we
 	 * start the loop over columns as col = row and deal with A)ij and A_ji
 	 * at the same time since we can evaluate the same costly G() function
-	 * [or dGdr () function)]  once.
+	 * [or dGdr () function)] once.
 	 */
 
 	mem = (double)nm * (double)nm * (double)sizeof (double);	/* In bytes */
