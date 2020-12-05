@@ -15,7 +15,7 @@ method=r
 tens=0.85
 gmt set GMT_VERBOSE debugging
 
-gmt greenspline -R$R3D -I$dz @Table_5_23.txt -S${method}${tens} -D5 > all.txt
+gmt greenspline -R$R3D -I$dz @Table_5_23.txt -S${method}${tens} -D5 -M3dalpha.txt > all.txt
 
 gmt greenspline -R$R3D -I$dz -G3D_%05.2lf.grd @Table_5_23.txt -S${method}${tens} -D5
 # Make a list of the grids
