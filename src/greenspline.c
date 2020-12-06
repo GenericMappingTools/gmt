@@ -2465,8 +2465,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			Rec->data = V;	/* For rec-by-rec output */
 			for (layer = 0, nz_off = 0; layer < n_layers; layer++, nz_off += nxy) {	/* Might be dummy loop of 1 layer unless 3-D */
 				int64_t col, row, p; /* On Windows, the 'for' index variables must be signed, so redefine these 3 inside this block only */
-				double z_level = (dimension == 3) ? Cube->z[layer] : 0.0;
-				if (dimension == 3) V[GMT_Z] = z_level;
+				if (dimension == 3) V[GMT_Z] = Cube->z[layer];
 				if (Ctrl->Q.active) {	/* Derivatives of solution */
 #ifdef _OPENMP
 #pragma omp parallel for private(row,V,ij,col,p,wp,r,C,part) shared(header,dimension,yp,nz_off,data,xp,nm,GMT,X,Ctrl,dGdr,par,Lz,alpha,normalize,norm)
@@ -2510,7 +2509,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				}
 
 				if (write_3D_records) {	/* Must dump this slice of the 3-D cube as ASCII slices as a backwards compatibility option */
-					V[GMT_Z] = z_level;
+					V[GMT_Z] = Cube->z[layer];
 					for (row = 0; row < header->n_rows; row++) {
 						V[GMT_Y] = yp[row];
 						for (col = 0; col < header->n_columns; col++) {
