@@ -1370,10 +1370,13 @@ levels of objects. The **-t** option allows you to change the
 transparency level for the current overlay by appending a percentage in
 the 0-100 range; the default is 0, or opaque. Transparency may also be
 controlled on a feature by feature basis when setting color or fill (see
-section :ref:`-Gfill_attrib`).  Finally, the modules
+section :ref:`-Gfill_attrib`).  For separate transparency for fill and stroke,
+append /*transp2* as well. **Note**: The modules
 :doc:`/plot`, :doc:`/plot3d`, and :doc:`/text` can all change transparency
 on a record-by-record basis if **-t** is given without argument and the
-input file supplies variable transparencies as the last numerical column value.
+input file supplies variable transparencies as the last numerical column value(s).
+Use the **+f** and **+s** modifiers to indicate which transparency is provided
+or if we expect one or two transparencies.
 
 .. _option_-x_core:
 
