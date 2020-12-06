@@ -12938,6 +12938,7 @@ int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, int row, int col, d
 	else
 		fprintf (fp, "%d %d %g %g %g %g %d %s\n", row, col, gap[XLO], gap[XHI], gap[YLO], gap[YHI], first, L);
 	fclose (fp);
+	if (first) API->GMT->current.plot.color_seq_id = 0;	/* Reset for new panel */
 	API->error = GMT_NOERROR;
 	return GMT_NOERROR;
 }
