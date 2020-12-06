@@ -244,6 +244,9 @@ enum GMT_enum_basemap {
 
 /* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"
+/* Default color list (or cpt) for automatic, sequential color choices */
+#define GMT_DEFAULT_COLOR_SET	"categorical"
+	
 /* CPT extension is pretty fixed */
 #define GMT_CPT_EXTENSION	".cpt"
 #define GMT_CPT_EXTENSION_LEN	4U

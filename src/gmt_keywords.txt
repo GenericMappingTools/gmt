@@ -5,7 +5,7 @@
 # gmt_keywords.h has quoted parameter names for text comparisons
 # gmt_keycases.h has #define GMT_<parameter> <case> statements
 # Any changes here will likely mean editing gmt_init.c as well,
-# including new entries to GMT5_keywords[].
+# including new entries to GMT_active_keyword[].
 #
 #-------------------------------------------------------
 # COLOR Group:	Color system settings
@@ -19,6 +19,7 @@ COLOR_HSV_MAX_S			# Maximum saturation assigned for most positive intensity valu
 COLOR_HSV_MAX_V			# Maximum value assigned for most positive intensity value
 COLOR_HSV_MIN_S			# Minimum saturation assigned for most positive intensity value
 COLOR_HSV_MIN_V			# Minimum value assigned for most positive intensity value
+COLOR_SET			# Default list of colors (or a cpt) for automatic sequential color choices
 #-------------------------------------------------------
 # DIR Group:	Directories to use
 #-------------------------------------------------------
