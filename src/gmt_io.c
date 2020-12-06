@@ -4019,8 +4019,7 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 
 	/* In case there is a comma in the list of variables, or if the first variable is actually a group,
 	 * we re-read the variable list with comma separators */
-	nc_inq_grp_ncid (GMT->current.io.ncid, varnm[0], &id);
-	if (pstr > qstr || GMT->current.io.ncid != id) {
+	if (pstr > qstr || nc_inq_grp_ncid (GMT->current.io.ncid, varnm[0], &id) == NC_NOERR) {
 		nvars = sscanf (filename,
 			"%[^?]?%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,]",
 			file, varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9], varnm[10],
