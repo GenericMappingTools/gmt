@@ -14578,6 +14578,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	Ccopy->current.ps.layer = GMT->current.ps.layer;
 	Ccopy->current.ps.active = GMT->current.ps.active;
 	Ccopy->current.ps.initialize = GMT->current.ps.initialize;
+	Ccopy->current.plot.color_seq_id = GMT->current.plot.color_seq_id;
 
 	/* GMT_COMMON */
 
