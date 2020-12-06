@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test auto-color sequencing via CPT or color list
+# Test auto-color sequencing of pens via CPT or color list
 
 gmt begin autocolorlines ps
 	gmt subplot begin 2x1 -Fs16c/0 -R-50/0/-10/20 -JM16c -SC -SR -Bwesn
