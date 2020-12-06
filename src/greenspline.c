@@ -2380,14 +2380,14 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	else {	/* Output on equidistant lattice */
 		uint64_t nz_off, nxy;
 		unsigned int layer, wmode = GMT_ADD_DEFAULT;
-		double *xp = NULL, *yp = NULL, wp, V[4];
+		double *xp = NULL, *yp = NULL, wp, V[4] = {0.0, 0.0, 0.0, 0.0};
 		GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate spline at %" PRIu64 " equidistant output locations\n", n_ok);
 		/* Precalculate coordinates */
 		xp = gmt_grd_coord (GMT, header, GMT_X);
 		if (dimension > 1) yp = gmt_grd_coord (GMT, header, GMT_Y);
 		nxy = header->size;	/* Will only be used for 3-D anyway when there are layers */
-		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
 		if (dimension == 1 || write_3D_records) {	/* Write ASCII table to named file or stdout for 1-D or stdout for 3-D */
+			GMT->common.b.ncol[GMT_OUT] = dimension + 1;
 			if (Ctrl->G.active) {
 				if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMT_NOTSET) {
 					gmt_M_free (GMT, xp);
@@ -2409,7 +2409,6 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 
 		} /* Else we are writing a grid or cube */
-		gmt_M_memset (V, 4, double);
 		if (Ctrl->C.movie) {	/* 2-D only: Write out grid after adding contribution for each eigenvalue separately */
 			gmt_grdfloat *tmp = NULL;
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
@@ -2462,16 +2461,17 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, ssave);
 		}
 		else {	/* Just compute the final interpolation */
-			Rec->data = V;	/* For rec-by-rec output */
+			if (dimension == 1 || write_3D_records) Rec->data = V;	/* For rec-by-rec output */
 			for (layer = 0, nz_off = 0; layer < n_layers; layer++, nz_off += nxy) {	/* Might be dummy loop of 1 layer unless 3-D */
 				int64_t col, row, p; /* On Windows, the 'for' index variables must be signed, so redefine these 3 inside this block only */
-				if (dimension == 3) V[GMT_Z] = Cube->z[layer];
+				double z_layer = (dimension == 3) ? Cube->z[layer] : 0.0;
 				if (Ctrl->Q.active) {	/* Derivatives of solution */
 #ifdef _OPENMP
-#pragma omp parallel for private(row,V,ij,col,p,wp,r,C,part) shared(header,dimension,yp,nz_off,data,xp,nm,GMT,X,Ctrl,dGdr,par,Lz,alpha,normalize,norm)
+#pragma omp parallel for private(row,V,ij,col,p,wp,r,C,part) shared(header,dimension,yp,z_layer,nz_off,data,xp,nm,GMT,X,Ctrl,dGdr,par,Lz,alpha,normalize,norm)
 #endif
 					for (row = 0; row < header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
-						if (dimension > 1) V[GMT_Y] = yp[row];
+						if (dimension > 1)  V[GMT_Y] = yp[row];
+						if (dimension == 3) V[GMT_Z] = z_layer;
 						ij = (dimension > 1) ? gmt_M_ijp (header, row, 0) + nz_off : 0;
 						for (col = 0; col < header->n_columns; col++, ij++) {	/* This loop is always active for 1,2,3D */
 							if (dimension == 2 && gmt_M_is_fnan (data[ij])) continue;	/* Only do solution where mask is not NaN */
@@ -2489,10 +2489,11 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				}
 				else {	/* Regular surface */
 #ifdef _OPENMP
-#pragma omp parallel for private(row,V,ij,col,p,wp,r,part) shared(header,dimension,yp,nz_off,data,xp,nm,GMT,X,G,par,Lz,alpha,normalize,norm)
+#pragma omp parallel for private(row,V,ij,col,p,wp,r,part) shared(header,dimension,yp,z_layer,nz_off,data,xp,nm,GMT,X,G,par,Lz,alpha,normalize,norm)
 #endif
 					for (row = 0; row < header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
-						if (dimension > 1) V[GMT_Y] = yp[row];
+						if (dimension > 1)  V[GMT_Y] = yp[row];
+						if (dimension == 3) V[GMT_Z] = z_layer;
 						ij = (dimension > 1) ? gmt_M_ijp (header, row, 0) + nz_off : 0;
 						for (col = 0; col < header->n_columns; col++, ij++) {	/* This loop is always active for 1,2,3D */
 							if (dimension == 2 && gmt_M_is_fnan (data[ij])) continue;	/* Only do solution where mask is not NaN */
@@ -2509,7 +2510,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				}
 
 				if (write_3D_records) {	/* Must dump this slice of the 3-D cube as ASCII slices as a backwards compatibility option */
-					V[GMT_Z] = Cube->z[layer];
+					V[GMT_Z] = z_layer;
 					for (row = 0; row < header->n_rows; row++) {
 						V[GMT_Y] = yp[row];
 						for (col = 0; col < header->n_columns; col++) {
