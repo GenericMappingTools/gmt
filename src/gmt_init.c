@@ -2988,6 +2988,8 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 				sscanf (value, "%lg %lg", &GMT->current.plot.gridline_spacing[GMT_X], &GMT->current.plot.gridline_spacing[GMT_Y]);
 			else if (option[1] == 'L')	/* Read PS layer */
 				GMT->current.ps.layer = atoi (value);
+			else if (option[1] == 'S')	/* Read next sequential color ID */
+				GMT->current.plot.color_seq_id = atoi (value);
 			continue;
 		}
 		if ((id = gmt_hash_lookup (GMT, option, unique_hashnode, GMT_N_UNIQUE, GMT_N_UNIQUE)) < 0) continue;	/* Quietly skip malformed lines */
@@ -3066,6 +3068,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	if (GMT->current.plot.gridline_spacing[GMT_X] > 0.0 || GMT->current.plot.gridline_spacing[GMT_Y] > 0.0)	/* Save gridline spacing in history */
 		fprintf (fp, "@G\t%g %g\n", GMT->current.plot.gridline_spacing[GMT_X], GMT->current.plot.gridline_spacing[GMT_Y]);
 	if (GMT->current.ps.layer) fprintf (fp, "@L\t%d\n", GMT->current.ps.layer); /* Write PS layer, if non-zero */
+	if (GMT->current.plot.color_seq_id) fprintf (fp, "@S\t%d\n", GMT->current.plot.color_seq_id); /* Write next sequential color, if non-zero */
 	fprintf (fp, "END\n");
 
 	/* Close the file */

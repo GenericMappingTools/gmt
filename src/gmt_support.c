@@ -17361,6 +17361,12 @@ unsigned int gmt_get_columbar_bands (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S)
 	return (n_z);
 }
 
+void gmt_set_next_color (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double rgb[]) {
+	/* Cycle through the colors in P and increment sequential ID and only update r,g,b but not alpha */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Current sequential color pick ID = %u.\n", GMT->current.plot.color_seq_id);
+	gmt_M_rgb_only_copy (rgb, P->data[GMT->current.plot.color_seq_id].rgb_low);
+	GMT->current.plot.color_seq_id = (GMT->current.plot.color_seq_id + 1) % P->n_colors;
+}
 
 #if 0	/* Probably not needed after all */
 char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {

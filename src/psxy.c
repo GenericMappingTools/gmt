@@ -944,7 +944,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	bool default_outline, outline_active, geovector = false, save_W = false, save_G = false, QR_symbol = false;
 	unsigned int n_needed, n_cols_start = 2, justify, tbl, grid_order, frame_order;
 	unsigned int n_total_read = 0, j, geometry, icol = 0, tcol_f = 0, tcol_s = 0, n_z = 0, k, kk;
-	unsigned int bcol, ex1, ex2, ex3, change = 0, pos2x, pos2y, save_u = false, seq_id = 0, seq_wrap;
+	unsigned int bcol, ex1, ex2, ex3, change = 0, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
 	int error = GMT_NOERROR, outline_setting;
 
@@ -957,7 +957,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	struct GMT_PEN current_pen, default_pen, save_pen, last_headpen, last_spiderpen;
 	struct GMT_FILL current_fill, default_fill, black, no_fill, save_fill;
 	struct GMT_SYMBOL S;
-	struct GMT_PALETTE *P = NULL, *A = NULL;
+	struct GMT_PALETTE *P = NULL;
 	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GMT_DATASET *Decorate = NULL, *Zin = NULL;
 	struct GMT_DATASEGMENT *L = NULL;
@@ -1015,12 +1015,6 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			xy_errors[GMT_Y] = 3;
 			error_type[GMT_X] = error_type[GMT_Y] = EBAR_NORMAL;
 		}
-	}
-	if (Ctrl->G.sequential || Ctrl->W.sequential) {	/* Load in the color-list as a categorical CPT */
-		if ((A = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, GMT->current.setting.color_set, NULL)) == NULL) {
-			Return (API->error);
-		}
-		seq_wrap = A->n_colors;
 	}
 	if (Ctrl->C.active) {
 		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
@@ -2062,6 +2056,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		uint64_t seg, seg_out = 0, n_new, n_cols = 2;
 		bool duplicate, resampled;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
+		struct GMT_PALETTE *A = NULL;
 		struct GMT_DATASET_HIDDEN *DH = NULL;
 		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
@@ -2118,6 +2113,12 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			Return (GMT_DIM_TOO_SMALL);
 		}
 
+		if (Ctrl->G.sequential || Ctrl->W.sequential) {	/* Load in the color-list as a categorical CPT */
+			if ((A = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, GMT->current.setting.color_set, NULL)) == NULL) {
+				Return (API->error);
+			}
+		}
+
 		if (Zin) {	/* Check that the Z file matches our polygon file */
 			if (Zin->n_records < D->n_segments) {
 				GMT_Report (API, GMT_MSG_ERROR, "Number of Z values is less then number of polygons\n");
@@ -2165,28 +2166,24 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				gmt_extract_label (GMT, D->table[tbl]->header[0], S.G.label, NULL);
 
 			if (Ctrl->G.sequential == GMT_COLOR_AUTO_TABLE) {	/* Update sequential fill color per table */
-				gmt_M_rgb_only_copy (current_fill.rgb, A->data[seq_id].rgb_low);
+				gmt_set_next_color (GMT, A, current_fill.rgb);
 				gmt_setfill (GMT, &current_fill, outline_setting);
-				seq_id = (seq_id + 1) % seq_wrap;
 			}
-			else if (Ctrl->W.sequential == GMT_COLOR_AUTO_TABLE) {	/* Update sequential pen olor per table */
-				gmt_M_rgb_only_copy (current_pen.rgb, A->data[seq_id].rgb_low);
+			else if (Ctrl->W.sequential == GMT_COLOR_AUTO_TABLE) {	/* Update sequential pen color per table */
+				gmt_set_next_color (GMT, A, current_pen.rgb);
 				gmt_setpen (GMT, &current_pen);
-				seq_id = (seq_id + 1) % seq_wrap;
 			}
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++, seg_out++) {	/* For each segment in the table */
 
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 
-				if (Ctrl->G.sequential == GMT_COLOR_AUTO_SEGMENT) {	/* Update sequential fill color per table */
-					gmt_M_rgb_only_copy (current_fill.rgb, A->data[seq_id].rgb_low);
+				if (Ctrl->G.sequential == GMT_COLOR_AUTO_SEGMENT) {	/* Update sequential fill color per segment */
+					gmt_set_next_color (GMT, A, current_fill.rgb);
 					gmt_setfill (GMT, &current_fill, outline_setting);
-					seq_id = (seq_id + 1) % seq_wrap;
 				}
-				else if (Ctrl->W.sequential == GMT_COLOR_AUTO_SEGMENT) {	/* Update sequential color per segment */
-					gmt_M_rgb_only_copy (current_pen.rgb, A->data[seq_id].rgb_low);
+				else if (Ctrl->W.sequential == GMT_COLOR_AUTO_SEGMENT) {	/* Update sequential pen color per segment */
+					gmt_set_next_color (GMT, A, current_pen.rgb);
 					gmt_setpen (GMT, &current_pen);
-					seq_id = (seq_id + 1) % seq_wrap;
 				}
 
 				if (gmt_segment_BB_outside_map_BB (GMT, L)) continue;

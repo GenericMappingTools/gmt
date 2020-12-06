@@ -52,6 +52,7 @@ struct PSXYZ_CTRL {
 	struct PSXYZ_G {	/* -G<fill>|+z */
 		bool active;
 		bool set_color;
+		int sequential;
 		struct GMT_FILL fill;
 	} G;
 	struct PSXYZ_I {	/* -I[<intensity>] */
@@ -86,6 +87,7 @@ struct PSXYZ_CTRL {
 		bool active;
 		bool cpt_effect;
 		bool set_color;
+		int sequential;
 		struct GMT_PEN pen;
 	} W;
 	struct PSXYZ_Z {	/* -Z<value> */
@@ -380,6 +382,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
 				}
+				if (Ctrl->G.fill.rgb[0] <= GMT_COLOR_AUTO_SEGMENT) Ctrl->G.sequential = irint (Ctrl->G.fill.rgb[0]);
 				break;
 			case 'I':	/* Adjust symbol color via intensity */
 				Ctrl->I.active = true;
@@ -464,6 +467,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 				}
 				if (Ctrl->W.pen.cptmode) Ctrl->W.cpt_effect = true;
 				if (c) c[0] = '+';	/* Restore */
+				if (Ctrl->W.pen.rgb[0] <= GMT_COLOR_AUTO_SEGMENT) Ctrl->W.sequential = irint (Ctrl->W.pen.rgb[0]);
 				break;
 
 			case 'Z':		/* Get value for CPT lookup */
@@ -634,11 +638,9 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	bool polygon, penset_OK = true, not_line, old_is_world;
 	bool get_rgb = false, read_symbol, clip_set = false, fill_active, rgb_from_z = false, QR_symbol = false;
 	bool default_outline, outline_active, save_u = false, geovector = false, can_update_headpen = true;
-	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol = 0, tcol_f = 0, tcol_s = 0, grid_order, frame_order;
-	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
-	unsigned int bcol, ex1, ex2, ex3, change = 0, n_needed, n_z = 0;
+	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol = 0, tcol_f = 0, tcol_s = 0, grid_order, frame_order, n_z = 0;
+	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0, bcol, ex1, ex2, ex3, change = 0, n_needed;
 	int error = GMT_NOERROR;
-
 	uint64_t i, n, n_total_read = 0;
 	size_t n_alloc = 0;
 
@@ -1775,6 +1777,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		bool duplicate = false;
 		int outline_setting;
 		uint64_t seg;
+		struct GMT_PALETTE *A = NULL;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT segment table(s) */
 		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 		struct GMT_DATASET_HIDDEN *DH = NULL;
@@ -1790,6 +1793,12 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		DH = gmt_get_DD_hidden (D);
+
+		if (Ctrl->G.sequential || Ctrl->W.sequential) {	/* Load in the color-list as a categorical CPT */
+			if ((A = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, GMT->current.setting.color_set, NULL)) == NULL) {
+				Return (API->error);
+			}
+		}
 
 		if (Zin) {	/* Check that the Z file matches our polygon file */
 			if (Zin->n_records < D->n_segments) {
@@ -1825,9 +1834,27 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER) gmt_extract_label (GMT, &D->table[tbl]->header[0][1], S.G.label, NULL);	/* Set first header as potential label */
 
+			if (Ctrl->G.sequential == GMT_COLOR_AUTO_TABLE) {	/* Update sequential fill color per table */
+				gmt_set_next_color (GMT, A, current_fill.rgb);
+				gmt_setfill (GMT, &current_fill, outline_setting);
+			}
+			else if (Ctrl->W.sequential == GMT_COLOR_AUTO_TABLE) {	/* Update sequential pen color per table */
+				gmt_set_next_color (GMT, A, current_pen.rgb);
+				gmt_setpen (GMT, &current_pen);
+			}
+
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
+
+				if (Ctrl->G.sequential == GMT_COLOR_AUTO_SEGMENT) {	/* Update sequential fill color per segment */
+					gmt_set_next_color (GMT, A, current_fill.rgb);
+					gmt_setfill (GMT, &current_fill, outline_setting);
+				}
+				else if (Ctrl->W.sequential == GMT_COLOR_AUTO_SEGMENT) {	/* Update sequential pen color per segment */
+					gmt_set_next_color (GMT, A, current_pen.rgb);
+					gmt_setpen (GMT, &current_pen);
+				}
 
 				if (gmt_segment_BB_outside_map_BB (GMT, L)) continue;
 				if (polygon && gmt_polygon_is_hole (GMT, L)) continue;	/* Holes are handled together with perimeters */
