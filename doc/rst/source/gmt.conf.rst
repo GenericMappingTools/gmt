@@ -90,7 +90,8 @@ COLOR Parameters
         Color used for the non-defined areas of images (i.e., where z = NaN) [127.5].
 
     **COLOR_SET**
-        Default comma-separated list of colors (or a CPT name) for automatic, sequential color assignments [categorical].
+        Default comma-separated list of colors (or a *categorical* CPT name) for automatic,
+        sequential color assignments [categorical].
 
 .. _DIR Parameters:
 
