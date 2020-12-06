@@ -64,6 +64,7 @@ struct PSXY_CTRL {
 	struct PSXY_G {	/* -G<fill>|+z */
 		bool active;
 		bool set_color;
+		int sequential;
 		struct GMT_FILL fill;
 	} G;
 	struct PSXY_I {	/* -I[<intensity>] */
@@ -95,7 +96,7 @@ struct PSXY_CTRL {
 		bool active;
 		bool cpt_effect;
 		bool set_color;
-		unsigned int sequential;
+		int sequential;
 		struct GMT_PEN pen;
 	} W;
 	struct PSXY_Z {	/* -Z<value> */
@@ -793,6 +794,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				else if (!opt->arg[0] || gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', NULL, " "); n_errors++;
 				}
+				if (Ctrl->G.fill.rgb[0] <= GMT_COLOR_AUTO_SEGMENT) Ctrl->G.sequential = irint (Ctrl->G.fill.rgb[0]);
 				break;
 			case 'I':	/* Adjust symbol color via intensity */
 				Ctrl->I.active = true;
@@ -876,7 +878,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				}
 				if (Ctrl->W.pen.cptmode) Ctrl->W.cpt_effect = true;
 				if (c) c[0] = '+';	/* Restore */
-				if (Ctrl->W.pen.rgb[0] <= GMT_COLOR_AUTO_SEGMENT) Ctrl->W.sequential = urint (Ctrl->W.pen.rgb[0]);
+				if (Ctrl->W.pen.rgb[0] <= GMT_COLOR_AUTO_SEGMENT) Ctrl->W.sequential = irint (Ctrl->W.pen.rgb[0]);
 				break;
 
 			case 'Z':		/* Get value for CPT lookup */
@@ -1014,7 +1016,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			error_type[GMT_X] = error_type[GMT_Y] = EBAR_NORMAL;
 		}
 	}
-	if (Ctrl->W.sequential) {	/* Load in the color-list as a categorical CPT */
+	if (Ctrl->G.sequential || Ctrl->W.sequential) {	/* Load in the color-list as a categorical CPT */
 		if ((A = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, GMT->current.setting.color_set, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -2162,7 +2164,12 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from first header */
 				gmt_extract_label (GMT, D->table[tbl]->header[0], S.G.label, NULL);
 
-			if (Ctrl->W.sequential == GMT_COLOR_AUTO_TABLE) {	/* Update sequential color per table */
+			if (Ctrl->G.sequential == GMT_COLOR_AUTO_TABLE) {	/* Update sequential fill color per table */
+				gmt_M_rgb_copy (current_fill.rgb, A->data[seq_id].rgb_low);
+				gmt_setfill (GMT, &current_fill, outline_setting);
+				seq_id = (seq_id + 1) % seq_wrap;
+			}
+			else if (Ctrl->W.sequential == GMT_COLOR_AUTO_TABLE) {	/* Update sequential pen olor per table */
 				gmt_M_rgb_copy (current_pen.rgb, A->data[seq_id].rgb_low);
 				gmt_setpen (GMT, &current_pen);
 				seq_id = (seq_id + 1) % seq_wrap;
@@ -2171,7 +2178,12 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 
-				if (Ctrl->W.sequential == GMT_COLOR_AUTO_SEGMENT) {	/* Update sequential color per segment */
+				if (Ctrl->G.sequential == GMT_COLOR_AUTO_SEGMENT) {	/* Update sequential fill color per table */
+					gmt_M_rgb_copy (current_fill.rgb, A->data[seq_id].rgb_low);
+					gmt_setfill (GMT, &current_fill, outline_setting);
+					seq_id = (seq_id + 1) % seq_wrap;
+				}
+				else if (Ctrl->W.sequential == GMT_COLOR_AUTO_SEGMENT) {	/* Update sequential color per segment */
 					gmt_M_rgb_copy (current_pen.rgb, A->data[seq_id].rgb_low);
 					gmt_setpen (GMT, &current_pen);
 					seq_id = (seq_id + 1) % seq_wrap;
