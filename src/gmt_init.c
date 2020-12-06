@@ -3593,10 +3593,6 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 	if (A->type == GMT_TIME) {	/* Strict check on time intervals */
 		if (gmtlib_verify_time_step (GMT, irint (val), unit))
 			return GMT_PARSE_ERROR;
-		if ((fmod (val, 1.0) > GMT_CONV8_LIMIT)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time step interval (%g) must be an integer\n", val);
-			return GMT_NOT_A_VALID_TYPE;
-		}
 	}
 
 	switch (unit) {	/* Determine if we have intervals or moments */
