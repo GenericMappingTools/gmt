@@ -241,6 +241,8 @@ enum GMT_enum_basemap {
 #define GMT_CPT_U_ANNOT		2	/* Annotate upper slice boundary */
 #define GMT_CPT_CATEGORICAL_VAL		1	/* Categorical CPT with numerical value */
 #define GMT_CPT_CATEGORICAL_KEY		2	/* Categorical CPT with text key */
+#define GMT_COLOR_AUTO_SEGMENT		-5	/* Flag in rgb for auto-color changing per segment */
+#define GMT_COLOR_AUTO_TABLE		-6	/* Flag in rgb for auto-color changing per table */
 
 /* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"

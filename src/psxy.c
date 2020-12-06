@@ -95,6 +95,7 @@ struct PSXY_CTRL {
 		bool active;
 		bool cpt_effect;
 		bool set_color;
+		unsigned int sequential;
 		struct GMT_PEN pen;
 	} W;
 	struct PSXY_Z {	/* -Z<value> */
@@ -875,6 +876,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				}
 				if (Ctrl->W.pen.cptmode) Ctrl->W.cpt_effect = true;
 				if (c) c[0] = '+';	/* Restore */
+				if (Ctrl->W.pen.rgb[0] <= GMT_COLOR_AUTO_SEGMENT) Ctrl->W.sequential = urint (Ctrl->W.pen.rgb[0]);
 				break;
 
 			case 'Z':		/* Get value for CPT lookup */
@@ -940,7 +942,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	bool default_outline, outline_active, geovector = false, save_W = false, save_G = false, QR_symbol = false;
 	unsigned int n_needed, n_cols_start = 2, justify, tbl, grid_order, frame_order;
 	unsigned int n_total_read = 0, j, geometry, icol = 0, tcol_f = 0, tcol_s = 0, n_z = 0, k, kk;
-	unsigned int bcol, ex1, ex2, ex3, change = 0, pos2x, pos2y, save_u = false;
+	unsigned int bcol, ex1, ex2, ex3, change = 0, pos2x, pos2y, save_u = false, seq_id = 0, seq_wrap;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
 	int error = GMT_NOERROR, outline_setting;
 
@@ -953,7 +955,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	struct GMT_PEN current_pen, default_pen, save_pen, last_headpen, last_spiderpen;
 	struct GMT_FILL current_fill, default_fill, black, no_fill, save_fill;
 	struct GMT_SYMBOL S;
-	struct GMT_PALETTE *P = NULL;
+	struct GMT_PALETTE *P = NULL, *A = NULL;
 	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GMT_DATASET *Decorate = NULL, *Zin = NULL;
 	struct GMT_DATASEGMENT *L = NULL;
@@ -1012,7 +1014,12 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			error_type[GMT_X] = error_type[GMT_Y] = EBAR_NORMAL;
 		}
 	}
-
+	if (Ctrl->W.sequential) {	/* Load in the color-list as a categorical CPT */
+		if ((A = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, GMT->current.setting.color_set, NULL)) == NULL) {
+			Return (API->error);
+		}
+		seq_wrap = A->n_colors;
+	}
 	if (Ctrl->C.active) {
 		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
@@ -2155,9 +2162,20 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from first header */
 				gmt_extract_label (GMT, D->table[tbl]->header[0], S.G.label, NULL);
 
+			if (Ctrl->W.sequential == GMT_COLOR_AUTO_TABLE) {	/* Update sequential color per table */
+				gmt_M_rgb_copy (current_pen.rgb, A->data[seq_id].rgb_low);
+				gmt_setpen (GMT, &current_pen);
+				seq_id = (seq_id + 1) % seq_wrap;
+			}
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++, seg_out++) {	/* For each segment in the table */
 
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
+
+				if (Ctrl->W.sequential == GMT_COLOR_AUTO_SEGMENT) {	/* Update sequential color per segment */
+					gmt_M_rgb_copy (current_pen.rgb, A->data[seq_id].rgb_low);
+					gmt_setpen (GMT, &current_pen);
+					seq_id = (seq_id + 1) % seq_wrap;
+				}
 
 				if (gmt_segment_BB_outside_map_BB (GMT, L)) continue;
 				if (polygon && gmt_polygon_is_hole (GMT, L)) continue;	/* Holes are handled together with perimeters */

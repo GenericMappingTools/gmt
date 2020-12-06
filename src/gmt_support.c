@@ -6365,13 +6365,22 @@ bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[]) {
 	if (!line) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No argument given to gmt_getrgb\n");
 		GMT->parent->error = GMT_PARSE_ERROR;
-		return false;
+		return true;
 	}
 	if (!line[0]) return (false);	/* Nothing to do - accept default action */
 
+	if (strstr (line, "auto")) {	/* Will select sequential colors from a list - flag via -5 */
+		/* Let auto[-segment] be GMT_COLOR_AUTO_SEGMENT and auto-table be GMT_COLOR_AUTO_TABLE */
+		if (strstr (line, "table"))
+			rgb[0] = rgb[1] = rgb[2] = GMT_COLOR_AUTO_TABLE;
+		else
+			rgb[0] = rgb[1] = rgb[2] = GMT_COLOR_AUTO_SEGMENT;
+		return (false);
+	}
+
 	rgb[3] = hsv[3] = cmyk[4] = 0.0;	/* Default is no transparency */
 	if (line[0] == '-') {
-		rgb[0] = -1.0; rgb[1] = -1.0; rgb[2] = -1.0;
+		rgb[0] = rgb[1] = rgb[2] = -1.0;
 		return (false);
 	}
 
