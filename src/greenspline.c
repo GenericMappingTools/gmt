@@ -1231,7 +1231,7 @@ GMT_LOCAL double greenspline_grad_spline3d_Mitasova_Mitas (struct GMT_CTRL *GMT,
  * coeff[GSP_RANGE]:	The largest |range| of the detrended data
  */
 
-GMT_LOCAL double greenspline_ungreenspline_do_normalization (double *X, double w_norm, unsigned int mode, double *coeff, unsigned int dim) {
+GMT_LOCAL double greenspline_undo_normalization (double *X, double w_norm, unsigned int mode, double *coeff, unsigned int dim) {
 	if (mode & GREENSPLINE_NORM) w_norm *= coeff[GSP_RANGE];	/* Scale back up by residual data range (ir we normalized) */
 	w_norm += coeff[GSP_MEAN_Z];					/* Add in mean data value plus minimum residual value (ir we normalized by range) */
 	if (mode & GREENSPLINE_TREND) {					/* Restore residual trend */
@@ -1241,7 +1241,7 @@ GMT_LOCAL double greenspline_ungreenspline_do_normalization (double *X, double w
 	return (w_norm);
 }
 
-GMT_LOCAL void greenspline_greenspline_do_normalization_1d (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, unsigned int mode, double *coeff) {
+GMT_LOCAL void greenspline_do_normalization_1d (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, unsigned int mode, double *coeff) {
 	/* We always remove/restore the mean observation value.  mode is a combination of bitflags that affects what we do:
 	 * Bit GREENSPLINE_TREND will also remove linear trend
 	 * Bit GREENSPLINE_NORM will normalize residuals by range
@@ -1303,7 +1303,7 @@ GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X
 	else
 		GMT_Report (API, GMT_MSG_INFORMATION, "Normalization mode: %s\n", type[mode]);
 	if (dim == 1) {	/* 1-D trend or mean only */
-		greenspline_greenspline_do_normalization_1d (API, X, obs, n, mode, coeff);
+		greenspline_do_normalization_1d (API, X, obs, n, mode, coeff);
 		return;
 	}
 	gmt_M_memset (coeff, GSP_LENGTH, double);
@@ -2270,7 +2270,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		predicted = gmt_M_memory (GMT, NULL, nm, double);	/* To hold predictions */
 		gmt_matrix_matrix_mult (GMT, A_orig, alpha, nm, nm, 1U, predicted);	/* predicted = A * alpha are normalized predictions at data points */
 		for (j = 0; j < nm; j++) {	/* For each data constraint */
-			predicted[j] = greenspline_ungreenspline_do_normalization (X[j], predicted[j], normalize, norm, dimension);	/* undo normalization first */
+			predicted[j] = greenspline_undo_normalization (X[j], predicted[j], normalize, norm, dimension);	/* undo normalization first */
 			pvar_sum += predicted[j] * predicted[j];	/* Sum of predicted variance */
 			dev = orig_obs[j] - predicted[j];	/* Deviation between observed and predicted */
 			rms += dev * dev;	/* Accumulate rms sum */
@@ -2365,7 +2365,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 						part = G (GMT, r, par, Lz);
 					out[dimension] += alpha[p] * part;
 				}
-				out[dimension] = greenspline_ungreenspline_do_normalization (out, out[dimension], normalize, norm, dimension);
+				out[dimension] = greenspline_undo_normalization (out, out[dimension], normalize, norm, dimension);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Rec);
 			}
 		}
@@ -2441,7 +2441,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 								part = G (GMT, r, par, Lz);
 							wp += alpha[p] * part;
 						}
-						V[GMT_Z] = greenspline_ungreenspline_do_normalization (V, wp, normalize, norm, 2U);
+						V[GMT_Z] = greenspline_undo_normalization (V, wp, normalize, norm, 2U);
 						Out->data[ij] = (gmt_grdfloat)V[GMT_Z];
 					}
 				}
@@ -2469,7 +2469,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				if (dimension == 3) V[GMT_Z] = z_level;
 				if (Ctrl->Q.active) {	/* Derivatives of solution */
 #ifdef _OPENMP
-#pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(dimension,yp,header,xp,X,Ctrl,GMT,alpha,Lz,norm,data,par,nz_off,z_level,nm,normalize)
+#pragma omp parallel for private(row,V,ij,col,p,wp,r,C,part) shared(header,dimension,yp,nz_off,data,xp,nm,GMT,X,Ctrl,dGdr,par,Lz,alpha,normalize,norm)
 #endif
 					for (row = 0; row < header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
 						if (dimension > 1) V[GMT_Y] = yp[row];
@@ -2484,13 +2484,13 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 								part = dGdr (GMT, r, par, Lz) * C;
 								wp += alpha[p] * part;
 							}
-							data[ij] = (gmt_grdfloat)greenspline_ungreenspline_do_normalization (V, wp, normalize, norm, dimension);
+							data[ij] = (gmt_grdfloat)greenspline_undo_normalization (V, wp, normalize, norm, dimension);
 						}
 					}	/* End of row-loop [OpenMP] */
 				}
 				else {	/* Regular surface */
 #ifdef _OPENMP
-#pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(dimension,yp,header,xp,X,Ctrl,GMT,alpha,Lz,norm,data,par,nz_off,z_level,nm,normalize)
+#pragma omp parallel for private(row,V,ij,col,p,wp,r,part) shared(header,dimension,yp,nz_off,data,xp,nm,GMT,X,G,par,Lz,alpha,normalize,norm)
 #endif
 					for (row = 0; row < header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
 						if (dimension > 1) V[GMT_Y] = yp[row];
@@ -2504,7 +2504,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 								part = G (GMT, r, par, Lz);
 								wp += alpha[p] * part;
 							}
-							data[ij] = (gmt_grdfloat)greenspline_ungreenspline_do_normalization (V, wp, normalize, norm, dimension);
+							data[ij] = (gmt_grdfloat)greenspline_undo_normalization (V, wp, normalize, norm, dimension);
 						}
 					}	/* End of row-loop [OpenMP] */
 				}
