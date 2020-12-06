@@ -2165,12 +2165,12 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				gmt_extract_label (GMT, D->table[tbl]->header[0], S.G.label, NULL);
 
 			if (Ctrl->G.sequential == GMT_COLOR_AUTO_TABLE) {	/* Update sequential fill color per table */
-				gmt_M_rgb_copy (current_fill.rgb, A->data[seq_id].rgb_low);
+				gmt_M_rgb_only_copy (current_fill.rgb, A->data[seq_id].rgb_low);
 				gmt_setfill (GMT, &current_fill, outline_setting);
 				seq_id = (seq_id + 1) % seq_wrap;
 			}
 			else if (Ctrl->W.sequential == GMT_COLOR_AUTO_TABLE) {	/* Update sequential pen olor per table */
-				gmt_M_rgb_copy (current_pen.rgb, A->data[seq_id].rgb_low);
+				gmt_M_rgb_only_copy (current_pen.rgb, A->data[seq_id].rgb_low);
 				gmt_setpen (GMT, &current_pen);
 				seq_id = (seq_id + 1) % seq_wrap;
 			}
@@ -2179,12 +2179,12 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 
 				if (Ctrl->G.sequential == GMT_COLOR_AUTO_SEGMENT) {	/* Update sequential fill color per table */
-					gmt_M_rgb_copy (current_fill.rgb, A->data[seq_id].rgb_low);
+					gmt_M_rgb_only_copy (current_fill.rgb, A->data[seq_id].rgb_low);
 					gmt_setfill (GMT, &current_fill, outline_setting);
 					seq_id = (seq_id + 1) % seq_wrap;
 				}
 				else if (Ctrl->W.sequential == GMT_COLOR_AUTO_SEGMENT) {	/* Update sequential color per segment */
-					gmt_M_rgb_copy (current_pen.rgb, A->data[seq_id].rgb_low);
+					gmt_M_rgb_only_copy (current_pen.rgb, A->data[seq_id].rgb_low);
 					gmt_setpen (GMT, &current_pen);
 					seq_id = (seq_id + 1) % seq_wrap;
 				}

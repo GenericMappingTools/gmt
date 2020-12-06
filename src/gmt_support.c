@@ -6369,20 +6369,7 @@ bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[]) {
 	}
 	if (!line[0]) return (false);	/* Nothing to do - accept default action */
 
-	if (strstr (line, "auto")) {	/* Will select sequential colors from a list - flag via -5 */
-		/* Let auto[-segment] be GMT_COLOR_AUTO_SEGMENT and auto-table be GMT_COLOR_AUTO_TABLE */
-		if (strstr (line, "table"))
-			rgb[0] = rgb[1] = rgb[2] = GMT_COLOR_AUTO_TABLE;
-		else
-			rgb[0] = rgb[1] = rgb[2] = GMT_COLOR_AUTO_SEGMENT;
-		return (false);
-	}
-
 	rgb[3] = hsv[3] = cmyk[4] = 0.0;	/* Default is no transparency */
-	if (line[0] == '-') {
-		rgb[0] = rgb[1] = rgb[2] = -1.0;
-		return (false);
-	}
 
 	strncpy (buffer, line, GMT_LEN64-1);	/* Make local copy */
 	if ((t = strstr (buffer, "@")) && strlen (t) > 1) {	/* User requested transparency via @<transparency> */
@@ -6393,6 +6380,21 @@ bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[]) {
 			rgb[3] = hsv[3] = cmyk[4] = transparency / 100.0;	/* Transparency is in 0-1 range */
 		t[0] = '\0';	/* Chop off transparency for the rest of this function */
 	}
+
+	if (strstr (buffer, "auto")) {	/* Will select sequential colors from a list - flag via -5 */
+		/* Let auto[-segment] be GMT_COLOR_AUTO_SEGMENT and auto-table be GMT_COLOR_AUTO_TABLE */
+		if (strstr (buffer, "table"))
+			rgb[0] = rgb[1] = rgb[2] = GMT_COLOR_AUTO_TABLE;
+		else
+			rgb[0] = rgb[1] = rgb[2] = GMT_COLOR_AUTO_SEGMENT;
+		return (false);
+	}
+
+	if (buffer[0] == '-') {
+		rgb[0] = rgb[1] = rgb[2] = -1.0;
+		return (false);
+	}
+
 	if (buffer[0] == '#') {	/* #rrggbb */
 		n = sscanf (buffer, "#%2x%2x%2x", (unsigned int *)&irgb[0], (unsigned int *)&irgb[1], (unsigned int *)&irgb[2]);
 		return (n != 3 || gmtsupport_check_irgb (irgb, rgb));
