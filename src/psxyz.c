@@ -1798,6 +1798,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			if ((A = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, GMT->current.setting.color_set, NULL)) == NULL) {
 				Return (API->error);
 			}
+			gmt_init_next_color (GMT);
 			if (GMT->common.l.active) {	/* Want auto legend for all the lines or polygons */
 				seq_legend = true;
 				seq_n_legends = A->n_colors;

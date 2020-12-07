@@ -17361,6 +17361,19 @@ unsigned int gmt_get_columbar_bands (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S)
 	return (n_z);
 }
 
+void gmt_init_next_color (struct GMT_CTRL *GMT) {
+	/*  Reset the sequential color IDs if starting a new plot or we detect overlay shift via -X -Y */
+	bool reset = false;
+	if (!GMT->common.O.active)	/* Start of a new plot means reset counters read from history to 0 0 */
+		reset = true;
+	else if (fabs (GMT->common.X.off) > 0.0 || fabs (GMT->common.Y.off) > 0.0)	/* Overlay but we are moving focus */
+		reset = true;
+	if (reset) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reset sequential color pick IDs to 0,0\n");
+		GMT->current.plot.color_seq_id[0] = GMT->current.plot.color_seq_id[1] = 0;
+	}
+}
+
 void gmt_set_next_color (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned int type, double rgb[]) {
 	/* Cycle through the colors in P and increment sequential ID and only update r,g,b but not alpha */
 	static char *kind[2] = {"table", "segment"};

@@ -989,7 +989,7 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 	int i = 0;
 	if (!text || !text[0]) {	/* Default is -Xr0 */
 		GMT->current.ps.origin[GMT_X] = GMT->common.X.mode = 'r';
-		GMT->current.setting.map_origin[GMT_X] = 0.0;
+		GMT->common.X.off = GMT->current.setting.map_origin[GMT_X] = 0.0;
 		return (GMT_NOERROR);
 	}
 	switch (text[0]) {
@@ -1021,6 +1021,7 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 	}
 	else	/* Allow use of -Xc or -Xf meaning -Xc0 or -Xf0 */
 		GMT->current.setting.map_origin[GMT_X] = 0.0;
+	GMT->common.X.off = GMT->current.setting.map_origin[GMT_X];
 	return (GMT_NOERROR);
 }
 
@@ -1031,7 +1032,7 @@ GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
 	int i = 0;
 	if (!text || !text[0]) {	/* Default is -Yr0 */
 		GMT->current.ps.origin[GMT_Y] = GMT->common.Y.mode = 'r';
-		GMT->current.setting.map_origin[GMT_Y] = 0.0;
+		GMT->common.Y.off = GMT->current.setting.map_origin[GMT_Y] = 0.0;
 		return (GMT_NOERROR);
 	}
 	switch (text[0]) {
@@ -1063,6 +1064,7 @@ GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
 	}
 	else	/* Allow use of -Yc or -Yf meaning -Yc0 or -Yf0 */
 		GMT->current.setting.map_origin[GMT_Y] = 0.0;
+	GMT->common.Y.off = GMT->current.setting.map_origin[GMT_Y];
 	return (GMT_NOERROR);
 }
 
@@ -10253,6 +10255,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "COLOR_SET = %s exceeds max name length of %d\n", value, GMT_LEN256);
 				error = true;
 			}
+			else if (!strncmp (value, "default", 7U))	/* Reset to GMT defaults */
+				strncpy (GMT->current.setting.color_set, GMT_DEFAULT_COLOR_SET, GMT_LEN256-1);
 			else if (strchr (value, ',')) {	/* Gave comma-separated list of colors, check that they are all valid */
 				char *word = NULL, *trail = NULL, *orig = strdup (value);
 				trail = orig;
