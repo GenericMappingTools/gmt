@@ -91,7 +91,7 @@ COLOR Parameters
 
     **COLOR_SET**
         Default comma-separated list of colors (or a *categorical* CPT name) for automatic,
-        sequential color assignments [categorical].
+        sequential color assignments [#0072BD,#D95319,#EDB120,#7E2F8E,#77AC30,#4DBEEE,#A2142F].
 
 .. _DIR Parameters:
 

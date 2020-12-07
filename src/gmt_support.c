@@ -6381,12 +6381,12 @@ bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[]) {
 		t[0] = '\0';	/* Chop off transparency for the rest of this function */
 	}
 
-	if (strstr (buffer, "auto")) {	/* Will select sequential colors from a list - flag via -5 */
+	if (strstr (buffer, "auto")) {	/* Will select sequential colors from a list - flag via -5 or -6 */
 		/* Let auto[-segment] be GMT_COLOR_AUTO_SEGMENT and auto-table be GMT_COLOR_AUTO_TABLE */
 		if (strstr (buffer, "table"))
-			rgb[0] = rgb[1] = rgb[2] = GMT_COLOR_AUTO_TABLE;
+			rgb[0] = rgb[1] = rgb[2] = GMT_COLOR_AUTO_TABLE - 7;
 		else
-			rgb[0] = rgb[1] = rgb[2] = GMT_COLOR_AUTO_SEGMENT;
+			rgb[0] = rgb[1] = rgb[2] = GMT_COLOR_AUTO_SEGMENT - 7;
 		return (false);
 	}
 
@@ -17361,11 +17361,13 @@ unsigned int gmt_get_columbar_bands (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S)
 	return (n_z);
 }
 
-void gmt_set_next_color (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double rgb[]) {
+void gmt_set_next_color (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned int type, double rgb[]) {
 	/* Cycle through the colors in P and increment sequential ID and only update r,g,b but not alpha */
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Current sequential color pick ID = %u.\n", GMT->current.plot.color_seq_id);
-	gmt_M_rgb_only_copy (rgb, P->data[GMT->current.plot.color_seq_id].rgb_low);
-	GMT->current.plot.color_seq_id = (GMT->current.plot.color_seq_id + 1) % P->n_colors;
+	static char *kind[2] = {"table", "segment"};
+	type--;	/* So 1 and 2 becomes 0 and 1 for array indices */ 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Current %s sequential color pick ID = %u.\n", kind[type], GMT->current.plot.color_seq_id[type]);
+	gmt_M_rgb_only_copy (rgb, P->data[GMT->current.plot.color_seq_id[type]].rgb_low);
+	GMT->current.plot.color_seq_id[type] = (GMT->current.plot.color_seq_id[type] + 1) % P->n_colors;
 }
 
 #if 0	/* Probably not needed after all */

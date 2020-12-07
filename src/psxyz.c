@@ -52,7 +52,7 @@ struct PSXYZ_CTRL {
 	struct PSXYZ_G {	/* -G<fill>|+z */
 		bool active;
 		bool set_color;
-		int sequential;
+		unsigned int sequential;
 		struct GMT_FILL fill;
 	} G;
 	struct PSXYZ_I {	/* -I[<intensity>] */
@@ -87,7 +87,7 @@ struct PSXYZ_CTRL {
 		bool active;
 		bool cpt_effect;
 		bool set_color;
-		int sequential;
+		unsigned int sequential;
 		struct GMT_PEN pen;
 	} W;
 	struct PSXYZ_Z {	/* -Z<value> */
@@ -382,7 +382,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
 				}
-				if (Ctrl->G.fill.rgb[0] <= GMT_COLOR_AUTO_SEGMENT) Ctrl->G.sequential = irint (Ctrl->G.fill.rgb[0]);
+				if (Ctrl->G.fill.rgb[0] < -4.0) Ctrl->G.sequential = irint (Ctrl->G.fill.rgb[0] + 7.0);
 				break;
 			case 'I':	/* Adjust symbol color via intensity */
 				Ctrl->I.active = true;
@@ -467,7 +467,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 				}
 				if (Ctrl->W.pen.cptmode) Ctrl->W.cpt_effect = true;
 				if (c) c[0] = '+';	/* Restore */
-				if (Ctrl->W.pen.rgb[0] <= GMT_COLOR_AUTO_SEGMENT) Ctrl->W.sequential = irint (Ctrl->W.pen.rgb[0]);
+				if (Ctrl->W.pen.rgb[0] < -4.0) Ctrl->W.sequential = irint (Ctrl->W.pen.rgb[0] + 7.0);
 				break;
 
 			case 'Z':		/* Get value for CPT lookup */
@@ -1835,11 +1835,11 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER) gmt_extract_label (GMT, &D->table[tbl]->header[0][1], S.G.label, NULL);	/* Set first header as potential label */
 
 			if (Ctrl->G.sequential == GMT_COLOR_AUTO_TABLE) {	/* Update sequential fill color per table */
-				gmt_set_next_color (GMT, A, current_fill.rgb);
+				gmt_set_next_color (GMT, A, GMT_COLOR_AUTO_TABLE, current_fill.rgb);
 				gmt_setfill (GMT, &current_fill, outline_setting);
 			}
 			else if (Ctrl->W.sequential == GMT_COLOR_AUTO_TABLE) {	/* Update sequential pen color per table */
-				gmt_set_next_color (GMT, A, current_pen.rgb);
+				gmt_set_next_color (GMT, A, GMT_COLOR_AUTO_TABLE, current_pen.rgb);
 				gmt_setpen (GMT, &current_pen);
 			}
 
@@ -1848,11 +1848,11 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 
 				if (Ctrl->G.sequential == GMT_COLOR_AUTO_SEGMENT) {	/* Update sequential fill color per segment */
-					gmt_set_next_color (GMT, A, current_fill.rgb);
+					gmt_set_next_color (GMT, A, GMT_COLOR_AUTO_SEGMENT, current_fill.rgb);
 					gmt_setfill (GMT, &current_fill, outline_setting);
 				}
 				else if (Ctrl->W.sequential == GMT_COLOR_AUTO_SEGMENT) {	/* Update sequential pen color per segment */
-					gmt_set_next_color (GMT, A, current_pen.rgb);
+					gmt_set_next_color (GMT, A, GMT_COLOR_AUTO_SEGMENT, current_pen.rgb);
 					gmt_setpen (GMT, &current_pen);
 				}
 

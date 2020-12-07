@@ -2988,8 +2988,8 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 				sscanf (value, "%lg %lg", &GMT->current.plot.gridline_spacing[GMT_X], &GMT->current.plot.gridline_spacing[GMT_Y]);
 			else if (option[1] == 'L')	/* Read PS layer */
 				GMT->current.ps.layer = atoi (value);
-			else if (option[1] == 'S')	/* Read next sequential color ID */
-				GMT->current.plot.color_seq_id = atoi (value);
+			else if (option[1] == 'S')	/* Read next sequential color IDs */
+				sscanf (value, "%d %d", &GMT->current.plot.color_seq_id[0], &GMT->current.plot.color_seq_id[1]);
 			continue;
 		}
 		if ((id = gmt_hash_lookup (GMT, option, unique_hashnode, GMT_N_UNIQUE, GMT_N_UNIQUE)) < 0) continue;	/* Quietly skip malformed lines */
@@ -3068,7 +3068,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	if (GMT->current.plot.gridline_spacing[GMT_X] > 0.0 || GMT->current.plot.gridline_spacing[GMT_Y] > 0.0)	/* Save gridline spacing in history */
 		fprintf (fp, "@G\t%g %g\n", GMT->current.plot.gridline_spacing[GMT_X], GMT->current.plot.gridline_spacing[GMT_Y]);
 	if (GMT->current.ps.layer) fprintf (fp, "@L\t%d\n", GMT->current.ps.layer); /* Write PS layer, if non-zero */
-	if (GMT->current.plot.color_seq_id) fprintf (fp, "@S\t%d\n", GMT->current.plot.color_seq_id); /* Write next sequential color, if non-zero */
+	if (GMT->current.plot.color_seq_id[0] && GMT->current.plot.color_seq_id[1]) fprintf (fp, "@S\t%d %d\n", GMT->current.plot.color_seq_id[0], GMT->current.plot.color_seq_id[1]); /* Write next sequential color IDs, if non-zero */
 	fprintf (fp, "END\n");
 
 	/* Close the file */
@@ -12938,7 +12938,7 @@ int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, int row, int col, d
 	else
 		fprintf (fp, "%d %d %g %g %g %g %d %s\n", row, col, gap[XLO], gap[XHI], gap[YLO], gap[YHI], first, L);
 	fclose (fp);
-	if (first) API->GMT->current.plot.color_seq_id = 0;	/* Reset for new panel */
+	if (first) API->GMT->current.plot.color_seq_id[0] = API->GMT->current.plot.color_seq_id[1] = 0;	/* Reset for new panel */
 	API->error = GMT_NOERROR;
 	return GMT_NOERROR;
 }
@@ -14579,7 +14579,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	Ccopy->current.ps.layer = GMT->current.ps.layer;
 	Ccopy->current.ps.active = GMT->current.ps.active;
 	Ccopy->current.ps.initialize = GMT->current.ps.initialize;
-	Ccopy->current.plot.color_seq_id = GMT->current.plot.color_seq_id;
+	Ccopy->current.plot.color_seq_id[0] = GMT->current.plot.color_seq_id[0];
+	Ccopy->current.plot.color_seq_id[1] = GMT->current.plot.color_seq_id[1];
 
 	/* GMT_COMMON */
 
