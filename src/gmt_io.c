@@ -4018,8 +4018,11 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 	qstr = strchr (filename, '?');
 
 	/* In case there is a comma in the list of variables, or if the first variable is actually a group,
-	 * we re-read the variable list with comma separators */
-	if (pstr > qstr || nc_inq_grp_ncid (GMT->current.io.ncid, varnm[0], &id) == NC_NOERR) {
+	 * we re-read the variable list with comma separators.
+	 * When a group is missing, nc_iq_grp_ncid comes either back with error status, or with group id
+	 * identical to file id. Not clear why both can happen, but this check captures both. */
+	i = nc_inq_grp_ncid (GMT->current.io.ncid, varnm[0], &id);
+	if (pstr > qstr || (i == NC_NOERR && GMT->current.io.ncid != id)) {
 		nvars = sscanf (filename,
 			"%[^?]?%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,]",
 			file, varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9], varnm[10],
