@@ -365,7 +365,8 @@ enum GMT_enum_download {
 /*! Various mode for auto-legend pens */
 enum GMT_enum_autolegend {
 	GMT_LEGEND_PEN_D  = 0, GMT_LEGEND_PEN_V  = 1, GMT_LEGEND_PEN_P  = 2,
-	GMT_LEGEND_DRAW_D = 1, GMT_LEGEND_DRAW_V = 2};
+	GMT_LEGEND_DRAW_D = 1, GMT_LEGEND_DRAW_V = 2, GMT_LEGEND_LABEL_FIXED = 0,
+	GMT_LEGEND_LABEL_FORMAT = 1, GMT_LEGEND_LABEL_LIST = 2, GMT_LEGEND_LABEL_HEADER = 3};
 
 /*! Various mode for custom symbols */
 enum GMT_enum_customsymb {

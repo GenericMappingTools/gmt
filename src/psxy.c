@@ -939,14 +939,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psxy task */
 	bool polygon, penset_OK = true, not_line, old_is_world, rgb_from_z = false, decorate_custom = false;
-	bool get_rgb = false, clip_set = false, fill_active, may_intrude_inside = false;
+	bool get_rgb = false, clip_set = false, fill_active, may_intrude_inside = false, seq_legend = false;
 	bool error_x = false, error_y = false, def_err_xy = false, can_update_headpen = true;
 	bool default_outline, outline_active, geovector = false, save_W = false, save_G = false, QR_symbol = false;
 	unsigned int n_needed, n_cols_start = 2, justify, tbl, grid_order, frame_order;
 	unsigned int n_total_read = 0, j, geometry, icol = 0, tcol_f = 0, tcol_s = 0, n_z = 0, k, kk;
 	unsigned int bcol, ex1, ex2, ex3, change = 0, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
-	int error = GMT_NOERROR, outline_setting;
+	int error = GMT_NOERROR, outline_setting, seq_n_legends = 0, seq_frequency = 0;
 
 	char s_args[GMT_BUFSIZ] = {""};
 
@@ -2117,6 +2117,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			if ((A = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, GMT->current.setting.color_set, NULL)) == NULL) {
 				Return (API->error);
 			}
+			if (GMT->common.l.active) {	/* Want auto legend for all the lines or polygons */
+				seq_legend = true;
+				seq_n_legends = A->n_colors;
+				seq_frequency = MAX (Ctrl->G.sequential, Ctrl->W.sequential);
+			}
 		}
 
 		if (Zin) {	/* Check that the Z file matches our polygon file */
@@ -2144,7 +2149,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 		if (GMT->current.io.OGR && (GMT->current.io.OGR->geometry == GMT_IS_POLYGON || GMT->current.io.OGR->geometry == GMT_IS_MULTIPOLYGON)) polygon = true;
 
-		if (GMT->common.l.active) {
+		if (!seq_legend && GMT->common.l.active) {
 			if (S.symbol == GMT_SYMBOL_LINE) {
 				if (polygon) {	/* Place a rectangle in the legend */
 					int symbol = S.symbol;
@@ -2177,6 +2182,9 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 
+				if (gmt_segment_BB_outside_map_BB (GMT, L)) continue;
+				if (polygon && gmt_polygon_is_hole (GMT, L)) continue;	/* Holes are handled together with perimeters */
+
 				if (Ctrl->G.sequential == GMT_COLOR_AUTO_SEGMENT) {	/* Update sequential fill color per segment */
 					gmt_set_next_color (GMT, A, GMT_COLOR_AUTO_SEGMENT, current_fill.rgb);
 					gmt_setfill (GMT, &current_fill, outline_setting);
@@ -2186,14 +2194,28 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					gmt_setpen (GMT, &current_pen);
 				}
 
-				if (gmt_segment_BB_outside_map_BB (GMT, L)) continue;
-				if (polygon && gmt_polygon_is_hole (GMT, L)) continue;	/* Holes are handled together with perimeters */
-
 				SH = gmt_get_DS_hidden (L);
 
+				if (seq_legend && seq_n_legends >= 0 && (seq_frequency == GMT_COLOR_AUTO_SEGMENT || seg == 0)) {
+					if (GMT->common.l.item.label_type == GMT_LEGEND_LABEL_HEADER && L->header)	/* Use a segment label if found in header */
+						gmt_extract_label (GMT, L->header, GMT->common.l.item.label, SH->ogr);
+					if (polygon) {	/* Place a rectangle in the legend */
+						int symbol = S.symbol;
+						S.symbol = PSL_RECT;
+						gmt_add_legend_item (API, &S, Ctrl->G.active, &current_fill, Ctrl->W.active, &current_pen, &(GMT->common.l.item));
+						S.symbol = symbol;
+					}
+					else	/* For specified line, width, color we can do an auto-legend entry under modern mode */
+						gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &current_pen, &(GMT->common.l.item));
+					seq_n_legends--;	/* One less to do */
+					GMT->common.l.item.ID++;	/* Increment the label counter */
+				}
+
 				duplicate = (DH->alloc_mode == GMT_ALLOC_EXTERNALLY && (polygon || gmt_trim_requested (GMT, &current_pen) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
-				if (duplicate)	/* Must duplicate externally allocated segment since it needs to be resampled below */
+				if (duplicate) {	/* Must duplicate externally allocated segment since it needs to be resampled below */
 					L = gmt_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
+					SH = gmt_get_DS_hidden (L);
+				}
 
 				resampled = false;
 				if (!polygon && gmt_trim_requested (GMT, &current_pen)) {	/* Needs a haircut */

@@ -8892,7 +8892,29 @@ GMT_LOCAL int gmtinit_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 		}
 		c[0] = '\0';	/* Chop'em off */
 	}
-	if (arg[0]) strncpy (GMT->common.l.item.label, arg, GMT_LEN128-1);
+	if (arg[0]) {	/* Gave a label, which may be a constant string, code, or format statement */
+		char *d = strchr (arg, '%');
+		if (d && strchr (d, 'd')) {
+			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_FORMAT;
+			strncpy (GMT->common.l.item.label, arg, GMT_LEN128-1);
+		}
+		else if (arg[strlen(arg)-1] == '#') {	/* Short hand for integer %d */
+			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_FORMAT;
+			arg[strlen(arg)-1] = '\0';
+			snprintf (GMT->common.l.item.label, GMT_LEN128, "%s%%d", arg);
+			arg[strlen(arg)-1] = '#';
+		}
+		else if (strchr (arg, ',')) {
+			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_LIST;
+			strncpy (GMT->common.l.item.label, arg, GMT_LEN128-1);
+		}
+		else {	/* Static string */
+			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_FIXED;
+			strncpy (GMT->common.l.item.label, arg, GMT_LEN128-1);
+		}
+	}
+	else	/* Try segment header label if present */
+			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_HEADER;
 	if (c) c[0] = '+';	/* Restore */
 	return (GMT_NOERROR);
 }
@@ -17731,7 +17753,7 @@ GMT_LOCAL void gmtinit_draw_legend_line (struct GMTAPI_CTRL *API, FILE *fp, stru
 
 void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do_fill, struct GMT_FILL *fill, bool do_line, struct GMT_PEN *pen, struct GMT_LEGEND_ITEM *item) {
 	/* Adds a new entry to the auto-legend information file hidden in the session directory */
-	char file[PATH_MAX] = {""};
+	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""};
 	bool gap_done = false;
 	double size = 0.0;
 	FILE *fp = NULL;
@@ -17809,12 +17831,14 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to append to existing current legend file %s !\n", file);
 			return;
 		}
-		if (item->scale > 0.0)
-			GMT_Report (API, GMT_MSG_WARNING, "Your -l+s<scale> is ignored - only applicable to the first instance of -l.\n");
-		if (item->just)
-			GMT_Report (API, GMT_MSG_WARNING, "Your -l+j<just> is ignored - only applicable to the first instance of -l.\n");
-		if (item->width)
-			GMT_Report (API, GMT_MSG_WARNING, "Your -l+w<width> is ignored - only applicable to the first instance of -l.\n");
+		if (item->ID == 0) {	/* Only warn unless auto-legend for multiple lines or polygons */
+			if (item->scale > 0.0)
+				GMT_Report (API, GMT_MSG_WARNING, "Your -l+s<scale> is ignored - only applicable to the first instance of -l.\n");
+			if (item->just)
+				GMT_Report (API, GMT_MSG_WARNING, "Your -l+j<just> is ignored - only applicable to the first instance of -l.\n");
+			if (item->width)
+				GMT_Report (API, GMT_MSG_WARNING, "Your -l+w<width> is ignored - only applicable to the first instance of -l.\n");
+		}
 	}
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Add record to current legend file%s\n", file);
@@ -17841,21 +17865,33 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	else
 		GMT_Report (API, GMT_MSG_INFORMATION, "No size or length given and no symbol present - default to line length of 0.5 cm.\n");
 
+	/* Finalize label */
+	if (item->label_type == 1)	/* Integer format string */
+		snprintf (label, GMT_LEN128, item->label, item->ID);
+	else if (item->label_type == 2) {	/* Got list of labels, pick the current one via ID */
+		char *word = gmt_get_word (item->label, ",", item->ID);
+		if (word) {	/* Still more labels in the list */
+			strncpy (label, word, GMT_LEN128-1);
+			gmt_M_str_free (word);
+		}
+	}
+	else	/* Got a fixed label */
+		strncpy (label, item->label, GMT_LEN128-1);
 	/* Place the symbol command */
 	if (S == NULL || S->symbol == GMT_SYMBOL_LINE) {	/* Line for legend entry */
 		if (pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
 		if (size > 0.0)	/* Got a line length in inches */
-			fprintf (fp, "S - - %gi - %s - %s\n", size, gmt_putpen (API->GMT, pen), item->label);
+			fprintf (fp, "S - - %gi - %s - %s\n", size, gmt_putpen (API->GMT, pen), label);
 		else	/* Let the legend module supply a default length */
-			fprintf (fp, "S - - - - %s - %s\n", gmt_putpen (API->GMT, pen), item->label);
+			fprintf (fp, "S - - - - %s - %s\n", gmt_putpen (API->GMT, pen), label);
 	}
 	else {	/* Regular symbol */
 		if (!(do_fill || do_line)) do_line = true;	/* If neither fill nor pen is selected, plot will draw line, so override do_line here */
 		if (do_line && pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
 		if (S->size_x > 0.0 && S->size_y > 0.0 && S->symbol == PSL_RECT)
-			fprintf (fp, "S - %c %gi,%gi %s %s - %s\n", S->symbol, size, S->size_y, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", item->label);
+			fprintf (fp, "S - %c %gi,%gi %s %s - %s\n", S->symbol, size, S->size_y, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 		else
-			fprintf (fp, "S - %c %gi %s %s - %s\n", S->symbol, size, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", item->label);
+			fprintf (fp, "S - %c %gi %s %s - %s\n", S->symbol, size, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 	}
 
 	if (item->draw & GMT_LEGEND_DRAW_V && item->pen[GMT_LEGEND_PEN_V][0]) {	/* Must end with horizontal, then vertical line */
