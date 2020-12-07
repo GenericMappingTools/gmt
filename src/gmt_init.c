@@ -3068,7 +3068,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	if (GMT->current.plot.gridline_spacing[GMT_X] > 0.0 || GMT->current.plot.gridline_spacing[GMT_Y] > 0.0)	/* Save gridline spacing in history */
 		fprintf (fp, "@G\t%g %g\n", GMT->current.plot.gridline_spacing[GMT_X], GMT->current.plot.gridline_spacing[GMT_Y]);
 	if (GMT->current.ps.layer) fprintf (fp, "@L\t%d\n", GMT->current.ps.layer); /* Write PS layer, if non-zero */
-	if (GMT->current.plot.color_seq_id[0] && GMT->current.plot.color_seq_id[1]) fprintf (fp, "@S\t%d %d\n", GMT->current.plot.color_seq_id[0], GMT->current.plot.color_seq_id[1]); /* Write next sequential color IDs, if non-zero */
+	if (GMT->current.plot.color_seq_id[0] || GMT->current.plot.color_seq_id[1]) fprintf (fp, "@S\t%d %d\n", GMT->current.plot.color_seq_id[0], GMT->current.plot.color_seq_id[1]); /* Write next sequential color IDs, if non-zero */
 	fprintf (fp, "END\n");
 
 	/* Close the file */
