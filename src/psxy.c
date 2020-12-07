@@ -938,15 +938,15 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 
 EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psxy task */
-	bool polygon, penset_OK = true, not_line, old_is_world, rgb_from_z = false, decorate_custom = false;
-	bool get_rgb = false, clip_set = false, fill_active, may_intrude_inside = false, seq_legend = false;
-	bool error_x = false, error_y = false, def_err_xy = false, can_update_headpen = true;
-	bool default_outline, outline_active, geovector = false, save_W = false, save_G = false, QR_symbol = false;
-	unsigned int n_needed, n_cols_start = 2, justify, tbl, grid_order, frame_order;
+	bool polygon = false, penset_OK = true, not_line = false, old_is_world = false, rgb_from_z = false;
+	bool get_rgb = false, clip_set = false, fill_active = false, may_intrude_inside = false, seq_legend = false;
+	bool error_x = false, error_y = false, def_err_xy = false, can_update_headpen = true, decorate_custom = false;
+	bool default_outline = false, outline_active = false, geovector = false, save_W = false, save_G = false, QR_symbol = false;
+	unsigned int n_needed = 0, n_cols_start = 2, justify = 0, tbl, grid_order = 0, frame_order = 0;
 	unsigned int n_total_read = 0, j, geometry, icol = 0, tcol_f = 0, tcol_s = 0, n_z = 0, k, kk;
 	unsigned int bcol, ex1, ex2, ex3, change = 0, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
-	int error = GMT_NOERROR, outline_setting, seq_n_legends = 0, seq_frequency = 0;
+	int error = GMT_NOERROR, outline_setting = 0, seq_n_legends = 0, seq_frequency = 0;
 
 	char s_args[GMT_BUFSIZ] = {""};
 

@@ -635,11 +635,11 @@ GMT_LOCAL bool psxyz_load_bands (struct GMT_CTRL *GMT, double *in, double *out, 
 
 EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psxyz task */
-	bool polygon, penset_OK = true, not_line, old_is_world, seq_legend = false;
-	bool get_rgb = false, read_symbol, clip_set = false, fill_active, rgb_from_z = false, QR_symbol = false;
-	bool default_outline, outline_active, save_u = false, geovector = false, can_update_headpen = true;
+	bool polygon = false, penset_OK = true, not_line = false, old_is_world = false, seq_legend = false;
+	bool get_rgb = false, read_symbol = false, clip_set = false, fill_active = false, rgb_from_z = false, QR_symbol = false;
+	bool default_outline = false, outline_active = false, save_u = false, geovector = false, can_update_headpen = true;
 	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol = 0, tcol_f = 0, tcol_s = 0, grid_order, frame_order, n_z = 0;
-	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0, bcol, ex1, ex2, ex3, change = 0, n_needed;
+	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0, bcol, ex1, ex2, ex3, change = 0, n_needed = 0;
 	int error = GMT_NOERROR, seq_n_legends = 0, seq_frequency = 0;
 	uint64_t i, n, n_total_read = 0;
 	size_t n_alloc = 0;
@@ -647,8 +647,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	char s_args[GMT_BUFSIZ] = {""};
 
 	double dim[PSL_MAX_DIMS], rgb[3][4] = {{-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}};
-	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL, *v4_rgb = NULL;
-	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, zz, zb, length, base, *z_for_cpt = NULL;
+	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL, *v4_rgb = NULL, *z_for_cpt = NULL;
+	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, zz, zb, length, base;
 	double bar_gap, bar_width, bar_step;
 
 	struct GMT_PEN default_pen, current_pen, last_headpen, last_spiderpen;
