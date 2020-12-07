@@ -251,8 +251,10 @@ char *gmt_strrstr (const char *s, const char *m) {
 
 char *gmt_get_word (char *list, char *sep, unsigned int col) {
 	/* Return word number col in the list with separator sep */
-	char *word = NULL, *trail = NULL, *orig = strdup (list);
+	char *word, *trail, *orig;
 	unsigned int k = 0;
+	if (list == NULL || sep == NULL) return (NULL);
+	orig = strdup (list);
 	trail = orig;
 	while ((word = strsep (&trail, sep)) != NULL && k < col) k++;
 	free (orig);
