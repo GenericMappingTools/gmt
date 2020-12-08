@@ -26,6 +26,7 @@
  *  gmt_chop                Chops off any CR or LF at end of string
  *  gmt_chop_ext            Chops off the trailing .xxx (file extension)
  *  gmt_get_ext             Returns a pointer to the tailing .xxx (file extension)
+ *  gmt_get_word            Return the specified word entry from a list
  *  gmt_strdup_noquote		Duplicates a string but removes any surrounding single or double quotes
  *  gmt_strstrip            Strip leading and trailing whitespace from string
  *  gmt_strlshift           Left shift a string by n characters
@@ -246,6 +247,18 @@ char *gmt_strrstr (const char *s, const char *m) {
             break;
     }
     return last;
+}
+
+char *gmt_get_word (char *list, char *sep, unsigned int col) {
+	/* Return word number col in the list with separator sep */
+	char *word, *trail, *orig;
+	unsigned int k = 0;
+	if (list == NULL || sep == NULL) return (NULL);
+	orig = strdup (list);
+	trail = orig;
+	while ((word = strsep (&trail, sep)) != NULL && k < col) k++;
+	free (orig);
+	return ((k == col) ? strdup (word) : NULL);
 }
 
 unsigned int gmt_get_modifier (const char *string, char modifier, char *token) {

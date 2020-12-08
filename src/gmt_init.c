@@ -110,21 +110,21 @@
 #define GMT_more_than_once(GMT,active) (gmt_M_check_condition (GMT, active, "Option -%c given more than once\n", option))
 
 #define GMT_COMPAT_INFO "Please see " GMT_DOC_URL "/changes.html#new-features-in-gmt-5 for more information.\n"
-#define GMT_COMPAT_WARN GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated.\n" GMT_COMPAT_INFO, GMT_keywords[case_val])
-#define GMT_COMPAT_CHANGE(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keywords[case_val], new_P)
+#define GMT_COMPAT_WARN GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated.\n" GMT_COMPAT_INFO, GMT_keyword[case_val])
+#define GMT_COMPAT_CHANGE(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keyword[case_val], new_P)
 #define GMT_COMPAT_TRANSLATE(new_P) error = (gmt_M_compat_check (GMT, 4) ? GMT_COMPAT_CHANGE (new_P) + gmtlib_setparameter (GMT, new_P, value, core) : gmtinit_badvalreport (GMT, keyword))
 #define GMT_COMPAT_OPT(new_P) if (strchr (list, option)) { GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new_P); option = new_P; }
 
 /* Leave a record that this keyword is no longer a default one
    So far, only gmtset calls this function with core = true, but this is a too fragile solution */
-#define GMT_KEYWORD_UPDATE(val) if (core) GMT_keywords_updated[val] = true
+#define GMT_KEYWORD_UPDATE(val) if (core) GMT_keyword_updated[val] = true
 
 
 /*--------------------------------------------------------------------*/
 /* Load private fixed array parameters from include files */
 /*--------------------------------------------------------------------*/
 
-struct GMT5_params {
+struct GMT_parameter {
 	const int code;
 	const char *name;
 };
@@ -134,7 +134,7 @@ struct GMT5_params {
  * If new keywords are added they need to be added here as well as to gmt_keywords.txt, plus
  * specific entries in both gmtlib_setparameter and gmtlib_putparameter, and gmt.conf.rst */
 
-static struct GMT5_params GMT5_keywords[]= {
+static struct GMT_parameter GMT_keyword_active[]= {
 	{ 1, "COLOR Parameters"},
 	{ 0, "COLOR_BACKGROUND"},
 	{ 0, "COLOR_FOREGROUND"},
@@ -145,6 +145,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "COLOR_HSV_MAX_S"},
 	{ 0, "COLOR_HSV_MIN_V"},
 	{ 0, "COLOR_HSV_MAX_V"},
+	{ 0, "COLOR_SET"},
 	{ 1, "DIR Parameters"},
 	{ 0, "DIR_CACHE"},
 	{ 0, "DIR_DATA"},
@@ -270,11 +271,11 @@ static struct GMT5_params GMT5_keywords[]= {
 };
 
 #include "gmt_keycases.h"				/* Get all the default case values */
-static char *GMT_keywords[GMT_N_KEYS] = {		/* Names of all parameters in gmt.conf */
+static char *GMT_keyword[GMT_N_KEYS] = {		/* Names of all parameters in gmt.conf */
 #include "gmt_keywords.h"
 };
 
-bool GMT_keywords_updated[GMT_N_KEYS] = {false};	/* Will be set to 'true' when individual keywords are set via gmtset */
+bool GMT_keyword_updated[GMT_N_KEYS] = {false};	/* Will be set to 'true' when individual keywords are set via gmtset */
 
 static char *GMT_unique_option[GMT_N_UNIQUE] = {	/* The common GMT command-line options [ just the subset that accepts arguments (e.g., -O is not listed) ] */
 #include "gmt_unique.h"
@@ -988,7 +989,7 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 	int i = 0;
 	if (!text || !text[0]) {	/* Default is -Xr0 */
 		GMT->current.ps.origin[GMT_X] = GMT->common.X.mode = 'r';
-		GMT->current.setting.map_origin[GMT_X] = 0.0;
+		GMT->common.X.off = GMT->current.setting.map_origin[GMT_X] = 0.0;
 		return (GMT_NOERROR);
 	}
 	switch (text[0]) {
@@ -1020,6 +1021,7 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 	}
 	else	/* Allow use of -Xc or -Xf meaning -Xc0 or -Xf0 */
 		GMT->current.setting.map_origin[GMT_X] = 0.0;
+	GMT->common.X.off = GMT->current.setting.map_origin[GMT_X];
 	return (GMT_NOERROR);
 }
 
@@ -1030,7 +1032,7 @@ GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
 	int i = 0;
 	if (!text || !text[0]) {	/* Default is -Yr0 */
 		GMT->current.ps.origin[GMT_Y] = GMT->common.Y.mode = 'r';
-		GMT->current.setting.map_origin[GMT_Y] = 0.0;
+		GMT->common.Y.off = GMT->current.setting.map_origin[GMT_Y] = 0.0;
 		return (GMT_NOERROR);
 	}
 	switch (text[0]) {
@@ -1062,6 +1064,7 @@ GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
 	}
 	else	/* Allow use of -Yc or -Yf meaning -Yc0 or -Yf0 */
 		GMT->current.setting.map_origin[GMT_Y] = 0.0;
+	GMT->common.Y.off = GMT->current.setting.map_origin[GMT_Y];
 	return (GMT_NOERROR);
 }
 
@@ -2652,20 +2655,20 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 	}
 
 	fprintf (fpo, "#\n# GMT %d.%d.%d Defaults file\n", GMT_MAJOR_VERSION, GMT_MINOR_VERSION, GMT_RELEASE_VERSION);
-	while (GMT5_keywords[k].name != NULL) {
-		if (GMT5_keywords[k].code == 1) {	/* Start of new group */
+	while (GMT_keyword_active[k].name != NULL) {
+		if (GMT_keyword_active[k].code == 1) {	/* Start of new group */
 			current_group = k++;
 			header = false;
 			continue;
 		}
-		case_val = gmt_hash_lookup (GMT, GMT5_keywords[k].name, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-		if (case_val >= 0 && !GMT_keywords_updated[case_val])
+		case_val = gmt_hash_lookup (GMT, GMT_keyword_active[k].name, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+		if (case_val >= 0 && !GMT_keyword_updated[case_val])
 			{k++; continue;}	/* If equal to default, skip it */
 		if (!header) {
-			fprintf (fpo, "#\n# %s\n#\n", GMT5_keywords[current_group].name);
+			fprintf (fpo, "#\n# %s\n#\n", GMT_keyword_active[current_group].name);
 			header = true;
 		}
-		fprintf (fpo, "%-30s = %s\n", GMT5_keywords[k].name, gmtlib_putparameter (GMT, GMT5_keywords[k].name));
+		fprintf (fpo, "%-30s = %s\n", GMT_keyword_active[k].name, gmtlib_putparameter (GMT, GMT_keyword_active[k].name));
 		k++;
 	}
 
@@ -2987,6 +2990,8 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 				sscanf (value, "%lg %lg", &GMT->current.plot.gridline_spacing[GMT_X], &GMT->current.plot.gridline_spacing[GMT_Y]);
 			else if (option[1] == 'L')	/* Read PS layer */
 				GMT->current.ps.layer = atoi (value);
+			else if (option[1] == 'S')	/* Read next sequential color IDs */
+				sscanf (value, "%d %d", &GMT->current.plot.color_seq_id[0], &GMT->current.plot.color_seq_id[1]);
 			continue;
 		}
 		if ((id = gmt_hash_lookup (GMT, option, unique_hashnode, GMT_N_UNIQUE, GMT_N_UNIQUE)) < 0) continue;	/* Quietly skip malformed lines */
@@ -3065,6 +3070,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	if (GMT->current.plot.gridline_spacing[GMT_X] > 0.0 || GMT->current.plot.gridline_spacing[GMT_Y] > 0.0)	/* Save gridline spacing in history */
 		fprintf (fp, "@G\t%g %g\n", GMT->current.plot.gridline_spacing[GMT_X], GMT->current.plot.gridline_spacing[GMT_Y]);
 	if (GMT->current.ps.layer) fprintf (fp, "@L\t%d\n", GMT->current.ps.layer); /* Write PS layer, if non-zero */
+	if (GMT->current.plot.color_seq_id[0] || GMT->current.plot.color_seq_id[1]) fprintf (fp, "@S\t%d %d\n", GMT->current.plot.color_seq_id[0], GMT->current.plot.color_seq_id[1]); /* Write next sequential color IDs, if non-zero */
 	fprintf (fp, "END\n");
 
 	/* Close the file */
@@ -6042,6 +6048,8 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.color_hsv_min_v = 0.3;
 	/* COLOR_HSV_MAX_V */
 	GMT->current.setting.color_hsv_max_v = 1;
+	/* COLOR_SET */
+	strncpy (GMT->current.setting.color_set, GMT_DEFAULT_COLOR_SET, GMT_LEN256-1);
 
 		/* PS group */
 
@@ -6247,11 +6255,11 @@ void gmt_conf_US (struct GMT_CTRL *GMT) {
 
 	/* PROJ_LENGTH_UNIT */
 	case_val = gmt_hash_lookup (GMT, "PROJ_LENGTH_UNIT", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
+	if (case_val >= 0) GMT_keyword_updated[case_val] = true;
 	GMT->current.setting.proj_length_unit = GMT_INCH;
 	/* PS_CHAR_ENCODING */
 	case_val = gmt_hash_lookup (GMT, "PS_CHAR_ENCODING", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
+	if (case_val >= 0) GMT_keyword_updated[case_val] = true;
 	strcpy (GMT->current.setting.ps_encoding.name, "Standard+");
 	gmtinit_load_encoding (GMT);
 	/* PS_MEDIA */
@@ -6259,7 +6267,7 @@ void gmt_conf_US (struct GMT_CTRL *GMT) {
 		gmtinit_setautopagesize (GMT);
 	else {
 		case_val = gmt_hash_lookup (GMT, "PS_MEDIA", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-		if (case_val >= 0) GMT_keywords_updated[case_val] = true;
+		if (case_val >= 0) GMT_keyword_updated[case_val] = true;
 		i = gmtinit_key_lookup ("letter", GMT_media_name, GMT_N_MEDIA);
 		/* Use the specified standard format */
 		GMT->current.setting.ps_media = i;
@@ -6268,7 +6276,7 @@ void gmt_conf_US (struct GMT_CTRL *GMT) {
 	}
 	/* TIME_WEEK_START */
 	case_val = gmt_hash_lookup (GMT, "TIME_WEEK_START", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
+	if (case_val >= 0) GMT_keyword_updated[case_val] = true;
 	GMT->current.setting.time_week_start = gmtinit_key_lookup ("Sunday", GMT_weekdays, 7);
 }
 
@@ -8886,7 +8894,29 @@ GMT_LOCAL int gmtinit_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 		}
 		c[0] = '\0';	/* Chop'em off */
 	}
-	if (arg[0]) strncpy (GMT->common.l.item.label, arg, GMT_LEN128-1);
+	if (arg[0]) {	/* Gave a label, which may be a constant string, code, or format statement */
+		char *d = strchr (arg, '%');
+		if (d && strchr (d, 'd')) {
+			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_FORMAT;
+			strncpy (GMT->common.l.item.label, arg, GMT_LEN128-1);
+		}
+		else if (arg[strlen(arg)-1] == '#') {	/* Short hand for integer %d */
+			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_FORMAT;
+			arg[strlen(arg)-1] = '\0';
+			snprintf (GMT->common.l.item.label, GMT_LEN128, "%s%%d", arg);
+			arg[strlen(arg)-1] = '#';
+		}
+		else if (strchr (arg, ',')) {
+			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_LIST;
+			strncpy (GMT->common.l.item.label, arg, GMT_LEN128-1);
+		}
+		else {	/* Static string */
+			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_FIXED;
+			strncpy (GMT->common.l.item.label, arg, GMT_LEN128-1);
+		}
+	}
+	else	/* Try segment header label if present */
+			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_HEADER;
 	if (c) c[0] = '+';	/* Restore */
 	return (GMT_NOERROR);
 }
@@ -9443,7 +9473,7 @@ GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 			error++;
 		else {
 			int case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-			if (case_val >= 0) GMT_keywords_updated[case_val] = true;		/* Leave a record that this keyword is no longer a default one */
+			if (case_val >= 0) GMT_keyword_updated[case_val] = true;		/* Leave a record that this keyword is no longer a default one */
 		}
 	}
 
@@ -9458,10 +9488,10 @@ GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 void gmtinit_update_keys (struct GMT_CTRL *GMT, bool arg) {
 	gmt_M_unused(GMT);
 	if (arg == false)
-		gmt_M_memset (GMT_keywords_updated, GMT_N_KEYS, bool);
+		gmt_M_memset (GMT_keyword_updated, GMT_N_KEYS, bool);
 	else {
 		for (unsigned int k = 0; k < GMT_N_KEYS; k++)
-			GMT_keywords_updated[k] = true;
+			GMT_keyword_updated[k] = true;
 	}
 }
 
@@ -9691,25 +9721,25 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.map_tick_length[3] *= scale;
 				if (core) {		/* Need to update more than just FONT_ANNOT_PRIMARY */
 					int p = gmt_hash_lookup (GMT, "FONT_ANNOT_SECONDARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_ANNOT_OFFSET_PRIMARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_ANNOT_OFFSET_SECONDARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "FONT_LABEL", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_LABEL_OFFSET", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "FONT_TITLE", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_TITLE_OFFSET", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_TICK_LENGTH_PRIMARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_TICK_LENGTH_SECONDARY", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_FRAME_WIDTH", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-					if (p >= 0) GMT_keywords_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 				}
 			}
 			else
@@ -10219,6 +10249,40 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = true;
 			else
 				GMT->current.setting.color_hsv_max_v = dval;
+			break;
+		case GMTCASE_COLOR_SET:
+			if (strlen (value) >= GMT_LEN256) {	/* Tool long string */
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "COLOR_SET = %s exceeds max name length of %d\n", value, GMT_LEN256);
+				error = true;
+			}
+			else if (!strncmp (value, "default", 7U))	/* Reset to GMT defaults */
+				strncpy (GMT->current.setting.color_set, GMT_DEFAULT_COLOR_SET, GMT_LEN256-1);
+			else if (strchr (value, ',')) {	/* Gave comma-separated list of colors, check that they are all valid */
+				char *word = NULL, *trail = NULL, *orig = strdup (value);
+				trail = orig;
+				while ((word = strsep (&trail, ",")) != NULL) {
+					if (*word != '\0') {	/* Skip empty strings */
+						if (!gmtlib_is_color (GMT, word)) {
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "COLOR_SET list-item %s is not a valid color\n", word);
+							error = true;
+						}
+					}
+					else {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "COLOR_SET list %s has a missing entry\n", value);
+						error = true;
+					}
+				}
+				gmt_M_str_free (orig);
+			}
+			else {	/* Gave a single name, presumably a CPT */
+				if (value[0] != '@' && !gmt_is_cpt_master (GMT, value) && gmt_access (GMT, value, F_OK)) {	/* Check that a local CPT can be found */
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "COLOR_SET selection of CPT %s cannot be found\n", value);
+					error = true;
+				}
+			}
+			if (!error)
+				strncpy (GMT->current.setting.color_set, value, GMT_LEN256-1);
+
 			break;
 
 		/* PS GROUP */
@@ -11093,7 +11157,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_DIR_TMP:
 		case GMTCASE_DIR_USER:
 			/* Setting ignored, were active previously in GMT5 but no longer */
-			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s (previously introduced in GMT5) is deprecated.\n" GMT_COMPAT_INFO, GMT_keywords[case_val]);
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s (previously introduced in GMT5) is deprecated.\n" GMT_COMPAT_INFO, GMT_keyword[case_val]);
 			break;
 
 		default:
@@ -11639,6 +11703,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			/* Intentionally fall through */
 		case GMTCASE_COLOR_HSV_MAX_V:
 			snprintf (value, GMT_LEN256, "%g", GMT->current.setting.color_hsv_max_v);
+			break;
+		case GMTCASE_COLOR_SET:
+			snprintf (value, GMT_LEN256, "%s", GMT->current.setting.color_set);
 			break;
 
 		/* PS GROUP */
@@ -12897,6 +12964,7 @@ int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, int row, int col, d
 	else
 		fprintf (fp, "%d %d %g %g %g %g %d %s\n", row, col, gap[XLO], gap[XHI], gap[YLO], gap[YHI], first, L);
 	fclose (fp);
+	if (first) API->GMT->current.plot.color_seq_id[0] = API->GMT->current.plot.color_seq_id[1] = 0;	/* Reset for new panel */
 	API->error = GMT_NOERROR;
 	return GMT_NOERROR;
 }
@@ -14537,6 +14605,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	Ccopy->current.ps.layer = GMT->current.ps.layer;
 	Ccopy->current.ps.active = GMT->current.ps.active;
 	Ccopy->current.ps.initialize = GMT->current.ps.initialize;
+	Ccopy->current.plot.color_seq_id[0] = GMT->current.plot.color_seq_id[0];
+	Ccopy->current.plot.color_seq_id[1] = GMT->current.plot.color_seq_id[1];
 
 	/* GMT_COMMON */
 
@@ -16887,7 +16957,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	gmtinit_init_unit_conversion (GMT);	/* Set conversion factors from various units to meters */
 
-	if (gmt_hash_init (GMT, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS)) {	/* Initialize hash table for GMT defaults */
+	if (gmt_hash_init (GMT, keys_hashnode, GMT_keyword, GMT_N_KEYS, GMT_N_KEYS)) {	/* Initialize hash table for GMT defaults */
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
 	}
@@ -17233,7 +17303,7 @@ GMT_LOCAL int gmtinit_put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 		}
 		if (bad == 0 && strcmp (API->GMT->current.setting.ps_convert, &c[1])) {	/* Got psconvert options, and if different we update defaults */
 			strncpy (API->GMT->current.setting.ps_convert, &c[1], GMT_LEN256-1);
-			GMT_keywords_updated[GMTCASE_PS_CONVERT] = true;	/* To make sure it will write it to gmt.conf */
+			GMT_keyword_updated[GMTCASE_PS_CONVERT] = true;	/* To make sure it will write it to gmt.conf */
 			c[0] = '\0';
 			restore = true;
 		}
@@ -17687,7 +17757,7 @@ GMT_LOCAL void gmtinit_draw_legend_line (struct GMTAPI_CTRL *API, FILE *fp, stru
 
 void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do_fill, struct GMT_FILL *fill, bool do_line, struct GMT_PEN *pen, struct GMT_LEGEND_ITEM *item) {
 	/* Adds a new entry to the auto-legend information file hidden in the session directory */
-	char file[PATH_MAX] = {""};
+	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""};
 	bool gap_done = false;
 	double size = 0.0;
 	FILE *fp = NULL;
@@ -17765,12 +17835,14 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to append to existing current legend file %s !\n", file);
 			return;
 		}
-		if (item->scale > 0.0)
-			GMT_Report (API, GMT_MSG_WARNING, "Your -l+s<scale> is ignored - only applicable to the first instance of -l.\n");
-		if (item->just)
-			GMT_Report (API, GMT_MSG_WARNING, "Your -l+j<just> is ignored - only applicable to the first instance of -l.\n");
-		if (item->width)
-			GMT_Report (API, GMT_MSG_WARNING, "Your -l+w<width> is ignored - only applicable to the first instance of -l.\n");
+		if (item->ID == 0) {	/* Only warn unless auto-legend for multiple lines or polygons */
+			if (item->scale > 0.0)
+				GMT_Report (API, GMT_MSG_WARNING, "Your -l+s<scale> is ignored - only applicable to the first instance of -l.\n");
+			if (item->just)
+				GMT_Report (API, GMT_MSG_WARNING, "Your -l+j<just> is ignored - only applicable to the first instance of -l.\n");
+			if (item->width)
+				GMT_Report (API, GMT_MSG_WARNING, "Your -l+w<width> is ignored - only applicable to the first instance of -l.\n");
+		}
 	}
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Add record to current legend file%s\n", file);
@@ -17797,21 +17869,33 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	else
 		GMT_Report (API, GMT_MSG_INFORMATION, "No size or length given and no symbol present - default to line length of 0.5 cm.\n");
 
+	/* Finalize label */
+	if (item->label_type == 1)	/* Integer format string */
+		snprintf (label, GMT_LEN128, item->label, item->ID);
+	else if (item->label_type == 2) {	/* Got list of labels, pick the current one via ID */
+		char *word = gmt_get_word (item->label, ",", item->ID);
+		if (word) {	/* Still more labels in the list */
+			strncpy (label, word, GMT_LEN128-1);
+			gmt_M_str_free (word);
+		}
+	}
+	else	/* Got a fixed label */
+		strncpy (label, item->label, GMT_LEN128-1);
 	/* Place the symbol command */
 	if (S == NULL || S->symbol == GMT_SYMBOL_LINE) {	/* Line for legend entry */
 		if (pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
 		if (size > 0.0)	/* Got a line length in inches */
-			fprintf (fp, "S - - %gi - %s - %s\n", size, gmt_putpen (API->GMT, pen), item->label);
+			fprintf (fp, "S - - %gi - %s - %s\n", size, gmt_putpen (API->GMT, pen), label);
 		else	/* Let the legend module supply a default length */
-			fprintf (fp, "S - - - - %s - %s\n", gmt_putpen (API->GMT, pen), item->label);
+			fprintf (fp, "S - - - - %s - %s\n", gmt_putpen (API->GMT, pen), label);
 	}
 	else {	/* Regular symbol */
 		if (!(do_fill || do_line)) do_line = true;	/* If neither fill nor pen is selected, plot will draw line, so override do_line here */
 		if (do_line && pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
 		if (S->size_x > 0.0 && S->size_y > 0.0 && S->symbol == PSL_RECT)
-			fprintf (fp, "S - %c %gi,%gi %s %s - %s\n", S->symbol, size, S->size_y, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", item->label);
+			fprintf (fp, "S - %c %gi,%gi %s %s - %s\n", S->symbol, size, S->size_y, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 		else
-			fprintf (fp, "S - %c %gi %s %s - %s\n", S->symbol, size, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", item->label);
+			fprintf (fp, "S - %c %gi %s %s - %s\n", S->symbol, size, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 	}
 
 	if (item->draw & GMT_LEGEND_DRAW_V && item->pen[GMT_LEGEND_PEN_V][0]) {	/* Must end with horizontal, then vertical line */
