@@ -126,7 +126,7 @@ Optional Arguments
     Note that this module will search for **-G** and **-W** strings in all the
     segment headers and let any values thus found over-ride the command line settings.
     If **-Z** is set, use **-G+z** to assign fill color via **-C**\ *cpt* and the
-    *z*-values obtained. Finally, if *fill* = *auto*\ [*-segment*] or *auto=table* then
+    *z*-values obtained. Finally, if *fill* = *auto*\ [*-segment*] or *auto-table* then
     we will cycle through the fill colors implied by :term:`COLOR_SET` and change on a per-segment
     or per-table basis.  Any *transparency* setting is unchanged.
 
