@@ -11,11 +11,21 @@
 # with the same file prefix as the script (stuff.sh -> stuff.ps).
 # In addition, each script that fails should add a single line
 # to the file ../fail_count.txt so we may report a total.
+#
 # Scripts that are known to fail can be excluded from the test
 # by adding the comment
+#
 #	# GMT_KNOWN_FAILURE
+#
 # to the script anywhere.  Their failures will be listed in the
 # test/fail_count.txt file but not counted by ctest.
+#
+# If a script is known to fail on a specific platform, you can
+# exclude the test by adding one of the following comments:
+#
+#	# GMT_KNOWN_FAILURE_WINDOWS
+#	# GMT_KNOWN_FAILURE_MACOS
+#	# GMT_KNOWN_FAILURE_LINUX
 #
 # Under Linux you can have all module calls be run via valgrind
 # in order to track down pesky memory leaks.  To do this, cd

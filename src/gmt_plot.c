@@ -635,18 +635,28 @@ void plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, doub
 	unsigned int nx;
 	double *x = NULL;
 
-	nx = gmtlib_time_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[item], &x);
-	gmtplot_x_grid (GMT, PSL, s, n, x, nx);
-	if (x) gmt_M_free (GMT, x);
+	if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_RELTIME) {	/* Works like Cartesian */
+		gmt_linearx_grid (GMT, PSL, w, e, s, n, GMT->current.map.frame.axis[GMT_X].item[item].interval);
+	}
+	else {
+		nx = gmtlib_time_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[item], &x);
+		gmtplot_x_grid (GMT, PSL, s, n, x, nx);
+		if (x) gmt_M_free (GMT, x);
+	}
 }
 
 GMT_LOCAL void gmtplot_timey_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item) {
 	unsigned int ny;
 	double *y = NULL;
 
-	ny = gmtlib_time_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item], &y);
-	gmtplot_y_grid (GMT, PSL, w, e, y, ny);
-	if (y) gmt_M_free (GMT, y);
+	if (gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_RELTIME) {	/* Works like Cartesian */
+		gmtplot_lineary_grid (GMT, PSL, w, e, s, n, GMT->current.map.frame.axis[GMT_Y].item[item].interval);
+	}
+	else {
+		ny = gmtlib_time_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item], &y);
+		gmtplot_y_grid (GMT, PSL, w, e, y, ny);
+		if (y) gmt_M_free (GMT, y);
+	}
 }
 
 GMT_LOCAL void gmtplot_logx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
@@ -6348,7 +6358,6 @@ void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr) {
 	struct GMT_MAP_PANEL *panel = mr->panel;
 	double dim[2];
 	if (!mr->plot) return;
-	if (gmt_M_is_cartesian (GMT, GMT_IN)) return;	/* Only for geographic projections */
 
 	dim[GMT_X] = dim[GMT_Y] = mr->size;
 	gmt_set_refpoint (GMT, mr->refpoint);	/* Finalize reference point plot coordinates, if needed */

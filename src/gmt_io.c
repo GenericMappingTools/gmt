@@ -3906,7 +3906,7 @@ GMT_LOCAL void * gmtio_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, in
 			}
 			for (k = 0; k < GMT->current.io.count[v][1]; ++col, ++k) {	/* For each column in variable v [typically 1 unless 2-D array] */
 				start[1] = k, count[1] = 1;	/* Read only k'th column in 2-D array or the only column [k = 0] in 1-D array */
-				nc_get_vara_double (GMT->current.io.ncid, GMT->current.io.varid[v], start, count, GMT->hidden.mem_coord[col]);	/* Read column */
+				nc_get_vara_double (GMT->current.io.grpid[v], GMT->current.io.varid[v], start, count, GMT->hidden.mem_coord[col]);	/* Read column */
 				for (row = 0; row < GMT->current.io.ndim; ++row) {	/* Loop over all records (rows) to do scaling */
 					if (GMT->hidden.mem_coord[col][row] == GMT->current.io.missing_value[v])	/* Nan proxy detected */
 						GMT->hidden.mem_coord[col][row] = GMT->session.d_NaN;
@@ -3956,6 +3956,29 @@ GMT_LOCAL void * gmtio_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, in
 }
 
 /*! . */
+GMT_LOCAL int gmtio_nc_inq_varid (int ncid, const char *varnm, int *grpid, int *varid) {
+/* Get group id and variable id of netCDF variable that includes the full group name.
+ * If no group name is included, grpid is the ncid
+ */
+	char *pstr;
+	char str[GMT_LEN64];
+	int status;
+
+	strcpy (str, varnm);
+	if ((pstr = strrchr (str, '/'))) {
+		pstr[0] = '\0';
+		status = nc_inq_grp_full_ncid (ncid, str, grpid);
+		if (status != NC_NOERR) return (status);
+		pstr++;
+	}
+	else {
+		*grpid = ncid;
+		pstr = str;
+	}
+	return (nc_inq_varid (*grpid, pstr, varid));
+}
+
+/*! . */
 GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) {
 /* Open a netCDF file for column I/O. Append ?var1/var2/... to indicate the requested columns.
  * Currently only reading is supported.
@@ -3967,6 +3990,7 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
  */
 
 	char file[PATH_MAX] = {""}, path[PATH_MAX] = {""};
+	char *pstr, *qstr;
 	int i, j, nvars, dimids[5] = {-1, -1, -1, -1, -1}, ndims, in, id;
 	size_t n, item[2];
 	size_t tmp_pointer; /* To avoid "cast from pointer to integer of different size" */
@@ -3990,7 +4014,21 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 		varnm[11], varnm[12], varnm[13], varnm[14], varnm[15], varnm[16], varnm[17], varnm[18], varnm[19]) - 1;
 	if (gmt_getdatapath (GMT, file, path, R_OK) == NULL) return (NULL);	/* No such file */
 	if (nc_open (path, NC_NOWRITE, &GMT->current.io.ncid)) return (NULL);
-	if (gmt_M_compat_check (GMT, 4)) {
+	pstr = strrchr (filename, ',');
+	qstr = strchr (filename, '?');
+
+	/* In case there is a comma in the list of variables, or if the first variable is actually a group,
+	 * we re-read the variable list with comma separators.
+	 * When a group is missing, nc_iq_grp_ncid comes either back with error status, or with group id
+	 * identical to file id. Not clear why both can happen, but this check captures both. */
+	i = nc_inq_grp_ncid (GMT->current.io.ncid, varnm[0], &id);
+	if (pstr > qstr || (i == NC_NOERR && GMT->current.io.ncid != id)) {
+		nvars = sscanf (filename,
+			"%[^?]?%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,]",
+			file, varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9], varnm[10],
+			varnm[11], varnm[12], varnm[13], varnm[14], varnm[15], varnm[16], varnm[17], varnm[18], varnm[19]) - 1;
+	}
+	else if (gmt_M_compat_check (GMT, 4)) {
 		if (nvars <= 0) nvars = sscanf (GMT->common.b.varnames,
 			"%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]",
 			varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9], varnm[10],
@@ -4000,6 +4038,7 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 		nc_inq_nvars (GMT->current.io.ncid, &GMT->current.io.nvars);
 	else
 		GMT->current.io.nvars = nvars;
+	GMT->current.io.grpid = gmt_M_memory (GMT, NULL, GMT->current.io.nvars, int);
 	GMT->current.io.varid = gmt_M_memory (GMT, NULL, GMT->current.io.nvars, int);
 	GMT->current.io.scale_factor = gmt_M_memory (GMT, NULL, GMT->current.io.nvars, double);
 	GMT->current.io.add_offset = gmt_M_memory (GMT, NULL, GMT->current.io.nvars, double);
@@ -4024,18 +4063,20 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 		}
 
 		/* Get variable ID and variable name */
-		if (nvars <= 0)
+		if (nvars <= 0) {
+			GMT->current.io.grpid[i] = GMT->current.io.ncid;
 			GMT->current.io.varid[i] = i;
+		}
 		else {
-			if (gmt_M_err_fail (GMT, nc_inq_varid (GMT->current.io.ncid, varnm[i], &GMT->current.io.varid[i]), file)) {
+			if (gmt_M_err_fail (GMT, gmtio_nc_inq_varid (GMT->current.io.ncid, varnm[i], &GMT->current.io.grpid[i], &GMT->current.io.varid[i]), file)) {
 				GMT->parent->error = GMT_NOT_A_VALID_ID;
 				return NULL;
 			}
 		}
-		nc_inq_varname (GMT->current.io.ncid, GMT->current.io.varid[i], varname);
+		nc_inq_varname (GMT->current.io.grpid[i], GMT->current.io.varid[i], varname);
 
 		/* Check number of dimensions */
-		if (gmt_M_err_fail (GMT, nc_inq_varndims (GMT->current.io.ncid, GMT->current.io.varid[i], &ndims), file)) {
+		if (gmt_M_err_fail (GMT, nc_inq_varndims (GMT->current.io.grpid[i], GMT->current.io.varid[i], &ndims), file)) {
 			GMT->parent->error = GMT_GRDIO_BAD_DIM;
 			return NULL;
 		}
@@ -4052,8 +4093,8 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "NetCDF variable %s has %" PRIuS " dimensions, showing only 2\n", varname, ndims);
 
 		/* Get information of the first two dimensions */
-		nc_inq_vardimid(GMT->current.io.ncid, GMT->current.io.varid[i], dimids);
-		nc_inq_dimlen(GMT->current.io.ncid, dimids[0], &n);
+		nc_inq_vardimid(GMT->current.io.grpid[i], GMT->current.io.varid[i], dimids);
+		nc_inq_dimlen(GMT->current.io.grpid[i], dimids[0], &n);
 		if (GMT->current.io.ndim != 0 && GMT->current.io.ndim != n) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "NetCDF variable %s has different dimension (%" PRIuS ") from others (%" PRIuS ")\n",
 			            varname, n, GMT->current.io.ndim);
@@ -4062,7 +4103,7 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 		}
 		GMT->current.io.count[i][0] = GMT->current.io.ndim = n;
 		if (dimids[1] >= 0 && ndims - in > 1) {
-			nc_inq_dimlen(GMT->current.io.ncid, dimids[1], &n);
+			nc_inq_dimlen(GMT->current.io.grpid[i], dimids[1], &n);
 		}
 		else
 			n = 1;
@@ -4071,31 +4112,31 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 
 		/* If selected by value instead of index */
 		for (j = 1; by_value && j <= in; j++) {
-			nc_inq_dim (GMT->current.io.ncid, dimids[j], dimname, &n);
-			nc_inq_varid (GMT->current.io.ncid, dimname, &id);
+			nc_inq_dim (GMT->current.io.grpid[i], dimids[j], dimname, &n);
+			nc_inq_varid (GMT->current.io.grpid[i], dimname, &id);
 			item[0] = 0, item[1] = n-1;
-			if (nc_get_att_double (GMT->current.io.ncid, id, "actual_range", dummy)) {
-				nc_get_var1_double (GMT->current.io.ncid, id, &item[0], &dummy[0]);
-				nc_get_var1_double (GMT->current.io.ncid, id, &item[1], &dummy[1]);
+			if (nc_get_att_double (GMT->current.io.grpid[i], id, "actual_range", dummy)) {
+				nc_get_var1_double (GMT->current.io.grpid[i], id, &item[0], &dummy[0]);
+				nc_get_var1_double (GMT->current.io.grpid[i], id, &item[1], &dummy[1]);
 			}
 			GMT->current.io.t_index[i][j] = lrint((t_value[j] - dummy[0]) / (dummy[1] - dummy[0]));
 		}
 
 		/* Get scales, offsets and missing values */
-		if (nc_get_att_double (GMT->current.io.ncid, GMT->current.io.varid[i], "scale_factor",
+		if (nc_get_att_double (GMT->current.io.grpid[i], GMT->current.io.varid[i], "scale_factor",
 		                       &GMT->current.io.scale_factor[i]))
 			GMT->current.io.scale_factor[i] = 1.0;
-		if (nc_get_att_double (GMT->current.io.ncid, GMT->current.io.varid[i], "add_offset",
+		if (nc_get_att_double (GMT->current.io.grpid[i], GMT->current.io.varid[i], "add_offset",
 		                       &GMT->current.io.add_offset[i]))
 			GMT->current.io.add_offset[i] = 0.0;
-		if (nc_get_att_double (GMT->current.io.ncid, GMT->current.io.varid[i], "_FillValue",
-		                       &GMT->current.io.missing_value[i]) && nc_get_att_double (GMT->current.io.ncid, GMT->current.io.varid[i],
+		if (nc_get_att_double (GMT->current.io.grpid[i], GMT->current.io.varid[i], "_FillValue",
+		                       &GMT->current.io.missing_value[i]) && nc_get_att_double (GMT->current.io.grpid[i], GMT->current.io.varid[i],
 		                       "missing_value", &GMT->current.io.missing_value[i]))
 		    GMT->current.io.missing_value[i] = GMT->session.d_NaN;
 
 		/* Scan for geographical or time units */
-		if (gmtlib_nc_get_att_text (GMT, GMT->current.io.ncid, GMT->current.io.varid[i], "long_name", long_name, GMT_LEN256)) long_name[0] = 0;
-		if (gmtlib_nc_get_att_text (GMT, GMT->current.io.ncid, GMT->current.io.varid[i], "units", units, GMT_LEN256)) units[0] = 0;
+		if (gmtlib_nc_get_att_text (GMT, GMT->current.io.grpid[i], GMT->current.io.varid[i], "long_name", long_name, GMT_LEN256)) long_name[0] = 0;
+		if (gmtlib_nc_get_att_text (GMT, GMT->current.io.grpid[i], GMT->current.io.varid[i], "units", units, GMT_LEN256)) units[0] = 0;
 		gmt_str_tolower (long_name); gmt_str_tolower (units);
 
 		if (gmt_M_type (GMT, GMT_IN, i) == GMT_IS_FLOAT)
@@ -4365,6 +4406,7 @@ int gmt_fclose (struct GMT_CTRL *GMT, FILE *stream) {
 	if ((size_t)stream == (size_t)-GMT->current.io.ncid) {
 		/* Special treatment for netCDF files */
 		nc_close (GMT->current.io.ncid);
+		gmt_M_free (GMT, GMT->current.io.grpid);
 		gmt_M_free (GMT, GMT->current.io.varid);
 		gmt_M_free (GMT, GMT->current.io.add_offset);
 		gmt_M_free (GMT, GMT->current.io.scale_factor);

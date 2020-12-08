@@ -317,7 +317,7 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_RECORD record;	/* Current record with pointers to data columns and text */
 	double *nc_xarray, *nc_yarray;	/* For grids with variable x,y arrays */
 	/* The remainder are just pointers to memory allocated elsewhere */
-	int *varid;			/* Array of variable IDs (netCDF only) */
+	int *grpid, *varid;			/* Arrays of group and variable IDs (netCDF only) */
 	double *scale_factor;		/* Array of scale factors (netCDF only) */
 	double *add_offset;		/* Array of offsets (netCDF only) */
 	double *missing_value;		/* Array of missing values (netCDF only) */

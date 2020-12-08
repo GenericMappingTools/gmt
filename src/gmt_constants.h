@@ -241,9 +241,14 @@ enum GMT_enum_basemap {
 #define GMT_CPT_U_ANNOT		2	/* Annotate upper slice boundary */
 #define GMT_CPT_CATEGORICAL_VAL		1	/* Categorical CPT with numerical value */
 #define GMT_CPT_CATEGORICAL_KEY		2	/* Categorical CPT with text key */
+#define GMT_COLOR_AUTO_TABLE		1	/* Flag in rgb for auto-color changing per table */
+#define GMT_COLOR_AUTO_SEGMENT		2	/* Flag in rgb for auto-color changing per segment */
 
 /* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"
+/* Default color list (or cpt) for automatic, sequential color choices */
+#define GMT_DEFAULT_COLOR_SET	"#0072BD,#D95319,#EDB120,#7E2F8E,#77AC30,#4DBEEE,#A2142F"
+	
 /* CPT extension is pretty fixed */
 #define GMT_CPT_EXTENSION	".cpt"
 #define GMT_CPT_EXTENSION_LEN	4U
@@ -360,7 +365,8 @@ enum GMT_enum_download {
 /*! Various mode for auto-legend pens */
 enum GMT_enum_autolegend {
 	GMT_LEGEND_PEN_D  = 0, GMT_LEGEND_PEN_V  = 1, GMT_LEGEND_PEN_P  = 2,
-	GMT_LEGEND_DRAW_D = 1, GMT_LEGEND_DRAW_V = 2};
+	GMT_LEGEND_DRAW_D = 1, GMT_LEGEND_DRAW_V = 2, GMT_LEGEND_LABEL_FIXED = 0,
+	GMT_LEGEND_LABEL_FORMAT = 1, GMT_LEGEND_LABEL_LIST = 2, GMT_LEGEND_LABEL_HEADER = 3};
 
 /*! Various mode for custom symbols */
 enum GMT_enum_customsymb {

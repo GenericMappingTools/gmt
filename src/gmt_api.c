@@ -5946,6 +5946,7 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 					else	/* Just this one layer grid */
 						sprintf (file, "%s", S_obj->filename);
 					G->data = &U_obj->data[here];	/* Point to start of this layer */
+					GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_export_cube: Layer %" PRIu64 ", offset = %" PRIu64 ".\n", k, here);
 					if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, S_obj->wesn, file, G) != GMT_NOERROR) {
 						return (API->error);
 					}
@@ -8923,7 +8924,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 		if (family == GMT_IS_PALETTE && !just_get_data) { /* CPTs must be handled differently since the master files live in share/cpt and filename is missing .cpt */
 			int c_err = 0;
 			char CPT_file[PATH_MAX] = {""}, *file = NULL, *m = NULL, *f = NULL;
-			first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable CPTs */
+			if (input[0] == '@') first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable CPTs */
 			file = strdup (&input[first]);
 			if ((c_err = gmtapi_colors2cpt (API, &file, &mode)) < 0) { /* Maybe converted colors to new CPT */
 				gmt_M_str_free (input);
