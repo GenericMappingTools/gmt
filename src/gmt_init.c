@@ -17870,9 +17870,9 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 		GMT_Report (API, GMT_MSG_INFORMATION, "No size or length given and no symbol present - default to line length of 0.5 cm.\n");
 
 	/* Finalize label */
-	if (item->label_type == 1)	/* Integer format string */
+	if (item->label_type == GMT_LEGEND_LABEL_FORMAT)	/* Integer format string */
 		snprintf (label, GMT_LEN128, item->label, item->ID);
-	else if (item->label_type == 2) {	/* Got list of labels, pick the current one via ID */
+	else if (item->label_type == GMT_LEGEND_LABEL_LIST) {	/* Got list of labels, pick the current one via ID */
 		char *word = gmt_get_word (item->label, ",", item->ID);
 		if (word) {	/* Still more labels in the list */
 			strncpy (label, word, GMT_LEN128-1);
