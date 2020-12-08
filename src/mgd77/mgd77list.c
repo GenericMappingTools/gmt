@@ -712,7 +712,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active[Q_C] && Ctrl->Q.min[Q_C] >= Ctrl->Q.max[Q_C], "Option -Qc: Minimum course change equals or exceeds maximum course change!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active[Q_V] && (Ctrl->Q.min[Q_V] >= Ctrl->Q.max[Q_V] || Ctrl->Q.min[Q_V] < 0.0), "Option -Qv: Minimum velocity equals or exceeds maximum velocity or is negative!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop, "Option -D: Start time exceeds stop time!\n");
-  n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && MGD77_Verify_Columns (GMT, Ctrl->F.flags), "Option F: Invalid column names encountered\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && MGD77_Verify_Columns (GMT, Ctrl->F.flags), "Option F: Invalid column names encountered\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
