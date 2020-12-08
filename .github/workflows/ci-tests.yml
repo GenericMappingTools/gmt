@@ -267,6 +267,8 @@ jobs:
           # Disable MinGW's path conversion, see #1035.
           if [ "$RUNNER_OS" == "Windows" ]; then export MSYS_NO_PATHCONV=1; fi
           # Run tests
+          pwd
+          ls -R ./*
           ctest ${CTEST_ARGS} -R api
           #ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed || ctest ${CTEST_ARGS} --rerun-failed
         env:
