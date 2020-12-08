@@ -156,7 +156,7 @@ Optional Arguments
     **-C**). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to symbol fill.  Use just **+c** for both effects.
     If **-Z** is set, then append **+z** to **-W** to assign pen color via **-C**\ *cpt* and the
-    *z*-values obtained.  Finally, if pen *color* = *auto*\ [*-segment*] or *auto=table* then
+    *z*-values obtained.  Finally, if pen *color* = *auto*\ [*-segment*] or *auto-table* then
     we will cycle through the pen colors implied by :term:`COLOR_SET` and change on a per-segment
     or per-table basis.  The *width*, *style*, or *transparency* settings are unchanged.
 
