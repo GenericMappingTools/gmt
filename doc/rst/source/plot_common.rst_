@@ -201,7 +201,7 @@ Optional Arguments
     at the end of the pen specification.
     See the `Vector Attributes`_ for more information.
     If **-Z** is set, then append **+z** to **-W** to assign pen color via **-C**\ *cpt* and the
-    *z*-values obtained.  Finally, if pen *color* = *auto*\ [*-segment*] or *auto=table* then
+    *z*-values obtained.  Finally, if pen *color* = *auto*\ [*-segment*] or *auto-table* then
     we will cycle through the pen colors implied by :term:`COLOR_SET` and change on a per-segment
     or per-table basis.  The *width*, *style*, or *transparency* settings are unchanged.
 
