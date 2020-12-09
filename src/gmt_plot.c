@@ -302,9 +302,11 @@ GMT_LOCAL void gmtplot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTR
 		PSL_command (PSL, "/PSL_H_y PSL_L_y PSL_LH add %d add def\n", PSL_IZ (PSL, GMT->current.setting.map_title_offset));	/* For title adjustment */
 
 	PSL_command (PSL, "%d %d PSL_H_y add PSL_slant_y add M\n", PSL_IZ (PSL, 0.5 * x_length), PSL_IZ (PSL, y_length));
-	form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-	PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, PSL_BC, form);
-	GMT->current.map.frame.plotted_header = true;
+	//form = gmt_setfont (GMT, &GMT->current.setting.font_title);
+	//PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, PSL_BC, form);
+	//GMT->current.map.frame.plotted_header = true;
+
+	gmt_map_title (GMT, 0.0, 0.0);
 }
 
 GMT_LOCAL unsigned int gmtplot_get_primary_annot (struct GMT_PLOT_AXIS *A) {
@@ -5625,34 +5627,51 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 	 * Note we have already checked if a header string contains both breaks and subtitles, which is not allowed:
 	 * We only allow a title to be broken into many lines, or a single title with multiple sub-titles.
 	 */
-	double sign = (gmt_M_is_zero (x) && gmt_M_is_zero (y)) ? -1.0 : +1.0;
+	bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y));
+	double sign = (pos_set) ? -1.0 : +1.0, y2 = 0.0, dy;
 	unsigned int n_breaks, n_lines, k;
 	char *word = NULL;
 	struct PSL_CTRL *PSL= GMT->PSL;
 
-	if ((n_breaks = gmt_char_count (GMT->current.map.frame.header, '\r'))) {	/* Plot this string over several lines but keep the same font */
+	if ((n_breaks = gmt_char_count (GMT->current.map.frame.header, '^'))) {	/* Plot this string over several lines but keep the same font */
 		unsigned int form = gmt_setfont (GMT, &GMT->current.setting.font_title);
 		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
+		if (pos_set) PSL_command (PSL, "currentpoint /PSL_text_y edef /PSL_text_x edef\n");	/* Remember the position set for the text */
 		for (k = 0; k <= n_breaks; k++) {
-			word = gmt_get_word (GMT->current.map.frame.header, "\r", n_breaks - k);	/* Pick from the end going forward */
-			PSL_plottext (PSL, 0.0, 0.0, sign * GMT->current.setting.font_title.size, word, 0.0, -PSL_BC, form);
-			if (k < n_breaks) PSL_setorigin (PSL, 0.0, GMT->current.setting.font_title.size / PSL_POINTS_PER_INCH, 0.0, PSL_FWD);
+			word = gmt_get_word (GMT->current.map.frame.header, "^", n_breaks - k);	/* Pick from the end going forward */
+			PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_title.size, word, 0.0, -PSL_BC, form);
+			if (k < n_breaks) {
+				dy = 1.1 * GMT->current.setting.font_title.size / PSL_POINTS_PER_INCH;
+				if (pos_set) {
+					y2 += dy;
+					PSL_command (PSL, "PSL_text_x PSL_text_y M 0 %d G\n", PSL->internal.y0 + (int)lrint (y2 * PSL->internal.y2iy));
+				}
+				else
+					y += dy;
+			}
 			gmt_M_str_free (word);
 		}
 		PSL_command (PSL, "U\n");
 	}
-	else if ((n_lines = gmt_char_count (GMT->current.map.frame.header, '\n'))) {	/* Plot first part as title but the rest as subtitles */
+	else if ((n_lines = gmt_char_count (GMT->current.map.frame.header, '~'))) {	/* Plot first part as title but the rest as subtitles */
 		unsigned int form = gmt_setfont (GMT, &GMT->current.setting.font_subtitle);
 		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
+		if (pos_set) PSL_command (PSL, "currentpoint /PSL_text_y edef /PSL_text_x edef\n");	/* Remember the position set for the text */
+		dy = 1.1 * GMT->current.setting.font_subtitle.size / PSL_POINTS_PER_INCH;
 		for (k = 0; k < n_lines; k++) {
-			word = gmt_get_word (GMT->current.map.frame.header, "\n", n_breaks - k);	/* Pick from the end going forward */
-			PSL_plottext (PSL, 0.0, 0.0, sign * GMT->current.setting.font_subtitle.size, word, 0.0, -PSL_BC, form);
-			PSL_setorigin (PSL, 0.0, GMT->current.setting.font_subtitle.size / PSL_POINTS_PER_INCH, 0.0, PSL_FWD);
+			word = gmt_get_word (GMT->current.map.frame.header, "~", n_lines - k);	/* Pick from the end going forward */
+			PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_subtitle.size, word, 0.0, -PSL_BC, form);
 			gmt_M_str_free (word);
+			if (pos_set) {
+				y2 += dy;
+				PSL_command (PSL, "PSL_text_x PSL_text_y M 0 %d G\n", PSL->internal.y0 + (int)lrint (y2 * PSL->internal.y2iy));
+			}
+			else
+				y += dy;
 		}
 		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-		word = gmt_get_word (GMT->current.map.frame.header, "\n", 0);
-		PSL_plottext (PSL, 0.0, 0.0, sign * GMT->current.setting.font_title.size, word, 0.0, -PSL_BC, form);
+		word = gmt_get_word (GMT->current.map.frame.header, "~", 0);
+		PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_title.size, word, 0.0, -PSL_BC, form);
 		PSL_command (PSL, "U\n");
 		gmt_M_str_free (word);
 	}
