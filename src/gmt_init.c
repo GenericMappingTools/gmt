@@ -157,6 +157,7 @@ static struct GMT_parameter GMT_keyword_active[]= {
 	{ 0, "FONT_HEADING"},
 	{ 0, "FONT_LABEL"},
 	{ 0, "FONT_LOGO"},
+	{ 0, "FONT_SUBTITLE"},
 	{ 0, "FONT_TAG"},
 	{ 0, "FONT_TITLE"},
 	{ 1, "FORMAT Parameters"},
@@ -5930,6 +5931,9 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	/* FONT_HEADING */
 	error += gmt_getfont (GMT, "32p,Helvetica,black", &GMT->current.setting.font_heading);
 	GMT->current.setting.given_unit[GMTCASE_FONT_HEADING] = 'p';
+	/* FONT_SUBTITLE */
+	error += gmt_getfont (GMT, "20p,Helvetica,black", &GMT->current.setting.font_subtitle);
+	GMT->current.setting.given_unit[GMTCASE_FONT_SUBTITLE] = 'p';
 	/* FONT_TITLE */
 	error += gmt_getfont (GMT, "24p,Helvetica,black", &GMT->current.setting.font_title);
 	GMT->current.setting.given_unit[GMTCASE_FONT_TITLE] = 'p';
@@ -9685,6 +9689,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_FONT:	/* Special to set all fonts */
 			error = gmtlib_setparameter (GMT, "FONT_ANNOT_PRIMARY", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_ANNOT_SECONDARY", value, core) +
+			        gmtlib_setparameter (GMT, "FONT_SUBTITLE", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_TITLE", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_TAG", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_HEADING", value, core) +
@@ -9708,6 +9713,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.font_label.size *= scale;
 				GMT->current.setting.font_heading.size *= scale;
 				GMT->current.setting.font_tag.size *= scale;
+				GMT->current.setting.font_subtitle.size *= scale;
 				GMT->current.setting.font_title.size *= scale;
 				GMT->current.setting.map_annot_offset[GMT_PRIMARY] *= scale;
 				GMT->current.setting.map_annot_offset[GMT_SECONDARY] *= scale;
@@ -9729,6 +9735,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 					p = gmt_hash_lookup (GMT, "FONT_LABEL", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_LABEL_OFFSET", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					p = gmt_hash_lookup (GMT, "FONT_SUBTITLE", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "FONT_TITLE", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
@@ -9753,6 +9761,9 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_FONT_HEADING:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_heading)) error = true;
+			break;
+		case GMTCASE_FONT_SUBTITLE:
+			if (gmt_getfont (GMT, value, &GMT->current.setting.font_subtitle)) error = true;
 			break;
 		case GMTCASE_FONT_TITLE:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_title)) error = true;
@@ -11319,6 +11330,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
+		case GMTCASE_FONT_SUBTITLE:
+			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_subtitle), GMT_BUFSIZ-1);
+			break;
 		case GMTCASE_FONT_TITLE:
 			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_title), GMT_BUFSIZ-1);
 			break;

@@ -5620,6 +5620,50 @@ GMT_LOCAL void gmtplot_map_annotations (struct GMT_CTRL *GMT) {
 	gmtplot_map_annotate (GMT, PSL, w, e, s, n);
 }
 
+void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
+	/* Place plot title, which may be a single line or multiple lines include sub-tiles in a separate font.
+	 * Note we have already checked if a header string contains both breaks and subtitles, which is not allowed:
+	 * We only allow a title to be broken into many lines, or a single title with multiple sub-titles.
+	 */
+	double sign = (gmt_M_is_zero (x) && gmt_M_is_zero (y)) ? -1.0 : +1.0;
+	unsigned int n_breaks, n_lines, k;
+	char *word = NULL;
+	struct PSL_CTRL *PSL= GMT->PSL;
+
+	if ((n_breaks = gmt_char_count (GMT->current.map.frame.header, '\r'))) {	/* Plot this string over several lines but keep the same font */
+		unsigned int form = gmt_setfont (GMT, &GMT->current.setting.font_title);
+		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
+		for (k = 0; k <= n_breaks; k++) {
+			word = gmt_get_word (GMT->current.map.frame.header, "\r", n_breaks - k);	/* Pick from the end going forward */
+			PSL_plottext (PSL, 0.0, 0.0, sign * GMT->current.setting.font_title.size, word, 0.0, -PSL_BC, form);
+			if (k < n_breaks) PSL_setorigin (PSL, 0.0, GMT->current.setting.font_title.size / PSL_POINTS_PER_INCH, 0.0, PSL_FWD);
+			gmt_M_str_free (word);
+		}
+		PSL_command (PSL, "U\n");
+	}
+	else if ((n_lines = gmt_char_count (GMT->current.map.frame.header, '\n'))) {	/* Plot first part as title but the rest as subtitles */
+		unsigned int form = gmt_setfont (GMT, &GMT->current.setting.font_subtitle);
+		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
+		for (k = 0; k < n_lines; k++) {
+			word = gmt_get_word (GMT->current.map.frame.header, "\n", n_breaks - k);	/* Pick from the end going forward */
+			PSL_plottext (PSL, 0.0, 0.0, sign * GMT->current.setting.font_subtitle.size, word, 0.0, -PSL_BC, form);
+			PSL_setorigin (PSL, 0.0, GMT->current.setting.font_subtitle.size / PSL_POINTS_PER_INCH, 0.0, PSL_FWD);
+			gmt_M_str_free (word);
+		}
+		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
+		word = gmt_get_word (GMT->current.map.frame.header, "\n", 0);
+		PSL_plottext (PSL, 0.0, 0.0, sign * GMT->current.setting.font_title.size, word, 0.0, -PSL_BC, form);
+		PSL_command (PSL, "U\n");
+		gmt_M_str_free (word);
+	}
+	else {	/* Straightforward */
+		unsigned int form = gmt_setfont (GMT, &GMT->current.setting.font_title);
+		PSL_plottext (PSL, 0.0, 0.0, sign * GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, -PSL_BC, form);
+	}
+
+	GMT->current.map.frame.plotted_header = true;
+}
+
 void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	/* This function is usually called twice by modules: Once before data-plotting starts and
 	 * once after all data-plotting has ended.  This is because different modules have different
