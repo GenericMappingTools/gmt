@@ -47,7 +47,8 @@ jobs:
                 @earth_day_20m \
                 @earth_night_20m \
                 @earth_age_06m \
-                @earth_mask_05m"
+                @earth_mask_05m \
+                @earth_mask_30s_p"
           # Download remote data multiple times to make sure all are downloaded
           gmt which -Ga $data
           gmt which -Ga $data
