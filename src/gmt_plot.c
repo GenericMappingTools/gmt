@@ -5626,6 +5626,8 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 	/* Place plot title, which may be a single line or multiple lines include sub-tiles in a separate font.
 	 * Note we have already checked if a header string contains both breaks and subtitles, which is not allowed:
 	 * We only allow a title to be broken into many lines, or a single title with multiple sub-titles.
+	 * Note, when x = y = 0 it means current point has already been selected so we must store that and keep
+	 * moving up for each line in the multi-line title.
 	 */
 	bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y));
 	double sign = (pos_set) ? -1.0 : +1.0, y2 = 0.0, dy;
