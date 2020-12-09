@@ -5898,11 +5898,13 @@ void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 
 	if (back && GMT->current.map.frame.header[0] && !GMT->current.map.frame.plotted_header) {	/* No header today */
 		gmt_plane_perspective (GMT, -1, 0.0);
-		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-		PSL_plottext (PSL, 0.5 * (GMT->current.proj.z_project.xmin + GMT->current.proj.z_project.xmax),
-			GMT->current.proj.z_project.ymax + GMT->current.setting.map_title_offset,
-			GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, -PSL_BC, form);
-		GMT->current.map.frame.plotted_header = true;
+		gmt_map_title (GMT, 0.5 * (GMT->current.proj.z_project.xmin + GMT->current.proj.z_project.xmax), GMT->current.proj.z_project.ymax + GMT->current.setting.map_title_offset);
+
+		//form = gmt_setfont (GMT, &GMT->current.setting.font_title);
+		//PSL_plottext (PSL, 0.5 * (GMT->current.proj.z_project.xmin + GMT->current.proj.z_project.xmax),
+		//	GMT->current.proj.z_project.ymax + GMT->current.setting.map_title_offset,
+		//	GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, -PSL_BC, form);
+		//GMT->current.map.frame.plotted_header = true;
 	}
 
 	gmt_plane_perspective (GMT, old_plane, old_level);
