@@ -5618,20 +5618,27 @@ GMT_LOCAL void gmtplot_map_annotations (struct GMT_CTRL *GMT) {
 }
 
 void gmtplot_title_breaks_decode (struct GMT_CTRL *GMT, const char *in_string, char *out_string) {
-	/* Deal with long-form #break; strings in title and subtitle and replace with ^ */
-	unsigned int i, o;
+	/* Deal with long-form @^ or #break; strings in title and subtitle and replace with ^ */
+	unsigned int i, o, kl[2] = {2, 7}, id;
+	char *kw[2] = {"@^", "#break;"};
 	gmt_M_unused (GMT);
 	if (in_string[0] == '\0') return;	/* Got nothing */
-	if (strstr (in_string, "#break;") == NULL)
+	if (strstr (in_string, "#break;"))
+		id = 1;
+	else if (strstr (in_string, "@^"))
+		id = 0;
+	else {	/* No markers given */
 		strncpy (out_string, in_string, GMT_LEN256);
-	else {
-		for (i = o = 0; i < strlen (in_string); i++) {
-			if (!strncmp (&in_string[i], "#break;", 7U))
-				out_string[o++] = '^', i += 6;	/* Skip 6 or those 7 letters, allowing for i++ */
-			else
-				out_string[o++] = in_string[i];
-		}
+		return;
 	}
+	/* Here we must replace kl[id] with GMT_ASCII_GS */
+	for (i = o = 0; i < strlen (in_string); i++) {
+		if (!strncmp (&in_string[i], kw[id], kl[id]))
+			out_string[o++] = GMT_ASCII_GS, i += (kl[id] - 1);	/* Skip one less, allowing for i++ */
+		else
+			out_string[o++] = in_string[i];
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Converted %s to %s\n", in_string, out_string);
 }
 
 void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
@@ -5642,7 +5649,7 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 	bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y)), many_lines = false;
 	double sign = (pos_set) ? -1.0 : +1.0, y_next = 0.0, line_spacing;
 	unsigned int n_breaks_T, n_breaks_S, k, form;
-	char *word = NULL, title[GMT_LEN256] = {""}, subtitle[GMT_LEN256] = {""};
+	char *word = NULL, title[GMT_LEN256] = {""}, subtitle[GMT_LEN256] = {""}, sep[2] = {""};
 	struct PSL_CTRL *PSL= GMT->PSL;
 
 	if (!GMT->current.map.frame.header[0]) return;	/* No title given */
@@ -5650,10 +5657,10 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 	gmtplot_title_breaks_decode (GMT, GMT->current.map.frame.header, title);
 	gmtplot_title_breaks_decode (GMT, GMT->current.map.frame.sub_header, subtitle);
 
-	n_breaks_T = gmt_char_count (title, '^');		/* Is there a title spilling over several lines */
-	n_breaks_S = gmt_char_count (GMT->current.map.frame.sub_header, '^');	/* Is there a subtitle spilling over several lines */
+	n_breaks_T = gmt_char_count (title, GMT_ASCII_GS);		/* Is there a title spilling over several lines */
+	n_breaks_S = gmt_char_count (subtitle, GMT_ASCII_GS);	/* Is there a subtitle spilling over several lines */
 
-	if (n_breaks_T || n_breaks_S || GMT->current.map.frame.sub_header[0])
+	if (n_breaks_T || n_breaks_S || subtitle[0])
 		many_lines = true;
 	else {	/* Just a single title string on one line */
 		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
@@ -5662,6 +5669,7 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 		return;	/* Done */
 	}
 
+	sep[0] = GMT_ASCII_GS;
 	/* Must put everything inside a gsave/grestore block */
 	PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
 	if (pos_set) PSL_command (PSL, "currentpoint /PSL_text_y edef /PSL_text_x edef\n");	/* Remember the position set for the text */
@@ -5672,7 +5680,7 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 		form = gmt_setfont (GMT, &GMT->current.setting.font_subtitle);
 		line_spacing = 1.1 * GMT->current.setting.font_subtitle.size / PSL_POINTS_PER_INCH;
 		for (k = 0; k <= n_breaks_S; k++) {
-			word = gmt_get_word (subtitle, "^", n_breaks_S - k);	/* Pick from the end going forward */
+			word = gmt_get_word (subtitle, sep, n_breaks_S - k);	/* Pick from the end going forward */
 			PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_subtitle.size, word, 0.0, -PSL_BC, form);
 			gmt_M_str_free (word);
 			if (pos_set) {	/* Must move up based on height above initial current point for every line since title will come later */
@@ -5688,7 +5696,7 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 	form = gmt_setfont (GMT, &GMT->current.setting.font_title);
 	line_spacing = 1.1 * GMT->current.setting.font_title.size / PSL_POINTS_PER_INCH;
 	for (k = 0; k <= n_breaks_T; k++) {
-		word = gmt_get_word (title, "^", n_breaks_T - k);	/* Pick from the end going forward */
+		word = gmt_get_word (title, sep, n_breaks_T - k);	/* Pick from the end going forward */
 		PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_title.size, word, 0.0, -PSL_BC, form);
 		gmt_M_str_free (word);
 		if (k < n_breaks_T) {	/* If there are more lines above this one */
