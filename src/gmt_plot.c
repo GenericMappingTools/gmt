@@ -5657,7 +5657,7 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 		many_lines = true;
 	else {	/* Just a single title string on one line */
 		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-		PSL_plottext (PSL, 0.0, 0.0, sign * GMT->current.setting.font_title.size, title, 0.0, -PSL_BC, form);
+		PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, -PSL_BC, form);
 		GMT->current.map.frame.plotted_header = true;
 		return;	/* Done */
 	}
