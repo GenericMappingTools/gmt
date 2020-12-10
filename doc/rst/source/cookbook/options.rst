@@ -320,7 +320,7 @@ Append **+n** to have no frame and annotations at all [Default is controlled by 
 Finally, you may optionally add **+t**\ *title* to place a title that
 will appear centered above the plot frame; optionally also add a *subtitle* via **+s**.
 **Note**: Both *title* and *subtitle* may be set over multiple lines by breaking them up
-using the markers '^' or '#break;'.
+using the markers '@^' or '#break;'.
 
 The Axes settings are specified by
 

@@ -6685,7 +6685,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     Append +o<plon>/<plat> to draw oblique gridlines about this pole [regular gridlines].\n");
 			gmt_message (GMT, "\t     Note: the +o modifier is ignored unless gridlines are specified via the axes parameters (below).\n");
 			gmt_message (GMT, "\t     Append +t<title> to place a title over the map frame [no title]. Optionally also set +s<subtitle>.\n");
-			gmt_message (GMT, "\t     Note: Both <title> and <subtitle> can be set across multiple lines by using \"^\" or \"#break;\" to mark breaks.\n");
+			gmt_message (GMT, "\t     Note: Both <title> and <subtitle> can be set across multiple lines by using \"@^\" or \"#break;\" to mark breaks.\n");
 			gmt_message (GMT, "\t     For 3-D plots the Z|z[<corners>] controls the vertical axis.  The <corners> specifies\n");
 			gmt_message (GMT, "\t     at which corner(s) to erect the z-axis via a combination of 1,2,3,4; 1 means lower left corner,\n");
 			gmt_message (GMT, "\t     2 is lower right, etc., in a counter-clockwise order [Default automatically selects one axis].\n");
