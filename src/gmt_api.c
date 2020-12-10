@@ -12486,8 +12486,8 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
 				return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
 			}
-			else
-				return GMT_NOERROR;
+			//else
+				//return GMT_NOERROR;
 		}
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */
