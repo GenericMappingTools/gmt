@@ -147,6 +147,9 @@ FONT Parameters
         Font to use for text plotted as part of the GMT time logo
         [8p,Helvetica,black].
 
+    **FONT_SUBTITLE**
+        Font to use when plotting titles over graphs that involve a subtitle [18p,Helvetica,black].
+
     **FONT_TAG**
         Font to use for subplot panel tags such as a), ii)
         [20p,Helvetica,black].

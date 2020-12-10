@@ -510,6 +510,7 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries */
 	struct GMT_PLOT_AXIS axis[3];	/* One each for x, y, and z */
 	char header[GMT_LEN256];	/* Plot title */
+	char sub_header[GMT_LEN256];	/* Plot subtitle */
 	struct GMT_FILL fill[3];		/* Fill for the basemap inside for planes x,y,z, if paint == true */
 	struct GMT_PEN pen;		/* Pen for the 3-D back wall outlines */
 	bool plotted_header;		/* true if header has been plotted */
