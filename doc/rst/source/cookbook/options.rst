@@ -281,13 +281,13 @@ but most examples of its usage are actually quite simple. We distinguish
 between two sets of information: Frame settings and Axes parameters.  These
 are set separately by their own **-B** invocations; hence multiple **-B**
 specifications may be specified. The frame settings covers things such
-as which axes should be plotted, canvas fill, plot title, and what type
+as which axes should be plotted, canvas fill, plot title (and subtitle), and what type
 of gridlines be drawn, whereas the Axes settings deal with annotation,
 tick, and gridline intervals, axes labels, and annotation units.
 
 The Frame settings are specified by
 
--  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
+-  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+s**\ *subtitle*][**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
 
 Here, the optional *axes* dictates which of the axes should be drawn
 and possibly annotated.  By default, all four map boundaries (or plot axes)
@@ -318,7 +318,9 @@ to produce oblique gridlines about another pole you can append **+o**\ *lon/lat*
 to change this behavior (the modifier is ignored if no gridlines are requested).
 Append **+n** to have no frame and annotations at all [Default is controlled by the codes].
 Finally, you may optionally add **+t**\ *title* to place a title that
-will appear centered above the plot frame.
+will appear centered above the plot frame; optionally also add a *subtitle* via **+s**.
+**Note**: Both *title* and *subtitle* may be set over multiple lines by breaking them up
+using the markers '^' or '#break;'.
 
 The Axes settings are specified by
 
