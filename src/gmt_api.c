@@ -12482,8 +12482,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		else
 			k = 1;	/* -A means -Az */
 		if ((opt = GMT_Find_Option (API, 'G', *head))) {	/* This is a problem */
-			GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
-			return_null (NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+			if (!strcmp(opt->arg, "")) {
+				GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
+				return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+			}
 		}
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */
@@ -12499,9 +12501,13 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		}
 		else
 			k = 1;	/* Default is the Gz grid */
-		if ((opt = GMT_Find_Option (API, 'G', *head))) {	/* This is a problem */
-			GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
-			return_null (NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+		if ((opt = GMT_Find_Option(API, 'G', *head))) {	/* This is a problem unless -G actually sent in a file name */
+			if (!strcmp(opt->arg, "")) {
+				GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
+				return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+			}
+			else
+				return GMT_NOERROR;
 		}
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */
