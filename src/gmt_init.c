@@ -5945,7 +5945,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	error += gmt_getfont (GMT, "32p,Helvetica,black", &GMT->current.setting.font_heading);
 	GMT->current.setting.given_unit[GMTCASE_FONT_HEADING] = 'p';
 	/* FONT_SUBTITLE */
-	error += gmt_getfont (GMT, "20p,Helvetica,black", &GMT->current.setting.font_subtitle);
+	error += gmt_getfont (GMT, "18p,Helvetica,black", &GMT->current.setting.font_subtitle);
 	GMT->current.setting.given_unit[GMTCASE_FONT_SUBTITLE] = 'p';
 	/* FONT_TITLE */
 	error += gmt_getfont (GMT, "24p,Helvetica,black", &GMT->current.setting.font_title);
