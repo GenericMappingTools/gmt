@@ -62,6 +62,7 @@ struct GMT_DEFAULTS {
 	unsigned int color_model;		/* 1 = read RGB, 2 = use RGB, 4 = read HSV, 8 = use HSV, 16 = read CMYK, 32 = use CMYK [1+2]
 									 * Add 128 to disallow output of color names */
 	char cpt[GMT_LEN64];			/* Default CPT */
+	char color_set[GMT_LEN256];		/* Default color list (or CPT) for automatic, sequential color choices */
 	double color_patch[3][4];		/* Color of background, foreground, nan [black,white,127.5] */
 	double color_hsv_min_s;			/* For smallest or most negative intensity [1.0] */
 	double color_hsv_max_s;			/* For largest or most positive intensity [0.1] */
@@ -74,6 +75,7 @@ struct GMT_DEFAULTS {
 	struct GMT_FONT font_label;		/* Font for labels [16p,Helvetica,black] */
 	struct GMT_FONT font_logo;		/* Font for GMT logo [8p,Helvetica,black] */
 	struct GMT_FONT font_tag;		/* Font for plot figure tags, e.g., a) [20p,Helvetica,black] */
+	struct GMT_FONT font_subtitle;		/* Font for plot titles [20p,Helvetica,black] */
 	struct GMT_FONT font_title;		/* Font for plot titles [24p,Helvetica,black] */
 	/* FORMAT group */
 	char format_clock_in[GMT_LEN64];	/* How to decode an incoming clock string [hh:mm:ss] */

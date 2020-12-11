@@ -5946,6 +5946,7 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 					else	/* Just this one layer grid */
 						sprintf (file, "%s", S_obj->filename);
 					G->data = &U_obj->data[here];	/* Point to start of this layer */
+					GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_export_cube: Layer %" PRIu64 ", offset = %" PRIu64 ".\n", k, here);
 					if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, S_obj->wesn, file, G) != GMT_NOERROR) {
 						return (API->error);
 					}
@@ -12481,8 +12482,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		else
 			k = 1;	/* -A means -Az */
 		if ((opt = GMT_Find_Option (API, 'G', *head))) {	/* This is a problem */
-			GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
-			return_null (NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+			if (!strcmp(opt->arg, "")) {
+				GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
+				return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+			}
 		}
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */
@@ -12498,9 +12501,13 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		}
 		else
 			k = 1;	/* Default is the Gz grid */
-		if ((opt = GMT_Find_Option (API, 'G', *head))) {	/* This is a problem */
-			GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
-			return_null (NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+		if ((opt = GMT_Find_Option(API, 'G', *head))) {	/* This is a problem unless -G actually sent in a file name */
+			if (!strcmp(opt->arg, "")) {
+				GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
+				return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+			}
+			else
+				return GMT_NOERROR;
 		}
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */

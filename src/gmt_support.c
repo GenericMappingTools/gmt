@@ -6365,15 +6365,11 @@ bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[]) {
 	if (!line) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No argument given to gmt_getrgb\n");
 		GMT->parent->error = GMT_PARSE_ERROR;
-		return false;
+		return true;
 	}
 	if (!line[0]) return (false);	/* Nothing to do - accept default action */
 
 	rgb[3] = hsv[3] = cmyk[4] = 0.0;	/* Default is no transparency */
-	if (line[0] == '-') {
-		rgb[0] = -1.0; rgb[1] = -1.0; rgb[2] = -1.0;
-		return (false);
-	}
 
 	strncpy (buffer, line, GMT_LEN64-1);	/* Make local copy */
 	if ((t = strstr (buffer, "@")) && strlen (t) > 1) {	/* User requested transparency via @<transparency> */
@@ -6384,6 +6380,21 @@ bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[]) {
 			rgb[3] = hsv[3] = cmyk[4] = transparency / 100.0;	/* Transparency is in 0-1 range */
 		t[0] = '\0';	/* Chop off transparency for the rest of this function */
 	}
+
+	if (strstr (buffer, "auto")) {	/* Will select sequential colors from a list - flag via -5 or -6 */
+		/* Let auto[-segment] be GMT_COLOR_AUTO_SEGMENT and auto-table be GMT_COLOR_AUTO_TABLE */
+		if (strstr (buffer, "table"))
+			rgb[0] = rgb[1] = rgb[2] = GMT_COLOR_AUTO_TABLE - 7;
+		else
+			rgb[0] = rgb[1] = rgb[2] = GMT_COLOR_AUTO_SEGMENT - 7;
+		return (false);
+	}
+
+	if (buffer[0] == '-') {
+		rgb[0] = rgb[1] = rgb[2] = -1.0;
+		return (false);
+	}
+
 	if (buffer[0] == '#') {	/* #rrggbb */
 		n = sscanf (buffer, "#%2x%2x%2x", (unsigned int *)&irgb[0], (unsigned int *)&irgb[1], (unsigned int *)&irgb[2]);
 		return (n != 3 || gmtsupport_check_irgb (irgb, rgb));
@@ -17350,6 +17361,27 @@ unsigned int gmt_get_columbar_bands (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S)
 	return (n_z);
 }
 
+void gmt_init_next_color (struct GMT_CTRL *GMT) {
+	/*  Reset the sequential color IDs if starting a new plot or we detect overlay shift via -X -Y */
+	bool reset = false;
+	if (!GMT->common.O.active)	/* Start of a new plot means reset counters read from history to 0 0 */
+		reset = true;
+	else if (fabs (GMT->common.X.off) > 0.0 || fabs (GMT->common.Y.off) > 0.0)	/* Overlay but we are moving focus */
+		reset = true;
+	if (reset) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reset sequential color pick IDs to 0,0\n");
+		GMT->current.plot.color_seq_id[0] = GMT->current.plot.color_seq_id[1] = 0;
+	}
+}
+
+void gmt_set_next_color (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned int type, double rgb[]) {
+	/* Cycle through the colors in P and increment sequential ID and only update r,g,b but not alpha */
+	static char *kind[2] = {"table", "segment"};
+	type--;	/* So 1 and 2 becomes 0 and 1 for array indices */ 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Current %s sequential color pick ID = %u.\n", kind[type], GMT->current.plot.color_seq_id[type]);
+	gmt_M_rgb_only_copy (rgb, P->data[GMT->current.plot.color_seq_id[type]].rgb_low);
+	GMT->current.plot.color_seq_id[type] = (GMT->current.plot.color_seq_id[type] + 1) % P->n_colors;
+}
 
 #if 0	/* Probably not needed after all */
 char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {

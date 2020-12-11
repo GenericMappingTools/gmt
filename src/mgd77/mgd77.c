@@ -29,6 +29,9 @@
 #define MGD77_CDF_CONVENTION	"CF-1.0"	/* MGD77+ files are CF-1.0 and hence COARDS-compliant */
 #define MGD77_COL_ORDER "#rec\tTZ\tyear\tmonth\tday\thour\tmin\tlat\t\tlon\t\tptc\ttwt\tdepth\tbcc\tbtc\tmtf1\tmtf2\tmag\tmsens\tdiur\tmsd\tgobs\teot\tfaa\tnqc\tid\tsln\tsspn\n"
 
+#define MGD77_NUM_VALID_COLNAMES 51
+char *valid_colnames[] = {"atime", "rtime", "ytime", "year", "month", "day", "hour", "min", "sec", "dmin", "hhmm", "date", "tz", "lon", "lat", "id", "ngdcid", "recno", "dist", "azim", "cc", "vel", "twt", "depth", "mtf1", "mtf2", "mag", "gobs", "faa", "drt", "ptc", "bcc", "btc", "msens", "msd", "diur", "eot", "sln", "sspn", "nqc", "carter", "igrf", "ceot", "ngrav", "weight", "mgd77", "mgd77t", "geo", "all", "allt", "dat"};
+
 struct MGD77_MAG_RF {
 	char *model;        /* Reference field model name */
 	int code;           /* Reference field code       */
@@ -4049,6 +4052,49 @@ void MGD77_Reset (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 	gmt_M_memset (F->Constraint, MGD77_MAX_COLS, struct MGD77_CONSTRAINT);
 	gmt_M_memset (F->Exact, MGD77_MAX_COLS, struct MGD77_PAIR);
 	gmt_M_memset (F->Bit_test, MGD77_MAX_COLS, struct MGD77_PAIR);
+}
+
+int MGD77_Verify_Columns (struct GMT_CTRL *GMT, char *arg) {
+	/* Scan the -Fstring to check if all the requested fields exist.
+ 	 */
+  
+	char p[GMT_BUFSIZ] = {""}, cstring[GMT_BUFSIZ] = {""};
+	unsigned int i, k, found, pos = 0, n = 0;
+  
+	if (!arg || !arg[0]) return 0;	/* Return when nothing is passed to us */
+    
+	strncpy (cstring, arg, GMT_BUFSIZ-1);
+	if (strchr (cstring, ':')) { /* We just want the fields list */
+		for (i = 0; i < strlen(cstring); i++) {
+			if (cstring[i] == ':') {
+				cstring[i] = '\0';
+				break;
+ 			}
+		}
+	}
+  
+	while ((gmt_strtok (cstring, ",", &pos, p))) {	/* Until we run out of abbreviations */
+		for (k = 0; k < strlen(p); k++) {
+			if ((p[k] == '>') || (p[k] == '<') || (p[k] == '=') || (p[k] == '|') || (p[k] == '!')) {
+				p[k] = '\0';
+				break;
+			}
+		}
+		found = 0;
+		for (k = 0; k < MGD77_NUM_VALID_COLNAMES; k++) {
+			if (!strcasecmp(p, valid_colnames[k])) {
+				found = 1;
+				break;
+			}
+		}
+		if (!found) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "\"%s\" is not a valid column name.\n", p);      
+			n++;
+		}
+	}
+  
+	return n;
+  
 }
 
 int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL *F, unsigned int option) {

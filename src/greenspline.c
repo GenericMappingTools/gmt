@@ -1231,7 +1231,7 @@ GMT_LOCAL double greenspline_grad_spline3d_Mitasova_Mitas (struct GMT_CTRL *GMT,
  * coeff[GSP_RANGE]:	The largest |range| of the detrended data
  */
 
-GMT_LOCAL double greenspline_ungreenspline_do_normalization (double *X, double w_norm, unsigned int mode, double *coeff, unsigned int dim) {
+GMT_LOCAL double greenspline_undo_normalization (double *X, double w_norm, unsigned int mode, double *coeff, unsigned int dim) {
 	if (mode & GREENSPLINE_NORM) w_norm *= coeff[GSP_RANGE];	/* Scale back up by residual data range (ir we normalized) */
 	w_norm += coeff[GSP_MEAN_Z];					/* Add in mean data value plus minimum residual value (ir we normalized by range) */
 	if (mode & GREENSPLINE_TREND) {					/* Restore residual trend */
@@ -1241,7 +1241,7 @@ GMT_LOCAL double greenspline_ungreenspline_do_normalization (double *X, double w
 	return (w_norm);
 }
 
-GMT_LOCAL void greenspline_greenspline_do_normalization_1d (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, unsigned int mode, double *coeff) {
+GMT_LOCAL void greenspline_do_normalization_1d (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, unsigned int mode, double *coeff) {
 	/* We always remove/restore the mean observation value.  mode is a combination of bitflags that affects what we do:
 	 * Bit GREENSPLINE_TREND will also remove linear trend
 	 * Bit GREENSPLINE_NORM will normalize residuals by range
@@ -1303,7 +1303,7 @@ GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X
 	else
 		GMT_Report (API, GMT_MSG_INFORMATION, "Normalization mode: %s\n", type[mode]);
 	if (dim == 1) {	/* 1-D trend or mean only */
-		greenspline_greenspline_do_normalization_1d (API, X, obs, n, mode, coeff);
+		greenspline_do_normalization_1d (API, X, obs, n, mode, coeff);
 		return;
 	}
 	gmt_M_memset (coeff, GSP_LENGTH, double);
@@ -1493,9 +1493,10 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	write_3D_records = (dimension == 3 && !Ctrl->G.active);	/* Just so it is only true if 3-D and no output filename was given */
 
+	/* As many S.mode reflects 1-D after parse, here we increment S.mode if dimension is 2 or 3 */
 	if (Ctrl->S.mode == SANDWELL_1987_1D || Ctrl->S.mode == WESSEL_BERCOVICI_1998_1D) Ctrl->S.mode += (dimension - 1);
 	if (Ctrl->S.mode == LINEAR_1D) Ctrl->S.mode += (dimension - 1);
-	if (Ctrl->S.mode == MITASOVA_MITAS_1993_2D ) Ctrl->S.mode += (dimension - 2);
+	if (Ctrl->S.mode == MITASOVA_MITAS_1993_2D) Ctrl->S.mode += (dimension - 2);
 
 	way = gmt_M_is_spherical (GMT) ? GMT_GREATCIRCLE : GMT_GEODESIC;
 	Ctrl->D.mode--;	/* Since I added 0 to be 1-D later so now it is -1 */
@@ -1537,7 +1538,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	if (Ctrl->D.mode <= 1 && Ctrl->L.active)
 		normalize = GREENSPLINE_NORM;	/* Do not de-plane, just remove mean and normalize */
 	else if (Ctrl->D.mode > 1 && Ctrl->L.active)
-		GMT_Report (API, GMT_MSG_ERROR, "-L ignored for -D modes 2 and 3\n");
+		GMT_Report (API, GMT_MSG_ERROR, "-L ignored for -D modes 3-5\n");
 
 	if (Ctrl->Q.active && dimension == 2) sincosd (Ctrl->Q.az, &Ctrl->Q.dir[GMT_X], &Ctrl->Q.dir[GMT_Y]);
 
@@ -1896,6 +1897,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			Grid->header->n_rows = 1;	/* So that output logic will work for 1-D which only has columns */
 			n_ok = Grid->header->n_columns = gmt_M_grd_get_nx (GMT, Grid->header);
 			header = Grid->header;
+			data = gmt_M_memory (GMT, NULL, Grid->header->n_columns, gmt_grdfloat);
 		}
 		else if (dimension == 2) {	/* Need a full-fledged Grid creation since we are writing it to who knows where */
 			if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->R3.range, Ctrl->I.inc, \
@@ -2031,7 +2033,6 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 #endif
 
-
 	if (dimension == 1) gmt_increase_abstime_format_precision (GMT, GMT_X, Ctrl->I.inc[GMT_X]);	/* In case we need more sub-second precision output */
 
 	if (Ctrl->E.active) {	/* Need to duplicate the data since SVD destroys it */
@@ -2051,7 +2052,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	 * (except for terms involving gradients where A_ij = -A_ji).  So we
 	 * start the loop over columns as col = row and deal with A)ij and A_ji
 	 * at the same time since we can evaluate the same costly G() function
-	 * [or dGdr () function)]  once.
+	 * [or dGdr () function)] once.
 	 */
 
 	mem = (double)nm * (double)nm * (double)sizeof (double);	/* In bytes */
@@ -2269,7 +2270,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		predicted = gmt_M_memory (GMT, NULL, nm, double);	/* To hold predictions */
 		gmt_matrix_matrix_mult (GMT, A_orig, alpha, nm, nm, 1U, predicted);	/* predicted = A * alpha are normalized predictions at data points */
 		for (j = 0; j < nm; j++) {	/* For each data constraint */
-			predicted[j] = greenspline_ungreenspline_do_normalization (X[j], predicted[j], normalize, norm, dimension);	/* undo normalization first */
+			predicted[j] = greenspline_undo_normalization (X[j], predicted[j], normalize, norm, dimension);	/* undo normalization first */
 			pvar_sum += predicted[j] * predicted[j];	/* Sum of predicted variance */
 			dev = orig_obs[j] - predicted[j];	/* Deviation between observed and predicted */
 			rms += dev * dev;	/* Accumulate rms sum */
@@ -2364,7 +2365,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 						part = G (GMT, r, par, Lz);
 					out[dimension] += alpha[p] * part;
 				}
-				out[dimension] = greenspline_ungreenspline_do_normalization (out, out[dimension], normalize, norm, dimension);
+				out[dimension] = greenspline_undo_normalization (out, out[dimension], normalize, norm, dimension);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Rec);
 			}
 		}
@@ -2379,14 +2380,14 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	else {	/* Output on equidistant lattice */
 		uint64_t nz_off, nxy;
 		unsigned int layer, wmode = GMT_ADD_DEFAULT;
-		double *xp = NULL, *yp = NULL, wp, V[4];
+		double *xp = NULL, *yp = NULL, wp, V[4] = {0.0, 0.0, 0.0, 0.0};
 		GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate spline at %" PRIu64 " equidistant output locations\n", n_ok);
 		/* Precalculate coordinates */
 		xp = gmt_grd_coord (GMT, header, GMT_X);
 		if (dimension > 1) yp = gmt_grd_coord (GMT, header, GMT_Y);
 		nxy = header->size;	/* Will only be used for 3-D anyway when there are layers */
-		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
 		if (dimension == 1 || write_3D_records) {	/* Write ASCII table to named file or stdout for 1-D or stdout for 3-D */
+			GMT->common.b.ncol[GMT_OUT] = dimension + 1;
 			if (Ctrl->G.active) {
 				if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMT_NOTSET) {
 					gmt_M_free (GMT, xp);
@@ -2406,11 +2407,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, xp);
 				Return (API->error);
 			}
-			if (dimension == 1)
-				data = gmt_M_memory (GMT, NULL, Grid->header->n_columns, gmt_grdfloat);
 
 		} /* Else we are writing a grid or cube */
-		gmt_M_memset (V, 4, double);
 		if (Ctrl->C.movie) {	/* 2-D only: Write out grid after adding contribution for each eigenvalue separately */
 			gmt_grdfloat *tmp = NULL;
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
@@ -2442,7 +2440,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 								part = G (GMT, r, par, Lz);
 							wp += alpha[p] * part;
 						}
-						V[GMT_Z] = greenspline_ungreenspline_do_normalization (V, wp, normalize, norm, 2U);
+						V[GMT_Z] = greenspline_undo_normalization (V, wp, normalize, norm, 2U);
 						Out->data[ij] = (gmt_grdfloat)V[GMT_Z];
 					}
 				}
@@ -2463,17 +2461,17 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, ssave);
 		}
 		else {	/* Just compute the final interpolation */
-			Rec->data = V;	/* For rec-by-rec output */
+			if (dimension == 1 || write_3D_records) Rec->data = V;	/* For rec-by-rec output */
 			for (layer = 0, nz_off = 0; layer < n_layers; layer++, nz_off += nxy) {	/* Might be dummy loop of 1 layer unless 3-D */
 				int64_t col, row, p; /* On Windows, the 'for' index variables must be signed, so redefine these 3 inside this block only */
-				double z_level = (dimension == 3) ? Cube->z[layer] : 0.0;
-				if (dimension == 3) V[GMT_Z] = z_level;
+				double z_layer = (dimension == 3) ? Cube->z[layer] : 0.0;
 				if (Ctrl->Q.active) {	/* Derivatives of solution */
 #ifdef _OPENMP
-#pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(dimension,yp,header,xp,X,Ctrl,GMT,alpha,Lz,norm,data,par,nz_off,z_level,nm,normalize)
+#pragma omp parallel for private(row,V,ij,col,p,wp,r,C,part) shared(header,dimension,yp,z_layer,nz_off,data,xp,nm,GMT,X,Ctrl,dGdr,par,Lz,alpha,normalize,norm)
 #endif
 					for (row = 0; row < header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
-						if (dimension > 1) V[GMT_Y] = yp[row];
+						if (dimension > 1)  V[GMT_Y] = yp[row];
+						if (dimension == 3) V[GMT_Z] = z_layer;
 						ij = (dimension > 1) ? gmt_M_ijp (header, row, 0) + nz_off : 0;
 						for (col = 0; col < header->n_columns; col++, ij++) {	/* This loop is always active for 1,2,3D */
 							if (dimension == 2 && gmt_M_is_fnan (data[ij])) continue;	/* Only do solution where mask is not NaN */
@@ -2485,16 +2483,17 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 								part = dGdr (GMT, r, par, Lz) * C;
 								wp += alpha[p] * part;
 							}
-							data[ij] = (gmt_grdfloat)greenspline_ungreenspline_do_normalization (V, wp, normalize, norm, dimension);
+							data[ij] = (gmt_grdfloat)greenspline_undo_normalization (V, wp, normalize, norm, dimension);
 						}
 					}	/* End of row-loop [OpenMP] */
 				}
 				else {	/* Regular surface */
 #ifdef _OPENMP
-#pragma omp parallel for private(V,row,col,ij,p,r,C,part,wp) shared(dimension,yp,header,xp,X,Ctrl,GMT,alpha,Lz,norm,data,par,nz_off,z_level,nm,normalize)
+#pragma omp parallel for private(row,V,ij,col,p,wp,r,part) shared(header,dimension,yp,z_layer,nz_off,data,xp,nm,GMT,X,G,par,Lz,alpha,normalize,norm)
 #endif
 					for (row = 0; row < header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
-						if (dimension > 1) V[GMT_Y] = yp[row];
+						if (dimension > 1)  V[GMT_Y] = yp[row];
+						if (dimension == 3) V[GMT_Z] = z_layer;
 						ij = (dimension > 1) ? gmt_M_ijp (header, row, 0) + nz_off : 0;
 						for (col = 0; col < header->n_columns; col++, ij++) {	/* This loop is always active for 1,2,3D */
 							if (dimension == 2 && gmt_M_is_fnan (data[ij])) continue;	/* Only do solution where mask is not NaN */
@@ -2505,13 +2504,13 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 								part = G (GMT, r, par, Lz);
 								wp += alpha[p] * part;
 							}
-							data[ij] = (gmt_grdfloat)greenspline_ungreenspline_do_normalization (V, wp, normalize, norm, dimension);
+							data[ij] = (gmt_grdfloat)greenspline_undo_normalization (V, wp, normalize, norm, dimension);
 						}
 					}	/* End of row-loop [OpenMP] */
 				}
 
 				if (write_3D_records) {	/* Must dump this slice of the 3-D cube as ASCII slices as a backwards compatibility option */
-					V[GMT_Z] = z_level;
+					V[GMT_Z] = z_layer;
 					for (row = 0; row < header->n_rows; row++) {
 						V[GMT_Y] = yp[row];
 						for (col = 0; col < header->n_columns; col++) {
@@ -2549,7 +2548,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 		}
 		if (delete_grid) /* No longer required for 1-D and 3-D */
-			gmt_free_grid (GMT, &Grid, dimension > 1);
+			gmt_free_grid (GMT, &Grid, false);
 		if (dimension == 3) GMT_Destroy_Data (API, &Cube);	/* Done with the output cube */
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */

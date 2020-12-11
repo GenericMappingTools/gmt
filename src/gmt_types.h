@@ -347,6 +347,7 @@ struct GMT_PLOT {		/* Holds all plotting-related parameters */
 	bool substitute_pi;		/* true when -R or -B was given with pi and we want to use pi in annotations if possible */
 	unsigned int mode_3D;		/* Determines if we draw fore and/or back 3-D box lines [Default is both] */
 	unsigned int *pen;		/* Pen (PSL_MOVE = up, PSL_DRAW = down) for these points */
+	unsigned int color_seq_id[2];	/* Next sequential color entries (table,segment) in the auto-CPT list of colors from COLOR_SET */
 	struct GMT_PLOT_CALCLOCK calclock;
 	/* The rest of the struct contains pointers that may point to memory not included by this struct */
 	double *x;			/* Holds the x/y (inches) of a line to be plotted */

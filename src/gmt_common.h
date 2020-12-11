@@ -65,12 +65,14 @@ struct GMT_LEGEND_ITEM {	/* Information about one item in a legend */
 	char pen[3][GMT_LEN32];		/* Pens to use with +d and +v and +p */
 	int draw;			/* 0 no draw, 1 draw horizontal +d, 2 draw vertical +v */
 	int just;			/* Legend placement [TR] */
+	int label_type;			/* 0 if static string, 1 if integer format statement, 2 if list of labels, 3 if nothing (use segment header) */
 	char code;			/* Label justification code (L|C|R) [L] */
 	double size;			/* Fixed symbol size when otherwise cannot set it */
 	double size2;			/* 2nd size (height) for 2-D symbols */
 	double scale;			/* Scale all given sizes, including +s<length> of a line */
 	double width;			/* Override auto-width with a fixed legend width */
 	unsigned int ncols;		/* How many columns to use for symbols */
+	unsigned int ID;		/* ID to use if label contains C-format for integer */
 };
 
 /*! Structure with all information given via the common GMT command-line options -R -J .. */
