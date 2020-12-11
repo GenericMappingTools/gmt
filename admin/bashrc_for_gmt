@@ -55,17 +55,24 @@ function gmtfind {
 alias cmakegmtd='cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug ..' # Configure cmake for debug
 alias cmakegmtr='cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release ..' # Configure cmake for release
 alias cmakegmtx='cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..' # Configure cmake for Xcode debug
-
-gmt6='cd ${REPO_DIR}/src'	# Cd to the GMT source directory
+# To change folders, open logs, build docs
+alias gmt6='cd ${REPO_DIR}/src'	# Cd to the GMT source directory
 alias gtop='cd ${REPO_DIR}'	# Cd to the top of the dev tree
 alias dlog='pushd .; gtop; ${EDITOR} dbuild/Testing/Temporary/LastTest.log; popd' # Open the dbuild check error log
 alias rlog='pushd .; gtop; ${EDITOR} rbuild/Testing/Temporary/LastTest.log; popd' # Open the rbuild check error log
 alias bdoc='pushd .; gmt6; cd ../dbuild; ${builder} -j${ncores} docs_html install; popd'
+# To pull changes, rebuild existing build directories
 alias buildd='pushd .; gtop; git pull; cd dbuild; ${builder} -j${ncores} install; popd' # Pull changes and rebuild existing dbuild
 alias buildr='pushd .; gtop; git pull; cd rbuild; ${builder} -j${ncores} install; popd' # Pull changes and rebuild existing rbuild
+# To pull changes, delete and remake build directories
 alias buildnewd='pushd .; gtop; git pull; rm -rf dbuild; mkdir dbuild; cd dbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G ${Bname} ..; ${builder} -j${ncores} install; popd' # Pull changes; delete and recreate build directory (debug)
 alias buildnewr='pushd .; gtop; git pull; rm -rf rbuild; mkdir rbuild; cd rbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release -G ${Bname} ..; ${builder} -j${ncores} install; popd' # Pull changes; delete and recreate build directory (release)
 alias buildnewx='pushd .; gtop; git pull; rm -rf xbuild; mkdir xbuild; cd xbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..; xcodebuild; popd' # Pull changes; delete and recreate build directory (XCode)
+# To rebuild without pulling remote changes
+alias builddnopull='pushd .; gtop; cd ../dbuild; ${builder} -j${ncores} install; popd' # Rebuild existing dbuild
+alias buildnewdnopull='pushd .; gtop; rm -rf dbuild; mkdir dbuild; cd dbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G ${Bname} ..; ${builder} -j${ncores} install; popd' # Delete and recreate build directory (debug)
+alias buildnewxnopull='pushd .; gtop; rm -rf xbuild; mkdir xbuild; cd xbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..; xcodebuild; popd' # Delete and recreate build directory (XCode)
+# To run tests
 alias checkdbuild='pushd .; gtop; cd dbuild; ${builder} -j${ncores} check; popd' # Run the tests for dbuild
 alias checkrbuild='pushd .; gtop; cd rbuild; ${builder} -j${ncores} check; popd' # Run the tests for rbuild
 # If gcc-mp is installed you can do OpenMP builds
@@ -83,6 +90,9 @@ alias bnr-mp=buildnewr-mp # Pull changes; delete and rebuild rbuild with OpenMP
 alias cdb=checkdbuild # Run the tests for dbuild
 alias crb=checkrbuild # Run the tests for rbuild
 alias bmdc='buildnewd; checkdbuild' # build new master debug and run all tests
+alias bdnp=builddnp # Rebuild existing dbuild
+alias bndnp=buildnewdnopull # delete and recreate dbuild
+alias bnxnp=buildnewxnopull # delete and recreate xbuild
 
 # See test results
 alias vpngdbuild='pushd .; gtop; cd dbuild; $pngview */*/*/*.png; popd'
