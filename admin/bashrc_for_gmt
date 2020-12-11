@@ -62,22 +62,38 @@ alias dlog='pushd .; gtop; ${EDITOR} dbuild/Testing/Temporary/LastTest.log; popd
 alias rlog='pushd .; gtop; ${EDITOR} rbuild/Testing/Temporary/LastTest.log; popd' # Open the rbuild check error log
 alias bdoc='pushd .; gmt6; cd ../dbuild; ${builder} -j${ncores} docs_html install; popd'
 # To pull changes, rebuild existing build directories
-alias buildd='pushd .; gtop; git pull; cd dbuild; ${builder} -j${ncores} install; popd' # Pull changes and rebuild existing dbuild
-alias buildr='pushd .; gtop; git pull; cd rbuild; ${builder} -j${ncores} install; popd' # Pull changes and rebuild existing rbuild
+alias buildd='pushd .; gtop; git pull; cd dbuild; ${builder} -j${ncores} install; \
+	popd' # Pull changes and rebuild existing dbuild
+alias buildr='pushd .; gtop; git pull; cd rbuild; ${builder} -j${ncores} install; \
+	popd' # Pull changes and rebuild existing rbuild
 # To pull changes, delete and remake build directories
-alias buildnewd='pushd .; gtop; git pull; rm -rf dbuild; mkdir dbuild; cd dbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G ${Bname} ..; ${builder} -j${ncores} install; popd' # Pull changes; delete and recreate build directory (debug)
-alias buildnewr='pushd .; gtop; git pull; rm -rf rbuild; mkdir rbuild; cd rbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release -G ${Bname} ..; ${builder} -j${ncores} install; popd' # Pull changes; delete and recreate build directory (release)
-alias buildnewx='pushd .; gtop; git pull; rm -rf xbuild; mkdir xbuild; cd xbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..; xcodebuild; popd' # Pull changes; delete and recreate build directory (XCode)
+alias buildnewd='pushd .; gtop; git pull; rm -rf dbuild; mkdir dbuild; cd dbuild; \
+	cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G ${Bname} ..; \
+	${builder} -j${ncores} install; popd' # Pull changes; delete and recreate build directory (debug)
+alias buildnewr='pushd .; gtop; git pull; rm -rf rbuild; mkdir rbuild; cd rbuild; \
+	cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release -G ${Bname} ..; \
+	${builder} -j${ncores} install; popd' # Pull changes; delete and recreate build directory (release)
+alias buildnewx='pushd .; gtop; git pull; rm -rf xbuild; mkdir xbuild; cd xbuild; \
+	cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..; xcodebuild; \
+	popd' # Pull changes; delete and recreate build directory (XCode)
 # To rebuild without pulling remote changes
 alias builddnopull='pushd .; gtop; cd ../dbuild; ${builder} -j${ncores} install; popd' # Rebuild existing dbuild
-alias buildnewdnopull='pushd .; gtop; rm -rf dbuild; mkdir dbuild; cd dbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G ${Bname} ..; ${builder} -j${ncores} install; popd' # Delete and recreate build directory (debug)
-alias buildnewxnopull='pushd .; gtop; rm -rf xbuild; mkdir xbuild; cd xbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..; xcodebuild; popd' # Delete and recreate build directory (XCode)
+alias buildnewdnopull='pushd .; gtop; rm -rf dbuild; mkdir dbuild; cd dbuild; \
+	cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G ${Bname} ..; \
+	${builder} -j${ncores} install; popd' # Delete and recreate build directory (debug)
+alias buildnewxnopull='pushd .; gtop; rm -rf xbuild; mkdir xbuild; cd xbuild; \
+	cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..; \
+	xcodebuild; popd' # Delete and recreate build directory (XCode)
 # To run tests
 alias checkdbuild='pushd .; gtop; cd dbuild; ${builder} -j${ncores} check; popd' # Run the tests for dbuild
 alias checkrbuild='pushd .; gtop; cd rbuild; ${builder} -j${ncores} check; popd' # Run the tests for rbuild
 # If gcc-mp is installed you can do OpenMP builds
-alias buildnewr-mp='pushd .; gtop; git pull; rm -rf rbuild-mp; mkdir rbuild-mp; cd rbuild-mp; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release -G ${Bname} -C ~/cache.cmake ..; ${builder} -j${ncores} install; popd'
-alias buildnewd-mp='pushd .; gtop; git pull; rm -rf dbuild-mp; mkdir dbuild-mp; cd dbuild-mp; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release -G ${Bname} -C ~/cache.cmake ..; ${builder} -j${ncores} install; popd'
+alias buildnewr-mp='pushd .; gtop; git pull; rm -rf rbuild-mp; mkdir rbuild-mp; \
+	cd rbuild-mp; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release -G ${Bname} -C ~/cache.cmake ..; \
+	${builder} -j${ncores} install; popd'
+alias buildnewd-mp='pushd .; gtop; git pull; rm -rf dbuild-mp; mkdir dbuild-mp; \
+	cd dbuild-mp; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release -G ${Bname} -C ~/cache.cmake ..; \
+	${builder} -j${ncores} install; popd'
 
 # Shorter aliases for the build aliases
 alias bd=buildd # Pull changes and rebuild existing dbuild
