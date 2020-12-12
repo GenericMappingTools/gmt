@@ -281,7 +281,8 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, const char *s
 	/* Convert a string containing Latex syntax to an EPS image */
 	unsigned int i, o;
 	int error = 0;
-	char *text = NULL, *prefix = NULL, tmpfile[PATH_MAX] = {""}, here[PATH_MAX] = {""}, file[PATH_MAX] = {""}, cmd[PATH_MAX] = {""};
+	char *text = NULL, *prefix = NULL, *font;
+	char tmpfile[PATH_MAX] = {""}, here[PATH_MAX] = {""}, file[PATH_MAX] = {""}, cmd[PATH_MAX] = {""};
 	unsigned char *picture = NULL;
 	FILE *fp = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -339,7 +340,18 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, const char *s
 		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create temporary file %s.\n", file);
 		return NULL;
 	}
-	fprintf (fp, "\\documentclass{article}\n\\begin{document}\n\\thispagestyle{empty}\n%s\n\\end{document}\n", text);
+	switch (GMT->current.setting.font_title.id) {	/* Pick corresponding family */
+		case 0:  case 1:  case 2:   case 3: font = "helvet";	break;
+		case 4:  case 5:  case 6:   case 7: font = "mathptmx";	break;
+		case 8:  case 9:  case 10: case 11: font = "courier";	break;
+		case 17: case 18: case 19: case 20: font = "bookman";	break;
+		case 29: case 30: case 31: case 32: font = "palatino";	break;
+		default: font = NULL;
+	}
+	fprintf (fp, "\\documentclass{article}\n");
+	if (font) /* Impose a selected font family, otherwise take default Computer Modern */
+		fprintf (fp, "\\usepackage[T1]{fontenc}\\usepackage[utf8]{inputenc}\\usepackage{%s}\n", font);
+	fprintf (fp, "\\begin{document}\n\\thispagestyle{empty}\n%s\n\\end{document}\n", text);
 	fclose (fp);
 	gmt_M_str_free (text);
 	/* Make Script file */
@@ -5783,6 +5795,12 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 			return;	/* Done */
 		}
 		/* Place EPS file as title, then free eps */
+		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
+		if (pos_set) {
+			PSL_command (PSL, "currentpoint T %g 2 dup scale\n", GMT->current.setting.font_title.size / 10.0);	/* Translate to this point, then scale up from 10p to title font size */
+		}
+		PSL_plotepsimage (PSL, x, y, header.width / 72.0, header.height / 72.0, PSL_BC, eps, &header);
+		PSL_command (PSL, "U\n");
 		PSL_free (eps);
 		return;
 	}
