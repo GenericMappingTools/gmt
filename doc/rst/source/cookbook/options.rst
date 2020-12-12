@@ -320,7 +320,8 @@ Append **+n** to have no frame and annotations at all [Default is controlled by 
 Finally, you may optionally add **+t**\ *title* to place a title that
 will appear centered above the plot frame; optionally also add a *subtitle* via **+s**.
 **Note**: Both *title* and *subtitle* may be set over multiple lines by breaking them up
-using the markers '@^' or '#break;'.
+using the markers '@^' or '#break;'.  To include Latex code as part of a single-line title,
+enclose the expression with @$ markers (**Note**: Requires latex and dvips to be installed).
 
 The Axes settings are specified by
 
@@ -345,6 +346,8 @@ but you may also split this into two separate invocations for clarity, i.e.,
     force a horizontal label for *y*-axes (useful for very short labels).
     For Cartesian axes you may specify an alternate via **+s** which is used for
     right or upper axis axis label (with any **+l** label used for left and bottom axes).
+    To include Latex code as part of a label, enclose the expression with @$ markers
+    (**Note**: Requires latex and dvips to be installed).
     If the axis annotation should have a leading text prefix (e.g., dollar sign for those
     plots of your net worth) you can append **+p**\ *prefix*. For geographic maps
     the addition of degree symbols, etc. is automatic (and controlled by the GMT

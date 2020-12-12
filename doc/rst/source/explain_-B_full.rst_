@@ -30,9 +30,9 @@
     requested (below) and disallowed for the oblique Mercator projection.
     To add a plot title, append **+t**\ *title*; optionally add a *subtitle* via **+s**.
     **Note**: Both *title* and *subtitle* may be set over multiple lines by breaking them up
-    using the markers '@^' or '#break;'.  To include Latex code as part of a tile, enclose
-    the expression with @$ markers (**Note**: Requires latex and dvips to be installed). The Frame setting is optional but
-    can be invoked once to override the above defaults.
+    using the markers '@^' or '#break;'.  To include Latex code as part of a single-line title,
+    enclose the expression with @$ markers (**Note**: Requires latex and dvips to be installed).
+    The Frame setting is optional but can be invoked once to override the above defaults.
 
     The Axes parameters are specified by
 
