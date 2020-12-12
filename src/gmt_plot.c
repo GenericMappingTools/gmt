@@ -266,6 +266,126 @@ struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle hea
 
 /* Local functions */
 
+/* COnverting Latex strings to EPS files.  This is based on the discussion we had at
+ * https://github.com/GenericMappingTools/gmt/issues/4563#issuecomment-743374160.
+ * As long as the user has latex and dvips installed this should work for everybody.
+ */
+
+GMT_LOCAL bool gmtplot_is_latex (struct GMT_CTRL *GMT, const char *string) {
+	/* Detect if string contains Latex commands, i.e., "....@$Latex...@$ ..." */
+	char *p;
+	return ((p = strstr (string, "@$")) && strstr (&p[1], "@$"));
+}
+
+GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, const char *string, struct imageinfo *h) {
+	/* Convert a string containing Latex syntax to an EPS image */
+	unsigned int i, o;
+	int error = 0;
+	char *text = NULL, *prefix = NULL, tmpfile[PATH_MAX] = {""}, here[PATH_MAX] = {""}, file[PATH_MAX] = {""}, cmd[PATH_MAX] = {""};
+	unsigned char *picture = NULL;
+	FILE *fp = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
+
+	if (gmt_check_executable (GMT, "latex", "--version", NULL, NULL)) {
+		GMT_Report (API, GMT_MSG_INFORMATION, "latex found.\n");
+	}
+	else {
+		GMT_Report (API, GMT_MSG_ERROR, "latex is not installed or not in your executable path - cannot process Latex to DVI.\n");
+		return NULL;
+	}
+	if (gmt_check_executable (GMT, "dvips", "--version", NULL, NULL)) {
+		GMT_Report (API, GMT_MSG_INFORMATION, "dvips found.\n");
+	}
+	else {
+		GMT_Report (API, GMT_MSG_ERROR, "dvips is not installed or not in your executable path - cannot convert DVI to EPS.\n");
+		return NULL;
+	}
+	/* Strip out the @$ to just get $ */
+	text = strdup (string);
+	for (i = o = 0; i < strlen (string); i++) {
+		if (!(string[i] == '@' && string[i+1] == '$'))
+			text[o++] = string[i];
+	}
+	text[o] = '\0';	/* Terminate the now shortened string */
+	/* Create unique file for outputs */
+
+	snprintf (tmpfile, PATH_MAX, "%s/gmt_latex_XXXXXX", API->tmp_dir);	/* The XXXXXX will be replaced by mktemp */
+	if ((prefix = mktemp (tmpfile)) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create temporary file name from template %s.\n", tmpfile);
+		gmt_M_str_free (string);
+		return NULL;
+	}
+	if (gmt_mkdir (prefix)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to create directory %s - exiting.\n", prefix);
+		gmt_M_str_free (string);
+		return NULL;
+	}
+	/* Remember were we are */
+	if (getcwd (here, PATH_MAX) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to determine current working directory - exiting.\n");
+		gmt_M_str_free (string);
+		return NULL;
+	}
+	gmt_replace_backslash_in_path (here);
+	/* Use tmpfile as the current directory */
+	if (chdir (prefix)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to change directory to %s - exiting.\n", prefix);
+		gmt_M_str_free (string);
+		return NULL;
+	}	
+	/* Make Latex file */
+	sprintf (file, "gmt_eq.tex");
+	if ((fp = fopen (file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create temporary file %s.\n", file);
+		return NULL;
+	}
+	fprintf (fp, "\\documentclass{article}\n\\begin{document}\n\\thispagestyle{empty}\n%s\n\\end{document}\n", text);
+	fclose (fp);
+	gmt_M_str_free (text);
+	/* Make Script file */
+#ifdef _WIN32
+	sprintf (file, "gmt_eq.bat");
+	sprintf (cmd, "start /B gmt_eq.bat 2> NUL");
+#else
+	sprintf (file, "gmt_eq.sh");
+	sprintf (cmd, "sh gmt_eq.sh 2> /dev/null");
+#endif
+	if ((fp = fopen (file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create temporary file %s.\n", file);
+		return NULL;
+	}
+	fprintf (fp, "latex gmt_eq.tex\ndvips -E gmt_eq.dvi -o equation.eps\n");
+#ifdef _WIN32
+	fprintf (fp, "del gmt_eq.*\n");
+#else
+	fprintf (fp, "rm -f gmt_eq.*\n");
+#endif
+	fclose (fp);
+	/* Run the script via a system call */
+	if ((error = system (cmd))) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Running \"%s\" returned error %d.\n", file, error);
+		return NULL;
+	}
+	/* Return EPS file */
+	memset (h, 0, sizeof(struct imageinfo)); /* initialize struct */
+	if (PSL_loadeps (GMT->PSL, "equation.eps", h, &picture)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to load EPS file equation.eps!\n");
+		return NULL;
+	}
+	/* Clean up */
+	if (gmt_remove_dir (API, prefix, false)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to remove temporary directory %s!\n", prefix);
+		return NULL;
+	}
+	/* Change back to original directory */
+	if (chdir (here)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to change directory to %s - exiting.\n", here);
+		return NULL;
+	}
+	/* Return the EPS data */
+	return picture;
+}
+
 /*	GMT_LINEAR PROJECTION MAP BOUNDARY	*/
 
 GMT_LOCAL void gmtplot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
@@ -5653,6 +5773,19 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 	struct PSL_CTRL *PSL= GMT->PSL;
 
 	if (!GMT->current.map.frame.header[0]) return;	/* No title given */
+
+	if (gmtplot_is_latex (GMT, GMT->current.map.frame.header)) {
+		/* Detected Latex commands, i.e., "....@$Latex...@$ ..." */
+		unsigned char *eps = NULL;
+		struct imageinfo header;
+		if ((eps = gmtplot_latex_eps (GMT, GMT->current.map.frame.header, &header)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conversion of Latex \"%s\" failed\n", GMT->current.map.frame.header);
+			return;	/* Done */
+		}
+		/* Place EPS file as title, then free eps */
+		PSL_free (eps);
+		return;
+	}
 
 	gmtplot_title_breaks_decode (GMT, GMT->current.map.frame.header, title);
 	gmtplot_title_breaks_decode (GMT, GMT->current.map.frame.sub_header, subtitle);
