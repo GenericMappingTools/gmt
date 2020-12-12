@@ -5051,7 +5051,7 @@ void gmt_map_axislabel (struct GMT_CTRL *GMT, double x, double y, char *label, d
 		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
 		/* If we plot label below the axis then we must adjust for the fact that the base y-coordinate is based on label font height of "M",
 		 * but now we have an EPS image of given (and presumably larger) height.  So we adjust by the difference in those two values */
-		if (pos_set) {	/* Translate origin to currentpoint since already set, and possibly rotate by +/- 90 degrees */
+		if (pos_set) {	/* Translate origin to currentpoint since already set by calling function, and possibly rotate by +/- 90 degrees */
 			if (fabs (angle) > 0.0) PSL_command (PSL, "currentpoint T %g R\n", angle); else PSL_command (PSL, "currentpoint T\n");
 			if (below) PSL_command (PSL, "0 %d PSL_LH sub neg M currentpoint T\n", (int)lrint (h * PSL->internal.y2iy));
 		}
@@ -5846,18 +5846,22 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 
 	if (gmtplot_is_latex (GMT, GMT->current.map.frame.header)) {
 		/* Detected Latex commands, i.e., "....@$Latex...@$ ..." */
+		double w, h;
 		unsigned char *eps = NULL;
 		struct imageinfo header;
 		if ((eps = gmtplot_latex_eps (GMT, &GMT->current.setting.font_title, GMT->current.map.frame.header, &header)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conversion of Latex \"%s\" failed\n", GMT->current.map.frame.header);
 			return;	/* Done */
 		}
-		/* Place EPS file as title, scaling size relative to default 10p size, then free eps */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_title: Conversion of Latex \"%s\" gave dimensions %g x %g\n", GMT->current.map.frame.header, w, h);
+		/* Scale up EPS dimensions by the ratio of title font size to Latex default size of 10p */
+		w = (header.width / 72.0)  * (GMT->current.setting.font_title.size / 10.0);
+		h = (header.height / 72.0) * (GMT->current.setting.font_title.size / 10.0);
+		/* Place EPS file as title */
 		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
 		if (pos_set)
-			PSL_command (PSL, "currentpoint T\n");	/* Translate to currentpoint since already set */
-		PSL_command (PSL, "%g 2 dup scale\n", GMT->current.setting.font_title.size / 10.0);	/* Translate to this point, then scale up from 10p to title font size */
-		PSL_plotepsimage (PSL, x, y, header.width / 72.0, header.height / 72.0, PSL_BC, eps, &header);
+			PSL_command (PSL, "currentpoint T\n");	/* Translate to currentpoint since already set by calling function */
+		PSL_plotepsimage (PSL, x, y, w, h, PSL_BC, eps, &header);
 		PSL_command (PSL, "U\n");
 		PSL_free (eps);
 		return;	/* Done on this end */
