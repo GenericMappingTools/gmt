@@ -5035,25 +5035,26 @@ GMT_LOCAL unsigned int gmtplot_geo_vector_greatcircle (struct GMT_CTRL *GMT, dou
  *----------------------------------------------------------|
  */
 
-void gmt_map_axislabel (struct GMT_CTRL *GMT, double x, double y, char *label, double angle, int just, bool offset, bool below) {
+void gmt_map_label (struct GMT_CTRL *GMT, double x, double y, char *label, double angle, int just, unsigned int axis, bool below) {
 	/* Function to use to set axis labels for Cartesian basemaps and colorbars */
 	struct PSL_CTRL *PSL= GMT->PSL;
 
 	if (gmtplot_is_latex (GMT, label)) {	/* Detected Latex commands, i.e., "....@$Latex...@$ ..." */
 		bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y));	/* If the current point has already been placed */
+		bool set_L_off = (axis == GMT_X && !below);
 		double w, h;
 		unsigned char *eps = NULL;
 		struct imageinfo header;
 
 		if ((eps = gmtplot_latex_eps (GMT, &GMT->current.setting.font_label, label, &header)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_axislabel: Conversion of Latex \"%s\" failed\n", label);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_label: Conversion of Latex \"%s\" failed\n", label);
 			return;	/* Done */
 		}
 		/* Scale up EPS dimensions by the ratio of label font size to Latex default size of 10p */
 		w = (header.width / 72.0)  * (GMT->current.setting.font_label.size / 10.0);
 		h = (header.height / 72.0) * (GMT->current.setting.font_label.size / 10.0);
 		/* Place EPS file as label, then free eps */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_axislabel: Conversion of Latex \"%s\" gave dimensions %g x %g\n", label, w, h);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_label: Conversion of Latex \"%s\" gave dimensions %g x %g\n", label, w, h);
 		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
 		/* If we plot label below the axis then we must adjust for the fact that the base y-coordinate is based on label font height of "M",
 		 * but now we have an EPS image of given (and presumably larger) height.  So we adjust by the difference in those two values */
@@ -5064,7 +5065,7 @@ void gmt_map_axislabel (struct GMT_CTRL *GMT, double x, double y, char *label, d
 		// PSL_command (PSL, "V currentpoint -2000 0 G 4000 0 D S U\n");	/* Debug line for base of label */
 		PSL_plotepsimage (PSL, x, y, w, h, PSL_BC, eps, &header);	/* Place the EPS plot */
 		PSL_command (PSL, "U\n");	/* Close up the block */
-		if (offset)	/* Must reset the value of PSL_LH to the EPS image height so the title baseline can be adjusted */
+		if (set_L_off)	/* Must reset the value of PSL_LH to the EPS image height so the title baseline can be adjusted */
 			PSL_command (PSL, "/PSL_LH %d def\n", (int)lrint (h * PSL->internal.y2iy));
 		PSL_free (eps);
 		return;	/* Done on this end */
@@ -5337,7 +5338,6 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	/* Finally do axis label */
 
 	if (A->label[0] && annotate && !gmt_M_axis_is_geo_strict (GMT, axis)) {
-		bool set_L_off = (axis == GMT_X && !below);
 		unsigned int far_ = !below, l_just;
 		double label_angle;
 		char *this_label = (far_ && A->secondary_label[0]) ? A->secondary_label : A->label;	/* Get primary or secondary axis label */
@@ -5363,7 +5363,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 			label_angle = (horizontal ? 0.0 : 90.0) + angle_add;
 			//PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, this_label, label_angle, l_just, form);
 		}
-		gmt_map_axislabel (GMT, 0.0, 0.0, this_label, label_angle, l_just, set_L_off, below);
+		gmt_map_label (GMT, 0.0, 0.0, this_label, label_angle, l_just, axis, below);
 	}
 	else
 		PSL_command (PSL, "/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def\n");
