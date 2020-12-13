@@ -5059,8 +5059,11 @@ void gmt_map_label (struct GMT_CTRL *GMT, double x, double y, char *label, doubl
 		/* If we plot label below the axis then we must adjust for the fact that the base y-coordinate is based on label font height of "M",
 		 * but now we have an EPS image of given (and presumably larger) height.  So we adjust by the difference in those two values */
 		if (pos_set) {	/* Translate origin to currentpoint since already set by calling function, and possibly rotate by +/- 90 degrees */
+			double sgn[2] = {-1.0, 1.0};
 			if (fabs (angle) > 0.0) PSL_command (PSL, "currentpoint T %g R\n", angle); else PSL_command (PSL, "currentpoint T\n");
 			if (below) PSL_command (PSL, "0 %d PSL_LH sub neg M currentpoint T\n", (int)lrint (h * PSL->internal.y2iy));
+			/* I am somehow missing the label offset so I need to account for it here in order to get correct result */
+			if (axis == GMT_Y) PSL_command (PSL, "0 %d M currentpoint T\n", (int)lrint (sgn[below]*GMT->current.setting.map_label_offset * PSL->internal.y2iy));
 		}
 		// PSL_command (PSL, "V currentpoint -2000 0 G 4000 0 D S U\n");	/* Debug line for base of label */
 		PSL_plotepsimage (PSL, x, y, w, h, PSL_BC, eps, &header);	/* Place the EPS plot */
