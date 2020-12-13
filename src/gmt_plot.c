@@ -344,9 +344,15 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 	switch (F->id) {
 		case 0:  case 1:  case 2:   case 3: font = "helvet";	code = "phv";	break;
 		case 4:  case 5:  case 6:   case 7: font = "mathptmx";	code = "ptm";	break;
-		case 8:  case 9:  case 10: case 11: font = "courier";	code = "bch";	break;
+		case 8:  case 9:  case 10: case 11: font = "courier";	code = "pcr";	break;
+		case 12: font = "symbol";	code = "psy";	break;
+		case 13: case 14: case 15: case 16: font = "avantgar";	code = "pag";	break;
 		case 17: case 18: case 19: case 20: font = "bookman";	code = "pbk";	break;
-		case 29: case 30: case 31: case 32: font = "palatino";	code = "ppl";	break;
+		case 21: case 22: case 23: case 24: font = "helvet";	code = "phv";	break;
+		case 25: case 26: case 27: case 28: font = "newcent";	code = "pnc";	break;
+		case 29: case 30: case 31: case 32: font = "mathpazo";	code = "ppl";	break;
+		case 33: font = "zapfchan";	code = "pzc";	break;
+		case 34: font = "zapfding";	code = "pzd";	break;
 		default: font = code = NULL;	/* Go with default */
 	}
 	/* Write Latex file */
