@@ -12483,7 +12483,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
 			return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
 		}
-		else	/* -A with no args means -Az */
+		else	/* -A with no args means just add the z grid */
 			k = 1;
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */
@@ -12501,7 +12501,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
 			return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
 		}
-		else 	/* Default is the -Gz grid */
+		else 	/* Default is to just add the -Gz grid */
 			k = 1;
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */
