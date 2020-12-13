@@ -12371,7 +12371,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	unsigned int output_pos = 0, input_pos = 0, mod_pos;
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_GRID, GMT_IS_PALETTE, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
-	int sdir, k, n_in_added = 0, n_to_add, e, n_pre_arg, n_per_family[GMT_N_FAMILIES];
+	int sdir, k = 0, n_in_added = 0, n_to_add, e, n_pre_arg, n_per_family[GMT_N_FAMILIES];
 	bool deactivate_output = false, deactivate_input = false, strip_colon = false, strip = false, is_grdmath = false;
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
@@ -12479,14 +12479,12 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		if (opt->arg[0]) {
 			for (k = 1, len = 0; len < strlen (opt->arg); len++) if (opt->arg[len] == ',') k++;
 		}
-		else
-			k = 1;	/* -A means -Az */
-		if ((opt = GMT_Find_Option (API, 'G', *head))) {	/* This is a problem */
-			if (!strcmp(opt->arg, "")) {
-				GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
-				return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
-			}
+		else if ((opt = GMT_Find_Option (API, 'G', *head)) && opt->arg[0] == '\0') {	/* This is a problem */
+			GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
+			return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
 		}
+		else	/* -A with no args means -Az */
+			k = 1;
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */
 			*head = GMT_Append_Option (API, new_ptr, *head);
@@ -12499,16 +12497,12 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		if ((opt = GMT_Find_Option (API, 'C', *head))) {	/* Determine how many output grids are requested */
 			for (k = 1, len = 0; len < strlen (opt->arg); len++) if (opt->arg[len] == ',') k++;
 		}
-		else
-			k = 1;	/* Default is the Gz grid */
-		if ((opt = GMT_Find_Option(API, 'G', *head))) {	/* This is a problem unless -G actually sent in a file name */
-			if (!strcmp(opt->arg, "")) {
-				GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
-				return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
-			}
-			else
-				return GMT_NOERROR;
+		else if ((opt = GMT_Find_Option(API, 'G', *head)) && opt->arg[0] == '\0') {	/* This is a problem unless -G actually sent in a file name */
+			GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
+			return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
 		}
+		else 	/* Default is the -Gz grid */
+			k = 1;
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */
 			*head = GMT_Append_Option (API, new_ptr, *head);
