@@ -269,7 +269,7 @@ struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle hea
 /* Converting Latex strings to EPS files.  This is based on the discussion we had at
  * https://github.com/GenericMappingTools/gmt/issues/4563#issuecomment-743374160.
  * As long as the user has latex, dvips and required fonts installed this should work
- * for everybody. W. Wessel, Dec 11, 2020.
+ * for everybody. P. Wessel, Dec 11, 2020.
  */
 
 GMT_LOCAL bool gmtplot_is_latex (struct GMT_CTRL *GMT, const char *string) {
@@ -307,14 +307,14 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 
 	snprintf (template, PATH_MAX, "%s/gmt_latex_XXXXXX", API->tmp_dir);	/* The XXXXXX will be replaced by mktemp */
 	if ((tmpdir = mktemp (template)) == NULL) {
-		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create temporary file name from template %s.\n", template);
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create temporary directory name from template %s.\n", template);
 		return NULL;
 	}
 	if (gmt_mkdir (tmpdir)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create directory %s - exiting.\n", tmpdir);
 		return NULL;
 	}
-	/* Remember were we are */
+	/* Remember where we are */
 	if (getcwd (here, PATH_MAX) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to determine current working directory - exiting.\n");
 		return NULL;
@@ -325,7 +325,7 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to change directory to %s - exiting.\n", tmpdir);
 		return NULL;
 	}	
-	/* Open Latex file */
+	/* Create Latex file */
 	sprintf (file, "gmt_eq.tex");
 	if ((fp = fopen (file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create Latex file %s.\n", file);
@@ -355,20 +355,20 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 		case 34: font = "zapfding";	code = "pzd";	break;
 		default: font = code = NULL;	/* Go with default */
 	}
-	/* Write Latex file */
-	fprintf (fp, "\\documentclass{article}\n");
+	/* Write Latex file content */
+	fprintf (fp, "\\documentclass{article}\n");	/* Default to 10p font size */
 	if (font) { /* Impose a selected font family, otherwise take default Computer Modern */
 		GMT_Report (API, GMT_MSG_DEBUG, "gmtplot_latex_eps: Selecting font %s [%s].\n", font, code);
 		fprintf (fp, "\\usepackage[T1]{fontenc}\\usepackage[utf8]{inputenc}\\usepackage{%s}\n", font);
 	}
-	fprintf (fp, "\\begin{document}\n\\thispagestyle{empty}\n");
+	fprintf (fp, "\\begin{document}\n\\thispagestyle{empty}\n");	/* No page number */
 	if (code) /* Select font */
 		fprintf (fp, "\\fontfamily{%s}\\selectfont\n", code);
 	fprintf (fp, "%s\n\\end{document}\n", text);
 	fclose (fp);
 	gmt_M_str_free (text);
 
-	/* Make script file */
+	/* Make script file for running latex and dvips */
 #ifdef _WIN32
 	sprintf (file, "gmt_eq.bat");
 	sprintf (cmd, "start /B gmt_eq.bat");
@@ -391,18 +391,18 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 
 	/* Run the script via a system call */
 	if ((error = system (cmd))) {
-		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Running \"%s\" returned error %d.\n", file, error);
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Running \"%s\" returned error %d.\n", cmd, error);
 		return NULL;
 	}
 	/* Retrieve the EPS code */
-	memset (h, 0, sizeof(struct imageinfo)); /* Initialize information struct */
+	gmt_M_memset (h, 1U, struct imageinfo); /* Initialize information struct */
 	if (PSL_loadeps (GMT->PSL, "equation.eps", h, &picture)) {
-		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to load EPS file equation.eps!\n");
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to load EPS file equation.eps\n");
 		return NULL;
 	}
 	/* Clean up */
 	if (gmt_remove_dir (API, tmpdir, false)) {
-		GMT_Report (API, GMT_MSG_ERROR, "vUnable to remove temporary directory %s!\n", tmpdir);
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to remove temporary directory %s!\n", tmpdir);
 		PSL_free (picture);
 		return NULL;
 	}
@@ -413,7 +413,7 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 		return NULL;
 	}
 
-	/* Return the EPS data and information via header */
+	/* Return the EPS data and size information via header */
 	return picture;
 }
 
@@ -5041,13 +5041,13 @@ void gmt_map_label (struct GMT_CTRL *GMT, double x, double y, char *label, doubl
 
 	if (gmtplot_is_latex (GMT, label)) {	/* Detected Latex commands, i.e., "....@$Latex...@$ ..." */
 		bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y));	/* If the current point has already been placed */
-		bool set_L_off = (axis == GMT_X && !below);
+		bool set_L_off = (axis == GMT_X && !below);	/* May need to ensure extra offset for title */
 		double w, h;
 		unsigned char *eps = NULL;
 		struct imageinfo header;
 
 		if ((eps = gmtplot_latex_eps (GMT, &GMT->current.setting.font_label, label, &header)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_label: Conversion of Latex \"%s\" failed\n", label);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_label: Conversion of Latex \"%s\" to EPS failed\n", label);
 			return;	/* Done */
 		}
 		/* Scale up EPS dimensions by the ratio of label font size to Latex default size of 10p */
@@ -5062,10 +5062,10 @@ void gmt_map_label (struct GMT_CTRL *GMT, double x, double y, char *label, doubl
 			double sgn[2] = {-1.0, 1.0};
 			if (fabs (angle) > 0.0) PSL_command (PSL, "currentpoint T %g R\n", angle); else PSL_command (PSL, "currentpoint T\n");
 			if (below) PSL_command (PSL, "0 %d PSL_LH sub neg M currentpoint T\n", (int)lrint (h * PSL->internal.y2iy));
-			/* I am somehow missing the label offset so I need to account for it here in order to get correct result */
+			/* I am somehow missing the label offset for y-axes so I need to account for it here in order to get correct result */
 			if (axis == GMT_Y) PSL_command (PSL, "0 %d M currentpoint T\n", (int)lrint (sgn[below]*GMT->current.setting.map_label_offset * PSL->internal.y2iy));
 		}
-		// PSL_command (PSL, "V currentpoint -2000 0 G 4000 0 D S U\n");	/* Debug line for base of label */
+		// PSL_command (PSL, "V currentpoint -2000 0 G 4000 0 D S U\n");	/* Debug line for base of label; keep for future debugging */
 		PSL_plotepsimage (PSL, x, y, w, h, PSL_BC, eps, &header);	/* Place the EPS plot */
 		PSL_command (PSL, "U\n");	/* Close up the block */
 		if (set_L_off)	/* Must reset the value of PSL_LH to the EPS image height so the title baseline can be adjusted */
@@ -5358,13 +5358,11 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		if (axis == GMT_Y && A->label_mode) {
 			l_just = (below) ? PSL_MR : PSL_ML;
 			label_angle = 0.0 + y_angle_add;
-			//PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, this_label, label_angle, l_just, form);
 		}
 		else {
 			double angle_add = (axis == GMT_X) ? x_angle_add : y_angle_add;
 			l_just = (axis == GMT_X) ? lx_just : ly_just;
 			label_angle = (horizontal ? 0.0 : 90.0) + angle_add;
-			//PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, this_label, label_angle, l_just, form);
 		}
 		gmt_map_label (GMT, 0.0, 0.0, this_label, label_angle, l_just, axis, below);
 	}
@@ -5859,7 +5857,7 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 		unsigned char *eps = NULL;
 		struct imageinfo header;
 		if ((eps = gmtplot_latex_eps (GMT, &GMT->current.setting.font_title, GMT->current.map.frame.header, &header)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conversion of Latex \"%s\" failed\n", GMT->current.map.frame.header);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conversion of Latex \"%s\" to EPS failed\n", GMT->current.map.frame.header);
 			return;	/* Done */
 		}
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_title: Conversion of Latex \"%s\" gave dimensions %g x %g\n", GMT->current.map.frame.header, w, h);
