@@ -394,7 +394,7 @@ GMT_LOCAL bool gmtnc_not_obviously_polar (double *se) {
 	return false;
 }
 
-GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char job) {
+GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char job, bool cube) {
 	int j, err, has_vector, has_range, registration, var_spacing = 0;
 	int old_fill_mode, status;
 	double dummy[2], min, max, *xy = NULL;
@@ -539,6 +539,12 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		gmt_M_err_trap (nc_def_dim (ncid, coord, (size_t) header->n_rows, &dims[0]));
 		gmt_M_err_trap (nc_def_var (ncid, coord, NC_DOUBLE, 1, &dims[0], &ids[0]));
 
+		if (cube) {
+			strcpy (coord, (gmt_M_type (GMT, GMT_OUT, GMT_Z) & GMT_IS_RATIME) ? "time" : "z");
+			gmt_M_err_trap (nc_def_dim (ncid, coord, (size_t) header->n_bands, &dims[0]));
+			gmt_M_err_trap (nc_def_var (ncid, coord, NC_DOUBLE, 1, &dims[0], &ids[0]));
+		}
+
 		switch (header->type) {
 			case GMT_GRID_IS_NB: z_type = NC_BYTE; break;
 			case GMT_GRID_IS_NS: z_type = NC_SHORT; break;
@@ -548,10 +554,10 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			default: z_type = NC_NAT;
 		}
 
-		/* Variable name is given, or defaults to "z" */
+		/* Variable name is given, or defaults to "z" (or "w" under cube) */
 		if (!HH->varname[0])
-			strcpy (HH->varname, "z");
-		gmt_M_err_trap (nc_def_var (ncid, HH->varname, z_type, 2, dims, &z_id));
+			strcpy (HH->varname, (cube) ? "w" : "z");
+		gmt_M_err_trap (nc_def_var (ncid, HH->varname, z_type, (cube) ? 3 : 2, dims, &z_id));
 
 		/* set deflation and chunking */
 		if (GMT->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic) {
@@ -879,25 +885,25 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		}
 
 #ifdef NC4_DEBUG
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->wesn: %g %g %g %g\n",
-	            header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->registration:%u\n", header->registration);
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->row_order: %s\n",
-	            HH->row_order == k_nc_start_south ? "S->N" : "N->S");
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->n_columns: %3d   head->n_rows:%3d\n", header->n_columns, header->n_rows);
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->inc: %g %g\n", header->inc[GMT_X], header->inc[GMT_Y]);
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->mx: %3d   head->my:%3d\n", header->mx, header->my);
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->nm: %3d head->size:%3d\n", header->nm, header->size);
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->t-index %d,%d,%d\n",
-	            HH->t_index[0], HH->t_index[1], HH->t_index[2]);
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->pad xlo:%u xhi:%u ylo:%u yhi:%u\n",
-	            header->pad[XLO], header->pad[XHI], header->pad[YLO], header->pad[YHI]);
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->BC  xlo:%u xhi:%u ylo:%u yhi:%u\n",
-	            HH->BC[XLO], HH->BC[XHI], HH->BC[YLO], HH->BC[YHI]);
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->grdtype:%u %u\n", HH->grdtype, GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->wesn: %g %g %g %g\n",
+		            header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->registration:%u\n", header->registration);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->row_order: %s\n",
+		            HH->row_order == k_nc_start_south ? "S->N" : "N->S");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->n_columns: %3d   head->n_rows:%3d\n", header->n_columns, header->n_rows);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->inc: %g %g\n", header->inc[GMT_X], header->inc[GMT_Y]);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->mx: %3d   head->my:%3d\n", header->mx, header->my);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->nm: %3d head->size:%3d\n", header->nm, header->size);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->t-index %d,%d,%d\n",
+		            HH->t_index[0], HH->t_index[1], HH->t_index[2]);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->pad xlo:%u xhi:%u ylo:%u yhi:%u\n",
+		            header->pad[XLO], header->pad[XHI], header->pad[YLO], header->pad[YHI]);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->BC  xlo:%u xhi:%u ylo:%u yhi:%u\n",
+		            HH->BC[XLO], HH->BC[XHI], HH->BC[YLO], HH->BC[YHI]);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->grdtype:%u %u\n", HH->grdtype, GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT);
 #endif
 	}
-	else {
+	else {	/* Here we are writing */
 		/* Store global attributes */
 		unsigned int row, col;
 		const int *nc_vers = gmtnc_netcdf_libvers();
@@ -970,7 +976,7 @@ L100:
 		gmt_M_err_trap (nc_put_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", NC_DOUBLE, 2U, dummy));
 
 		/* When varname is given, and z_units is default, overrule z_units with varname */
-		if (HH->varname[0] && !strcmp (header->z_units, "z"))
+		if (HH->varname[0] && !cube && !strcmp (header->z_units, "z"))
 			strncpy (header->z_units, HH->varname, GMT_GRID_UNIT_LEN80-1);
 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
@@ -1504,15 +1510,15 @@ int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 }
 
 int gmt_nc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	return (gmtnc_grd_info (GMT, header, 'r'));
+	return (gmtnc_grd_info (GMT, header, 'r', false));
 }
 
 int gmt_nc_update_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	return (gmtnc_grd_info (GMT, header, 'u'));
+	return (gmtnc_grd_info (GMT, header, 'u', false));
 }
 
 int gmt_nc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	return (gmtnc_grd_info (GMT, header, 'w'));
+	return (gmtnc_grd_info (GMT, header, 'w', false));
 }
 
 int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
@@ -1739,7 +1745,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 
 	/* Write grid header without closing file afterwards */
 	gmtnc_setup_chunk_cache();
-	status = gmtnc_grd_info (GMT, header, 'W');
+	status = gmtnc_grd_info (GMT, header, 'W', false);
 	if (status != NC_NOERR)
 		goto nc_err;
 
@@ -1964,7 +1970,7 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 		struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_nc_write_cube: Writing 3-D CUBE not implemented yet\n");
-		return (GMT_RUNTIME_ERROR);
+		//return (GMT_RUNTIME_ERROR);
 
 		width = header->n_columns;	height = header->n_rows;
 
@@ -2001,9 +2007,9 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 		if (HH->row_order == k_nc_start_south)
 			first_row = header->n_rows - 1 - last_row;
 
-		/* Write grid header without closing file afterwards */
+		/* Write grid header without closing file afterwards so more items can be added */
 		gmtnc_setup_chunk_cache();
-		status = gmtnc_grd_info (GMT, header, 'W');
+		status = gmtnc_grd_info (GMT, header, 'W', true);
 		if (status != NC_NOERR)
 			goto nc_err;
 
