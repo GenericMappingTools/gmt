@@ -175,8 +175,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -N<prefix> -T<njobs>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w|W]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-M[<job>,]] [-Q[s]] [-Sb<postflight>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<preflight>] [%s] [-W[<workdir>]] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-M[<job>]] [-Q[s]] [-Sb<postflight>] [-Sf<preflight>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[<workdir>]] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -198,7 +198,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Given names for the optional <postflight> and <preflight> GMT scripts [none]:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sb Append name of <preflight> GMT modern script that may download or compute\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       files needed by the <mainscript>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of <postflight> script (which may not be a GMT script) which will\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of <postflight> script (not necessarily a GMT script) which will\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       take actions once all batch jobs have completed.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Give <workdir> where temporary files will be built [<workdir> = <prefix> set by -N].\n");
