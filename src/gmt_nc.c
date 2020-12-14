@@ -1979,7 +1979,7 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 
 		width = header->n_columns;	height = header->n_rows;
 		header->n_bands = n_layers_used;	/* Number of layers to actually write */
-
+		strncpy (HH->name, file, GMT_GRID_NAME_LEN256);
 		/* Determine the value to be assigned to missing data, if not already done so */
 		switch (header->type) {
 			case GMT_GRID_IS_NB:

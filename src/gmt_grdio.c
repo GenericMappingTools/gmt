@@ -3330,6 +3330,11 @@ struct GMT_CUBE *gmtlib_create_cube (struct GMT_CTRL *GMT) {
 	GU = gmt_get_U_hidden (C);
 	C->header = gmt_get_header (GMT);
 	gmt_grd_init (GMT, C->header, NULL, false); /* Set default values */
+#ifdef DOUBLE_PRECISION_GRID
+	header->type = GMT_GRID_IS_ND;
+#else
+	header->type = GMT_GRID_IS_NF;
+#endif
 	GMT_Set_Index (GMT->parent, C->header, GMT_GRID_LAYOUT);
 	GU->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
 	GU->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
