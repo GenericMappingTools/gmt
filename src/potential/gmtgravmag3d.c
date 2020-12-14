@@ -102,27 +102,27 @@ struct GMTGRAVMAG3D_CTRL {
 	struct GMTGRAVMAG3D_VERT *vert;
 };
 
-static struct GMTGRAVMAG3D_TRIANG {
+struct GMTGRAVMAG3D_TRIANG {
 	double  x, y, z;
 };
 
-static struct  GMTGRAVMAG3D_VERT {
+struct  GMTGRAVMAG3D_VERT {
 	unsigned int  a, b, c;
 };
 
-static struct GMTGRAVMAG3D_RAW {
+struct GMTGRAVMAG3D_RAW {
 	double  t1[3], t2[3], t3[3];
 };
 
-static struct MAG_VAR2 {
+struct MAG_VAR2 {
 	double	m, m_dip;
 };
 
-static struct MAG_VAR3 {
+struct MAG_VAR3 {
 	double	m, m_dec, m_dip;
 };
 
-static struct MAG_VAR4 {
+struct MAG_VAR4 {
 	double	t_dec, t_dip, m, m_dec, m_dip;
 };
 
