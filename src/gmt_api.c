@@ -12479,11 +12479,15 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		if (opt->arg[0]) {
 			for (k = 1, len = 0; len < strlen (opt->arg); len++) if (opt->arg[len] == ',') k++;
 		}
-		else if ((opt = GMT_Find_Option (API, 'G', *head)) && opt->arg[0] == '\0') {	/* This is a problem */
-			GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
-			return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+		else if ((opt = GMT_Find_Option (API, 'G', *head))) {	/* This is a problem */
+			if (opt->arg[0] == '\0') {	/* This is a problem */
+				GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
+				return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+			}
+			else
+				k = 0;
 		}
-		else	/* -A with no args means just add the z grid */
+		else	/* No -A with no args or -G means just add the z grid */
 			k = 1;
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */
@@ -12497,11 +12501,15 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		if ((opt = GMT_Find_Option (API, 'C', *head))) {	/* Determine how many output grids are requested */
 			for (k = 1, len = 0; len < strlen (opt->arg); len++) if (opt->arg[len] == ',') k++;
 		}
-		else if ((opt = GMT_Find_Option(API, 'G', *head)) && opt->arg[0] == '\0') {	/* This is a problem unless -G actually sent in a file name */
-			GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
-			return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+		else if ((opt = GMT_Find_Option(API, 'G', *head))) {	/* This is a problem unless -G actually sent in a file name */
+			if (opt->arg[0] == '\0') {	/* This is a problem unless -G actually sent in a file name */
+				GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
+				return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+			}
+			else
+				k = 0;
 		}
-		else 	/* Default is to just add the -Gz grid */
+		else 	/* No -C or -G; default is to just add the -Gz grid */
 			k = 1;
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */
