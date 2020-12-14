@@ -199,7 +199,8 @@ Optional Arguments
 **-Z**
     For 3-D projections: expect each item to have its own level given in
     the 3rd column, and **-N** is implicitly set. (Not implemented for
-    paragraph mode).
+    paragraph mode).  **Note**: If **-F+z** is used then the text level
+    is based on the 4th data column instead.
 
 .. include:: explain_-aspatial.rst_
 
