@@ -1897,36 +1897,72 @@ int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double 
 }
 
 /* Write a 3-D cube to file; cube is represented internally by a stack of 2-D grids and a layer z-array */
-
-int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlayers, double *layer, const char *file) {
+int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], const char *file) {
 	/* Depending on mode, we either write individual layer grid files or a single 3-D data cube */
-	uint64_t k;
+	uint64_t k, k0, k1, n_layers_used, save_n_bands, here = 0;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
-	if (strchr (file, '%')) {	/* Format specifier found, do individual layer grids */
-		char gfile[PATH_MAX] = {""};
-		for (k = 0; k < nlayers; k++) {
-			sprintf (gfile, file, layer[k]);
-			if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, gfile, G[k]) != GMT_NOERROR) {
-				return (GMT->parent->error);
-			}
+	/* Determine which layers we want to write */
+	k0 = 0;	k1 = C->header->n_bands - 1;	/* Default is all */
+	if (wesn && wesn[ZHI] > wesn[ZLO]) {	/* Want to write a subset of layers */
+		if (gmt_get_active_layers (GMT, C, &(wesn[ZLO]), &k0, &k1) == 0) {
+			gmtlib_report_error (API, GMT_RUNTIME_ERROR);
 		}
+	}
+	n_layers_used = k1 - k0 + 1;	/* Total number of layers actually to be written */
+	if (n_layers_used == 0) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmt_write_nc_cube: No layers selected from GMT_IS_CUBE.\n");
+		return (gmtlib_report_error (API, GMT_DIM_TOO_SMALL));
+	}
+	here = k0 * C->header->size;	/* Start position in the cube for layer k0 */
+
+	if (strchr (file, '%') || n_layers_used == 1) {	/* Format specifier found, do individual layer grids, or a single layer so no format needed */
+		char gfile[PATH_MAX] = {""};
+		struct GMT_GRID *G = NULL;
+
+		/* !! Remember that the gmt_nc.c codes will unpad and mess up C->data */
+		G = gmt_get_grid (GMT);	/* Need a dummy grid for writing */
+		save_n_bands = C->header->n_bands;	/* Remember how many bands */
+		G->header = C->header;	/* Use this pointer for now */
+		G->header->n_bands = 1;	/* Grids only have one band [must undo this below] */
+		/* Write the layers via a grid */
+		for (k = k0; k <= k1; k++) {	/* For all selected output levels */
+			if (n_layers_used > 1 || strchr (file, '%'))	/* Create the k'th layer file name from template */
+				sprintf (gfile, file, C->z[k]);
+			else	/* Just this one layer grid */
+				sprintf (gfile, "%s", file);
+			G->data = &C->data[here];	/* Point to start of this layer */
+			GMT_Report (API, GMT_MSG_DEBUG, "gmt_write_nc_cube: Layer %" PRIu64 ", offset = %" PRIu64 ".\n", k, here);
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, gfile, G) != GMT_NOERROR) {
+				return (API->error);
+			}
+			here += C->header->size;	/* Move to next level */
+		}
+		/* Wipe and free the temporary grid structure */
+		G->header->n_bands = save_n_bands;	/* Restore bands */
+		G->data = NULL;
+		G->header = NULL;
+		gmt_free_grid (GMT, &G, true);
 		return (GMT_NOERROR);
 	}
-	else {	/* Here we must write a 3-D netcdf data cube */
+	else {	/* Here we must write a 3-D netcdf data cube NOT COMPLETED SO NOT WORKING */
 
 		int status = NC_NOERR;
 		bool adj_nan_value;   /* if we need to change the fill value */
 		bool do_round = true; /* if we need to round to integral */
 		unsigned int width, height;
-		unsigned int dim[2], origin[2]; /* dimension and origin {y,x} of subset to write to netcdf */
+		unsigned int dim[3], origin[3]; /* dimension and origin {y,x} of subset to write to netcdf */
 		int first_col, first_row, last_row;
 		// int last_col;
 		size_t n, nm;
 		size_t width_t, height_t;
 		double level_min, level_max, limit[2];      /* minmax of level variable */
 		gmt_grdfloat *pgrid = NULL;
-		struct GMT_GRID_HEADER *header = G[0]->header;
+		struct GMT_GRID_HEADER *header = C->header;
 		struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
+
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_write_nc_cube: Writing 3-D CUBE not implemented yet\n");
+		return (GMT_RUNTIME_ERROR);
 
 		width = header->n_columns;	height = header->n_rows;
 
@@ -1973,8 +2009,8 @@ int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlaye
 		adj_nan_value = !isnan (header->nan_value);
 		dim[0]    = height,    dim[1]    = width;
 
-		for (k = 0; k < nlayers; k++) {	/* Write each layer separately */
-			pgrid = G[k]->data;
+		for (k = k0; k <= k1; k++) {	/* For all selected output levels */
+			pgrid = &C->data[here];
 
 			/* Remove padding from grid */
 			gmtnc_unpad_grid (pgrid, width, height, header->pad, sizeof(pgrid[0]));
@@ -2009,7 +2045,7 @@ int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlaye
 			status = gmtnc_io_nc_grid (GMT, header, dim, origin, 0, k_put_netcdf, pgrid);
 			if (status != NC_NOERR)
 				goto nc_err;
-
+			here += C->header->size;
 		}
 		if (level_min <= level_max) {
 			/* Warn if level-range exceeds the precision of a single precision float: */

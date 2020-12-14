@@ -42,7 +42,7 @@ EXTERN_MSC char * gmt_strdup (struct GMT_CTRL *GMT, const char *s);
 /* gmt_nc.c: */
 
 EXTERN_MSC int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double **zarray);
-EXTERN_MSC int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlayers, double *layer, const char *file);
+EXTERN_MSC int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], const char *file);
 
 /* gmt_init.c: */
 

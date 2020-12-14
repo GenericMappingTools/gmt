@@ -5880,14 +5880,13 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 	bool done = true;
 	unsigned int method;
 	uint64_t row, col, i0, i1, j0, j1, k0, k1, ij, ijp, ij_orig;
-	uint64_t k, n_layers_used, here = 0, save_n_bands;
+	uint64_t k, here = 0;
 	size_t size;
 	double dx, dy;
 	p_func_uint64_t GMT_2D_to_index = NULL;
 	GMT_putfunction api_put_val = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_CUBE *U_copy = NULL;
-	struct GMT_GRID *G = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_MATRIX_HIDDEN *MH = NULL;
 	struct GMT_CUBE_HIDDEN *UH = gmt_get_U_hidden (U_obj), *UH2 = NULL;
@@ -5911,52 +5910,18 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 	}
 	if (mode & GMT_GRID_IS_GEO) gmt_set_geographic (GMT, GMT_OUT);	/* From API to tell cube is geographic */
 	gmtlib_grd_set_units (GMT, U_obj->header);	/* Ensure unit strings are set, regardless of destination */
+
 	method = gmtapi_set_method (S_obj);	/* Get the actual method to use since may be MATRIX or VECTOR masquerading as GRID */
 	switch (method) {
-		case GMT_IS_FILE:	/* Name of a cube file on disk */
+		case GMT_IS_FILE:	/* Name of a cube file to write to disk */
 			if (mode & GMT_CONTAINER_ONLY) {	/* Update header structure only */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Updating cube header for file %s not implemented\n", S_obj->filename);
 				return (gmtlib_report_error (API, GMT_RUNTIME_ERROR));
 			}
 			else {
 				GMT_Report (API, GMT_MSG_INFORMATION, "Writing cube to file %s\n", S_obj->filename);
-				/* Determine which layers we want to write */
-				k0 = 0;	k1 = U_obj->header->n_bands - 1;
-				if (S_obj->region && S_obj->wesn[ZHI] > S_obj->wesn[ZLO]) {	/* Want to write a subset of layers */
-					if (gmt_get_active_layers (GMT, U_obj, &(S_obj->wesn[ZLO]), &k0, &k1) == 0) {
-						gmtlib_report_error (API, GMT_RUNTIME_ERROR);
-					}
-				}
-				n_layers_used = k1 - k0 + 1;	/* Total number of layers actually to be read */
-				if (n_layers_used == 0) {
-					GMT_Report (API, GMT_MSG_ERROR, "gmtapi_export_cube: No layers selected from GMT_IS_CUBE.\n");
-					return (gmtlib_report_error (API, GMT_DIM_TOO_SMALL));
-				}
-
-				/* !! Remember that the gmt_nc.c codes will unpad and mess up C->data */
-				G = gmt_get_grid (GMT);	/* Need a dummy grid for writing */
-				save_n_bands = U_obj->header->n_bands;	/* Remember how many bands */
-				G->header = U_obj->header;	/* Use this pointer for now */
-				G->header->n_bands = 1;	/* Grids only have one band */
-				here = k0 * U_obj->header->size;	/* Start position in the cube for layer k0 */
-				/* Write the layers via a grid */
-				for (k = k0; k <= k1; k++) {	/* For all selected output levels */
-					if (n_layers_used > 1)	/* Create the k'th layer file */
-						sprintf (file, S_obj->filename, U_obj->z[k]);
-					else	/* Just this one layer grid */
-						sprintf (file, "%s", S_obj->filename);
-					G->data = &U_obj->data[here];	/* Point to start of this layer */
-					GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_export_cube: Layer %" PRIu64 ", offset = %" PRIu64 ".\n", k, here);
-					if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, S_obj->wesn, file, G) != GMT_NOERROR) {
-						return (API->error);
-					}
-					here += U_obj->header->size;	/* Move to next level */
-				}
-				U_obj->header->n_bands = save_n_bands;	/* Restore number of layers */
-				/* Wipe and free the temporary grid structure */
-				G->data = NULL;
-				G->header = NULL;
-				gmt_free_grid (GMT, &G, true);
+				if (gmt_write_nc_cube (GMT, U_obj, S_obj->wesn, S_obj->filename) != GMT_NOERROR)
+					return (gmtlib_report_error (API, API->error));
 				done = true;
 			}
 			break;
