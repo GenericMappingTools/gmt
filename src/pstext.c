@@ -603,7 +603,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 			case 'Z':
 				/* For backward compatibility we will see -Z+ as the current -Z
 				 * and -Z<level> as an alternative to -p<az>/<el>/<level> */
-				if (opt->arg[0] == '+' && !opt->arg[1])	/* Deprecated -Z+ optino */
+				if (opt->arg[0] == '+' && !opt->arg[1])	/* Deprecated -Z+ option */
 					Ctrl->Z.active = true;
 				else if (opt->arg[0])	/* Deprecated -Z<level> option */
 					GMT->current.proj.z_level = atof(opt->arg);
