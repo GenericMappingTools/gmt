@@ -1476,7 +1476,7 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {	/* Return/write 1-3 grids */
 		int k, kk;
-		char file[PATH_MAX] = {""}, *code[N_COMPS] = {"e", "n", "v"};
+		char file[PATH_MAX] = {""}, *code[N_COMPS] = {"e", "n", "v"}, *comp_info[3] = {"x|east solid Earth tide component", "y|north solid Earth tide component", "z|vertical solid Earth tide component"};
 		struct GMT_GRID *Grid[N_COMPS] = {NULL, NULL, NULL};
 
 		gmt_set_geographic (GMT, GMT_OUT);
@@ -1487,6 +1487,11 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 			                             GMT->common.R.registration, 0, NULL)) == NULL)
 				Return (API->error);
 
+			strcpy (Grid[k]->header->z_units, "tide [meter]");
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[k]))
+				Return (API->error);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, comp_info[k], Grid[k]))
+				Return (API->error);
 		}
 
 		earthtide_solid_grd (GMT, Ctrl, &cal_start, Grid);	/* Evaluate the chosen component (s) on the grids */
@@ -1494,9 +1499,6 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 		/* Now write the one to three grids */
 		for (k = kk = 0; k < N_COMPS; k++) {
 			if (!Ctrl->C.selected[k]) continue;
-			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[k]))
-				Return (API->error);
-
 			if (!API->external) kk = k;	/* On command line we pick item k from an array of 3 items */
 			if (strstr (Ctrl->G.file[kk], "%s"))
 				sprintf (file, Ctrl->G.file[kk], code[k]);
