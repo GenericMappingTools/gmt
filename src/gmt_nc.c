@@ -163,7 +163,7 @@ GMT_LOCAL int gmtnc_n_chunked_rows_in_cache (struct GMT_CTRL *GMT, struct GMT_GR
 }
 
 /* Read and write classic or chunked netcdf files */
-GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned dim[], unsigned origin[], size_t stride, unsigned io_mode, gmt_grdfloat* grid) {
+GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned dim[], unsigned origin[], size_t stride, unsigned io_mode, gmt_grdfloat* grid, bool cube, unsigned int layer) {
 	/* io_mode = k_get_netcdf: read a netcdf file to grid
 	 * io_mode = k_put_netcdf: write a grid to netcdf */
 	int status = NC_NOERR;
@@ -193,6 +193,8 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 	memcpy (start, HH->t_index, 3 * sizeof(size_t)); /* set lower dimensions first (e.g. layer) */
 	start[yx_dim[0]] = origin[0]; /* first row */
 	start[yx_dim[1]] = origin[1]; /* first col */
+	if (cube) start[2] = layer; /* current layer */
+	if (cube) count[2] = 1; /* full layer */
 
 	/* set mapping of complex grids or if reading a part of a grid */
 	imap[yx_dim[0]] = (stride == 0 ? width : stride); /* distance between each row */
@@ -527,7 +529,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 	} /* if (job == 'r' || job == 'u') */
 	else {
 		/* Define dimensions of z variable */
-		ndims = 2;
+		ndims = (cube) ? 3 : 2;
 		HH->xy_dim[0] = 1;
 		HH->xy_dim[1] = 0;
 
@@ -541,8 +543,8 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		if (cube) {
 			strcpy (coord, (gmt_M_type (GMT, GMT_OUT, GMT_Z) & GMT_IS_RATIME) ? "time" : "z");
-			gmt_M_err_trap (nc_def_dim (ncid, coord, (size_t) header->n_bands, &dims[0]));
-			gmt_M_err_trap (nc_def_var (ncid, coord, NC_DOUBLE, 1, &dims[0], &ids[0]));
+			gmt_M_err_trap (nc_def_dim (ncid, coord, (size_t) header->n_bands, &dims[2]));
+			gmt_M_err_trap (nc_def_var (ncid, coord, NC_DOUBLE, 1, &dims[2], &HH->z3_id));
 		}
 
 		switch (header->type) {
@@ -563,10 +565,11 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		if (GMT->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic) {
 			/* set chunk size */
 			gmt_M_err_trap (nc_def_var_chunking (ncid, z_id, NC_CHUNKED, GMT->current.setting.io_nc4_chunksize));
-			/* set deflation level and shuffle for x, y, and z variable */
+			/* set deflation level and shuffle for x, y[, z], and z[|w] variable */
 			if (GMT->current.setting.io_nc4_deflation_level) {
 				gmt_M_err_trap (nc_def_var_deflate (ncid, ids[1], true, true, GMT->current.setting.io_nc4_deflation_level));
 				gmt_M_err_trap (nc_def_var_deflate (ncid, ids[0], true, true, GMT->current.setting.io_nc4_deflation_level));
+				if (cube) gmt_M_err_trap (nc_def_var_deflate (ncid, ids[2], true, true, GMT->current.setting.io_nc4_deflation_level));
 				gmt_M_err_trap (nc_def_var_deflate (ncid, z_id, true, true, GMT->current.setting.io_nc4_deflation_level));
 			}
 		} /* GMT->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic */
@@ -976,7 +979,7 @@ L100:
 		gmt_M_err_trap (nc_put_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", NC_DOUBLE, 2U, dummy));
 
 		/* When varname is given, and z_units is default, overrule z_units with varname */
-		if (HH->varname[0] && !cube && !strcmp (header->z_units, "z"))
+		if (HH->varname[0] && !strcmp (header->z_units, cube ? "w" : "z"))
 			strncpy (header->z_units, HH->varname, GMT_GRID_UNIT_LEN80-1);
 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
@@ -1018,14 +1021,16 @@ L100:
 #endif
 		}
 
-		/* Limits need to be stored in actual, not internal grid, units */
-		if (header->z_min <= header->z_max) {
-			dummy[0] = header->z_min * header->z_scale_factor + header->z_add_offset;
-			dummy[1] = header->z_max * header->z_scale_factor + header->z_add_offset;
+		if (!cube) {	/* Must do this separately for cube values in gmt_nc_write_cube */
+			/* Limits need to be stored in actual, not internal grid, units */
+			if (header->z_min <= header->z_max) {
+				dummy[0] = header->z_min * header->z_scale_factor + header->z_add_offset;
+				dummy[1] = header->z_max * header->z_scale_factor + header->z_add_offset;
+			}
+			else
+				dummy[0] = 0.0, dummy[1] = 0.0;
+			gmt_M_err_trap (nc_put_att_double (ncid, z_id, "actual_range", NC_DOUBLE, 2U, dummy));
 		}
-		else
-			dummy[0] = 0.0, dummy[1] = 0.0;
-		gmt_M_err_trap (nc_put_att_double (ncid, z_id, "actual_range", NC_DOUBLE, 2U, dummy));
 
 		/* Store values along x and y axes */
 		nc_inq_nvars (ncid, &nvars);
@@ -1584,12 +1589,12 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 
 	/* Read grid */
 	if (dim2[1] == 0)
-		gmtnc_io_nc_grid (GMT, header, dim, origin, HH->stride, k_get_netcdf, pgrid + HH->data_offset);
+		gmtnc_io_nc_grid (GMT, header, dim, origin, HH->stride, k_get_netcdf, pgrid + HH->data_offset, false, 0);
 	else {
 		/* Read grid in two parts */
 		unsigned int stride_or_width = HH->stride != 0 ? HH->stride : width;
-		gmtnc_io_nc_grid (GMT, header, dim, origin, stride_or_width, k_get_netcdf, pgrid + HH->data_offset);
-		gmtnc_io_nc_grid (GMT, header, dim2, origin2, stride_or_width, k_get_netcdf, pgrid + HH->data_offset + dim[1]);
+		gmtnc_io_nc_grid (GMT, header, dim, origin, stride_or_width, k_get_netcdf, pgrid + HH->data_offset, false, 0);
+		gmtnc_io_nc_grid (GMT, header, dim2, origin2, stride_or_width, k_get_netcdf, pgrid + HH->data_offset + dim[1], false, 0);
 	}
 
 	/* If we need to shift grid */
@@ -1787,7 +1792,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 	/* Write grid */
 	dim[0]    = height,    dim[1]    = width;
 	origin[0] = first_row, origin[1] = first_col;
-	status = gmtnc_io_nc_grid (GMT, header, dim, origin, 0, k_put_netcdf, pgrid);
+	status = gmtnc_io_nc_grid (GMT, header, dim, origin, 0, k_put_netcdf, pgrid, false, 0);
 	if (status != NC_NOERR)
 		goto nc_err;
 
@@ -1922,6 +1927,7 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 		GMT_Report (API, GMT_MSG_ERROR, "gmt_nc_write_cube: No layers selected from GMT_IS_CUBE.\n");
 		return (gmtlib_report_error (API, GMT_DIM_TOO_SMALL));
 	}
+	save_n_bands = C->header->n_bands;	/* Remember how many bands */
 	here = k0 * C->header->size;	/* Start position in the cube for layer k0 */
 
 	if (strchr (file, '%') || n_layers_used == 1) {	/* Format specifier found, do individual layer grids, or a single layer so no format needed */
@@ -1930,7 +1936,6 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 
 		/* !! Remember that the gmt_nc.c codes will unpad and mess up C->data */
 		G = gmt_get_grid (GMT);	/* Need a dummy grid for writing */
-		save_n_bands = C->header->n_bands;	/* Remember how many bands */
 		G->header = C->header;	/* Use this pointer for now */
 		G->header->n_bands = 1;	/* Grids only have one band [must undo this below] */
 		/* Write the layers via a grid */
@@ -1955,7 +1960,7 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 	}
 	else {	/* Here we must write a 3-D netcdf data cube NOT COMPLETED SO NOT WORKING */
 
-		int status = NC_NOERR;
+		int status = NC_NOERR, err = 0;
 		bool adj_nan_value;   /* if we need to change the fill value */
 		bool do_round = true; /* if we need to round to integral */
 		unsigned int width, height;
@@ -1973,6 +1978,7 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 		//return (GMT_RUNTIME_ERROR);
 
 		width = header->n_columns;	height = header->n_rows;
+		header->n_bands = n_layers_used;	/* Number of layers to actually write */
 
 		/* Determine the value to be assigned to missing data, if not already done so */
 		switch (header->type) {
@@ -2013,12 +2019,21 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 		if (status != NC_NOERR)
 			goto nc_err;
 
+		/* Add cube parameters, etc not done by gmtnc_grd_info */
+
+		/* Define 3-D z variable and write the values */
+		gmtnc_put_units (HH->ncid, HH->z3_id, C->units);
+		gmt_M_err_trap (nc_put_att_double (HH->ncid, HH->z3_id, "actual_range", NC_DOUBLE, 2U, C->z_range));
+		gmt_M_err_trap (nc_put_var_double (HH->ncid, HH->z3_id, &C->z[k0]));
+
 		/* Get stats */
 		adj_nan_value = !isnan (header->nan_value);
-		dim[0]    = height,    dim[1]    = width;
+		dim[0]    = height,    dim[1]    = width;    dim[2]    = n_layers_used;
+		origin[0] = 0, origin[1] = 0;
 
 		for (k = k0; k <= k1; k++) {	/* For all selected output levels */
 			pgrid = &C->data[here];
+			origin[2] = k - k0;
 
 			/* Remove padding from grid */
 			gmtnc_unpad_grid (pgrid, width, height, header->pad, sizeof(pgrid[0]));
@@ -2049,8 +2064,7 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 			}
 
 			/* Write grid layer */
-			origin[0] = first_row, origin[1] = first_col;
-			status = gmtnc_io_nc_grid (GMT, header, dim, origin, 0, k_put_netcdf, pgrid);
+			status = gmtnc_io_nc_grid (GMT, header, dim, origin, 0, k_put_netcdf, pgrid, true, origin[2]);
 			if (status != NC_NOERR)
 				goto nc_err;
 			here += C->header->size;
