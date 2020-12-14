@@ -5435,7 +5435,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 						strcpy (cube_layer, &nc_z_named[1]);	/* Place variable name in cube_layer string */
 						nc_z_named[0] = '\0';	/* Chop off layer name for now */
 					}
-					if (gmt_examine_nc_cube (GMT, the_file, &n_layers, &level)) {	/* Learn the basics about the cube */
+					if (gmt_nc_read_cube_info (GMT, the_file, &n_layers, &level)) {	/* Learn the basics about the cube */
 						GMT_Report (API, GMT_MSG_ERROR, "gmtapi_import_cube: Unable to examine cube %s.\n", the_file);
 						return_null (API, GMT_RUNTIME_ERROR);
 					}
@@ -5920,7 +5920,7 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 			}
 			else {
 				GMT_Report (API, GMT_MSG_INFORMATION, "Writing cube to file %s\n", S_obj->filename);
-				if (gmt_write_nc_cube (GMT, U_obj, S_obj->wesn, S_obj->filename) != GMT_NOERROR)
+				if (gmt_nc_write_cube (GMT, U_obj, S_obj->wesn, S_obj->filename) != GMT_NOERROR)
 					return (gmtlib_report_error (API, API->error));
 				done = true;
 			}

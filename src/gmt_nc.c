@@ -40,6 +40,8 @@
  *  gmt_nc_update_grd_info: Update header in existing file
  *  gmt_nc_write_grd_info:  Write header to new file
  *  gmt_nc_write_grd:       Write header and data set to new file
+ *  gmt_nc_read_cube_info:  Read information from cube file
+ *  gmt_nc_write_cube:      rite header and cube to new file(s)
  *  gmtlib_is_nc_grid:	    Determine if we have a nc grid
  *
  * Private functions:
@@ -1834,7 +1836,7 @@ nc_err:
 
 /* Examine the netCDF data cube and determine if it is a 3-D cube and return the knots */
 
-int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double **zarray) {
+int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double **zarray) {
 	int i, err, ID = -1, dim = 0, ncid, z_id = -1, ids[5] = {-1,-1,-1,-1,-1}, dims[5], nvars;
 	int has_vector,ndims = 0, z_dim, status;
 	uint64_t n_layers = 0;
@@ -1897,7 +1899,7 @@ int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double 
 }
 
 /* Write a 3-D cube to file; cube is represented internally by a stack of 2-D grids and a layer z-array */
-int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], const char *file) {
+int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], const char *file) {
 	/* Depending on mode, we either write individual layer grid files or a single 3-D data cube */
 	uint64_t k, k0, k1, n_layers_used, save_n_bands, here = 0;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -1911,7 +1913,7 @@ int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 	}
 	n_layers_used = k1 - k0 + 1;	/* Total number of layers actually to be written */
 	if (n_layers_used == 0) {
-		GMT_Report (API, GMT_MSG_ERROR, "gmt_write_nc_cube: No layers selected from GMT_IS_CUBE.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "gmt_nc_write_cube: No layers selected from GMT_IS_CUBE.\n");
 		return (gmtlib_report_error (API, GMT_DIM_TOO_SMALL));
 	}
 	here = k0 * C->header->size;	/* Start position in the cube for layer k0 */
@@ -1932,7 +1934,7 @@ int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 			else	/* Just this one layer grid */
 				sprintf (gfile, "%s", file);
 			G->data = &C->data[here];	/* Point to start of this layer */
-			GMT_Report (API, GMT_MSG_DEBUG, "gmt_write_nc_cube: Layer %" PRIu64 ", offset = %" PRIu64 ".\n", k, here);
+			GMT_Report (API, GMT_MSG_DEBUG, "gmt_nc_write_cube: Layer %" PRIu64 ", offset = %" PRIu64 ".\n", k, here);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, gfile, G) != GMT_NOERROR) {
 				return (API->error);
 			}
@@ -1961,7 +1963,7 @@ int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 		struct GMT_GRID_HEADER *header = C->header;
 		struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_write_nc_cube: Writing 3-D CUBE not implemented yet\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_nc_write_cube: Writing 3-D CUBE not implemented yet\n");
 		return (GMT_RUNTIME_ERROR);
 
 		width = header->n_columns;	height = header->n_rows;
