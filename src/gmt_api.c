@@ -12475,48 +12475,51 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	}
 	/* 1j. Check if this is a blockm* module using -A to set n output grids */
 	else if (!strncmp (module, "block", 5U) && (opt = GMT_Find_Option (API, 'A', *head))) {
-		/* Determine how many output grids are requested */
-		if (opt->arg[0]) {
+		/* Below, k is the number of under=the-hood -G? options we must add for returning grids to externals */
+		k = 0;	/* Make sure we initialize this first */
+		if (opt->arg[0]) {	/* Gave -A: Determine how many output grids are requested */
 			for (k = 1, len = 0; len < strlen (opt->arg); len++) if (opt->arg[len] == ',') k++;
 		}
-		else if ((opt = GMT_Find_Option (API, 'G', *head))) {	/* This is a problem */
-			if (opt->arg[0] == '\0') {	/* This is a problem */
-				GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
-				return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+		if ((opt = GMT_Find_Option (API, 'G', *head))) {	/* This is a problem unless -G actually sent in a file name */
+			if (opt->arg[0] == '\0') {	/* This is a problem unless -G actually sent in a file name, in which case no -G? should be added */
+				GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
+				return_null (NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
 			}
-			else
+			else	/* Gave an argument, no need to add -G? */
 				k = 0;
 		}
-		else	/* No -A with no args or -G means just add the z grid */
+		else	/* No -A or -G; default is to just add the z grid via -G?  */
 			k = 1;
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */
 			*head = GMT_Append_Option (API, new_ptr, *head);
 			k--;
 		}
-		deactivate_output = true;	/* Turn off implicit table output since only secondary -G -G -G is in effect */
+		deactivate_output = true;	/* Turn off implicit table output since only secondary -G output(s) is in effect */
 	}
 	/* 1k. Check if this is the earthtide module requesting output grids */
 	else if (!strncmp (module, "earthtide", 9U) && !GMT_Find_Option (API, 'L', *head) && !GMT_Find_Option (API, 'S', *head)) {
-		if ((opt = GMT_Find_Option (API, 'C', *head))) {	/* Determine how many output grids are requested */
+		/* Below, k is the number of under=the-hood -G? options we must add for returning grids to externals */
+		k = 0;	/* Make sure we initialize this first */
+		if ((opt = GMT_Find_Option (API, 'C', *head))) {	/* Gave -C: Determine how many output grids are requested */
 			for (k = 1, len = 0; len < strlen (opt->arg); len++) if (opt->arg[len] == ',') k++;
 		}
-		else if ((opt = GMT_Find_Option(API, 'G', *head))) {	/* This is a problem unless -G actually sent in a file name */
-			if (opt->arg[0] == '\0') {	/* This is a problem unless -G actually sent in a file name */
-				GMT_Report(API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
-				return_null(NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+		if ((opt = GMT_Find_Option(API, 'G', *head))) {	/* This is a problem unless -G actually sent in a file name */
+			if (opt->arg[0] == '\0') {	/* This is a problem unless -G actually sent in a file name, in which case no -G? should be added */
+				GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G (with no argument) when called externally\n", module);
+				return_null (NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
 			}
-			else
+			else	/* Gave an argument, no need to add -G? */
 				k = 0;
 		}
-		else 	/* No -C or -G; default is to just add the -Gz grid */
+		else if (k == 0) 	/* No -C or -G; default is to just add the -Gz grid via -G? */
 			k = 1;
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */
 			*head = GMT_Append_Option (API, new_ptr, *head);
 			k--;
 		}
-		deactivate_output = true;	/* Turn off implicit table output since only secondary -G -G -G is in effect */
+		deactivate_output = true;	/* Turn off implicit table output since only secondary -G output(s) is in effect */
 	}
 	/* 1l. Check if this is makecpt using -E or -S with no args */
 	else if (!strncmp (module, "makecpt", 7U)) {
