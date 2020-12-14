@@ -32,7 +32,6 @@
 #define THIS_MODULE_MODERN_NAME	"gmtgravmag3d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe"
-//#define THIS_MODULE_KEYS	"TD{,FD(,GG),>D}"
 #define THIS_MODULE_KEYS	"<D{,TD(,FD(,GG},>D)"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVf"
@@ -46,10 +45,10 @@ struct GMTGRAVMAG3D_CTRL {
 		bool active;
 		double dir;
 	} D;
-	struct GMTGRAVMAG3D_I {	/* -Idx[/dy] */
+	struct GMTGRAVMAG3D_E {	/* -T */
 		bool active;
-		double inc[2];
-	} I;
+		double dz;
+	} E;
 	struct GMTGRAVMAG3D_F {	/* -F<grdfile> */
 		bool active;
 		char *file;
@@ -62,14 +61,19 @@ struct GMTGRAVMAG3D_CTRL {
 		bool active;
 		double	t_dec, t_dip, m_int, m_dec, m_dip;
 	} H;
+	struct GMTGRAVMAG3D_I {	/* -Idx[/dy] */
+		bool active;
+		double inc[2];
+	} I;
 	struct GMTGRAVMAG3D_L {	/* -L */
 		bool active;
 		double zobs;
 	} L;
-	struct GMTGRAVMAG3D_E {	/* -T */
+	struct GMTGRAVMAG3D_M {	/* -M for model body(ies) */
 		bool active;
-		double dz;
-	} E;
+		bool type[7][20];
+		double params[7][20][9];	/* 7 bodies with at most 9 parameters */
+	} M;
 	struct GMTGRAVMAG3D_S {	/* -S */
 		bool active;
 		double radius;
@@ -124,6 +128,16 @@ struct MAG_VAR3 {
 
 struct MAG_VAR4 {
 	double	t_dec, t_dip, m, m_dec, m_dip;
+};
+
+enum GMT_enum_body {
+	BELL = 0,
+	CILINDER,
+	CONE,
+	ELLIP,
+	PRISM,
+	PIRAMID,
+	SPHERE
 };
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -199,9 +213,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int j, pos = 0, n_errors = 0, n_files = 0;
-	char	ptr[GMT_LEN256] = {""};
-	struct	GMT_OPTION *opt = NULL;
+	unsigned int j, pos = 0, pos2 = 0, n_errors = 0, n_files = 0;
+	char ptr[GMT_LEN256] = {""};
+	char p[GMT_LEN16] = {""}, p2[GMT_LEN16] = {""};
+	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -255,14 +270,41 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				Ctrl->L.zobs = atof (opt->arg);
 				break;
 			case 'M':
-				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Option -M is deprecated; -fg was set instead, use this in the future.\n");
-					if (gmt_M_is_cartesian (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+				Ctrl->M.active = true;
+
+				while (gmt_strtok (&opt->arg[pos], ",", &pos, p)) {		/* -M+cone,a/b/c+ellipe,a/b/c/d */
+					int n_par, nPRI = 0, nCONE = 0;
+					if (p[0] != '+') {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Model option must start with a +<code>\n");
+						return GMT_PARSE_ERROR;
+					}
+					pos2 = 0;
+					gmt_strtok (&opt->arg[pos], "+", &pos2, p2);	/* Get the string with the model parameters */
+					if (!strcmp(&p[1], "cone")) {
+						n_par = sscanf (p2, "%lg/%lg/%lg/%lg/%lg", &Ctrl->M.params[CONE][nCONE][0], &Ctrl->M.params[CONE][nCONE][1], &Ctrl->M.params[CONE][nCONE][2], &Ctrl->M.params[CONE][nCONE][3], &Ctrl->M.params[CONE][nCONE][4]);
+						if (n_par != 4 && n_par != 5) {
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Model cone option, wrong number of parametrs.\n");
+							return GMT_PARSE_ERROR;
+						}
+						if (n_par == 4)  Ctrl->M.params[CONE][nCONE][4] = 24;
+						Ctrl->M.type[CONE][nCONE] = true;
+						nCONE++;
+					}
+					else if (!strcmp(&p[1], "prism")) {
+						n_par = sscanf (p2, "%lg/%lg/%lg/%lg/%lg/%lg", &Ctrl->M.params[PRISM][nPRI][0], &Ctrl->M.params[PRISM][nPRI][1], &Ctrl->M.params[PRISM][nPRI][2], &Ctrl->M.params[PRISM][nPRI][3], &Ctrl->M.params[CONE][nPRI][4], &Ctrl->M.params[CONE][nPRI][5]);
+						if (n_par < 4) {
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Model prism option, wrong number of parametrs.\n");
+							return GMT_PARSE_ERROR;
+						}
+						Ctrl->M.type[PRISM][nPRI] = true;
+						nPRI++;
+					}
+					else {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unknown model code (%s) in -M option\n", &p[1]);
+						return GMT_PARSE_ERROR;
+					}
 				}
-				else
-					n_errors += gmt_default_error (GMT, opt->option);
 				break;
-	 		case 'P':		/* For backward compat of pre GMT version */
 	 		case 'E':
 				Ctrl->E.dz = atof (opt->arg);
 				Ctrl->E.active = true;
@@ -523,9 +565,9 @@ GMT_LOCAL int gmtgravmag3d_read_t(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LOCAL int gmtgravmag3d_read_raw (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl) {
+GMT_LOCAL int read_raw(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl) {
 	/* read a file with triagles in the raw format and returns nb of triangles */
-	int row;
+	int row, seg, nt;
 	struct  GMT_DATASET *In = NULL;
 
 	if ((In = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->T.raw_file, NULL)) == NULL)
@@ -534,28 +576,52 @@ GMT_LOCAL int gmtgravmag3d_read_raw (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_C
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ts: %s does not have 9 columns with 3 triang vertices\n", Ctrl->T.raw_file);
 		return -1;
 	}
-	if (In->table[0]->n_segments > 1) /* case not dealt (or ignored) and should be tested here */
-		GMT_Report(GMT->parent, GMT_MSG_WARNING, "Multi-segment files are not implementd. Using first segment only\n");
 
-	Ctrl->raw_mesh = gmt_M_memory (GMT, NULL, In->table[0]->n_records, struct GMTGRAVMAG3D_RAW);
-	for (row = 0; row < In->table[0]->n_records; row++) {
-		Ctrl->raw_mesh[row].t1[0] =  In->table[0]->segment[0]->data[0][row];
-		Ctrl->raw_mesh[row].t1[1] = -In->table[0]->segment[0]->data[1][row];
-		Ctrl->raw_mesh[row].t1[2] =  In->table[0]->segment[0]->data[2][row] * Ctrl->D.dir;
+	Ctrl->raw_mesh = gmt_M_memory (GMT, NULL, In->n_records, struct GMTGRAVMAG3D_RAW);
 
-		Ctrl->raw_mesh[row].t2[0] =  In->table[0]->segment[0]->data[3][row];
-		Ctrl->raw_mesh[row].t2[1] = -In->table[0]->segment[0]->data[4][row];
-		Ctrl->raw_mesh[row].t2[2] =  In->table[0]->segment[0]->data[5][row] * Ctrl->D.dir;
+	for (seg = nt = 0; seg < In->n_segments; seg++) {
+		for (row = 0; row < In->table[0]->n_records; row++) {
+			Ctrl->raw_mesh[nt].t1[0] =  In->table[0]->segment[seg]->data[0][row];
+			Ctrl->raw_mesh[nt].t1[1] = -In->table[0]->segment[seg]->data[1][row];
+			Ctrl->raw_mesh[nt].t1[2] =  In->table[0]->segment[seg]->data[2][row] * Ctrl->D.dir;
 
-		Ctrl->raw_mesh[row].t3[0] =  In->table[0]->segment[0]->data[6][row];
-		Ctrl->raw_mesh[row].t3[1] = -In->table[0]->segment[0]->data[7][row];
-		Ctrl->raw_mesh[row].t3[2] =  In->table[0]->segment[0]->data[8][row] * Ctrl->D.dir;
+			Ctrl->raw_mesh[nt].t2[0] =  In->table[0]->segment[seg]->data[3][row];
+			Ctrl->raw_mesh[nt].t2[1] = -In->table[0]->segment[seg]->data[4][row];
+			Ctrl->raw_mesh[nt].t2[2] =  In->table[0]->segment[seg]->data[5][row] * Ctrl->D.dir;
+
+			Ctrl->raw_mesh[nt].t3[0] =  In->table[0]->segment[seg]->data[6][row];
+			Ctrl->raw_mesh[nt].t3[1] = -In->table[0]->segment[seg]->data[7][row];
+			Ctrl->raw_mesh[nt].t3[2] =  In->table[0]->segment[seg]->data[8][row] * Ctrl->D.dir;
+			nt++;
+		}
 	}
-	Ctrl->n_raw_triang = In->table[0]->n_records;
+
+	Ctrl->n_raw_triang = In->n_records;
 	if (GMT_Destroy_Data (GMT->parent, &In) != GMT_NOERROR) {
 		return GMT->parent->error;
 	}
 	return 0;
+}
+
+#include "solids.c"
+/* -----------------------------------------------------------------*/
+GMT_LOCAL int solids(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl) {
+	/*  */
+
+	for (int m = 0; m < 7; m++) {
+		for (int n = 0; n < 20; n++) {
+			if (Ctrl->M.type[m][n]) {
+				switch (Ctrl->M.type[m][n]) {
+					case PRISM:
+						prism(GMT, Ctrl);
+						break;
+				
+					default:
+						break;
+				}
+			}
+		}
+	}
 }
 
 
@@ -568,7 +634,7 @@ EXTERN_MSC int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	unsigned int row, col, i, j, k, kk;
 	unsigned int ndata_p = 0, nx_p, ny_p, n_vert_max;
 	unsigned int z_th = 0, n_triang = 0, ndata_s = 0, n_swap = 0;
-	int retval, error = 0;
+	int error = 0;
 	uint64_t ij;
 	size_t nm;
 	int km, pm;		/* index of current body facet (for mag only) */
@@ -658,18 +724,20 @@ EXTERN_MSC int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		gmtgravmag3d_set_center (Ctrl);
 	}
 	else if (Ctrl->T.stl) { 	/* Read STL file defining a closed volume */
-		if ( (retval = gmtgravmag3d_read_stl(GMT, Ctrl)) < 0 ) {
+		if ( (ndata_s = gmtgravmag3d_read_stl(GMT, Ctrl)) < 0 ) {
 			GMT_Report (API, GMT_MSG_ERROR, "Cannot open file %s\n", Ctrl->T.stl_file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		ndata_s = retval;
 		/*n_swap = gmtgravmag3d_check_triang_cw (ndata_s, 1);*/
 	}
 	else if (Ctrl->T.raw) { 	/* Read RAW file defining a closed volume */
-		if ((error = gmtgravmag3d_read_raw(GMT, Ctrl)))
+		if ((error = read_raw(GMT, Ctrl)))
 			Return (error);
 
 		/*n_swap = gmtgravmag3d_check_triang_cw (Ctrl->n_raw_triang, 1);*/
+	}
+	else if (Ctrl->M.active) {
+		solids(GMT, Ctrl);
 	}
 
 	if (n_swap > 0)
