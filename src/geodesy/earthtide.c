@@ -1487,7 +1487,7 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 			                             GMT->common.R.registration, 0, NULL)) == NULL)
 				Return (API->error);
 
-			strcpy (Grid[k]->header->z_units, "tide [meter]");
+			strcpy (Grid[k]->header->z_units, "solid-earth-tide [meter]");
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[k]))
 				Return (API->error);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, comp_info[k], Grid[k]))
