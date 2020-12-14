@@ -733,8 +733,11 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		this_dim = dims;	/* Pointer to the dims instead of NULL */
 		inc[GMT_Z] = 0.0;
 	}
-	else	/* Normal equidistant output levels lets us pass z-inc */
-		inc[GMT_Z] = Ctrl->T.T.inc;	
+	else {	/* Normal equidistant output levels lets us pass z-inc */
+		inc[GMT_Z] = Ctrl->T.T.inc;
+		wesn[ZLO] = Ctrl->T.T.min;
+		wesn[ZHI] = Ctrl->T.T.max;
+	}
 
 	if ((C[GMT_OUT] = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, this_dim, wesn, inc, C[GMT_IN]->header->registration, GMT_NOTSET, NULL)) == NULL)
 		Return (GMT_MEMORY_ERROR);
