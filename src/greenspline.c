@@ -2543,6 +2543,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			else if (dimension == 3 && !write_3D_records) {	/* Write the 3-D cube */
 				gmt_grd_init (GMT, Cube->header, options, true);
 				snprintf (Cube->header->remark, GMT_GRID_REMARK_LEN160, "%s (-S%s)", method[Ctrl->S.mode], Ctrl->S.arg);
+				if (GMT_Set_Comment (API, GMT_IS_CUBE, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Cube)) Return (API->error);
 				if (GMT_Write_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Cube))
 					Return (EXIT_FAILURE);
 			}

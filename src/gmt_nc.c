@@ -419,7 +419,7 @@ GMT_LOCAL int gmtnc_put_xy_vectors (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char job, bool cube, double *w_range) {
+GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char job, bool cube) {
 	int j, err, has_vector, has_range, registration, var_spacing = 0;
 	int old_fill_mode, status;
 	double dummy[2], min, max;
@@ -1045,23 +1045,13 @@ L100:
 #endif
 		}
 
-		if (cube) {	/* Must do this differently for cube values */
-			if (w_range[0] <= w_range[1]) {
-				dummy[0] = w_range[0] * header->z_scale_factor + header->z_add_offset;
-				dummy[1] = w_range[1] * header->z_scale_factor + header->z_add_offset;
-			}
-			else
-				dummy[0] = 0.0, dummy[1] = 0.0;
+		/* Limits need to be stored in actual, not internal grid, units */
+		if (header->z_min <= header->z_max) {
+			dummy[0] = header->z_min * header->z_scale_factor + header->z_add_offset;
+			dummy[1] = header->z_max * header->z_scale_factor + header->z_add_offset;
 		}
-		else {	/* Regular grid */
-			/* Limits need to be stored in actual, not internal grid, units */
-			if (header->z_min <= header->z_max) {
-				dummy[0] = header->z_min * header->z_scale_factor + header->z_add_offset;
-				dummy[1] = header->z_max * header->z_scale_factor + header->z_add_offset;
-			}
-			else
-				dummy[0] = 0.0, dummy[1] = 0.0;
-		}
+		else
+			dummy[0] = 0.0, dummy[1] = 0.0;
 		gmt_M_err_trap (nc_put_att_double (ncid, z_id, "actual_range", NC_DOUBLE, 2U, dummy));
 
 		/* Store values along x and y axes */
@@ -1537,15 +1527,15 @@ int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 }
 
 int gmt_nc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	return (gmtnc_grd_info (GMT, header, 'r', false, NULL));
+	return (gmtnc_grd_info (GMT, header, 'r', false));
 }
 
 int gmt_nc_update_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	return (gmtnc_grd_info (GMT, header, 'u', false, NULL));
+	return (gmtnc_grd_info (GMT, header, 'u', false));
 }
 
 int gmt_nc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	return (gmtnc_grd_info (GMT, header, 'w', false, NULL));
+	return (gmtnc_grd_info (GMT, header, 'w', false));
 }
 
 int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
@@ -1772,7 +1762,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 
 	/* Write grid header without closing file afterwards */
 	gmtnc_setup_chunk_cache();
-	status = gmtnc_grd_info (GMT, header, 'W', false, NULL);
+	status = gmtnc_grd_info (GMT, header, 'W', false);
 	if (status != NC_NOERR)
 		goto nc_err;
 
@@ -2060,8 +2050,8 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 			here += C->header->size;
 		}
 		/* The min/max of the cube */
-		limit[0] = level_min;
-		limit[1] = level_max;
+		header->z_min = level_min;
+		header->z_max = level_max;
 
 		/* Adjust first_row */
 		if (HH->row_order == k_nc_start_south)
@@ -2069,7 +2059,7 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 
 		/* Write grid header without closing file afterwards so more items can be added */
 		gmtnc_setup_chunk_cache();
-		status = gmtnc_grd_info (GMT, header, 'W', true, limit);
+		status = gmtnc_grd_info (GMT, header, 'W', true);
 		if (status != NC_NOERR)
 			goto nc_err;
 
