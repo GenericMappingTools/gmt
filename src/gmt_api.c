@@ -1997,6 +1997,11 @@ GMT_LOCAL int gmtapi_init_grdheader (struct GMT_CTRL *GMT, unsigned int directio
 	gmtlib_grd_get_units (GMT, header);
 	gmt_BC_init (GMT, header);	/* Initialize grid interpolation and boundary condition parameters */
 	HH->grdtype = gmtlib_get_grdtype (GMT, direction, header);	/* Set grid type (i.e. periodicity for global grids) */
+#ifdef DOUBLE_PRECISION_GRID
+	header->type = GMT_GRID_IS_ND;
+#else
+	header->type = GMT_GRID_IS_NF;
+#endif
 	return (GMT_NOERROR);
 }
 
@@ -5372,7 +5377,7 @@ GMT_LOCAL struct GMT_CUBE * gmtapi_import_cube (struct GMTAPI_CTRL *API, int obj
 	unsigned int both_set = (GMT_CONTAINER_ONLY | GMT_DATA_ONLY);
 	unsigned int method, start_over_method = 0;
 	double dx, dy, d;
-	double *level = NULL, z_min, z_max;
+	double *level = NULL, z_min, z_max, w_range[2] = {0.0, 0.0};
 	p_func_uint64_t GMT_2D_to_index = NULL;
 	struct GMT_CUBE *U_obj = NULL, *U_orig = NULL;
 	struct GMT_GRID *G = NULL;
@@ -5435,7 +5440,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 						strcpy (cube_layer, &nc_z_named[1]);	/* Place variable name in cube_layer string */
 						nc_z_named[0] = '\0';	/* Chop off layer name for now */
 					}
-					if (gmt_nc_read_cube_info (GMT, the_file, &n_layers, &level)) {	/* Learn the basics about the cube */
+					if (gmt_nc_read_cube_info (GMT, the_file, w_range, &n_layers, &level)) {	/* Learn the basics about the cube */
 						GMT_Report (API, GMT_MSG_ERROR, "gmtapi_import_cube: Unable to examine cube %s.\n", the_file);
 						return_null (API, GMT_RUNTIME_ERROR);
 					}

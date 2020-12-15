@@ -2692,6 +2692,11 @@ struct GMT_GRID *gmt_create_grid (struct GMT_CTRL *GMT) {
 	G->header = gmt_get_header (GMT);
 	gmt_grd_init (GMT, G->header, NULL, false); /* Set default values */
 	GMT_Set_Index (GMT->parent, G->header, GMT_GRID_LAYOUT);
+#ifdef DOUBLE_PRECISION_GRID
+	G->header->type = GMT_GRID_IS_ND;
+#else
+	G->header->type = GMT_GRID_IS_NF;
+#endif
 	GH->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
 	GH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	GH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
@@ -3331,9 +3336,9 @@ struct GMT_CUBE *gmtlib_create_cube (struct GMT_CTRL *GMT) {
 	C->header = gmt_get_header (GMT);
 	gmt_grd_init (GMT, C->header, NULL, false); /* Set default values */
 #ifdef DOUBLE_PRECISION_GRID
-	header->type = GMT_GRID_IS_ND;
+	C->header->type = GMT_GRID_IS_ND;
 #else
-	header->type = GMT_GRID_IS_NF;
+	C->header->type = GMT_GRID_IS_NF;
 #endif
 	GMT_Set_Index (GMT->parent, C->header, GMT_GRID_LAYOUT);
 	GU->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */

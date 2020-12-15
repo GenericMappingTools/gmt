@@ -320,7 +320,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int int_mode, row, col, level_type, dtype = 0, file_mode = GMT_CONTAINER_AND_DATA;
 	uint64_t n_layers = 0, k, node, start_k, stop_k, n_layers_used, *this_dim = NULL, dims[3] = {0, 0, 0};
-	double wesn[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, inc[3] = {0.0, 0.0, 0.0}, *level = NULL, *i_value = NULL, *o_value = NULL;
+	double wesn[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, inc[3] = {0.0, 0.0, 0.0}, w_range[2] = {0.0, 0.0};
+	double *level = NULL, *i_value = NULL, *o_value = NULL;
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_CUBE *C[2] = {NULL, NULL};     /* Structures to hold input/output cubes */
 
@@ -372,7 +373,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			strcpy (cube_layer, &nc_z_named[1]);
 			nc_z_named[0] = '\0';	/* Chop off layer name for now */
 		}
-		if ((error = gmt_nc_read_cube_info (GMT, Ctrl->In.file[0], &n_layers, &level))) {
+		if ((error = gmt_nc_read_cube_info (GMT, Ctrl->In.file[0], w_range, &n_layers, &level))) {
 			Return (error);
 		}
 	}
@@ -763,6 +764,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	}
 	GMT_Destroy_Data (API, &C[GMT_IN]);	/* Done with the input cube */
 
+	if (GMT_Set_Comment (API, GMT_IS_CUBE, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C[GMT_OUT]))
+		Return (EXIT_FAILURE);
 	if (GMT_Write_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, C[GMT_OUT]))
 		Return (EXIT_FAILURE);
 
