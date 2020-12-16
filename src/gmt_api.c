@@ -12423,7 +12423,13 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	else if (!strncmp (module, "greenspline", 11U) && (opt = GMT_Find_Option (API, 'R', *head))) {
 		/* Found the -R"domain" option; determine the dimensionality of the output */
 		unsigned dim = gmtapi_determine_dimension (API, opt->arg);
-		type = (dim == 2) ? 'G' : 'D';
+		switch (dim) {	/* Determine if output is D, G, or U */
+			case 1: type = 'D'; break;	/* 1-D is a data table */
+			case 2: type = 'G'; break;	/* 2-D is always a grid */
+			default:	/* 3-D, but can be dataset or cube */
+				type = ((opt = GMT_Find_Option (API, 'G', *head))) ? 'U' : 'D';
+				break;
+		}
 	}
 	/* 1g. Check if this is the triangulate module, where primary dataset output should be turned off if -G given without -M,N,Q,S */
 	else if (!strncmp (module, "triangulate", 11U) && (opt = GMT_Find_Option (API, 'G', *head))) {

@@ -689,6 +689,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active + GMT->common.R.active[RSET]) == 1 && dimension == 2, "Must specify -R, -I, [-r], -G for gridding\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.movie && strchr (Ctrl->G.file, '%') == NULL, "Must give a filename template via -G when -C..+m|M is selected\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.movie && dimension != 2, "The -C..+m|M modifier is only available for 2-D gridding\n");
+	n_errors += gmt_M_check_condition (GMT, dimension == 3 && Ctrl->G.active && API->external && strchr (Ctrl->G.file, '%'), "Option -G: Cannot contain format-specifiers when not used on the command line\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
