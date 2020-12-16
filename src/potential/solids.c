@@ -266,10 +266,10 @@ int cilindro (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, int nb) {
 
 	i_tri = Ctrl->n_raw_triang;		/* Start over any previous raw triang collection */
 
-	rad_c = Ctrl->M.params[CILINDER][nb][0];		height_c   = Ctrl->M.params[CILINDER][nb][1];
-	z_c   = Ctrl->M.params[CILINDER][nb][2];
-	x0    = Ctrl->M.params[CILINDER][nb][3];		y0  = Ctrl->M.params[CILINDER][nb][4];
-	npts_circ = Ctrl->M.params[CILINDER][nb][5];
+	rad_c = Ctrl->M.params[CYLINDER][nb][0];		height_c   = Ctrl->M.params[CYLINDER][nb][1];
+	z_c   = Ctrl->M.params[CYLINDER][nb][2];
+	x0    = Ctrl->M.params[CYLINDER][nb][3];		y0  = Ctrl->M.params[CYLINDER][nb][4];
+	npts_circ = Ctrl->M.params[CYLINDER][nb][5];
 	z_top = -(z_c + height_c);		z_bot = -z_c ;
 
 	n_tri = Ctrl->npts_circ * 4;

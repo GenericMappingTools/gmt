@@ -135,7 +135,7 @@ struct MAG_VAR4 {
 
 enum GMT_enum_body {
 	BELL = 0,
-	CILINDER,
+	CYLINDER,
 	CONE,
 	ELLIPSOID,
 	PRISM,
@@ -176,7 +176,7 @@ GMT_LOCAL int check_triang_cw (struct GMTGRAVMAG3D_CTRL *Ctrl, unsigned int n, u
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s xyz_file -Tv<vert_file> | -Tr|s<raw_file> OR -M+<par> [-C<density>] [-G<outgrid>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s xyz_file -Tv<vert_file> | -Tr|s<raw_file> OR -M+s<par> [-C<density>] [-G<outgrid>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-E<thick>] [-F<xy_file>] [-L<z_observation>]\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [-S<radius>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Z<level>] [%s] [-fg] [%s] [%s]\n\n", GMT_V_OPT, GMT_r_OPT, GMT_PAR_OPT);
@@ -191,21 +191,21 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOR\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Select among one or more of the following bodies, where x0 & y0 are the horizontal coordinates of the\n\t   body center [default to 0,0], npts is the number of points that a circle is discretized and n_slices\n\t   apply when bodies are made by a pile of slices. For example Spheres and Ellipsoids are made of\n\t   2*n_slices and Bells have n_slices [Default 5]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   It is even possible to select more than one body. For example:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t -M+prism,1/1/1/-5/-10/1+sphere,1/-5\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +bell,height/sx/sy/z0[/x0/y0/n_sig/npts/n_slices]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t\t -M+sprism,1/1/1/-5/-10/1+ssphere,1/-5\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   bell,height/sx/sy/z0[/x0/y0/n_sig/npts/n_slices]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\t Gaussian of height <height> with caracteristic STDs <sx> and <sy>. The base\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\t width (at depth <z0>) is controled by the number of sigmas (<n_sig>) [Default = 2]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +cilinder,rad/height/z0[/x0/y0/npts/n_slices]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   cylinder,rad/height/z0[/x0/y0/npts/n_slices]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\t Cilinder of radius <rad> height <height> and base at depth <z0>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +cone,semi_x/semi_y/height/z0[/x0/y0/npts]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   cone,semi_x/semi_y/height/z0[/x0/y0/npts]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\t Cone of semi axes <semi_x/semi_y> height <height> and base at depth <z0>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +ellipsoid,semi_x/semi_y/semi_z/z_center[/x0/y0/npts/n_slices]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   ellipsoid,semi_x/semi_y/semi_z/z_center[/x0/y0/npts/n_slices]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\t Ellipsoid of semi axes <semi_x/semi_y/semi_z> and center depth <z_center>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +prism,side_x/side_y/side_z/z0[/x0/y0]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   prism,side_x/side_y/side_z/z0[/x0/y0]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\t Prism of sides <x/y/z> and base at depth <z0>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +piramid,side_x/side_y/height/z0[/x0/y0]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   piramid,side_x/side_y/height/z0[/x0/y0]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\t Piramid of sides <x/y> height <height> and base at depth <z0>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +sphere,rad/z_center[/x0/y0/npts/n_slices]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   sphere,rad/z_center[/x0/y0/npts/n_slices]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\t Sphere of radius <rad> and center at depth <z_center>\n");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -299,13 +299,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				Ctrl->M.active = true;
 
 				while (gmt_strtok (opt->arg, ",", &pos, p)) {		/* -M+cone,a/b/c+ellipe,a/b/c/d */
-					if (p[0] != '+') {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Model option must start with a +<code>\n");
+					if (p[0] != '+' && p[1] != 's') {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Model option must start with a +s<code> and not %s\n", p);
 						return GMT_PARSE_ERROR;
 					}
 					gmt_strtok(opt->arg, "+", &pos, p2);	/* Get the string with the model parameters */
 					if (pos < strlen(opt->arg)) pos--;		/* Need to receed 1 due to the (p[0] != '+') test */
-					if (!strcmp(&p[1], "bell")) {
+					if (!strcmp(&p[2], "bell")) {
 						n_par = sscanf (p2, "%lg/%lg/%lg/%lg/%lg/%lg/%lg/%lg/%lg", &Ctrl->M.params[BELL][nBELL][0], &Ctrl->M.params[BELL][nBELL][1], &Ctrl->M.params[BELL][nBELL][2], &Ctrl->M.params[BELL][nBELL][3], &Ctrl->M.params[BELL][nBELL][4], &Ctrl->M.params[BELL][nBELL][5], &Ctrl->M.params[BELL][nBELL][6], &Ctrl->M.params[BELL][nBELL][7], &Ctrl->M.params[BELL][nBELL][8]);
 						if (n_par < 4) err_npar = 1;
 						if (n_par < 7)  Ctrl->M.params[BELL][nBELL][6] = Ctrl->n_sigmas;
@@ -314,21 +314,21 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 						Ctrl->M.type[BELL][nBELL] = BELL;
 						nBELL++;
 					}
-					else if (!strcmp(&p[1], "cilinder")) {
-						n_par = sscanf (p2, "%lg/%lg/%lg/%lg/%lg/%lg", &Ctrl->M.params[CILINDER][nCIL][0], &Ctrl->M.params[CILINDER][nCIL][1], &Ctrl->M.params[CILINDER][nCIL][2], &Ctrl->M.params[CILINDER][nCIL][3], &Ctrl->M.params[CILINDER][nCIL][4], &Ctrl->M.params[CILINDER][nCIL][5]);
+					else if (!strcmp(&p[2], "cylinder")) {
+						n_par = sscanf (p2, "%lg/%lg/%lg/%lg/%lg/%lg", &Ctrl->M.params[CYLINDER][nCIL][0], &Ctrl->M.params[CYLINDER][nCIL][1], &Ctrl->M.params[CYLINDER][nCIL][2], &Ctrl->M.params[CYLINDER][nCIL][3], &Ctrl->M.params[CYLINDER][nCIL][4], &Ctrl->M.params[CYLINDER][nCIL][5]);
 						if (n_par < 3) err_npar = 1;
-						if (n_par < 6)  Ctrl->M.params[CILINDER][nCIL][5] = Ctrl->npts_circ;
-						Ctrl->M.type[CILINDER][nCIL] = CILINDER;
+						if (n_par < 6)  Ctrl->M.params[CYLINDER][nCIL][5] = Ctrl->npts_circ;
+						Ctrl->M.type[CYLINDER][nCIL] = CYLINDER;
 						nCIL++;
 					}
-					else if (!strcmp(&p[1], "cone")) {
+					else if (!strcmp(&p[2], "cone")) {
 						n_par = sscanf (p2, "%lg/%lg/%lg/%lg/%lg", &Ctrl->M.params[CONE][nCONE][0], &Ctrl->M.params[CONE][nCONE][1], &Ctrl->M.params[CONE][nCONE][2], &Ctrl->M.params[CONE][nCONE][3], &Ctrl->M.params[CONE][nCONE][4]);
 						if (n_par < 4) err_npar = 1;
 						if (n_par == 4)  Ctrl->M.params[CONE][nCONE][4] = Ctrl->npts_circ;
 						Ctrl->M.type[CONE][nCONE] = CONE;
 						nCONE++;
 					}
-					else if (!strcmp(&p[1], "ellipsoid")) {
+					else if (!strcmp(&p[2], "ellipsoid")) {
 						n_par = sscanf (p2, "%lg/%lg/%lg/%lg/%lg/%lg/%lg/%lg", &Ctrl->M.params[ELLIPSOID][nELL][0], &Ctrl->M.params[ELLIPSOID][nELL][1], &Ctrl->M.params[ELLIPSOID][nELL][2], &Ctrl->M.params[ELLIPSOID][nELL][3], &Ctrl->M.params[ELLIPSOID][nELL][4], &Ctrl->M.params[ELLIPSOID][nELL][5], &Ctrl->M.params[ELLIPSOID][nELL][6], &Ctrl->M.params[ELLIPSOID][nELL][7]);
 						if (n_par < 4) err_npar = 1;
 						if (n_par < 7)  Ctrl->M.params[ELLIPSOID][nELL][6] = Ctrl->npts_circ;
@@ -336,19 +336,19 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 						Ctrl->M.type[ELLIPSOID][nELL] = ELLIPSOID;
 						nELL++;
 					}
-					else if (!strcmp(&p[1], "piramid")) {
+					else if (!strcmp(&p[2], "piramid")) {
 						n_par = sscanf (p2, "%lg/%lg/%lg/%lg/%lg/%lg", &Ctrl->M.params[PIRAMID][nPIR][0], &Ctrl->M.params[PIRAMID][nPIR][1], &Ctrl->M.params[PIRAMID][nPIR][2], &Ctrl->M.params[PIRAMID][nPIR][3], &Ctrl->M.params[PIRAMID][nPIR][4], &Ctrl->M.params[PIRAMID][nPIR][5]);
 						if (n_par < 4) err_npar = 1;
 						Ctrl->M.type[PIRAMID][nPIR] = PIRAMID;
 						nPIR++;
 					}
-					else if (!strcmp(&p[1], "prism")) {
+					else if (!strcmp(&p[2], "prism")) {
 						n_par = sscanf (p2, "%lg/%lg/%lg/%lg/%lg/%lg", &Ctrl->M.params[PRISM][nPRI][0], &Ctrl->M.params[PRISM][nPRI][1], &Ctrl->M.params[PRISM][nPRI][2], &Ctrl->M.params[PRISM][nPRI][3], &Ctrl->M.params[PRISM][nPRI][4], &Ctrl->M.params[PRISM][nPRI][5]);
 						if (n_par < 4) err_npar = 1;
 						Ctrl->M.type[PRISM][nPRI] = PRISM;
 						nPRI++;
 					}
-					else if (!strcmp(&p[1], "sphere")) {
+					else if (!strcmp(&p[2], "sphere")) {
 						n_par = sscanf (p2, "%lg/%lg/%lg/%lg/%lg/%lg", &Ctrl->M.params[SPHERE][nSPHERE][0], &Ctrl->M.params[SPHERE][nSPHERE][1], &Ctrl->M.params[SPHERE][nSPHERE][2], &Ctrl->M.params[SPHERE][nSPHERE][3], &Ctrl->M.params[SPHERE][nSPHERE][4], &Ctrl->M.params[SPHERE][nSPHERE][5]);
 						if (n_par < 2) err_npar = 1;
 						if (n_par < 5)  Ctrl->M.params[SPHERE][nSPHERE][4] = Ctrl->npts_circ;
@@ -676,7 +676,7 @@ GMT_LOCAL void solids(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl) {
 					case BELL:
 						five_psoid(GMT, Ctrl, BELL, n, false, false, true, false);
 						break;
-					case CILINDER:
+					case CYLINDER:
 						cilindro(GMT, Ctrl, n);
 						break;
 					case CONE:
