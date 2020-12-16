@@ -113,7 +113,8 @@ GMT_LOCAL double earthtide_getutcmtai (double tsec, bool *leapflag) {
 	/*  get utc - tai (s) */
 	/*  "Julian Date Converter" */
 	/*  http://aa.usno.navy.mil/data/docs/JulianDate.php */
-	/*  parameter (MJDUPPER=58299)    !*** upper limit, leap second table, 2018jun30 */
+	/*  or https://www.aavso.org/jd-calculator */
+	/*  parameter (MJDUPPER=59393)    !*** upper limit, leap second table, 28 June 2021 */
 	/* upper limit, leap second table, */
 	/* lower limit, leap second table, */
 	/* leap second table limit flag */
@@ -133,7 +134,7 @@ GMT_LOCAL double earthtide_getutcmtai (double tsec, bool *leapflag) {
 	}
 
 	/*  test upper table limit (upper limit set by bulletin C memos) */
-	if (mjd0t > 58664) {
+	if (mjd0t > 59393) {
 		*leapflag = true;		/* true means flag *IS* raised */
 		return -37;				/* return the upper table value */
 	}
@@ -1175,7 +1176,7 @@ GMT_LOCAL void earthtide_solid_grd (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL 
 		}
 	}
 	if (leapflag)
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "time crossed leap seconds table boundaries. Boundary edge used instead.");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "time crossed leap seconds table boundaries. Boundary edge used instead.");
 
 	/* Free these that were never used anyway */
 	if (!Ctrl->G.do_north) free (grd_n);
@@ -1257,7 +1258,7 @@ GMT_LOCAL void earthtide_solid_ts (struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, d
 	gmt_M_free (GMT, Out);
 
 	if (leapflag)
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "time crossed leap seconds table boundaries. Boundary edge used instead.");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "time crossed leap seconds table boundaries. Boundary edge used instead.");
 }
 
 /* ------------------------------------------------------------------------------------------------------- */
@@ -1475,7 +1476,7 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {	/* Return/write 1-3 grids */
 		int k, kk;
-		char file[PATH_MAX] = {""}, *code[N_COMPS] = {"e", "n", "v"};
+		char file[PATH_MAX] = {""}, *code[N_COMPS] = {"e", "n", "v"}, *comp_info[3] = {"x|east solid Earth tide component", "y|north solid Earth tide component", "z|vertical solid Earth tide component"};
 		struct GMT_GRID *Grid[N_COMPS] = {NULL, NULL, NULL};
 
 		gmt_set_geographic (GMT, GMT_OUT);
@@ -1486,6 +1487,11 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 			                             GMT->common.R.registration, 0, NULL)) == NULL)
 				Return (API->error);
 
+			strcpy (Grid[k]->header->z_units, "solid-earth-tide [meter]");
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[k]))
+				Return (API->error);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, comp_info[k], Grid[k]))
+				Return (API->error);
 		}
 
 		earthtide_solid_grd (GMT, Ctrl, &cal_start, Grid);	/* Evaluate the chosen component (s) on the grids */
@@ -1493,9 +1499,6 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 		/* Now write the one to three grids */
 		for (k = kk = 0; k < N_COMPS; k++) {
 			if (!Ctrl->C.selected[k]) continue;
-			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[k]))
-				Return (API->error);
-
 			if (!API->external) kk = k;	/* On command line we pick item k from an array of 3 items */
 			if (strstr (Ctrl->G.file[kk], "%s"))
 				sprintf (file, Ctrl->G.file[kk], code[k]);

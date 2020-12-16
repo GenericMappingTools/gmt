@@ -405,7 +405,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 			}
 		}
 		/* Here NaNs have either been skipped by inward search, or will be ignored (NAN_IS_IGNORED)
-		   or will beconsider to be within range (NAN_IS_INRANGE) */
+		   or will be considered to be within range (NAN_IS_INRANGE) */
 		for (row = row0, go = true; go && row <= row1; row++) {	/* Scan from ymax towards ymin */
 			for (col = col0, node = gmt_M_ijp (G->header, row, 0); go && col <= col1; col++, node++) {
 				if (gmt_M_is_fnan (G->data[node])) {
@@ -574,6 +574,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	}
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Geographic data required more trickery */
 		double we[2] = {wesn_new[XLO], wesn_new[XHI]};
+		gmt_set_geographic (GMT, GMT_OUT);	/* Out same as in */
 		while (we[XHI] > G->header->wesn[XLO]) we[XLO] -= 360.0, we[XHI] -= 360.0;	/* Wind past on the left */
 		we[XLO] += 360.0, we[XHI] += 360.0;	/* Now we either overlap or we are past on the right */
 		if (we[XLO] >= G->header->wesn[XHI])
@@ -737,7 +738,10 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, format, wesn_new[XLO], wesn_new[XHI], wesn_new[YLO],
 		            wesn_new[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], G->header->n_columns, G->header->n_rows);
 	}
-	if (geo_to_cart) GMT_Report (API, GMT_MSG_WARNING, "Expanded grid region implies the grid is no longer geographic\n");
+	if (geo_to_cart) {
+		GMT_Report (API, GMT_MSG_WARNING, "Expanded grid region implies the grid is no longer geographic\n");
+		gmt_set_cartesian (GMT, GMT_OUT);
+	}
 
 	if (Ctrl->S.set_nan) {	/* Set all nodes outside the circle to NaN */
 		unsigned int row, col;

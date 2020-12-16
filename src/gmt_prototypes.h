@@ -230,6 +230,7 @@ EXTERN_MSC struct GMT_GRID * gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GM
 #ifdef _POSTSCRIPTLIGHT_H
 /* gmt_plot.c prototypes only included if postscriptlight has been included */
 
+EXTERN_MSC void gmt_map_title (struct GMT_CTRL *GMT, double x, double y);
 EXTERN_MSC void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
 EXTERN_MSC int gmt_ps_append (struct GMT_CTRL *GMT, char *source, unsigned int mode, FILE *dest);
 EXTERN_MSC char * gmt_export2proj4 (struct GMT_CTRL *GMT);

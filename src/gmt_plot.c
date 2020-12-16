@@ -292,7 +292,7 @@ GMT_LOCAL void gmtplot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTR
 
 		PSL_setlinecap (PSL, cap);	/* Reset back to default */
 	}
-	if (!GMT->current.map.frame.header[0] || GMT->current.map.frame.plotted_header) return;	/* No header today */
+	if (!GMT->current.map.frame.header[0] || GMT->current.map.frame.plotted_header) return;	/* No title (and optional subtitle) today */
 
 	PSL_comment (PSL, "Placing plot title\n");
 
@@ -302,9 +302,8 @@ GMT_LOCAL void gmtplot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTR
 		PSL_command (PSL, "/PSL_H_y PSL_L_y PSL_LH add %d add def\n", PSL_IZ (PSL, GMT->current.setting.map_title_offset));	/* For title adjustment */
 
 	PSL_command (PSL, "%d %d PSL_H_y add PSL_slant_y add M\n", PSL_IZ (PSL, 0.5 * x_length), PSL_IZ (PSL, y_length));
-	form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-	PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, PSL_BC, form);
-	GMT->current.map.frame.plotted_header = true;
+
+	gmt_map_title (GMT, 0.0, 0.0);
 }
 
 GMT_LOCAL unsigned int gmtplot_get_primary_annot (struct GMT_PLOT_AXIS *A) {
@@ -2403,9 +2402,7 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 			PSL_defunits (PSL, "PSL_H_y", GMT->current.setting.map_title_offset + GMT->current.setting.map_tick_length[GMT_PRIMARY]);
 
 		PSL_command (PSL, "%d %d PSL_H_y add M\n", PSL_IZ (PSL, GMT->current.proj.rect[XHI] * 0.5), PSL_IZ (PSL, GMT->current.proj.rect[YHI]));
-		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-		PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, PSL_BC, form);
-		GMT->current.map.frame.plotted_header = true;
+		gmt_map_title (GMT, 0.0, 0.0);
 	}
 
 	gmtplot_consider_internal_annotations (GMT, PSL, w, e, s, n);	/* Handle any special case of internal annotations */
@@ -5620,6 +5617,103 @@ GMT_LOCAL void gmtplot_map_annotations (struct GMT_CTRL *GMT) {
 	gmtplot_map_annotate (GMT, PSL, w, e, s, n);
 }
 
+void gmtplot_title_breaks_decode (struct GMT_CTRL *GMT, const char *in_string, char *out_string) {
+	/* Deal with long-form @^ or #break; strings in title and subtitle and replace with ^ */
+	unsigned int i, o, kl[2] = {2, 7}, id;
+	char *kw[2] = {"@^", "#break;"};
+	gmt_M_unused (GMT);
+	if (in_string[0] == '\0') return;	/* Got nothing */
+	if (strstr (in_string, "#break;"))
+		id = 1;
+	else if (strstr (in_string, "@^"))
+		id = 0;
+	else {	/* No markers given */
+		strncpy (out_string, in_string, GMT_LEN256);
+		return;
+	}
+	/* Here we must replace kl[id] with GMT_ASCII_GS */
+	for (i = o = 0; i < strlen (in_string); i++) {
+		if (!strncmp (&in_string[i], kw[id], kl[id]))
+			out_string[o++] = GMT_ASCII_GS, i += (kl[id] - 1);	/* Skip one less, allowing for i++ */
+		else
+			out_string[o++] = in_string[i];
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Converted %s to %s\n", in_string, out_string);
+}
+
+void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
+	/* Place plot title and optionally subtitle, which both may be a single line or multiple lines.
+	 * Note, when x = y = 0 it means current point has already been selected so we must store that and keep
+	 * moving up for each line in the multi-line title.
+	 */
+	bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y)), many_lines = false;
+	double sign = (pos_set) ? -1.0 : +1.0, y_next = 0.0, line_spacing;
+	unsigned int n_breaks_T, n_breaks_S, k, form;
+	char *word = NULL, title[GMT_LEN256] = {""}, subtitle[GMT_LEN256] = {""}, sep[2] = {""};
+	struct PSL_CTRL *PSL= GMT->PSL;
+
+	if (!GMT->current.map.frame.header[0]) return;	/* No title given */
+
+	gmtplot_title_breaks_decode (GMT, GMT->current.map.frame.header, title);
+	gmtplot_title_breaks_decode (GMT, GMT->current.map.frame.sub_header, subtitle);
+
+	n_breaks_T = gmt_char_count (title, GMT_ASCII_GS);		/* Is there a title spilling over several lines */
+	n_breaks_S = gmt_char_count (subtitle, GMT_ASCII_GS);	/* Is there a subtitle spilling over several lines */
+
+	if (n_breaks_T || n_breaks_S || subtitle[0])
+		many_lines = true;
+	else {	/* Just a single title string on one line */
+		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
+		PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, -PSL_BC, form);
+		GMT->current.map.frame.plotted_header = true;
+		return;	/* Done */
+	}
+
+	sep[0] = GMT_ASCII_GS;
+	/* Must put everything inside a gsave/grestore block */
+	PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
+	if (pos_set) PSL_command (PSL, "currentpoint /PSL_text_y edef /PSL_text_x edef\n");	/* Remember the position set for the text */
+
+	/* If there are subtitles then these must be placed first since we start from base and move up/backwards */
+
+	if (subtitle[0]) {	/* Plot a subtitle over one or more several lines */
+		form = gmt_setfont (GMT, &GMT->current.setting.font_subtitle);
+		line_spacing = 1.1 * GMT->current.setting.font_subtitle.size / PSL_POINTS_PER_INCH;
+		for (k = 0; k <= n_breaks_S; k++) {
+			word = gmt_get_word (subtitle, sep, n_breaks_S - k);	/* Pick from the end going forward */
+			PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_subtitle.size, word, 0.0, -PSL_BC, form);
+			gmt_M_str_free (word);
+			if (pos_set) {	/* Must move up based on height above initial current point for every line since title will come later */
+				y_next += line_spacing;
+				PSL_command (PSL, "PSL_text_x PSL_text_y M 0 %d G\n", PSL->internal.y0 + (int)lrint (y_next * PSL->internal.y2iy));
+			}
+			else	/* Just increment the change in y location */
+				y += line_spacing;
+		}
+	}
+
+	/* Now plot the title string(s) */
+	form = gmt_setfont (GMT, &GMT->current.setting.font_title);
+	line_spacing = 1.1 * GMT->current.setting.font_title.size / PSL_POINTS_PER_INCH;
+	for (k = 0; k <= n_breaks_T; k++) {
+		word = gmt_get_word (title, sep, n_breaks_T - k);	/* Pick from the end going forward */
+		PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_title.size, word, 0.0, -PSL_BC, form);
+		gmt_M_str_free (word);
+		if (k < n_breaks_T) {	/* If there are more lines above this one */
+			if (pos_set) {
+				y_next += line_spacing;
+				PSL_command (PSL, "PSL_text_x PSL_text_y M 0 %d G\n", PSL->internal.y0 + (int)lrint (y_next * PSL->internal.y2iy));
+			}
+			else	/* Just increment the change in y location */
+				y += line_spacing;
+		}
+	}
+
+	PSL_command (PSL, "U\n");
+
+	GMT->current.map.frame.plotted_header = true;
+}
+
 void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	/* This function is usually called twice by modules: Once before data-plotting starts and
 	 * once after all data-plotting has ended.  This is because different modules have different
@@ -5833,11 +5927,7 @@ void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 
 	if (back && GMT->current.map.frame.header[0] && !GMT->current.map.frame.plotted_header) {	/* No header today */
 		gmt_plane_perspective (GMT, -1, 0.0);
-		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-		PSL_plottext (PSL, 0.5 * (GMT->current.proj.z_project.xmin + GMT->current.proj.z_project.xmax),
-			GMT->current.proj.z_project.ymax + GMT->current.setting.map_title_offset,
-			GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, -PSL_BC, form);
-		GMT->current.map.frame.plotted_header = true;
+		gmt_map_title (GMT, 0.5 * (GMT->current.proj.z_project.xmin + GMT->current.proj.z_project.xmax), GMT->current.proj.z_project.ymax + GMT->current.setting.map_title_offset);
 	}
 
 	gmt_plane_perspective (GMT, old_plane, old_level);

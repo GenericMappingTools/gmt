@@ -477,9 +477,8 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 
 	L_off = 3.0 * GMT->current.setting.map_label_offset;	T_off = 2.0 * GMT->current.setting.map_title_offset;
 	if (GMT->current.map.frame.header[0]) {	/* Plot title */
-		int form = gmt_setfont (GMT, &GMT->current.setting.font_title);
 		PSL_comment (PSL, "Placing plot title\n");
-		PSL_plottext (PSL, tri_x[2], tri_y[2]+2.0*T_off, GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, PSL_BC, form);
+		gmt_map_title (GMT, tri_x[2], tri_y[2]+2.0*T_off);
 	}
 	if (Ctrl->L.active) {	/* Plot the vertex labels */
 		double dx = L_off * cosd (30.0), dy = L_off * sind (30.0);

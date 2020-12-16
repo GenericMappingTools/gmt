@@ -75,6 +75,7 @@ struct GMT_DEFAULTS {
 	struct GMT_FONT font_label;		/* Font for labels [16p,Helvetica,black] */
 	struct GMT_FONT font_logo;		/* Font for GMT logo [8p,Helvetica,black] */
 	struct GMT_FONT font_tag;		/* Font for plot figure tags, e.g., a) [20p,Helvetica,black] */
+	struct GMT_FONT font_subtitle;		/* Font for plot titles [20p,Helvetica,black] */
 	struct GMT_FONT font_title;		/* Font for plot titles [24p,Helvetica,black] */
 	/* FORMAT group */
 	char format_clock_in[GMT_LEN64];	/* How to decode an incoming clock string [hh:mm:ss] */

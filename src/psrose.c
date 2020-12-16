@@ -1064,8 +1064,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	if ((GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) && !GMT->current.map.frame.no_frame) {
 		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 		y = lsize + 6.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY];
-		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-		PSL_plottext (PSL, 0.0, off + y, GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, PSL_BC, form);
+		gmt_map_title (GMT, 0.0, off + y);
 
 		gmt_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
 		if (do_labels) {
