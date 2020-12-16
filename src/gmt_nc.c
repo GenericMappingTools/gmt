@@ -570,9 +570,9 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		gmt_M_err_trap (nc_def_var (ncid, coord, NC_DOUBLE, 1, &dims[0+d_off], &ids[0+d_off]));
 		HH->xyz_id[GMT_Y] = ids[0+d_off];
 
-		if (cube) {
+		if (cube) {	/* Allow for cube expansion by setting layer dimension to UNLIMITED */
 			strcpy (coord, (gmt_M_type (GMT, GMT_OUT, GMT_Z) & GMT_IS_RATIME) ? "time" : "z");
-			gmt_M_err_trap (nc_def_dim (ncid, coord, (size_t) header->n_bands, &dims[0]));
+			gmt_M_err_trap (nc_def_dim (ncid, coord, (size_t) NC_UNLIMITED, &dims[0]));
 			gmt_M_err_trap (nc_def_var (ncid, coord, NC_DOUBLE, 1, &dims[0], &HH->xyz_id[GMT_Z]));
 		}
 
@@ -2077,7 +2077,10 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 
 		gmt_M_err_trap (nc_enddef (HH->ncid));	/* Belatedly end definition mode */
 		gmtnc_put_xy_vectors (GMT, header);	/* Place x and y vectors */
-		gmt_M_err_trap (nc_put_var_double (HH->ncid, HH->xyz_id[GMT_Z], &C->z[k0]));
+		{
+			size_t z_zero = 0, z_count = n_layers_used;
+			gmt_M_err_trap (nc_put_vara_double (HH->ncid, HH->xyz_id[GMT_Z], &z_zero, &z_count, &C->z[k0]));
+		}
 
 		/* Get stats */
 		//dim[0]    = height,    dim[1]    = width;    dim[2]    = n_layers_used;

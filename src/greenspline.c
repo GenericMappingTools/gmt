@@ -681,7 +681,6 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == LINEAR_1D && Ctrl->D.mode > 3, "Option -Sl: Cannot select -D4 or higher\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || (dimension > 1 && Ctrl->I.inc[GMT_Y] <= 0.0) || (dimension == 3 && Ctrl->I.inc[GMT_Z] <= 0.0)), "Option -I: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, dimension == 2 && !Ctrl->N.active && !(Ctrl->G.active  || Ctrl->G.file), "Option -G: Must specify output grid file name\n");
-	n_errors += gmt_M_check_condition (GMT, dimension == 3 && Ctrl->G.active  && strchr (Ctrl->G.file, '%') == NULL, "Option -G: For 3-D output the filename must include a floating-point format identifier, e.g., %%g\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.value < 0.0 && !Ctrl->C.file, "Option -C: Must specify file name for eigenvalues if cut < 0\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Option -T: Must specify mask grid file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && dimension != 2, "Option -T: Only applies to 2-D gridding\n");
