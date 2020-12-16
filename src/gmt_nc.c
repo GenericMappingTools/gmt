@@ -194,7 +194,6 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 	start[yx_dim[0]] = origin[0]; /* first row */
 	start[yx_dim[1]] = origin[1]; /* first col */
 	if (cube) start[2] = layer; /* current layer */
-	if (cube) count[2] = 1; /* full layer */
 
 	/* set mapping of complex grids or if reading a part of a grid */
 	imap[yx_dim[0]] = (stride == 0 ? width : stride); /* distance between each row */
@@ -541,6 +540,8 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		}
 		HH->xy_dim[0] = ndims-1;
 		HH->xy_dim[1] = ndims-2;
+		HH->xyz_id[GMT_X] = ids[1];
+		HH->xyz_id[GMT_Y] = ids[0];
 
 		/* Check if LatLon variable exists, then we may need to flip x and y */
 		if (nc_inq_varid (ncid, "LatLon", &i) == NC_NOERR) nc_get_var_int (ncid, i, HH->xy_dim);
