@@ -139,7 +139,7 @@ enum GMT_enum_body {
 	CONE,
 	ELLIPSOID,
 	PRISM,
-	PIRAMID,
+	PYRAMID,
 	SPHERE
 };
 
@@ -203,8 +203,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t\t Ellipsoid of semi axes <semi_x/semi_y/semi_z> and center depth <z_center>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   prism,side_x/side_y/side_z/z0[/x0/y0]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\t Prism of sides <x/y/z> and base at depth <z0>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   piramid,side_x/side_y/height/z0[/x0/y0]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t Piramid of sides <x/y> height <height> and base at depth <z0>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   pyramid,side_x/side_y/height/z0[/x0/y0]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t\t Pyramid of sides <x/y> height <height> and base at depth <z0>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   sphere,rad/z_center[/x0/y0/npts/n_slices]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\t Sphere of radius <rad> and center at depth <z_center>\n");
 
@@ -336,10 +336,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 						Ctrl->M.type[ELLIPSOID][nELL] = ELLIPSOID;
 						nELL++;
 					}
-					else if (!strcmp(&p[2], "piramid")) {
-						n_par = sscanf (p2, "%lg/%lg/%lg/%lg/%lg/%lg", &Ctrl->M.params[PIRAMID][nPIR][0], &Ctrl->M.params[PIRAMID][nPIR][1], &Ctrl->M.params[PIRAMID][nPIR][2], &Ctrl->M.params[PIRAMID][nPIR][3], &Ctrl->M.params[PIRAMID][nPIR][4], &Ctrl->M.params[PIRAMID][nPIR][5]);
+					else if (!strcmp(&p[2], "pyramid")) {
+						n_par = sscanf (p2, "%lg/%lg/%lg/%lg/%lg/%lg", &Ctrl->M.params[PYRAMID][nPIR][0], &Ctrl->M.params[PYRAMID][nPIR][1], &Ctrl->M.params[PYRAMID][nPIR][2], &Ctrl->M.params[PYRAMID][nPIR][3], &Ctrl->M.params[PYRAMID][nPIR][4], &Ctrl->M.params[PYRAMID][nPIR][5]);
 						if (n_par < 4) err_npar = 1;
-						Ctrl->M.type[PIRAMID][nPIR] = PIRAMID;
+						Ctrl->M.type[PYRAMID][nPIR] = PYRAMID;
 						nPIR++;
 					}
 					else if (!strcmp(&p[2], "prism")) {
@@ -685,8 +685,8 @@ GMT_LOCAL void solids(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl) {
 					case ELLIPSOID:
 						five_psoid(GMT, Ctrl, ELLIPSOID, n, false, false, false, false);
 						break;
-					case PIRAMID:
-						five_psoid(GMT, Ctrl, PIRAMID, n, false, true, false, false);
+					case PYRAMID:
+						five_psoid(GMT, Ctrl, PYRAMID, n, false, true, false, false);
 						break;
 					case PRISM:
 						prism(GMT, Ctrl, n);

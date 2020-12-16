@@ -105,7 +105,7 @@ int prism(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, int nb) {
 }
 
 int five_psoid(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, int body_type, int nb, bool cone, bool piram, bool sino, bool hemi) {
-/*	Constructs either a sphere, ellipsoid, cone, piramid, or a bell
+/*	Constructs either a sphere, ellipsoid, cone, pyramid, or a bell
 /*	as a union of triagular facets. Returns number of triangles. */
 	int i, j, j1, k, l, m, m1, m2, n = 0, n_tri, i_tri, npts_circ, n_slices, n_sigmas = 2;
 	bool first = true;
