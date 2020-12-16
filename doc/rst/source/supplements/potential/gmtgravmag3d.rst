@@ -12,9 +12,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt gravmag3d** |-T|\ **p**\ *xyz_file*\ [**+m**] |-T|\ **v**\ *vert_file* OR |-T|\ **r\|s**\ *raw_file*
+**gmt gravmag3d** *xyz_file* |-T|\ **v**\ *vert_file* OR |-T|\ **r\|s**\ *raw_file*
 [ |-C|\ *density* ]
-[ |-D| ]
 [ |-E|\ *thickness* ]
 [ |-F|\ *xy_file* ]
 [ |-G|\ *outputgrid* ]
@@ -31,10 +30,9 @@ Synopsis
 Description
 -----------
 
-**gravmag3d** will compute the gravity or magnetic anomaly of a body
-described by a set of triangles. The output can either be along a given
-set of xy locations or on a grid. This method is not particularly fast
-but allows computing the anomaly of arbitrarily complex shapes.
+**gravmag3d** will compute the gravity or magnetic anomaly of a body described by a set of triangles.
+The output can either be along a given set of xy locations or on a grid. This method is not particularly
+fast but allows computing the anomaly of arbitrarily complex shapes.
 
 Required Arguments
 ------------------
@@ -47,9 +45,8 @@ Required Arguments
 .. _-H:
 
 **-H**\ *f_dec*/*f_dip*/*m_int*/*m_dec*/*m_dip*
-    Sets parameters for computing a magnetic anomaly. Use
-    *f_dec*/*f_dip* to set the geomagnetic declination/inclination in
-    degrees. *m_int*/*m_dec*/*m_dip* are the body magnetic intensity
+    Sets parameters for computing a magnetic anomaly. Use *f_dec*/*f_dip* to set the geomagnetic
+    declination/inclination in degrees. *m_int*/*m_dec*/*m_dip* are the body magnetic intensity
     declination and inclination.
 
 .. _-F:
@@ -70,16 +67,16 @@ Required Arguments
 
 .. _-T:
 
-**-Tp**\ *xyz_file*\ [**+m**] **-Tv**\ *vert_file* OR **Tr\|s**\ *raw_file*
-    Gives names of xyz (**-Tp**\ *xyz_file*\ [**+m**]) and vertex (**-Tv**\ *vert_file*) files defining a close surface.
+**-Tv**\ *vert_file* (must have when passing a *xyz_file*) OR **Tr\|s**\ *raw_file*
+    Gives names of a xyz and vertex (**-Tv**\ *vert_file*) files defining a close surface.
     The file formats correspond to the output of the :doc:`triangulate </triangulate>` program.
-    The optional **+m** flag to **-Tp** instructs the program that the xyzm file
-    has four columns and that the fourth column contains the magnetization intensity (plus signal),
-    which needs not to be constant. In this case the third argument of the **-H** option is
-    ignored. A *raw* format (selected by the **-Tr** option) is a file with N rows (one per triangle)
-    and 9 columns corresponding to the x,y,x coordinates of each of the three vertex of each triangle.
-    Alternatively, the **-Ts** option indicates that the surface file is in the ASCII STL (Stereo Lithographic) format.
-    These two type of files are used to provide a closed surface.
+    The *xyz* file can have 3, 4, 5, 6 or 8 columns. In first case (3 columns) the magnetization (or density) are
+    assumed constant (controlled by **-C** or **-H**). Following cases are: 4 columns -> 4rth col magnetization intensity;
+    5 columns: mag, mag dip; 6 columns: mag, mag dec, mag dip; 8 columns: field dec, field dip, mag, mag dec, mag dip.
+    When n columns > 3 the third argument of the **-H** option is ignored. A *raw* format (selected by the **-Tr** option)
+    is a file with N rows (one per triangle) and 9 columns corresponding to the x,y,x coordinates of each of the three
+    vertex of each triangle. Alternatively, the **-Ts** option indicates that the surface file is in the ASCII STL
+    (Stereo Lithographic) format. These two type of files are used to provide a closed surface.
 
 Optional Arguments
 ------------------
