@@ -643,8 +643,10 @@ MAP Parameters
         Sets which axes to draw and annotate. Combine any uppercase **W**,
         **E**, **S**, **N**, **Z** to draw and annotate west, east, south,
         north and/or vertical (perspective view only) axis. Use lower case
-        to draw the axis only, but not annotate. Add an optional **+** to
-        draw a cube of axes in perspective view. [WESN].
+        to draw the axis only, but not annotate.   To *just* draw an axis 
+        without annotation and ticks you can use the **l**\ (eft), **r**\ (ight), 
+        **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes. Add an 
+        optional **+** to draw a cube of axes in perspective view. [WESN].
 
     **MAP_FRAME_PEN**
         Pen attributes used to draw plain map frame [thicker,black].
