@@ -67,22 +67,22 @@ Required Arguments (not all)
     of the body center [default to 0,0 positive up], *npts* is the number of points that a circle is discretized
     and *n_slices* apply when bodies are made by a pile of slices. For example Spheres and Ellipsoids are made of
     *2 x n_slices* and Bells have *n_slices* [Default 5]. It is even possible to select more than one body. For example
-    **-M+sprism,1/1/1/-5/-10/1+ssphere,1/-5** computes the effect of a prism and a sphere. Unfortunately there is
+    **-M+s**\ *prism,1/1/1/-5/-10/1*\ **+s**\ *sphere,1/-5* computes the effect of a prism and a sphere. Unfortunately there is
     no current way of selecting distinct densities or magnetic parameters for each body.
 
-      - **bell,height/sx/sy/z0[/x0/y0/n_sig/npts/n_slices]** Gaussian of height <height> with caracteristic STDs <sx> and <sy>. The base width (at depth <z0>) is controled by the number of sigmas (<n_sig>) [Default = 2]\n");
+      - *bell,height/sx/sy/z0[/x0/y0/n_sig/npts/n_slices]* Gaussian of height *height* with caracteristic STDs *sx* and *sy*. The base width (at depth *z0*) is controled by the number of sigmas (*n_sig*) [Default = 2]\n");
 
-      - **cylinder,rad/height/z0[/x0/y0/npts/n_slices]** Cylinder of radius <rad> height <height> and base at depth <z0>
+      - *cylinder,rad/height/z0[/x0/y0/npts/n_slices]* Cylinder of radius *rad* and height *height* and base at depth *z0*
 
-      - **cone,semi_x/semi_y/height/z0[/x0/y0/npts]** Cone of semi axes <semi_x/semi_y> height <height> and base at depth <z0>
+      - *cone,semi_x/semi_y/height/z0[/x0/y0/npts]* Cone of semi axes *semi_x/semi_y* height *height* and base at depth *z0*
 
-      - **ellipsoid,semi_x/semi_y/semi_z/z_center[/x0/y0/npts/n_slices]** Ellipsoid of semi axes <semi_x/semi_y/semi_z> and center depth <z_center>
+      - *ellipsoid,semi_x/semi_y/semi_z/z_center[/x0/y0/npts/n_slices]** Ellipsoid of semi axes *semi_x/semi_y/semi_z* and center depth *z_center*
 
-      - **prism,side_x/side_y/side_z/z0[/x0/y0]** Prism of sides <x/y/z> and base at depth <z0>
+      - *prism,side_x/side_y/side_z/z0[/x0/y0]* Prism of sides *x/y/z* and base at depth *z0*
 
-      - **piramid,side_x/side_y/height/z0[/x0/y0]** Piramid of sides <x/y> height <height> and base at depth <z0>
+      - *pyramid,side_x/side_y/height/z0[/x0/y0]* Pyramid of sides *x/y* height *height* and base at depth *z0*
 
-      - **sphere,rad/z_center[/x0/y0/npts/n_slices]** Sphere of radius <rad> and center at depth <z_center>
+      - *sphere,rad/z_center[/x0/y0/npts/n_slices]* Sphere of radius *rad* and center at depth *z_center*
  
 .. _-R:
 
