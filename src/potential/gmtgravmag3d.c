@@ -337,7 +337,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 /* -------------------------------------------------------------------------*/
 GMT_LOCAL int gmtgravmag3d_read_xyz(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct GMT_OPTION *options, double *lon_0, double *lat_0) {
 	/* read xyz[m] file with point data coordinates */
-	int n_cols, k, error, n = 0;
+	int n_cols = 0, k, error, n = 0;
 	size_t n_alloc = 10 * GMT_CHUNK;
 	char line[GMT_LEN256] = {""};
 	double x1, x2, x3, x4, x5, x6, x7, x8;
@@ -366,7 +366,7 @@ GMT_LOCAL int gmtgravmag3d_read_xyz(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CT
 		return GMT->parent->error;
 
 	Ctrl->triang = gmt_M_memory (GMT, NULL, n_alloc, struct GMTGRAVMAG3D_TRIANG);
-	Ctrl->T.m_var = (n_cols == 3) ? false : true;		/* x,y,z */ 
+	Ctrl->T.m_var = (n_cols == 3) ? false : true;		/* x,y,z */
 	if (n_cols == 4) {
 		Ctrl->T.m_var1 = true;
 		Ctrl->box.mag_int = gmt_M_memory (GMT, NULL, n_alloc, double);
