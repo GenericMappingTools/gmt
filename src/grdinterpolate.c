@@ -17,8 +17,8 @@
 /*
  * Brief synopsis: grdinterpolate reads a 3D netcdf spatial data cube with
  * the 3rd dimension either depth/height or time.  It then interpolates
- * the cube at arbitrary z (or time) values and writes either a single
- * slice 2-D grid or another 3-D data cube (via ncecat).  Alternatively,
+ * the cube at arbitrary depth z (or time) values and writes either a single
+ * slice 2-D grid or another multi-level 3-D data cube.  Alternatively,
  * we can read a stack of input 2-D grids instead of the 3D cube.  Finally,
  * we may sample time-series (-S) or extract a vertical slice (-E) rather
  * than write gridded horizontal output slice(s).
@@ -34,7 +34,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"grdinterpolate"
 #define THIS_MODULE_MODERN_NAME	"grdinterpolate"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Interpolate 2-D grids or 1-D series from a 3-D data cube"
+#define THIS_MODULE_PURPOSE	"Interpolate a 3-D cube, 2-D grids or 1-D series from a 3-D data cube or stack of 2-D grids"
 #define THIS_MODULE_KEYS	"<G{+,>?}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"->RVfn"
@@ -113,7 +113,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	static char type[3] = {'l', 'a', 'c'};
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <3Dgrid> | <grd1> <grd2> <grd3> ... -G<outfile>\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cube> | <grd1> <grd2> <grd3> ... -G<outfile>\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fl|a|c|n][+1|2] [-S<x>/<y>|<table>[+h<header>]] [-T[<min>/<max>/]<inc>[+i|n]] [%s]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Z[<levels>]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
@@ -121,7 +121,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<3Dgrid> is the name of the input 3D netCDF data cube.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<cube> is the name of the input 3D netCDF data cube.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   However, with -Z we instead expect a series of 2-D grids.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify a single output file name (or a filename format template; also see -S).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To write a series of 2-D grids instead of a cube, include a floating-point C-format\n");
@@ -288,6 +288,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 		n_errors += gmt_M_check_condition (GMT, strstr (Ctrl->E.lines, "+d"), "Option -E: Unrecognized modifier +d\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !(Ctrl->T.active || Ctrl->E.active || Ctrl->S.active) && strchr (Ctrl->G.file, '%'), "Options -Z: If -T not given the we must write a single data cube\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && API->external && strchr (Ctrl->G.file, '%'), "Option -G: Cannot contain format-specifiers when not used on the command line\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

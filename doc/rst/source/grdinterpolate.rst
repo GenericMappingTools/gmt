@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdinterpolate** *3Dgrid* | *grd1 grd2 ...*
+**gmt grdinterpolate** *cube* | *grd1 grd2 ...*
 |-G|\ *outfile*
 [ |-E|\ *table*\|\ *line* ]
 [ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**] ]
@@ -53,7 +53,7 @@ more level-series, or we slice the 3-D cube along an arbitrary vertical slice an
 Required Arguments
 ------------------
 
-*3Dgrid*
+*cube*
     Name of a 3-D netCDF data cube to be interpolated. Alternatively, with **-Z**,
     you can specify a set of 2-D grid layers instead.
 

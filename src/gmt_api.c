@@ -12227,6 +12227,32 @@ GMT_LOCAL bool gmtapi_operator_takes_dataset (struct GMT_OPTION *opt, int *geome
 	return false;	/* No, something else */
 }
 
+GMT_LOCAL char gmtapi_grdinterpolate_type (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
+	unsigned int n_files = 0;
+	char type = 'D';	/* For -S */
+	struct GMT_OPTION *opt = NULL, *E = NULL, *S = NULL, *T = NULL;
+
+	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
+		if (opt->option == GMT_OPT_INFILE) n_files++;
+		else if (opt->option == 'E') E = opt;
+		else if (opt->option == 'S') S = opt;
+		else if (opt->option == 'T') T = opt;
+	}
+	/* Now determine the various cases that yield different return types */
+	if (E == NULL && S == NULL) {	/* Interpolating onto a single grid or a new cube */
+		if (T == NULL && n_files > 1)	/* Repackaging multiple grids as a single cube */
+			type = 'U';
+		else if (T && strchr (T->arg, '/') || strchr (T->arg, ','))	/* Making more than one output layer */
+			type = 'U';
+		else
+			type = 'G';	/* Making a single grid layer */
+	}
+	else if (E)	/* Sample a vertical slice as a grid */
+		type = 'G';
+
+	return (type);
+}
+
 #define api_is_required_IO(key) (key == API_PRIMARY_INPUT || key == API_PRIMARY_OUTPUT)			/* Returns true if this is a primary input or output item */
 #define api_not_required_io(key) ((key == API_PRIMARY_INPUT || key == API_SECONDARY_INPUT) ? API_SECONDARY_INPUT : API_SECONDARY_OUTPUT)	/* Returns the optional input or output flag */
 
@@ -12511,7 +12537,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	}
 	/* 1o. Check if grdinterpolate is producing grids or datasets */
 	else if (!strncmp (module, "grdinterpolate", 14U)) {
-		type = ((opt = GMT_Find_Option (API, 'S', *head))) ? 'D' : 'G';	/* Giving -S means we change default output from grid to dataset */
+		type = gmtapi_grdinterpolate_type (API, *head);	/* Determine the right type for the output */
 	}
 	/* 1p. Check if grdgdal is reading a dataset */
 	else if (!strncmp (module, "grdgdal", 7U)) {	/* Set input data type based on options */
