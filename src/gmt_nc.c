@@ -1863,6 +1863,31 @@ nc_err:
 	return status;
 }
 
+bool gmt_nc_is_cube (struct GMT_CTRL *GMT, char *file) {
+	/* Return true if the file is a 3-D netCDF cube */
+	int i, ID = -1, ncid, z_id = -1, dim = 0, nvars, ndims = 0;
+
+	if (file == NULL || file[0] == '\0') return false;	/* Got no file */
+	if (!strcmp (file,"=")) return (false);	/* NetCDF is not pipeable */
+	if (gmt_M_file_is_memory (file)) return ((file[GMTAPI_OBJECT_FAMILY_START] == 'U') ? true : false);	/* Memory cube or not */
+	if (nc_open (file, NC_NOWRITE, &ncid)) return false;	/* Unable to open, so probably not netCDF file */
+	if (nc_inq_nvars (ncid, &nvars)) return false;	/* No variables, no good */
+	i = 0;
+	while (i < nvars && z_id < 0) {	/* Look for first 3D grid, with fallback to first higher-dimension (4-%D) grid if 3D not found */
+		if (nc_inq_varndims (ncid, i, &ndims)) return false;	/* Not good */
+		if (ndims == 3)	/* Found the first 3-D grid */
+			z_id = i;
+		else if (ID == -1 && ndims > 3 && ndims < 5) {	/* Also look for higher-dim grid in case no 3-D */
+			ID = i;
+			dim = ndims;
+		}
+		i++;
+	}
+	if (z_id >= 0) return true;	/* Found it */
+	/* No 3-D grid found, check if we found a higher dimension cube */
+	return ((ID == -1) ? false : true);
+}
+
 /* Examine the netCDF data cube and determine if it is a 3-D cube and return the knots */
 
 int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, uint64_t *nz, double **zarray) {
@@ -1873,12 +1898,11 @@ int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, ui
 	char varname[GMT_GRID_VARNAME_LEN80], dimname[GMT_GRID_UNIT_LEN80], z_units[GMT_GRID_UNIT_LEN80];
 	double *z = NULL, dummy[2] = {0.0, 0.0};
 
-
 	gmt_M_err_trap (nc_open (file, NC_NOWRITE, &ncid));
 
 	gmt_M_err_trap (nc_inq_nvars (ncid, &nvars));
 	i = 0;
-	while (i < nvars && z_id < 0) {	/* Look for first 3D grid, with fallback to first higher-dimension (3-4D) grid if 3D not found */
+	while (i < nvars && z_id < 0) {	/* Look for first 3D grid, with fallback to first higher-dimension (4-5D) grid if 3D not found */
 		gmt_M_err_trap (nc_inq_varndims (ncid, i, &ndims));
 		if (ndims == 3)	/* Found the first 3-D grid */
 			z_id = i;

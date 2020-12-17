@@ -7822,9 +7822,10 @@ GMT_LOCAL char gmtapi_debug_geometry_code (unsigned int geometry) {
 		case GMT_IS_LP:		 c = 'C'; break;
 		case GMT_IS_PLP:	 c = 'A'; break;
 		case GMT_IS_SURFACE: c = 'G'; break;
+		case GMT_IS_VOLUME:	 c = 'U'; break;
 		case GMT_IS_NONE:	 c = 'N'; break;
 		case GMT_IS_TEXT:	 c = 'X'; break;
-		default:	 		 c = 'U'; break;
+		default:	 		 c = '-'; break;
 	}
 	return c;
 }
@@ -7835,10 +7836,10 @@ GMT_LOCAL int gmtapi_encode_id (struct GMTAPI_CTRL *API, unsigned int module_inp
 	 * Name template: @GMTAPI@-S-D-F-A-G-M-###### where # is the 6-digit integer object code.  Total length is 27 chars (GMTAPI_MEMFILE_LEN)
 	 * S stands for P(rimary) or S(econdary) input or output object (command line is primary, files via options are secondary).
 	 * D stands for Direction and is either I(n) or O(ut).
-	 * F stands for Family and is one of D(ataset), G(rid), I(mage), C(PT), X(PostScript), M(atrix), V(ector), U(ndefined).
+	 * F stands for Family and is one of D(ataset), G(rid), I(mage), C(PT), X(PostScript), M(atrix), V(ector), U(cube)-(undefined).
 	 * A stands for Actual Family and is one of D, G, I, C, X, M, V, and U as well.
 	 *   Actual family may differ from family if a Dataset is actually passed as a Matrix, for instance.
-	 * G stands for Geometry and is one of (poin)T, L(ine), P(olygon), C(Line|Polygon), A(POint|Line|Polygon), G(rid), N(one), X(text), or U(ndefined).
+	 * G stands for Geometry and is one of (poin)T, L(ine), P(olygon), C(Line|Polygon), A(POint|Line|Polygon), G(rid), V(olume), N(one), X(text), or -(ndefined).
 	 * M stands for Messenger and is either Y(es) or N(o).
 	 * Limitation:  object_ID must be <= GMTAPI_MAX_ID */
 
