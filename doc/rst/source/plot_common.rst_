@@ -126,7 +126,9 @@ Optional Arguments
     Note that this module will search for **-G** and **-W** strings in all the
     segment headers and let any values thus found over-ride the command line settings.
     If **-Z** is set, use **-G+z** to assign fill color via **-C**\ *cpt* and the
-    *z*-values obtained.
+    *z*-values obtained. Finally, if *fill* = *auto*\ [*-segment*] or *auto-table* then
+    we will cycle through the fill colors implied by :term:`COLOR_SET` and change on a per-segment
+    or per-table basis.  Any *transparency* setting is unchanged.
 
 .. _-I:
 
@@ -199,7 +201,9 @@ Optional Arguments
     at the end of the pen specification.
     See the `Vector Attributes`_ for more information.
     If **-Z** is set, then append **+z** to **-W** to assign pen color via **-C**\ *cpt* and the
-    *z*-values obtained.
+    *z*-values obtained.  Finally, if pen *color* = *auto*\ [*-segment*] or *auto-table* then
+    we will cycle through the pen colors implied by :term:`COLOR_SET` and change on a per-segment
+    or per-table basis.  The *width*, *style*, or *transparency* settings are unchanged.
 
 .. _-X:
 

@@ -119,7 +119,7 @@ GMT_LOCAL bool gmtdcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, 
 			return false;
 		}
 		sprintf (path, "%s/geography/dcw/%s%s", GMT->session.USERDIR, name, suffix);	/* Final local path */
-		snprintf (remote_path, PATH_MAX, "%s/geography/dcw/%s%s", gmtlib_dataserver_url (GMT->parent), name, suffix);	/* Unique remote path */
+		snprintf (remote_path, PATH_MAX, "%s/geography/dcw/%s%s", gmt_dataserver_url (GMT->parent), name, suffix);	/* Unique remote path */
 		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Downloading %s%s for the first time - be patient\n", name, suffix);
 		if (gmt_download_file (GMT, name, remote_path, path, true)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to obtain remote file %s%s\n", name, suffix);

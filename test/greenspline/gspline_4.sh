@@ -24,8 +24,10 @@ z=5
 while read grid; do
 #	echo "Doing z = $z"
 	gmt grdcontour -JX $grid -C10 -L9/11 -S8 -Ddump
-	$AWK '{if ($1 == ">") {print $0} else {print $1, $2, '$z'}}' dump > tmp
-	gmt psxyz -R$R2D/$Z -JX -JZ -p$view -O -K tmp -Gp39+r300+fgray+b- -Wthin >> $ps
+	if [ -s dump ]; then
+		$AWK '{if ($1 == ">") {print $0} else {print $1, $2, '$z'}}' dump > tmp
+		gmt psxyz -R$R2D/$Z -JX -JZ -p$view -O -K tmp -Gp39+r300+fgray+b- -Wthin >> $ps
+	fi
 	z=$(gmt math -Q $z $dz ADD =)
 done < t.lis
 echo "12 6 Volume exceeding 10% UO@-2@- concentration" | gmt pstext -R$R2D/$Z -JX -JZ -p$view -F+jLT+f16p -O -K -Z10 -Dj0.1i >> $ps
