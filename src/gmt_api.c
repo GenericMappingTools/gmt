@@ -10745,7 +10745,8 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 				already_registered = true;
 			}
 			if (def_direction == GMT_IN && (mode & GMT_CONTAINER_ONLY) == 0) {	/* Allocate the grid array unless we asked for header only */
-				if ((C->data = gmt_M_memory_aligned (API->GMT, NULL, C->header->size * C->header->n_bands, gmt_grdfloat)) == NULL)
+				size_t chunk = C->header->size * ((size_t)C->header->n_bands);	/* Total memory needed for the entire cube */
+				if ((C->data = gmt_M_memory_aligned (API->GMT, NULL, chunk, gmt_grdfloat)) == NULL)
 					return_null (API, error);	/* Allocation error */
 				/* Also allocate and populate the x,y vectors */
 				if ((error = gmtapi_alloc_grid_xy (API, G)) != GMT_NOERROR)
