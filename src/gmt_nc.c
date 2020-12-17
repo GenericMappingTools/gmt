@@ -1863,9 +1863,10 @@ nc_err:
 	return status;
 }
 
-bool gmt_nc_is_cube (struct GMT_CTRL *GMT, char *file) {
+bool gmt_nc_is_cube (struct GMTAPI_CTRL *API, char *file) {
 	/* Return true if the file is a 3-D netCDF cube */
 	int i, ID = -1, ncid, z_id = -1, dim = 0, nvars, ndims = 0;
+	gmt_M_unused (API);
 
 	if (file == NULL || file[0] == '\0') return false;	/* Got no file */
 	if (!strcmp (file,"=")) return (false);	/* NetCDF is not pipeable */

@@ -324,6 +324,8 @@ GMT_LOCAL int gmtapi_skip_modern_module (const char *name) {
 	return 0;	/* Display this one */
 }
 
+EXTERN_MSC int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], const char *file);
+
 /* Pretty print all GMT core module names and their purposes for gmt --help */
 void gmtlib_module_show_all (void *V_API, struct GMT_MODULEINFO M[], const char *title) {
 	unsigned int module_id = 0, n;

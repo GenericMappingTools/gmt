@@ -579,6 +579,10 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if ((k_data = gmt_remote_dataset_id (API, opt->arg)) != GMT_NOTSET || (k_data = gmt_get_tile_id (API, opt->arg)) != GMT_NOTSET)
 			gmt_set_geographic (GMT, GMT_IN);	/* Since this will be returned as a memory grid */
 
+		if (gmt_nc_is_cube (API, opt->arg)) {
+			GMT_Report (API, GMT_MSG_INFORMATION, "Detected a data cube: %s\n", opt->arg);
+			continue;
+		}
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {
 			Return (API->error);
 		}
