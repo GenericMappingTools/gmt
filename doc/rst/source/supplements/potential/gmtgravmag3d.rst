@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt gravmag3d** *xyz_file* |-T|\ **v**\ *vert_file* OR |-T|\ **r\|s**\ *raw_file* OR |-M|\ **+**\ *body,params*
+**gmt gravmag3d** *xyz_file* |-T|\ **v**\ *vert_file* OR |-T|\ **r\|s**\ *raw_file* OR |-M|\ **+s**\ *body,params*
 [ |-C|\ *density* ]
 [ |-E|\ *thickness* ]
 [ |-F|\ *xy_file* ]
@@ -62,7 +62,7 @@ Required Arguments (not all)
 
 .. _-M:
 
-**-M+s**\ *body,params* (Alaternative to **-Tr**\ /**-Ts**). Create geometric bodies and compute their grav/mag effect.
+**-M+s**\ *body,params* (An alaternative to **-Tr**\ /**-Ts**). Create geometric bodies and compute their grav/mag effect.
     Select among one or more of the following bodies, where *x0* & *y0* represent the horizontal coordinates
     of the body center [default to 0,0 positive up], *npts* is the number of points that a circle is discretized
     and *n_slices* apply when bodies are made by a pile of slices. For example Spheres and Ellipsoids are made of
@@ -70,7 +70,7 @@ Required Arguments (not all)
     **-M+s**\ *prism,1/1/1/-5/-10/1*\ **+s**\ *sphere,1/-5* computes the effect of a prism and a sphere. Unfortunately there is
     no current way of selecting distinct densities or magnetic parameters for each body.
 
-      - *bell,height/sx/sy/z0[/x0/y0/n_sig/npts/n_slices]* Gaussian of height *height* with caracteristic STDs *sx* and *sy*. The base width (at depth *z0*) is controled by the number of sigmas (*n_sig*) [Default = 2]\n");
+      - *bell,height/sx/sy/z0[/x0/y0/n_sig/npts/n_slices]* Gaussian of height *height* with characteristic STDs *sx* and *sy*. The base width (at depth *z0*) is controled by the number of sigmas (*n_sig*) [Default = 2]\n");
 
       - *cylinder,rad/height/z0[/x0/y0/npts/n_slices]* Cylinder of radius *rad* and height *height* and base at depth *z0*
 
@@ -154,7 +154,7 @@ specified unit to meter.  If your grid is geographic, convert distances to meter
 Examples
 --------
 
-To compute the magnetic anomaly of a cube of unity side located at 5 meters depth and centered at -10,1 in a domain
+To compute the magnetic anomaly of a cube of unit sides located at 5 meters depth and centered at -10,1 in a domain
 *-R-15/15/-15/15* with a magnetization of 10 Am with a declination of 10 degrees, inclination of 60 in a magnetic field
 with -10 deg of declination and 40 deg of inclination, do::
 

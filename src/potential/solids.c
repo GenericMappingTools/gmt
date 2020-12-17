@@ -27,7 +27,6 @@ int prism(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, int nb) {
 	double a, b, c, z_c, x0, y0, z_top, z_bot;
 	int i_tri = Ctrl->n_raw_triang;
 
-	/* Note, position [9] bellow holds current body number */
 	a   = Ctrl->M.params[PRISM][nb][0];		b  = Ctrl->M.params[PRISM][nb][1];		c  = Ctrl->M.params[PRISM][nb][2];
 	z_c = Ctrl->M.params[PRISM][nb][3];		x0 = Ctrl->M.params[PRISM][nb][4];		y0 = Ctrl->M.params[PRISM][nb][5];
 
@@ -106,7 +105,7 @@ int prism(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, int nb) {
 
 int five_psoid(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, int body_type, int nb, bool cone, bool piram, bool sino, bool hemi) {
 /*	Constructs either a sphere, ellipsoid, cone, pyramid, or a bell
-/*	as a union of triagular facets. Returns number of triangles. */
+/*	as a union of triangular facets. Returns number of triangles. */
 	int i, j, j1, k, l, m, m1, m2, n = 0, n_tri, i_tri, npts_circ, n_slices, n_sigmas = 2;
 	bool first = true;
 	double a, b, c, z_c, x0, y0, z_top, z_bot;
