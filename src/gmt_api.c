@@ -5418,34 +5418,18 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			/* If we need to read the header etc then we based this on the first layer in the cube */
 			if ((mode & GMT_DATA_ONLY) == 0) {	/* Get the cube header information */
 				char cube_layer[GMT_LEN64] = {""}, *nc_z_named = NULL, *the_file = NULL;
-				if (mode & GMT_CUBE_IS_STACK) {	/* Got NULL-terminated list of grid file names */
-					files = (char **)S_obj->filename;	/* Must cast this pointer to a char array pointer */
-					n_layers = gmtapi_get_file_count (files);	/* Count the layers */
-					the_file = strdup (files[0]);		/* Duplicate first filename since we may change it */
-					nc_z_named = strchr (the_file, '?');	/* Maybe given a specific variable? */
-					if (nc_z_named) {	/* Gave a specific layer. Keep variable name and remove from filename */
-						strcpy (cube_layer, &nc_z_named[1]);
-						nc_z_named[0] = '\0';	/* Chop off layer name for now */
-					}
-					strncpy (file, the_file, PATH_MAX-1);	/* Read grid header from the first file in the list */
-					if (nc_z_named) {	/* Even 2-d grids could have a specific netCDF variable passed */
-						strcat (file, "?");
-						strcat (file, cube_layer);
-					}
+				/* Got a single 3-D cube netCDF name, possibly selecting a specific variable via ?<name> */
+				the_file = strdup (S_obj->filename);		/* Duplicate filename since we may change it */
+				nc_z_named = strchr (the_file, '?');	/* Maybe given a specific variable? */
+				if (nc_z_named) {	/* Gave a specific layer. Keep variable name and truncate the filename */
+					strcpy (cube_layer, &nc_z_named[1]);	/* Place variable name in cube_layer string */
+					nc_z_named[0] = '\0';	/* Chop off layer name for now */
 				}
-				else {	/* Got a single 3-D cube netCDF name, possibly selecting a specific variable via ?<name> */
-					the_file = strdup (S_obj->filename);		/* Duplicate filename since we may change it */
-					nc_z_named = strchr (the_file, '?');	/* Maybe given a specific variable? */
-					if (nc_z_named) {	/* Gave a specific layer. Keep variable name and truncate the filename */
-						strcpy (cube_layer, &nc_z_named[1]);	/* Place variable name in cube_layer string */
-						nc_z_named[0] = '\0';	/* Chop off layer name for now */
-					}
-					if (gmt_nc_read_cube_info (GMT, the_file, w_range, &n_layers, &level)) {	/* Learn the basics about the cube */
-						GMT_Report (API, GMT_MSG_ERROR, "gmtapi_import_cube: Unable to examine cube %s.\n", the_file);
-						return_null (API, GMT_RUNTIME_ERROR);
-					}
-					sprintf (file, "%s?%s[0]", the_file, cube_layer);	/* Read cube header from the first layer in the cube */
+				if (gmt_nc_read_cube_info (GMT, the_file, w_range, &n_layers, &level)) {	/* Learn the basics about the cube */
+					GMT_Report (API, GMT_MSG_ERROR, "gmtapi_import_cube: Unable to examine cube %s.\n", the_file);
+					return_null (API, GMT_RUNTIME_ERROR);
 				}
+				sprintf (file, "%s?%s[0]", the_file, cube_layer);	/* Read cube header from the first layer in the cube */
 				if (nc_z_named) nc_z_named[0] = '?';	/* Restore layer name in file name */
 				gmt_M_str_free (the_file);
 				/* Read the first layer grid */
@@ -5463,7 +5447,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					UH->xyz_alloc_mode[GMT_Z] = GMT_ALLOC_INTERNALLY;
 				}
 				U_obj->header->n_bands = n_layers;
-				U_obj->mode = (mode & GMT_CUBE_IS_STACK);	/* Will either be GMT_CUBE_IS_STACK or 0 */
+				U_obj->mode = mode;
 				if (nc_z_named) strcpy (U_obj->name, cube_layer);	/* Remember this name if given */
 				if (GMT_Destroy_Data (API, &G)) {	/* Must use GMT_Destroy_Data since G was registered in GMT_Read_Data */
 					gmtlib_free_cube (GMT, &U_obj, true);
@@ -5498,24 +5482,10 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				return_null (API, GMT_DIM_TOO_SMALL);
 			}
 
-			if (U_obj->mode & GMT_CUBE_IS_STACK) files = (char **)S_obj->filename;	/* Since we have a NULL-terminated list of 2D grids */
-
-			/* Read the layers via an intermediate grid and add to growing data cube slices */
-			if (files)
-				GMT_Report (API, GMT_MSG_INFORMATION, "Reading cube from individual layer grid files\n");
-			else
-				GMT_Report (API, GMT_MSG_INFORMATION, "Reading cube from file %s\n", S_obj->filename);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Reading cube from file %s\n", S_obj->filename);
 			for (k = k0; k <= k1; k++) {	/* Read the required layers into individual grid structures */
 				/* Get the k'th layer from 3D cube possibly via a selected variable name */
-				if (U_obj->mode & GMT_CUBE_IS_STACK) {	/* Give the next unique file name from the input list */
-					strncpy (file, files[k], PATH_MAX-1);
-					if (U_obj->name[0]) {	/* Even 2-D grids could have specified a netCDF variable */
-						strcat (file, "?");
-						strcat (file, U_obj->name);
-					}
-				}
-				else	/* Get the k'th layer from this cube file */
-					sprintf (file, "%s?%s[%" PRIu64 "]", S_obj->filename, U_obj->name, k);
+				sprintf (file, "%s?%s[%" PRIu64 "]", S_obj->filename, U_obj->name, k);
 				/* Read in the layer as a temporary grid */
 				if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, S_obj->wesn, file, NULL)) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "gmtapi_import_cube: Unable to read layer %" PRIu64 " from file %s.\n", k, file);
@@ -9022,6 +8992,7 @@ void * GMT_Read_Group (void *V_API, unsigned int family, unsigned int method, un
 	 * Note: For DATASET you can also use wildcard expressions in GMT_Read_Data but there we combine then into one data|test-set.
 	 * Return: Pointer to array of data container, or NULL if there were errors (passed back via API->error).
 	 */
+	bool free_list = false;
 	unsigned int n_files, k;
 	char **file = NULL, *pattern = NULL;
 	struct GMTAPI_CTRL *API = NULL;
@@ -9045,6 +9016,7 @@ void * GMT_Read_Group (void *V_API, unsigned int family, unsigned int method, un
 			GMT_Report (API, GMT_MSG_ERROR, "GMT_Read_Group: Expansion of \"%s\" gave no results\n", pattern);
 			return_null (API, GMT_OBJECT_NOT_FOUND);
 		}
+		free_list = true;
 	}
 	/* Reuse data or allocate empty array of containers */
 	object = (data == NULL) ? gmtapi_alloc_object_array (API, n_files, family) : data;
@@ -9052,8 +9024,10 @@ void * GMT_Read_Group (void *V_API, unsigned int family, unsigned int method, un
 		if ((object[k] = GMT_Read_Data (API, family, method, geometry, mode, wesn, file[k], object[k])) == NULL)
 			GMT_Report (API, GMT_MSG_ERROR, "GMT_Read_Group: Reading of %s failed, returning NULL\n", file[k]);
 	}
-	gmt_free_list (API->GMT, file, n_files);	/* Free the file list */
-	if (n_items) *n_items = n_files;	/* Return how many items we allocated, if n_items is not NULL */
+	if (free_list) {	/* Free the file list we created above and optionally return back how many we found */
+		gmt_free_list (API->GMT, file, n_files);
+		if (n_items) *n_items = n_files;	/* Return how many items we allocated, if n_items is not NULL */
+	}
 	return (object);	/* Return pointer to the data containers */
 }
 
@@ -10759,7 +10733,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 					C->z_range[0] = range[ZLO];	C->z_range[1] = range[ZHI];
 					if (inc && inc[GMT_Z] > 0.0) {	/* Must make equidistant array, else we lave it as NULL to be set by calling module */
 						HU = gmt_get_U_hidden (C);
-						C->header->n_bands = gmtlib_make_equidistant_array (API->GMT, range[ZLO], range[ZHI], inc[GMT_Z], &(C->z));
+						C->header->n_bands = gmt_make_equidistant_array (API->GMT, range[ZLO], range[ZHI], inc[GMT_Z], &(C->z));
 						C->z_inc = inc[GMT_Z];
 						HU->xyz_alloc_mode[GMT_Z] = GMT_ALLOC_INTERNALLY;
 					}

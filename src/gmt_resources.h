@@ -137,7 +137,7 @@ enum GMT_enum_container {
 	GMT_CONTAINER_ONLY	= 1U,   /* Create|read|write the container but no data array */
 	GMT_DATA_ONLY		= 2U,   /* Create|Read|write the container's array only */
 	GMT_WITH_STRINGS	= 32U,  /* Allocate string array also [DATASET, MATRIX, VECTOR only] */
-	GMT_CUBE_IS_STACK	= 64U,	/* Passed via mode to GMT_Read_Data if infile is a NULL-terminated array of files */
+	GMT_CUBE_IS_STACK	= 64U,	/* Set if source was a stack of 2-D grids */
 	GMT_NO_STRINGS		= 0U    /* Do not allocate string array also [Default] */
 };
 

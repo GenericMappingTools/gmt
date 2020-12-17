@@ -16672,7 +16672,7 @@ double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, 
 	return (gmtsupport_unique_array (GMT, array, n));
 }
 
-uint64_t gmtlib_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
+uint64_t gmt_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
 	/* Just makes an equidistant array given vetted input parameters */
 	uint64_t k, n;
 	double *val = NULL;
@@ -17151,7 +17151,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 			default:	/* OK as is */
 				break;
 		}
-		T->n = gmtlib_make_equidistant_array (GMT, t0, t1, inc, &(T->array));
+		T->n = gmt_make_equidistant_array (GMT, t0, t1, inc, &(T->array));
 	}
 	if (T->vartime && GMT->current.setting.time_system.unit != unit) {
 		uint64_t k;

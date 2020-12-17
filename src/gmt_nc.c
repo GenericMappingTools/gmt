@@ -409,10 +409,12 @@ GMT_LOCAL int gmtnc_put_xy_vectors (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 
 	/* Depending on row_order, write y-coordinate array bottom-to-top or top-to-bottom */
 	if (HH->row_order == k_nc_start_south) {
-		for (row = 0; row < header->n_rows; row++) xy[row] = (double) gmt_M_col_to_x (GMT, row, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->n_rows);
+		for (row = 0; row < header->n_rows; row++)
+			xy[row] = (double) gmt_M_col_to_x (GMT, row, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->n_rows);
 	}
 	else {
-		for (row = 0; row < header->n_rows; row++) xy[row] = (double) gmt_M_row_to_y (GMT, row, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->n_rows);
+		for (row = 0; row < header->n_rows; row++)
+			xy[row] = (double) gmt_M_row_to_y (GMT, row, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->n_rows);
 	}
 	gmt_M_err_trap (nc_put_var_double (HH->ncid, HH->xyz_id[GMT_Y], xy));
 	gmt_M_free (GMT, xy);

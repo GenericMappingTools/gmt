@@ -1255,7 +1255,7 @@ and pass the ``par`` array with contents as indicated below:
   **GMT_IS_CUBE**.
     Same procedure as for **GMT_IS_GRID** but both ``wesn``, ``inc`` and ``par`` have one extra
     dimension for the depth or time axis.  For non-equidistant layers you need to use
-    ``par[2]`` to sets the number of layers, otherwise ``wesn`` and ``inc`` can set it all.
+    ``par[2]`` to sets the number of layers and use ``inc[2] = 0``, otherwise ``wesn`` and ``inc`` can set it all.
 
   **GMT_IS_DATASET**.
     We allocate an empty :ref:`GMT_DATASET <struct-dataset>` structure consisting of ``par[0]`` tables,
@@ -3795,7 +3795,7 @@ allocated will be *size * n_bands*, where the latter is one of the parameters in
   struct GMT_CUBE {
        struct GMT_GRID_HEADER *header;      /* The full GMT header for the grid */
        float                  *data;        /* Pointer to the float 3-D array */
-       unsigned int           mode;         /* Indicates input was list of 2-D grids rather than a cube */
+       unsigned int           mode;         /* Indicates data originated as a list of 2-D grids rather than a cube */
        double                 z_range[2];   /* Minimum/max z values (complements header->wesn) */
        double                 z_inc;        /* z increment (complements header->inc) (0 if variable z spacing) */
        double                 *x, *y, *z;   /* Arrays of x,y,z coordinates */
