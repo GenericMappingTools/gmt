@@ -2669,7 +2669,7 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 			fprintf (fpo, "#\n# %s\n#\n", GMT_keyword_active[current_group].name);
 			header = true;
 		}
-		fprintf (fpo, "%-30s = %s\n", GMT_keyword_active[k].name, gmtlib_putparameter (GMT, GMT_keyword_active[k].name));
+		fprintf (fpo, "%-30s = %s\n", GMT_keyword_active[k].name, gmtlib_getparameter (GMT, GMT_keyword_active[k].name));
 		k++;
 	}
 
