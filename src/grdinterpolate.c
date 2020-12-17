@@ -716,7 +716,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	/* Read the selected subset of the cube into C[GMT_IN] */
 
-	if (Ctrl->Z.active) {	/* Need to read in individual grids and convert to cube */
+	if (Ctrl->Z.active) {	/* Need to read in individual grids and convert to cube first */
 		uint64_t here = 0;
 		unsigned int N = n_layers;
 		struct GMT_GRID **G = NULL;
