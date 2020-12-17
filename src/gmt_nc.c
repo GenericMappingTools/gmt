@@ -598,9 +598,9 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			gmt_M_err_trap (nc_def_var_chunking (ncid, z_id, NC_CHUNKED, GMT->current.setting.io_nc4_chunksize));
 			/* set deflation level and shuffle for x, y[, z], and z[|w] variable */
 			if (GMT->current.setting.io_nc4_deflation_level) {
-				gmt_M_err_trap (nc_def_var_deflate (ncid, ids[1+d_off], true, true, GMT->current.setting.io_nc4_deflation_level));
-				gmt_M_err_trap (nc_def_var_deflate (ncid, ids[0+d_off], true, true, GMT->current.setting.io_nc4_deflation_level));
-				if (cube) gmt_M_err_trap (nc_def_var_deflate (ncid, ids[0], true, true, GMT->current.setting.io_nc4_deflation_level));
+				gmt_M_err_trap (nc_def_var_deflate (ncid, HH->xyz_id[GMT_X], true, true, GMT->current.setting.io_nc4_deflation_level));
+				gmt_M_err_trap (nc_def_var_deflate (ncid, HH->xyz_id[GMT_Y], true, true, GMT->current.setting.io_nc4_deflation_level));
+				if (cube) gmt_M_err_trap (nc_def_var_deflate (ncid, HH->xyz_id[GMT_Z], true, true, GMT->current.setting.io_nc4_deflation_level));
 				gmt_M_err_trap (nc_def_var_deflate (ncid, z_id, true, true, GMT->current.setting.io_nc4_deflation_level));
 			}
 		} /* GMT->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic */

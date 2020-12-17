@@ -737,6 +737,10 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		if (C[GMT_IN]->z == NULL && GMT_Put_Levels (API, C[GMT_IN], level, n_layers))
 			Return (API->error);
 		C[GMT_IN]->mode = GMT_CUBE_IS_STACK;	/* Flag that the source was a stack of grids and not a cube */
+		if (gmt_M_is_geographic (GMT, GMT_IN))
+			gmt_set_geographic (GMT, GMT_OUT);
+		else
+			gmt_set_cartesian (GMT, GMT_OUT);
 	}
 	else if (C[GMT_IN] == NULL && (C[GMT_IN] = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, wesn, Ctrl->In.file[0], NULL)) == NULL)
 		Return (GMT_DATA_READ_ERROR);
