@@ -89,6 +89,10 @@ COLOR Parameters
     **COLOR_NAN**
         Color used for the non-defined areas of images (i.e., where z = NaN) [127.5].
 
+    **COLOR_SET**
+        Default comma-separated list of colors (or a *categorical* CPT name) for automatic,
+        sequential color assignments [*default*, which is #0072BD,#D95319,#EDB120,#7E2F8E,#77AC30,#4DBEEE,#A2142F].
+
 .. _DIR Parameters:
 
 DIR Parameters
@@ -142,6 +146,9 @@ FONT Parameters
     **FONT_LOGO**
         Font to use for text plotted as part of the GMT time logo
         [8p,Helvetica,black].
+
+    **FONT_SUBTITLE**
+        Font to use when plotting titles over graphs that involve a subtitle [18p,Helvetica,black].
 
     **FONT_TAG**
         Font to use for subplot panel tags such as a), ii)
@@ -636,8 +643,10 @@ MAP Parameters
         Sets which axes to draw and annotate. Combine any uppercase **W**,
         **E**, **S**, **N**, **Z** to draw and annotate west, east, south,
         north and/or vertical (perspective view only) axis. Use lower case
-        to draw the axis only, but not annotate. Add an optional **+** to
-        draw a cube of axes in perspective view. [WESN].
+        to draw the axis only, but not annotate.   To *just* draw an axis 
+        without annotation and ticks you can use the **l**\ (eft), **r**\ (ight), 
+        **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes. Add an 
+        optional **+** to draw a cube of axes in perspective view. [WESN].
 
     **MAP_FRAME_PEN**
         Pen attributes used to draw plain map frame [thicker,black].

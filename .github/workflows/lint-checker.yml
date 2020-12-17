@@ -2,7 +2,7 @@
 
 on:
   # enable pull request for debugging
-  # pull_request:
+  #pull_request:
   # Schedule runs daily
   schedule:
     - cron: '0 0 * * *'
@@ -21,7 +21,9 @@ jobs:
     - name: Install cppcheck
       run: |
         set -x -e
-        sudo snap install cppcheck
+        #sudo snap install cppcheck
+        # Install the dev version due to a packaging issue of cppcheck 2.3
+        sudo snap install cppcheck --edge
         cppcheck --version
 
     - name: Run cppcheck

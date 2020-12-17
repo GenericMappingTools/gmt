@@ -28,4 +28,7 @@
     just subdivides the available width among the specified columns.
     The upper-case modifiers reflect legend codes described in :doc:`legend`, which provide more details and
     customization.  If **legend** is not called explicitly we will call it implicitly when finishing the plot
-    via :doc:`end`.
+    via :doc:`end`.  **Note**: If auto-coloring is used for pens or fills and **-l** is set then *label* may
+    contain a C-format for integers (e.g., %3.3d) or just # and we will use the sequence number
+    with the format to build the label entries.  Alternatively, give a list of comma-separated labels, or give
+    no label if your segment headers contain label settings.

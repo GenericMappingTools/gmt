@@ -371,7 +371,7 @@ L1:
 			return NULL;
 		}
 		sprintf (path, "%s/geography/gshhg/%s.nc", GMT->session.USERDIR, stem);	/* Final local path */
-		snprintf (remote_path, PATH_MAX, "%s/geography/gshhg/%s.nc", gmtlib_dataserver_url (GMT->parent), stem);	/* Unique remote path */
+		snprintf (remote_path, PATH_MAX, "%s/geography/gshhg/%s.nc", gmt_dataserver_url (GMT->parent), stem);	/* Unique remote path */
 		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Downloading %s.nc for the first time - be patient\n", stem);
 		if (gmt_download_file (GMT, stem, remote_path, path, true)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to obtain remote file %s.nc\n", stem);

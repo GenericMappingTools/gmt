@@ -446,7 +446,8 @@ void gmtlib_free_tmp_arrays (struct GMT_CTRL *GMT) {
 	for (col = 0; col < GMT->hidden.mem_cols; col++) {	/* For each column, free an array */
 		gmt_M_free (GMT, GMT->hidden.mem_coord[col]);
 	}
-	gmt_M_free (GMT, GMT->hidden.mem_coord);
+	if (GMT->hidden.mem_coord)
+		gmt_M_free (GMT, GMT->hidden.mem_coord);
 	if (GMT->hidden.mem_txt)
 		gmt_M_free (GMT, GMT->hidden.mem_txt);
 	GMT->hidden.mem_rows = GMT->hidden.mem_cols = 0;
