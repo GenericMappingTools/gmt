@@ -14,8 +14,8 @@ on:
     types:
       - published
   # schedule daily jobs
-  schedule:
-    - cron: '0 12 * * *'
+  #schedule:
+  #  - cron: '0 12 * * *'
 
 defaults:
   run:
