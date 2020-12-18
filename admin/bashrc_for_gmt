@@ -90,7 +90,7 @@ alias bnr-mp=buildnewr-mp # Pull changes; delete and rebuild rbuild with OpenMP
 alias cdb=checkdbuild # Run the tests for dbuild
 alias crb=checkrbuild # Run the tests for rbuild
 alias bmdc='buildnewd; checkdbuild' # build new master debug and run all tests
-alias bdnp=builddnp # Rebuild existing dbuild
+alias bdnp=builddnopull # Rebuild existing dbuild
 alias bndnp=buildnewdnopull # delete and recreate dbuild
 alias bnxnp=buildnewxnopull # delete and recreate xbuild
 
