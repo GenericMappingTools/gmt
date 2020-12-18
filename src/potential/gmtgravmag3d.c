@@ -384,7 +384,7 @@ GMT_LOCAL int gmtgravmag3d_read_xyz(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CT
 		Ctrl->okabe_mag_var4 = gmt_M_memory (GMT, NULL, n_alloc, struct MAG_VAR4);
 	}
 
-	if (n_cols > 3) {				/* A bit uggly doing this here but only now we know enough */
+	if (n_cols > 3) {				/* A bit ugly doing this here but only now we know enough */
 		Ctrl->H.active = true;
 		Ctrl->C.active = false;
 	}
@@ -535,7 +535,7 @@ GMT_LOCAL int gmtgravmag3d_read_raw (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_C
 		return -1;
 	}
 	if (In->table[0]->n_segments > 1) /* case not dealt (or ignored) and should be tested here */
-		GMT_Report(GMT->parent, GMT_MSG_WARNING, "Multi-segment files are not implementd. Using first segment only\n");
+		GMT_Report(GMT->parent, GMT_MSG_WARNING, "Multi-segment files are not implemented. Using first segment only\n");
 
 	Ctrl->raw_mesh = gmt_M_memory (GMT, NULL, In->table[0]->n_records, struct GMTGRAVMAG3D_RAW);
 	for (row = 0; row < In->table[0]->n_records; row++) {
