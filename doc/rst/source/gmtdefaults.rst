@@ -30,7 +30,7 @@ GMT command (**PARAMETER** and *VALUE* are any combination listed
 below). In classic mode, the first two options are permanent changes until 
 explicitly changed back, while the last option is ephemeral and only applies to 
 the single GMT command that received the override. In modern mode, changes made using
-`gmtset` stay in effect for the duration of the current session. GMT can provide
+:doc:`gmtset` stay in effect for the duration of the current session. GMT can provide
 default values in US or SI units. This choice is determined at compile time.
 
 Required Arguments
