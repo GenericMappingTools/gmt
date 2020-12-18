@@ -5429,14 +5429,15 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				}
 				if (gmt_nc_read_cube_info (GMT, the_file, w_range, &n_layers, &level)) {	/* Learn the basics about the cube */
 					GMT_Report (API, GMT_MSG_ERROR, "gmtapi_import_cube: Unable to examine cube %s.\n", the_file);
+					gmt_M_str_free (the_file);
 					return_null (API, GMT_RUNTIME_ERROR);
 				}
 				sprintf (file, "%s?%s[0]", the_file, cube_layer);	/* Read cube header from the first layer in the cube */
-				if (nc_z_named) nc_z_named[0] = '?';	/* Restore layer name in file name */
-				gmt_M_str_free (the_file);
 				/* Read the first layer grid */
-				if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL)
-						return_null (API, GMT_RUNTIME_ERROR);
+				if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL) {
+					gmt_M_str_free (the_file);
+					return_null (API, GMT_RUNTIME_ERROR);
+				}
 				/* Allocate a data cube structure and fill in the file information */
 				U_obj = gmtlib_create_cube (GMT);
 				gmt_copy_gridheader (GMT, U_obj->header, G->header);
@@ -5450,7 +5451,11 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				}
 				U_obj->header->n_bands = n_layers;
 				U_obj->mode = mode;
-				if (nc_z_named) strcpy (U_obj->name, cube_layer);	/* Remember this name if given */
+				if (nc_z_named) strncpy (U_obj->name, cube_layer, GMT_GRID_VARNAME_LEN80);	/* Remember this name if given */
+				HH = gmt_get_H_hidden (U_obj->header);
+				strncpy (HH->name, the_file, GMT_GRID_NAME_LEN256);	/* Filename minus any specified variable */
+				if (nc_z_named) nc_z_named[0] = '?';	/* Restore layer name in file name */
+				gmt_M_str_free (the_file);
 				if (GMT_Destroy_Data (API, &G)) {	/* Must use GMT_Destroy_Data since G was registered in GMT_Read_Data */
 					gmtlib_free_cube (GMT, &U_obj, true);
 					return_null (API, GMT_RUNTIME_ERROR);
@@ -5463,6 +5468,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			if (mode & GMT_CONTAINER_ONLY) break;	/* Just needed the header, get out of here */
 
 			/* Here we have the cube header and possibly the levels */
+			HH = gmt_get_H_hidden (U_obj->header);
 
 			/* Determine which layers we want to read */
 			k0 = 0;	k1 = U_obj->header->n_bands - 1;	/* All layers selected */
@@ -5487,7 +5493,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			GMT_Report (API, GMT_MSG_INFORMATION, "Reading cube from file %s\n", S_obj->filename);
 			for (k = k0; k <= k1; k++) {	/* Read the required layers into individual grid structures */
 				/* Get the k'th layer from 3D cube possibly via a selected variable name */
-				sprintf (file, "%s?%s[%" PRIu64 "]", S_obj->filename, U_obj->name, k);
+				sprintf (file, "%s?%s[%" PRIu64 "]", HH->name, U_obj->name, k);
 				/* Read in the layer as a temporary grid */
 				if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, S_obj->wesn, file, NULL)) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "gmtapi_import_cube: Unable to read layer %" PRIu64 " from file %s.\n", k, file);

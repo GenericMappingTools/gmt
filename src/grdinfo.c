@@ -490,7 +490,7 @@ GMT_LOCAL void grdinfo_smart_increments (struct GMT_CTRL *GMT, double inc[], uns
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_set_pad (GMT, GMT_PAD_DEFAULT); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	int error = 0, k_data;
@@ -600,6 +600,8 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	}
 
 	Out = gmt_new_record (GMT, (n_cols) ? out : NULL, (cmode) == GMT_COL_FIX ? record : NULL);	/* the two items */
+
+	gmt_set_pad (API->GMT, 0);	/* Not read pads to simplify operations */
 
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
 
@@ -1224,23 +1226,36 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->T.active) {
 		if (Ctrl->T.mode & 2) {	/* Must do alpha trimming first */
+			size_t size = header->size * ((size_t)header->n_bands);
 			gmt_grdfloat *tmp_grid = NULL;
 			char *file_ptr = grdfile;	/* To avoid a warning */
-			if (gmt_M_file_is_memory (file_ptr)) {	/* Must operate on a copy since sorting is required */
-				tmp_grid = gmt_M_memory_aligned (GMT, NULL, header->size, gmt_grdfloat);
-				gmt_M_memcpy (tmp_grid, G->data, header->size, gmt_grdfloat);
+			if (is_cube) {
+				if (gmt_M_file_is_memory (file_ptr)) {	/* Must operate on a copy since sorting is required */
+					tmp_grid = gmt_M_memory_aligned (GMT, NULL, size, gmt_grdfloat);
+					gmt_M_memcpy (tmp_grid, G->data, size, gmt_grdfloat);
+				}
+				else
+					tmp_grid = U->data;
 			}
-			else
-				tmp_grid = G->data;
-			gmt_sort_array (GMT, tmp_grid, header->size, GMT_FLOAT);	/* Sort so we can find quantiles */
-			global_vmin = gmt_quantile_f (GMT, tmp_grid, 0.5 * Ctrl->T.alpha, header->size);			/* "Left" quantile */
-			global_vmax = gmt_quantile_f (GMT, tmp_grid, 100.0-0.5* Ctrl->T.alpha, header->size);	/* "Right" quantile */
+			else {	/* Grid */
+				if (gmt_M_file_is_memory (file_ptr)) {	/* Must operate on a copy since sorting is required */
+					tmp_grid = gmt_M_memory_aligned (GMT, NULL, size, gmt_grdfloat);
+					gmt_M_memcpy (tmp_grid, G->data, size, gmt_grdfloat);
+				}
+				else
+					tmp_grid = G->data;
+			}
+			gmt_sort_array (GMT, tmp_grid, size, GMT_FLOAT);	/* Sort so we can find quantiles */
+			global_vmin = gmt_quantile_f (GMT, tmp_grid, 0.5 * Ctrl->T.alpha, size);		/* "Left" quantile */
+			global_vmax = gmt_quantile_f (GMT, tmp_grid, 100.0-0.5* Ctrl->T.alpha, size);	/* "Right" quantile */
 			if (is_cube && GMT_Destroy_Data (API, &U) != GMT_NOERROR) {
-				gmt_M_free (GMT, tmp_grid);
+				if (gmt_M_file_is_memory (file_ptr))	/* Now free temp grid */
+					gmt_M_free (GMT, tmp_grid);
 				Return (API->error);
 			}
 			else if (!is_cube && GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
-				gmt_M_free (GMT, tmp_grid);
+				if (gmt_M_file_is_memory (file_ptr))	/* Now free temp grid */
+					gmt_M_free (GMT, tmp_grid);
 				Return (API->error);
 			}
 			if (gmt_M_file_is_memory (file_ptr))	/* Now free temp grid */
@@ -1261,11 +1276,11 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			}
 		}
 		sprintf (record, "-T");
-		gmt_ascii_format_col (GMT, text, global_vmin, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
-		gmt_ascii_format_col (GMT, text, global_vmax, GMT_OUT, GMT_Z);	strcat (record, text);
+		gmt_ascii_format_col (GMT, text, global_vmin, GMT_OUT, GMT_W);	strcat (record, text);	strcat (record, "/");
+		gmt_ascii_format_col (GMT, text, global_vmax, GMT_OUT, GMT_W);	strcat (record, text);
 		if (Ctrl->T.inc > 0.0) {
 			strcat (record, "/");
-			gmt_ascii_format_col (GMT, text, Ctrl->T.inc, GMT_OUT, GMT_Z);	strcat (record, text);
+			gmt_ascii_format_col (GMT, text, Ctrl->T.inc, GMT_OUT, GMT_W);	strcat (record, text);
 		}
 		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 	}

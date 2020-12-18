@@ -33,11 +33,11 @@ Synopsis
 Description
 -----------
 
-**grdinfo** reads a 2-D binary grid file and reports metadata and
-various statistics for the data and (*x*,\ *y*,\ *z*) coordinates in the grid or cube file(s).
-The output information contains the minimum/maximum values for the data *v*, for the *x*, *y*,
-and *z* coordinates, where the min/max of *v* occur, the *x*-, *y*-, and *z*-increments,
-and the number of *x*, *y* (and *z* for cubes) nodes, and [optionally] the mean, standard
+**grdinfo** reads a 2-D binary grid file and reports metadata and various
+statistics for the data (*v) and coordinates (*x*,\ *y*) in a grid (or *x*,\ *y*,\ *z* for a 3-D cube).
+The output information may report the minimum/maximum values for *v* and the
+coordinates, where the min/max of *v* occur, the spatial increments,
+and the number of nodes in each dimension, and [optionally] the mean, standard
 deviation, and/or the median, median absolute deviation (MAD) of *v*, and/or
 the mode (Least Median of Squares; LMS), LMS scale of *v*, and number of nodes set
 to NaN. We also report if the grid is pixel- or gridline-registered and
@@ -67,7 +67,7 @@ Optional Arguments
     while *gtype* is either 0 (Cartesian) or 1 (geographic).
     If the **-I** option is used, the
     output format is instead *NF w e s n {b t} v0 v1*, where *NF* is the total
-    number of grids read and *w e s n {b t}* are rounded off (see **-I**).
+    number of files read and *w e s n {b t}* are rounded off (see **-I**).
 
 .. _-D:
 
@@ -141,13 +141,14 @@ Optional Arguments
 
 **-Q**
     All input files must be data 3-D netCDF data cube files [all files are 2-D grids].
-    Not compatible with **-D**, **-D**, **-F**, **-Ib**
+    Not compatible with **-D**, **-E**, **-F**, and **-Ib**.
 
 .. _-R:
 
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of the input grid(s). If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted.
+    If **-Q** is used you must also append limits in the *z* dimension.
 .. include:: explain_-R.rst_
 
 .. _-T:

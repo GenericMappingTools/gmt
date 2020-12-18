@@ -768,7 +768,7 @@ struct GMT_CUBE {
 	double z_range[2];			/* Minimum/max z values (complements header->wesn[4]) */
 	double z_inc;				/* z increment (complements inc[2]) (0 if variable z spacing */
 	double *z;					/* Array of z values (complements x, y) */
-	char name[GMT_GRID_UNIT_LEN80];		/* Name of the 3-D variable, if read from file (or empty if just one) */
+	char name[GMT_GRID_VARNAME_LEN80];	/* Name of the 3-D variable, if read from file (or empty if just one) */
 	char units[GMT_GRID_UNIT_LEN80];	/* Units in 3rd direction (complements x_units, y_units, z_units)  */
 };
 
