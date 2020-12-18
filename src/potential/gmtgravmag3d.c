@@ -487,7 +487,7 @@ GMT_LOCAL int read_xyz(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, str
 		Ctrl->okabe_mag_var4 = gmt_M_memory (GMT, NULL, n_alloc, struct MAG_VAR4);
 	}
 
-	if (n_cols > 3) {				/* A bit uggly doing this here but only now we know enough */
+	if (n_cols > 3) {				/* A bit ugly doing this here but only now we know enough */
 		Ctrl->H.active = true;
 		Ctrl->C.active = false;
 	}
