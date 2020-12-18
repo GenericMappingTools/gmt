@@ -500,7 +500,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 	uint64_t ij, n_nan = 0, n = 0;
 
-	double x_min = 0.0, y_min = 0.0, z_min = 0.0, v_min = 0.0, x_max = 0.0, y_max = 0.0, z_max = 0.0, v_max = 0.0, wesn[4];
+	double x_min = 0.0, y_min = 0.0, z_min = 0.0, v_min = 0.0, x_max = 0.0, y_max = 0.0, z_max = 0.0, v_max = 0.0, wesn[6];
 	double global_xmin, global_xmax, global_ymin, global_ymax, global_zmin, global_zmax, global_vmin, global_vmax;
 	double z_mean = 0.0, z_median = 0.0, z_mode = 0.0, z_stdev = 0.0, z_scale = 0.0, z_lmsscl = 0.0, z_rms = 0.0, out[30];
 
@@ -537,6 +537,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 	/* OK, done parsing, now process all input grids in a loop */
 
+	gmt_M_memset (wesn, 6, double);	/* Initialize */
 	if (Ctrl->Q.active) {
 		x_col_min = 14; x_col_max = 17; y_col_min = 15; y_col_max = 18; z_col_min = 16; z_col_max = 19; GMT_W = 3;
 	}
@@ -544,7 +545,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		x_col_min = 10; x_col_max = 12; y_col_min = 11; y_col_max = 13;
 	}
 	sep = GMT->current.setting.io_col_separator;
-	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
+	gmt_M_memcpy (wesn, GMT->common.R.wesn, 6, double);	/* Current -R setting, if any */
 	if (Ctrl->D.active && Ctrl->D.mode == 0 && GMT->common.R.active[RSET]) {
 		global_xmin = GMT->common.R.wesn[XLO]; global_ymin = GMT->common.R.wesn[YLO];
 		global_xmax = GMT->common.R.wesn[XHI] ; global_ymax = GMT->common.R.wesn[YHI];
@@ -717,7 +718,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (Ctrl->T.mode & 2) strncpy (grdfile, opt->arg, PATH_MAX-1);
 
 		if (Ctrl->M.active || Ctrl->L.active) {	/* Must determine the location of global min and max values */
-			uint64_t ij_min, ij_max, l_min, l_max, here = 0;
+			uint64_t ij_min, ij_max, l_min, l_max, here = 0, node;
 			unsigned int col, row;
 			gmt_grdfloat *data = (is_cube) ? U->data : G->data;
 
@@ -725,13 +726,14 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			ij_min = ij_max = n = 0;
 			for (level = 0; level < header->n_bands; level++) {
 				for (row = 0; row < header->n_rows; row++) {
-					for (col = 0, ij = here + gmt_M_ijp (header, row, 0); col < header->n_columns; col++, ij++) {
-						if (gmt_M_is_fnan (data[ij])) continue;
-						if (data[ij] < v_min) {
-							v_min = data[ij];	ij_min = ij; if (is_cube) z_min = U->z[level];
+					for (col = 0, ij = gmt_M_ijp (header, row, 0); col < header->n_columns; col++, ij++) {
+						node = ij + here;
+						if (gmt_M_is_fnan (data[node])) continue;
+						if (data[node] < v_min) {
+							v_min = data[node];	ij_min = ij; if (is_cube) z_min = U->z[level];
 						}
-						if (data[ij] > v_max) {
-							v_max = data[ij];	ij_max = ij; if (is_cube) z_max = U->z[level];
+						if (data[node] > v_max) {
+							v_max = data[node];	ij_max = ij; if (is_cube) z_max = U->z[level];
 						}
 						n++;
 					}

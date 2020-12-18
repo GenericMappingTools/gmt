@@ -5495,8 +5495,9 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					return_null (API, GMT_GRID_READ_ERROR);
 				}
 				if (U_obj->data == NULL) {	/* Update grid header (due to possible subsets) and allocate cube the first time */
+					n_layers = U_obj->header->n_bands;	/* Full number of layers before subsetting */
 					if (S_obj->region) gmt_copy_gridheader (GMT, U_obj->header, G->header);	/* Since subset can have changed dims and ranges */
-					U_obj->header->n_bands = n_layers_used;
+					U_obj->header->n_bands = n_layers_used;	/* New number of layers */
 					U_obj->z_range[0] = U_obj->z[k0];
 					U_obj->z_range[1] = U_obj->z[k1];
 					if (k0) {	/* Eliminate entries not included and shrink array */
