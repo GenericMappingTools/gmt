@@ -1957,6 +1957,8 @@ int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, ui
 
 	/* Get information about z variable */
 	gmtnc_get_units (GMT, ncid, ids[z_dim], z_units);
+	if (strstr (z_units, "seconds since 1970-01-01"))
+		gmt_set_column_type (GMT, GMT_IN, GMT_Z, GMT_IS_ABSTIME);
 
 	/* Look for the z-coordinate vector */
 	if ((has_vector = nc_get_var_double (ncid, ids[z_dim], z))) {

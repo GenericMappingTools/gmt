@@ -314,7 +314,7 @@ GMT_LOCAL bool grdinterpolate_equidistant_levels (struct GMT_CTRL *GMT, double *
 
 EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	char file[PATH_MAX] = {""}, cube_layer[GMT_LEN64] = {""}, *nc_z_named = NULL;
-	bool equi_levels, convert_to_cube = false;
+	bool equi_levels, convert_to_cube = false, z_is_abstime = false;
 	int error = 0;
 	unsigned int int_mode, row, col, level_type, dtype = 0;
 	uint64_t n_layers = 0, k, node, start_k, stop_k, n_layers_used, *this_dim = NULL, dims[3] = {0, 0, 0};
@@ -362,6 +362,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			}
 			n_layers = Ctrl->Z.T.n;		/* Set number of layers anticipated */
 			level = Ctrl->Z.T.array;	/* Pointer to allocated array with the level values */
+			z_is_abstime = Ctrl->Z.T.temporal;	/* In case we parsed abs time for levels */
 		}
 		if (!(Ctrl->T.active || Ctrl->E.active || Ctrl->S.active)) convert_to_cube = true;	/* Just want to build cube from input stack */
 	}
@@ -741,6 +742,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			gmt_set_geographic (GMT, GMT_OUT);
 		else
 			gmt_set_cartesian (GMT, GMT_OUT);
+		if (z_is_abstime) gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ABSTIME);
 	}
 	else if (C[GMT_IN] == NULL && (C[GMT_IN] = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, wesn, Ctrl->In.file[0], NULL)) == NULL)
 		Return (GMT_DATA_READ_ERROR);

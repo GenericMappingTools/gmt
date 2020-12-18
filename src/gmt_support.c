@@ -17046,6 +17046,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, T->file, NULL)) == NULL) {
 			return (GMT_PARSE_ERROR);
 		}
+		if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_ABSTIME) T->temporal = true;	/* We read absolute times from the file */
 		GMT->current.io.col_type[GMT_IN][GMT_X]  = save_coltype[GMT_IN];
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = save_coltype[GMT_OUT];
 		GMT->current.io.trailing_text[GMT_IN] = save_trailing;

@@ -1231,7 +1231,7 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 				gmt_format_calendar (GMT, date, clock, &GMT->current.io.date_output, &GMT->current.io.clock_output, false, 1, 0.0);
 				snprintf (string[i], GMT_GRID_UNIT_LEN80, "time [%s since %s %s]", unit, date, clock);
 				/* Warning for non-double grids */
-				if (i == 2 && GMT->session.grdformat[header->type][1] != 'd')
+				if (i == 2 && header->n_bands == 1 && GMT->session.grdformat[header->type][1] != 'd')
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Use double precision output grid to avoid loss of significance of time coordinate.\n");
 				break;
 		}
