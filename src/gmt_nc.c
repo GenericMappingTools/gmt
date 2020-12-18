@@ -1866,25 +1866,43 @@ nc_err:
 bool gmt_nc_is_cube (struct GMTAPI_CTRL *API, char *file) {
 	/* Return true if the file is a 3-D netCDF cube */
 	int i, ID = -1, ncid, z_id = -1, dim = 0, nvars, ndims = 0;
+	char varname[GMT_GRID_NAME_LEN256] = {""}, *c = NULL;
 	gmt_M_unused (API);
 
 	if (file == NULL || file[0] == '\0') return false;	/* Got no file */
 	if (!strcmp (file,"=")) return (false);	/* NetCDF is not pipeable */
 	if (gmt_M_file_is_memory (file)) return ((file[GMTAPI_OBJECT_FAMILY_START] == 'U') ? true : false);	/* Memory cube or not */
-	if (nc_open (file, NC_NOWRITE, &ncid)) return false;	/* Unable to open, so probably not netCDF file */
-	if (nc_inq_nvars (ncid, &nvars)) return false;	/* No variables, no good */
-	i = 0;
-	while (i < nvars && z_id < 0) {	/* Look for first 3D grid, with fallback to first higher-dimension (4-%D) grid if 3D not found */
-		if (nc_inq_varndims (ncid, i, &ndims)) return false;	/* Not good */
-		if (ndims == 3)	/* Found the first 3-D grid */
-			z_id = i;
-		else if (ID == -1 && ndims > 3 && ndims < 5) {	/* Also look for higher-dim grid in case no 3-D */
-			ID = i;
-			dim = ndims;
-		}
-		i++;
+	if ((c = strchr (file, '?'))) {	/* Specific variable */
+		strcpy (varname, &c[1]);
+		c[0] = '\0';	/* Chop off for now */
 	}
-	if (z_id >= 0) return true;	/* Found it */
+	if (nc_open (file, NC_NOWRITE, &ncid)) {
+		if (c) c[0] = '?';	/* Restore */
+		return false;	/* Unable to open, so probably not netCDF file */
+	}
+	if (c) c[0] = '?';	/* Restore */
+	if (nc_inq_nvars (ncid, &nvars)) return false;	/* No variables, no good */
+	if (c) {
+		if (nc_inq_varid (ncid, varname, &z_id) == NC_NOERR) {	/* Gave a named variable that exist, is it 2-4 D? */
+			if (nc_inq_varndims (ncid, z_id, &ndims)) return false;	/* Not god */
+			if (ndims != 3) z_id = -1;	/* But not 3-D */
+			if (ndims > 2 && ndims <= 5) ID = z_id;
+		}
+	}
+	else {	/* Must search */
+		i = 0;
+		while (i < nvars && z_id < 0) {	/* Look for first 3D grid, with fallback to first higher-dimension (4-%D) grid if 3D not found */
+			if (nc_inq_varndims (ncid, i, &ndims)) return false;	/* Not good */
+			if (ndims == 3)	/* Found the first 3-D grid */
+				z_id = i;
+			else if (ID == -1 && ndims > 3 && ndims < 5) {	/* Also look for higher-dim grid in case no 3-D */
+				ID = i;
+				dim = ndims;
+			}
+			i++;
+		}
+	}
+	if (z_id >= 0) return true;	/* Found  3-D grid */
 	/* No 3-D grid found, check if we found a higher dimension cube */
 	return ((ID == -1) ? false : true);
 }
