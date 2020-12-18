@@ -5495,16 +5495,17 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					return_null (API, GMT_GRID_READ_ERROR);
 				}
 				if (U_obj->data == NULL) {	/* Update grid header (due to possible subsets) and allocate cube the first time */
-					n_layers = U_obj->header->n_bands;	/* Full number of layers before subsetting */
+					n_layers = U_obj->header->n_bands;	/* Remember full number of layers before overwriting in the next line */
 					if (S_obj->region) gmt_copy_gridheader (GMT, U_obj->header, G->header);	/* Since subset can have changed dims and ranges */
 					U_obj->header->n_bands = n_layers_used;	/* New number of layers */
 					U_obj->z_range[0] = U_obj->z[k0];
 					U_obj->z_range[1] = U_obj->z[k1];
-					if (k0) {	/* Eliminate entries not included and shrink array */
+					if (k0) {	/* Eliminate levels not included and shrink length of array */
 						memmove (U_obj->z, &U_obj->z[k0], n_layers_used * sizeof(double));
 						gmt_M_memset (&U_obj->z[n_layers_used], n_layers-n_layers_used, double);
 						U_obj->z = gmt_M_memory (API->GMT, U_obj->z, n_layers_used, double);
 					}
+					/* Allocate cube data (note: each layer has padding) */
 					U_obj->data = gmt_M_memory_aligned (API->GMT, NULL, U_obj->header->size * n_layers_used, gmt_grdfloat);
 					z_min = U_obj->header->z_min;	/* Initialize cube min/max values based on this first layer */
 					z_max = U_obj->header->z_max;
