@@ -19,7 +19,7 @@
  * Date:	1-JAN-2010
  * Version:	6 API
  *
- * Brief synopsis: grdinfo reads one or more grid file and [optionally] prints
+ * Brief synopsis: grdinfo reads one or more grid/cube file and [optionally] prints
  * out various statistics like mean/standard deviation and median/scale.
  *
  */
@@ -29,8 +29,8 @@
 #define THIS_MODULE_CLASSIC_NAME	"grdinfo"
 #define THIS_MODULE_MODERN_NAME	"grdinfo"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Extract information from grids"
-#define THIS_MODULE_KEYS	"<G{+,>D}"
+#define THIS_MODULE_PURPOSE	"Extract information from 2-D grids or 3-D cubes"
+#define THIS_MODULE_KEYS	"<?{+,>D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->RVfho"
 

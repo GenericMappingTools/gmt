@@ -34,7 +34,7 @@ Description
 -----------
 
 **grdinfo** reads a 2-D binary grid file and reports metadata and various
-statistics for the data (*v) and coordinates (*x*,\ *y*) in a grid (or *x*,\ *y*,\ *z* for a 3-D cube).
+statistics for the data (*v*) and coordinates (*x*,\ *y*) in a grid (or *x*,\ *y*,\ *z* for a 3-D cube).
 The output information may report the minimum/maximum values for *v* and the
 coordinates, where the min/max of *v* occur, the spatial increments,
 and the number of nodes in each dimension, and [optionally] the mean, standard
