@@ -275,6 +275,7 @@ struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle hea
 bool gmt_text_is_latex (struct GMT_CTRL *GMT, const char *string) {
 	/* Detect if string contains Latex commands, i.e., "....@$Latex...@$ ..." */
 	char *p;
+	if (string == NULL || string[0] == '\0') return false;
 	return ((p = strstr (string, "@$")) && strstr (&p[1], "@$"));
 }
 
