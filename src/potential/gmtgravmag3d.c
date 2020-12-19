@@ -193,10 +193,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   It is even possible to select more than one body. For example:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\t -M+sprism,1/1/1/-5/-10/1+ssphere,1/-5\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   bell,height/sx/sy/z0[/x0/y0/n_sig/npts/n_slices]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t Gaussian of height <height> with caracteristic STDs <sx> and <sy>. The base\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t width (at depth <z0>) is controled by the number of sigmas (<n_sig>) [Default = 2]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t\t Gaussian of height <height> with characteristic STDs <sx> and <sy>. The base\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t\t width (at depth <z0>) is controlled by the number of sigmas (<n_sig>) [Default = 2]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   cylinder,rad/height/z0[/x0/y0/npts/n_slices]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t Cilinder of radius <rad> height <height> and base at depth <z0>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t\t Cylinder of radius <rad> height <height> and base at depth <z0>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   cone,semi_x/semi_y/height/z0[/x0/y0/npts]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\t Cone of semi axes <semi_x/semi_y> height <height> and base at depth <z0>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   ellipsoid,semi_x/semi_y/semi_z/z_center[/x0/y0/npts/n_slices]\n");

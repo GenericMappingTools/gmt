@@ -70,20 +70,20 @@ Required Arguments (not all)
     **-M+s**\ *prism,1/1/1/-5/-10/1*\ **+s**\ *sphere,1/-5* computes the effect of a prism and a sphere. Unfortunately there is
     no current way of selecting distinct densities or magnetic parameters for each body.
 
-      - *bell,height/sx/sy/z0[/x0/y0/n_sig/npts/n_slices]* Gaussian of height *height* with characteristic STDs *sx* and *sy*. The base width (at depth *z0*) is controled by the number of sigmas (*n_sig*) [Default = 2]\n");
+      - *bell,height/sx/sy/z0[/x0/y0/n_sig/npts/n_slices]* Gaussian of height *height* with characteristic STDs *sx* and *sy*. The base width (at depth *z0*) is controlled by the number of sigmas (*n_sig*) [Default = 2]
 
       - *cylinder,rad/height/z0[/x0/y0/npts/n_slices]* Cylinder of radius *rad* and height *height* and base at depth *z0*
 
       - *cone,semi_x/semi_y/height/z0[/x0/y0/npts]* Cone of semi axes *semi_x/semi_y* height *height* and base at depth *z0*
 
-      - *ellipsoid,semi_x/semi_y/semi_z/z_center[/x0/y0/npts/n_slices]** Ellipsoid of semi axes *semi_x/semi_y/semi_z* and center depth *z_center*
+      - *ellipsoid,semi_x/semi_y/semi_z/z_center[/x0/y0/npts/n_slices]* Ellipsoid of semi axes *semi_x/semi_y/semi_z* and center depth *z_center*
 
       - *prism,side_x/side_y/side_z/z0[/x0/y0]* Prism of sides *x/y/z* and base at depth *z0*
 
       - *pyramid,side_x/side_y/height/z0[/x0/y0]* Pyramid of sides *x/y* height *height* and base at depth *z0*
 
       - *sphere,rad/z_center[/x0/y0/npts/n_slices]* Sphere of radius *rad* and center at depth *z_center*
- 
+
 .. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
@@ -91,7 +91,7 @@ Required Arguments (not all)
 
 .. _-T:
 
-**-Tv**\ *vert_file* (must have when passing a *xyz_file*) OR **Tr\|s**\ *raw_file*
+**-Tv**\ *vert_file* (must have when passing a *xyz_file*) OR **-Tr\|s**\ *raw_file*
     Gives names of a xyz and vertex (**-Tv**\ *vert_file*) files defining a close surface.
     The file formats correspond to the output of the :doc:`triangulate </triangulate>` program.
     The *xyz* file can have 3, 4, 5, 6 or 8 columns. In first case (3 columns) the magnetization (or density) are
