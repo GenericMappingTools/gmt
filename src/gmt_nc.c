@@ -421,7 +421,7 @@ GMT_LOCAL int gmtnc_put_xy_vectors (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char job, bool cube) {
+GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char job, bool cube, uint64_t n_layers) {
 	/* Used when reading and writing 2-D grids and when writing 3-D data cubes */
 	int j, err, has_vector, has_range, registration, var_spacing = 0;
 	int old_fill_mode, status;
@@ -572,9 +572,9 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		gmt_M_err_trap (nc_def_var (ncid, coord, NC_DOUBLE, 1, &dims[0+d_off], &ids[0+d_off]));
 		HH->xyz_id[GMT_Y] = ids[0+d_off];
 
-		if (cube) {	/* Allow for cube expansion by setting layer dimension to UNLIMITED */
+		if (cube) {	/* Allow for cube expansion by setting layer dimension to 0 (NC_UNLIMITED) */
 			strcpy (coord, (gmt_M_type (GMT, GMT_OUT, GMT_Z) & GMT_IS_RATIME) ? "time" : "z");
-			gmt_M_err_trap (nc_def_dim (ncid, coord, (size_t) NC_UNLIMITED, &dims[0]));
+			gmt_M_err_trap (nc_def_dim (ncid, coord, (size_t) n_layers, &dims[0]));
 			gmt_M_err_trap (nc_def_var (ncid, coord, NC_DOUBLE, 1, &dims[0], &HH->xyz_id[GMT_Z]));
 		}
 
@@ -595,12 +595,14 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		/* set deflation and chunking */
 		if (GMT->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic) {
 			/* set chunk size */
-			gmt_M_err_trap (nc_def_var_chunking (ncid, z_id, NC_CHUNKED, GMT->current.setting.io_nc4_chunksize));
+			size_t nc4_chunksize[3] = {0, 0, 0};
+			gmt_M_memcpy (&nc4_chunksize[cube], GMT->current.setting.io_nc4_chunksize, 2U, size_t);
+			gmt_M_err_trap (nc_def_var_chunking (ncid, z_id, NC_CHUNKED, nc4_chunksize));
 			/* set deflation level and shuffle for x, y[, z], and z[|w] variable */
 			if (GMT->current.setting.io_nc4_deflation_level) {
 				gmt_M_err_trap (nc_def_var_deflate (ncid, HH->xyz_id[GMT_X], true, true, GMT->current.setting.io_nc4_deflation_level));
 				gmt_M_err_trap (nc_def_var_deflate (ncid, HH->xyz_id[GMT_Y], true, true, GMT->current.setting.io_nc4_deflation_level));
-				if (cube) gmt_M_err_trap (nc_def_var_deflate (ncid, HH->xyz_id[GMT_Z], true, true, GMT->current.setting.io_nc4_deflation_level));
+				if (cube && n_layers == 0) gmt_M_err_trap (nc_def_var_deflate (ncid, HH->xyz_id[GMT_Z], true, true, GMT->current.setting.io_nc4_deflation_level));
 				gmt_M_err_trap (nc_def_var_deflate (ncid, z_id, true, true, GMT->current.setting.io_nc4_deflation_level));
 			}
 		} /* GMT->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic */
@@ -1533,15 +1535,15 @@ int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 }
 
 int gmt_nc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	return (gmtnc_grd_info (GMT, header, 'r', false));
+	return (gmtnc_grd_info (GMT, header, 'r', false, 0));
 }
 
 int gmt_nc_update_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	return (gmtnc_grd_info (GMT, header, 'u', false));
+	return (gmtnc_grd_info (GMT, header, 'u', false, 0));
 }
 
 int gmt_nc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	return (gmtnc_grd_info (GMT, header, 'w', false));
+	return (gmtnc_grd_info (GMT, header, 'w', false, 0));
 }
 
 int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
@@ -1768,7 +1770,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 
 	/* Write grid header without closing file afterwards */
 	gmtnc_setup_chunk_cache();
-	status = gmtnc_grd_info (GMT, header, 'W', false);
+	status = gmtnc_grd_info (GMT, header, 'W', false, 0);
 	if (status != NC_NOERR)
 		goto nc_err;
 
@@ -2105,7 +2107,7 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 
 		/* Write grid header without closing file afterwards so more items can be added */
 		gmtnc_setup_chunk_cache();
-		status = gmtnc_grd_info (GMT, header, 'W', true);
+		status = gmtnc_grd_info (GMT, header, 'W', true, n_layers_used);
 		if (status != NC_NOERR)
 			goto nc_err;
 
