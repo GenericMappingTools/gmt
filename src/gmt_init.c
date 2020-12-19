@@ -10267,11 +10267,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT_COMPAT_TRANSLATE ("MAP_FRAME_WIDTH");
 			break;
 		case GMTCASE_MAP_FRAME_WIDTH:
-			dval = gmt_M_to_inch (GMT, value);
-			if (dval > 0.0)
-				GMT->current.setting.map_frame_width = dval;
-			else
-				error = true;
+			GMT->current.setting.map_frame_width = gmt_M_to_inch (GMT, value);
 			break;
 		case GMTCASE_GRID_CROSS_SIZE_PRIMARY:
 			GMT_COMPAT_TRANSLATE ("MAP_GRID_CROSS_SIZE_PRIMARY");
