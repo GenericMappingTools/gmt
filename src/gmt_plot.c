@@ -272,7 +272,7 @@ struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle hea
  * for everybody. P. Wessel, Dec 11, 2020.
  */
 
-GMT_LOCAL bool gmtplot_is_latex (struct GMT_CTRL *GMT, const char *string) {
+bool gmt_text_is_latex (struct GMT_CTRL *GMT, const char *string) {
 	/* Detect if string contains Latex commands, i.e., "....@$Latex...@$ ..." */
 	char *p;
 	return ((p = strstr (string, "@$")) && strstr (&p[1], "@$"));
@@ -5035,11 +5035,39 @@ GMT_LOCAL unsigned int gmtplot_geo_vector_greatcircle (struct GMT_CTRL *GMT, dou
  *----------------------------------------------------------|
  */
 
+void gmt_map_text (struct GMT_CTRL *GMT, double x, double y, struct GMT_FONT *font, char *label, double angle, int just, unsigned int form) {
+	/* Function to plot single-line text in pstext.c */
+	struct PSL_CTRL *PSL= GMT->PSL;
+
+	if (gmt_text_is_latex (GMT, label)) {	/* Detected Latex commands, i.e., "....@$Latex...@$ ..." */
+		double w, h;
+		unsigned char *eps = NULL;
+		struct imageinfo header;
+
+		if ((eps = gmtplot_latex_eps (GMT, font, label, &header)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_text: Conversion of Latex \"%s\" to EPS failed\n", label);
+			return;	/* Done */
+		}
+		/* Scale up EPS dimensions by the ratio of label font size to Latex default size of 10p */
+		w = (header.width  / 72.0) * (font->size / 10.0);
+		h = (header.height / 72.0) * (font->size / 10.0);
+		/* Place EPS file as label, then free eps */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_text: Conversion of Latex \"%s\" gave dimensions %g x %g\n", label, w, h);
+		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
+		PSL_setorigin (PSL, x, y, angle, PSL_FWD);		/* Move to desired point and possibly rotate to angle */
+		PSL_plotepsimage (PSL, 0.0, 0.0, w, h, just, eps, &header);	/* Place the EPS plot */
+		PSL_command (PSL, "U\n");	/* Close up the block */
+		PSL_free (eps);
+	}
+	else	/* Regular text label */
+		PSL_plottext (PSL, x, y, font->size, label, angle, just, form);
+}
+
 void gmt_map_label (struct GMT_CTRL *GMT, double x, double y, char *label, double angle, int just, unsigned int axis, bool below) {
 	/* Function to use to set axis labels for Cartesian basemaps and colorbars */
 	struct PSL_CTRL *PSL= GMT->PSL;
 
-	if (gmtplot_is_latex (GMT, label)) {	/* Detected Latex commands, i.e., "....@$Latex...@$ ..." */
+	if (gmt_text_is_latex (GMT, label)) {	/* Detected Latex commands, i.e., "....@$Latex...@$ ..." */
 		bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y));	/* If the current point has already been placed */
 		bool set_L_off = (axis == GMT_X && !below);	/* May need to ensure extra offset for title */
 		double w, h;
@@ -5851,7 +5879,7 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 
 	if (!GMT->current.map.frame.header[0]) return;	/* No title given */
 
-	if (gmtplot_is_latex (GMT, GMT->current.map.frame.header)) {
+	if (gmt_text_is_latex (GMT, GMT->current.map.frame.header)) {
 		/* Detected Latex commands, i.e., "....@$Latex...@$ ..." */
 		double w, h;
 		unsigned char *eps = NULL;

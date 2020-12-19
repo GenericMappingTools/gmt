@@ -296,6 +296,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   @!<char1><char2> makes one composite character.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   @. prints the degree symbol.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   @@ prints the @ sign itself.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   @$<Latex expression>@$ may be used (except for -M).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use @a|c|e|i|n|o|s|u|A|C|E|N|O|U for accented European characters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t(See module documentation for more information).\n\n");
 
@@ -1232,6 +1233,18 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			gmtlib_enforce_rgb_triplets (GMT, in_txt, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 			if (Ctrl->Q.active) gmt_str_setcase (GMT, in_txt, Ctrl->Q.mode);
 			use_text = pstext_get_label (GMT, Ctrl, in_txt);	/* In case there are words */
+			if (gmt_text_is_latex (GMT, use_text)) {
+				if (T.boxflag & 3) {
+					GMT_Report (API, GMT_MSG_WARNING, "Record %d has Latex which cannot be used with box filling - skipping\n", n_read);
+					gmt_M_str_free (use_text);
+					continue;
+				}
+				else if (Ctrl->G.mode) {
+					GMT_Report (API, GMT_MSG_WARNING, "Record %d has Latex which cannot be used with -G - skipping\n", n_read);
+					gmt_M_str_free (use_text);
+					continue;
+				}
+			}
 			n_read++;
 			if (Ctrl->F.get_xy_from_justify) {
 				plot_x = coord[GMT_X], plot_y = coord[GMT_Y];
@@ -1339,7 +1352,8 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 				m++;
 			}
 			else {
-				PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, fmode);
+				gmt_map_text (GMT, plot_x, plot_y, &T.font, curr_txt, T.paragraph_angle, T.block_justify, fmode);
+				//PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, fmode);
 			}
 			if (Ctrl->A.active) T.paragraph_angle = save_angle;	/* Restore original angle */
 			gmt_M_str_free (use_text);
