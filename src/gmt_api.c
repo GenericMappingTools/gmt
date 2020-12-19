@@ -5119,6 +5119,72 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 	return (G_obj);	/* Pass back out what we have so far */
 }
 
+GMT_LOCAL void gmtapi_cube_set_units (struct GMT_CTRL *GMT, struct GMT_CUBE *U) {
+	/* Set unit strings for cube coordinates x, y and z based on
+	   output data types for columns 0, 1, and 2.
+	*/
+	unsigned int i;
+	char *string[4] = {NULL, NULL, NULL, NULL}, unit[GMT_GRID_UNIT_LEN80] = {""};
+	char date[GMT_LEN16] = {""}, clock[GMT_LEN16] = {""};
+	struct GMT_GRID_HEADER *header = U->header;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
+
+	/* Copy pointers to unit strings */
+	string[0] = header->x_units;
+	string[1] = header->y_units;
+	string[2] = U->units;
+	string[3] = header->z_units;
+
+	/* Use input data type as backup for output data type */
+	for (i = 0; i < 4; i++)
+		if (gmt_M_type (GMT, GMT_OUT, i) == GMT_IS_UNKNOWN) GMT->current.io.col_type[GMT_OUT][i] = GMT->current.io.col_type[GMT_IN][i];
+
+	/* Catch some anomalies */
+	if (gmt_M_type (GMT, GMT_OUT, GMT_X) == GMT_IS_LAT && gmt_M_type (GMT, GMT_OUT, GMT_Y) == GMT_IS_LAT) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Output type for X-coordinate of grid %s is LAT. Replaced by LON.\n", HH->name);
+		gmt_set_column_type (GMT, GMT_OUT, GMT_X, GMT_IS_LON);
+
+	}
+	if (gmt_M_type (GMT, GMT_OUT, GMT_Y) == GMT_IS_LON && gmt_M_type (GMT, GMT_OUT, GMT_X) == GMT_IS_LON) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Output type for Y-coordinate of grid %s is LON. Replaced by LAT.\n", HH->name);
+		gmt_set_column_type (GMT, GMT_OUT, GMT_Y, GMT_IS_LAT);
+	}
+
+	/* Set unit strings one by one based on output type - or fall through if Cartesian floats */
+	for (i = 0; i < 4; i++) {
+		switch (gmt_M_type (GMT, GMT_OUT, i)) {
+			case GMT_IS_LON:
+				strcpy (string[i], "longitude [degrees_east]"); break;
+			case GMT_IS_LAT:
+				strcpy (string[i], "latitude [degrees_north]"); break;
+			case GMT_IS_ABSTIME:
+			case GMT_IS_RELTIME:
+			case GMT_IS_RATIME:
+				/* Determine time unit */
+				switch (GMT->current.setting.time_system.unit) {
+					case 'y':
+						strcpy (unit, "years"); break;
+					case 'o':
+						strcpy (unit, "months"); break;
+					case 'd':
+						strcpy (unit, "days"); break;
+					case 'h':
+						strcpy (unit, "hours"); break;
+					case 'm':
+						strcpy (unit, "minutes"); break;
+					default:
+						strcpy (unit, "seconds"); break;
+				}
+				gmt_format_calendar (GMT, date, clock, &GMT->current.io.date_output, &GMT->current.io.clock_output, false, 1, 0.0);
+				snprintf (string[i], GMT_GRID_UNIT_LEN80, "time [%s since %s %s]", unit, date, clock);
+				/* Warning for non-double cubes */
+				if (i == 3 && GMT->session.grdformat[header->type][1] != 'd')
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Use double precision output cube to avoid loss of significance of time coordinate.\n");
+				break;
+		}
+	}
+}
+
 /*! Writes out a single grid to destination */
 GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_GRID *G_obj) {
 	int item, error;
@@ -5894,7 +5960,7 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 				S_obj->region = false;
 	}
 	if (mode & GMT_GRID_IS_GEO) gmt_set_geographic (GMT, GMT_OUT);	/* From API to tell cube is geographic */
-	gmtlib_grd_set_units (GMT, U_obj->header);	/* Ensure unit strings are set, regardless of destination */
+	gmtapi_cube_set_units (GMT, U_obj);	/* Ensure unit strings are set, regardless of destination */
 
 	method = gmtapi_set_method (S_obj);	/* Get the actual method to use since may be MATRIX or VECTOR masquerading as GRID */
 	switch (method) {

@@ -2116,10 +2116,32 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 			nc_put_att_text (HH->ncid, HH->z_id, "long_name", strlen(C->name), C->name);
 		else
 			nc_put_att_text (HH->ncid, HH->z_id, "long_name", 4U, "cube");
-		if (C->units[0])
-			nc_put_att_text (HH->ncid, HH->xyz_id[GMT_Z], "long_name", strlen(C->units), C->units);
-		else
+		if (C->units[0]) {
+			int i = 0, j = 0;
+			bool copy = false;
+			char name[GMT_GRID_UNIT_LEN80], units[GMT_GRID_UNIT_LEN80];
+			strncpy (name, C->units, GMT_GRID_UNIT_LEN80-1);
+			units[0] = '\0';
+			for (i = 0; i < GMT_GRID_UNIT_LEN80 && name[i]; i++) {
+				if (name[i] == ']') copy = false, units[j] = '\0';
+				if (copy) units[j++] = name[i];
+				if (name[i] == '[') {
+					name[i] = '\0';
+					if (i > 0 && name[i-1] == ' ') name[i-1] = '\0';
+					copy = true;
+				}
+			}
+			if (name[0]) nc_put_att_text (HH->ncid, HH->xyz_id[GMT_Z], "long_name", strlen(name), name);
+			if (units[0]) nc_put_att_text (HH->ncid, HH->xyz_id[GMT_Z], "units", strlen(units), units);
+			if (name[0] && strstr (name, "time"))
+				nc_put_att_text (HH->ncid, HH->xyz_id[GMT_Z], "standard_name", 4U, "time");
+			else if (name[0] == '\0')
+				nc_put_att_text (HH->ncid, HH->xyz_id[GMT_Z], "long_name", 1U, "z");
+		}
+		else	/* No information about z, so generic z */
 			nc_put_att_text (HH->ncid, HH->xyz_id[GMT_Z], "long_name", 1U, "z");
+		if (gmt_M_is_geographic (GMT, GMT_OUT))
+			nc_put_att_text (HH->ncid, HH->xyz_id[GMT_Z], "axis", 1, "Z");
 		gmt_M_err_trap (nc_put_att_double (HH->ncid, HH->xyz_id[GMT_Z], "actual_range", NC_DOUBLE, 2U, C->z_range));
 
 		gmt_M_err_trap (nc_enddef (HH->ncid));	/* Belatedly end definition mode */

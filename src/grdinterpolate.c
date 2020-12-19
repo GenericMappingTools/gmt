@@ -314,7 +314,7 @@ GMT_LOCAL bool grdinterpolate_equidistant_levels (struct GMT_CTRL *GMT, double *
 
 EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	char file[PATH_MAX] = {""}, cube_layer[GMT_LEN64] = {""}, *nc_z_named = NULL;
-	bool equi_levels, convert_to_cube = false, z_is_abstime = false;
+	bool equi_levels, convert_to_cube = false, z_is_abstime = false, got_cube = false;
 	int error = 0;
 	unsigned int int_mode, row, col, level_type, dtype = 0;
 	uint64_t n_layers = 0, k, node, start_k, stop_k, n_layers_used, *this_dim = NULL, dims[3] = {0, 0, 0};
@@ -367,9 +367,20 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		if (!(Ctrl->T.active || Ctrl->E.active || Ctrl->S.active)) convert_to_cube = true;	/* Just want to build cube from input stack */
 	}
 	else if (gmt_M_file_is_memory (Ctrl->In.file[0])) {	/* Got a memory reference */
-		C[GMT_IN] = GMT_Read_VirtualFile (API, Ctrl->In.file[0]);
-		n_layers = C[GMT_IN]->header->n_bands;
-		level = C[GMT_IN]->z;
+		if (Ctrl->In.n_files == 1) {	/* Got one memory reference so it must be a cube */
+			if (Ctrl->In.file[0][GMTAPI_OBJECT_FAMILY_START] != 'U') {
+				GMT_Report (API, GMT_MSG_ERROR, "Input memory reference is not a cube!\n");
+				Return (API->error);
+			}
+			C[GMT_IN] = GMT_Read_VirtualFile (API, Ctrl->In.file[0]);
+			n_layers = C[GMT_IN]->header->n_bands;
+			level = C[GMT_IN]->z;
+			got_cube = true;
+		}
+		else {	/* If many references given then clearly we are missing -Z */
+			GMT_Report (API, GMT_MSG_ERROR, "Multiple grid memory references requires -Z!\n");
+			Return (API->error);
+		}
 	}
 	else {	/* See if we got a 3D netCDF data cube; if so return number of layers and and the levels array */
 		nc_z_named = strchr (Ctrl->In.file[0], '?');	/* Maybe given a specific variable? */
@@ -380,6 +391,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		if ((error = gmt_nc_read_cube_info (GMT, Ctrl->In.file[0], w_range, &n_layers, &level))) {
 			Return (error);
 		}
+		got_cube = true;
 	}
 
 	if (n_layers == 1) {
@@ -387,6 +399,10 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
+	if (got_cube && !(Ctrl->E.active || Ctrl->S.active || Ctrl->T.active)) {	/* If given a cube we requires other options */
+		GMT_Report (API, GMT_MSG_ERROR, "Data cube read but none of -E, -S -T were given\n");
+		Return (GMT_RUNTIME_ERROR);
+	}
 	/* Create output level array, if selected */
 	if (Ctrl->T.active && gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -T: Unable to set up output level array\n");

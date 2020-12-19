@@ -1188,7 +1188,7 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	string[1] = header->y_units;
 	string[2] = header->z_units;
 
-	/* Use input data type as backup fr output data type */
+	/* Use input data type as backup for output data type */
 	for (i = 0; i < 3; i++)
 		if (gmt_M_type (GMT, GMT_OUT, i) == GMT_IS_UNKNOWN) GMT->current.io.col_type[GMT_OUT][i] = GMT->current.io.col_type[GMT_IN][i];
 
