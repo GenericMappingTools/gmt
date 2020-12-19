@@ -87,6 +87,7 @@ Required Arguments
     Determines the name of the final movie file and a sub-directory with frame images (but see **-W**).
     **Note**: If the subdirectory exist then we exit immediately.  You are therefore required to remove any
     old directory by that name first.  This is done to prevent the accidental loss of valuable data.
+    You can prevent this issue by using **-Z** to delete the directory after a successful run.
 
 .. _-T:
 
