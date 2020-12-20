@@ -421,7 +421,7 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 /*	GMT_LINEAR PROJECTION MAP BOUNDARY	*/
 
 GMT_LOCAL void gmtplot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
-	unsigned int form, cap = PSL->internal.line_cap;
+	unsigned int cap = PSL->internal.line_cap;
 	double x_length, y_length;
 
 	x_length = GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO];
@@ -6104,7 +6104,7 @@ GMT_LOCAL bool gmtplot_z_axis_side (struct GMT_CTRL *GMT, unsigned int axis, uns
 
 void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 	/* Mode means: 1 = background walls and title, 2 = foreground walls and axis, 3 = all */
-	unsigned int fore, back, old_plane, form;
+	unsigned int fore, back, old_plane;
 	double nesw[4], old_level, xx, yy, az;
 	struct PSL_CTRL *PSL= GMT->PSL;
 
