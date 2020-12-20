@@ -5046,14 +5046,14 @@ void gmt_map_text (struct GMT_CTRL *GMT, double x, double y, struct GMT_FONT *fo
 		struct imageinfo header;
 
 		if ((eps = gmtplot_latex_eps (GMT, font, label, &header)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_text: Conversion of LaTeX \"%s\" to EPS failed\n", label);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_text: Conversion of LaTeX to EPS failed\n");
 			return;	/* Done */
 		}
 		/* Scale up EPS dimensions by the ratio of label font size to LaTeX default size of 10p */
 		w = (header.width  / 72.0) * (font->size / 10.0);
 		h = (header.height / 72.0) * (font->size / 10.0);
 		/* Place EPS file as label, then free eps */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_text: Conversion of LaTeX \"%s\" gave dimensions %g x %g\n", label, w, h);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_text: Conversion of LaTeX gave dimensions %g x %g\n", w, h);
 		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
 		PSL_setorigin (PSL, x, y, angle, PSL_FWD);		/* Move to desired point and possibly rotate to angle */
 		PSL_plotepsimage (PSL, 0.0, 0.0, w, h, just, eps, &header);	/* Place the EPS plot */
@@ -5076,14 +5076,14 @@ void gmt_map_label (struct GMT_CTRL *GMT, double x, double y, char *label, doubl
 		struct imageinfo header;
 
 		if ((eps = gmtplot_latex_eps (GMT, &GMT->current.setting.font_label, label, &header)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_label: Conversion of LaTeX \"%s\" to EPS failed\n", label);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_label: Conversion of LaTeX label to EPS failed\n");
 			return;	/* Done */
 		}
 		/* Scale up EPS dimensions by the ratio of label font size to LaTeX default size of 10p */
 		w = (header.width / 72.0)  * (GMT->current.setting.font_label.size / 10.0);
 		h = (header.height / 72.0) * (GMT->current.setting.font_label.size / 10.0);
 		/* Place EPS file as label, then free eps */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_label: Conversion of LaTeX \"%s\" gave dimensions %g x %g\n", label, w, h);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_label: Conversion of LaTeX label gave dimensions %g x %g\n", w, h);
 		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
 		/* If we plot label below the axis then we must adjust for the fact that the base y-coordinate is based on label font height of "M",
 		 * but now we have an EPS image of given (and presumably larger) height.  So we adjust by the difference in those two values */
@@ -5886,10 +5886,10 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 		unsigned char *eps = NULL;
 		struct imageinfo header;
 		if ((eps = gmtplot_latex_eps (GMT, &GMT->current.setting.font_title, GMT->current.map.frame.header, &header)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conversion of LaTeX \"%s\" to EPS failed\n", GMT->current.map.frame.header);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conversion of LaTeX header to EPS failed\n");
 			return;	/* Done */
 		}
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_title: Conversion of LaTeX \"%s\" gave dimensions %g x %g\n", GMT->current.map.frame.header, w, h);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_title: Conversion of LaTeX header gave dimensions %g x %g\n", w, h);
 		/* Scale up EPS dimensions by the ratio of title font size to LaTeX default size of 10p */
 		w = (header.width / 72.0)  * (GMT->current.setting.font_title.size / 10.0);
 		h = (header.height / 72.0) * (GMT->current.setting.font_title.size / 10.0);
