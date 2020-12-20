@@ -10864,7 +10864,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 					case 'o':	f = 30;	break;
 					default:	f = 1;	break;
 				}
-				GMT->current.setting.refresh_time = atoi (lower_value) * f;
+				GMT->current.setting.refresh_time = (unsigned int )(atoi (lower_value) * f);
 				if (GMT->current.setting.refresh_time == 0)	/* 0 means no auto download */
 					GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			}
