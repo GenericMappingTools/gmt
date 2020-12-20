@@ -240,7 +240,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 
 	unsigned int j, pos = 0, n_errors = 0, n_files = 0;
 	int n_par, err_npar = 0, nBELL = 0, nCIL = 0, nPRI = 0, nCONE = 0, nELL = 0, nPIR = 0, nSPHERE = 0;
-	char ptr[GMT_LEN256] = {""};
 	char p[GMT_LEN16] = {""}, p2[GMT_LEN16] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -469,7 +468,7 @@ GMT_LOCAL int read_xyz(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, str
 		return GMT->parent->error;
 
 	Ctrl->triang = gmt_M_memory (GMT, NULL, n_alloc, struct GMTGRAVMAG3D_XYZ);
-	Ctrl->T.m_var = (n_cols == 3) ? false : true;		/* x,y,z */ 
+	Ctrl->T.m_var = (n_cols == 3) ? false : true;		/* x,y,z */
 	if (n_cols == 4) {
 		Ctrl->T.m_var1 = true;
 		Ctrl->box.mag_int = gmt_M_memory (GMT, NULL, n_alloc, double);
