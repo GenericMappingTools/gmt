@@ -1353,8 +1353,8 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, cont);
 		Return (GMT_RUNTIME_ERROR); /* Original copy of grid used for contouring */
 	}
-	n_edges = G->header->n_rows * (urint (ceil (G->header->n_columns / 16.0)));
-	edge = gmt_M_memory (GMT, NULL, n_edges, unsigned int);	/* Bit flags used to keep track of contours */
+
+	edge = gmt_contour_edge_init (GMT, G->header, &n_edges);
 
 	if (Ctrl->D.active) {
 		uint64_t dim[GMT_DIM_SIZE] = {0, 0, 0, 3};
@@ -1565,6 +1565,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 		if (ns < 0) Return (-ns);
 	}
+	gmt_M_free (GMT, edge);
 
 	if (make_plot && n_cont_attempts == 0) GMT_Report (API, GMT_MSG_INFORMATION, "No contours drawn, check your -A, -C, -L settings?\n");
 
@@ -1630,7 +1631,6 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	if (Ctrl->contour.save_labels) {	/* Close file with the contour label locations (lon, lat, angle, label) */
 		if ((error = gmt_contlabel_save_end (GMT, &Ctrl->contour)) != 0) {
-			gmt_M_free (GMT, edge);
 			gmt_M_free (GMT, cont);
 			Return (error);
 		}
@@ -1643,7 +1643,6 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (GMT_Destroy_Data (GMT->parent, &G_orig) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to free G_orig\n");
 	}
-	gmt_M_free (GMT, edge);
 	gmt_M_free (GMT, cont);
 
 	Return (GMT_NOERROR);

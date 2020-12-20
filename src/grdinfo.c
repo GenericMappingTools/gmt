@@ -620,7 +620,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			y = gmt_grd_coord (GMT, G->header, GMT_Y);
 		
 			if (Ctrl->E.mode == GMT_Y) {
-				gmt_M_row_loop (GMT, G, row) {	/* Along each row; y is the monotonically increaseing coordinate */
+				gmt_M_row_loop (GMT, G, row) {	/* Along each row; y is the monotonically increasing coordinate */
 					out[GMT_Y] = y[row];
 					z = -FLT_MAX * Ctrl->E.val;
 					gmt_M_col_loop (GMT, G, row, col, ij) {	/* Loop across this row */
