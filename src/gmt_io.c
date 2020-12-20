@@ -9142,7 +9142,7 @@ int gmt_mkdir (const char *path)
 
 	/* Iterate the string */
 	p = (_path[1] == ':') ? _path + 3 : _path + 1;  /* Skip any leading X: drive designators */
-	while (*p) { /* Create intermediate directoreis recursively */
+	while (*p) { /* Create intermediate directories recursively */
 		if (*p == '/' || *p == '\\') {	/* Found start of next directory */
 			sep = *p;	/* What separator did we use? */
 			*p = '\0';	/* Temporarily truncate */

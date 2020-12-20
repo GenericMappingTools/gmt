@@ -791,8 +791,8 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	bool get_contours, bad, pen_set, begin, saddle, drape_resample = false;
 	bool nothing_inside = false, use_intensity_grid, do_G_reading = true;
 
-	unsigned int c, nk, n4, row, col, n_edges, d_reg[3], i_reg = 0, id[2], good;
-	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, *edge = NULL;
+	unsigned int c, nk, n4, row, col, d_reg[3], i_reg = 0, id[2], good;
+	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0;
 
 	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, way, bin_inc[4], ij_inc[4], error = 0;
 	int start[2], stop[2], inc[2];
@@ -1063,10 +1063,11 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	y_inc[0] = y_inc[1] = 0.0;	y_inc[2] = y_inc[3] = Z->header->inc[GMT_Y];
 
 	if (get_contours) {	/* Need to find contours */
+		unsigned int n_edges, *edge = NULL;
 		struct GMT_GRID *Z_orig = NULL;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Find contours\n");
-		n_edges = Z->header->n_rows * (urint (ceil (Z->header->n_columns / 16.0)));
-		edge = gmt_M_memory (GMT, NULL, n_edges, unsigned int);
+
+		edge = gmt_contour_edge_init (GMT, Z->header, &n_edges);
 		binij = gmt_M_memory (GMT, NULL, Topo->header->nm, struct GRDVIEW_BIN);
 		if ((Z_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, Z)) == NULL) {
 			gmt_M_free (GMT, edge);		gmt_M_free (GMT, binij);

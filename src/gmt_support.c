@@ -10855,6 +10855,15 @@ void gmt_symbol_free (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S) {
 		gmtsupport_decorate_free (GMT, &(S->D));
 }
 
+unsigned int *gmt_contour_edge_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned int *n_edges) {
+	/* Create and return the edge bit flag array used to keep track of contours and return now many edges */
+	unsigned int *edge = NULL;
+	*n_edges = header->n_rows * (urint (ceil (header->n_columns / 16.0)));
+	edge = gmt_M_memory (GMT, NULL, *n_edges, unsigned int);
+	if (edge == NULL) *n_edges = 0;	/* Disaster, but at least return consistent values */
+	return (edge);
+}
+
 /*! . */
 int64_t gmt_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int smooth_factor, unsigned int int_scheme, int orient, unsigned int *edge, bool *first, double **x, double **y) {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
