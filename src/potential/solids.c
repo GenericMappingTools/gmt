@@ -33,7 +33,7 @@ int prism(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, int nb) {
 	Ctrl->raw_mesh = gmt_M_memory (GMT, Ctrl->raw_mesh, Ctrl->n_raw_triang + 12, struct GMTGRAVMAG3D_RAW);
 	z_top = -(z_c + c);		z_bot = -z_c ;		/* -1 because Z is positive down in Okabe */
 
-	/* vertex of top rectangle *
+	/* vertex of top rectangle */
 		/* first triangle */
 	Ctrl->raw_mesh[i_tri].t1[0] = -a/2 + x0;	Ctrl->raw_mesh[i_tri].t1[1] =  b/2 - y0;	Ctrl->raw_mesh[i_tri].t1[2] = z_top;
 	Ctrl->raw_mesh[i_tri].t2[0] = -a/2 + x0;	Ctrl->raw_mesh[i_tri].t2[1] = -b/2 - y0;	Ctrl->raw_mesh[i_tri].t2[2] = z_top;
@@ -104,7 +104,7 @@ int prism(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, int nb) {
 }
 
 int five_psoid(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, int body_type, int nb, bool cone, bool piram, bool sino, bool hemi) {
-/*	Constructs either a sphere, ellipsoid, cone, pyramid, or a bell
+/*	Constructs either a sphere, ellipsoid, cone, pyramid, or a bell */
 /*	as a union of triangular facets. Returns number of triangles. */
 	int i, j, j1, k, l, m, m1, m2, n = 0, n_tri, i_tri, npts_circ, n_slices, n_sigmas = 2;
 	bool first = true;
