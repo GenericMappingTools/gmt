@@ -296,7 +296,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   @!<char1><char2> makes one composite character.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   @. prints the degree symbol.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   @@ prints the @ sign itself.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   @$<Latex expression>@$ may be used (except for -M).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   @$<LaTeX expression>@$ may be used (except for -M).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use @a|c|e|i|n|o|s|u|A|C|E|N|O|U for accented European characters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t(See module documentation for more information).\n\n");
 
@@ -1235,12 +1235,12 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			use_text = pstext_get_label (GMT, Ctrl, in_txt);	/* In case there are words */
 			if (gmt_text_is_latex (GMT, use_text)) {
 				if (T.boxflag & 3) {
-					GMT_Report (API, GMT_MSG_WARNING, "Record %d has Latex which cannot be used with box filling - skipping\n", n_read);
+					GMT_Report (API, GMT_MSG_WARNING, "Record %d has LaTeX which cannot be used with box filling - skipping\n", n_read);
 					gmt_M_str_free (use_text);
 					continue;
 				}
 				else if (Ctrl->G.mode) {
-					GMT_Report (API, GMT_MSG_WARNING, "Record %d has Latex which cannot be used with -G - skipping\n", n_read);
+					GMT_Report (API, GMT_MSG_WARNING, "Record %d has LaTeX which cannot be used with -G - skipping\n", n_read);
 					gmt_M_str_free (use_text);
 					continue;
 				}

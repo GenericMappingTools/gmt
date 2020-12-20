@@ -21,10 +21,10 @@ sequence "@!\\227@~\\145@~" will print the epsilon character (octal code
 over-printed dot (octal code \\227 from the current font, assuming the
 ISOLatin1 character set).
 
-Latex Expressions
+LaTeX Expressions
 -----------------
 
-Except for paragraph mode (**-M**), your text may include Latex equations.
+Except for paragraph mode (**-M**), your text may include LaTeX equations.
 These must be enclosed by the marker @$.  Such lines will be converted to
 EPS via system commands latex and dvips, which must be available on your
 system (as well as any required fonts).

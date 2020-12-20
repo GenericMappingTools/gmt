@@ -266,21 +266,21 @@ struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle hea
 
 /* Local functions */
 
-/* Converting Latex strings to EPS files.  This is based on the discussion we had at
+/* Converting LaTeX strings to EPS files.  This is based on the discussion we had at
  * https://github.com/GenericMappingTools/gmt/issues/4563#issuecomment-743374160.
  * As long as the user has latex, dvips and required fonts installed this should work
  * for everybody. P. Wessel, Dec 11, 2020.
  */
 
 bool gmt_text_is_latex (struct GMT_CTRL *GMT, const char *string) {
-	/* Detect if string contains Latex commands, i.e., "....@$Latex...@$ ..." */
+	/* Detect if string contains LaTeX commands, i.e., "....@$LaTeX...@$ ..." */
 	char *p;
 	if (string == NULL || string[0] == '\0') return false;
 	return ((p = strstr (string, "@$")) && strstr (&p[1], "@$"));
 }
 
 GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FONT *F, const char *string, struct imageinfo *h) {
-	/* Convert a string containing Latex syntax to an EPS image */
+	/* Convert a string containing LaTeX syntax to an EPS image */
 	unsigned int i, o;
 	int error = 0;
 	char *text = NULL, *tmpdir = NULL, *font, *code;
@@ -293,7 +293,7 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 		GMT_Report (API, GMT_MSG_DEBUG, "latex found.\n");
 	}
 	else {
-		GMT_Report (API, GMT_MSG_ERROR, "latex is not installed or not in your executable path - cannot process Latex to DVI.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "latex is not installed or not in your executable path - cannot process LaTeX to DVI.\n");
 		return NULL;
 	}
 	if (gmt_check_executable (GMT, "dvips", "--version", NULL, NULL)) {
@@ -326,10 +326,10 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to change directory to %s - exiting.\n", tmpdir);
 		return NULL;
 	}	
-	/* Create Latex file */
+	/* Create LaTeX file */
 	sprintf (file, "gmt_eq.tex");
 	if ((fp = fopen (file, "w")) == NULL) {
-		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create Latex file %s.\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create LaTeX file %s.\n", file);
 		return NULL;
 	}
 
@@ -356,7 +356,7 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 		case 34: font = "zapfding";	code = "pzd";	break;
 		default: font = code = NULL;	/* Go with default */
 	}
-	/* Write Latex file content */
+	/* Write LaTeX file content */
 	fprintf (fp, "\\documentclass{article}\n");	/* Default to 10p font size */
 	if (font) { /* Impose a selected font family, otherwise take default Computer Modern */
 		GMT_Report (API, GMT_MSG_DEBUG, "gmtplot_latex_eps: Selecting font %s [%s].\n", font, code);
@@ -5040,20 +5040,20 @@ void gmt_map_text (struct GMT_CTRL *GMT, double x, double y, struct GMT_FONT *fo
 	/* Function to plot single-line text in pstext.c */
 	struct PSL_CTRL *PSL= GMT->PSL;
 
-	if (gmt_text_is_latex (GMT, label)) {	/* Detected Latex commands, i.e., "....@$Latex...@$ ..." */
+	if (gmt_text_is_latex (GMT, label)) {	/* Detected LaTeX commands, i.e., "....@$LaTeX...@$ ..." */
 		double w, h;
 		unsigned char *eps = NULL;
 		struct imageinfo header;
 
 		if ((eps = gmtplot_latex_eps (GMT, font, label, &header)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_text: Conversion of Latex \"%s\" to EPS failed\n", label);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_text: Conversion of LaTeX \"%s\" to EPS failed\n", label);
 			return;	/* Done */
 		}
-		/* Scale up EPS dimensions by the ratio of label font size to Latex default size of 10p */
+		/* Scale up EPS dimensions by the ratio of label font size to LaTeX default size of 10p */
 		w = (header.width  / 72.0) * (font->size / 10.0);
 		h = (header.height / 72.0) * (font->size / 10.0);
 		/* Place EPS file as label, then free eps */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_text: Conversion of Latex \"%s\" gave dimensions %g x %g\n", label, w, h);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_text: Conversion of LaTeX \"%s\" gave dimensions %g x %g\n", label, w, h);
 		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
 		PSL_setorigin (PSL, x, y, angle, PSL_FWD);		/* Move to desired point and possibly rotate to angle */
 		PSL_plotepsimage (PSL, 0.0, 0.0, w, h, just, eps, &header);	/* Place the EPS plot */
@@ -5068,7 +5068,7 @@ void gmt_map_label (struct GMT_CTRL *GMT, double x, double y, char *label, doubl
 	/* Function to use to set axis labels for Cartesian basemaps and colorbars */
 	struct PSL_CTRL *PSL= GMT->PSL;
 
-	if (gmt_text_is_latex (GMT, label)) {	/* Detected Latex commands, i.e., "....@$Latex...@$ ..." */
+	if (gmt_text_is_latex (GMT, label)) {	/* Detected LaTeX commands, i.e., "....@$LaTeX...@$ ..." */
 		bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y));	/* If the current point has already been placed */
 		bool set_L_off = (axis == GMT_X && !below);	/* May need to ensure extra offset for title */
 		double w, h;
@@ -5076,14 +5076,14 @@ void gmt_map_label (struct GMT_CTRL *GMT, double x, double y, char *label, doubl
 		struct imageinfo header;
 
 		if ((eps = gmtplot_latex_eps (GMT, &GMT->current.setting.font_label, label, &header)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_label: Conversion of Latex \"%s\" to EPS failed\n", label);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_label: Conversion of LaTeX \"%s\" to EPS failed\n", label);
 			return;	/* Done */
 		}
-		/* Scale up EPS dimensions by the ratio of label font size to Latex default size of 10p */
+		/* Scale up EPS dimensions by the ratio of label font size to LaTeX default size of 10p */
 		w = (header.width / 72.0)  * (GMT->current.setting.font_label.size / 10.0);
 		h = (header.height / 72.0) * (GMT->current.setting.font_label.size / 10.0);
 		/* Place EPS file as label, then free eps */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_label: Conversion of Latex \"%s\" gave dimensions %g x %g\n", label, w, h);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_label: Conversion of LaTeX \"%s\" gave dimensions %g x %g\n", label, w, h);
 		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
 		/* If we plot label below the axis then we must adjust for the fact that the base y-coordinate is based on label font height of "M",
 		 * but now we have an EPS image of given (and presumably larger) height.  So we adjust by the difference in those two values */
@@ -5881,16 +5881,16 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 	if (!GMT->current.map.frame.header[0]) return;	/* No title given */
 
 	if (gmt_text_is_latex (GMT, GMT->current.map.frame.header)) {
-		/* Detected Latex commands, i.e., "....@$Latex...@$ ..." */
+		/* Detected LaTeX commands, i.e., "....@$LaTeX...@$ ..." */
 		double w, h;
 		unsigned char *eps = NULL;
 		struct imageinfo header;
 		if ((eps = gmtplot_latex_eps (GMT, &GMT->current.setting.font_title, GMT->current.map.frame.header, &header)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conversion of Latex \"%s\" to EPS failed\n", GMT->current.map.frame.header);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conversion of LaTeX \"%s\" to EPS failed\n", GMT->current.map.frame.header);
 			return;	/* Done */
 		}
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_title: Conversion of Latex \"%s\" gave dimensions %g x %g\n", GMT->current.map.frame.header, w, h);
-		/* Scale up EPS dimensions by the ratio of title font size to Latex default size of 10p */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_title: Conversion of LaTeX \"%s\" gave dimensions %g x %g\n", GMT->current.map.frame.header, w, h);
+		/* Scale up EPS dimensions by the ratio of title font size to LaTeX default size of 10p */
 		w = (header.width / 72.0)  * (GMT->current.setting.font_title.size / 10.0);
 		h = (header.height / 72.0) * (GMT->current.setting.font_title.size / 10.0);
 		/* Place EPS file as title */
