@@ -382,18 +382,25 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 		return NULL;
 	}
 #ifdef _WIN32
-	fprintf (fp, "latex gmt_eq.tex > NUL\ndvips -q -E gmt_eq.dvi -o equation.eps\n");
-	fprintf (fp, "del gmt_eq.*\n");
+	fprintf (fp, "latex -interaction=nonstopmode gmt_eq.tex > NUL\ndvips -q -E gmt_eq.dvi -o equation.eps\n");
 #else
-	fprintf (fp, "latex gmt_eq.tex > /dev/null\ndvips -q -E gmt_eq.dvi -o equation.eps\n");
-	fprintf (fp, "rm -f gmt_eq.*\n");
+	fprintf (fp, "latex -interaction=nonstopmode gmt_eq.tex > /dev/null\ndvips -q -E gmt_eq.dvi -o equation.eps\n");
 #endif
 	fclose (fp);
 
 	/* Run the script via a system call */
 	if ((error = system (cmd))) {
 		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Running \"%s\" returned error %d.\n", cmd, error);
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Please run it manually to learn what LaTeX packages you are missing.\n", cmd, error);
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: The script and logs can be found here: %s\n", tmpdir);
 		return NULL;
+	}
+	else {	/* Success, now remove the temp files but not worry about the return code here */
+#ifdef _WIN32
+		system ("del gmt_eq.*");
+#else
+		system ("rm -f gmt_eq.*");
+#endif
 	}
 	/* Retrieve the EPS code */
 	gmt_M_memset (h, 1U, struct imageinfo); /* Initialize information struct */
