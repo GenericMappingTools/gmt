@@ -24,7 +24,8 @@ Appendix :ref:`Chart-Octal-Codes-for-Chars` in the GMT Technical Reference and C
 **-G** or **-W** options, a rectangle underlying the text may be plotted
 (does not work for strings with sub/super scripts, symbols, or composite
 characters, except in paragraph mode (**-M**)).  Finally, you may typeset
-Latex expressions provided they are enclosed in @$...@$.
+Latex expressions provided they are enclosed in @[ ... @[ or <math> ... </math>;
+see Chapter :doc:`/cookbook/gmt-latex` for more details.
 
 Required Arguments
 ------------------

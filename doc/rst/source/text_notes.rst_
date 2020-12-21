@@ -21,21 +21,6 @@ sequence "@!\\227@~\\145@~" will print the epsilon character (octal code
 over-printed dot (octal code \\227 from the current font, assuming the
 ISOLatin1 character set).
 
-LaTeX Expressions
------------------
-
-Except for paragraph mode (**-M**), your text may include LaTeX equations.
-These must be enclosed by the marker @[.  Such lines will be converted to
-EPS via system commands latex and dvips, which must be available on your
-system (as well as any required fonts).  You may alternatively enclose the
-LaTeX text with <math> ... </math>.  LaTeX is a large and complicated system
-with many packages, and we simply must assume your LaTeX installation has
-support for the packages *fontenc* and *inputenc* as well as the required fonts
-*helvet, mathptmx, courier, symbol, avantgar, bookman, newcent, mathpazo,
-zapfchan, zapfding*.  If the conversion from LaTeX to EPS fails, please follow
-instructions to run the script manually to determine what packages or fonts
-you may be missing.
-
 Limitations
 -----------
 
