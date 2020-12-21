@@ -296,7 +296,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   @!<char1><char2> makes one composite character.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   @. prints the degree symbol.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   @@ prints the @ sign itself.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   @$<LaTeX expression>@$ may be used (except for -M).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   @[<LaTeX expression>@[ may be used (except for -M).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use @a|c|e|i|n|o|s|u|A|C|E|N|O|U for accented European characters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t(See module documentation for more information).\n\n");
 
