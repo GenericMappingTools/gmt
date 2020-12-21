@@ -71,7 +71,7 @@ To add a typeset figure caption for a 3-inch wide illustration, use
 
 To place a line containing a Latex equation, try::
 
-    echo 3 3 'Use @$\Delta g = 2\pi\rho Gh@$' | gmt text -R0/6/0/6 -JX15c -B -F+f32p+a30 -pdf map
+    echo 3 3 'Use @[\Delta g = 2\pi\rho Gh@[' | gmt text -R0/6/0/6 -JX15c -B -F+f32p+a30 -pdf map
 
 .. include:: text_notes.rst_
 
