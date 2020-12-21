@@ -23,7 +23,7 @@ location instead of the regular text.
 GMT fonts and LaTeX
 -------------------
 
-LaTeX is a large and complicated system with many optional packages, and we simply
+LaTeX is a large and complicated type-setting system with many optional packages, and we simply
 must assume that your LaTeX installation has all the needed features; see our
 `wiki <https://github.com/GenericMappingTools/gmt/wiki>`_ for typical installs
 via package managers.  Your installation must have support for the packages *fontenc*
