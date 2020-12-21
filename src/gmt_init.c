@@ -6358,7 +6358,7 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	GMT->current.map.frame.draw_box = false;
 	error += gmtinit_decode5_wesnz (GMT, GMT->current.setting.map_frame_axes, false);
 	/* MAP_FRAME_TYPE (plain) */
-	GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
+	GMT->current.setting.map_frame_type = GMT_IS_FANCY;
 	/* MAP_FRAME_WIDTH */
 	GMT->current.setting.map_frame_width = GMT->session.d_NaN; /* 3p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_FRAME_WIDTH] = 'p';
