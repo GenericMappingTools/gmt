@@ -30,9 +30,9 @@
     requested (below) and disallowed for the oblique Mercator projection.
     To add a plot title, append **+t**\ *title*; optionally add a *subtitle* via **+s**.
     **Note**: Both *title* and *subtitle* may be set over multiple lines by breaking them up
-    using the markers '@^' or '#break;'.  To include LaTeX code as part of a single-line title,
-    enclose the expression with @$ markers (**Note**: Requires ``latex`` and ``dvips``
-     to be installed).
+    using the markers '@^' or '<break>'.  To include LaTeX code as part of a single-line title,
+    enclose the expression with @[ markers (or alternatively <math> ... </math>).
+    **Note**: Requires ``latex``, ``dvips`` and required fonts to be installed.
     The Frame setting is optional but can be invoked once to override the above defaults.
 
     The Axes parameters are specified by
@@ -76,7 +76,8 @@
     a long string containing everything passed to **-B**. Therefore, they cannot contain substrings
     that looks like other modifiers.  If you need to embed such sequences (e.g., **+t**\ "Solving a+b=c")
     you need to replace those + symbols with their octal equivalent \\053, (e.g., **+t**\ "Solving a\\053b=c").
-    To include LaTeX code as part of a label, enclose the expression with @$ markers (**Note**: Requires ``latex`` and ``dvips`` to be installed).
+    To include LaTeX code as part of a label, enclose the expression with @[ markers (or alternatively
+    <math> ... </math>). **Note**: Requires ``latex``, ``dvips`` and required fonts to be installed.
     The *intervals* specification is a concatenated string made up of substrings
     of the form
 

@@ -273,10 +273,12 @@ struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle hea
  */
 
 bool gmt_text_is_latex (struct GMT_CTRL *GMT, const char *string) {
-	/* Detect if string contains LaTeX commands, i.e., "....@$LaTeX...@$ ..." */
+	/* Detect if string contains LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
 	char *p;
 	if (string == NULL || string[0] == '\0') return false;
-	return ((p = strstr (string, "@$")) && strstr (&p[1], "@$"));
+	if ((p = strstr (string, "@[")) && strstr (&p[1], "@[")) return true;
+	if ((p = strstr (string, "<math>")) && strstr (&p[1], "</math>")) return true;
+	return false;
 }
 
 GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FONT *F, const char *string, struct imageinfo *h) {
@@ -333,10 +335,16 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 		return NULL;
 	}
 
-	/* Replace any @$ with just $ */
+	/* Replace any @[ or <math> ... </math> with $ */
 	text = strdup (string);
 	for (i = o = 0; i < strlen (string); i++) {
-		if (!(string[i] == '@' && string[i+1] == '$'))
+		if (string[i] == '@' && string[i+1] == '[')
+			text[o++] = '$', i++;
+		else if (!strncmp (&string[i], "<math>", 6U))
+			text[o++] = '$', i += 5;
+		else if (!strncmp (&string[i], "</math>", 7U))
+			text[o++] = '$', i += 6;
+		else
 			text[o++] = string[i];
 	}
 	text[o] = '\0';	/* Terminate the now shortened string */
@@ -5047,7 +5055,7 @@ void gmt_map_text (struct GMT_CTRL *GMT, double x, double y, struct GMT_FONT *fo
 	/* Function to plot single-line text in pstext.c */
 	struct PSL_CTRL *PSL= GMT->PSL;
 
-	if (gmt_text_is_latex (GMT, label)) {	/* Detected LaTeX commands, i.e., "....@$LaTeX...@$ ..." */
+	if (gmt_text_is_latex (GMT, label)) {	/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
 		double w, h;
 		unsigned char *eps = NULL;
 		struct imageinfo header;
@@ -5075,7 +5083,7 @@ void gmt_map_label (struct GMT_CTRL *GMT, double x, double y, char *label, doubl
 	/* Function to use to set axis labels for Cartesian basemaps and colorbars */
 	struct PSL_CTRL *PSL= GMT->PSL;
 
-	if (gmt_text_is_latex (GMT, label)) {	/* Detected LaTeX commands, i.e., "....@$LaTeX...@$ ..." */
+	if (gmt_text_is_latex (GMT, label)) {	/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
 		bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y));	/* If the current point has already been placed */
 		bool set_L_off = (axis == GMT_X && !below);	/* May need to ensure extra offset for title */
 		double w, h;
@@ -5851,14 +5859,14 @@ GMT_LOCAL void gmtplot_map_annotations (struct GMT_CTRL *GMT) {
 }
 
 void gmtplot_title_breaks_decode (struct GMT_CTRL *GMT, const char *in_string, char *out_string) {
-	/* Deal with long-form @^ or #break; strings in title and subtitle and replace with ^ */
+	/* Deal with long-form @^ or <break> strings in title and subtitle and replace with GMT_ASCII_GS */
 	unsigned int i, o, kl[2] = {2, 7}, id;
-	char *kw[2] = {"@^", "#break;"};
+	char *kw[2] = {"@^", "<break>"};
 	gmt_M_unused (GMT);
 	if (in_string[0] == '\0') return;	/* Got nothing */
-	if (strstr (in_string, "#break;"))
+	if (strstr (in_string, kw[1]))
 		id = 1;
-	else if (strstr (in_string, "@^"))
+	else if (strstr (in_string, kw[0]))
 		id = 0;
 	else {	/* No markers given */
 		strncpy (out_string, in_string, GMT_LEN256);
@@ -5888,7 +5896,7 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 	if (!GMT->current.map.frame.header[0]) return;	/* No title given */
 
 	if (gmt_text_is_latex (GMT, GMT->current.map.frame.header)) {
-		/* Detected LaTeX commands, i.e., "....@$LaTeX...@$ ..." */
+		/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
 		double w, h;
 		unsigned char *eps = NULL;
 		struct imageinfo header;
