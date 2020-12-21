@@ -321,7 +321,7 @@ Finally, you may optionally add **+t**\ *title* to place a title that
 will appear centered above the plot frame; optionally also add a *subtitle* via **+s**.
 **Note**: Both *title* and *subtitle* may be set over multiple lines by breaking them up
 using the markers '@^' or '#break;'.  To include LaTeX code as part of a single-line title,
-enclose the expression with @$ markers (**Note**: Requires ``latex`` and ``dvips`` to be installed).
+enclose the expression with @[ markers (**Note**: Requires ``latex`` and ``dvips`` to be installed).
 
 The Axes settings are specified by
 
