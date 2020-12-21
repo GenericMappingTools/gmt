@@ -6319,10 +6319,10 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_annot[GMT_SECONDARY]);
 	GMT->current.setting.given_unit[GMTCASE_FONT_ANNOT_SECONDARY] = 'p';
 	/* FONT_HEADING */
-	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_heading);
+	error += gmt_getfont (GMT, "auto,Helvetica-Bold,black", &GMT->current.setting.font_heading);
 	GMT->current.setting.given_unit[GMTCASE_FONT_HEADING] = 'p';
 	/* FONT_TITLE */
-	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_title);
+	error += gmt_getfont (GMT, "auto,Helvetica-Bold,black", &GMT->current.setting.font_title);
 	GMT->current.setting.given_unit[GMTCASE_FONT_TITLE] = 'p';
 	/* FONT_LABEL */
 	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_label);
