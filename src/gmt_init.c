@@ -6316,7 +6316,7 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_annot[GMT_PRIMARY]);
 	GMT->current.setting.given_unit[GMTCASE_FONT_ANNOT_PRIMARY] = 'p';
 	/* FONT_ANNOT_SECONDARY */
-	error += gmt_getfont (GMT, "auto,AHelvetica,black", &GMT->current.setting.font_annot[GMT_SECONDARY]);
+	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_annot[GMT_SECONDARY]);
 	GMT->current.setting.given_unit[GMTCASE_FONT_ANNOT_SECONDARY] = 'p';
 	/* FONT_HEADING */
 	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_heading);
