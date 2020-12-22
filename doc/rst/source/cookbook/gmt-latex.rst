@@ -59,10 +59,9 @@ a DVI file by the command::
 
     latex -interaction=nonstopmode gmt_eq.tex > /dev/null
 
-followed by the conversion to EPS via
+followed by the conversion to EPS via::
 
-``dvips -q -E gmt_eq.dvi -o equation.eps``
-
+    dvips -q -E gmt_eq.dvi -o equation.eps
 
 These two commands are executed via the script *gmt_eq.sh* (or *gmt_eq.bat* under Windows).
 If the system command returns a successful status then we read the EPS file *equation.eps*
