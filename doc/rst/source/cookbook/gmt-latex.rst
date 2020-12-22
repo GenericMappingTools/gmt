@@ -55,9 +55,9 @@ up creating a temporary directory containing a small LaTex file called *gmt_eq.t
 
 Because :term:`FONT_TITLE` was set to Helvetica, the LaTeX file changes the default
 font to Helvetica as well (package *helvet*, code *phv*).  This file is then converted to
-a DVI file by the command
+a DVI file by the command::
 
-``latex -interaction=nonstopmode gmt_eq.tex > /dev/null``
+    latex -interaction=nonstopmode gmt_eq.tex > /dev/null
 
 followed by the conversion to EPS via
 
