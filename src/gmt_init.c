@@ -6309,28 +6309,26 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	 * dimension (font size, length, etc.) with gmt set or --PAR=value. Below, all modern
 	 * font sizes are set to auto [->NaN] and all dimensions are set to NaN.  If these remain
 	 * NaN after reading gmt.conf then they are auto-scaled in gmt_set_undefined_defaults. */
-
-	return;	/* Not make default action for 6.1 yet */
 	
 	/* FONT group */
 
 	/* FONT_ANNOT_PRIMARY */
-	error += gmt_getfont (GMT, "auto,AvantGarde-Book,black", &GMT->current.setting.font_annot[GMT_PRIMARY]);
+	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_annot[GMT_PRIMARY]);
 	GMT->current.setting.given_unit[GMTCASE_FONT_ANNOT_PRIMARY] = 'p';
 	/* FONT_ANNOT_SECONDARY */
-	error += gmt_getfont (GMT, "auto,AvantGarde-Book,black", &GMT->current.setting.font_annot[GMT_SECONDARY]);
+	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_annot[GMT_SECONDARY]);
 	GMT->current.setting.given_unit[GMTCASE_FONT_ANNOT_SECONDARY] = 'p';
 	/* FONT_HEADING */
-	error += gmt_getfont (GMT, "auto,AvantGarde-Demi,black", &GMT->current.setting.font_heading);
+	error += gmt_getfont (GMT, "auto,Helvetica-Bold,black", &GMT->current.setting.font_heading);
 	GMT->current.setting.given_unit[GMTCASE_FONT_HEADING] = 'p';
 	/* FONT_TITLE */
-	error += gmt_getfont (GMT, "auto,AvantGarde-Demi,black", &GMT->current.setting.font_title);
+	error += gmt_getfont (GMT, "auto,Helvetica-Bold,black", &GMT->current.setting.font_title);
 	GMT->current.setting.given_unit[GMTCASE_FONT_TITLE] = 'p';
 	/* FONT_LABEL */
-	error += gmt_getfont (GMT, "auto,AvantGarde-Book,black", &GMT->current.setting.font_label);
+	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_label);
 	GMT->current.setting.given_unit[GMTCASE_FONT_LABEL] = 'p';
 	/* FONT_TAG */
-	error += gmt_getfont (GMT, "auto,AvantGarde-Book,black", &GMT->current.setting.font_tag);
+	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_tag);
 	GMT->current.setting.given_unit[GMTCASE_FONT_TAG] = 'p';
 	/* FONT_LOGO */
 	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_logo);
@@ -6358,7 +6356,7 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	GMT->current.map.frame.draw_box = false;
 	error += gmtinit_decode5_wesnz (GMT, GMT->current.setting.map_frame_axes, false);
 	/* MAP_FRAME_TYPE (plain) */
-	GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
+	GMT->current.setting.map_frame_type = GMT_IS_FANCY;
 	/* MAP_FRAME_WIDTH */
 	GMT->current.setting.map_frame_width = GMT->session.d_NaN; /* 3p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_FRAME_WIDTH] = 'p';
