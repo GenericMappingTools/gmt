@@ -135,7 +135,7 @@ Optional Arguments
 .. _-R:
 
 .. |Add_-R| replace:: Using the **-R** option
-    will select a subsection of *in\_grdfile* grid. If this subsection
+    will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted.
 .. include:: explain_-R.rst_
 
