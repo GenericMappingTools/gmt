@@ -348,6 +348,7 @@ but you may also split this into two separate invocations for clarity, i.e.,
     For Cartesian axes you may specify an alternate via **+s** which is used for
     right or upper axis axis label (with any **+l** label used for left and bottom axes).
     To include LaTeX code as part of a label, enclose the expression with @[ markers
+    (or alternatively <math> ... </math>)
     (**Note**: Requires ``latex`` and ``dvips`` to be installed).
     If the axis annotation should have a leading text prefix (e.g., dollar sign for those
     plots of your net worth) you can append **+p**\ *prefix*. For geographic maps
