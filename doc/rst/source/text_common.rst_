@@ -139,7 +139,7 @@ Optional Arguments
     text dimensions (and **-C**) to build clip paths and turn clipping on.
     This clipping can then be turned off later with :doc:`clip` **-C**.
     To **not** plot the text but activate clipping, use **-G+n** instead.
-    **Note**: cannot be used with Latex expressions.
+    **Note**: cannot be used with LaTeX expressions.
 
 .. _-L:
 
