@@ -281,6 +281,12 @@ bool gmt_text_is_latex (struct GMT_CTRL *GMT, const char *string) {
 	return false;
 }
 
+GMT_LOCAL bool gmtplot_has_title_breaks (struct GMT_CTRL *GMT, const char *string) {
+	/* Returns true if string has line-break escape sequences in it */
+	if (string == NULL || string[0] == '\0') return false;
+	return ((strstr (string, "<break>") || strstr (string, "@^")) ? true : false);
+}
+
 GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FONT *F, const char *string, struct imageinfo *h) {
 	/* Convert a string containing LaTeX syntax to an EPS image */
 	unsigned int i, o;
@@ -290,6 +296,11 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 	unsigned char *picture = NULL;
 	FILE *fp = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
+
+	if (gmtplot_has_title_breaks (GMT, string)) {
+		GMT_Report (API, GMT_MSG_ERROR, "LaTeX expressions are only allowed in single-line strings\n");
+		return NULL;
+	}
 
 	if (gmt_check_executable (GMT, "latex", "--version", NULL, NULL)) {
 		GMT_Report (API, GMT_MSG_DEBUG, "latex found.\n");
@@ -5882,41 +5893,54 @@ void gmtplot_title_breaks_decode (struct GMT_CTRL *GMT, const char *in_string, c
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Converted %s to %s\n", in_string, out_string);
 }
 
+GMT_LOCAL double gmtplot_place_latex_eps (struct GMT_CTRL *GMT, double x, double y, struct GMT_FONT *F, const char *string) {
+	/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
+	bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y));
+	double w, h;
+	unsigned char *eps = NULL;
+	struct imageinfo header;
+
+	if ((eps = gmtplot_latex_eps (GMT, F, string, &header)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conversion of LaTeX string to EPS failed\n");
+		return 0;	/* Done */
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtplot_place_latex_eps: Conversion of LaTeX string gave dimensions %g x %g\n", w, h);
+	/* Scale up EPS dimensions by the ratio of title font size to LaTeX default size of 10p */
+	w = (header.width  / 72.0) * (F->size / 10.0);
+	h = (header.height / 72.0) * (F->size / 10.0);
+	/* Place EPS file instead of text */
+	PSL_command (GMT->PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
+	if (pos_set)
+		PSL_command (GMT->PSL, "currentpoint T\n");	/* Translate to currentpoint since already set by calling function */
+	PSL_plotepsimage (GMT->PSL, x, y, w, h, PSL_BC, eps, &header);
+	PSL_command (GMT->PSL, "U\n");
+	PSL_free (eps);
+	return h;
+}
+
 void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 	/* Place plot title and optionally subtitle, which both may be a single line or multiple lines.
 	 * Note, when x = y = 0 it means current point has already been selected so we must store that and keep
 	 * moving up for each line in the multi-line title.
 	 */
-	bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y)), many_lines = false;
+	bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y)), many_lines = false, head_latex = false;
 	double sign = (pos_set) ? -1.0 : +1.0, y_next = 0.0, line_spacing;
-	unsigned int n_breaks_T, n_breaks_S, k, form;
+	unsigned int n_breaks_T = 0, n_breaks_S, k, form;
 	char *word = NULL, title[GMT_LEN256] = {""}, subtitle[GMT_LEN256] = {""}, sep[2] = {""};
 	struct PSL_CTRL *PSL= GMT->PSL;
 
-	if (!GMT->current.map.frame.header[0]) return;	/* No title given */
+	if (!GMT->current.map.frame.header[0]) return;	/* No title given, so cannot have subtitle either */
 
-	if (gmt_text_is_latex (GMT, GMT->current.map.frame.header)) {
-		/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
-		double w, h;
-		unsigned char *eps = NULL;
-		struct imageinfo header;
-		if ((eps = gmtplot_latex_eps (GMT, &GMT->current.setting.font_title, GMT->current.map.frame.header, &header)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conversion of LaTeX header to EPS failed\n");
-			return;	/* Done */
-		}
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_title: Conversion of LaTeX header gave dimensions %g x %g\n", w, h);
-		/* Scale up EPS dimensions by the ratio of title font size to LaTeX default size of 10p */
-		w = (header.width / 72.0)  * (GMT->current.setting.font_title.size / 10.0);
-		h = (header.height / 72.0) * (GMT->current.setting.font_title.size / 10.0);
-		/* Place EPS file as title */
-		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
-		if (pos_set)
-			PSL_command (PSL, "currentpoint T\n");	/* Translate to currentpoint since already set by calling function */
-		PSL_plotepsimage (PSL, x, y, w, h, PSL_BC, eps, &header);
-		PSL_command (PSL, "U\n");
-		PSL_free (eps);
-		return;	/* Done on this end */
+	if ((head_latex = gmt_text_is_latex (GMT, GMT->current.map.frame.header)) && gmtplot_has_title_breaks (GMT, GMT->current.map.frame.header)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "LaTeX expressions are only allowed in single-line titles\n");
+		return;	/* Done */
 	}
+	if (GMT->current.map.frame.sub_header[0] && gmt_text_is_latex (GMT, GMT->current.map.frame.sub_header) && gmtplot_has_title_breaks (GMT, GMT->current.map.frame.sub_header)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "LaTeX expressions are only allowed in single-line subtitles\n");
+		return;	/* Done */
+	}
+	
+	/* OK, here we know that if there is LaTeX it is only a single-line string, else it could be multi-line titles and subtitles */
 
 	gmtplot_title_breaks_decode (GMT, GMT->current.map.frame.header, title);
 	gmtplot_title_breaks_decode (GMT, GMT->current.map.frame.sub_header, subtitle);
@@ -5927,9 +5951,15 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 	if (n_breaks_T || n_breaks_S || subtitle[0])
 		many_lines = true;
 	else {	/* Just a single title string on one line */
-		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-		PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, -PSL_BC, form);
-		GMT->current.map.frame.plotted_header = true;
+		if (gmt_text_is_latex (GMT, title)) {
+			/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
+			(void)gmtplot_place_latex_eps (GMT, x, y, &GMT->current.setting.font_title, title);
+		}
+		else {
+			form = gmt_setfont (GMT, &GMT->current.setting.font_title);
+			PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, -PSL_BC, form);
+			GMT->current.map.frame.plotted_header = true;
+		}
 		return;	/* Done */
 	}
 
@@ -5941,35 +5971,54 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 	/* If there are subtitles then these must be placed first since we start from base and move up/backwards */
 
 	if (subtitle[0]) {	/* Plot a subtitle over one or more several lines */
-		form = gmt_setfont (GMT, &GMT->current.setting.font_subtitle);
-		line_spacing = 1.1 * GMT->current.setting.font_subtitle.size / PSL_POINTS_PER_INCH;
-		for (k = 0; k <= n_breaks_S; k++) {
-			word = gmt_get_word (subtitle, sep, n_breaks_S - k);	/* Pick from the end going forward */
-			PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_subtitle.size, word, 0.0, -PSL_BC, form);
-			gmt_M_str_free (word);
+		if (gmt_text_is_latex (GMT, subtitle)) {
+			/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
+			double h = gmtplot_place_latex_eps (GMT, x, y, &GMT->current.setting.font_subtitle, subtitle);
+			if (!head_latex) h += GMT->current.setting.map_title_offset;
 			if (pos_set) {	/* Must move up based on height above initial current point for every line since title will come later */
-				y_next += line_spacing;
+				y_next += h;
 				PSL_command (PSL, "PSL_text_x PSL_text_y M 0 %d G\n", PSL->internal.y0 + (int)lrint (y_next * PSL->internal.y2iy));
 			}
-			else	/* Just increment the change in y location */
-				y += line_spacing;
+			else
+				y += h;
+		}
+		else {
+			form = gmt_setfont (GMT, &GMT->current.setting.font_subtitle);
+			line_spacing = 1.1 * GMT->current.setting.font_subtitle.size / PSL_POINTS_PER_INCH;
+			for (k = 0; k <= n_breaks_S; k++) {
+				word = gmt_get_word (subtitle, sep, n_breaks_S - k);	/* Pick from the end going forward */
+				PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_subtitle.size, word, 0.0, -PSL_BC, form);
+				gmt_M_str_free (word);
+				if (pos_set) {	/* Must move up based on height above initial current point for every line since title will come later */
+					y_next += line_spacing;
+					PSL_command (PSL, "PSL_text_x PSL_text_y M 0 %d G\n", PSL->internal.y0 + (int)lrint (y_next * PSL->internal.y2iy));
+				}
+				else	/* Just increment the change in y location */
+					y += line_spacing;
+			}
 		}
 	}
 
-	/* Now plot the title string(s) */
-	form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-	line_spacing = 1.1 * GMT->current.setting.font_title.size / PSL_POINTS_PER_INCH;
-	for (k = 0; k <= n_breaks_T; k++) {
-		word = gmt_get_word (title, sep, n_breaks_T - k);	/* Pick from the end going forward */
-		PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_title.size, word, 0.0, -PSL_BC, form);
-		gmt_M_str_free (word);
-		if (k < n_breaks_T) {	/* If there are more lines above this one */
-			if (pos_set) {
-				y_next += line_spacing;
-				PSL_command (PSL, "PSL_text_x PSL_text_y M 0 %d G\n", PSL->internal.y0 + (int)lrint (y_next * PSL->internal.y2iy));
+	if (gmt_text_is_latex (GMT, GMT->current.map.frame.header)) {
+		/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
+		(void)gmtplot_place_latex_eps (GMT, x, y, &GMT->current.setting.font_title, GMT->current.map.frame.header);
+	}
+	else {
+		/* Now plot the title string(s), i.e., more than one line or LaTeX-free string */
+		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
+		line_spacing = 1.1 * GMT->current.setting.font_title.size / PSL_POINTS_PER_INCH;
+		for (k = 0; k <= n_breaks_T; k++) {
+			word = gmt_get_word (title, sep, n_breaks_T - k);	/* Pick from the end going forward */
+			PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_title.size, word, 0.0, -PSL_BC, form);
+			gmt_M_str_free (word);
+			if (k < n_breaks_T) {	/* If there are more lines above this one */
+				if (pos_set) {
+					y_next += line_spacing;
+					PSL_command (PSL, "PSL_text_x PSL_text_y M 0 %d G\n", PSL->internal.y0 + (int)lrint (y_next * PSL->internal.y2iy));
+				}
+				else	/* Just increment the change in y location */
+					y += line_spacing;
 			}
-			else	/* Just increment the change in y location */
-				y += line_spacing;
 		}
 	}
 
