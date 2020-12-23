@@ -55,7 +55,7 @@ file text.txt on a Mercator plot with the given specifications, use::
 
 To plot a text at the upper left corner of a 10 cm map::
 
-    echo TopLeft | gmt text -R1/10/1/10 -JX10 -F+cTL -pdf plot
+    echo TopLeft | gmt text -R1/10/1/10 -JX10 -B -F+cTL -pdf plot
 
 To add a typeset figure caption for a 3-inch wide illustration, use
 
