@@ -166,7 +166,7 @@ Optional Arguments
     Separate paragraphs with a blank line.  Note that here,
     the justification set via **-F+j** applies to the box alignment
     since the text justification is set by *parjust*.  **Note**:
-    cannot be used with Latex expressions.
+    cannot be used with LaTeX expressions.
 
 .. _-N:
 
