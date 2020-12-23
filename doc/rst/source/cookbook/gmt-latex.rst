@@ -42,7 +42,7 @@ Technical Details
 
 To help anyone debug their LaTeX installation, consider the case where you make a basemap
 that contains the title request -B+t"Use @[\\Delta g = 2\\pi\\rho Gh@[". This request ends
-up creating a temporary directory containing a small LaTex file called *gmt_eq.tex*::
+up creating a temporary directory containing a small LaTeX file called *gmt_eq.tex*::
 
     \documentclass{article}
     \usepackage[T1]{fontenc} \usepackage[utf8]{inputenc}
