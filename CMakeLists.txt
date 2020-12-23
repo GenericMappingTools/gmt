@@ -87,6 +87,10 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 		"Need to either install GraphicsMagick or disable tests.")
 endif (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 
+# Find latex and dvips for LaTeX integration
+find_program (LATEX latex)
+find_program (DVIPS dvips)
+
 # Add subdirectories
 add_subdirectory (src)
 add_subdirectory (share)      # share must be processed *after* src (GSHHG_PATH)
