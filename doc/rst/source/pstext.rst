@@ -80,7 +80,7 @@ To add a text without using input data but only the fixed text option::
 
 To place a line containing a Latex equation, try::
 
-    echo 3 3 'Use @$\Delta g = 2\pi\rho Gh@$' | gmt pstext -R0/6/0/6 -JX15c -B -F+f32p+a30 -P > map.ps
+    echo 3 3 'Use @[\Delta g = 2\pi\rho Gh@[' | gmt pstext -R0/6/0/6 -JX15c -Baf -F+f32p+a30 -P > map.ps
 
 .. include:: text_notes.rst_
 
