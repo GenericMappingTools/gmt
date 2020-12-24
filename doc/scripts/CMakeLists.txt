@@ -76,6 +76,11 @@ foreach (skip_test GMT_-U.sh GMT_encoding.sh gen_data_App_O.sh gen_data_dummy.sh
 	list (REMOVE_ITEM _scripts_tests doc/scripts/${skip_test})
 endforeach()
 
+# Remove GMT_latex.sh if latex or dvips not found
+if (NOT LATEX OR NOT DVIPS)
+	list (REMOVE_ITEM _scripts_tests doc/scripts/GMT_latex.sh)
+endif (NOT LATEX OR NOT DVIPS)
+
 if (DO_TESTS AND BASH)
 	foreach (_job ${_scripts_tests})
 		add_test (NAME ${_job}
