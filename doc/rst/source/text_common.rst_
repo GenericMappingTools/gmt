@@ -23,7 +23,9 @@ Appendix :ref:`Chart-Octal-Codes-for-Chars` in the GMT Technical Reference and C
 :doc:`gmt.conf` file in order to use the accented characters. Using the
 **-G** or **-W** options, a rectangle underlying the text may be plotted
 (does not work for strings with sub/super scripts, symbols, or composite
-characters, except in paragraph mode (**-M**)).
+characters, except in paragraph mode (**-M**)).  Finally, you may typeset
+LaTeX expressions provided they are enclosed in @[ ... @[ or <math> ... </math>;
+see Chapter :doc:`/cookbook/gmt-latex` for more details.
 
 Required Arguments
 ------------------
@@ -137,6 +139,7 @@ Optional Arguments
     text dimensions (and **-C**) to build clip paths and turn clipping on.
     This clipping can then be turned off later with :doc:`clip` **-C**.
     To **not** plot the text but activate clipping, use **-G+n** instead.
+    **Note**: cannot be used with LaTeX expressions.
 
 .. _-L:
 
@@ -162,7 +165,8 @@ Optional Arguments
     discussed above, although composite characters are not supported.
     Separate paragraphs with a blank line.  Note that here,
     the justification set via **-F+j** applies to the box alignment
-    since the text justification is set by *parjust*.
+    since the text justification is set by *parjust*.  **Note**:
+    cannot be used with LaTeX expressions.
 
 .. _-N:
 
@@ -189,6 +193,7 @@ Optional Arguments
 **-W**\ *pen*
     Sets the pen used to draw a rectangle around the text string (see
     **-C**) [Default is width = default, color = black, style = solid].
+    **Note**: cannot be used with LaTeX expressions.
 
 .. _-X:
 
