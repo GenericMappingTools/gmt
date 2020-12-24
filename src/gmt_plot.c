@@ -275,6 +275,7 @@ struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle hea
 bool gmt_text_is_latex (struct GMT_CTRL *GMT, const char *string) {
 	/* Detect if string contains LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
 	char *p;
+	gmt_M_unused (GMT);
 	if (string == NULL || string[0] == '\0') return false;
 	if ((p = strstr (string, "@[")) && strstr (&p[1], "@[")) return true;
 	if ((p = strstr (string, "<math>")) && strstr (&p[1], "</math>")) return true;
@@ -283,6 +284,7 @@ bool gmt_text_is_latex (struct GMT_CTRL *GMT, const char *string) {
 
 GMT_LOCAL bool gmtplot_has_title_breaks (struct GMT_CTRL *GMT, const char *string) {
 	/* Returns true if string has line-break escape sequences in it */
+	gmt_M_unused (GMT);
 	if (string == NULL || string[0] == '\0') return false;
 	return ((strstr (string, "<break>") || strstr (string, "@^")) ? true : false);
 }
@@ -5904,10 +5906,10 @@ GMT_LOCAL double gmtplot_place_latex_eps (struct GMT_CTRL *GMT, double x, double
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conversion of LaTeX string to EPS failed\n");
 		return 0;	/* Done */
 	}
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtplot_place_latex_eps: Conversion of LaTeX string gave dimensions %g x %g\n", w, h);
 	/* Scale up EPS dimensions by the ratio of title font size to LaTeX default size of 10p */
 	w = (header.width  / 72.0) * (F->size / 10.0);
 	h = (header.height / 72.0) * (F->size / 10.0);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtplot_place_latex_eps: Conversion of LaTeX string gave dimensions %g x %g\n", w, h);
 	/* Place EPS file instead of text */
 	PSL_command (GMT->PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
 	if (pos_set)
