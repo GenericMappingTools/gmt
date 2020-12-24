@@ -1,4 +1,4 @@
-"/ISO-8859-2_Encoding [\n\
+"/ISO-8859-16_Encoding [\n\
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
@@ -19,16 +19,16 @@
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
-/uni00A0	/Aogonek	/breve		/Lslash		/currency	/Lcaron		/Sacute		/section\n\
-/dieresis	/Scaron		/Scedilla	/Tcaron		/Zacute		/uni00AD	/Zcaron		/Zdotaccent\n\
-/degree		/aogonek	/ogonek		/lslash		/acute		/lcaron		/sacute		/caron\n\
-/cedilla	/scaron		/scedilla	/tcaron		/zacute		/hungarumlaut	/zcaron		/zdotaccent\n\
-/Racute		/Aacute		/Acircumflex	/Abreve		/Adieresis	/Lacute		/Cacute		/Ccedilla\n\
-/Ccaron		/Eacute		/Eogonek	/Edieresis	/Ecaron		/Iacute		/Icircumflex	/Dcaron\n\
-/Dcroat		/Nacute		/Ncaron		/Oacute		/Ocircumflex	/Ohungarumlaut	/Odieresis	/multiply\n\
-/Rcaron		/Uring		/Uacute		/Uhungarumlaut	/Udieresis	/Yacute		/Tcommaaccent	/germandbls\n\
-/racute		/aacute		/acircumflex	/abreve		/adieresis	/lacute		/cacute		/ccedilla\n\
-/ccaron		/eacute		/eogonek	/edieresis	/ecaron		/iacute		/icircumflex	/dcaron\n\
-/dcroat		/nacute		/ncaron		/oacute		/ocircumflex	/ohungarumlaut	/odieresis	/divide\n\
-/rcaron		/uring		/uacute		/uhungarumlaut	/udieresis	/yacute		/tcommaaccent	/dotaccent\n\
+/uni00A0	/Aogonek	/aogonek	/Lslash		/Euro		/quotedblbase	/Scaron		/section\n\
+/scaron		/copyright	/Scommaaccent	/guillemotleft	/Zacute		/uni00AD	/zacute		/Zdotaccent\n\
+/degree		/plusminus	/Ccaron		/lslash		/Zcaron		/quotedblright	/paragraph	/periodcentered\n\
+/zcaron		/ccaron		/scommaaccent	/guillemotright	/OE		/oe		/Ydieresis	/zdotaccent\n\
+/Agrave		/Aacute		/Acircumflex	/Abreve		/Adieresis	/Cacute		/AE		/Ccedilla\n\
+/Egrave		/Eacute		/Ecircumflex	/Edieresis	/Igrave		/Iacute		/Icircumflex	/Idieresis\n\
+/Dcroat		/Nacute		/Ograve		/Oacute		/Ocircumflex	/Ohungarumlaut	/Odieresis	/Sacute\n\
+/Uhungarumlaut	/Ugrave		/Uacute		/Ucircumflex	/Udieresis	/Eogonek	/uni021A	/germandbls\n\
+/agrave		/aacute		/acircumflex	/abreve		/adieresis	/cacute		/ae		/ccedilla\n\
+/egrave		/eacute		/ecircumflex	/edieresis	/igrave		/iacute		/icircumflex	/idieresis\n\
+/dcroat		/nacute		/ograve		/oacute		/ocircumflex	/ohungarumlaut	/odieresis	/sacute\n\
+/uhungarumlaut	/ugrave		/uacute		/ucircumflex	/udieresis	/eogonek	/uni021B	/ydieresis\n\
 ] def\n",
