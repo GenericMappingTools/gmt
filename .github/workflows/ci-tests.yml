@@ -65,7 +65,7 @@ jobs:
 
           - name: Linux - Tests
             os: ubuntu-latest
-            run_in_pr : true
+            run_in_pr : false
             BUILD_DOCS  : false
             DEPLOY_DOCS : false
             PACKAGE     : false
