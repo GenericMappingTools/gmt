@@ -944,7 +944,7 @@ PostScript Parameters
         files and in command line parameters. This allows GMT to ensure
         that the PostScript output generates the correct characters on the
         plot. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
-        ISO-8859-x (where x is in the ranges [1,11] or [13,15-16]). See
+        ISO-8859-x (where x is in the ranges 1-11 or 13-16). See
         Appendix F for details [ISOLatin1+ (or Standard+)].  **Note**: Normally
         the character set is written as part of the PostScript header.  If
         you need to switch to another character set for a later overlay then
