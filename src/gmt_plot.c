@@ -266,10 +266,190 @@ struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle hea
 
 /* Local functions */
 
+/* Converting LaTeX strings to EPS files.  This is based on the discussion we had at
+ * https://github.com/GenericMappingTools/gmt/issues/4563#issuecomment-743374160.
+ * As long as the user has latex, dvips and required fonts installed this should work
+ * for everybody. P. Wessel, Dec 11, 2020.
+ */
+
+bool gmt_text_is_latex (struct GMT_CTRL *GMT, const char *string) {
+	/* Detect if string contains LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
+	char *p;
+	gmt_M_unused (GMT);
+	if (string == NULL || string[0] == '\0') return false;
+	if ((p = strstr (string, "@[")) && strstr (&p[1], "@[")) return true;
+	if ((p = strstr (string, "<math>")) && strstr (&p[1], "</math>")) return true;
+	return false;
+}
+
+GMT_LOCAL bool gmtplot_has_title_breaks (struct GMT_CTRL *GMT, const char *string) {
+	/* Returns true if string has line-break escape sequences in it */
+	gmt_M_unused (GMT);
+	if (string == NULL || string[0] == '\0') return false;
+	return ((strstr (string, "<break>") || strstr (string, "@^")) ? true : false);
+}
+
+GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FONT *F, const char *string, struct imageinfo *h) {
+	/* Convert a string containing LaTeX syntax to an EPS image */
+	unsigned int i, o;
+	int error = 0;
+	char *text = NULL, *tmpdir = NULL, *font, *code;
+	char template[PATH_MAX] = {""}, here[PATH_MAX] = {""}, file[PATH_MAX] = {""}, cmd[PATH_MAX] = {""};
+	unsigned char *picture = NULL;
+	FILE *fp = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
+
+	if (gmtplot_has_title_breaks (GMT, string)) {
+		GMT_Report (API, GMT_MSG_ERROR, "LaTeX expressions are only allowed in single-line strings\n");
+		return NULL;
+	}
+
+	if (gmt_check_executable (GMT, "latex", "--version", NULL, NULL)) {
+		GMT_Report (API, GMT_MSG_DEBUG, "latex found.\n");
+	}
+	else {
+		GMT_Report (API, GMT_MSG_ERROR, "latex is not installed or not in your executable path - cannot process LaTeX to DVI.\n");
+		return NULL;
+	}
+	if (gmt_check_executable (GMT, "dvips", "--version", NULL, NULL)) {
+		GMT_Report (API, GMT_MSG_DEBUG, "dvips found.\n");
+	}
+	else {
+		GMT_Report (API, GMT_MSG_ERROR, "dvips is not installed or not in your executable path - cannot convert DVI to EPS.\n");
+		return NULL;
+	}
+
+	/* Create unique directory for outputs, stored in tmpdir */
+
+	snprintf (template, PATH_MAX, "%s/gmt_latex_XXXXXX", API->tmp_dir);	/* The XXXXXX will be replaced by mktemp */
+	if ((tmpdir = mktemp (template)) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create temporary directory name from template %s.\n", template);
+		return NULL;
+	}
+	if (gmt_mkdir (tmpdir)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to create directory %s - exiting.\n", tmpdir);
+		return NULL;
+	}
+	/* Remember where we are */
+	if (getcwd (here, PATH_MAX) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to determine current working directory - exiting.\n");
+		return NULL;
+	}
+	gmt_replace_backslash_in_path (here);
+	/* Use tmpdir as the current directory */
+	if (chdir (tmpdir)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to change directory to %s - exiting.\n", tmpdir);
+		return NULL;
+	}	
+	/* Create LaTeX file */
+	sprintf (file, "gmt_eq.tex");
+	if ((fp = fopen (file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create LaTeX file %s.\n", file);
+		return NULL;
+	}
+
+	/* Replace any @[ or <math> ... </math> with $ */
+	text = strdup (string);
+	for (i = o = 0; i < strlen (string); i++) {
+		if (string[i] == '@' && string[i+1] == '[')
+			text[o++] = '$', i++;
+		else if (!strncmp (&string[i], "<math>", 6U))
+			text[o++] = '$', i += 5;
+		else if (!strncmp (&string[i], "</math>", 7U))
+			text[o++] = '$', i += 6;
+		else
+			text[o++] = string[i];
+	}
+	text[o] = '\0';	/* Terminate the now shortened string */
+
+	/* Check title font selection and pick corresponding fontpackagename and fontcode, if possible */
+	switch (F->id) {
+		case 0:  case 1:  case 2:   case 3: font = "helvet";	code = "phv";	break;
+		case 4:  case 5:  case 6:   case 7: font = "mathptmx";	code = "ptm";	break;
+		case 8:  case 9:  case 10: case 11: font = "courier";	code = "pcr";	break;
+		case 12: font = "symbol";	code = "psy";	break;
+		case 13: case 14: case 15: case 16: font = "avantgar";	code = "pag";	break;
+		case 17: case 18: case 19: case 20: font = "bookman";	code = "pbk";	break;
+		case 21: case 22: case 23: case 24: font = "helvet";	code = "phv";	break;
+		case 25: case 26: case 27: case 28: font = "newcent";	code = "pnc";	break;
+		case 29: case 30: case 31: case 32: font = "mathpazo";	code = "ppl";	break;
+		case 33: font = "zapfchan";	code = "pzc";	break;
+		case 34: font = "zapfding";	code = "pzd";	break;
+		default: font = code = NULL;	/* Go with default */
+	}
+	/* Write LaTeX file content */
+	fprintf (fp, "\\documentclass{article}\n");	/* Default to 10p font size */
+	if (font) { /* Impose a selected font family, otherwise take default Computer Modern */
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtplot_latex_eps: Selecting font %s [%s].\n", font, code);
+		fprintf (fp, "\\usepackage[T1]{fontenc}\\usepackage[utf8]{inputenc}\\usepackage{%s}\n", font);
+	}
+	fprintf (fp, "\\begin{document}\n\\thispagestyle{empty}\n");	/* No page number */
+	if (code) /* Select font */
+		fprintf (fp, "\\fontfamily{%s}\\selectfont\n", code);
+	fprintf (fp, "%s\n\\end{document}\n", text);
+	fclose (fp);
+	gmt_M_str_free (text);
+
+	/* Make script file for running latex and dvips */
+#ifdef _WIN32
+	sprintf (file, "gmt_eq.bat");
+	sprintf (cmd, "start /B gmt_eq.bat");
+#else
+	sprintf (file, "gmt_eq.sh");
+	sprintf (cmd, "sh gmt_eq.sh");
+#endif
+	if ((fp = fopen (file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create script file %s.\n", file);
+		return NULL;
+	}
+#ifdef _WIN32
+	fprintf (fp, "latex -interaction=nonstopmode gmt_eq.tex > NUL\ndvips -q -E gmt_eq.dvi -o equation.eps\n");
+#else
+	fprintf (fp, "latex -interaction=nonstopmode gmt_eq.tex > /dev/null\ndvips -q -E gmt_eq.dvi -o equation.eps\n");
+#endif
+	fclose (fp);
+
+	/* Run the script via a system call */
+	if ((error = system (cmd))) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Running \"%s\" returned error %d.\n", cmd, error);
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Please run it manually to learn what LaTeX packages you are missing.\n", cmd, error);
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: The script and logs can be found here: %s\n", tmpdir);
+		return NULL;
+	}
+	else {	/* Success, now remove the temp files but not worry about the return code here */
+#ifdef _WIN32
+		system ("del gmt_eq.*");
+#else
+		system ("rm -f gmt_eq.*");
+#endif
+	}
+	/* Retrieve the EPS code */
+	gmt_M_memset (h, 1U, struct imageinfo); /* Initialize information struct */
+	if (PSL_loadeps (GMT->PSL, "equation.eps", h, &picture)) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to load EPS file equation.eps\n");
+		return NULL;
+	}
+	/* Clean up */
+	if (gmt_remove_dir (API, tmpdir, false)) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to remove temporary directory %s!\n", tmpdir);
+		PSL_free (picture);
+		return NULL;
+	}
+	/* Change back to original directory */
+	if (chdir (here)) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to change directory back to %s - exiting.\n", here);
+		PSL_free (picture);
+		return NULL;
+	}
+
+	/* Return the EPS data and size information via header */
+	return picture;
+}
+
 /*	GMT_LINEAR PROJECTION MAP BOUNDARY	*/
 
 GMT_LOCAL void gmtplot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
-	unsigned int form, cap = PSL->internal.line_cap;
+	unsigned int cap = PSL->internal.line_cap;
 	double x_length, y_length;
 
 	x_length = GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO];
@@ -292,7 +472,7 @@ GMT_LOCAL void gmtplot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTR
 
 		PSL_setlinecap (PSL, cap);	/* Reset back to default */
 	}
-	if (!GMT->current.map.frame.header[0] || GMT->current.map.frame.plotted_header) return;	/* No header today */
+	if (!GMT->current.map.frame.header[0] || GMT->current.map.frame.plotted_header) return;	/* No title (and optional subtitle) today */
 
 	PSL_comment (PSL, "Placing plot title\n");
 
@@ -302,9 +482,8 @@ GMT_LOCAL void gmtplot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTR
 		PSL_command (PSL, "/PSL_H_y PSL_L_y PSL_LH add %d add def\n", PSL_IZ (PSL, GMT->current.setting.map_title_offset));	/* For title adjustment */
 
 	PSL_command (PSL, "%d %d PSL_H_y add PSL_slant_y add M\n", PSL_IZ (PSL, 0.5 * x_length), PSL_IZ (PSL, y_length));
-	form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-	PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, PSL_BC, form);
-	GMT->current.map.frame.plotted_header = true;
+
+	gmt_map_title (GMT, 0.0, 0.0);
 }
 
 GMT_LOCAL unsigned int gmtplot_get_primary_annot (struct GMT_PLOT_AXIS *A) {
@@ -2403,9 +2582,7 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 			PSL_defunits (PSL, "PSL_H_y", GMT->current.setting.map_title_offset + GMT->current.setting.map_tick_length[GMT_PRIMARY]);
 
 		PSL_command (PSL, "%d %d PSL_H_y add M\n", PSL_IZ (PSL, GMT->current.proj.rect[XHI] * 0.5), PSL_IZ (PSL, GMT->current.proj.rect[YHI]));
-		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-		PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, PSL_BC, form);
-		GMT->current.map.frame.plotted_header = true;
+		gmt_map_title (GMT, 0.0, 0.0);
 	}
 
 	gmtplot_consider_internal_annotations (GMT, PSL, w, e, s, n);	/* Handle any special case of internal annotations */
@@ -4887,6 +5064,78 @@ GMT_LOCAL unsigned int gmtplot_geo_vector_greatcircle (struct GMT_CTRL *GMT, dou
  *----------------------------------------------------------|
  */
 
+void gmt_map_text (struct GMT_CTRL *GMT, double x, double y, struct GMT_FONT *font, char *label, double angle, int just, unsigned int form) {
+	/* Function to plot single-line text in pstext.c */
+	struct PSL_CTRL *PSL= GMT->PSL;
+
+	if (gmt_text_is_latex (GMT, label)) {	/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
+		double w, h;
+		unsigned char *eps = NULL;
+		struct imageinfo header;
+
+		if ((eps = gmtplot_latex_eps (GMT, font, label, &header)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_text: Conversion of LaTeX to EPS failed\n");
+			return;	/* Done */
+		}
+		/* Scale up EPS dimensions by the ratio of label font size to LaTeX default size of 10p */
+		w = (header.width  / 72.0) * (font->size / 10.0);
+		h = (header.height / 72.0) * (font->size / 10.0);
+		/* Place EPS file as label, then free eps */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_text: Conversion of LaTeX gave dimensions %g x %g\n", w, h);
+		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
+		PSL_setorigin (PSL, x, y, angle, PSL_FWD);		/* Move to desired point and possibly rotate to angle */
+		PSL_plotepsimage (PSL, 0.0, 0.0, w, h, just, eps, &header);	/* Place the EPS plot */
+		PSL_command (PSL, "U\n");	/* Close up the block */
+		PSL_free (eps);
+	}
+	else	/* Regular text label */
+		PSL_plottext (PSL, x, y, font->size, label, angle, just, form);
+}
+
+void gmt_map_label (struct GMT_CTRL *GMT, double x, double y, char *label, double angle, int just, unsigned int axis, bool below) {
+	/* Function to use to set axis labels for Cartesian basemaps and colorbars */
+	struct PSL_CTRL *PSL= GMT->PSL;
+
+	if (gmt_text_is_latex (GMT, label)) {	/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
+		bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y));	/* If the current point has already been placed */
+		bool set_L_off = (axis == GMT_X && !below);	/* May need to ensure extra offset for title */
+		double w, h;
+		unsigned char *eps = NULL;
+		struct imageinfo header;
+
+		if ((eps = gmtplot_latex_eps (GMT, &GMT->current.setting.font_label, label, &header)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_label: Conversion of LaTeX label to EPS failed\n");
+			return;	/* Done */
+		}
+		/* Scale up EPS dimensions by the ratio of label font size to LaTeX default size of 10p */
+		w = (header.width / 72.0)  * (GMT->current.setting.font_label.size / 10.0);
+		h = (header.height / 72.0) * (GMT->current.setting.font_label.size / 10.0);
+		/* Place EPS file as label, then free eps */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_label: Conversion of LaTeX label gave dimensions %g x %g\n", w, h);
+		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
+		/* If we plot label below the axis then we must adjust for the fact that the base y-coordinate is based on label font height of "M",
+		 * but now we have an EPS image of given (and presumably larger) height.  So we adjust by the difference in those two values */
+		if (pos_set) {	/* Translate origin to currentpoint since already set by calling function, and possibly rotate by +/- 90 degrees */
+			double sgn[2] = {-1.0, 1.0};
+			if (fabs (angle) > 0.0) PSL_command (PSL, "currentpoint T %g R\n", angle); else PSL_command (PSL, "currentpoint T\n");
+			if (below) PSL_command (PSL, "0 %d PSL_LH sub neg M currentpoint T\n", (int)lrint (h * PSL->internal.y2iy));
+			/* I am somehow missing the label offset for y-axes so I need to account for it here in order to get correct result */
+			if (axis == GMT_Y) PSL_command (PSL, "0 %d M currentpoint T\n", (int)lrint (sgn[below]*GMT->current.setting.map_label_offset * PSL->internal.y2iy));
+		}
+		// PSL_command (PSL, "V currentpoint -2000 0 G 4000 0 D S U\n");	/* Debug line for base of label; keep for future debugging */
+		PSL_plotepsimage (PSL, x, y, w, h, PSL_BC, eps, &header);	/* Place the EPS plot */
+		PSL_command (PSL, "U\n");	/* Close up the block */
+		if (set_L_off)	/* Must reset the value of PSL_LH to the EPS image height so the title baseline can be adjusted */
+			PSL_command (PSL, "/PSL_LH %d def\n", (int)lrint (h * PSL->internal.y2iy));
+		PSL_free (eps);
+		return;	/* Done on this end */
+	}
+	else {	/* Regular text label */
+		int form = gmt_setfont (GMT, &GMT->current.setting.font_label);
+		PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, label, angle, just, form);
+	}
+}
+
 void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, bool below, unsigned side) {
 	unsigned int k, i, nx, nx1, np = 0;/* Misc. variables */
 	unsigned int annot_pos;	/* Either 0 for upper annotation or 1 for lower annotation */
@@ -5149,28 +5398,30 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	/* Finally do axis label */
 
 	if (A->label[0] && annotate && !gmt_M_axis_is_geo_strict (GMT, axis)) {
-		unsigned int far_ = !below;
+		unsigned int far_ = !below, l_just;
+		double label_angle;
 		char *this_label = (far_ && A->secondary_label[0]) ? A->secondary_label : A->label;	/* Get primary or secondary axis label */
 		if (!MM_set) PSL_command (PSL, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
 		form = gmt_setfont (GMT, &GMT->current.setting.font_label);
-		PSL_command (PSL, "/PSL_LH ");
+		PSL_command (PSL, "/PSL_LH ");	/* PSL_LH is the hight of the label text based on height of letter M */
 		PSL_deftextdim (PSL, "-h", GMT->current.setting.font_label.size, "M");
 		PSL_command (PSL, "def\n");
 		PSL_command (PSL, "/PSL_L_y PSL_A0_y PSL_A1_y mx %d add %sdef\n", PSL_IZ (PSL, GMT->current.setting.map_label_offset), (neg == horizontal) ? "PSL_LH add " : "");
-		/* Move to new anchor point */
+		/* Move to new anchor point for label */
 		if (angled)	/* Add offset due to angled x-annotations */
 			PSL_command (PSL, "%d PSL_L_y PSL_slant_y add MM\n", PSL_IZ (PSL, 0.5 * length));
 		else
 			PSL_command (PSL, "%d PSL_L_y MM\n", PSL_IZ (PSL, 0.5 * length));
 		if (axis == GMT_Y && A->label_mode) {
-			i = (below) ? PSL_MR : PSL_ML;
-			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, this_label, 0.0 + y_angle_add, i, form);
+			l_just = (below) ? PSL_MR : PSL_ML;
+			label_angle = 0.0 + y_angle_add;
 		}
 		else {
 			double angle_add = (axis == GMT_X) ? x_angle_add : y_angle_add;
-			unsigned int l_just = (axis == GMT_X) ? lx_just : ly_just;
-			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, this_label, (horizontal ? 0.0 : 90.0) + angle_add, l_just, form);
+			l_just = (axis == GMT_X) ? lx_just : ly_just;
+			label_angle = (horizontal ? 0.0 : 90.0) + angle_add;
 		}
+		gmt_map_label (GMT, 0.0, 0.0, this_label, label_angle, l_just, axis, below);
 	}
 	else
 		PSL_command (PSL, "/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def\n");
@@ -5620,6 +5871,164 @@ GMT_LOCAL void gmtplot_map_annotations (struct GMT_CTRL *GMT) {
 	gmtplot_map_annotate (GMT, PSL, w, e, s, n);
 }
 
+void gmtplot_title_breaks_decode (struct GMT_CTRL *GMT, const char *in_string, char *out_string) {
+	/* Deal with long-form @^ or <break> strings in title and subtitle and replace with GMT_ASCII_GS */
+	unsigned int i, o, kl[2] = {2, 7}, id;
+	char *kw[2] = {"@^", "<break>"};
+	gmt_M_unused (GMT);
+	if (in_string[0] == '\0') return;	/* Got nothing */
+	if (strstr (in_string, kw[1]))
+		id = 1;
+	else if (strstr (in_string, kw[0]))
+		id = 0;
+	else {	/* No markers given */
+		strncpy (out_string, in_string, GMT_LEN256);
+		return;
+	}
+	/* Here we must replace kl[id] with GMT_ASCII_GS */
+	for (i = o = 0; i < strlen (in_string); i++) {
+		if (!strncmp (&in_string[i], kw[id], kl[id]))
+			out_string[o++] = GMT_ASCII_GS, i += (kl[id] - 1);	/* Skip one less, allowing for i++ */
+		else
+			out_string[o++] = in_string[i];
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Converted %s to %s\n", in_string, out_string);
+}
+
+GMT_LOCAL double gmtplot_place_latex_eps (struct GMT_CTRL *GMT, double x, double y, struct GMT_FONT *F, const char *string) {
+	/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
+	bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y));
+	double w, h;
+	unsigned char *eps = NULL;
+	struct imageinfo header;
+
+	if ((eps = gmtplot_latex_eps (GMT, F, string, &header)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conversion of LaTeX string to EPS failed\n");
+		return 0;	/* Done */
+	}
+	/* Scale up EPS dimensions by the ratio of title font size to LaTeX default size of 10p */
+	w = (header.width  / 72.0) * (F->size / 10.0);
+	h = (header.height / 72.0) * (F->size / 10.0);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtplot_place_latex_eps: Conversion of LaTeX string gave dimensions %g x %g\n", w, h);
+	/* Place EPS file instead of text */
+	PSL_command (GMT->PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
+	if (pos_set)
+		PSL_command (GMT->PSL, "currentpoint T\n");	/* Translate to currentpoint since already set by calling function */
+	PSL_plotepsimage (GMT->PSL, x, y, w, h, PSL_BC, eps, &header);
+	PSL_command (GMT->PSL, "U\n");
+	PSL_free (eps);
+	return h;
+}
+
+void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
+	/* Place plot title and optionally subtitle, which both may be a single line or multiple lines.
+	 * Note, when x = y = 0 it means current point has already been selected so we must store that and keep
+	 * moving up for each line in the multi-line title.
+	 */
+	bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y)), many_lines = false, head_latex = false;
+	double sign = (pos_set) ? -1.0 : +1.0, y_next = 0.0, line_spacing;
+	unsigned int n_breaks_T = 0, n_breaks_S, k, form;
+	char *word = NULL, title[GMT_LEN256] = {""}, subtitle[GMT_LEN256] = {""}, sep[2] = {""};
+	struct PSL_CTRL *PSL= GMT->PSL;
+
+	if (!GMT->current.map.frame.header[0]) return;	/* No title given, so cannot have subtitle either */
+
+	if ((head_latex = gmt_text_is_latex (GMT, GMT->current.map.frame.header)) && gmtplot_has_title_breaks (GMT, GMT->current.map.frame.header)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "LaTeX expressions are only allowed in single-line titles\n");
+		return;	/* Done */
+	}
+	if (GMT->current.map.frame.sub_header[0] && gmt_text_is_latex (GMT, GMT->current.map.frame.sub_header) && gmtplot_has_title_breaks (GMT, GMT->current.map.frame.sub_header)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "LaTeX expressions are only allowed in single-line subtitles\n");
+		return;	/* Done */
+	}
+	
+	/* OK, here we know that if there is LaTeX it is only a single-line string, else it could be multi-line titles and subtitles */
+
+	gmtplot_title_breaks_decode (GMT, GMT->current.map.frame.header, title);
+	gmtplot_title_breaks_decode (GMT, GMT->current.map.frame.sub_header, subtitle);
+
+	n_breaks_T = gmt_char_count (title, GMT_ASCII_GS);		/* Is there a title spilling over several lines */
+	n_breaks_S = gmt_char_count (subtitle, GMT_ASCII_GS);	/* Is there a subtitle spilling over several lines */
+
+	if (n_breaks_T || n_breaks_S || subtitle[0])
+		many_lines = true;
+	else {	/* Just a single title string on one line */
+		if (gmt_text_is_latex (GMT, title)) {
+			/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
+			(void)gmtplot_place_latex_eps (GMT, x, y, &GMT->current.setting.font_title, title);
+		}
+		else {
+			form = gmt_setfont (GMT, &GMT->current.setting.font_title);
+			PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, -PSL_BC, form);
+			GMT->current.map.frame.plotted_header = true;
+		}
+		return;	/* Done */
+	}
+
+	sep[0] = GMT_ASCII_GS;
+	/* Must put everything inside a gsave/grestore block */
+	PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
+	if (pos_set) PSL_command (PSL, "currentpoint /PSL_text_y edef /PSL_text_x edef\n");	/* Remember the position set for the text */
+
+	/* If there are subtitles then these must be placed first since we start from base and move up/backwards */
+
+	if (subtitle[0]) {	/* Plot a subtitle over one or more several lines */
+		if (gmt_text_is_latex (GMT, subtitle)) {
+			/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
+			double h = gmtplot_place_latex_eps (GMT, x, y, &GMT->current.setting.font_subtitle, subtitle);
+			if (!head_latex) h += GMT->current.setting.map_title_offset;
+			if (pos_set) {	/* Must move up based on height above initial current point for every line since title will come later */
+				y_next += h;
+				PSL_command (PSL, "PSL_text_x PSL_text_y M 0 %d G\n", PSL->internal.y0 + (int)lrint (y_next * PSL->internal.y2iy));
+			}
+			else
+				y += h;
+		}
+		else {
+			form = gmt_setfont (GMT, &GMT->current.setting.font_subtitle);
+			line_spacing = 1.1 * GMT->current.setting.font_subtitle.size / PSL_POINTS_PER_INCH;
+			for (k = 0; k <= n_breaks_S; k++) {
+				word = gmt_get_word (subtitle, sep, n_breaks_S - k);	/* Pick from the end going forward */
+				PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_subtitle.size, word, 0.0, -PSL_BC, form);
+				gmt_M_str_free (word);
+				if (pos_set) {	/* Must move up based on height above initial current point for every line since title will come later */
+					y_next += line_spacing;
+					PSL_command (PSL, "PSL_text_x PSL_text_y M 0 %d G\n", PSL->internal.y0 + (int)lrint (y_next * PSL->internal.y2iy));
+				}
+				else	/* Just increment the change in y location */
+					y += line_spacing;
+			}
+		}
+	}
+
+	if (gmt_text_is_latex (GMT, GMT->current.map.frame.header)) {
+		/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
+		(void)gmtplot_place_latex_eps (GMT, x, y, &GMT->current.setting.font_title, GMT->current.map.frame.header);
+	}
+	else {
+		/* Now plot the title string(s), i.e., more than one line or LaTeX-free string */
+		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
+		line_spacing = 1.1 * GMT->current.setting.font_title.size / PSL_POINTS_PER_INCH;
+		for (k = 0; k <= n_breaks_T; k++) {
+			word = gmt_get_word (title, sep, n_breaks_T - k);	/* Pick from the end going forward */
+			PSL_plottext (PSL, x, y, sign * GMT->current.setting.font_title.size, word, 0.0, -PSL_BC, form);
+			gmt_M_str_free (word);
+			if (k < n_breaks_T) {	/* If there are more lines above this one */
+				if (pos_set) {
+					y_next += line_spacing;
+					PSL_command (PSL, "PSL_text_x PSL_text_y M 0 %d G\n", PSL->internal.y0 + (int)lrint (y_next * PSL->internal.y2iy));
+				}
+				else	/* Just increment the change in y location */
+					y += line_spacing;
+			}
+		}
+	}
+
+	PSL_command (PSL, "U\n");
+
+	GMT->current.map.frame.plotted_header = true;
+}
+
 void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	/* This function is usually called twice by modules: Once before data-plotting starts and
 	 * once after all data-plotting has ended.  This is because different modules have different
@@ -5761,7 +6170,7 @@ GMT_LOCAL bool gmtplot_z_axis_side (struct GMT_CTRL *GMT, unsigned int axis, uns
 
 void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 	/* Mode means: 1 = background walls and title, 2 = foreground walls and axis, 3 = all */
-	unsigned int fore, back, old_plane, form;
+	unsigned int fore, back, old_plane;
 	double nesw[4], old_level, xx, yy, az;
 	struct PSL_CTRL *PSL= GMT->PSL;
 
@@ -5833,11 +6242,7 @@ void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 
 	if (back && GMT->current.map.frame.header[0] && !GMT->current.map.frame.plotted_header) {	/* No header today */
 		gmt_plane_perspective (GMT, -1, 0.0);
-		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-		PSL_plottext (PSL, 0.5 * (GMT->current.proj.z_project.xmin + GMT->current.proj.z_project.xmax),
-			GMT->current.proj.z_project.ymax + GMT->current.setting.map_title_offset,
-			GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, -PSL_BC, form);
-		GMT->current.map.frame.plotted_header = true;
+		gmt_map_title (GMT, 0.5 * (GMT->current.proj.z_project.xmin + GMT->current.proj.z_project.xmax), GMT->current.proj.z_project.ymax + GMT->current.setting.map_title_offset);
 	}
 
 	gmt_plane_perspective (GMT, old_plane, old_level);

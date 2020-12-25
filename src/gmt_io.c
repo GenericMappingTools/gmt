@@ -1218,7 +1218,8 @@ GMT_LOCAL int gmtio_a_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *
 	while ((--p != line) && strchr (" \t,\r\n", (int)*p));
 	*(p + 1) = '\0';
 	/* Convert whatever it is to double */
-	gmt_scanf (GMT, line, gmt_M_type (GMT, GMT_IN, GMT_Z), d);
+	if (gmt_scanf (GMT, line, gmt_M_type (GMT, GMT_IN, GMT_Z), d) == GMT_IS_NAN)
+		*d = GMT->session.d_NaN;
 	return (GMT_OK);
 }
 
@@ -9141,7 +9142,7 @@ int gmt_mkdir (const char *path)
 
 	/* Iterate the string */
 	p = (_path[1] == ':') ? _path + 3 : _path + 1;  /* Skip any leading X: drive designators */
-	while (*p) { /* Create intermediate directoreis recursively */
+	while (*p) { /* Create intermediate directories recursively */
 		if (*p == '/' || *p == '\\') {	/* Found start of next directory */
 			sep = *p;	/* What separator did we use? */
 			*p = '\0';	/* Temporarily truncate */

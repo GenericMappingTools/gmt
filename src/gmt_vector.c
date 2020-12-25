@@ -363,7 +363,7 @@ GMT_LOCAL uint64_t gmtvector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double
 	for (i = 1; i < n; i++) {
 		if (mode == GMT_STAIRS_Y) {	/* First follow x, then y */
 			n_step = lrint (fabs (x[i] - x[i-1]) / step);
-			for (j = 1; j < n_step; j++) {
+			for (j = 1; j <= n_step; j++) {
 				c = j / (double)n_step;
 				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1] * (1 - c) + x[i] * c;
@@ -382,7 +382,7 @@ GMT_LOCAL uint64_t gmtvector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double
 		}
 		else if (mode == GMT_STAIRS_X) {	/* First follow y, then x */
 			n_step = lrint (fabs (y[i]-y[i-1]) / step);
-			for (j = 1; j < n_step; j++) {
+			for (j = 1; j <= n_step; j++) {
 				c = j / (double)n_step;
 				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1];
@@ -1482,7 +1482,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			lon_i = lon[i-1] + dlon;	/* Use lon_i instead of lon[i] in the marching since this avoids any jumping */
 			theta = fabs (dlon) * cosd (lat[i-1]);
 			n_step = lrint (theta / step);
-			for (j = 1; j < n_step; j++) {
+			for (j = 1; j <= n_step; j++) {
 				c = j / (double)n_step;
 				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1] * (1 - c) + lon_i * c;
@@ -1504,7 +1504,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 		else if (mode == GMT_STAIRS_X) {	/* First follow parallel, then meridian */
 			theta = fabs (lat[i]-lat[i-1]);
 			n_step = lrint (theta / step);
-			for (j = 1; j < n_step; j++) {
+			for (j = 1; j <= n_step; j++) {
 				c = j / (double)n_step;
 				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1];

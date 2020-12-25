@@ -300,6 +300,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 	}
 	grid_was_read = Ctrl->G.active;
 	HH = gmt_get_H_hidden (G->header);
+	if (gmt_M_is_geographic (GMT, GMT_IN)) gmt_set_geographic (GMT, GMT_OUT);	/* Out same as in */
 
 	if ((G->header->type == GMT_GRID_IS_SF || G->header->type == GMT_GRID_IS_SD) && Ctrl->T.active) {
 		GMT_Report (API, GMT_MSG_ERROR, "Toggling registrations not possible for Surfer grid formats\n");

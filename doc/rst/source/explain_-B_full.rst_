@@ -3,7 +3,7 @@
 **-B**\ [**p**\|\ **s**]\ *parameters*
     Set map Frame and Axes parameters. The Frame parameters are specified by
 
-    **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
+    **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+s**\ *subtitle*][**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
 
     where *axes* selects which axes to plot. By default, all four map boundaries
     (or plot axes) are plotted (named **W**, **E**, **S**, **N**). To customize,
@@ -28,8 +28,12 @@
     Optionally append **+o**\ *plon/plat* to draw oblique gridlines about
     specified pole [regular gridlines]. Ignored if gridlines are not
     requested (below) and disallowed for the oblique Mercator projection.
-    To add a plot title, append **+t**\ *title*. The Frame setting is optional but
-    can be invoked once to override the above defaults.
+    To add a plot title, append **+t**\ *title*; optionally add a *subtitle* via **+s**.
+    **Note**: Both *title* and *subtitle* may be set over multiple lines by breaking them up
+    using the markers '@^' or '<break>'.  To include LaTeX code as part of a single-line title or subtitle,
+    enclose the expression with @[ markers (or alternatively <math> ... </math>);
+    see Chapter :doc:`/cookbook/gmt-latex` for more details.
+    The Frame setting is optional but can be invoked once to override the above defaults.
 
     The Axes parameters are specified by
 
@@ -68,11 +72,12 @@
     specify annotations normal [Default] and parallel to the axis, respectively. Note that
     these defaults can be changed via :term:`MAP_ANNOT_ORTHO`. Geographic axes can
     take **+f** which will give fancy annotations with W|E|S|N suffices encoding the sign.
-    **Note**: Text items such as *title*, *label* and *seclabel* are seen by GMT as part of
+    **Note**: Text items such as *title*, *subtitle*, *label* and *seclabel* are seen by GMT as part of
     a long string containing everything passed to **-B**. Therefore, they cannot contain substrings
     that looks like other modifiers.  If you need to embed such sequences (e.g., **+t**\ "Solving a+b=c")
     you need to replace those + symbols with their octal equivalent \\053, (e.g., **+t**\ "Solving a\\053b=c").
-
+    To include LaTeX code as part of a label, enclose the expression with @[ markers (or alternatively
+    <math> ... </math>); see Chapter :doc:`/cookbook/gmt-latex` for more details.
     The *intervals* specification is a concatenated string made up of substrings
     of the form
 

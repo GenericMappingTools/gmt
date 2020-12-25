@@ -4907,9 +4907,9 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 	 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the matrix header */
 			/* Must create a grid container from matrix info S_obj->resource and hence a new object is required */
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
-			if (grid == NULL) {	/* Only allocate when not already allocated */
+			if (grid == NULL) {	/* Only allocate when not already allocated, and only allocate container */
 				uint64_t dim[3] = {M_obj->n_columns, M_obj->n_rows, 1};
-				if ((G_obj = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, mode, dim, M_obj->range, M_obj->inc, M_obj->registration, GMT_NOTSET, NULL)) == NULL)
+				if ((G_obj = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, dim, M_obj->range, M_obj->inc, M_obj->registration, GMT_NOTSET, NULL)) == NULL)
 					return_null (API, GMT_MEMORY_ERROR);
 			}
 			else
@@ -5022,9 +5022,9 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			MH = gmt_get_M_hidden (M_obj);
 			if (!(M_obj->shape == GMT_IS_ROW_FORMAT && M_obj->type == GMT_GRDFLOAT && (mode & GMT_GRID_IS_COMPLEX_MASK) == 0))
 				 return_null (API, GMT_NOT_A_VALID_IO_ACCESS);
-			if (grid == NULL) {	/* Only allocate when not already allocated.  Note cannot have pad since input matrix wont have one */
+			if (grid == NULL) {	/* Only allocate when not already allocated, and only get container.  Note: Cannot have pad since input matrix won't have one */
 				uint64_t dim[3] = {M_obj->n_rows, M_obj->n_columns, 1};
-				if ((G_obj = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, mode, dim, M_obj->range, M_obj->inc, M_obj->registration, 0, NULL)) == NULL)
+				if ((G_obj = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, dim, M_obj->range, M_obj->inc, M_obj->registration, 0, NULL)) == NULL)
 					return_null (API, GMT_MEMORY_ERROR);
 			}
 			else
@@ -5645,9 +5645,9 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 	 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:	/* The user's 3-D cube matrix of some sort, + info in the matrix header */
 			/* Must create a cube container from matrix info S_obj->resource and hence a new object is required */
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
-			if (cube == NULL) {	/* Only allocate when not already allocated */
+			if (cube == NULL) {	/* Only allocate when not already allocated, and only get container */
 				uint64_t dim[3] = {M_obj->n_columns, M_obj->n_rows, M_obj->n_layers};
-				if ((U_obj = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, mode, dim, M_obj->range, M_obj->inc, M_obj->registration, GMT_NOTSET, NULL)) == NULL)
+				if ((U_obj = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, GMT_CONTAINER_ONLY, dim, M_obj->range, M_obj->inc, M_obj->registration, GMT_NOTSET, NULL)) == NULL)
 					return_null (API, GMT_MEMORY_ERROR);
 			}
 			else
@@ -5776,7 +5776,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				 return_null (API, GMT_NOT_A_VALID_IO_ACCESS);
 			if (cube == NULL) {	/* Only allocate when not already allocated.  Note cannot have pad since input matrix wont have one */
 				uint64_t dim[3] = {M_obj->n_rows, M_obj->n_columns, M_obj->n_layers};
-				if ((U_obj = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, mode, dim, M_obj->range, M_obj->inc, M_obj->registration, 0, NULL)) == NULL)
+				if ((U_obj = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, GMT_CONTAINER_ONLY, dim, M_obj->range, M_obj->inc, M_obj->registration, 0, NULL)) == NULL)
 					return_null (API, GMT_MEMORY_ERROR);
 			}
 			else
@@ -12371,7 +12371,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	unsigned int output_pos = 0, input_pos = 0, mod_pos;
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_GRID, GMT_IS_PALETTE, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
-	int sdir, k, n_in_added = 0, n_to_add, e, n_pre_arg, n_per_family[GMT_N_FAMILIES];
+	int sdir, k = 0, n_in_added = 0, n_to_add, e, n_pre_arg, n_per_family[GMT_N_FAMILIES];
 	bool deactivate_output = false, deactivate_input = false, strip_colon = false, strip = false, is_grdmath = false;
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
@@ -12475,40 +12475,51 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	}
 	/* 1j. Check if this is a blockm* module using -A to set n output grids */
 	else if (!strncmp (module, "block", 5U) && (opt = GMT_Find_Option (API, 'A', *head))) {
-		/* Determine how many output grids are requested */
-		if (opt->arg[0]) {
+		/* Below, k is the number of under=the-hood -G? options we must add for returning grids to externals */
+		k = 0;	/* Make sure we initialize this first */
+		if (opt->arg[0]) {	/* Gave -A: Determine how many output grids are requested */
 			for (k = 1, len = 0; len < strlen (opt->arg); len++) if (opt->arg[len] == ',') k++;
 		}
-		else
-			k = 1;	/* -A means -Az */
-		if ((opt = GMT_Find_Option (API, 'G', *head))) {	/* This is a problem */
-			GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
-			return_null (NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+		if ((opt = GMT_Find_Option (API, 'G', *head))) {	/* This is a problem unless -G actually sent in a file name */
+			if (opt->arg[0] == '\0') {	/* Cannot just give -G here */
+				GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
+				return_null (NULL, GMT_NOT_A_VALID_OPTION);
+			}
+			else	/* Gave a (presumably) file argument, no need to add -G? */
+				k = 0;
 		}
+		else	/* No -A or -G; default is to just add the z grid via -G?  */
+			k = 1;
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */
 			*head = GMT_Append_Option (API, new_ptr, *head);
 			k--;
 		}
-		deactivate_output = true;	/* Turn off implicit table output since only secondary -G -G -G is in effect */
+		deactivate_output = true;	/* Turn off implicit table output since only secondary -G output(s) is in effect */
 	}
 	/* 1k. Check if this is the earthtide module requesting output grids */
 	else if (!strncmp (module, "earthtide", 9U) && !GMT_Find_Option (API, 'L', *head) && !GMT_Find_Option (API, 'S', *head)) {
-		if ((opt = GMT_Find_Option (API, 'C', *head))) {	/* Determine how many output grids are requested */
+		/* Below, k is the number of under=the-hood -G? options we must add for returning grids to externals */
+		k = 0;	/* Make sure we initialize this first */
+		if ((opt = GMT_Find_Option (API, 'C', *head))) {	/* Gave -C: Determine how many output grids are requested */
 			for (k = 1, len = 0; len < strlen (opt->arg); len++) if (opt->arg[len] == ',') k++;
 		}
-		else
-			k = 1;	/* Default is the Gz grid */
-		if ((opt = GMT_Find_Option (API, 'G', *head))) {	/* This is a problem */
-			GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
-			return_null (NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
+		if ((opt = GMT_Find_Option(API, 'G', *head))) {	/* This is a problem unless -G actually sent in a file name */
+			if (opt->arg[0] == '\0') {	/* Cannot just give -G here */
+				GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G (with no argument) when called externally\n", module);
+				return_null (NULL, GMT_NOT_A_VALID_OPTION);
+			}
+			else	/* Gave a (presumably) file argument, no need to add -G? */
+				k = 0;
 		}
+		else if (k == 0) 	/* No -C or -G; default is to just add the -Gz grid via -G? */
+			k = 1;
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */
 			*head = GMT_Append_Option (API, new_ptr, *head);
 			k--;
 		}
-		deactivate_output = true;	/* Turn off implicit table output since only secondary -G -G -G is in effect */
+		deactivate_output = true;	/* Turn off implicit table output since only secondary -G output(s) is in effect */
 	}
 	/* 1l. Check if this is makecpt using -E or -S with no args */
 	else if (!strncmp (module, "makecpt", 7U)) {

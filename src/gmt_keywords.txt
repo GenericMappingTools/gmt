@@ -37,6 +37,7 @@ FONT_ANNOT_SECONDARY		# Font for secondary axes annotations
 FONT_HEADING			# Font for heading above subplots
 FONT_LABEL			# Font for axes labels
 FONT_LOGO			# Font for GMT logo
+FONT_SUBTITLE		# Font for plot subtitles
 FONT_TAG			# Font for panel figure tags
 FONT_TITLE			# Font for plot titles
 #-------------------------------------------------------

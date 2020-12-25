@@ -157,6 +157,7 @@ static struct GMT_parameter GMT_keyword_active[]= {
 	{ 0, "FONT_HEADING"},
 	{ 0, "FONT_LABEL"},
 	{ 0, "FONT_LOGO"},
+	{ 0, "FONT_SUBTITLE"},
 	{ 0, "FONT_TAG"},
 	{ 0, "FONT_TITLE"},
 	{ 1, "FORMAT Parameters"},
@@ -385,7 +386,7 @@ static char *map_annot_oblique_item[N_MAP_ANNOT_OBLIQUE_ITEMS] = {
 
 static struct GMT_KEYWORD_DICTIONARY gmt_common_kw[] = {
 	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
-	{   0, 'B', "frame",         "",        "",                                         "b,g,n,o,t",				"box,fill,noframe,oblique-pole,title" },
+	{   0, 'B', "frame",         "",        "",                                         "b,g,n,o,t,s",				"box,fill,noframe,oblique-pole,title,subtitle" },
 	{   0, 'B', "axis",          "x,y,z",   "x,y,z",                                    "a,f,l,L,p,s,S,u",			"angle,fancy,label,Label,prefix,second-label,Second-label,unit" },
 	{   0, 'J', "projection",    "",        "",                                         "",         				""},
 	{   0, 'R', "region",        "",        "",                                         "r,u",        				"rectangular,unit"},
@@ -3802,7 +3803,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 			for (j = 0; j < 6; j++) GMT->current.map.frame.axis[i].item[j].parent = i;
 			if (GMT->current.proj.xyz_projection[i] == GMT_TIME) GMT->current.map.frame.axis[i].type = GMT_TIME;
 		}
-		GMT->current.map.frame.header[0] = '\0';
+		GMT->current.map.frame.header[0] = GMT->current.map.frame.sub_header[0] = '\0';
 		GMT->current.map.frame.init = true;
 		GMT->current.map.frame.draw = false;
 		GMT->current.map.frame.set_frame[GMT_PRIMARY] = GMT->current.map.frame.set_frame[GMT_SECONDARY] = 0;
@@ -4074,13 +4075,13 @@ bool gmtlib_B_is_frame (struct GMT_CTRL *GMT, char *in) {
 
 /*! . */
 GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
-	bool did_g = false;
+	bool did_g = false, sub = false, title = false;
 	unsigned int pos = 0, k, error = 0;
 	char p[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, *mod = NULL;
 	double pole[2];
 	struct GMT_FILL F;
 
-	/* Parsing of -B<framesettings>: -B[<axes>][+b][+g<fill>][+n][+o<lon>/<lat>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>] */
+	/* Parsing of -B<framesettings>: -B[<axes>][+b][+g<fill>][+n][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>] */
 
 	/* First determine that the given -B<in> string is indeed the framesetting option.  If not return -1 */
 
@@ -4091,8 +4092,8 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	/* OK, here we are pretty sure this is a frame -B statement */
 
 	strncpy (text, in, GMT_BUFSIZ-1);
-	gmt_handle5_plussign (GMT, text, "bginotwxyz", 0);	/* Temporarily change double plus-signs to double ASCII 1 to avoid +<modifier> angst */
-	GMT->current.map.frame.header[0] = '\0';
+	gmt_handle5_plussign (GMT, text, "bginostwxyz", 0);	/* Temporarily change double plus-signs to double ASCII 1 to avoid +<modifier> angst */
+	GMT->current.map.frame.header[0] = GMT->current.map.frame.sub_header[0] = '\0';
 	gmt_M_memset (GMT->current.map.frame.paint, 3U, bool);
 	GMT->current.map.frame.draw_box = GMT_3D_NONE;
 
@@ -4150,11 +4151,20 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 						gmtlib_set_oblique_pole_and_origin (GMT, pole[GMT_X], pole[GMT_Y], 0.0, 0.0);
 					}
 					break;
+				case 's':
+					if (p[1]) {	/* Actual subtitle was appended */
+						strncpy (GMT->current.map.frame.sub_header, &p[1], GMT_LEN256-1);
+						gmt_handle5_plussign (GMT, GMT->current.map.frame.sub_header, NULL, 1);	/* Recover any non-modifier plus signs */
+						gmtlib_enforce_rgb_triplets (GMT, GMT->current.map.frame.sub_header, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+						sub = true;
+					}
+					break;
 				case 't':
 					if (p[1]) {	/* Actual title was appended */
 						strncpy (GMT->current.map.frame.header, &p[1], GMT_LEN256-1);
 						gmt_handle5_plussign (GMT, GMT->current.map.frame.header, NULL, 1);	/* Recover any non-modifier plus signs */
 						gmtlib_enforce_rgb_triplets (GMT, GMT->current.map.frame.header, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+						title = true;
 					}
 					break;
 				case 'w':	/* Set back-wall outline and optionally the pen to use */
@@ -4200,6 +4210,10 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 		*mod = '\0';	/* Separate the modifiers from the frame selectors */
 	}
 
+	if (sub && !title) {	/* Cannot request subtitle and not set a title */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot request subtitle (+s) if no title (+t) is set\n");
+		error++;
+	}
 	if (!GMT->current.map.frame.paint[GMT_X] && did_g) {	/* Let +g set all sides not already set */
 		gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_X], &F, 1U, struct GMT_FILL);
 		GMT->current.map.frame.paint[GMT_X] = true;
@@ -5930,6 +5944,9 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	/* FONT_HEADING */
 	error += gmt_getfont (GMT, "32p,Helvetica,black", &GMT->current.setting.font_heading);
 	GMT->current.setting.given_unit[GMTCASE_FONT_HEADING] = 'p';
+	/* FONT_SUBTITLE */
+	error += gmt_getfont (GMT, "18p,Helvetica,black", &GMT->current.setting.font_subtitle);
+	GMT->current.setting.given_unit[GMTCASE_FONT_SUBTITLE] = 'p';
 	/* FONT_TITLE */
 	error += gmt_getfont (GMT, "24p,Helvetica,black", &GMT->current.setting.font_title);
 	GMT->current.setting.given_unit[GMTCASE_FONT_TITLE] = 'p';
@@ -6655,10 +6672,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t-B Specify both (1) basemap frame settings and (2) axes parameters.\n");
 			gmt_message (GMT, "\t   Frame settings are modified via an optional single invocation of\n");
-			gmt_message (GMT, "\t     -B[<axes>][+b][+g<fill>][+i[<val>]][+n][+o<lon>/<lat>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]\n");
+			gmt_message (GMT, "\t     -B[<axes>][+b][+g<fill>][+i[<val>]][+n][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]\n");
 			gmt_message (GMT, "\t   Axes parameters are specified via one or more invocations of\n");
 			gmt_message (GMT, "\t     -B[p|s][x|y|z]<info>\n\n");
-			gmt_message (GMT, "\t   1. Frame settings control which axes to plot, frame fill, title, and type of gridlines:\n");
+			gmt_message (GMT, "\t   1. Frame settings control which axes to plot, frame fill, title (and subtitle), and type of gridlines:\n");
 			gmt_message (GMT, "\t     <axes> is a combination of W,E,S,N,Z and plots those axes only [Default is WESNZ (all)].\n");
 			gmt_message (GMT, "\t     Use lower case w,e,s,n,z just to draw and tick (but not annotate) those axes,\n");
 			gmt_message (GMT, "\t     and use l,r,b,t,u just to draw (but not annotate and tick) those axes.\n");
@@ -6667,7 +6684,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     Append +n to have no frame and annotations whatsoever [Default is controlled by WESNZ/wesnz].\n");
 			gmt_message (GMT, "\t     Append +o<plon>/<plat> to draw oblique gridlines about this pole [regular gridlines].\n");
 			gmt_message (GMT, "\t     Note: the +o modifier is ignored unless gridlines are specified via the axes parameters (below).\n");
-			gmt_message (GMT, "\t     Append +t<title> to place a title over the map frame [no title].\n");
+			gmt_message (GMT, "\t     Append +t<title> to place a title over the map frame [no title]. Optionally also set +s<subtitle>.\n");
+			gmt_message (GMT, "\t     Note: Both <title> and <subtitle> can be set across multiple lines by using \"@^\" or \"<break>\" to mark breaks.\n");
+			gmt_message (GMT, "\t     A single-line <title> and <subtitle> may contain LaTeX code enclosed by @[ .... @[ (or alternatively <math> ... </math>).\n");
+			gmt_message (GMT, "\t     Using LaTeX expressions require you to have a functioning latex and dvips installation, including required fonts.\n");
 			gmt_message (GMT, "\t     For 3-D plots the Z|z[<corners>] controls the vertical axis.  The <corners> specifies\n");
 			gmt_message (GMT, "\t     at which corner(s) to erect the z-axis via a combination of 1,2,3,4; 1 means lower left corner,\n");
 			gmt_message (GMT, "\t     2 is lower right, etc., in a counter-clockwise order [Default automatically selects one axis].\n");
@@ -6695,6 +6715,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     Use quotes if any of the <label>, <prefix> or <unit> have spaces.\n");
 			gmt_message (GMT, "\t     For Cartesian axes you can have different labels on the left vs right or bottom vs top\n");
 			gmt_message (GMT, "\t     by separating the two labels with ||, e.g., +l\"Left label||Right label\".\n");
+			gmt_message (GMT, "\t     A <label> may contain LaTeX code enclosed by @[ .... @[  (or alternatively <math> ... </math>).\n");
+			gmt_message (GMT, "\t     Using LaTeX expressions require you to have a functioning latex and dvips installation, including required fonts.\n");
 			gmt_message (GMT, "\t     Geographic map annotations will automatically have degree, minute, seconds units.\n");
 			gmt_message (GMT, "\t     The <intervals> setting controls the annotation spacing and is a textstring made up of one or\n");
 			gmt_message (GMT, "\t     more substrings of the form [a|f|g][<stride>[+-<phase>]], where the (optional) a\n");
@@ -6740,9 +6762,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t-B Specify both (1) basemap frame settings and (2) axes parameters.\n");
 			gmt_message (GMT, "\t   (1) Frame settings are modified via an optional single invocation of\n");
-			gmt_message (GMT, "\t     -B[<axes>][+g<fill>][+n][+o<lon>/<lat>][+t<title>]\n");
+			gmt_message (GMT, "\t       -B[<axes>][+b][+g<fill>][+i[<val>]][+n][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]\n");
 			gmt_message (GMT, "\t   (2) Axes parameters are specified via one or more invocations of\n");
-			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+a<angle>][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]\n");
+			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>\n");
 			gmt_message (GMT, "\t   <intervals> is composed of concatenated [<type>]<stride>[l|p] sub-strings\n");
 			gmt_message (GMT, "\t   See basemap man page for more details and examples of all settings.\n");
 			break;
@@ -7398,7 +7420,7 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	}
 	if (kind == 0) gmt_message (GMT, "%s  If z is appended we use the z-unit from the grdfile [no unit].\n", pad);
 	if (kind < 2) gmt_message (GMT, "%s +v for placing curved text along path [Default is straight].\n", pad);
-	gmt_message (GMT, "%s +w sets how many (x,y) points to use for angle calculation [auto].\n", pad);
+	gmt_message (GMT, "%s +w<n> sets how many (x,y) points to use for angle calculation [auto].\n", pad);
 	if (kind == 1) {
 		gmt_message (GMT, "%s +x[first,last] adds <first> and <last> to these two labels [,'].\n", pad);
 		gmt_message (GMT, "%s   This modifier is only allowed if -SqN2 is used.\n", pad);
@@ -7803,8 +7825,8 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 	switch (option) {
 
 		case 'B':	/* Tickmark option */
-			gmt_message (GMT, "\t-B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+l|L<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>] OR\n");
-			gmt_message (GMT, "\t-B[p|s][x|y|z][a|f|g]<tick>[m][l|p] -B[p|s][x|y|z][+l<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]\n");
+			gmt_message (GMT, "\t-B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+l|L<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>] OR\n");
+			gmt_message (GMT, "\t-B[p|s][x|y|z][a|f|g]<tick>[m][l|p] -B[p|s][x|y|z][+l<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]\n");
 			break;
 
 		case 'J':	/* Map projection option */
@@ -9685,6 +9707,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_FONT:	/* Special to set all fonts */
 			error = gmtlib_setparameter (GMT, "FONT_ANNOT_PRIMARY", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_ANNOT_SECONDARY", value, core) +
+			        gmtlib_setparameter (GMT, "FONT_SUBTITLE", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_TITLE", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_TAG", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_HEADING", value, core) +
@@ -9708,6 +9731,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.font_label.size *= scale;
 				GMT->current.setting.font_heading.size *= scale;
 				GMT->current.setting.font_tag.size *= scale;
+				GMT->current.setting.font_subtitle.size *= scale;
 				GMT->current.setting.font_title.size *= scale;
 				GMT->current.setting.map_annot_offset[GMT_PRIMARY] *= scale;
 				GMT->current.setting.map_annot_offset[GMT_SECONDARY] *= scale;
@@ -9729,6 +9753,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 					p = gmt_hash_lookup (GMT, "FONT_LABEL", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "MAP_LABEL_OFFSET", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
+					p = gmt_hash_lookup (GMT, "FONT_SUBTITLE", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
 					p = gmt_hash_lookup (GMT, "FONT_TITLE", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 					if (p >= 0) GMT_keyword_updated[p] = true;		/* Leave a record that this keyword is no longer a default one */
@@ -9753,6 +9779,9 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_FONT_HEADING:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_heading)) error = true;
+			break;
+		case GMTCASE_FONT_SUBTITLE:
+			if (gmt_getfont (GMT, value, &GMT->current.setting.font_subtitle)) error = true;
 			break;
 		case GMTCASE_FONT_TITLE:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_title)) error = true;
@@ -10837,7 +10866,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 					case 'o':	f = 30;	break;
 					default:	f = 1;	break;
 				}
-				GMT->current.setting.refresh_time = atoi (lower_value) * f;
+				GMT->current.setting.refresh_time = (unsigned int )(atoi (lower_value) * f);
 				if (GMT->current.setting.refresh_time == 0)	/* 0 means no auto download */
 					GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			}
@@ -11319,6 +11348,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
+		case GMTCASE_FONT_SUBTITLE:
+			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_subtitle), GMT_BUFSIZ-1);
+			break;
 		case GMTCASE_FONT_TITLE:
 			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_title), GMT_BUFSIZ-1);
 			break;
