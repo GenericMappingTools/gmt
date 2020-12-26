@@ -3268,11 +3268,11 @@ static int psl_init_fonts (struct PSL_CTRL *PSL) {
 				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Trouble decoding custom font info [%s].  Skipping this font\n", buf);
 				continue;
 			}
-			if (strlen (fullname) >= PSL_NAME_LEN) {
-				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font name %s exceeds %d characters and will be truncated\n", fullname, PSL_NAME_LEN);
-				fullname[PSL_NAME_LEN-1] = '\0';
+			if (strlen (fullname) >= PSL_FONTNAME_LEN) {
+				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font name %s exceeds %d characters and will be truncated\n", fullname, PSL_FONTNAME_LEN);
+				fullname[PSL_FONTNAME_LEN-1] = '\0';
 			}
-			strncpy (PSL->internal.font[i].name, fullname, PSL_NAME_LEN);
+			strncpy (PSL->internal.font[i].name, fullname, PSL_FONTNAME_LEN);
 			i++;
 			if (i == n_alloc) {
 				n_alloc <<= 1;
