@@ -3272,7 +3272,7 @@ static int psl_init_fonts (struct PSL_CTRL *PSL) {
 				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font name %s exceeds %d characters and will be truncated\n", fullname, PSL_NAME_LEN);
 				fullname[PSL_NAME_LEN-1] = '\0';
 			}
-			strncpy (PSL->internal.font[i].name, fullname, PSL_NAME_LEN-1);
+			strncpy (PSL->internal.font[i].name, fullname, PSL_NAME_LEN);
 			i++;
 			if (i == n_alloc) {
 				n_alloc <<= 1;
