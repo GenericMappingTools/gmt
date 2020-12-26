@@ -87,7 +87,7 @@ struct GMT_FONT {
 
 /*! Holds information for each predefined font [Matches PSL_FONT structure] */
 struct GMT_FONTSPEC {
-	char name[GMT_LEN64];	/* Name of the font */
+	char name[PSL_FONTNAME_LEN];	/* Name of the font */
 	double height;		/* Height of letter "A" for unit fontsize */
 	int encode;
 	int encode_orig;

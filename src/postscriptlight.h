@@ -154,7 +154,7 @@ enum PSL_enum_const {PSL_CM	= 0,
 	PSL_MAX_EPS_FONTS	= 6,
 	PSL_MAX_DIMS		= 13,		/* Max number of dim arguments to PSL_plot_symbol */
 	PSL_N_PATTERNS		= 91,		/* Current number of predefined patterns + 1, # 91 is user-supplied */
-	PSL_NAME_LEN		= 64,		/* Max length of font names */
+	PSL_FONTNAME_LEN	= 64,		/* Max length of font names */
 	PSL_BUFSIZ		= 4096U};
 
 /* PSL codes for pen movements (used by PSL_plotpoint, PSL_plotline, PSL_plotarc) */
@@ -264,7 +264,7 @@ enum PSL_enum_err {PSL_BAD_VALUE = -99,	/* Bad value */
  *--------------------------------------------------------------------*/
 
 struct PSL_FONT {	/* Definition */
-	char name[PSL_NAME_LEN];/* Name of this font */
+	char name[PSL_FONTNAME_LEN];/* Name of this font */
 	double height;		/* Height of A for unit fontsize */
 	int encoded;		/* true if we never should re-encode this font (e.g. symbols) */
 				/* This is also changed to true after we do re-encode a font */
