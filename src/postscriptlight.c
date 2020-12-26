@@ -219,9 +219,11 @@ static char *PSL_ISO_name[] = {
 	"PSL_ISO-8859-8",
 	"PSL_ISO-8859-9",
 	"PSL_ISO-8859-10",
+	"PSL_ISO-8859-11",
 	"PSL_ISO-8859-13",
 	"PSL_ISO-8859-14",
 	"PSL_ISO-8859-15",
+	"PSL_ISO-8859-16",
 	NULL
 };
 
@@ -240,9 +242,11 @@ static char *PSL_ISO_encoding[] = {
 #include "PSL_ISO-8859-8.h"
 #include "PSL_ISO-8859-9.h"
 #include "PSL_ISO-8859-10.h"
+#include "PSL_ISO-8859-11.h"
 #include "PSL_ISO-8859-13.h"
 #include "PSL_ISO-8859-14.h"
 #include "PSL_ISO-8859-15.h"
+#include "PSL_ISO-8859-16.h"
 NULL
 };
 
@@ -3268,7 +3272,7 @@ static int psl_init_fonts (struct PSL_CTRL *PSL) {
 				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font name %s exceeds %d characters and will be truncated\n", fullname, PSL_NAME_LEN);
 				fullname[PSL_NAME_LEN-1] = '\0';
 			}
-			strncpy (PSL->internal.font[i].name, fullname, PSL_NAME_LEN-1);
+			strncpy (PSL->internal.font[i].name, fullname, PSL_NAME_LEN);
 			i++;
 			if (i == n_alloc) {
 				n_alloc <<= 1;
