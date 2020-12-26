@@ -6335,11 +6335,11 @@ GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Trouble decoding custom font info [%s].  Skipping this font.\n", buf);
 				continue;
 			}
-			if (strlen (fullname) >= GMT_LEN32) {
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Font %s exceeds %d characters and will be truncated\n", fullname, GMT_LEN32);
-				fullname[GMT_LEN32-1] = '\0';
+			if (strlen (fullname) >= GMT_LEN64) {
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Font %s exceeds %d characters and will be truncated\n", fullname, GMT_LEN64);
+				fullname[GMT_LEN64-1] = '\0';
 			}
-			strncpy (GMT->session.font[i].name, fullname, GMT_LEN32-1);
+			strncpy (GMT->session.font[i].name, fullname, GMT_LEN64);
 			i++;
 		}
 		fclose (in);
