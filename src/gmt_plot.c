@@ -3641,6 +3641,8 @@ GMT_LOCAL void gmtplot_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CT
 	if (G->curved_text) form |= PSL_TXT_CURVED;	/* Want text set along curved path */
 	if (G->fillbox) form |= PSL_TXT_FILLBOX;	/* Want the box filled */
 	if (G->box & 1) form |= PSL_TXT_DRAWBOX;	/* Want box outline */
+	if (G->font_label.form & 2)	/* Must supply both font rgb and pen rgb and use charpath and S to fill and outline text */
+		form |= (G->font_label.form & 8) ? PSL_TXT_PENFILL : PSL_TXT_FILLPEN;
 	if (mode & PSL_TXT_INIT) {	/* Determine and places all PSL attributes */
 		char *font = NULL;
 		if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */

@@ -651,9 +651,10 @@ MAP Parameters
         Sets which axes to draw and annotate. Combine any uppercase **W**,
         **E**, **S**, **N**, **Z** to draw and annotate west, east, south,
         north and/or vertical (perspective view only) axis. Use lower case
-        to draw and tick the axis only, but not annotate, or use **l**, **r**,
-        **b** or **t** to just draw the axis. Add an optional **+** to
-        draw a cube of axes in perspective view. [WrSt].
+        to draw the axis only, but not annotate.   To *just* draw an axis
+        without annotation and ticks you can use the **l**\ (eft), **r**\ (ight),
+        **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes. Add an
+        optional **+** to draw a cube of axes in perspective view. [WESN].
 
     **MAP_FRAME_PEN**
         Pen attributes used to draw plain map frame [thicker,black].
@@ -956,7 +957,7 @@ PostScript Parameters
         the character set is written as part of the PostScript header.  If
         you need to switch to another character set for a later overlay then
         you must use **--PS_CHAR_ENCODING**\ =\ *encoding* on the command line and
-        not via gmt :doc:`set`.  Finally, note 6, 8, and 11 do not work with standard fonts.
+        not via gmt :doc:`/set`.  Finally, note 6, 8, and 11 do not work with standard fonts.
 
     **PS_COLOR_MODEL**
         Determines whether PostScript output should use RGB, HSV, CMYK, or
