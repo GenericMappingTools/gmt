@@ -547,7 +547,7 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def	% true for rounded box shape, false gives rectangular box
   /PSL_fillbox psl_bits 128 and 128 eq def	% true to paint box opaque before placing text
   /PSL_drawbox psl_bits 256 and 256 eq def  % true to draw box outline before placing text
-  /PSL_font_F  psl_bits 1536 and 0 eq def  % 0 if just fill
+  /PSL_font_F  psl_bits 1536 and 0 eq def   % 0 if just fill
   /PSL_font_FO psl_bits 512 and 512 eq def  % 512 if fill then outline, 1024 if outline then fill, 0 if just fill
   /PSL_font_OF psl_bits 1024 and 1024 eq def  % 1024 if outline then fill, 0 if just fill
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def	% Upper limit in loop over labels
