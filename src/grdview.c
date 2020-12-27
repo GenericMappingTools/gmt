@@ -432,7 +432,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert grid values to colors. Optionally, name a master cpt\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [%s]; if so,\n", GMT_DEFAULT_CPT_NAME);
+	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [%s]; if so,\n", API->GMT->current.setting.cpt);
 	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append +i<dz> to quantize the range [the exact grid range].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
@@ -791,8 +791,8 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	bool get_contours, bad, pen_set, begin, saddle, drape_resample = false;
 	bool nothing_inside = false, use_intensity_grid, do_G_reading = true;
 
-	unsigned int c, nk, n4, row, col, n_edges, d_reg[3], i_reg = 0, id[2], good;
-	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, *edge = NULL;
+	unsigned int c, nk, n4, row, col, d_reg[3], i_reg = 0, id[2], good;
+	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0;
 
 	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, way, bin_inc[4], ij_inc[4], error = 0;
 	int start[2], stop[2], inc[2];
@@ -858,7 +858,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->C.active && Ctrl->Q.cpt && Ctrl->G.n != 3)
-		Ctrl->C.active = true;	/* Use default CPT (GMT_DEFAULT_CPT_NAME) and autostretch or under modern reuse current CPT */
+		Ctrl->C.active = true;	/* Use default CPT (GMT->current.setting.cpt) and autostretch or under modern reuse current CPT */
 
 	/* Determine what wesn to pass to map_setup */
 
@@ -1063,10 +1063,11 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	y_inc[0] = y_inc[1] = 0.0;	y_inc[2] = y_inc[3] = Z->header->inc[GMT_Y];
 
 	if (get_contours) {	/* Need to find contours */
+		unsigned int n_edges, *edge = NULL;
 		struct GMT_GRID *Z_orig = NULL;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Find contours\n");
-		n_edges = Z->header->n_rows * (urint (ceil (Z->header->n_columns / 16.0)));
-		edge = gmt_M_memory (GMT, NULL, n_edges, unsigned int);
+
+		edge = gmt_contour_edge_init (GMT, Z->header, &n_edges);
 		binij = gmt_M_memory (GMT, NULL, Topo->header->nm, struct GRDVIEW_BIN);
 		if ((Z_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, Z)) == NULL) {
 			gmt_M_free (GMT, edge);		gmt_M_free (GMT, binij);

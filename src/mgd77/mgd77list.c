@@ -712,6 +712,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active[Q_C] && Ctrl->Q.min[Q_C] >= Ctrl->Q.max[Q_C], "Option -Qc: Minimum course change equals or exceeds maximum course change!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active[Q_V] && (Ctrl->Q.min[Q_V] >= Ctrl->Q.max[Q_V] || Ctrl->Q.min[Q_V] < 0.0), "Option -Qv: Minimum velocity equals or exceeds maximum velocity or is negative!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop, "Option -D: Start time exceeds stop time!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && MGD77_Verify_Columns (GMT, Ctrl->F.flags), "Option F: Invalid column names encountered\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -1119,20 +1120,20 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 		}
 		for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {	/* Prepare GMT output formatting machinery */
 			while (kx < n_aux && aux[kx].pos == kk) {	/* Insert formatting for auxiliary column (none are special) */
-				gmt_set_column (GMT, GMT_OUT, pos, GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_OUT, pos, GMT_IS_FLOAT);
 				pos++, kx++;
 			}
 			if (kk >= n_cols_to_process) continue;	/* Don't worry about helper columns that won't be printed */
 			c  = M.order[kk].set;
 			id = M.order[kk].item;
 			if (c == MGD77_M77_SET && id == time_column)	/* Special time formatting */
-				gmt_set_column (GMT, GMT_OUT, pos, M.time_format);
+				gmt_set_column_type (GMT, GMT_OUT, pos, M.time_format);
 			else if (c == MGD77_M77_SET && id == lon_column)	/* Special lon formatting */
-				gmt_set_column (GMT, GMT_OUT, pos, GMT_IS_LON);
+				gmt_set_column_type (GMT, GMT_OUT, pos, GMT_IS_LON);
 			else if (c == MGD77_M77_SET && id == lat_column)	/* Special lat formatting */
-				gmt_set_column (GMT, GMT_OUT, pos, GMT_IS_LAT);
+				gmt_set_column_type (GMT, GMT_OUT, pos, GMT_IS_LAT);
 			else 		/* Everything else is float (not true for the 3 strings though but dealt with separately) */
-				gmt_set_column (GMT, GMT_OUT, pos, GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_OUT, pos, GMT_IS_FLOAT);
 		}
 
 		if (first_cruise && !GMT->common.b.active[GMT_OUT] && GMT->current.setting.io_header[GMT_OUT]) {	/* Write out header record */

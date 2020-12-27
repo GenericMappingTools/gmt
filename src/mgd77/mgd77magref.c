@@ -22,7 +22,7 @@
 #define THIS_MODULE_PURPOSE	"Evaluate the IGRF or CM4 magnetic field models"
 #define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-Vbdh" GMT_OPT("Hm")
+#define THIS_MODULE_OPTIONS "-Vbdho" GMT_OPT("Hm")
 
 struct MGD77MAGREF_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -86,7 +86,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A+y+a<alt>+t<date>] [-C<cm4file>] [-D<dstfile>] [-E<f107file>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<rthxyzdi[/[0|9]1234567]>] [-G] [-L<rtxyz[/1234]>] [-Sc|l<low>/<high>] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_o_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -154,7 +154,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\t   Default is 4 input columns (unless -A is used).  Note for binary input, absolute time must\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   be in the unix time-system (unless -A+y is used).\n");
 	}
-	GMT_Option (API, "bo,d,h,:,.");
+	GMT_Option (API, "bo,d,h,o,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -193,12 +193,12 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GM
 						case 't':
 							Ctrl->A.fixed_time = true;
 							strncpy (tfixed, &p[1], GMT_LEN64-1);
-							gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
+							gmt_set_column_type (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
 							break;
 						case 'y':
 							Ctrl->A.years = true;
-							gmt_set_column (GMT, GMT_IO, 2, GMT_IS_FLOAT);
-							gmt_set_column (GMT, GMT_IO, 3, GMT_IS_FLOAT);
+							gmt_set_column_type (GMT, GMT_IO, 2, GMT_IS_FLOAT);
+							gmt_set_column_type (GMT, GMT_IO, 3, GMT_IS_FLOAT);
 							break;
 						default:
 							break;
@@ -456,7 +456,7 @@ EXTERN_MSC int GMT_mgd77magref (void *V_API, int mode, void *args) {
 
 	Ctrl->CM4->CM4_D.dst = calloc (1U, sizeof(double));	/* We need at least a size of one in case a value is given in input */
 	if (!Ctrl->A.fixed_time)			/* Otherwise we don't print the time */
-		gmt_set_column (GMT, GMT_IO, t_col, GMT_IS_ABSTIME);
+		gmt_set_column_type (GMT, GMT_IO, t_col, GMT_IS_ABSTIME);
 
 	/* Shorthand for these */
 	nval = Ctrl->CM4->CM4_F.n_field_components;
@@ -534,12 +534,12 @@ EXTERN_MSC int GMT_mgd77magref (void *V_API, int mode, void *args) {
 		Ctrl->CM4->CM4_DATA.n_times = 1;
 	}
 	else	/* Make sure input time columns are encoded/decoded properly since here we know t_col is set. */
-		gmt_set_column (GMT, GMT_IO, t_col, (Ctrl->A.years) ? GMT_IS_FLOAT : GMT_IS_ABSTIME);
+		gmt_set_column_type (GMT, GMT_IO, t_col, (Ctrl->A.years) ? GMT_IS_FLOAT : GMT_IS_ABSTIME);
 
-	gmt_set_column (GMT, GMT_IO, t_col+1, GMT_IS_FLOAT);		/* Override any previous t_col = 3 settings */
+	gmt_set_column_type (GMT, GMT_IO, t_col+1, GMT_IS_FLOAT);		/* Override any previous t_col = 3 settings */
 	if (!Ctrl->copy_input) {	/* No time on output */
-		gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_FLOAT);
-		gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
+		gmt_set_column_type (GMT, GMT_OUT, 2, GMT_IS_FLOAT);
+		gmt_set_column_type (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
 	}
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */

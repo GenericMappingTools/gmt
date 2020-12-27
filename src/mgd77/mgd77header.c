@@ -231,7 +231,7 @@ EXTERN_MSC int GMT_mgd77header (void *V_API, int mode, void *args) {
 
 	saved_range = GMT->current.io.geo.range;	/* We may have to reset thisso keep a copy */
 	gmt_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, M.time_format);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, M.time_format);
 
 	use = (M.original || M.format != MGD77_FORMAT_CDF) ? MGD77_ORIG : MGD77_REVISED;
 

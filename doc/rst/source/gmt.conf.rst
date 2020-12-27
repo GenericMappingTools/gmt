@@ -61,6 +61,9 @@ COLOR Parameters
         Color used for the foreground of images (i.e., when z > highest
         color table entry) [white].
 
+    **COLOR_CPT**
+        Default CPT table when none is selected [turbo].
+
     **COLOR_HSV_MAX_S**
         Maximum saturation (0-1) assigned for most positive intensity value [0.1].
 
@@ -85,6 +88,10 @@ COLOR Parameters
 
     **COLOR_NAN**
         Color used for the non-defined areas of images (i.e., where z = NaN) [127.5].
+
+    **COLOR_SET**
+        Default comma-separated list of colors (or a *categorical* CPT name) for automatic,
+        sequential color assignments [*default*, which is #0072BD,#D95319,#EDB120,#7E2F8E,#77AC30,#4DBEEE,#A2142F].
 
 .. _DIR Parameters:
 
@@ -139,6 +146,9 @@ FONT Parameters
     **FONT_LOGO**
         Font to use for text plotted as part of the GMT time logo
         [8p,Helvetica,black].
+
+    **FONT_SUBTITLE**
+        Font to use when plotting titles over graphs that involve a subtitle [18p,Helvetica,black].
 
     **FONT_TAG**
         Font to use for subplot panel tags such as a), ii)
@@ -633,8 +643,10 @@ MAP Parameters
         Sets which axes to draw and annotate. Combine any uppercase **W**,
         **E**, **S**, **N**, **Z** to draw and annotate west, east, south,
         north and/or vertical (perspective view only) axis. Use lower case
-        to draw the axis only, but not annotate. Add an optional **+** to
-        draw a cube of axes in perspective view. [WESN].
+        to draw the axis only, but not annotate.   To *just* draw an axis
+        without annotation and ticks you can use the **l**\ (eft), **r**\ (ight),
+        **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes. Add an
+        optional **+** to draw a cube of axes in perspective view. [WESN].
 
     **MAP_FRAME_PEN**
         Pen attributes used to draw plain map frame [thicker,black].
@@ -932,12 +944,12 @@ PostScript Parameters
         files and in command line parameters. This allows GMT to ensure
         that the PostScript output generates the correct characters on the
         plot. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
-        ISO-8859-x (where x is in the ranges [1,10] or [13,15]). See
+        ISO-8859-x (where x is in the ranges 1-11 or 13-16). See
         Appendix F for details [ISOLatin1+ (or Standard+)].  **Note**: Normally
         the character set is written as part of the PostScript header.  If
         you need to switch to another character set for a later overlay then
         you must use **--PS_CHAR_ENCODING**\ =\ *encoding* on the command line and
-        not via gmt set.
+        not via gmt :doc:`/set`.  Finally, note 6, 8, and 11 do not work with standard fonts.
 
     **PS_COLOR_MODEL**
         Determines whether PostScript output should use RGB, HSV, CMYK, or

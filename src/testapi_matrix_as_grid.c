@@ -1,4 +1,4 @@
-#include "gmt_dev.h"
+#include "gmt.h"
 
 /* Test passing a gridline and pixel-registered matrix as grids to grdimage.
  * the two plots should be identical.  This tests was made to demonstrate a
@@ -15,11 +15,12 @@ int main () {
 
 	double inc[2] = {1.0, 1.0};
 	float coord[9] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};	/* Use floats to match what grids are */
+	double range_g[4] = {0.0, 2.0, 0.0, 2.0};
+	double range_p[4] = {-0.5, 2.5, -0.5, 2.5};
 
 	API = GMT_Create_Session ("test", 2U, mode, NULL);
 
 	/* pass matrix as gridline-registered grid */
-	double range_g[4] = {0.0, 2.0, 0.0, 2.0};
 	if ((M_g = GMT_Create_Data (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, range_g, inc, GMT_GRID_NODE_REG, 0, NULL)) == NULL) return (EXIT_FAILURE);
 	GMT_Put_Matrix (API, M_g, GMT_FLOAT, 0, coord);
 	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, M_g, input_g);
@@ -32,7 +33,6 @@ int main () {
 	GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, args_g);
 
 	/* pass matrix as pixel-registered grid */
-	double range_p[4] = {-0.5, 2.5, -0.5, 2.5};
 	if ((M_p = GMT_Create_Data (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, range_p, inc, GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) return (EXIT_FAILURE);
 	GMT_Put_Matrix (API, M_p, GMT_FLOAT, 0, coord);
 	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, M_p, input_p);

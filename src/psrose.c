@@ -667,8 +667,8 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 			unsigned int col_type[2];
 			struct GMT_RECORD *Rec = gmt_new_record (GMT, out, NULL);
 			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 2U, unsigned int);	/* Save first 2 current output col types */
-			gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_FLOAT);
-			gmt_set_column (GMT, GMT_OUT, GMT_Y, GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_OUT, GMT_X, GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_OUT, GMT_Y, GMT_IS_FLOAT);
 			if ((error = GMT_Set_Columns (API, GMT_OUT, 7U, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 				gmt_M_free (GMT, sum);
 				gmt_M_free (GMT, xx);
@@ -1064,8 +1064,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	if ((GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) && !GMT->current.map.frame.no_frame) {
 		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 		y = lsize + 6.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY];
-		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-		PSL_plottext (PSL, 0.0, off + y, GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, PSL_BC, form);
+		gmt_map_title (GMT, 0.0, off + y);
 
 		gmt_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
 		if (do_labels) {

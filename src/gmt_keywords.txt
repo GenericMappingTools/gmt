@@ -5,19 +5,21 @@
 # gmt_keywords.h has quoted parameter names for text comparisons
 # gmt_keycases.h has #define GMT_<parameter> <case> statements
 # Any changes here will likely mean editing gmt_init.c as well,
-# including new entries to GMT5_keywords[].
+# including new entries to GMT_active_keyword[].
 #
 #-------------------------------------------------------
 # COLOR Group:	Color system settings
 #-------------------------------------------------------
 COLOR_BACKGROUND		# Color used for data below the current color table range
 COLOR_FOREGROUND		# Color used for data above the current color table range
+COLOR_CPT			# Default CPT
 COLOR_MODEL			# Color model in use (RGB, HSV, CMYK)
 COLOR_NAN			# Color used for data whose value is NaN
 COLOR_HSV_MAX_S			# Maximum saturation assigned for most positive intensity value
 COLOR_HSV_MAX_V			# Maximum value assigned for most positive intensity value
 COLOR_HSV_MIN_S			# Minimum saturation assigned for most positive intensity value
 COLOR_HSV_MIN_V			# Minimum value assigned for most positive intensity value
+COLOR_SET			# Default list of colors (or a cpt) for automatic sequential color choices
 #-------------------------------------------------------
 # DIR Group:	Directories to use
 #-------------------------------------------------------
@@ -35,6 +37,7 @@ FONT_ANNOT_SECONDARY		# Font for secondary axes annotations
 FONT_HEADING			# Font for heading above subplots
 FONT_LABEL			# Font for axes labels
 FONT_LOGO			# Font for GMT logo
+FONT_SUBTITLE		# Font for plot subtitles
 FONT_TAG			# Font for panel figure tags
 FONT_TITLE			# Font for plot titles
 #-------------------------------------------------------

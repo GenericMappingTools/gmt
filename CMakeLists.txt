@@ -87,6 +87,10 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 		"Need to either install GraphicsMagick or disable tests.")
 endif (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 
+# Find latex and dvips for LaTeX integration
+find_program (LATEX latex)
+find_program (DVIPS dvips)
+
 # Add subdirectories
 add_subdirectory (src)
 add_subdirectory (share)      # share must be processed *after* src (GSHHG_PATH)
@@ -240,9 +244,9 @@ message(
 	"*\n"
 	"*  Locations:\n"
 	"*  Installing GMT in          : ${CMAKE_INSTALL_PREFIX}\n"
-	"*  GMT_DATADIR                : ${GMT_DATADIR_FULL}\n"
-	"*  GMT_DOCDIR                 : ${GMT_DOCDIR_FULL}\n"
-	"*  GMT_MANDIR                 : ${GMT_MANDIR_FULL}")
+	"*  GMT_DATADIR                : ${CMAKE_INSTALL_PREFIX}/${GMT_DATADIR}\n"
+	"*  GMT_DOCDIR                 : ${CMAKE_INSTALL_PREFIX}/${GMT_DOCDIR}\n"
+	"*  GMT_MANDIR                 : ${CMAKE_INSTALL_PREFIX}/${GMT_MANDIR}")
 
 # For debugging: print all set variables
 #get_cmake_property(_variableNames VARIABLES)

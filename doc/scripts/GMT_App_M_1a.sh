@@ -76,10 +76,16 @@ do
 	1.55 $y ${left}
 	4.50 $y ${right}
 	END
+	if [ $(grep -c RANGE ${GMT_SHAREDIR}/cpt/${left}.cpt) -eq 1 ]; then # Plot default range for left CPT
+		grep RANGE ${GMT_SHAREDIR}/cpt/${left}.cpt | awk '{printf "2.9 %g %s\n", "'$y'", $4}' | gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N
+	fi
 	if [ $(grep -c HARD_HINGE ${GMT_SHAREDIR}/cpt/${left}.cpt) -eq 1 ]; then # Plot hard hinge symbol for left CPT
 		echo 1.55 $y | gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i
 	elif [ $(grep -c SOFT_HINGE ${GMT_SHAREDIR}/cpt/${left}.cpt) -eq 1 ]; then # Plot soft hinge symbol for left CPT
 		echo 1.55 $y | gmt plot -St0.2c -Gwhite -Wfaint -D0/-0.29i
+	fi
+	if [ $(grep -c RANGE ${GMT_SHAREDIR}/cpt/${right}.cpt) -eq 1 ]; then # Plot default range for left CPT
+		grep RANGE ${GMT_SHAREDIR}/cpt/${right}.cpt | awk '{printf "5.85 %g %s\n", "'$y'", $4}' | gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N
 	fi
 	if [ $(grep -c HARD_HINGE ${GMT_SHAREDIR}/cpt/${right}.cpt) -eq 1 ]; then # Plot hard hinge symbol for right CPT
 		echo 4.50 $y | gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i

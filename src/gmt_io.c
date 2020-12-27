@@ -1218,7 +1218,8 @@ GMT_LOCAL int gmtio_a_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *
 	while ((--p != line) && strchr (" \t,\r\n", (int)*p));
 	*(p + 1) = '\0';
 	/* Convert whatever it is to double */
-	gmt_scanf (GMT, line, gmt_M_type (GMT, GMT_IN, GMT_Z), d);
+	if (gmt_scanf (GMT, line, gmt_M_type (GMT, GMT_IN, GMT_Z), d) == GMT_IS_NAN)
+		*d = GMT->session.d_NaN;
 	return (GMT_OK);
 }
 
@@ -3284,17 +3285,17 @@ GMT_LOCAL void gmtio_assign_col_type_if_notset (struct GMT_CTRL *GMT, unsigned i
 		for (k = 0; k < GMT->common.i.n_cols; k++) {
 			if (GMT->current.io.col[GMT_IN][k].col == col) {	/* Found one of the physical columns that will be column = order */
 				if (!GMT->current.io.col_set[GMT_IN][GMT->current.io.col[GMT_IN][k].order])
-					gmt_set_column (GMT, GMT_IN, GMT->current.io.col[GMT_IN][k].order, type);
+					gmt_set_column_type (GMT, GMT_IN, GMT->current.io.col[GMT_IN][k].order, type);
 				if (!GMT->current.io.col_set[GMT_OUT][GMT->current.io.col[GMT_IN][k].order])
-					gmt_set_column (GMT, GMT_OUT, GMT->current.io.col[GMT_IN][k].order, type);
+					gmt_set_column_type (GMT, GMT_OUT, GMT->current.io.col[GMT_IN][k].order, type);
 			}
 		}
 	}
 	else {	/* logical equal physical, so no column shopping */
 		if (!GMT->current.io.col_set[GMT_IN][col])
-			gmt_set_column (GMT, GMT_IN, col, type);
+			gmt_set_column_type (GMT, GMT_IN, col, type);
 		if (!GMT->current.io.col_set[GMT_OUT][col])
-			gmt_set_column (GMT, GMT_OUT, col, type);
+			gmt_set_column_type (GMT, GMT_OUT, col, type);
 	}
 }
 
@@ -3906,7 +3907,7 @@ GMT_LOCAL void * gmtio_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, in
 			}
 			for (k = 0; k < GMT->current.io.count[v][1]; ++col, ++k) {	/* For each column in variable v [typically 1 unless 2-D array] */
 				start[1] = k, count[1] = 1;	/* Read only k'th column in 2-D array or the only column [k = 0] in 1-D array */
-				nc_get_vara_double (GMT->current.io.ncid, GMT->current.io.varid[v], start, count, GMT->hidden.mem_coord[col]);	/* Read column */
+				nc_get_vara_double (GMT->current.io.grpid[v], GMT->current.io.varid[v], start, count, GMT->hidden.mem_coord[col]);	/* Read column */
 				for (row = 0; row < GMT->current.io.ndim; ++row) {	/* Loop over all records (rows) to do scaling */
 					if (GMT->hidden.mem_coord[col][row] == GMT->current.io.missing_value[v])	/* Nan proxy detected */
 						GMT->hidden.mem_coord[col][row] = GMT->session.d_NaN;
@@ -3956,6 +3957,29 @@ GMT_LOCAL void * gmtio_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, in
 }
 
 /*! . */
+GMT_LOCAL int gmtio_nc_inq_varid (int ncid, const char *varnm, int *grpid, int *varid) {
+/* Get group id and variable id of netCDF variable that includes the full group name.
+ * If no group name is included, grpid is the ncid
+ */
+	char *pstr;
+	char str[GMT_LEN64];
+	int status;
+
+	strcpy (str, varnm);
+	if ((pstr = strrchr (str, '/'))) {
+		pstr[0] = '\0';
+		status = nc_inq_grp_full_ncid (ncid, str, grpid);
+		if (status != NC_NOERR) return (status);
+		pstr++;
+	}
+	else {
+		*grpid = ncid;
+		pstr = str;
+	}
+	return (nc_inq_varid (*grpid, pstr, varid));
+}
+
+/*! . */
 GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) {
 /* Open a netCDF file for column I/O. Append ?var1/var2/... to indicate the requested columns.
  * Currently only reading is supported.
@@ -3967,6 +3991,7 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
  */
 
 	char file[PATH_MAX] = {""}, path[PATH_MAX] = {""};
+	char *pstr, *qstr;
 	int i, j, nvars, dimids[5] = {-1, -1, -1, -1, -1}, ndims, in, id;
 	size_t n, item[2];
 	size_t tmp_pointer; /* To avoid "cast from pointer to integer of different size" */
@@ -3990,7 +4015,21 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 		varnm[11], varnm[12], varnm[13], varnm[14], varnm[15], varnm[16], varnm[17], varnm[18], varnm[19]) - 1;
 	if (gmt_getdatapath (GMT, file, path, R_OK) == NULL) return (NULL);	/* No such file */
 	if (nc_open (path, NC_NOWRITE, &GMT->current.io.ncid)) return (NULL);
-	if (gmt_M_compat_check (GMT, 4)) {
+	pstr = strrchr (filename, ',');
+	qstr = strchr (filename, '?');
+
+	/* In case there is a comma in the list of variables, or if the first variable is actually a group,
+	 * we re-read the variable list with comma separators.
+	 * When a group is missing, nc_iq_grp_ncid comes either back with error status, or with group id
+	 * identical to file id. Not clear why both can happen, but this check captures both. */
+	i = nc_inq_grp_ncid (GMT->current.io.ncid, varnm[0], &id);
+	if (pstr > qstr || (i == NC_NOERR && GMT->current.io.ncid != id)) {
+		nvars = sscanf (filename,
+			"%[^?]?%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,]",
+			file, varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9], varnm[10],
+			varnm[11], varnm[12], varnm[13], varnm[14], varnm[15], varnm[16], varnm[17], varnm[18], varnm[19]) - 1;
+	}
+	else if (gmt_M_compat_check (GMT, 4)) {
 		if (nvars <= 0) nvars = sscanf (GMT->common.b.varnames,
 			"%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]",
 			varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9], varnm[10],
@@ -4000,6 +4039,7 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 		nc_inq_nvars (GMT->current.io.ncid, &GMT->current.io.nvars);
 	else
 		GMT->current.io.nvars = nvars;
+	GMT->current.io.grpid = gmt_M_memory (GMT, NULL, GMT->current.io.nvars, int);
 	GMT->current.io.varid = gmt_M_memory (GMT, NULL, GMT->current.io.nvars, int);
 	GMT->current.io.scale_factor = gmt_M_memory (GMT, NULL, GMT->current.io.nvars, double);
 	GMT->current.io.add_offset = gmt_M_memory (GMT, NULL, GMT->current.io.nvars, double);
@@ -4024,18 +4064,20 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 		}
 
 		/* Get variable ID and variable name */
-		if (nvars <= 0)
+		if (nvars <= 0) {
+			GMT->current.io.grpid[i] = GMT->current.io.ncid;
 			GMT->current.io.varid[i] = i;
+		}
 		else {
-			if (gmt_M_err_fail (GMT, nc_inq_varid (GMT->current.io.ncid, varnm[i], &GMT->current.io.varid[i]), file)) {
+			if (gmt_M_err_fail (GMT, gmtio_nc_inq_varid (GMT->current.io.ncid, varnm[i], &GMT->current.io.grpid[i], &GMT->current.io.varid[i]), file)) {
 				GMT->parent->error = GMT_NOT_A_VALID_ID;
 				return NULL;
 			}
 		}
-		nc_inq_varname (GMT->current.io.ncid, GMT->current.io.varid[i], varname);
+		nc_inq_varname (GMT->current.io.grpid[i], GMT->current.io.varid[i], varname);
 
 		/* Check number of dimensions */
-		if (gmt_M_err_fail (GMT, nc_inq_varndims (GMT->current.io.ncid, GMT->current.io.varid[i], &ndims), file)) {
+		if (gmt_M_err_fail (GMT, nc_inq_varndims (GMT->current.io.grpid[i], GMT->current.io.varid[i], &ndims), file)) {
 			GMT->parent->error = GMT_GRDIO_BAD_DIM;
 			return NULL;
 		}
@@ -4052,8 +4094,8 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "NetCDF variable %s has %" PRIuS " dimensions, showing only 2\n", varname, ndims);
 
 		/* Get information of the first two dimensions */
-		nc_inq_vardimid(GMT->current.io.ncid, GMT->current.io.varid[i], dimids);
-		nc_inq_dimlen(GMT->current.io.ncid, dimids[0], &n);
+		nc_inq_vardimid(GMT->current.io.grpid[i], GMT->current.io.varid[i], dimids);
+		nc_inq_dimlen(GMT->current.io.grpid[i], dimids[0], &n);
 		if (GMT->current.io.ndim != 0 && GMT->current.io.ndim != n) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "NetCDF variable %s has different dimension (%" PRIuS ") from others (%" PRIuS ")\n",
 			            varname, n, GMT->current.io.ndim);
@@ -4062,7 +4104,7 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 		}
 		GMT->current.io.count[i][0] = GMT->current.io.ndim = n;
 		if (dimids[1] >= 0 && ndims - in > 1) {
-			nc_inq_dimlen(GMT->current.io.ncid, dimids[1], &n);
+			nc_inq_dimlen(GMT->current.io.grpid[i], dimids[1], &n);
 		}
 		else
 			n = 1;
@@ -4071,41 +4113,41 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 
 		/* If selected by value instead of index */
 		for (j = 1; by_value && j <= in; j++) {
-			nc_inq_dim (GMT->current.io.ncid, dimids[j], dimname, &n);
-			nc_inq_varid (GMT->current.io.ncid, dimname, &id);
+			nc_inq_dim (GMT->current.io.grpid[i], dimids[j], dimname, &n);
+			nc_inq_varid (GMT->current.io.grpid[i], dimname, &id);
 			item[0] = 0, item[1] = n-1;
-			if (nc_get_att_double (GMT->current.io.ncid, id, "actual_range", dummy)) {
-				nc_get_var1_double (GMT->current.io.ncid, id, &item[0], &dummy[0]);
-				nc_get_var1_double (GMT->current.io.ncid, id, &item[1], &dummy[1]);
+			if (nc_get_att_double (GMT->current.io.grpid[i], id, "actual_range", dummy)) {
+				nc_get_var1_double (GMT->current.io.grpid[i], id, &item[0], &dummy[0]);
+				nc_get_var1_double (GMT->current.io.grpid[i], id, &item[1], &dummy[1]);
 			}
 			GMT->current.io.t_index[i][j] = lrint((t_value[j] - dummy[0]) / (dummy[1] - dummy[0]));
 		}
 
 		/* Get scales, offsets and missing values */
-		if (nc_get_att_double (GMT->current.io.ncid, GMT->current.io.varid[i], "scale_factor",
+		if (nc_get_att_double (GMT->current.io.grpid[i], GMT->current.io.varid[i], "scale_factor",
 		                       &GMT->current.io.scale_factor[i]))
 			GMT->current.io.scale_factor[i] = 1.0;
-		if (nc_get_att_double (GMT->current.io.ncid, GMT->current.io.varid[i], "add_offset",
+		if (nc_get_att_double (GMT->current.io.grpid[i], GMT->current.io.varid[i], "add_offset",
 		                       &GMT->current.io.add_offset[i]))
 			GMT->current.io.add_offset[i] = 0.0;
-		if (nc_get_att_double (GMT->current.io.ncid, GMT->current.io.varid[i], "_FillValue",
-		                       &GMT->current.io.missing_value[i]) && nc_get_att_double (GMT->current.io.ncid, GMT->current.io.varid[i],
+		if (nc_get_att_double (GMT->current.io.grpid[i], GMT->current.io.varid[i], "_FillValue",
+		                       &GMT->current.io.missing_value[i]) && nc_get_att_double (GMT->current.io.grpid[i], GMT->current.io.varid[i],
 		                       "missing_value", &GMT->current.io.missing_value[i]))
 		    GMT->current.io.missing_value[i] = GMT->session.d_NaN;
 
 		/* Scan for geographical or time units */
-		if (gmtlib_nc_get_att_text (GMT, GMT->current.io.ncid, GMT->current.io.varid[i], "long_name", long_name, GMT_LEN256)) long_name[0] = 0;
-		if (gmtlib_nc_get_att_text (GMT, GMT->current.io.ncid, GMT->current.io.varid[i], "units", units, GMT_LEN256)) units[0] = 0;
+		if (gmtlib_nc_get_att_text (GMT, GMT->current.io.grpid[i], GMT->current.io.varid[i], "long_name", long_name, GMT_LEN256)) long_name[0] = 0;
+		if (gmtlib_nc_get_att_text (GMT, GMT->current.io.grpid[i], GMT->current.io.varid[i], "units", units, GMT_LEN256)) units[0] = 0;
 		gmt_str_tolower (long_name); gmt_str_tolower (units);
 
 		if (gmt_M_type (GMT, GMT_IN, i) == GMT_IS_FLOAT)
 			{ /* Float type is preset, do not alter */ }
 		else if (!strcmp (long_name, "longitude") || strstr (units, "degrees_e"))
-			gmt_set_column (GMT, GMT_IN, i, GMT_IS_LON);
+			gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_LON);
 		else if (!strcmp (long_name, "latitude") || strstr (units, "degrees_n"))
-			gmt_set_column (GMT, GMT_IN, i, GMT_IS_LAT);
+			gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_LAT);
 		else if (!strcmp (long_name, "time") || !strcmp (varname, "time")) {
-			gmt_set_column (GMT, GMT_IN, i, GMT_IS_RELTIME);
+			gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_RELTIME);
 			gmt_M_memcpy (&time_system, &GMT->current.setting.time_system, 1, struct GMT_TIME_SYSTEM);
 			if (gmt_get_time_system (GMT, units, &time_system) || gmt_init_time_system_structure (GMT, &time_system))
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Time units [%s] in NetCDF file not recognized, defaulting to %s.\n",
@@ -4118,7 +4160,7 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 			GMT->current.io.add_offset[i] *= GMT->current.setting.time_system.i_scale;	/* Offset in internal time units */
 		}
 		else if (gmt_M_type (GMT, GMT_IN, i) == GMT_IS_UNKNOWN)
-			gmt_set_column (GMT, GMT_IN, i, GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_FLOAT);
 	}
 
 	GMT->current.io.input = gmtio_nc_input;
@@ -4231,16 +4273,16 @@ int gmtlib_scanf_geodim (struct GMT_CTRL *GMT, char *s, double *val) {
 /*! . */
 void gmt_set_geographic (struct GMT_CTRL *GMT, unsigned int dir) {
 	/* Eliminate lots of repeated statements to do this: */
-	gmt_set_column (GMT, dir, GMT_X, GMT_IS_LON);
-	gmt_set_column (GMT, dir, GMT_Y, GMT_IS_LAT);
+	gmt_set_column_type (GMT, dir, GMT_X, GMT_IS_LON);
+	gmt_set_column_type (GMT, dir, GMT_Y, GMT_IS_LAT);
 	if (dir == GMT_IN) (void) gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Default spherical distance calculations are in meters (cannot fail) */
 }
 
 /*! . */
 void gmt_set_cartesian (struct GMT_CTRL *GMT, unsigned int dir) {
 	/* Eliminate lots of repeated statements to do this: */
-	gmt_set_column (GMT, dir, GMT_X, GMT_IS_FLOAT);
-	gmt_set_column (GMT, dir, GMT_Y, GMT_IS_FLOAT);
+	gmt_set_column_type (GMT, dir, GMT_X, GMT_IS_FLOAT);
+	gmt_set_column_type (GMT, dir, GMT_Y, GMT_IS_FLOAT);
 }
 
 /*! Handles non-proxy checking for input z values.  If the input value equals
@@ -4365,6 +4407,7 @@ int gmt_fclose (struct GMT_CTRL *GMT, FILE *stream) {
 	if ((size_t)stream == (size_t)-GMT->current.io.ncid) {
 		/* Special treatment for netCDF files */
 		nc_close (GMT->current.io.ncid);
+		gmt_M_free (GMT, GMT->current.io.grpid);
 		gmt_M_free (GMT, GMT->current.io.varid);
 		gmt_M_free (GMT, GMT->current.io.add_offset);
 		gmt_M_free (GMT, GMT->current.io.scale_factor);
@@ -5627,8 +5670,8 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 	gmtio_init_io_columns (GMT, GMT_IN);	/* Set default input column order */
 	gmtio_init_io_columns (GMT, GMT_OUT);	/* Set default output column order */
 	for (i = 0; i < 2; i++) GMT->current.io.skip_if_NaN[i] = true;								/* x/y must be non-NaN */
-	for (i = 0; i < 2; i++) gmt_set_column (GMT, GMT_IO, i, GMT_IS_UNKNOWN);	/* Must be told [or find out] what x/y are */
-	for (i = 2; i < GMT_MAX_COLUMNS; i++) gmt_set_column (GMT, GMT_IO, i, GMT_IS_FLOAT);	/* Other columns default to floats */
+	for (i = 0; i < 2; i++) gmt_set_column_type (GMT, GMT_IO, i, GMT_IS_UNKNOWN);	/* Must be told [or find out] what x/y are */
+	for (i = 2; i < GMT_MAX_COLUMNS; i++) gmt_set_column_type (GMT, GMT_IO, i, GMT_IS_FLOAT);	/* Other columns default to floats */
 	gmt_M_memset (GMT->current.io.col_set[GMT_X], GMT_MAX_COLUMNS, char);	/* This is the initial state of input columns - all available to be changed by modules */
 	gmt_M_memset (GMT->current.io.col_set[GMT_Y], GMT_MAX_COLUMNS, char);	/* This is the initial state of output columns - all available to be changed by modules */
 	gmt_M_memset (GMT->current.io.curr_rec, GMT_MAX_COLUMNS, double);	/* Initialize current and previous records to zero */
@@ -9067,7 +9110,7 @@ void gmt_replace_backslash_in_path (char *dir) {
 }
 
 /*! . */
-void gmt_set_column (struct GMT_CTRL *GMT, unsigned int direction, unsigned int col, enum gmt_col_enum type) {
+void gmt_set_column_type (struct GMT_CTRL *GMT, unsigned int direction, unsigned int col, enum gmt_col_enum type) {
 	/* Sets the column type for this input or output column or both (dir == GMT_IO) */
 	unsigned int start = (direction == GMT_IO) ? GMT_IN : direction;
 	unsigned int stop  = (direction == GMT_IO) ? GMT_OUT : direction;
@@ -9075,6 +9118,12 @@ void gmt_set_column (struct GMT_CTRL *GMT, unsigned int direction, unsigned int 
 		GMT->current.io.col_type[dir][col] = type;
 		GMT->current.io.col_set[dir][col] = 1;	/* Flag as having been set and thus should not be automatically changed */
 	}
+}
+
+/*! . */
+enum gmt_col_enum gmt_get_column_type (struct GMT_CTRL *GMT, unsigned int direction, unsigned int col) {
+	/* Gets the column type for this input or output column */
+	return (GMT->current.io.col_type[direction][col]);	/* Flag as having been set and thus should not be automatically changed */
 }
 
 int gmt_mkdir (const char *path)
@@ -9095,7 +9144,7 @@ int gmt_mkdir (const char *path)
 
 	/* Iterate the string */
 	p = (_path[1] == ':') ? _path + 3 : _path + 1;  /* Skip any leading X: drive designators */
-	while (*p) { /* Create intermediate directoreis recursively */
+	while (*p) { /* Create intermediate directories recursively */
 		if (*p == '/' || *p == '\\') {	/* Found start of next directory */
 			sep = *p;	/* What separator did we use? */
 			*p = '\0';	/* Temporarily truncate */

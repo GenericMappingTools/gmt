@@ -106,13 +106,17 @@ EXTERN_MSC int GMT_Put_Matrix          (void *API, struct GMT_MATRIX *M, unsigne
 /* These 2 functions are new in 6.0 and are being considered beta */
 EXTERN_MSC int GMT_Put_Strings         (void *API, unsigned int family, void *object, char **array);
 EXTERN_MSC char ** GMT_Get_Strings     (void *API, unsigned int family, void *object);
+/* This function is new in 6.2 and is being considered beta */
+EXTERN_MSC int GMT_Put_Levels          (void *API, struct GMT_CUBE *C, double *levels, uint64_t n_levels);
 
-/* 4 functions to relate (row,col) to a 1-D index for grids and images and to precompute equidistant coordinates for grids and images */
+/* 5 functions to relate (row,col) to a 1-D index for grids, cubes and images and to precompute equidistant coordinates for grids and images */
 
 EXTERN_MSC uint64_t GMT_Get_Index      (void *API, struct GMT_GRID_HEADER *header, int row, int col);
 EXTERN_MSC double * GMT_Get_Coord      (void *API, unsigned int family, unsigned int dim, void *container);
 EXTERN_MSC int GMT_Set_Index	       (void *API, struct GMT_GRID_HEADER *header, char *code);	/* Experimental */
 EXTERN_MSC uint64_t GMT_Get_Pixel      (void *API, struct GMT_GRID_HEADER *header, int row, int col, int layer);	/* Experimental */
+/* This function for cubes is new in 6.2 and is being considered beta */
+EXTERN_MSC uint64_t GMT_Get_Index3     (void *API, struct GMT_GRID_HEADER *header, int row, int col, int layer);
 
 /* 11 functions to show and inquire about GMT common options, GMT default settings, object metadata, convert strings to doubles, and message and report printing */
 

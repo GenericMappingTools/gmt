@@ -186,7 +186,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -F<type><width>[<modifiers>] [-D<increment>] [-E]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>[+e|n|a]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>[+a][e|i|n]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -233,6 +233,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   then no output will be given at this point [Default does not check Symmetry].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <min> to <max> by <inc> [Default uses input times].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of t-values to produce instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append +i to indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If only <inc> is given, optionally append +e to keep increment exact [Default will adjust to fit range].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For absolute time filtering, append a valid time unit (%s) to the increment.\n", GMT_TIME_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   For spatial filtering with distance computed from the first two columns, specify increment as\n");
@@ -980,13 +981,13 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 			F.filter_type = FILTER1D_CUSTOM;
 			if ((error = GMT_Set_Columns (API, GMT_IN, 1, GMT_COL_FIX_NO_TEXT)) != 0) Return (error, "Error in GMT_Set_Columns");
 			save_col[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
-			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Always read the weights as floats */
+			gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Always read the weights as floats */
 			gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
 			if ((F.Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 				Return (API->error, "Error Reading input\n");
 			}
 			gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
-			gmt_set_column (GMT, GMT_IN, GMT_X, save_col[GMT_X]);	/* Reset this col type to whatever it actually is */
+			gmt_set_column_type (GMT, GMT_IN, GMT_X, save_col[GMT_X]);	/* Reset this col type to whatever it actually is */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;
 	}
@@ -995,15 +996,15 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 		if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != 0) Return (error, "Error in GMT_Set_Columns");
 		save_col[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
 		save_col[GMT_Y] = GMT->current.io.col_type[GMT_IN][GMT_Y];	/* Save col type in case it is a time column */
-		gmt_set_column (GMT, GMT_IN, GMT_X, GMT->current.io.col_type[GMT_IN][F.t_col]);	/* Same units as time-series "t"*/
-		gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);	/* Always read the widths as floats */
+		gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT->current.io.col_type[GMT_IN][F.t_col]);	/* Same units as time-series "t"*/
+		gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);	/* Always read the widths as floats */
 		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
 		if ((F.W = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error, "Error Reading input\n");
 		}
 		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
-		gmt_set_column (GMT, GMT_IN, GMT_X, save_col[GMT_X]);	/* Reset this col type to whatever it actually is */
-		gmt_set_column (GMT, GMT_IN, GMT_Y, save_col[GMT_Y]);	/* Reset this col type to whatever it actually is */
+		gmt_set_column_type (GMT, GMT_IN, GMT_X, save_col[GMT_X]);	/* Reset this col type to whatever it actually is */
+		gmt_set_column_type (GMT, GMT_IN, GMT_Y, save_col[GMT_Y]);	/* Reset this col type to whatever it actually is */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " filter weights from file %s.\n", F.W->n_records, Ctrl->F.file);
 		if (! (F.W->n_segments == 1 || F.W->n_segments == D->n_segments)) {
 			Return (API->error, "Variable filter width requires either one segment (shared with all data segments) or one width segment per input data segments\n");

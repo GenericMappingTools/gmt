@@ -279,7 +279,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<dx>/<dy>][+to|O|c|C]] [-D[j|J]<dx>[/<dy>][+v[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]] [-G[<color>][+n]] %s\n", API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-M] [-N] %s%s[-Q<case>] [%s] [%s]\n", API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-W[<pen>] [%s] [%s] [-Z[<zlevel>|+]]\n", GMT_X_OPT, GMT_Y_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-W[<pen>] [%s] [%s] [-Z]\n", GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s]\n\t[%s] [-it<word>]\n", GMT_a_OPT, API->c_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s]\n\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tReads (x,y[,fontinfo,angle,justify],text) from <table> [or stdin].\n");
@@ -296,7 +296,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   @!<char1><char2> makes one composite character.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   @. prints the degree symbol.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   @@ prints the @ sign itself.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use @a|c|e|in|o|s|u|A|C|E|N|O|U for accented European characters.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   @[<LaTeX expression>@[ may be used (except for -M).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use @a|c|e|i|n|o|s|u|A|C|E|N|O|U for accented European characters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t(See module documentation for more information).\n\n");
 
 	if (show_fonts) {	/* List fonts */
@@ -359,7 +360,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Draw a box around the text with the specified pen [Default pen is %s].", 0);
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z For 3-D plots: expect records to have a z value in the 3rd column (i.e., x y z ...).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Z+ also sets -N.  Note: if -F+z is used the text is based on the 4th data column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Z also sets -N.  Note: if -F+z is used the text is based on the 4th data column.\n");
 	GMT_Option (API, "a,c,e,f,h");
 	GMT_Message (API, GMT_TIME_NONE, "\t-i Append t<word> to use word number <word> (0 is first) in the text as the label [all the text].\n");
 	GMT_Option (API, "p,qi,t");
@@ -603,11 +604,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 			case 'Z':
 				/* For backward compatibility we will see -Z+ as the current -Z
 				 * and -Z<level> as an alternative to -p<az>/<el>/<level> */
-				if (opt->arg[0] == '+' && !opt->arg[1])
+				if (opt->arg[0] == '+' && !opt->arg[1])	/* Deprecated -Z+ option */
 					Ctrl->Z.active = true;
-				else if (opt->arg[0])
+				else if (opt->arg[0])	/* Deprecated -Z<level> option */
 					GMT->current.proj.z_level = atof(opt->arg);
-				else
+				else	/* Normal -Z only */
 					Ctrl->Z.active = true;
 				break;
 
@@ -947,12 +948,12 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {
 				ncol++;	/* Read fill transparencies from data file */
 				tcol_f = ncol - 1;	/* If there is fill transparency then this is the column to use */
-				gmt_set_column (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
 			}
 			if (GMT->common.t.mode & GMT_SET_PEN_TRANSP) {
 				ncol++;	/* Read stroke transparencies from data file */
 				tcol_s = ncol - 1;
-				gmt_set_column (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
 			}
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Expects a %s record with %d leading numerical columns, followed by %d text parameters and %s trailing text\n",
@@ -1232,6 +1233,18 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			gmtlib_enforce_rgb_triplets (GMT, in_txt, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 			if (Ctrl->Q.active) gmt_str_setcase (GMT, in_txt, Ctrl->Q.mode);
 			use_text = pstext_get_label (GMT, Ctrl, in_txt);	/* In case there are words */
+			if (gmt_text_is_latex (GMT, use_text)) {
+				if (T.boxflag & 3) {
+					GMT_Report (API, GMT_MSG_WARNING, "Record %d has LaTeX which cannot be used with box filling - skipping\n", n_read);
+					gmt_M_str_free (use_text);
+					continue;
+				}
+				else if (Ctrl->G.mode) {
+					GMT_Report (API, GMT_MSG_WARNING, "Record %d has LaTeX which cannot be used with -G - skipping\n", n_read);
+					gmt_M_str_free (use_text);
+					continue;
+				}
+			}
 			n_read++;
 			if (Ctrl->F.get_xy_from_justify) {
 				plot_x = coord[GMT_X], plot_y = coord[GMT_Y];
@@ -1339,7 +1352,8 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 				m++;
 			}
 			else {
-				PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, fmode);
+				gmt_map_text (GMT, plot_x, plot_y, &T.font, curr_txt, T.paragraph_angle, T.block_justify, fmode);
+				//PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, fmode);
 			}
 			if (Ctrl->A.active) T.paragraph_angle = save_angle;	/* Restore original angle */
 			gmt_M_str_free (use_text);

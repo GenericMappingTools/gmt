@@ -113,7 +113,8 @@ GMT_LOCAL double earthtide_getutcmtai (double tsec, bool *leapflag) {
 	/*  get utc - tai (s) */
 	/*  "Julian Date Converter" */
 	/*  http://aa.usno.navy.mil/data/docs/JulianDate.php */
-	/*  parameter (MJDUPPER=58299)    !*** upper limit, leap second table, 2018jun30 */
+	/*  or https://www.aavso.org/jd-calculator */
+	/*  parameter (MJDUPPER=59393)    !*** upper limit, leap second table, 28 June 2021 */
 	/* upper limit, leap second table, */
 	/* lower limit, leap second table, */
 	/* leap second table limit flag */
@@ -133,7 +134,7 @@ GMT_LOCAL double earthtide_getutcmtai (double tsec, bool *leapflag) {
 	}
 
 	/*  test upper table limit (upper limit set by bulletin C memos) */
-	if (mjd0t > 58664) {
+	if (mjd0t > 59393) {
 		*leapflag = true;		/* true means flag *IS* raised */
 		return -37;				/* return the upper table value */
 	}
@@ -1051,10 +1052,10 @@ GMT_LOCAL void earthtide_sun_moon_track (struct GMT_CTRL *GMT, struct GMT_GCAL *
 
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
-	gmt_set_column (GMT, GMT_OUT, 1, GMT_IS_LON);
-	gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_LAT);
-	gmt_set_column (GMT, GMT_OUT, 4, GMT_IS_LON);
-	gmt_set_column (GMT, GMT_OUT, 5, GMT_IS_LAT);
+	gmt_set_column_type (GMT, GMT_OUT, 1, GMT_IS_LON);
+	gmt_set_column_type (GMT, GMT_OUT, 2, GMT_IS_LAT);
+	gmt_set_column_type (GMT, GMT_OUT, 4, GMT_IS_LON);
+	gmt_set_column_type (GMT, GMT_OUT, 5, GMT_IS_LAT);
 
 	if (T.count){
 		tdel2 = (T.max-T.min) / ( (T.inc - 1) * 24 * 3600);
@@ -1175,7 +1176,7 @@ GMT_LOCAL void earthtide_solid_grd (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL 
 		}
 	}
 	if (leapflag)
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "time crossed leap seconds table boundaries. Boundary edge used instead.");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "time crossed leap seconds table boundaries. Boundary edge used instead.");
 
 	/* Free these that were never used anyway */
 	if (!Ctrl->G.do_north) free (grd_n);
@@ -1257,7 +1258,7 @@ GMT_LOCAL void earthtide_solid_ts (struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, d
 	gmt_M_free (GMT, Out);
 
 	if (leapflag)
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "time crossed leap seconds table boundaries. Boundary edge used instead.");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "time crossed leap seconds table boundaries. Boundary edge used instead.");
 }
 
 /* ------------------------------------------------------------------------------------------------------- */
@@ -1265,7 +1266,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-G<outgrid>] [-C<comp>] [-L<lon>/<lat>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T[<min>/<max>/][-|+]<inc>[+n]]\n\t[%s] [-S]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T[<min>/<max>/][-|+]<inc>[+i|n]]\n\t[%s] [-S]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_bo_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -1287,6 +1288,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   moon_lon, moon_lat, moon_dist.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <min> to <max> by <inc>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of t-values to produce over the range instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append +i to indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a valid time unit (%s) to the increment and add +t.\n", GMT_TIME_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no -T is provided get current time in UTC from the computer clock.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no -G or -S are provided then -T is interpreted to mean compute a time-series\n");
@@ -1474,7 +1476,7 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {	/* Return/write 1-3 grids */
 		int k, kk;
-		char file[PATH_MAX] = {""}, *code[N_COMPS] = {"e", "n", "v"};
+		char file[PATH_MAX] = {""}, *code[N_COMPS] = {"e", "n", "v"}, *comp_info[3] = {"x|east solid Earth tide component", "y|north solid Earth tide component", "z|vertical solid Earth tide component"};
 		struct GMT_GRID *Grid[N_COMPS] = {NULL, NULL, NULL};
 
 		gmt_set_geographic (GMT, GMT_OUT);
@@ -1485,6 +1487,11 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 			                             GMT->common.R.registration, 0, NULL)) == NULL)
 				Return (API->error);
 
+			strcpy (Grid[k]->header->z_units, "solid-earth-tide [meter]");
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[k]))
+				Return (API->error);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, comp_info[k], Grid[k]))
+				Return (API->error);
 		}
 
 		earthtide_solid_grd (GMT, Ctrl, &cal_start, Grid);	/* Evaluate the chosen component (s) on the grids */
@@ -1492,9 +1499,6 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 		/* Now write the one to three grids */
 		for (k = kk = 0; k < N_COMPS; k++) {
 			if (!Ctrl->C.selected[k]) continue;
-			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[k]))
-				Return (API->error);
-
 			if (!API->external) kk = k;	/* On command line we pick item k from an array of 3 items */
 			if (strstr (Ctrl->G.file[kk], "%s"))
 				sprintf (file, Ctrl->G.file[kk], code[k]);
@@ -1538,7 +1542,7 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) 	/* Sets output geometry */
 			Return (API->error);
 
-		gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_ABSTIME);	/* Common for both tables; other column types set in the two functions */
+		gmt_set_column_type (GMT, GMT_OUT, 0, GMT_IS_ABSTIME);	/* Common for both tables; other column types set in the two functions */
 
 		if (Ctrl->S.active)
 			earthtide_sun_moon_track (GMT, &cal_start, Ctrl->T.T);

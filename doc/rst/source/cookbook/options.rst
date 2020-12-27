@@ -281,13 +281,13 @@ but most examples of its usage are actually quite simple. We distinguish
 between two sets of information: Frame settings and Axes parameters.  These
 are set separately by their own **-B** invocations; hence multiple **-B**
 specifications may be specified. The frame settings covers things such
-as which axes should be plotted, canvas fill, plot title, and what type
+as which axes should be plotted, canvas fill, plot title (and subtitle), and what type
 of gridlines be drawn, whereas the Axes settings deal with annotation,
 tick, and gridline intervals, axes labels, and annotation units.
 
 The Frame settings are specified by
 
--  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
+-  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+s**\ *subtitle*][**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
 
 Here, the optional *axes* dictates which of the axes should be drawn
 and possibly annotated.  By default, all four map boundaries (or plot axes)
@@ -318,7 +318,11 @@ to produce oblique gridlines about another pole you can append **+o**\ *lon/lat*
 to change this behavior (the modifier is ignored if no gridlines are requested).
 Append **+n** to have no frame and annotations at all [Default is controlled by the codes].
 Finally, you may optionally add **+t**\ *title* to place a title that
-will appear centered above the plot frame.
+will appear centered above the plot frame; optionally also add a *subtitle* via **+s**.
+**Note**: Both *title* and *subtitle* may be set over multiple lines by breaking them up
+using the markers '@^' or '<break>'.  To include LaTeX code as part of a single-line title or subtitle,
+enclose the expression with @[ markers (or alternatively <math> ... </math>).
+(**Note**: Requires ``latex`` and ``dvips`` to be installed).
 
 The Axes settings are specified by
 
@@ -343,6 +347,9 @@ but you may also split this into two separate invocations for clarity, i.e.,
     force a horizontal label for *y*-axes (useful for very short labels).
     For Cartesian axes you may specify an alternate via **+s** which is used for
     right or upper axis axis label (with any **+l** label used for left and bottom axes).
+    To include LaTeX code as part of a label, enclose the expression with @[ markers
+    (or alternatively <math> ... </math>)
+    (**Note**: Requires ``latex`` and ``dvips`` to be installed).
     If the axis annotation should have a leading text prefix (e.g., dollar sign for those
     plots of your net worth) you can append **+p**\ *prefix*. For geographic maps
     the addition of degree symbols, etc. is automatic (and controlled by the GMT
@@ -1370,10 +1377,13 @@ levels of objects. The **-t** option allows you to change the
 transparency level for the current overlay by appending a percentage in
 the 0-100 range; the default is 0, or opaque. Transparency may also be
 controlled on a feature by feature basis when setting color or fill (see
-section :ref:`-Gfill_attrib`).  Finally, the modules
+section :ref:`-Gfill_attrib`).  For separate transparency for fill and stroke,
+append /*transp2* as well. **Note**: The modules
 :doc:`/plot`, :doc:`/plot3d`, and :doc:`/text` can all change transparency
 on a record-by-record basis if **-t** is given without argument and the
-input file supplies variable transparencies as the last numerical column value.
+input file supplies variable transparencies as the last numerical column value(s).
+Use the **+f** and **+s** modifiers to indicate which transparency is provided
+or if we expect one or two transparencies.
 
 .. _option_-x_core:
 

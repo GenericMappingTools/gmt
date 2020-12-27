@@ -219,9 +219,11 @@ static char *PSL_ISO_name[] = {
 	"PSL_ISO-8859-8",
 	"PSL_ISO-8859-9",
 	"PSL_ISO-8859-10",
+	"PSL_ISO-8859-11",
 	"PSL_ISO-8859-13",
 	"PSL_ISO-8859-14",
 	"PSL_ISO-8859-15",
+	"PSL_ISO-8859-16",
 	NULL
 };
 
@@ -240,9 +242,11 @@ static char *PSL_ISO_encoding[] = {
 #include "PSL_ISO-8859-8.h"
 #include "PSL_ISO-8859-9.h"
 #include "PSL_ISO-8859-10.h"
+#include "PSL_ISO-8859-11.h"
 #include "PSL_ISO-8859-13.h"
 #include "PSL_ISO-8859-14.h"
 #include "PSL_ISO-8859-15.h"
+#include "PSL_ISO-8859-16.h"
 NULL
 };
 
@@ -871,7 +875,9 @@ static int psl_shorten_path_old (struct PSL_CTRL *PSL, double *x, double *y, int
 	return (k);
 }
 
-#define N_LENGTH_THRESHOLD 100000000
+/* Addressing issue https://github.com/GenericMappingTools/gmt/issues/439 for long DCW polygons.
+   #define N_LENGTH_THRESHOLD 100000000 meant we only did new path but now we try 50000 as cutoff */
+#define N_LENGTH_THRESHOLD 50000
 static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
 	if (n > N_LENGTH_THRESHOLD)
 		return psl_shorten_path_old (PSL, x, y, n, ix, iy, mode);
@@ -3262,11 +3268,11 @@ static int psl_init_fonts (struct PSL_CTRL *PSL) {
 				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Trouble decoding custom font info [%s].  Skipping this font\n", buf);
 				continue;
 			}
-			if (strlen (fullname) >= PSL_NAME_LEN) {
-				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font name %s exceeds %d characters and will be truncated\n", fullname, PSL_NAME_LEN);
-				fullname[PSL_NAME_LEN-1] = '\0';
+			if (strlen (fullname) >= PSL_FONTNAME_LEN) {
+				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font name %s exceeds %d characters and will be truncated\n", fullname, PSL_FONTNAME_LEN);
+				fullname[PSL_FONTNAME_LEN-1] = '\0';
 			}
-			strncpy (PSL->internal.font[i].name, fullname, PSL_NAME_LEN-1);
+			strncpy (PSL->internal.font[i].name, fullname, PSL_FONTNAME_LEN);
 			i++;
 			if (i == n_alloc) {
 				n_alloc <<= 1;
@@ -5604,6 +5610,8 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 	 * 			= 64: Typeset text along path [straight text].
 	 * 			= 128: Fill box
 	 * 			= 256: Draw box
+	 * 			= 512: Fill & outline font, fill first, then outline
+	 * 			= 1024: Fill & outline font, outline first, then fill
 	 */
 
 	bool curved = ((mode & PSL_TXT_CURVED) == PSL_TXT_CURVED);	/* True if baseline must follow line path */
@@ -5637,7 +5645,7 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 		PSL_command (PSL, "PSL_set_label_heights\n");	/* Estimate text heights */
 	}
 
-	extras = mode & (PSL_TXT_ROUND | PSL_TXT_FILLBOX | PSL_TXT_DRAWBOX);	/* This just gets these bit settings, if present */
+	extras = mode & (PSL_TXT_ROUND | PSL_TXT_FILLBOX | PSL_TXT_DRAWBOX | PSL_TXT_DRAWBOX | PSL_TXT_FILLPEN | PSL_TXT_PENFILL);	/* This just gets these bit settings, if present */
 	if (mode & PSL_TXT_SHOW) {	/* Lay down visible text */
 		PSL_comment (PSL, "Display the texts:\n");
 		PSL_command (PSL, "%d PSL_%s_path_labels\n", PSL_TXT_SHOW|extras, name[kind]);

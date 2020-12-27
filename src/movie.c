@@ -345,6 +345,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set a custom canvas with dimensions and dots-per-unit manually by\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     providing <width>x<height>x<dpu> (e.g., 15cx10cx50, 6ix6ix100, etc.).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set the <prefix> used for movie files and directory names.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The directory cannot already exist; see -Z to remove such directories at the end.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set number of frames, create times from <min>/<max>/<inc>[+n] or give file with frame-specific information.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <min>/<max>/<inc> is used then +n is used to indicate that <inc> is in fact number of frames instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <timefile> does not exist it must be created by the foreground script given via -Sf.\n");
@@ -1326,13 +1327,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	n_data_frames = n_frames;
 
-	if (Ctrl->W.active) {
-		if (Ctrl->W.dir)
+	if (Ctrl->W.active) {	/* Create the working directory under /tmp or a specified directory */
+		if (Ctrl->W.dir)	/* Make a subdirectory under this directory based on N.prefix */
 			strcpy (workdir, Ctrl->W.dir);
-		else 	/* Make one in tempdir based on N.prefix */
+		else	/* Make a subdirectory in the tempdir based on N.prefix */
 			sprintf (workdir, "%s/%s", API->tmp_dir, Ctrl->N.prefix);
 	}
-	else
+	else	/* Create N.prefix locally in the current directory */
 		strcpy (workdir, Ctrl->N.prefix);
 
 	/* Get full path to the current working directory */
@@ -1343,9 +1344,24 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	gmt_replace_backslash_in_path (topdir);
 
+	{	/* Block to check for existing workdir */
+		struct stat S;
+		int err = stat (workdir, &S);	/* Stat the workdir path (which may not exist) */
+		if (err == 0 && !S_ISDIR (S.st_mode)) {	/* Path already exists, but it is not a directory */
+			GMT_Report (API, GMT_MSG_ERROR, "A file named %s already exist and prevents us from creating a directory by that name; please delete file or adjust -N - exiting.\n", workdir);
+			movie_close_files (Ctrl);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		else if (err == 0 && S_ISDIR (S.st_mode)) {	/* Directory already exists */
+			GMT_Report (API, GMT_MSG_ERROR, "Working directory %s already exist and -Z was not specified - exiting\n", workdir);
+			movie_close_files (Ctrl);
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
+
 	/* Create a working directory which will house every local file and all subdirectories created */
 	if (gmt_mkdir (workdir)) {
-		GMT_Report (API, GMT_MSG_ERROR, "An old directory named %s exists OR we were unable to create new working directory %s - exiting.\n", workdir, workdir);
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to create new working directory %s - exiting.\n", workdir);
 		movie_close_files (Ctrl);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -1358,7 +1374,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	/* Get full path to this working directory */
 	if (getcwd (cwd, PATH_MAX) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to determine current working directory.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to determine current working directory - exiting.\n");
 		movie_close_files (Ctrl);
 		Return (GMT_RUNTIME_ERROR);
 	}

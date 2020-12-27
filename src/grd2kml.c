@@ -149,7 +149,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is the data set to be plotted.  Its z-values are in user units and will be\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  converted to colors via the CPT [%s].\n", GMT_DEFAULT_CPT_NAME);
+	GMT_Message (API, GMT_TIME_NONE, "\t  converted to colors via the CPT [%s].\n", API->GMT->current.setting.cpt);
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Sets file name prefix for image directory and KML file. If the directory\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   already exist we will overwrite the files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -159,7 +159,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     s Altitude relative to sea floor or ground.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append fixed <altitude> [g0: Clamped to sea surface or ground].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert z to rgb. Optionally, instead give name of a master cpt\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [%s]; if so,\n", GMT_DEFAULT_CPT_NAME);
+	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [%s]; if so,\n", API->GMT->current.setting.cpt);
 	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append +i<dz> to quantize the range [the exact grid range].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
