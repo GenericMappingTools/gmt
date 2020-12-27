@@ -207,7 +207,9 @@ enum PSL_enum_txt {PSL_TXT_INIT	= 1,
 	PSL_TXT_ROUND		= 32,
 	PSL_TXT_CURVED		= 64,
 	PSL_TXT_FILLBOX		= 128,
-	PSL_TXT_DRAWBOX		= 256};
+	PSL_TXT_DRAWBOX		= 256,
+	PSL_TXT_FILLPEN		= 512,
+	PSL_TXT_PENFILL		= 1024};
 
 /* PSL codes for text hyphen substitution (PSL_settextmode) */
 
