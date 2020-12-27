@@ -646,7 +646,7 @@ MAP Parameters
         to draw the axis only, but not annotate.   To *just* draw an axis
         without annotation and ticks you can use the **l**\ (eft), **r**\ (ight),
         **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes. Add an
-        optional **+** to draw a cube of axes in perspective view. [WESN].
+        optional **+b** to draw a cube of axes in perspective view. [WESN].
 
     **MAP_FRAME_PEN**
         Pen attributes used to draw plain map frame [thicker,black].
