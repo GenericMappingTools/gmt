@@ -158,10 +158,10 @@ PSL_pathtextdict begin
         char show}
       if
       PSL_font_FO { % Fill first then outline, if requested
-        currentpoint /PSL_text_y edef /PSL_text_x edef N PSL_text_x PSL_text_y M V char true charpath fs U V char false charpath S U char stringwidth pop 0 G
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
       } if
       PSL_font_OF { % Outline text then fill, if requested
-        currentpoint /PSL_text_y edef /PSL_text_x edef N PSL_text_x PSL_text_y M V char false charpath S U V char true charpath fs U char stringwidth pop 0 G
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
       } if
       0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def		% Update the current position
