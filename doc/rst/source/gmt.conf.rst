@@ -653,7 +653,7 @@ MAP Parameters
 
     **MAP_FRAME_TYPE**
         Choose between **inside**, **plain** and **fancy** (thick boundary,
-        alternating black/white frame; append **+** for rounded corners)
+        alternating black/white frame; append **-rounded** for rounded corners)
         [fancy]. For some map projections (e.g., Oblique Mercator), plain is
         the only option even if fancy is set as default. In general, fancy
         only applies to situations where the projected x and y directions
