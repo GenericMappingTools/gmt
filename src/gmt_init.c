@@ -10262,7 +10262,9 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			}
 			else if (!strcmp (lower_value, "fancy"))
 				GMT->current.setting.map_frame_type = GMT_IS_FANCY;
-			else if (!strcmp (lower_value, "fancy+"))
+			else if (!strcmp (lower_value, "fancy-rounded"))
+				GMT->current.setting.map_frame_type = GMT_IS_ROUNDED;
+			else if (!strcmp (lower_value, "fancy+"))	/* Deprecated */
 				GMT->current.setting.map_frame_type = GMT_IS_ROUNDED;
 			else if (!strcmp (lower_value, "inside"))
 				GMT->current.setting.map_frame_type = GMT_IS_INSIDE;
@@ -11798,7 +11800,7 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else if (GMT->current.setting.map_frame_type == GMT_IS_FANCY)
 				strcpy (value, "fancy");
 			else if (GMT->current.setting.map_frame_type == GMT_IS_ROUNDED)
-				strcpy (value, "fancy+");
+				strcpy (value, "fancy-rounded");
 			else if (GMT->current.setting.map_frame_type == GMT_IS_INSIDE)
 				strcpy (value, "inside");
 			else
