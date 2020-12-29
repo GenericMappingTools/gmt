@@ -14,7 +14,7 @@ view=200/25
 method=r
 tens=0.85
 # Write a single 3-D data cube
-gmt greenspline -R$R3D -I$dz -G3D_cube.grd @Table_5_23.txt -S${method}${tens} -D5
+gmt greenspline -R$R3D -I$dz -G3D_cube.grd @Table_5_23.txt -S${method}${tens} -Z5 -D+x"x-distance [km]"+y"y-distance [km]"+z"z-distance [km]"+d"Uranium Oxide [%]"+v"uoxide"
 # Make a list of the cube z-levels
 gmt math -T${Z}/${dz} -o0 T = t.lis
 gmt psbasemap -R$R2D/$Z -JX6i/3i -JZ2.5i -p$view -Bx5f1g1 -By1g1 -Bz2f1 -BWSneZ+b -P -K > $ps

@@ -1,7 +1,8 @@
-**-D**\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*]
-    Give one or more combinations for values *xname*, *yname*, *zname* (give the names of those variables
-    and in square bracket their units, e.g., "distance [km]"), *scale* (to multiply grid values after
-    read [normally 1]), *offset* (to add to grid after scaling [normally 0]),
+**-D**\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+d**\ *vname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*][**+v**\ *varname*]
+    Give one or more combinations for values *xname*, *yname*, *zname* (3rd dimension in cube),
+    and *dname* (data value name) and give the names of those variables
+    and in square bracket their units, e.g., "distance [km]"), *scale* (to multiply data values after
+    read [normally 1]), *offset* (to add to data after scaling [normally 0]),
     *invalid* (a value to represent missing data [NaN]), *title* (anything you
     like), and *remark* (anything you like). Items not listed will remain untouched.
     Give a blank name to completely reset a particular string.
@@ -10,4 +11,6 @@
     option modifiers.  Alternatively, you can place the entire double-quoted string inside single
     quotes.  If you have shell variables that contain plus symbols you cannot use single quotes but
     you can escape the plus symbols in a variable using constructs like ${variable/+/\\+}.
-    Note that for geographic grids (**-fg**) *xname* and *yname* are set automatically.
+    Note that for geographic grids and cubes (**-fg**) *xname* and *yname* are set automatically.
+    Normally, the data netCDF variable is called "z" (grid) or "cube" (data cube). You can name this
+    netCDF variable via **+v**\ *varname*.

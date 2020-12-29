@@ -45,6 +45,10 @@ struct GRDINTERPOLATE_CTRL {
 		char **file;
 		unsigned int n_files;
 	} In;
+	struct GRDEDIT_D {	/* -D[+x<xname>][+yyname>][+z<zname>][+v<zname>][+s<scale>][+o<offset>][+n<invalid>][+t<title>][+r<remark>] */
+		bool active;
+		char *information;
+	} D;
 	struct GRDINTERPOLATE_E {	/* -E<file>|<line1>[,<line2>,...][+a<az>][+c][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x] */
 		bool active;
 		unsigned int mode;
@@ -100,6 +104,7 @@ GMT_LOCAL void grdinterpolate_free_files (struct GMT_CTRL *GMT, char ***list, un
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	grdinterpolate_free_files (GMT, &(C->In.file), C->In.n_files);
+	gmt_M_str_free (C->D.information);
 	gmt_M_str_free (C->G.file);
 	gmt_M_str_free (C->S.file);
 	gmt_M_str_free (C->S.header);
@@ -114,6 +119,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cube> | <grd1> <grd2> <grd3> ... -G<outfile>\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_GRDEDIT3D);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fl|a|c|n][+1|2] [-S<x>/<y>|<table>[+h<header>]] [-T[<min>/<max>/]<inc>[+i|n]] [%s]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Z[<levels>]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
@@ -127,6 +133,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   To write a series of 2-D grids instead of a cube, include a floating-point C-format\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   statement in <outfile> set via -G for embedding the level in the file name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	gmt_cube_info_syntax (API->GMT, 'D');
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set up a single crossection based on <file> or on the given <line1>[,<line2>,...]. Give start and stop\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   coordinates for each line segment.  The format of each <line> is <start>/<stop>, where <start> or <stop>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   are coordinate pairs, e.g., <lon1/lat1>/<lon2>/<lat2>.\n");
@@ -197,6 +204,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 
 			/* Processes program-specific parameters */
 
+			case 'D':	/* Give grid information */
+				Ctrl->D.active = true;
+				Ctrl->D.information = strdup (opt->arg);
+				break;
 			case 'E':	/* Create or read an equidistant profile for slicing */
 				Ctrl->E.active = true;
 				Ctrl->E.lines = strdup (opt->arg);
@@ -793,6 +804,11 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	if ((C[GMT_OUT] = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, this_dim, wesn, inc, C[GMT_IN]->header->registration, GMT_NOTSET, NULL)) == NULL)
 		Return (GMT_MEMORY_ERROR);
+
+	if (Ctrl->D.active && gmt_decode_cube_h_info (GMT, Ctrl->D.information, C[GMT_OUT])) {
+		GMT_Destroy_Data (API, &C[GMT_OUT]);	/* Done with the output cube */
+		Return (GMT_PARSE_ERROR);
+	}
 
 	/* If not equidistant we must add in the level array manually */
 	if (C[GMT_OUT]->z == NULL && GMT_Put_Levels (API, C[GMT_OUT], Ctrl->T.T.array, Ctrl->T.T.n))

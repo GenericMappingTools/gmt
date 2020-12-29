@@ -1833,23 +1833,29 @@ GMT_LOCAL void gmtgrdio_decode_grd_h_info_old (struct GMT_CTRL *GMT, char *input
 	}
 }
 
-int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HEADER *h) {
+GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, unsigned int dim, struct GMT_GRID_HEADER *h, struct GMT_CUBE *C) {
 	size_t k, n_slash = 0;
-	unsigned int uerr = 0;
+	unsigned int uerr = 0, kind = dim - 2;
 	bool old = false;
+	char *modifiers[2] = {"xydsontrv", "xyzdsontrv"}, code;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	for (k = 0; k < strlen (input); k++) if (input[k] == '/') n_slash++;
 	if (!(input[0] == '+' && (strstr (input, "+x") || strstr (input, "+y") || strstr (input, "+z") || strstr (input, "+s") || \
 	    strstr (input, "+o") || strstr (input, "+n") || strstr (input, "+t") || strstr (input, "+r")))) {	/* Cannot be new syntax */
 		old = (n_slash > 4);	/* Pretty sure this is the old syntax of that many slashes */
 	}
-	if (old)	/* Old syntax: -D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark> */
+	if (dim == 3 && old) return GMT_PARSE_ERROR;	/* Old syntax does not exist for cubes */
+	if (dim < 2 || dim > 3) return GMT_PARSE_ERROR;	/* Not a valid dimension */
+	if (old)	/* Old grid syntax: -D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark> */
 		gmtgrdio_decode_grd_h_info_old (GMT, input, h);
-	else {	/* New syntax: -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
+	else {	/* New syntax: -D[+x<xname>][+yyname>][+z<zname>][+d<dname>][+s<scale>][+o<offset>][+n<invalid>][+t<title>][+r<remark>] plus [+v<name>] for 3D */
 		char word[GMT_LEN256] = {""};
 		unsigned int pos = 0;
 		double d;
-		while (gmt_getmodopt (GMT, 'D', input, "xyzsontr", &pos, word, &uerr) && uerr == 0) {
+		while (gmt_getmodopt (GMT, 'D', input, modifiers[kind], &pos, word, &uerr) && uerr == 0) {
+			code = word[0];	/* This is the modifier. Check if 2D and 'z' and change to 'v' */
+			if (code == 'z' && dim == 2) code = 'd';
 			switch (word[0]) {
 				case 'x':	/* Revise x-unit name */
 					gmt_M_memset (h->x_units, GMT_GRID_UNIT_LEN80, char);
@@ -1867,7 +1873,15 @@ int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HE
 							GMT_GRID_UNIT_LEN80);
 					if (word[1]) strncpy (h->y_units, &word[1], GMT_GRID_UNIT_LEN80-1);
 					break;
-				case 'z':	/* Revise z-unit name */
+				case 'z':	/* Revise 3rd dim z-unit name for 3-D cubes  */
+					gmt_M_memset (C->units, GMT_GRID_UNIT_LEN80, char);
+					if (strlen(word) > GMT_GRID_UNIT_LEN80)
+						GMT_Report (GMT->parent, GMT_MSG_WARNING,
+							"z_unit string exceeds upper length of %d characters (truncated)\n",
+							GMT_GRID_UNIT_LEN80);
+					if (word[1]) strncpy (C->units, &word[1], GMT_GRID_UNIT_LEN80-1);
+					break;
+				case 'd':	/* Revise 2-D or 3-D data-unit name */
 					gmt_M_memset (h->z_units, GMT_GRID_UNIT_LEN80, char);
 					if (strlen(word) > GMT_GRID_UNIT_LEN80)
 						GMT_Report (GMT->parent, GMT_MSG_WARNING,
@@ -1901,12 +1915,30 @@ int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HE
 							GMT_GRID_REMARK_LEN160);
 					if (word[1]) strncpy (h->remark, &word[1], GMT_GRID_REMARK_LEN160-1);
 					break;
+				case 'v':	/* Set the data netCDF variable name */
+					gmt_M_memset (HH->varname, GMT_GRID_VARNAME_LEN80, char);
+					if (strlen(word) > GMT_GRID_VARNAME_LEN80)
+						GMT_Report (GMT->parent, GMT_MSG_WARNING,
+							"data variable name exceeds upper length of %d characters (truncated)\n",
+							GMT_GRID_VARNAME_LEN80);
+					if (word[1]) strncpy (HH->varname, &word[1], GMT_GRID_VARNAME_LEN80-1);
+					break;
 				default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					break;
 			}
 		}
 	}
 	return (int)uerr;
+}
+
+int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HEADER *h) {
+	/* Backwards compatible when just dealing with grids */
+	return gmtgrdio_decode_grdcube_info (GMT, input, 2U, h, NULL);
+}
+
+int gmt_decode_cube_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_CUBE *C) {
+	/* Backwards compatible when just dealing with grids */
+	return gmtgrdio_decode_grdcube_info (GMT, input, 3U, C->header, C);
 }
 
 void gmt_grd_set_cartesian (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int direction) {
@@ -1925,17 +1957,33 @@ void gmt_grd_set_cartesian (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uns
 	HH->grdtype = GMT_GRID_CARTESIAN;	/* Set hidden type to Cartesian */
 }
 
-void gmt_grd_info_syntax (struct GMT_CTRL *GMT, char option) {
-	/* Display the option for setting grid metadata in grdedit etc. */
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t-%c Append grid header information as one string composed of one or\n", option);
+GMT_LOCAL void gmtgrdio_grdcube_info_syntax (struct GMT_CTRL *GMT, char option, unsigned int dim) {
+	/* Display the option for setting grid, cube, or both metadata in grdedit etc. */
+	static char *type[3] = {"grid", "cube", "grid or cube"};
+	static char *vname[3] = {"z", "cube", "z or cube"};
+	unsigned int k = dim - 2;
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t-%c Append %s header information as one string composed of one or\n", option, type[k]);
 	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t   more modifiers; items not listed will remain unchanged:\n");
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +x[<name>]   Sets the x-unit name; leave blank to reset\n");
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +y[<name>]   Sets the y-unit name; leave blank to reset\n");
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +z[<name>]   Sets the z-unit name; leave blank to reset\n");
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +t[<title>]  Sets the grid title;  leave blank to reset\n");
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +r[<remark>] Sets the grid remark; leave blank to reset\n");
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +s<scale>    Sets the z-scale\n");
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +o<offset>   Sets the z-offset\n");
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +x[<name>]   Sets the x-dimension unit name; leave blank to reset\n");
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +y[<name>]   Sets the y-dimension unit name; leave blank to reset\n");
+	if (dim > 2) GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +z[<name>]   Sets the z-dimension unit name; leave blank to reset\n");
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +d[<name>]   Sets the %s data unit name; leave blank to reset\n", type[k]);
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +t[<title>]  Sets the %s title;  leave blank to reset\n", type[k]);
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +r[<remark>] Sets the %s remark; leave blank to reset\n", type[k]);
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +s<scale>    Sets the data-scale\n");
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +o<offset>   Sets the data-offset\n");
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +v<varname>  Names the netCDF data variable (if netCDF format) [%s]\n", vname[k]);
+}
+
+void gmt_grd_info_syntax (struct GMT_CTRL *GMT, char option) {
+	gmtgrdio_grdcube_info_syntax (GMT, option, 2U);
+}
+
+void gmt_cube_info_syntax (struct GMT_CTRL *GMT, char option) {
+	gmtgrdio_grdcube_info_syntax (GMT, option, 3U);
+}
+void gmt_grdcube_info_syntax (struct GMT_CTRL *GMT, char option) {
+	gmtgrdio_grdcube_info_syntax (GMT, option, 4U);
 }
 
 void gmt_set_grdinc (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
