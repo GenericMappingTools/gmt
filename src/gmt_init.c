@@ -318,9 +318,11 @@ static char *PSL_ISO_name[] = {
 	"PSL_ISO-8859-8",
 	"PSL_ISO-8859-9",
 	"PSL_ISO-8859-10",
+	"PSL_ISO-8859-11",
 	"PSL_ISO-8859-13",
 	"PSL_ISO-8859-14",
 	"PSL_ISO-8859-15",
+	"PSL_ISO-8859-16",
 	NULL
 };
 
@@ -339,9 +341,11 @@ static char *PSL_ISO_encoding[] = {
 #include "PSL_ISO-8859-8.h"
 #include "PSL_ISO-8859-9.h"
 #include "PSL_ISO-8859-10.h"
+#include "PSL_ISO-8859-11.h"
 #include "PSL_ISO-8859-13.h"
 #include "PSL_ISO-8859-14.h"
 #include "PSL_ISO-8859-15.h"
+#include "PSL_ISO-8859-16.h"
 NULL
 };
 
@@ -6335,11 +6339,11 @@ GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Trouble decoding custom font info [%s].  Skipping this font.\n", buf);
 				continue;
 			}
-			if (strlen (fullname) >= GMT_LEN32) {
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Font %s exceeds %d characters and will be truncated\n", fullname, GMT_LEN32);
-				fullname[GMT_LEN32-1] = '\0';
+			if (strlen (fullname) >= PSL_FONTNAME_LEN) {
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Font %s exceeds %d characters and will be truncated\n", fullname, PSL_FONTNAME_LEN);
+				fullname[PSL_FONTNAME_LEN-1] = '\0';
 			}
-			strncpy (GMT->session.font[i].name, fullname, GMT_LEN32-1);
+			strncpy (GMT->session.font[i].name, fullname, PSL_FONTNAME_LEN);
 			i++;
 		}
 		fclose (in);
@@ -6685,7 +6689,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     Append +o<plon>/<plat> to draw oblique gridlines about this pole [regular gridlines].\n");
 			gmt_message (GMT, "\t     Note: the +o modifier is ignored unless gridlines are specified via the axes parameters (below).\n");
 			gmt_message (GMT, "\t     Append +t<title> to place a title over the map frame [no title]. Optionally also set +s<subtitle>.\n");
-			gmt_message (GMT, "\t     Note: Both <title> and <subtitle> can be set across multiple lines by using \"@^\" or \"#break;\" to mark breaks.\n");
+			gmt_message (GMT, "\t     Note: Both <title> and <subtitle> can be set across multiple lines by using \"@^\" or \"<break>\" to mark breaks.\n");
+			gmt_message (GMT, "\t     A single-line <title> and <subtitle> may contain LaTeX code enclosed by @[ .... @[ (or alternatively <math> ... </math>).\n");
+			gmt_message (GMT, "\t     Using LaTeX expressions require you to have a functioning latex and dvips installation, including required fonts.\n");
 			gmt_message (GMT, "\t     For 3-D plots the Z|z[<corners>] controls the vertical axis.  The <corners> specifies\n");
 			gmt_message (GMT, "\t     at which corner(s) to erect the z-axis via a combination of 1,2,3,4; 1 means lower left corner,\n");
 			gmt_message (GMT, "\t     2 is lower right, etc., in a counter-clockwise order [Default automatically selects one axis].\n");
@@ -6713,6 +6719,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     Use quotes if any of the <label>, <prefix> or <unit> have spaces.\n");
 			gmt_message (GMT, "\t     For Cartesian axes you can have different labels on the left vs right or bottom vs top\n");
 			gmt_message (GMT, "\t     by separating the two labels with ||, e.g., +l\"Left label||Right label\".\n");
+			gmt_message (GMT, "\t     A <label> may contain LaTeX code enclosed by @[ .... @[  (or alternatively <math> ... </math>).\n");
+			gmt_message (GMT, "\t     Using LaTeX expressions require you to have a functioning latex and dvips installation, including required fonts.\n");
 			gmt_message (GMT, "\t     Geographic map annotations will automatically have degree, minute, seconds units.\n");
 			gmt_message (GMT, "\t     The <intervals> setting controls the annotation spacing and is a textstring made up of one or\n");
 			gmt_message (GMT, "\t     more substrings of the form [a|f|g][<stride>[+-<phase>]], where the (optional) a\n");
@@ -7416,7 +7424,7 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	}
 	if (kind == 0) gmt_message (GMT, "%s  If z is appended we use the z-unit from the grdfile [no unit].\n", pad);
 	if (kind < 2) gmt_message (GMT, "%s +v for placing curved text along path [Default is straight].\n", pad);
-	gmt_message (GMT, "%s +w sets how many (x,y) points to use for angle calculation [auto].\n", pad);
+	gmt_message (GMT, "%s +w<n> sets how many (x,y) points to use for angle calculation [auto].\n", pad);
 	if (kind == 1) {
 		gmt_message (GMT, "%s +x[first,last] adds <first> and <last> to these two labels [,'].\n", pad);
 		gmt_message (GMT, "%s   This modifier is only allowed if -SqN2 is used.\n", pad);
@@ -9995,7 +10003,9 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			}
 			else if (!strcmp (lower_value, "fancy"))
 				GMT->current.setting.map_frame_type = GMT_IS_FANCY;
-			else if (!strcmp (lower_value, "fancy+"))
+			else if (!strcmp (lower_value, "fancy-rounded"))
+				GMT->current.setting.map_frame_type = GMT_IS_ROUNDED;
+			else if (!strcmp (lower_value, "fancy+"))	/* Deprecated */
 				GMT->current.setting.map_frame_type = GMT_IS_ROUNDED;
 			else if (!strcmp (lower_value, "inside"))
 				GMT->current.setting.map_frame_type = GMT_IS_INSIDE;
@@ -11516,7 +11526,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else if (GMT->current.setting.map_frame_type == GMT_IS_FANCY)
 				strcpy (value, "fancy");
 			else if (GMT->current.setting.map_frame_type == GMT_IS_ROUNDED)
-				strcpy (value, "fancy+");
+				strcpy (value, "fancy-rounded");
 			else if (GMT->current.setting.map_frame_type == GMT_IS_INSIDE)
 				strcpy (value, "inside");
 			else

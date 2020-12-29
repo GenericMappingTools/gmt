@@ -643,17 +643,17 @@ MAP Parameters
         Sets which axes to draw and annotate. Combine any uppercase **W**,
         **E**, **S**, **N**, **Z** to draw and annotate west, east, south,
         north and/or vertical (perspective view only) axis. Use lower case
-        to draw the axis only, but not annotate.   To *just* draw an axis 
-        without annotation and ticks you can use the **l**\ (eft), **r**\ (ight), 
-        **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes. Add an 
-        optional **+** to draw a cube of axes in perspective view. [WESN].
+        to draw the axis only, but not annotate.   To *just* draw an axis
+        without annotation and ticks you can use the **l**\ (eft), **r**\ (ight),
+        **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes. Add an
+        optional **+b** to draw a cube of axes in perspective view. [WESN].
 
     **MAP_FRAME_PEN**
         Pen attributes used to draw plain map frame [thicker,black].
 
     **MAP_FRAME_TYPE**
         Choose between **inside**, **plain** and **fancy** (thick boundary,
-        alternating black/white frame; append **+** for rounded corners)
+        alternating black/white frame; append **-rounded** for rounded corners)
         [fancy]. For some map projections (e.g., Oblique Mercator), plain is
         the only option even if fancy is set as default. In general, fancy
         only applies to situations where the projected x and y directions
@@ -944,12 +944,12 @@ PostScript Parameters
         files and in command line parameters. This allows GMT to ensure
         that the PostScript output generates the correct characters on the
         plot. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
-        ISO-8859-x (where x is in the ranges [1,10] or [13,15]). See
+        ISO-8859-x (where x is in the ranges 1-11 or 13-16). See
         Appendix F for details [ISOLatin1+ (or Standard+)].  **Note**: Normally
         the character set is written as part of the PostScript header.  If
         you need to switch to another character set for a later overlay then
         you must use **--PS_CHAR_ENCODING**\ =\ *encoding* on the command line and
-        not via gmt set.
+        not via gmt :doc:`/set`.  Finally, note 6, 8, and 11 do not work with standard fonts.
 
     **PS_COLOR_MODEL**
         Determines whether PostScript output should use RGB, HSV, CMYK, or

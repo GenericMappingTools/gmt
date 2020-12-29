@@ -26,6 +26,11 @@ if (DO_TESTS)
 		list (REMOVE_ITEM GMT_TEST_DIRS api)
 	endif (NOT DO_API_TESTS)
 
+	# Remove latex-specific tests if latex or dvips not found
+	if (NOT LATEX OR NOT DVIPS)
+		list (REMOVE_ITEM GMT_TEST_DIRS latex)
+	endif (NOT LATEX OR NOT DVIPS)
+
 	# export HAVE_GMT_DEBUG_SYMBOLS
 	get_directory_property (_dir_defs COMPILE_DEFINITIONS)
 	list (FIND _dir_defs DEBUG HAVE_GMT_DEBUG_SYMBOLS)

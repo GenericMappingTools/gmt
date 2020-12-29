@@ -32,6 +32,7 @@ fi
 # packages for running GMT tests
 if [ "$RUN_TESTS" = "true" ]; then
     packages+=" graphicsmagick gdal-bin"
+    packages+=" texlive-latex-base texlive-binaries texlive-fonts-recommended"
 fi
 
 # Install packages
