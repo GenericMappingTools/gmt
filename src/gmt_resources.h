@@ -137,7 +137,7 @@ enum GMT_enum_container {
 	GMT_CONTAINER_ONLY	= 1U,   /* Create|read|write the container but no data array */
 	GMT_DATA_ONLY		= 2U,   /* Create|Read|write the container's array only */
 	GMT_WITH_STRINGS	= 32U,  /* Allocate string array also [DATASET, MATRIX, VECTOR only] */
-	GMT_CUBE_IS_STACK	= 64U,	/* Passed via mode to GMT_Read_Data if infile is a NULL-terminated array of files */
+	GMT_CUBE_IS_STACK	= 64U,	/* Set if source was a stack of 2-D grids */
 	GMT_NO_STRINGS		= 0U    /* Do not allocate string array also [Default] */
 };
 
@@ -768,7 +768,7 @@ struct GMT_CUBE {
 	double z_range[2];			/* Minimum/max z values (complements header->wesn[4]) */
 	double z_inc;				/* z increment (complements inc[2]) (0 if variable z spacing */
 	double *z;					/* Array of z values (complements x, y) */
-	char name[GMT_GRID_UNIT_LEN80];		/* Name of the 3-D variable, if read from file (or empty if just one) */
+	char name[GMT_GRID_VARNAME_LEN80];	/* Name of the 3-D variable, if read from file (or empty if just one) */
 	char units[GMT_GRID_UNIT_LEN80];	/* Units in 3rd direction (complements x_units, y_units, z_units)  */
 };
 
