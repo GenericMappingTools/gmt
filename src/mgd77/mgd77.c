@@ -29,8 +29,8 @@
 #define MGD77_CDF_CONVENTION	"CF-1.0"	/* MGD77+ files are CF-1.0 and hence COARDS-compliant */
 #define MGD77_COL_ORDER "#rec\tTZ\tyear\tmonth\tday\thour\tmin\tlat\t\tlon\t\tptc\ttwt\tdepth\tbcc\tbtc\tmtf1\tmtf2\tmag\tmsens\tdiur\tmsd\tgobs\teot\tfaa\tnqc\tid\tsln\tsspn\n"
 
-#define MGD77_NUM_VALID_COLNAMES 51
-char *valid_colnames[] = {"atime", "rtime", "ytime", "year", "month", "day", "hour", "min", "sec", "dmin", "hhmm", "date", "tz", "lon", "lat", "id", "ngdcid", "recno", "dist", "azim", "cc", "vel", "twt", "depth", "mtf1", "mtf2", "mag", "gobs", "faa", "drt", "ptc", "bcc", "btc", "msens", "msd", "diur", "eot", "sln", "sspn", "nqc", "carter", "igrf", "ceot", "ngrav", "weight", "mgd77", "mgd77t", "geo", "all", "allt", "dat"};
+#define MGD77_NUM_VALID_COLNAMES 52
+char *valid_colnames[] = {"time", "atime", "rtime", "ytime", "year", "month", "day", "hour", "min", "sec", "dmin", "hhmm", "date", "tz", "lon", "lat", "id", "ngdcid", "recno", "dist", "azim", "cc", "vel", "twt", "depth", "mtf1", "mtf2", "mag", "gobs", "faa", "drt", "ptc", "bcc", "btc", "msens", "msd", "diur", "eot", "sln", "sspn", "nqc", "carter", "igrf", "ceot", "ngrav", "weight", "mgd77", "mgd77t", "geo", "all", "allt", "dat"};
 
 struct MGD77_MAG_RF {
 	char *model;        /* Reference field model name */
@@ -941,12 +941,16 @@ int MGD77_Order_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 
 	for (i = 0; i < F->n_out_columns; i++) {	/* This is not really needed if MGD77_Select_All_Columns did things, but just in case */
 		if (MGD77_Info_from_Abbrev (GMT, F->desired_column[i], H, &set, &item) == MGD77_NOT_SET) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Requested column %s not in data set!\n", F->desired_column[i]);
-			return (MGD77_ERROR_NOSUCHCOLUMN);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested column %s not in data set!\n", F->desired_column[i]);
+      //return MGD77_ERROR_NOSUCHCOLUMN;
+			F->order[i].item = i;
+      F->order[i].set  = GMT_NOTSET;
 		}
-		F->order[i].item = item;
-		F->order[i].set  = set;
-		H->info[set].col[item].pos = i;
+		else {
+      F->order[i].item = item;
+      F->order[i].set  = set;
+      H->info[set].col[item].pos = i;
+    }
 	}
 
 	for (i = 0; i < F->n_exact; i++) {	/* Determine column and info numbers from column name */

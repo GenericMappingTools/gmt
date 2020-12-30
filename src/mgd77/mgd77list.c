@@ -1147,7 +1147,10 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 				c  = M.order[kk].set;
 				id = M.order[kk].item;
 				gmt_cat_to_record (GMT, record, auxlist[aux[kx].type].header, GMT_OUT, sep_flag);
-				sprintf (word, "%7s", D->H.info[c].col[id].abbrev);
+        if (c == GMT_NOTSET)
+          sprintf (word, "%7s", M.desired_column[id]);
+        else
+          sprintf (word, "%7s", D->H.info[c].col[id].abbrev);
 				gmt_cat_to_record (GMT, record, word, GMT_OUT, sep_flag);
 				sep_flag = 1;
 			}
@@ -1563,7 +1566,9 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 					if (kk >= n_cols_to_process) continue;
 					c  = M.order[kk].set;
 					id = M.order[kk].item;
-					if (D->H.info[c].col[id].text) {
+          if (c == GMT_NOTSET) 
+            gmt_add_to_record (GMT, record, GMT->session.d_NaN, pos, GMT_OUT, sep_flag);	/* Write NaN value */
+          else if (D->H.info[c].col[id].text) {
 						strncpy (word, &tvalue[kk][rec*D->H.info[c].col[id].text], D->H.info[c].col[id].text);
 						word[D->H.info[c].col[id].text] = 0;
 						gmt_cat_to_record (GMT, record, word, GMT_OUT, sep_flag);	/* Format our output x value */
@@ -1598,7 +1603,9 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 					if (kk >= n_cols_to_process) continue;
 					c  = M.order[kk].set;
 					id = M.order[kk].item;
-					if (c == MGD77_M77_SET && id == time_column) {	/* This is the time column */
+					if (c == GMT_NOTSET) 
+            out[pos] = GMT->session.d_NaN; /* Write NaN value */
+          else if (c == MGD77_M77_SET && id == time_column) {	/* This is the time column */
 						if (gmt_M_type (GMT, GMT_OUT, pos) == GMT_IS_FLOAT) {	/* fractional year */
 							if (need_date) {	/* Did not get computed already */
 								date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
