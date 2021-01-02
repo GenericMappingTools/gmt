@@ -9742,7 +9742,7 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim) {
 	if (gmt_M_is_dnan (GMT->current.setting.font_heading.size))
 		GMT->current.setting.font_heading.size = scale * 28.0;	/* Modern 28p vs 10p */
 	if (gmt_M_is_dnan (GMT->current.setting.font_tag.size))
-		GMT->current.setting.font_tag.size = scale * 18.0;		/* Modern 18p vs 10p */
+		GMT->current.setting.font_tag.size = scale * 16.0;		/* Modern 16p vs 10p */
 	if (gmt_M_is_dnan (GMT->current.setting.font_title.size))
 		GMT->current.setting.font_title.size = scale * 22.0;	/* Modern 22p vs 10p */
 	if (gmt_M_is_dnan (GMT->current.setting.font_logo.size))
