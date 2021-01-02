@@ -452,10 +452,9 @@ GMT Miscellaneous Parameters
     **GMT_THEME**
         Override GMT default settings with those of the selected theme.  Choose from
         *classic* [Default for classic mode], *modern* [Default for modern mode],
-        *inverse* (white on black), *movie* (suitable for movie making) and *darkmode*.
-        You can also create and use your own themes by compiling files of desired settings
-        and place them in your GMT user themes directory (usually ~/.gmt/themes) and name
-        them *theme*.conf.
+        and *minimal*. You can also create and use your own themes by compiling 
+        files of desired settings and place them in your GMT user themes directory 
+        (usually ~/.gmt/themes) and name them *theme*.conf.
 
     **GMT_TRIANGULATE**
         Determines if we use the **Watson** [Default] or **Shewchuk**
