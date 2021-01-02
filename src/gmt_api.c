@@ -15101,6 +15101,18 @@ EXTERN_MSC void * gmtlib_get_ctrl (void *V_API) {
 	return API->GMT;	/* Pass back the GMT ctrl pointer as void pointer */
 }
 
+EXTERN_MSC void *gmtlib_get_common_R (void *V_API) {
+	/* For external environments that need to access GMT->common.R */
+	struct GMTAPI_CTRL *API = NULL;
+	struct COMMON_R R;
+
+	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
+	API = gmtapi_get_api_ptr (V_API);
+	gmt_M_memcpy (&R, &API->GMT->hidden.common_R, 1, struct COMMON_R);
+
+	return &R;	/* Pass back the GMT ctrl pointer as void pointer */
+}
+
 int64_t gmt_eliminate_duplicates (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, uint64_t cols[], uint64_t ncols, bool text) {
 	/* Scan dataset per segment and eliminate any duplicate records as identified by having no change in all the specified cols.
 	 * If no change then we skip the duplicate records.  No segment will be eliminated since first record always survives.

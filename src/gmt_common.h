@@ -75,6 +75,19 @@ struct GMT_LEGEND_ITEM {	/* Information about one item in a legend */
 	unsigned int ID;		/* ID to use if label contains C-format for integer */
 };
 
+/* If this struct is ever changed, Julia must know about it */
+struct COMMON_R {          /* -Rw/e/s/n[/z_min/z_max][r] or -Rgridfile */
+	bool active[4];		   /* RSET = 0: -R, ISET = 1: inc, GSET = 2: -r, FSET = 3: read grid */
+	bool oblique;		   /* true when -R...r was given (oblique map, probably), else false (map borders are meridians/parallels) */
+	uint32_t registration; /* Registration mode of a grid given via -r or -Rgrid */
+	int row_order;		   /* Order of rows in NetCDF output: 0 (not set) or k_nc_start_north or k_nc_start_south */
+	unsigned int mode;	   /* For modern mode only: 0 = get exact region from data, 1 = rounded region from data */
+	double wesn[6];		   /* Boundaries of west, east, south, north, low-z and hi-z */
+	double wesn_orig[4];   /* Original Boundaries of west, east, south, north (oblique projection may reset wesn above) */
+	double inc[2];		   /* For grid increments set via -Idx/dy or implicitly via -Ggrid */
+	char string[GMT_LEN256];
+};
+
 /*! Structure with all information given via the common GMT command-line options -R -J .. */
 struct GMT_COMMON {
 	struct synopsis {	/* \0 (zero) or ^ */
@@ -104,17 +117,7 @@ struct GMT_COMMON {
 	struct P {	/* -P */
 		bool active;
 	} P;
-	struct R {	/* -Rw/e/s/n[/z_min/z_max][r] or -Rgridfile */
-		bool active[4];	/* RSET = 0: -R, ISET = 1: inc, GSET = 2: -r, FSET = 3: read grid */
-		bool oblique;	/* true when -R...r was given (oblique map, probably), else false (map borders are meridians/parallels) */
-		uint32_t registration;	/* Registration mode of a grid given via -r or -Rgrid */
-		int row_order;	/* Order of rows in NetCDF output: 0 (not set) or k_nc_start_north or k_nc_start_south */
-		unsigned int mode;	/* For modern mode only: 0 = get exact region from data, 1 = rounded region from data */
-		double wesn[6];		/* Boundaries of west, east, south, north, low-z and hi-z */
-		double wesn_orig[4];	/* Original Boundaries of west, east, south, north (oblique projection may reset wesn above) */
-		double inc[2];	/* For grid increments set via -Idx/dy or implicitly via -Ggrid */
-		char string[GMT_LEN256];
-	} R;
+	struct COMMON_R R;
 	struct U {	/* -U */
 		bool active;
 		unsigned int just;

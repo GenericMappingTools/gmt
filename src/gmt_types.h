@@ -391,6 +391,7 @@ struct GMT_INTERNAL {
 	double **mem_coord;		/* Columns of temp memory */
 	char **mem_txt;			/* For temp text */
 	struct MEMORY_TRACKER *mem_keeper;	/* Only filled when #ifdef MEMDEBUG  */
+	struct COMMON_R common_R;	/* gmt_end_module saves API->GMT->common.R here so we can access it from externals */
 #ifdef DEBUG
 	bool gridline_debug;
 	char gridline_kind;

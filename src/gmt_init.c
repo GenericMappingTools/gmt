@@ -14675,6 +14675,9 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	gmtlib_fft_cleanup (GMT); /* Clean FFT resources */
 
+	/* Before resetting GMT, copy common_R into GMT->hiden.common_R, but we have to do it indirectly */
+	gmt_M_memcpy (&Ccopy->hidden.common_R, &GMT->common.R, 1, struct COMMON_R);
+
 	/* Overwrite GMT with what we saved in gmt_init_module */
 	gmt_M_memcpy (GMT, Ccopy, 1, struct GMT_CTRL);	/* Overwrite struct with things from Ccopy */
 	/* ALL POINTERS IN GMT ARE NOW JUNK AGAIN */
