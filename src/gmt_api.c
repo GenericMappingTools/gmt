@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -12920,55 +12920,55 @@ int GMT_Get_Common (void *V_API, unsigned int option, double par[]) {
 	GMT = API->GMT;
 
 	switch (option) {
-		case 'B':	if (GMT->common.B.active[0] || GMT->common.B.active[1]) ret = 0; break;
+		case 'B':	if (API->common_snapshot->B.active[0] || API->common_snapshot->B.active[1]) ret = 0; break;
 		case 'I':
-			if (GMT->common.R.active[ISET]) {
+			if (API->common_snapshot->R.active[ISET]) {
 				ret = 2;
-				if (par) gmt_M_memcpy (par, GMT->common.R.inc, 2, double);
+				if (par) gmt_M_memcpy (par, API->common_snapshot->R.inc, 2, double);
 			}
 			break;
-		case 'J':	if (GMT->common.J.active) ret = 0; break;
-		case 'K':	if (GMT->common.K.active) ret = 0; break;
-		case 'O':	if (GMT->common.O.active) ret = 0; break;
-		case 'P':	if (GMT->common.P.active) ret = 0; break;
+		case 'J':	if (API->common_snapshot->J.active) ret = 0; break;
+		case 'K':	if (API->common_snapshot->K.active) ret = 0; break;
+		case 'O':	if (API->common_snapshot->O.active) ret = 0; break;
+		case 'P':	if (API->common_snapshot->P.active) ret = 0; break;
 		case 'R':
-			if (GMT->common.R.active[RSET]) {
+			if (API->common_snapshot->R.active[RSET]) {
 				ret = 4;
-				if (par) gmt_M_memcpy (par, GMT->common.R.wesn, 4, double);
+				if (par) gmt_M_memcpy (par, API->common_snapshot->R.wesn, 4, double);
 			}
 			break;
-		case 'U':	if (GMT->common.U.active) ret = 0; break;
-		case 'V':	if (GMT->common.V.active) ret = GMT->current.setting.verbose; break;
+		case 'U':	if (API->common_snapshot->U.active) ret = 0; break;
+		case 'V':	if (API->common_snapshot->V.active) ret = GMT->current.setting.verbose; break;
 		case 'X':
-			if (GMT->common.X.active) {
+			if (API->common_snapshot->X.active) {
 				ret = 1;
-				if (par) par[0] = GMT->common.X.off;
+				if (par) par[0] = API->common_snapshot->X.off;
 			}
 			break;
 		case 'Y':
-			if (GMT->common.Y.active) {
+			if (API->common_snapshot->Y.active) {
 				ret = 1;
-				if (par) par[0] = GMT->common.Y.off;
+				if (par) par[0] = API->common_snapshot->Y.off;
 			}
 			break;
-		case 'a':	if (GMT->common.a.active) ret = GMT->common.a.geometry; break;
-		case 'b':	if (GMT->common.b.active[GMT_IN]) ret = GMT_IN; else if (GMT->common.b.active[GMT_OUT]) ret = GMT_OUT; break;
-		case 'f':	if (GMT->common.f.active[GMT_IN]) ret = GMT_IN; else if (GMT->common.f.active[GMT_OUT]) ret = GMT_OUT; break;
-		case 'g':	if (GMT->common.g.active) ret = 0; break;
-		case 'h':	if (GMT->common.h.active) ret = GMT->common.h.mode; break;
-		case 'i':	if (GMT->common.i.select) ret = (int)GMT->common.i.n_cols; break;
-		case 'n':	if (GMT->common.n.active) ret = 0; break;
-		case 'o':	if (GMT->common.o.select) ret = (int)GMT->common.o.n_cols; break;
-		case 'p':	if (GMT->common.p.active) ret = 0; break;
-		case 'r':	if (GMT->common.R.active[GSET]) ret = GMT->common.R.registration; break;
-		case 's':	if (GMT->common.s.active) ret = 0; break;
+		case 'a':	if (API->common_snapshot->a.active) ret = API->common_snapshot->a.geometry; break;
+		case 'b':	if (API->common_snapshot->b.active[GMT_IN]) ret = GMT_IN; else if (API->common_snapshot->b.active[GMT_OUT]) ret = GMT_OUT; break;
+		case 'f':	if (API->common_snapshot->f.active[GMT_IN]) ret = GMT_IN; else if (API->common_snapshot->f.active[GMT_OUT]) ret = GMT_OUT; break;
+		case 'g':	if (API->common_snapshot->g.active) ret = 0; break;
+		case 'h':	if (API->common_snapshot->h.active) ret = API->common_snapshot->h.mode; break;
+		case 'i':	if (API->common_snapshot->i.select) ret = (int)API->common_snapshot->i.n_cols; break;
+		case 'n':	if (API->common_snapshot->n.active) ret = 0; break;
+		case 'o':	if (API->common_snapshot->o.select) ret = (int)API->common_snapshot->o.n_cols; break;
+		case 'p':	if (API->common_snapshot->p.active) ret = 0; break;
+		case 'r':	if (API->common_snapshot->R.active[GSET]) ret = API->common_snapshot->R.registration; break;
+		case 's':	if (API->common_snapshot->s.active) ret = 0; break;
 		case 't':
-			if (GMT->common.t.active) {
+			if (API->common_snapshot->t.active) {
 				ret = 2;
-				if (par) gmt_M_memcpy (par, GMT->common.t.value, 2, double);
+				if (par) gmt_M_memcpy (par, API->common_snapshot->t.value, 2, double);
 			}
 			break;
-		case ':':	if (GMT->common.colon.toggle[GMT_IN]) ret = GMT_IN; else if (GMT->common.colon.toggle[GMT_OUT]) ret = GMT_OUT; break;
+		case ':':	if (API->common_snapshot->colon.toggle[GMT_IN]) ret = GMT_IN; else if (API->common_snapshot->colon.toggle[GMT_OUT]) ret = GMT_OUT; break;
 		default:
 			gmtlib_report_error (API, GMT_OPTION_NOT_FOUND);
 			break;
