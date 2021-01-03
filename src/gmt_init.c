@@ -12831,6 +12831,8 @@ void gmt_end (struct GMT_CTRL *GMT) {
 	gmt_M_str_free (GMT->hidden.mem_keeper);
 #endif
 
+	gmt_M_free (GMT, GMT->parent->common_snapshot);	/* Free snapshot */
+
 	gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 }
 
@@ -14674,6 +14676,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	gmtinit_free_dirnames (GMT);		/* Wipe previous dir names */
 
 	gmtlib_fft_cleanup (GMT); /* Clean FFT resources */
+
+	gmt_M_memcpy (GMT->parent->common_snapshot, &GMT->common, 1, struct GMT_COMMON);	/* Get a common option snapshot */
 
 	/* Overwrite GMT with what we saved in gmt_init_module */
 	gmt_M_memcpy (GMT, Ccopy, 1, struct GMT_CTRL);	/* Overwrite struct with things from Ccopy */
@@ -17043,6 +17047,8 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	gmtlib_fft_initialization (GMT);	/* Determine which FFT algos are available and set pointers */
 
 	gmtinit_set_today (GMT);	/* Determine today's rata die value */
+
+	API->common_snapshot = gmt_M_memory (GMT, NULL, 1U, struct GMT_COMMON);	/* For holding snapshots of common options */
 
 	return (GMT);
 }
