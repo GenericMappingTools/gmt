@@ -658,6 +658,10 @@ MAP Parameters
     **MAP_FRAME_PEN**
         Pen attributes used to draw plain map frame [thicker,black].
 
+    **MAP_FRAME_PERCENT**
+        Percentage of the fancy frame width to use for the internal checkerboard
+        frame lines [100].
+
     **MAP_FRAME_TYPE**
         Choose between **inside**, **plain** and **fancy** (thick boundary,
         alternating black/white frame; append **-rounded** for rounded corners)

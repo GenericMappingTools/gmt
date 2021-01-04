@@ -135,6 +135,7 @@ struct GMT_DEFAULTS {
 	double map_annot_offset[2];		/* Distance between primary or secondary annotation and tickmarks [5p/5p] */
 	double map_annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
 	double map_annot_min_spacing;	/* If an annotation is closer that this to an older annotation, the annotation is skipped [0.0] */
+	double map_frame_percent;		/* Percentage of fancy map frame width to actually draw [100] */
 	double map_frame_width;			/* Thickness of fancy map frame [5p] */
 	double map_grid_cross_size[2];	/* Size of primary & secondary gridcrosses.  0 means draw continuous gridlines */
 	double map_heading_offset;		/* Distance between top of panel title and base of subplot heading [18p] */
