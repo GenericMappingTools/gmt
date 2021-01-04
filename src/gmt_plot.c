@@ -1310,6 +1310,11 @@ GMT_LOCAL void gmtplot_wesn_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL 
 	}
 }
 
+GMT_LOCAL double gmtplot_fancy_pen_width (struct GMT_CTRL *GMT) {
+	/* Return the pen width of the black/white checker fancy frame in points */
+	return (fabs (0.01 * GMT->current.setting.map_frame_percent * GMT->current.setting.map_frame_width) * GMT->session.u2u[GMT_INCH][GMT_PT]);
+}
+
 GMT_LOCAL void gmtplot_fancy_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	double fat_pen, thin_pen;
 	bool dual = false;
@@ -1322,7 +1327,7 @@ GMT_LOCAL void gmtplot_fancy_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL
 
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 
-	fat_pen = fabs (GMT->current.setting.map_frame_width) * GMT->session.u2u[GMT_INCH][GMT_PT];
+	fat_pen = gmtplot_fancy_pen_width (GMT);
 	if (GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_LOWER].active) {	/* Need two-layer frame */
 		fat_pen *= 0.5;
 		dual = true;
@@ -1393,7 +1398,7 @@ GMT_LOCAL void gmtplot_polar_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL
 
 	/* Here draw fancy map boundary */
 
-	fat_pen = fabs (GMT->current.setting.map_frame_width) * GMT->session.u2u[GMT_INCH][GMT_PT];
+	fat_pen = gmtplot_fancy_pen_width (GMT);
 	if (GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_LOWER].active) {	/* Need two-layer frame */
 		fat_pen *= 0.5;
 		dual = true;
@@ -1448,7 +1453,7 @@ GMT_LOCAL void gmtplot_conic_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL
 	if (GMT->current.proj.north_pole && gmt_M_is_Npole (n)) /* Cannot have northern boundary */
 		GMT->current.map.frame.side[N_SIDE] = GMT_AXIS_NONE;
 
-	fat_pen = fabs (GMT->current.setting.map_frame_width) * GMT->session.u2u[GMT_INCH][GMT_PT];
+	fat_pen = gmtplot_fancy_pen_width (GMT);
 	if (GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_LOWER].active) {	/* Need two-layer frame */
 		fat_pen *= 0.5;
 		dual = true;
