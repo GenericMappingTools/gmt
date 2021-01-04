@@ -215,6 +215,7 @@ static struct GMT_parameter GMT_keyword_active[]= {
 	{ 0, "MAP_DEGREE_SYMBOL"},
 	{ 0, "MAP_FRAME_AXES"},
 	{ 0, "MAP_FRAME_PEN"},
+	{ 0, "MAP_FRAME_PERCENT"},
 	{ 0, "MAP_FRAME_TYPE"},
 	{ 0, "MAP_FRAME_WIDTH"},
 	{ 0, "MAP_GRID_CROSS_SIZE_PRIMARY"},
@@ -5988,8 +5989,8 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	error += gmtinit_decode5_wesnz (GMT, "WESNZ", false);
 	/* MAP_DEFAULT_PEN */
 	error += gmt_getpen (GMT, "default,black", &GMT->current.setting.map_default_pen);
-	/* MAP_FRAME_PEN */
-	error += gmt_getpen (GMT, "thicker,black", &GMT->current.setting.map_frame_pen);
+	/* MAP_FRAME_PERCENT */
+	GMT->current.setting.map_frame_percent = 100.0;
 	/* MAP_FRAME_TYPE (fancy) */
 	GMT->current.setting.map_frame_type = GMT_IS_FANCY;
 	GMT->current.setting.map_graph_extension_unit = GMT_GRAPH_EXTENSION_UNIT;	/* Defaults for graph */
@@ -9975,6 +9976,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_MAP_FRAME_PEN:
 			error = gmt_getpen (GMT, value, &GMT->current.setting.map_frame_pen);
 			break;
+		case GMTCASE_MAP_FRAME_PERCENT:
+			dval = atof (value);
+			if (dval <= 0.0 || dval > 100.0)
+				error = true;
+			else
+				GMT->current.setting.map_frame_percent = dval;
+			break;
 		case GMTCASE_BASEMAP_TYPE:
 			GMT_COMPAT_TRANSLATE ("MAP_FRAME_TYPE");
 			break;
@@ -11500,6 +11508,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			/* Intentionally fall through */
 		case GMTCASE_MAP_FRAME_PEN:
 			snprintf (value, GMT_LEN256, "%s", gmt_putpen (GMT, &GMT->current.setting.map_frame_pen));
+			break;
+		case GMTCASE_MAP_FRAME_PERCENT:
+			snprintf (value, GMT_LEN256, "%g", GMT->current.setting.map_frame_percent);
 			break;
 		case GMTCASE_BASEMAP_TYPE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
