@@ -5989,6 +5989,8 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	error += gmtinit_decode5_wesnz (GMT, "WESNZ", false);
 	/* MAP_DEFAULT_PEN */
 	error += gmt_getpen (GMT, "default,black", &GMT->current.setting.map_default_pen);
+	/* MAP_FRAME_PEN */
+	error += gmt_getpen (GMT, "thicker,black", &GMT->current.setting.map_frame_pen);
 	/* MAP_FRAME_PERCENT */
 	GMT->current.setting.map_frame_percent = 100.0;
 	/* MAP_FRAME_TYPE (fancy) */
