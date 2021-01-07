@@ -2,7 +2,7 @@
 
 on:
   # enable pull request for debugging
-  #pull_request:
+  # pull_request:
   # Schedule runs daily
   schedule:
     - cron: '0 0 * * *'
@@ -12,7 +12,7 @@ name: Lint Checker
 jobs:
   lint-checker:
     name: Lint Checker
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - name: Check out repository
@@ -21,9 +21,7 @@ jobs:
     - name: Install cppcheck
       run: |
         set -x -e
-        #sudo snap install cppcheck
-        # Install the dev version due to a packaging issue of cppcheck 2.3
-        sudo snap install cppcheck --edge
+        brew install cppcheck
         cppcheck --version
 
     - name: Run cppcheck
