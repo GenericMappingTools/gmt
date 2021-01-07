@@ -61,7 +61,7 @@ you need to be aware of at run-time.
    :width: 600 px
    :align: center
 
-   The GMT run-time environment.  The will initiate with a set of system defaults that
+   The GMT run-time environment.  The session will initiate with a set of system defaults that
    you can override with having your own gmt.conf file in the current directory, specifying
    GMT parameters via the *--PAR=value* technique, and supply module options.  Some GMT modules
    will read hidden data (like coastlines) but most will explicitly need to be given user data.
