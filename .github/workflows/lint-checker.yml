@@ -2,7 +2,7 @@
 
 on:
   # enable pull request for debugging
-  pull_request:
+  # pull_request:
   # Schedule runs daily
   schedule:
     - cron: '0 0 * * *'
