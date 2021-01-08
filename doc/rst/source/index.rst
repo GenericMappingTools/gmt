@@ -79,3 +79,4 @@ Quick links
    Debugging GMT <debug>
    GMT C API <api>
    PostScriptLight C API <postscriptlight>
+   Developer Docs <dev_notes>
