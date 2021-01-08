@@ -1278,7 +1278,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		gmt_M_grd_loop (GMT, Z, row, col, ij) {	/* Compute rgb for each pixel */
 			if (gmt_M_is_fnan (Topo->data[ij]) && Ctrl->T.skip) continue;
 			if (use_intensity_grid && Ctrl->T.skip && gmt_M_is_fnan (Intens->data[ij])) continue;
-			gmt_get_rgb_from_z (GMT, P, Topo->data[ij], fill.rgb);
+			gmt_get_fill_from_z (GMT, P, Topo->data[ij], &fill);
 			if (use_intensity_grid)
 				gmt_illuminate (GMT, Intens->data[ij], fill.rgb);
 			else
