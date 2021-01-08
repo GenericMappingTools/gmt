@@ -383,7 +383,7 @@ set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	gmt_common_runpath.h gmt_common_sighandler.c gmt_common_string.h clear.c begin.c
 	gmt_color_rgb.h gmt_colornames.h gmt_media_size.h gmt_mgg_header2.h
 	gmt_modern.c end.c declspec.h gmt_hidden.h gmt_remote.h gmt_remote.c
-	figure.c gmt_dev.h gmt_common.h gmt_constants.h compat/qsort.h
+	figure.c gmt_dev.h gmt_common.h gmt_common_longoptions.h gmt_constants.h compat/qsort.h
 	gmt_contour.h gmt_customio.h gmt_datums.h gmt_dcw.h gmt_decorate.h gmt_defaults.h
 	gmt_ellipsoids.h gmt_error.h gmt_gdalread.h gmt_glib.h gmt_grd.h gmt_grdio.h gmt_hash.h
 	gmt_internals.h gmt_io.h gmt_macros.h gmt_media_name.h gmt_modern.h
