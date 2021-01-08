@@ -1,11 +1,13 @@
 	/* GMT Common option long-option to short-option translation table
 	 *
 	 * General short-option syntax:
-	 *		-<sort-option>[<short-directives>][+<short-modifier>[<argument>]]
+	 *		-<short_option>[<short_directives>][+<short_modifiers>[<argument>]]
 	 * General long-option syntax:
-	 * 		--<long-option>[=<long-directive][+<long-modifier>[=<argument>]]
+	 * 		--<long_option>[=<long_directives][+<long_modifiers>[=<argument>]]
 	 *
-	 *  separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers
+	 * The items below correspond to the named parameters in the GMT_KEYWORD_DICTIONARY structure:
+	 *
+	 *  separator, short_option, long_option, short_directives, long_directives, short_modifiers, long_modifiers
 	 */
 	{   0, 'B', "frame",         "",        "",                                         "b,g,n,o,t,s",				"box,fill,noframe,oblique-pole,title,subtitle" },
 	{   0, 'B', "axis",          "x,y,z",   "x,y,z",                                    "a,f,l,L,p,s,S,u",			"angle,fancy,label,Label,prefix,second-label,Second-label,unit" },
