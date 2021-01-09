@@ -3,7 +3,7 @@
 	 * General short-option syntax:
 	 *		-<short_option>[<short_directives>][+<short_modifiers>[<argument>]]
 	 * General long-option syntax:
-	 * 		--<long_option>[=<long_directives][+<long_modifiers>[=<argument>]]
+	 *		--<long_option>[=[<long_directives>:]<arg>][+<long_modifier1>[=<arg1>]][+<long_modifier2>[=<arg2>]]...
 	 *
 	 * The items below correspond to the named parameters in the GMT_KEYWORD_DICTIONARY structure:
 	 */
@@ -30,8 +30,8 @@
 	{   0, 'n', "interpolation", "b,c,l,n", "bspline,bicubic,linear,nearestneighbor",   "a,b,c,t",     				"antialias,bc,clip,threshold"},
 	{ ',', 'o', "outcols",       "",        "",                                         "",        					""},
 	{   0, 'p', "perspective",   "x,y,z",   "x,y,z",                                    "v,w",     					"view,world"},
-	{ ',', 'q', "inrows",        "~",       "invert",                                   "a,c,f,s",   				"perset,column,perfile,persegment"},
-	{ ',', 'q', "outrows",       "~",       "invert",                                   "a,c,f,s",   				"perset,column,perfile,persegment"},
+	{ ',', 'q', "inrows",        "~",       "invert",                                   "a,c,f,s",   				"perset,column,perfile,persegment"},	/* Actually -qi */
+	{ ',', 'q', "outrows",       "~",       "invert",                                   "a,c,f,s",   				"perset,column,perfile,persegment"},	/* Actually -qo */
 	{   0, 'r', "registration",  "g,p",     "gridline,pixel",                           "",        					""},
 	{   0, 's', "skiprows",      "",       "",                                         "a,r",     					"any,reverse"},
 	{   0, 't', "transparency",  "",        "",                                         "",        					""},
