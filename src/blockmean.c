@@ -40,6 +40,18 @@
 
 #include "block_subs.h"
 
+static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
+	/* separator, short_option, long_option, short_directives, long_directives, short_modifiers, long_modifiers */
+	{ 0, 'A', "fields", "", "", "", "" },
+	{ 0, 'C', "center", "", "", "", "" },
+	{ 0, 'E', "extend", "", "", "P,p", "prop-simple,prop-weighted" },
+	{ 0, 'G', "gridfile", "", "", "", "" },
+	GMT_INCREMENT_KW,	/* Defined in gmt_constant.h since not a true GMT common option (but almost) */
+	{ 0, 'S', "select", "m,n,s,w", "mean,count,sum,weight", "", "" },
+	{ 0, 'W', "weights", "i,o", "in,out", "s", "sigma" },
+	{ 0, '\0', "", "", "", "", ""}	/* End of list marked with empty option and strings */
+};
+
 enum Block_Modes {
 	BLK_MODE_NOTSET = 0,	/* No -E+p|P (or -Ep) set */
 	BLK_MODE_OBSOLETE = 1,	/* Old -Ep for backwards compatibility; assumes input weights are already set to 1/s^2 */
