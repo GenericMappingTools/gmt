@@ -4988,6 +4988,10 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 			s->x = atof (col[GMT_X]);
 			s->y = atof (col[GMT_Y]);
 		}
+		/* Unfortunately, "R" was used for two things: General rotation and Rounded rectangle symbol.  We now use "O" for rotation
+		 * but for backwards compatibility we must fix any old-style "R" for rotation here by replacing with "O" */
+		if (s->action == 'R' && last == 1)	/* Got the deprecated R for rotate the coordinate system, not R for rounded rectangle */
+			s->action = GMT_SYMBOL_ROTATE;
 
 		switch (s->action) {
 
@@ -5012,7 +5016,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 				gmtsupport_decode_arg (col[4], 2, s);	/* angle2 could be a variable or constant degrees */
 				break;
 
-			case 'R':		/* Rotate coordinate system about (0,0) */
+			case GMT_SYMBOL_ROTATE:		/* Rotate coordinate system about (0,0) */
 				if (last != 1) error++;
 				s->action = gmtsupport_decode_arg (col[0], 0, s);	/* angle could be a variable or constant heading or azimuth in degrees */
 				break;
@@ -5068,7 +5072,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 				}
 				s->font = GMT->current.setting.font_annot[GMT_PRIMARY];	/* Default font for symbols */
 				s->justify = PSL_MC;				/* Default justification of text */
-				head->text = 1;	/* We will be typsetting text so fonts are required */
+				head->text = 1;	/* We will be typesetting text so fonts are required */
 				if (s->action == GMT_SYMBOL_VARTEXT && c[1] == 't') head->text = 2;	/* Flag that trailing text will be used */
 				k = 1;
 				while (col[last][k] && col[last][k] != '+') k++;
@@ -5103,6 +5107,13 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 				if (last != 4) error++;
 				s->p[0] = atof (col[2]);
 				s->p[1] = atof (col[3]);
+				break;
+
+			case 'R':		/* Draw rounded rect symbol */
+				if (last != 5) error++;
+				s->p[0] = atof (col[2]);
+				s->p[1] = atof (col[3]);
+				s->p[2] = atof (col[4]);
 				break;
 
 			case 'e':		/* Draw ellipse symbol */

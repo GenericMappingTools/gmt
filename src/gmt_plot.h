@@ -47,7 +47,7 @@
 #define GMT_SYMBOL_DRAW		((int)'D')
 #define GMT_SYMBOL_STROKE	((int)'S')
 #define GMT_SYMBOL_ARC		((int)'A')
-#define GMT_SYMBOL_ROTATE	((int)'R')
+#define GMT_SYMBOL_ROTATE	((int)'O')	/* Since R stands for rounded rectangle in plot */
 #define GMT_SYMBOL_VARROTATE	((int)'V')
 #define GMT_SYMBOL_AZIMROTATE	((int)'Z')
 #define GMT_SYMBOL_TEXTURE	((int)'T')
