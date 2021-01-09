@@ -7102,11 +7102,14 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			case PSL_TRIANGLE:
 			case PSL_DIAMOND:
 			case PSL_STAR:
+			case PSL_DOT:
 			case PSL_HEXAGON:
 			case PSL_OCTAGON:
 			case PSL_PENTAGON:
+			case PSL_PLUS:
 			case PSL_INVTRIANGLE:
 			case PSL_RECT:
+			/* case PSL_RNDRECT: Cannot use as conflicts with GMT_SYMBOL_ROTATE */
 			case PSL_XDASH:
 			case PSL_YDASH:
 				if (flush) gmtplot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
