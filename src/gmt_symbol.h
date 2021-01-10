@@ -76,6 +76,7 @@ enum gmt_enum_custsymb {
 	GMT_VAR_SIZE		= -3,	/* We have the symbol size $s in a conditional test */
 	GMT_VAR_IS_Y		= -2,	/* We have y or latitude in a conditional test */
 	GMT_VAR_IS_X		= -1,	/* We have x or longitude in a conditional test */
+	GMT_VAR_WORD		= 64,	/* We have a variable string (the trailing text) in a conditional test and we want a particular word */
 	GMT_CONST_VAR		=  0,	/* We have a constant factor in a conditional test */
 	GMT_BEGIN_SINGLE_IF	=  1,	/* We have a single, 1-liner if condition, with no end if */
 	GMT_BEGIN_BLOCK_IF	=  2,	/* Starting a new if branch */

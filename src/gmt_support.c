@@ -4798,6 +4798,7 @@ int gmt_locate_custom_symbol (struct GMT_CTRL *GMT, const char *in_name, char *n
 	return (type);
 
 }
+
 /*! . */
 GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
 	/* Load in an initialize a new custom symbol.  These files can live in many places:
@@ -4891,7 +4892,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 		s = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL_ITEM);
 		if (first) head->first = s;
 		first = false;
-
+		for (k = 0; k < 8; k++) col[k][0] = '\0';	/* Reset col array */
 		if (strstr (buffer, "if $")) {	/* Parse a logical if-test or elseif here */
 			if (strstr (buffer, "} elseif $")) {	/* Actually, it is an elseif-branch [skip { elseif]; nc -=3 means we count the cols only */
 				nc = sscanf (buffer, "%*s %*s %s %s %s %*s %s %s %s %s %s %s %s %s", arg[0], OP, right, col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7]) - 3;
@@ -4912,8 +4913,12 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 						s->var[k] = GMT_VAR_IS_Y;
 					else if (arg[k][1] == 's')	/* Test on symbol size */
 						s->var[k] = GMT_VAR_SIZE;
-					else if (arg[k][1] == 't')	/* Test on trailing text */
-						s->var[k] = GMT_VAR_STRING;
+					else if (arg[k][1] == 't') {	/* Test on trailing text or word */
+						if (arg[k][2] == '\0')	/* The whole text */
+							s->var[k] = GMT_VAR_STRING;
+						else	/* Use a single word */
+							s->var[k] = GMT_VAR_WORD + atoi (&arg[k][2]);	/* Get the word number $t<varno> plus GMT_VAR_WORD */
+					}
 					else
 						s->var[k] = atoi (&arg[k][1]);	/* Get the variable number $<varno> */
 					s->const_val[k] = 0.0;
