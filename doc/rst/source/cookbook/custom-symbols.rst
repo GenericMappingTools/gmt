@@ -95,7 +95,7 @@ out parameters for pre-processing. The available types are
 
 To use the extra parameters in your macro you address them as $1, $2, etc.  There
 is no limit on how many parameters your symbol may use. To access the trailing text in
-the input file you use $t and for a particular work (number k = 0, 1, ...) in the
+the input file you use $t and for a particular word (number k = 0, 1, ...) in the
 trailing text you use $t\ *k*.
 
 Macro commands
