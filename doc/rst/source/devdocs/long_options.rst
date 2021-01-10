@@ -69,20 +69,21 @@ Clearly, these translation tables will need to address not only the longer *name
 also the longer names for *modifiers*.  We can now be more abstract and state that a general
 GMT short-format option actually follows a specific syntax::
 
-    -option[directive][+modifier1[arg1]][+modifier2[arg2]][...]
+    -option[directive][arg][+modifier1[arg1]][+modifier2[arg2]][...]
 
-where *option* and any *modifier* are single characters and there may be none, one,
+where *option*, *directive*, and any *modifier* are single characters and there may be none, one,
 or more modifiers following the initial option and the
-optional *directive*.  As we saw in the case of **-i**, the sequence of "optional directive
+optional *directive* (and optional *arg*).  As we saw in the case of **-i**, the sequence of "optional directive
 followed by optional modifiers" may in fact be repeated by separating these sequences with
 a comma.  The corresponding long-format syntax format is represented this way::
 
-    -long-option[=directive][+modifier1[=arg1]][+modifier2[=arg2]][...]
+    -long-option[=[directive:]arg][+modifier1[=arg1]][+modifier2[=arg2]][...]
 
 where the key differences are
 
 #. The *option* is a mnemonic word and not a single letter
 #. Optional directives are appended after an equal sign
+#. Optional argument are appended after an equal sign or after the directive colon.
 #. Optional *modifiers* use mnemonic words and not a single letter
 #. Optional modifier arguments are appended after another equal sign
 
