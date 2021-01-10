@@ -670,7 +670,9 @@ EXTERN_MSC int GMT_grdspotter (void *V_API, int mode, void *args) {
 				Return (GMT_ERROR_ON_FOPEN);
 			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {
-				if (line[0] == '#' || line[0] == '\n') continue;
+				if (line[0] == '#') continue;
+				gmt_chop (line);
+				if (gmt_is_a_blank_line (line)) continue;
 				k = sscanf (line, "%*s %d %lf %lf %lf %lf", &Qid, &wq, &eq, &sq, &nq);
 				ID_info[Ctrl->Q.id].ok = true;
 				if (k == 5) {	/* Got restricted wesn also */

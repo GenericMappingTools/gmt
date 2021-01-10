@@ -361,7 +361,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 				fprintf (fp, "# Rotated custom symbol, read size and rotation from data file\nN: 1 o\n$1 R\n");
 				first = false;
 			}
-			fprintf (fp, "%s", buffer);
+			fprintf (fp, "%s", buffer);	/* Pass remaining lines unchanged */
 		}
 		fclose (fpc);
 	}
