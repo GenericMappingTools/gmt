@@ -4798,6 +4798,7 @@ int gmt_locate_custom_symbol (struct GMT_CTRL *GMT, const char *in_name, char *n
 	return (type);
 
 }
+
 /*! . */
 GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
 	/* Load in an initialize a new custom symbol.  These files can live in many places:
@@ -4846,7 +4847,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 					head->PS_BB[0] = atof (c1);	head->PS_BB[2] = atof (c2);
 					head->PS_BB[1] = atof (c3);	head->PS_BB[3] = atof (c4);
 					got_BB[bb] = true;
-					if (bb == 0) got_BB[1] = true;	/* If we find Highres BB then we don't need to look for lowres BB */
+					if (bb == 0) got_BB[1] = true;	/* If we find HighRes BB then we don't need to look for LowRes BB */
 					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Custom EPS symbol %s has width %g and height %g inches [%s]\n",
 						&name[pos], (head->PS_BB[1] - head->PS_BB[0]) / 72, (head->PS_BB[3] - head->PS_BB[2]) / 72, &BB_string[bb][2]);
 				}
@@ -4855,8 +4856,9 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 			strcat (head->PS_macro, buffer);
 			continue;
 		}
+		if (buffer[0] == '#') continue;	/* Skip comments */
 		gmt_chop (buffer);	/* Get rid of \n \r */
-		if (buffer[0] == '#' || buffer[0] == '\0') continue;	/* Skip comments or blank lines */
+		if (gmt_is_a_blank_line (buffer)) continue;	/* Skip blank lines */
 		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y[,z] stuff */
 			char flags[GMT_LEN64] = {""};
 			nc = sscanf (&buffer[2], "%d %s", &head->n_required, flags);
@@ -4891,7 +4893,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 		s = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL_ITEM);
 		if (first) head->first = s;
 		first = false;
-
+		for (k = 0; k < 8; k++) col[k][0] = '\0';	/* Reset col array */
 		if (strstr (buffer, "if $")) {	/* Parse a logical if-test or elseif here */
 			if (strstr (buffer, "} elseif $")) {	/* Actually, it is an elseif-branch [skip { elseif]; nc -=3 means we count the cols only */
 				nc = sscanf (buffer, "%*s %*s %s %s %s %*s %s %s %s %s %s %s %s %s", arg[0], OP, right, col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7]) - 3;
@@ -4912,8 +4914,12 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 						s->var[k] = GMT_VAR_IS_Y;
 					else if (arg[k][1] == 's')	/* Test on symbol size */
 						s->var[k] = GMT_VAR_SIZE;
-					else if (arg[k][1] == 't')	/* Test on trailing text */
-						s->var[k] = GMT_VAR_STRING;
+					else if (arg[k][1] == 't') {	/* Test on trailing text or word */
+						if (arg[k][2] == '\0')	/* The whole text */
+							s->var[k] = GMT_VAR_STRING;
+						else	/* Use a single word */
+							s->var[k] = GMT_VAR_WORD + atoi (&arg[k][2]);	/* Get the word number $t<varno> plus GMT_VAR_WORD */
+					}
 					else
 						s->var[k] = atoi (&arg[k][1]);	/* Get the variable number $<varno> */
 					s->const_val[k] = 0.0;
@@ -4988,6 +4994,10 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 			s->x = atof (col[GMT_X]);
 			s->y = atof (col[GMT_Y]);
 		}
+		/* Unfortunately, "R" was used for two things: General rotation and Rounded rectangle symbol.  We now use "O" for rotation
+		 * but for backwards compatibility we must fix any old-style "R" for rotation here by replacing with "O" */
+		if (s->action == 'R' && last == 1)	/* Got the deprecated R for rotate the coordinate system, not R for rounded rectangle */
+			s->action = GMT_SYMBOL_ROTATE;
 
 		switch (s->action) {
 
@@ -5012,7 +5022,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 				gmtsupport_decode_arg (col[4], 2, s);	/* angle2 could be a variable or constant degrees */
 				break;
 
-			case 'R':		/* Rotate coordinate system about (0,0) */
+			case GMT_SYMBOL_ROTATE:		/* Rotate coordinate system about (0,0) */
 				if (last != 1) error++;
 				s->action = gmtsupport_decode_arg (col[0], 0, s);	/* angle could be a variable or constant heading or azimuth in degrees */
 				break;
@@ -5064,11 +5074,11 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 				if ((c = strchr (s->string, '$'))) {	/* Got a text string variable */
 					s->action = GMT_SYMBOL_VARTEXT;
 					if (c[1] == 't' && isdigit (c[2]))	/* Select this word from trailing text */
-						s->var[0] = atoi (&c[2]) + 1;	/* We add the 1 here so 0-(n-1) becomes 1-n */
+						s->var[0] = atoi (&c[2]);	/* Word number is 0-(n-1) */
 				}
 				s->font = GMT->current.setting.font_annot[GMT_PRIMARY];	/* Default font for symbols */
 				s->justify = PSL_MC;				/* Default justification of text */
-				head->text = 1;	/* We will be typsetting text so fonts are required */
+				head->text = 1;	/* We will be typesetting text so fonts are required */
 				if (s->action == GMT_SYMBOL_VARTEXT && c[1] == 't') head->text = 2;	/* Flag that trailing text will be used */
 				k = 1;
 				while (col[last][k] && col[last][k] != '+') k++;
@@ -5103,6 +5113,13 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 				if (last != 4) error++;
 				s->p[0] = atof (col[2]);
 				s->p[1] = atof (col[3]);
+				break;
+
+			case 'R':		/* Draw rounded rect symbol */
+				if (last != 5) error++;
+				s->p[0] = atof (col[2]);
+				s->p[1] = atof (col[3]);
+				s->p[2] = atof (col[4]);
 				break;
 
 			case 'e':		/* Draw ellipse symbol */
@@ -15110,6 +15127,7 @@ int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct GMT_MATH_MACRO **
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#') continue;
 		gmt_chop (line);
+		if (gmt_is_a_blank_line (line)) continue;
 		if ((c = strstr (line, ": ")))	/* This macro has comments */
 			c[0] = '\0';		/* Chop off the comments */
 		gmt_strstrip (line, true);	/* Remove leading and trailing whitespace */

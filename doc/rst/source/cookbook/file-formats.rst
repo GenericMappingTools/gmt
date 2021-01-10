@@ -18,7 +18,7 @@ Optional file header records
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The first data record may be preceded by one or more header records. Any
-records that begins with '#' is considered a header or comment line and
+records that has '#' as the *first* character is considered a header or comment line and
 are always processed correctly. If your data file has leading header
 records that do *not* start with '#' then you must make sure to use the
 **-h** option and set the parameter :term:`IO_N_HEADER_RECS` in the :doc:`/gmt.conf` file
