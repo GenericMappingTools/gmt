@@ -95,7 +95,8 @@ out parameters for pre-processing. The available types are
 
 To use the extra parameters in your macro you address them as $1, $2, etc.  There
 is no limit on how many parameters your symbol may use. To access the trailing text in
-the input file you use $t.
+the input file you use $t and for a particular word (number k = 0, 1, ...) in the
+trailing text you use $t\ *k*.
 
 Macro commands
 ~~~~~~~~~~~~~~
@@ -113,7 +114,7 @@ are constants.
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | **Name**      | **Code**   | **Purpose**                            | **Arguments**                              |
 +===============+============+========================================+============================================+
-| rotate        | **R**      | Rotate the coordinate system           | :math:`\alpha`\[**a**]                     |
+| rotate        | **O**      | Rotate the coordinate system           | :math:`\alpha`\[**a**]                     |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | moveto        | **M**      | Set a new anchor point                 | :math:`x_0, y_0`                           |
 +---------------+------------+----------------------------------------+--------------------------------------------+
@@ -151,6 +152,8 @@ are constants.
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | rect          | **r**      | Plot a rectangle                       | :math:`x, y, width, height`                |
 +---------------+------------+----------------------------------------+--------------------------------------------+
+| roundrect     | **R**      | Plot a rounded rectangle               | :math:`x, y, width, height, radius`        |
++---------------+------------+----------------------------------------+--------------------------------------------+
 | square        | **s**      | Plot a square                          | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | triangle      | **t**      | Plot a triangle                        | :math:`x, y, size`                         |
@@ -164,11 +167,11 @@ are constants.
 | y-dash        | **y**      | Plot a y-dash                          | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 
-Note for **R**\: if an **a** is appended to the angle then :math:`\alpha` is considered
+Note for **O**\: if an **a** is appended to the angle then :math:`\alpha` is considered
 to be a map azimuth; otherwise it is a Cartesian map angle.  The **a** modifier
 does not apply if the angle is given via a variable, in which case the type of angle
-has already been specified via **N:** above and already converged before seen by **R**.
-Finally, the **R** command can also be given the negative of a variable, e.g., -$2 to
+has already been specified via **N:** above and already converged before seen by **O**.
+Finally, the **O** command can also be given the negative of a variable, e.g., -$2 to
 undo a rotation, if necessary.
 
 Symbol fill and outline

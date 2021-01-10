@@ -3363,13 +3363,17 @@ enum plot_operand {
 
 GMT_LOCAL int gmtplot_custum_failed_bool_test_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], char *text, bool *retval) {
 	unsigned int k;
-	bool result;
+	int type;
+	bool result, delete[2] = {false, false};
 	char *arg[2];
 	gmt_M_unused (size);	/* Numerical values not used here */
 	for (k = 0; k < 2; k++) {	/* Load up the left and right operands */
-		switch (s->var[k]) {
-			case GMT_VAR_STRING:	/* training text comparison */
+		type = (s->var[k] >= GMT_VAR_WORD) ? GMT_VAR_WORD : s->var[k];	/* If word then (s->var[k] - GMT_VAR_WORD) is the word number (0, 1, ...) */
+		switch (type) {
+			case GMT_VAR_STRING:	/* trailing text comparison */
 				arg[k] = text;		break;
+			case GMT_VAR_WORD:		/* trailing word comparison */
+				arg[k] = gmt_get_word (text, " \t", s->var[0] - GMT_VAR_WORD);	delete[k] = true;	break;
 			case GMT_CONST_STRING:	/* Constant text comparison */
 				arg[k] = s->string;	break;
 			default:	/* Should not get here */
@@ -3398,6 +3402,9 @@ GMT_LOCAL int gmtplot_custum_failed_bool_test_string (struct GMT_CTRL *GMT, stru
 			return GMT_PARSE_ERROR;
 			break;
 	}
+	for (k = 0; k < 2; k++)
+		if (delete[k]) gmt_M_str_free (arg[k]);	/* Free word that we extracted from text */
+
 	if (s->negate) result = !result;	/* Negate the test since we used a ! operator , e.g., != */
 	*retval = !result;		/* Return the opposite of the test result */
 	return (GMT_NOERROR);
@@ -3412,7 +3419,7 @@ GMT_LOCAL int gmtplot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_
 	/* Determine if we have text comparisons to deal with, if so, call the string version of this function */
 
 	for (k = 0; k < 2; k++)
-		if (s->var[k] == GMT_VAR_STRING) {
+		if (s->var[k] == GMT_VAR_STRING || s->var[k] >= GMT_VAR_WORD) {
 			error = gmtplot_custum_failed_bool_test_string (GMT, s, size, text, retval);
 			return error;
 		}
@@ -3497,8 +3504,8 @@ GMT_LOCAL void gmtplot_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL
 GMT_LOCAL void gmtplot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], char *text) {
 	/* Returns the [possibly reformatted] string to use for the letter macro.
  	 * These are the things that can happen:
-	 * 1. Action is GMT_SYMBOL_TEXT means we have a static fixed text string; just copy
-	 * 2. s->text is $t.  Then we use the trialing text from the input as the text.
+	 * 1. Action = GMT_SYMBOL_TEXT means we have a static fixed text string; just copy
+	 * 2. s->text is $t.  Then we use the trailing text from the input as the text.
 	 *    Optionally, a single word of the trailing text can be selected by appending
 	 *    a word integer, $t0 is the first word, $t1 the second, etc.
 	 * 3. We have a format statement that contains free-form text with interspersed
@@ -3516,18 +3523,15 @@ GMT_LOCAL void gmtplot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CU
 	else if (!strcmp (s->string, "$t"))	/* Get entire string from trailing text in the input */
 		strcpy (text, GMT->current.io.curr_trailing_text);
 	else if (!strncmp (s->string, "$t", 2U) && isdigit (s->string[2])) {	/* Get word number n from trailing text in the input */
-		char *word = NULL, *trail = NULL, *orig = strdup (GMT->current.io.curr_trailing_text);
-		int col = 0;
-		trail = orig;
-		while (col < s->var[0] && (word = strsep (&trail, " \t")) != NULL)
-			col++;	/* Advance to the right word */
-		if (word && *word != '\0')	/* Skip empty strings */
+		char *word = gmt_get_word (GMT->current.io.curr_trailing_text, " \t", s->var[0]);
+		if (word) {	/* Got it */
 			strcpy (text, word);
-		else {	/* Default to the whole trailing text if word does not exist */
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "No word # %d in the trailing text (%d words) - return all text\n", s->var[0], col);
+			gmt_M_str_free (word);
+		}
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "No word # %d in the trailing text - return all text instead\n", s->var[0]);
 			strcpy (text, GMT->current.io.curr_trailing_text);
 		}
-		gmt_M_str_free (orig);
 	}
 	else {	/* Must replace special items within a template string */
 		unsigned int n_skip, in, out;
@@ -7109,7 +7113,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			case PSL_PLUS:
 			case PSL_INVTRIANGLE:
 			case PSL_RECT:
-			/* case PSL_RNDRECT: Cannot use as conflicts with GMT_SYMBOL_ROTATE */
+			case PSL_RNDRECT:
 			case PSL_XDASH:
 			case PSL_YDASH:
 				if (flush) gmtplot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
