@@ -2,7 +2,7 @@
 
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
 
-GMT is available on Windows, macOS, Linux and FreeBSD.
+GMT is available on Windows, macOS, Linux, FreeBSD and OpenBSD.
 Source and binary packages are provided for the latest release,
 and can be downloaded from the [GMT main site](https://www.generic-mapping-tools.org)
 and [the GitHub repository](https://github.com/GenericMappingTools/gmt/releases).
@@ -26,7 +26,9 @@ for compiling GMT source package (either stable release or development version).
 - [Cross Platform Install Instructions](#cross-platform-install-instructions)
   * [Install via conda](#install-via-conda)
 - [FreeBSD](#freebsd)
-  * [Install via Ports](#install-via-ports)
+  * [Install via Ports](#install-via-freebsd-ports)
+- [OpenBSD](#openbsd)
+  * [Install via Ports](#install-via-openbsd-ports)
 
 ## Windows
 
@@ -227,6 +229,16 @@ latest release from source](BUILDING.md).
 
 The FreeBSD Ports Collection is a diverse collection of utility and application software that has been ported to FreeBSD.
 
+**Precompiled**
+
+Install precompiled gmt binaries with
+
+```
+$ pkg install gmt
+```
+
+**Compile from Ports**
+
 If not done already, set up the **Ports Collection** (see
 https://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/ports-using.html):
 
@@ -245,4 +257,22 @@ Then change into directory `/usr/ports/graphics/gmt` and build:
 
 ```
 make install clean
+```
+
+## OpenBSD
+
+GMT may be installed on OpenBSD using Ports or from source.
+
+**NOTE:** The Ports Collection may provide old GMT versions. If you want the latest GMT release, consider [building the
+latest release from source](BUILDING.md).
+
+### Install via Ports
+For more information, please refer to relevant documentation from the OpenBSD project.
+
+**Precompiled**
+
+Install precompiled gmt binaries with
+
+```
+$ pkg_add gmt
 ```
