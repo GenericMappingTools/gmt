@@ -38,7 +38,7 @@ hobbyists.
 
 ## Installation
 
-GMT has been installed successfully under UNIX/Linux/macOS/FreeBSD on workstations. It
+GMT has been installed successfully under UNIX/Linux/macOS/FreeBSD/OpenBSD on workstations. It
 also installs under Windows and in UNIX emulators such as Cygwin or on virtual
 machines.  We anticipate few problems if you are installing the package on
 other platforms.
