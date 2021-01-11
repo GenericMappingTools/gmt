@@ -77,7 +77,7 @@ optional *directive* (and optional *arg*).  As we saw in the case of **-i**, the
 followed by optional modifiers" may in fact be repeated by separating these sequences with
 a comma.  The corresponding long-format syntax format is represented this way::
 
-    -long-option[=[directive:]arg][+modifier1[=arg1]][+modifier2[=arg2]][...]
+    --long-option[=[directive:]arg][+modifier1[=arg1]][+modifier2[=arg2]][...]
 
 where the key differences are
 
