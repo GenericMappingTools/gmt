@@ -6034,7 +6034,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	/* COLOR_MODEL */
 	GMT->current.setting.color_model = GMT_RGB;
 	/* COLOR_NAN */
-	error += gmt_getrgb (GMT, "127.5", GMT->current.setting.color_patch[GMT_NAN]);
+	error += gmt_getrgb (GMT, "128", GMT->current.setting.color_patch[GMT_NAN]);
 	/* COLOR_HSV_MIN_S */
 	GMT->current.setting.color_hsv_min_s = 1;
 	/* COLOR_HSV_MAX_S */
