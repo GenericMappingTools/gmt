@@ -15,7 +15,7 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: psimage reads an EPS file or a a 1, 8, 24, or 32 bit image and plots it on the page
+ * Brief synopsis: psimage reads an EPS file or a 1, 8, 24, or 32 bit image and plots it on the page
  * Images are only supported if GMT was built with GDAL support.
  *
  * Author:	Paul Wessel
