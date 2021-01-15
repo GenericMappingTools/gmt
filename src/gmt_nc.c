@@ -2039,7 +2039,7 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 		int first_col, first_row, last_row;
 		size_t n, nm;
 		size_t width_t, height_t;
-		double level_min, level_max, limit[2];      /* minmax of level variable */
+		double level_min, level_max;      /* minmax of level variable */
 		gmt_grdfloat *pgrid = NULL;
 		struct GMT_GRID_HEADER *header = C->header;
 		struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
