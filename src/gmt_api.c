@@ -4272,11 +4272,11 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 }
 
 int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in) {
-	/* Convert an indexed image to RGB. Other than indirect calls to gmtapi_expand_index_image, that
-	   get done by gmtapi_import_image, there are other cases when we need also to convert from indexed to RGB.
-	   For example in grdimage when the image was sent in via an external. In this case the code flow goes
+	/* Convert an indexed image to RGB. Other than indirect calls to gmtapi_expand_index_image, e.g., the one
+	   called by gmtapi_import_image, there are other cases when we need also to convert from indexed to RGB.
+	   For example in grdimage when the image was sent in via an external wrapper. In this case the code flow goes
 	   through gmtapi_get_image_data() (in GMT_Read_Data -> gmtapi_pass_object (API, S_obj, family, mode, wesn))
-	   and deliver thta Image object directly to the calling module.
+	   and deliver that Image object directly to the calling module amd may thus have indexed pixels.
 	*/
 	struct GMT_IMAGE* Irgb = NULL;
 	if ((*I_in)->header->n_bands == 1 && (*I_in)->n_indexed_colors > 0) {		/* Indexed image, convert to RGB */
