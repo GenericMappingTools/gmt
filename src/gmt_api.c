@@ -4270,10 +4270,29 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	(*I_out) = I;
 	return (new);
 }
+
+int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in) {
+	/* Convert an indexed image to RGB. Other than indirect calls to gmtapi_expand_index_image, that
+	   get done by gmtapi_import_image, there are other cases when we need also to convert from indexed to RGB.
+	   For example in grdimage when the image was sent in via an external. In this case the code flow goes
+	   through gmtapi_get_image_data() (in GMT_Read_Data -> gmtapi_pass_object (API, S_obj, family, mode, wesn))
+	   and deliver thta Image object directly to the calling module.
+	*/
+	struct GMT_IMAGE* Irgb = NULL;
+	if ((*I_in)->header->n_bands == 1 && (*I_in)->n_indexed_colors > 0) {		/* Indexed image, convert to RGB */
+		gmtapi_expand_index_image (GMT, *I_in, &Irgb);	/* true if we have a read-only indexed image and we had to allocate a new one */
+		if (GMT_Destroy_Data (GMT->parent, I_in) != GMT_NOERROR) {
+			gmtlib_report_error(GMT->parent, GMT->parent->error);
+			return GMT->parent->error;
+		}
+		(*I_in) = Irgb;
+	}
+	return GMT_NOERROR;
+}
 #endif
 
 /*! . */
-GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *image) {
+GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *image) {
 	/* Handles the reading of a 2-D image given in one of several ways.
 	 * Get the entire image:
  	 * 	mode = GMT_CONTAINER_AND_DATA reads both header and image;
@@ -4700,7 +4719,7 @@ unsigned int gmt_whole_earth (struct GMT_CTRL *GMT, double we_in[], double we_ou
 }
 
 /*! . */
-GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_GRID *grid) {
+GMT_LOCAL struct GMT_GRID *gmtapi_import_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_GRID *grid) {
 	/* Handles the reading of a 2-D grid given in one of several ways.
 	 * Get the entire grid:
  	 * 	mode = GMT_CONTAINER_AND_DATA reads both header and grid;
