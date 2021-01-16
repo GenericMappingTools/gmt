@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Operations on Cartesian vectors in 2-D and 3-D"
 #define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdefghioqs" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vbdefghijoqs" GMT_OPT("HMm")
 
 enum gmtvector_method {	/* The available methods */
 	DO_NOTHING=0,
