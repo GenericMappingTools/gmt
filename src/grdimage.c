@@ -1289,10 +1289,12 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			I->y = gmt_grd_coord (GMT, I->header, GMT_Y);
 		}
 
+#ifdef HAVE_GDAL
 		if (!Ctrl->A.active && gmtlib_ind2rgb(GMT, &I)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Error convering from indexed to RGB\n");
 			Return (API->error);
 		}
+#endif
 
 		gray_only  = (I->header->n_bands == 1 && I->n_indexed_colors == 0);	/* Got a grayscale image */
 		got_z_grid = false;		/* Flag that we are using a GMT_IMAGE instead of a GMT_GRID as main input */
