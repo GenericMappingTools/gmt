@@ -9570,8 +9570,8 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 	if (gmt_M_is_geographic (GMT, GMT_IN) && GMT->common.j.active) {	/* User specified a -j setting */
 		static char *kind[5] = {"Cartesian", "Flat Earth", "Great Circle", "Geodesic", "Loxodrome"};
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Spherical distance calculation mode: %s.\n", kind[GMT->common.j.active]);
-		if (mode != GMT_GREATCIRCLE)	/* We override a selection due to deprecated leading -|+ signs before increment or radius */
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your distance mode (%s) differs from your -j option (%s) which takes precedence.\n", kind[mode], kind[GMT->common.j.active]);
+		if (mode != GMT->common.j.mode)	/* We override a selection due to deprecated leading -|+ signs before increment or radius */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your distance mode (%s) differs from your -j option (%s) which takes precedence.\n", kind[mode], kind[GMT->common.j.mode]);
 		mode = GMT->common.j.mode;	/* Override with what -j said */
 	}
 
