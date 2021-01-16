@@ -1103,6 +1103,8 @@ GMT_LOCAL bool grdimage_adjust_R_consideration (struct GMT_CTRL *GMT, struct GMT
 	return false;
 }
 
+EXTERN_MSC bool gmtlib_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I_in, struct GMT_IMAGE **I_out);
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, Conf); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -1287,7 +1289,18 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			I->y = gmt_grd_coord (GMT, I->header, GMT_Y);
 		}
 
-		gray_only = (I->header->n_bands == 1);	/* Got a grayscale image */
+//#if 0
+		if (I->header->n_bands == 1 && I->n_indexed_colors > 0) {	/* Indexed image, must convert to RGB */
+			struct GMT_IMAGE *Irgb = NULL;
+			gmtlib_expand_index_image (GMT, I, &Irgb);	/* true if we have a read-only indexed image and we had to allocate a new one */
+			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR)
+				Return (API->error);
+			I = Irgb;
+		}
+		else
+//#endif
+			gray_only = (I->header->n_bands == 1);	/* Got a grayscale image */
+
 		got_z_grid = false;	/* Flag that we are using a GMT_IMAGE instead of a GMT_GRID as main input */
 
 		if (I->header->ProjRefPROJ4 != NULL)	/* We are not using this information yet, but report it under -V */

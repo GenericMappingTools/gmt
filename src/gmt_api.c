@@ -4198,8 +4198,7 @@ GMT_LOCAL int gmtapi_import_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_I
 	return GMT_NOERROR;
 }
 
-#ifdef HAVE_GDAL
-GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I_in, struct GMT_IMAGE **I_out) {
+bool gmtlib_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I_in, struct GMT_IMAGE **I_out) {
 	/* In most situations we can use an input image given to a module as the dataset to
 	 * plot.  However, if the image is indexed then we must expand it to rgb since we may
 	 * need to interpolate the r/g/b planes due to projections. If the image is read-only
@@ -4270,7 +4269,6 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	(*I_out) = I;
 	return (new);
 }
-#endif
 
 /*! . */
 GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *image) {
@@ -4551,14 +4549,12 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
 
-#ifdef HAVE_GDAL
-	if (no_index && gmtapi_expand_index_image (API->GMT, I_obj, &Irgb)) {	/* true if we have a read-only indexed image and we had to allocate a new one */
+	if (no_index && gmtlib_expand_index_image (API->GMT, I_obj, &Irgb)) {	/* true if we have a read-only indexed image and we had to allocate a new one */
 		if (GMT_Destroy_Data (API, &I_obj) != GMT_NOERROR) {
 			return_null (API, API->error);
 		}
 		I_obj = Irgb;
 	}
-#endif
 
 	if (!via) S_obj->resource = I_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
 

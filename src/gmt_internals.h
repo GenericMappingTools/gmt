@@ -278,6 +278,8 @@ EXTERN_MSC void gmtlib_module_classic_all (void *V_API, struct GMT_MODULEINFO M[
 EXTERN_MSC const char *gmtlib_module_keys (void *API, struct GMT_MODULEINFO M[], char *candidate);
 EXTERN_MSC const char *gmtlib_module_group (void *API, struct GMT_MODULEINFO M[], char *candidate);
 
+EXTERN_MSC bool gmtlib_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I_in, struct GMT_IMAGE **I_out);
+
 #ifdef HAVE_GDAL
 EXTERN_MSC int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn,
 			unsigned int *pad, unsigned int complex_mode);		/* Function to read true images via GDAL */
