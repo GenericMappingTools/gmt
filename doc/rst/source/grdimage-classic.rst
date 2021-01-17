@@ -22,7 +22,7 @@ Synopsis
 [ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
 [ |-J|\ **z**\|\ **-Z**\ *parameters* ]
 [ |-K| ] [ |-M| ] [ |-N| ]
-[ |-O| ] [ |-P| ] [ |-Q| ]
+[ |-O| ] [ |-P| ] [ |-Q|\ [*color*] ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
