@@ -61,7 +61,7 @@ Optional Arguments
     If we should derive intensities from another file than *reliefgrid*, specify the file
     [Default is no illumination].
 
-.. _-J:
+.. _-Jz:
 
 .. include:: explain_-Jz.rst_
 
