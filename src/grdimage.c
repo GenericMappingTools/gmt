@@ -1103,6 +1103,8 @@ GMT_LOCAL bool grdimage_adjust_R_consideration (struct GMT_CTRL *GMT, struct GMT
 	return false;
 }
 
+EXTERN_MSC int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in);
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, Conf); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -1237,7 +1239,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 #endif
 
 	if (Ctrl->D.active) {	/* Main input is a single image and not a grid */
-
+		if (Ctrl->I.derive) {	/* Cannot auto-derive intensities from an image */
+			GMT_Report (API, GMT_MSG_WARNING, "Cannot derive intensities from an input image file; -I ignored\n");
+			Ctrl->I.derive = use_intensity_grid = false;
+		}
 		if (use_intensity_grid && GMT->common.R.active[RSET]) {
 			/* Make sure the region of the intensity grid and -R are in agreement within a noise threshold */
 			double xnoise = Intens_orig->header->inc[GMT_X]*GMT_CONV4_LIMIT, ynoise = Intens_orig->header->inc[GMT_Y]*GMT_CONV4_LIMIT;
@@ -1287,8 +1292,15 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			I->y = gmt_grd_coord (GMT, I->header, GMT_Y);
 		}
 
-		gray_only = (I->header->n_bands == 1);	/* Got a grayscale image */
-		got_z_grid = false;	/* Flag that we are using a GMT_IMAGE instead of a GMT_GRID as main input */
+#ifdef HAVE_GDAL
+		if (!Ctrl->A.active && gmtlib_ind2rgb(GMT, &I)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Error convering from indexed to RGB\n");
+			Return (API->error);
+		}
+#endif
+
+		gray_only  = (I->header->n_bands == 1 && I->n_indexed_colors == 0);	/* Got a grayscale image */
+		got_z_grid = false;		/* Flag that we are using a GMT_IMAGE instead of a GMT_GRID as main input */
 
 		if (I->header->ProjRefPROJ4 != NULL)	/* We are not using this information yet, but report it under -V */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Data projection (Proj4 type)\n\t%s\n", I->header->ProjRefPROJ4);

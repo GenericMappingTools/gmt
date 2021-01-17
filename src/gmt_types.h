@@ -277,6 +277,7 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	void (*get_crossings) (struct GMT_CTRL *, double *, double *, double, double, double, double);	/* Returns map crossings in x or y */
 	double (*geodesic_meter) (struct GMT_CTRL *, double, double, double, double);	/* pointer to geodesic function returning distance between two points points in meter */
 	double (*geodesic_az_backaz) (struct GMT_CTRL *, double, double, double, double, bool);	/* pointer to geodesic function returning azimuth or backazimuth between two points points */
+	void (*second_point) (struct GMT_CTRL *, double, double, double, double, double *, double *, double *);	/* pointer to function returning second point (and bakaz) given first point, az, and dist */
 };
 
 struct GMT_GCAL {	/* (proleptic) Gregorian calendar  */
