@@ -8107,10 +8107,10 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "gmt_grd_project: Antialias counter nz written to grid file nz_grd_counter.grd\n");
 			GMT_Destroy_Data (GMT->parent, &G);
 		}
-	}
-
-bail_grd_dbg:
+		bail_grd_dbg:
+		ij_out = 0;
 #endif
+	}
 
 /* PART 2: Create weighted average of interpolated and observed points */
 
@@ -8336,11 +8336,10 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "gmt_grd_project: Antialias counter nz written to grid file nz_img_counter.grd\n");
 			GMT_Destroy_Data (GMT->parent, &G);
 		}
-	}
-
-bail_img_dbg:
+		bail_img_dbg:
+		ij_out = 0;
 #endif
-
+	}
 /* PART 2: Create weighted average of interpolated and observed points */
 
 //#ifdef _OPENMP
