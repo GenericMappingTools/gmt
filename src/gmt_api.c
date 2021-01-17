@@ -4270,10 +4270,29 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	(*I_out) = I;
 	return (new);
 }
+
+int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in) {
+	/* Convert an indexed image to RGB. Other than indirect calls to gmtapi_expand_index_image, e.g., the one
+	   called by gmtapi_import_image, there are other cases when we need also to convert from indexed to RGB.
+	   For example in grdimage when the image was sent in via an external wrapper. In this case the code flow goes
+	   through gmtapi_get_image_data() (in GMT_Read_Data -> gmtapi_pass_object (API, S_obj, family, mode, wesn))
+	   and deliver that Image object directly to the calling module amd may thus have indexed pixels.
+	*/
+	struct GMT_IMAGE* Irgb = NULL;
+	if ((*I_in)->header->n_bands == 1 && (*I_in)->n_indexed_colors > 0) {		/* Indexed image, convert to RGB */
+		gmtapi_expand_index_image (GMT, *I_in, &Irgb);	/* true if we have a read-only indexed image and we had to allocate a new one */
+		if (GMT_Destroy_Data (GMT->parent, I_in) != GMT_NOERROR) {
+			gmtlib_report_error(GMT->parent, GMT->parent->error);
+			return GMT->parent->error;
+		}
+		(*I_in) = Irgb;
+	}
+	return GMT_NOERROR;
+}
 #endif
 
 /*! . */
-GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *image) {
+GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *image) {
 	/* Handles the reading of a 2-D image given in one of several ways.
 	 * Get the entire image:
  	 * 	mode = GMT_CONTAINER_AND_DATA reads both header and image;
@@ -4700,7 +4719,7 @@ unsigned int gmt_whole_earth (struct GMT_CTRL *GMT, double we_in[], double we_ou
 }
 
 /*! . */
-GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_GRID *grid) {
+GMT_LOCAL struct GMT_GRID *gmtapi_import_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_GRID *grid) {
 	/* Handles the reading of a 2-D grid given in one of several ways.
 	 * Get the entire grid:
  	 * 	mode = GMT_CONTAINER_AND_DATA reads both header and grid;
@@ -5417,14 +5436,6 @@ int GMT_Put_Levels_ (struct GMT_CUBE *C, double *level, uint64_t *n) {
 }
 #endif
 
-
-GMT_LOCAL uint64_t gmtapi_get_file_count (char **list) {
-	/* Determine how many entries before trailing NULL entry */
-	uint64_t k = 0;
-	while (list[k]) k++;
-	return (k);
-}
-
 /*! . */
 GMT_LOCAL struct GMT_CUBE * gmtapi_import_cube (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_CUBE *cube) {
 	/* Handles the reading of a 3-D data cube given in one of several ways.
@@ -5437,7 +5448,7 @@ GMT_LOCAL struct GMT_CUBE * gmtapi_import_cube (struct GMTAPI_CTRL *API, int obj
 	 * If the cube->data array is NULL it will be allocated for you.
 	 */
 
-	char file[PATH_MAX] = {""}, **files = NULL;
+	char file[PATH_MAX] = {""};
 	int item, new_item, new_ID;
 	bool done = true;
  	uint64_t row, col, kol, row_out, i0, i1, j0, j1, k0, k1, ij, ij_orig;
@@ -5926,7 +5937,6 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 
 /*! Writes out a single cube to destination */
 GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_CUBE *U_obj) {
-	char file[PATH_MAX] = {""};
 	int item, error;
 	bool done = true;
 	unsigned int method;
@@ -12309,6 +12319,7 @@ GMT_LOCAL char gmtapi_grdinterpolate_type (struct GMTAPI_CTRL *API, struct GMT_O
 	unsigned int n_files = 0;
 	char type = 'D';	/* For -S */
 	struct GMT_OPTION *opt = NULL, *E = NULL, *S = NULL, *T = NULL;
+	gmt_M_unused (API);
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 		if (opt->option == GMT_OPT_INFILE) n_files++;
@@ -12320,7 +12331,7 @@ GMT_LOCAL char gmtapi_grdinterpolate_type (struct GMTAPI_CTRL *API, struct GMT_O
 	if (E == NULL && S == NULL) {	/* Interpolating onto a single grid or a new cube */
 		if (T == NULL && n_files > 1)	/* Repackaging multiple grids as a single cube */
 			type = 'U';
-		else if (T && strchr (T->arg, '/') || strchr (T->arg, ','))	/* Making more than one output layer */
+		else if (T && (strchr (T->arg, '/') || strchr (T->arg, ',')))	/* Making more than one output layer */
 			type = 'U';
 		else
 			type = 'G';	/* Making a single grid layer */

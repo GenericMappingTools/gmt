@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Operations on Cartesian vectors in 2-D and 3-D"
 #define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdefghioqs" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vbdefghijoqs" GMT_OPT("HMm")
 
 enum gmtvector_method {	/* The available methods */
 	DO_NOTHING=0,
@@ -290,7 +290,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 	}
 
 	if ((Ctrl->T.mode == DO_ROT3D || Ctrl->T.mode == DO_POLE) && gmt_M_is_cartesian (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set for 3-D rots and pole ops */
-
+	if (Ctrl->T.dmode >= GMT_GREATCIRCLE || GMT->common.j.active) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg implicitly */
 	n_in = (Ctrl->C.active[GMT_IN] && gmt_M_is_geographic (GMT, GMT_IN)) ? 3 : 2;
 	if (Ctrl->T.a_and_d) n_in += 2;	/* Must read azimuth and distance as well */
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_in;
@@ -376,7 +376,8 @@ GMT_LOCAL void gmtvector_get_azpole (struct GMT_CTRL *GMT, double A[3], double P
 GMT_LOCAL void gmtvector_translate_point (struct GMT_CTRL *GMT, double A[3], double B[3], double a_d[], bool geo) {
 	/* Given point in A, azimuth az and distance d, return the point P away from A */
 	if (geo)
-		gmt_translate_point (GMT, A[GMT_X], A[GMT_Y], a_d[0], a_d[1], &B[GMT_X], &B[GMT_Y]);
+		GMT->current.map.second_point (GMT, A[GMT_X], A[GMT_Y], a_d[0], a_d[1], &B[GMT_X], &B[GMT_Y], NULL);
+		// gmt_translate_point (GMT, A[GMT_X], A[GMT_Y], a_d[0], a_d[1], &B[GMT_X], &B[GMT_Y]);
 	else {	/* Cartesian translation */
 		double s, c;
 		sincosd (90.0 - a_d[0], &s, &c);
@@ -480,6 +481,13 @@ GMT_LOCAL void gmtvector_gmt_make_rot2d_matrix (double angle, double R[3][3]) {
 	R[1][0] = s;	R[1][1] = c;
 }
 
+GMT_LOCAL double gmtvector_dist_to_meter (struct GMT_CTRL *GMT, double d_in) {
+	double d_out = d_in / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in degrees or meters */
+	if (GMT->current.map.dist[GMT_MAP_DIST].arc)	/* Got arc measure */
+		d_out *= GMT->current.proj.DIST_M_PR_DEG;	/* Now in degrees */
+	return (d_out);
+}
+
 GMT_LOCAL double gmtvector_dist_to_degree (struct GMT_CTRL *GMT, double d_in) {
 	double d_out = d_in / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in degrees or meters */
 	if (!GMT->current.map.dist[GMT_MAP_DIST].arc)	/* Got unit distance measure */
@@ -544,11 +552,18 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->T.mode == DO_TRANSLATE && geo) {	/* Initialize distance machinery */
-		if (Ctrl->T.a_and_d)	/* Read az and dist from file, set units here */
-			error = gmt_init_distaz (GMT, Ctrl->T.unit, GMT_GREATCIRCLE, GMT_MAP_DIST);
-		else {	/* Got a fixed set, set units here */
+		int def_mode = (GMT->common.j.active) ? GMT->common.j.mode : GMT_GREATCIRCLE;
+		if (Ctrl->T.a_and_d) {	/* Read az and dist from file, set units here */
+			Ctrl->T.dmode = def_mode;	/* Store the setting here */
 			error = gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.dmode, GMT_MAP_DIST);
-			Ctrl->T.par[1] = gmtvector_dist_to_degree (GMT, Ctrl->T.par[1]);	/* Make sure we have degrees from whatever -Tt set */
+		}
+		else {	/* Got a fixed set, set units here */
+			if (GMT->common.j.active) Ctrl->T.dmode = def_mode;	/* Override any setting in -T */
+			error = gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.dmode, GMT_MAP_DIST);
+			if (Ctrl->T.dmode == GMT_GREATCIRCLE)
+				Ctrl->T.par[1] = gmtvector_dist_to_degree (GMT, Ctrl->T.par[1]);	/* Make sure we have degrees from whatever -Tt set */
+			else 	/* Get meters */
+				Ctrl->T.par[1] = gmtvector_dist_to_meter (GMT, Ctrl->T.par[1]);	/* Make sure we have degrees from whatever -Tt set */
 		}
 		if (error == GMT_NOT_A_VALID_TYPE) Return (error);
 	}
@@ -694,7 +709,10 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 					case DO_TRANSLATE:	/* Return translated points moved a distance d in the direction of azimuth  */
 						if (Ctrl->T.a_and_d) {	/* Get azimuth and distance from input file */
 							Ctrl->T.par[0] = Sin->data[2][row];
-							Ctrl->T.par[1] = (geo) ? gmtvector_dist_to_degree (GMT, Sin->data[3][row]) : Sin->data[3][row];	/* Make sure we have degrees from meters for get */
+							if (geo)
+								Ctrl->T.par[1] = (Ctrl->T.dmode == GMT_GREATCIRCLE) ? gmtvector_dist_to_degree (GMT, Sin->data[3][row]) : gmtvector_dist_to_meter (GMT, Sin->data[3][row]);	/* Make sure we have degrees or meters for calculations */
+							else
+								Ctrl->T.par[1] = Sin->data[3][row];	/* Pass as is */
 						}
 						gmtvector_translate_point (GMT, vector_1, vector_3, Ctrl->T.par, geo);
 						break;

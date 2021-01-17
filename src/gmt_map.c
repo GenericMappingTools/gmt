@@ -3209,7 +3209,7 @@ GMT_LOCAL int gmtmap_init_lambert (struct GMT_CTRL *GMT, bool *search) {
  *	TRANSFORMATION ROUTINES FOR THE OBLIQUE MERCATOR PROJECTION (GMT_OBLIQUE_MERC)
  */
 
-void gmt_translate_point (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat) {
+GMT_LOCAL void gmtmap_translate_point_spherical (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat, double *back_azimuth) {
 	/* compute new point dist degrees from input point along azimuth */
 	double sa, ca, sd, cd, sy, cy;
 	gmt_M_unused (GMT);
@@ -3218,6 +3218,47 @@ void gmt_translate_point (struct GMT_CTRL *GMT, double lon, double lat, double a
 	sincosd (distance, &sd, &cd);
 	*tlon = lon + atand (sd * sa / (cy * cd - sy * sd * ca));
 	*tlat = d_asind (sy * cd + cy * sd * ca);
+	if (back_azimuth)
+		*back_azimuth = gmtmap_az_backaz_sphere (GMT, lon, lat, *tlon, *tlat, true);
+}
+
+void gmt_translate_point (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat, double *back_azimuth) {
+	/* compute new point dist degrees from input point along azimuth */
+	gmtmap_translate_point_spherical (GMT, lon, lat, azimuth, distance, tlon, tlat, back_azimuth);
+}
+
+GMT_LOCAL void gmtmap_translate_point_geodesic (struct GMT_CTRL *GMT, double lon1, double lat1, double azimuth, double distance_m, double *lon2, double *lat2, double *back_azimuth) {
+	/* Use Vincenty (1975) solution to the direct geodesic problem.  Unstable for near antipodal points */
+	double a = GMT->current.proj.EQ_RAD, f = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening, f1 = 1.0 - f;
+	double b = a * f1, s = distance_m, alpha1 = azimuth * D2R, s_alpha1, c_alpha1, tan_U1, c_U1, s_U1, sigma1, s_alpha, cosSqAlpha, cos2SigmaM, tmp;
+	double uSq, A, B, sigma, sigmaP, deltaSigma, sinSigma, cosSigma, lambda, C, L;
+
+	sincos (alpha1, &s_alpha1, &c_alpha1);
+	tan_U1 = f1 * tand (lat1);
+	c_U1 = 1.0 / sqrt ((1.0 + tan_U1 * tan_U1));
+	s_U1 = tan_U1 * c_U1,
+	sigma1 = atan2 (tan_U1, c_alpha1);
+	s_alpha = c_U1 * s_alpha1;
+	cosSqAlpha = 1.0 - s_alpha * s_alpha;
+	uSq = cosSqAlpha * (a * a - b * b) / (b * b);
+	A = 1.0 + uSq / 16384.0 * (4096.0 + uSq * (-768.0 + uSq * (320.0 - 175.0 * uSq)));
+	B = uSq / 1024.0 * (256.0 + uSq * (-128.0 + uSq * (74.0 - 47.0 * uSq)));
+	sigma = s / (b * A);
+	sigmaP = 2 * M_PI;
+	while (fabs (sigma - sigmaP) > 1e-12) {
+		cos2SigmaM = cos (2.0 * sigma1 + sigma);
+		sincos (sigma, &sinSigma, &cosSigma);
+		deltaSigma = B * sinSigma * (cos2SigmaM + B / 4.0 * (cosSigma * (-1.0 + 2.0 * cos2SigmaM * cos2SigmaM) - B / 6.0 * cos2SigmaM * (-3.0 + 4.0 * sinSigma * sinSigma) * (-3.0 + 4.0 * cos2SigmaM * cos2SigmaM)));
+		sigmaP = sigma;
+		sigma = s / (b * A) + deltaSigma;
+	}
+	tmp = s_U1 * sinSigma - c_U1 * cosSigma * c_alpha1;
+	*lat2 = R2D * atan2 (s_U1 * cosSigma + c_U1 * sinSigma * c_alpha1, f1 * sqrt (s_alpha * s_alpha + tmp * tmp));
+	lambda = atan2 (sinSigma * s_alpha1, c_U1 * cosSigma - s_U1 * sinSigma * c_alpha1);
+	C = f / 16.0 * cosSqAlpha * (4.0 + f * (4.0 - 3.0 * cosSqAlpha));
+	L = lambda - (1.0 - C) * f * s_alpha * (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * (-1.0 + 2.0 * cos2SigmaM * cos2SigmaM)));
+	*lon2 = lon1 + L * R2D;
+	if (back_azimuth) *back_azimuth = R2D * atan2 (s_alpha, -tmp); /* final back azimuth */
 }
 
 GMT_LOCAL void gmtmap_pole_rotate_forward (struct GMT_CTRL *GMT, double lon, double lat, double *tlon, double *tlat) {
@@ -3334,7 +3375,7 @@ GMT_LOCAL int gmtmap_init_oblique (struct GMT_CTRL *GMT, bool *search) {
 		gmtmap_get_origin (GMT, o_x, o_y, p_x, p_y, &o_x, &o_y);
 		az = atand (cosd (p_y) * sind (p_x - o_x) / (cosd (o_y) * sind (p_y) - sind (o_y) * cosd (p_y) * cosd (p_x - o_x))) + 90.0;
 		/* compute point 10 degrees from origin along azimuth */
-		gmt_translate_point (GMT, o_x, o_y, az, 10.0, &b_x, &b_y);
+		gmt_translate_point (GMT, o_x, o_y, az, 10.0, &b_x, &b_y, NULL);
 
 		GMT->current.proj.pars[0] = o_x;	GMT->current.proj.pars[1] = o_y;
 		GMT->current.proj.pars[2] = b_x;	GMT->current.proj.pars[3] = b_y;
@@ -6298,12 +6339,14 @@ GMT_LOCAL int gmtmap_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsign
 		case GMT_DIST_M+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in meter */
 			GMT->current.map.dist[type].func = &gmt_great_circle_dist_meter;
 			GMT->current.map.azimuth_func = &gmtmap_az_backaz_sphere;
+			GMT->current.map.second_point = &gmtmap_translate_point_spherical;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and %s radius = %.4f m, in %s.\n",
 				type_name[type], aux[choice], rad[GMT->current.setting.proj_mean_radius], GMT->current.proj.mean_radius, unit_name);
 			break;
 		case GMT_DIST_M+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in meter */
 			GMT->current.map.dist[type].func = GMT->current.map.geodesic_meter;
 			GMT->current.map.azimuth_func = GMT->current.map.geodesic_az_backaz;
+			GMT->current.map.second_point = &gmtmap_translate_point_geodesic;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be using %s geodesics in %s\n", type_name[type], GEOD_TEXT[GMT->current.setting.proj_geodesic], unit_name);
 			break;
 		case GMT_DIST_DEG+GMT_FLATEARTH:	/* 2-D lon, lat data, use Flat Earth distances in degrees */
@@ -6314,23 +6357,27 @@ GMT_LOCAL int gmtmap_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsign
 		case GMT_DIST_DEG+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in degrees */
 			GMT->current.map.dist[type].func = &gmtlib_great_circle_dist_degree;
 			GMT->current.map.azimuth_func = &gmtmap_az_backaz_sphere;
+			GMT->current.map.second_point = &gmtmap_translate_point_spherical;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and return lengths in %s.\n", unit_name,
 				type_name[type], aux[choice]);
 			break;
 		case GMT_DIST_DEG+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in degrees */
 			GMT->current.map.dist[type].func = &gmtmap_geodesic_dist_degree;
 			GMT->current.map.azimuth_func = GMT->current.map.geodesic_az_backaz;
+			GMT->current.map.second_point = &gmtmap_translate_point_geodesic;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be using geodesics in %s\n", type_name[type], unit_name);
 			break;
 		case GMT_DIST_COS+GMT_GREATCIRCLE:	/* 2-D lon, lat data, and Green's function needs cosine of spherical distance */
 			GMT->current.map.dist[type].func = &gmtmap_great_circle_dist_cos;
 			GMT->current.map.azimuth_func = &gmtmap_az_backaz_sphere;
+			GMT->current.map.second_point = &gmtmap_translate_point_spherical;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and return cosine of spherical angles.\n",
 				type_name[type], aux[choice]);
 			break;
 		case GMT_DIST_COS+GMT_GEODESIC:	/* 2-D lon, lat data, and Green's function needs cosine of geodesic distance */
 			GMT->current.map.dist[type].func = &gmtmap_geodesic_dist_cos;
 			GMT->current.map.azimuth_func = GMT->current.map.geodesic_az_backaz;
+			GMT->current.map.second_point = &gmtmap_translate_point_geodesic;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be using cosine of geodesic angle\n", type_name[type]);
 			break;
 		case GMT_DIST_M+GMT_LOXODROME:	/* 2-D lon, lat data, but measure distance along rhumblines in meter */
@@ -9533,8 +9580,8 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 	if (gmt_M_is_geographic (GMT, GMT_IN) && GMT->common.j.active) {	/* User specified a -j setting */
 		static char *kind[5] = {"Cartesian", "Flat Earth", "Great Circle", "Geodesic", "Loxodrome"};
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Spherical distance calculation mode: %s.\n", kind[GMT->common.j.active]);
-		if (mode != GMT_GREATCIRCLE)	/* We override a selection due to deprecated leading -|+ signs before increment or radius */
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your distance mode (%s) differs from your -j option (%s) which takes precedence.\n", kind[mode], kind[GMT->common.j.active]);
+		if (mode != GMT->common.j.mode)	/* We override a selection due to deprecated leading -|+ signs before increment or radius */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your distance mode (%s) differs from your -j option (%s) which takes precedence.\n", kind[mode], kind[GMT->common.j.mode]);
 		mode = GMT->common.j.mode;	/* Override with what -j said */
 	}
 

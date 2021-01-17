@@ -87,7 +87,7 @@ COLOR Parameters
         in CMYK but interpolates in RGB).
 
     **COLOR_NAN**
-        Color used for the non-defined areas of images (i.e., where z = NaN) [127.5].
+        Color used for the non-defined areas of images (i.e., where z = NaN) [128].
 
     **COLOR_SET**
         Default comma-separated list of colors (or a *categorical* CPT name) for automatic,
