@@ -2230,6 +2230,11 @@ int gmtinit_parse_n_option (struct GMT_CTRL *GMT, char *item) {
 
 	while ((gmt_strtok (&item[k], "+", &pos, p))) {
 		switch (p[0]) {
+#ifdef DEBUG
+			case 'A':	/* Debug antialias will save the counter to a grid */
+				GMT->common.n.save_debug = true;
+				break;
+#endif
 			case 'a':	/* Turn off antialias */
 				GMT->common.n.antialias = false;
 				break;
@@ -7359,6 +7364,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] Specify the grid interpolation mode.\n");
 			gmt_message (GMT, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default is bicubic].\n");
+#ifdef DEBUG
+			gmt_message (GMT, "\t   Append +A to save the antialiasing counter to a grid for debugging.\n");
+#endif
 			gmt_message (GMT, "\t   Append +a to switch off antialiasing (except for l) [Default: on].\n");
 			gmt_message (GMT, "\t   Append +b<BC> to change boundary conditions.  <BC> can be either:\n");
 			gmt_message (GMT, "\t     g for geographic, p for periodic, and n for natural boundary conditions.\n");
