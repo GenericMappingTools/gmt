@@ -8096,9 +8096,23 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 			}
 		}
+#ifdef DEBUG
+		if (GMT->common.n.save_debug) {	/* Write nz as a debug grid to file */
+			uint64_t k;
+			struct GMT_GRID *G = NULL;
+			if ((G = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, O->header->wesn, O->header->inc, \
+				O->header->registration, GMT_PAD_DEFAULT, NULL)) == NULL) goto bail_grd_dbg;
+			for (k = 0; k < G->header->size; k++) G->data[k] = (float)nz[k];
+			(void) GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, "nz_grd_counter.grd", G);
+			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "gmt_grd_project: Antialias counter nz written to grid file nz_grd_counter.grd\n");
+			GMT_Destroy_Data (GMT->parent, &G);
+		}
+		bail_grd_dbg:
+		ij_out = 0;
+#endif
 	}
 
-	/* PART 2: Create weighted average of interpolated and observed points */
+/* PART 2: Create weighted average of interpolated and observed points */
 
 /* Open MP does not work yet */
 
@@ -8311,9 +8325,22 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 				}
 			}
 		}
+#ifdef DEBUG
+		if (GMT->common.n.save_debug) {	/* Write nz as a debug grid to file */
+			uint64_t k;
+			struct GMT_GRID *G = NULL;
+			if ((G = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, O->header->wesn, O->header->inc, \
+				O->header->registration, GMT_PAD_DEFAULT, NULL)) == NULL) goto bail_img_dbg;
+			for (k = 0; k < G->header->size; k++) G->data[k] = (float)nz[k];
+			(void) GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, "nz_img_counter.grd", G);
+			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "gmt_grd_project: Antialias counter nz written to grid file nz_img_counter.grd\n");
+			GMT_Destroy_Data (GMT->parent, &G);
+		}
+		bail_img_dbg:
+		ij_out = 0;
+#endif
 	}
-
-	/* PART 2: Create weighted average of interpolated and observed points */
+/* PART 2: Create weighted average of interpolated and observed points */
 
 //#ifdef _OPENMP
 //#pragma omp parallel for private(row_out,y_proj,col_out,ij_out,x_proj,z_int,inv_nz,b) shared(O,GMT,y_out_proj,x_out_proj,inverse,x_out,y_out,I,nz,z_int_bg,nb)
