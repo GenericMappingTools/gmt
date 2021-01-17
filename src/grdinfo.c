@@ -720,7 +720,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (Ctrl->T.mode & 2) strncpy (grdfile, opt->arg, PATH_MAX-1);
 
 		if (Ctrl->M.active || Ctrl->L.active) {	/* Must determine the location of global min and max values */
-			uint64_t ij_min, ij_max, l_min, l_max, here = 0, node;
+			uint64_t ij_min, ij_max, here = 0, node;
 			unsigned int col, row;
 			gmt_grdfloat *data = (is_cube) ? U->data : G->data;
 

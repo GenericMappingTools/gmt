@@ -1980,21 +1980,21 @@ GMT_LOCAL int gmtio_get_hms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 	for (order = 0; i < off; i++) {
 		switch (text[i]) {
 			case 'h':	/* Hour */
-				if (S->order[0] < 0)		/* First time we encountered a h */
+				if (S->order[0] < 0)		/* First time we encountered an h */
 					S->order[0] = order++;
 				else if (text[i-1] != 'h')	/* Must follow a previous h */
 					error++;
 				n_h++;
 				break;
 			case 'm':	/* Minute */
-				if (S->order[1] < 0)		/* First time we encountered a m */
+				if (S->order[1] < 0)		/* First time we encountered an m */
 					S->order[1] = order++;
 				else if (text[i-1] != 'm')	/* Must follow a previous m */
 					error++;
 				n_m++;
 				break;
 			case 's':	/* Seconds */
-				if (S->order[2] < 0)		/* First time we encountered a s */
+				if (S->order[2] < 0)		/* First time we encountered an s */
 					S->order[2] = order++;
 				else if (text[i-1] != 's')	/* Must follow a previous s */
 					error++;
@@ -4275,7 +4275,10 @@ void gmt_set_geographic (struct GMT_CTRL *GMT, unsigned int dir) {
 	/* Eliminate lots of repeated statements to do this: */
 	gmt_set_column_type (GMT, dir, GMT_X, GMT_IS_LON);
 	gmt_set_column_type (GMT, dir, GMT_Y, GMT_IS_LAT);
-	if (dir == GMT_IN) (void) gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Default spherical distance calculations are in meters (cannot fail) */
+	if (dir == GMT_IN) {	/* Default spherical distance calculations are in meters (cannot fail) */
+		int mode = (GMT->common.j.active) ? GMT->common.j.mode : GMT_GREATCIRCLE;
+		(void) gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, mode, GMT_MAP_DIST);
+	}
 }
 
 /*! . */
