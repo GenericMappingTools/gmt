@@ -474,8 +474,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 	                                   "SOption -Q: Cannot use -M when doing colormasking\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.device_dpi && Ctrl->Q.active,
 	                                   "Option -Q: Cannot use -Ei when doing colormasking\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->Q.active,
-	                                   "Option -Q: Cannot use -D when doing colormasking\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.return_image && Ctrl->Out.file == NULL,
 	                                   "Option -A: Must provide an output filename for image\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.file && Ctrl->Out.file,
