@@ -173,20 +173,154 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+EXTERN_MSC int gmtlib_grd_sample (void *V_API, struct GMT_GRID *Gin, double *wesn, double *incs, int registration, int mode, struct GMT_GRID **G) {
+	/* 2D equidistant sampling of input grid In.
+	 *
+	 * err = gmtlib_grdsample (API, Gin, wesn, incs, registration, mode, G)
+	 *
+	 * Input arguments:
+	 *	Gin:	The input GMT grid
+	 *	wesn:	Array with xmin, xmax, ymin, ymax for output, or NULL if same as input
+	 *	incs:	Array with xinc and yinc,  If yinc == 0 we set it to xinc
+	 *	reg:	Registration (pixel or gridline)
+	 *	mode:	Currently unused
+	 * Output arguments
+	 *	G:		The resulting grid structure with allocated memory
+	 *	err:	The function return code, nonzero if a problem
+	 */
+
+	int shift = 0, row, col;
+	uint64_t ij;
+	struct GMTAPI_CTRL *API;
+	struct GMT_CTRL *GMT;
+	struct GMT_GRID *Gout = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
+	double lat, wesn_o[4], inc[2], *lon = NULL;
+	gmt_M_unused (mode);
+
+	/* Sanity check on input arguments */
+	if (V_API == NULL) return (GMT_NOT_A_SESSION);
+	if (Gin == NULL) return (GMT_PTR_IS_NULL);
+	if (G == NULL) return (GMT_PTR_IS_NULL);
+	if ((registration == GMT_GRID_NODE_REG || registration == GMT_GRID_PIXEL_REG)) return (GMT_VALUE_NOT_SET);
+	API = gmt_get_api_ptr (V_API);
+	GMT = API->GMT;
+
+	gmt_M_memcpy (wesn_o, (wesn ? wesn : Gin->header->wesn), 4, double);	/* wesn_o is the region we want for the output [Same as input] */
+	gmt_M_memcpy (inc, (incs ? incs : Gin->header->inc), 2, double);	/* Either a new increment is given or we use the one from the input grid */
+
+ 	if (wesn) {		/* Gave a specific region */
+		bool wrap_360_i = (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_360_range (Gin->header->wesn[XLO], Gin->header->wesn[XHI]));
+		bool wrap_360_o = (gmt_M_is_geographic (GMT, GMT_OUT) && gmt_M_360_range (wesn_o[XLO], wesn_o[XHI]));
+
+		/* Adjust wesn_o used to CREATE the output grid: It cannot exceed the input grid bounds */
+		while (wesn_o[YLO] < Gin->header->wesn[YLO]) wesn_o[YLO] += inc[GMT_Y];	/* Now on or inside boundary */
+		while (wesn_o[YHI] > Gin->header->wesn[YHI]) wesn_o[YHI] -= inc[GMT_Y];	/* Now on or inside boundary */
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
+			if (Gin->header->wesn[XHI] < wesn_o[XLO]) shift += 360;
+			else if (Gin->header->wesn[XLO] > wesn_o[XHI]) shift -= 360;
+			else if (wrap_360_i && wesn_o[XHI] > Gin->header->wesn[XHI]) shift += 360;
+			else if (wrap_360_i && wesn_o[XLO] < Gin->header->wesn[XLO]) shift -= 360;
+			if (shift) {	/* Must modify header */
+				Gin->header->wesn[XLO] += shift, Gin->header->wesn[XHI] += shift;
+				GMT_Report (API, GMT_MSG_DEBUG, "Input grid region needed a %d longitude adjustment to fit final grid region\n", shift);
+			}
+		}
+		if (!wrap_360_o && !wrap_360_i) {	/* Can only shrink wesn_o if there is no 360-wrapping going on */
+			while (wesn_o[XLO] < Gin->header->wesn[XLO]) wesn_o[XLO] += inc[GMT_X];	/* Now on or inside boundary */
+			while (wesn_o[XHI] > Gin->header->wesn[XHI]) wesn_o[XHI] -= inc[GMT_X];	/* Now on or inside boundary */
+		}
+	}
+
+	/* Here, wesn_o is the region we wish to use when creating the output grid */
+
+	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn_o, inc, \
+		registration, GMT_NOTSET, NULL)) == NULL) return (API->error);
+
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
+		char format[GMT_BUFSIZ] = {""};
+		sprintf (format, "Input  grid (%s/%s/%s/%s) n_columns = %%d n_rows = %%d dx = %s dy = %s registration = %%d\n",
+			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+
+		GMT_Report (API, GMT_MSG_INFORMATION, format, Gin->header->wesn[XLO], Gin->header->wesn[XHI],
+			Gin->header->wesn[YLO], Gin->header->wesn[YHI], Gin->header->n_columns, Gin->header->n_rows,
+			Gin->header->inc[GMT_X], Gin->header->inc[GMT_Y], Gin->header->registration);
+
+		memcpy (&format, "Output", 6);
+
+		GMT_Report (API, GMT_MSG_INFORMATION, format, Gout->header->wesn[XLO], Gout->header->wesn[XHI],
+			Gout->header->wesn[YLO], Gout->header->wesn[YHI], Gout->header->n_columns, Gout->header->n_rows,
+			Gout->header->inc[GMT_X], Gout->header->inc[GMT_Y], Gout->header->registration);
+	}
+
+	if (Gout->header->inc[GMT_X] > Gin->header->inc[GMT_X])
+		GMT_Report (API, GMT_MSG_WARNING, "Output sampling interval in x exceeds input interval and may lead to aliasing.\n");
+	if (Gout->header->inc[GMT_Y] > Gin->header->inc[GMT_Y])
+		GMT_Report (API, GMT_MSG_WARNING, "Output sampling interval in y exceeds input interval and may lead to aliasing.\n");
+
+	/* Precalculate longitudes from the output grid layout */
+
+	HH = gmt_get_H_hidden (Gin->header);
+	lon = gmt_M_memory (GMT, NULL, Gout->header->n_columns, double);
+	for (col = 0; col < (int)Gout->header->n_columns; col++) {
+		lon[col] = gmt_M_grd_col_to_x (GMT, col, Gout->header);
+		if (!HH->nxp)
+			/* Nothing */;
+		else if (lon[col] > Gin->header->wesn[XHI])
+			lon[col] -= Gin->header->inc[GMT_X] * HH->nxp;
+		else if (lon[col] < Gin->header->wesn[XLO])
+			lon[col] += Gin->header->inc[GMT_X] * HH->nxp;
+	}
+
+	/* Loop over input point and estimate output values */
+
+	Gout->header->z_min = FLT_MAX; Gout->header->z_max = -FLT_MAX;	/* Min/max for out */
+
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,lat,ij) shared(GMT,Gin,Gout,lon)
+#endif
+	for (row = 0; row < (int)Gout->header->n_rows; row++) {
+		lat = gmt_M_grd_row_to_y (GMT, row, Gout->header);
+		if (!HH->nyp)
+			/* Nothing */;
+		else if (lat > Gin->header->wesn[YHI])
+			lat -= Gin->header->inc[GMT_Y] * HH->nyp;
+		else if (lat < Gin->header->wesn[YLO])
+			lat += Gin->header->inc[GMT_Y] * HH->nyp;
+		for (col = 0; col < (int)Gout->header->n_columns; col++) {
+			ij = gmt_M_ijp (Gout->header, row, col);
+			Gout->data[ij] = (gmt_grdfloat)gmt_bcr_get_z (GMT, Gin, lon[col], lat);
+			if (Gout->data[ij] < Gout->header->z_min) Gout->header->z_min = Gout->data[ij];
+			if (Gout->data[ij] > Gout->header->z_max) Gout->header->z_max = Gout->data[ij];
+		}
+	}
+	gmt_M_free (GMT, lon);
+
+	if (!GMT->common.n.truncate && (Gout->header->z_min < Gin->header->z_min || Gout->header->z_max > Gin->header->z_max)) {	/* Report and possibly truncate output to input extrama */
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Output grid extrema [%g/%g] exceeds extrema of input grid [%g/%g]; to clip output use -n...+c""\n",
+			Gout->header->z_min, Gout->header->z_max, Gin->header->z_min, Gin->header->z_max);
+	}
+
+	if (shift) {	/* Must restore input header wesn */
+		Gin->header->wesn[XLO] -= shift, Gin->header->wesn[XHI] -= shift;
+	}
+	*G = Gout;	/* Pass out the new grid */
+
+	API->error = GMT_NOERROR;
+
+	return (GMT_NOERROR);	
+}
+
 EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 
-	int error = 0, row, col;
+	int error = 0;
 	unsigned int registration;
 
-	uint64_t ij;
-
-	char format[GMT_BUFSIZ];
-
-	double *lon = NULL, lat, wesn_i[4], wesn_o[4], inc[2];
+	double wesn_i[4], wesn_o[4], inc[2];
 
 	struct GRDSAMPLE_CTRL *Ctrl = NULL;
 	struct GMT_GRID *Gin = NULL, *Gout = NULL;
-	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -300,74 +434,14 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 	/* Here, wesn_i is compatible with the INPUT grid so we can read the subset from which we will resample.
 	 * Here, wesn_o is the region we wish to use when creating the output grid */
 
-	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn_o, inc, \
-		registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-
-	sprintf (format, "Input  grid (%s/%s/%s/%s) n_columns = %%d n_rows = %%d dx = %s dy = %s registration = %%d\n",
-		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
-		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-
-	GMT_Report (API, GMT_MSG_INFORMATION, format, Gin->header->wesn[XLO], Gin->header->wesn[XHI],
-		Gin->header->wesn[YLO], Gin->header->wesn[YHI], Gin->header->n_columns, Gin->header->n_rows,
-		Gin->header->inc[GMT_X], Gin->header->inc[GMT_Y], Gin->header->registration);
-
-	memcpy (&format, "Output", 6);
-
-	GMT_Report (API, GMT_MSG_INFORMATION, format, Gout->header->wesn[XLO], Gout->header->wesn[XHI],
-		Gout->header->wesn[YLO], Gout->header->wesn[YHI], Gout->header->n_columns, Gout->header->n_rows,
-		Gout->header->inc[GMT_X], Gout->header->inc[GMT_Y], Gout->header->registration);
-
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn_i, Ctrl->In.file, Gin) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
 
-	if (Gout->header->inc[GMT_X] > Gin->header->inc[GMT_X])
-		GMT_Report (API, GMT_MSG_WARNING, "Output sampling interval in x exceeds input interval and may lead to aliasing.\n");
-	if (Gout->header->inc[GMT_Y] > Gin->header->inc[GMT_Y])
-		GMT_Report (API, GMT_MSG_WARNING, "Output sampling interval in y exceeds input interval and may lead to aliasing.\n");
+	/* Now do the resampling of the grid, getting Gout back */
 
-	/* Precalculate longitudes from the output grid layout */
-
-	HH = gmt_get_H_hidden (Gin->header);
-	lon = gmt_M_memory (GMT, NULL, Gout->header->n_columns, double);
-	for (col = 0; col < (int)Gout->header->n_columns; col++) {
-		lon[col] = gmt_M_grd_col_to_x (GMT, col, Gout->header);
-		if (!HH->nxp)
-			/* Nothing */;
-		else if (lon[col] > Gin->header->wesn[XHI])
-			lon[col] -= Gin->header->inc[GMT_X] * HH->nxp;
-		else if (lon[col] < Gin->header->wesn[XLO])
-			lon[col] += Gin->header->inc[GMT_X] * HH->nxp;
-	}
-
-	/* Loop over input point and estimate output values */
-
-	Gout->header->z_min = FLT_MAX; Gout->header->z_max = -FLT_MAX;	/* Min/max for out */
-
-#ifdef _OPENMP
-#pragma omp parallel for private(row,col,lat,ij) shared(GMT,Gin,Gout,lon)
-#endif
-	for (row = 0; row < (int)Gout->header->n_rows; row++) {
-		lat = gmt_M_grd_row_to_y (GMT, row, Gout->header);
-		if (!HH->nyp)
-			/* Nothing */;
-		else if (lat > Gin->header->wesn[YHI])
-			lat -= Gin->header->inc[GMT_Y] * HH->nyp;
-		else if (lat < Gin->header->wesn[YLO])
-			lat += Gin->header->inc[GMT_Y] * HH->nyp;
-		for (col = 0; col < (int)Gout->header->n_columns; col++) {
-			ij = gmt_M_ijp (Gout->header, row, col);
-			Gout->data[ij] = (gmt_grdfloat)gmt_bcr_get_z (GMT, Gin, lon[col], lat);
-			if (Gout->data[ij] < Gout->header->z_min) Gout->header->z_min = Gout->data[ij];
-			if (Gout->data[ij] > Gout->header->z_max) Gout->header->z_max = Gout->data[ij];
-		}
-	}
-	gmt_M_free (GMT, lon);
-
-	if (!GMT->common.n.truncate && (Gout->header->z_min < Gin->header->z_min || Gout->header->z_max > Gin->header->z_max)) {	/* Report and possibly truncate output to input extrama */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Output grid extrema [%g/%g] exceeds extrema of input grid [%g/%g]; to clip output use -n...+c""\n",
-			Gout->header->z_min, Gout->header->z_max, Gin->header->z_min, Gin->header->z_max);
-	}
+	if (gmtlib_grd_sample (API, Gin, wesn_o, inc, registration, 0, &Gout))
+		Return (API->error);
 
 	gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
