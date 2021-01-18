@@ -202,7 +202,7 @@ EXTERN_MSC int gmtlib_grd_sample (void *V_API, struct GMT_GRID *Gin, double *wes
 	if (V_API == NULL) return (GMT_NOT_A_SESSION);
 	if (Gin == NULL) return (GMT_PTR_IS_NULL);
 	if (G == NULL) return (GMT_PTR_IS_NULL);
-	if ((registration == GMT_GRID_NODE_REG || registration == GMT_GRID_PIXEL_REG)) return (GMT_VALUE_NOT_SET);
+	if (!(registration == GMT_GRID_NODE_REG || registration == GMT_GRID_PIXEL_REG)) return (GMT_VALUE_NOT_SET);
 	API = gmt_get_api_ptr (V_API);
 	GMT = API->GMT;
 
