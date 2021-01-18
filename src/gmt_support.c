@@ -6966,9 +6966,14 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 			if (i < 2) GMT->current.io.inc_code[i] |= GMT_INC_IS_NNODES;
 			if (last) last--;	/* Coverity rightly points out that if last == 0 it would become 4294967295 */
 		}
-		if (geo == 0 || (separate && (geo & bit) == 0) ) {
+		if (geo == 0 || (separate && (geo & bit) == 0) ) {	/* Gave a unit to a Cartesian axes that does not take any unit */
 			if (p[last] && strchr (GMT_LEN_UNITS "c", p[last])) {
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unit %c is ignored for Cartesian data\n", p[last]);
+				if (separate) {	/* Report per axis since separate increments where given */
+					static char *A = "xyzvuw";
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unit %c is ignored as the %c-axis is not geographic\n", p[last], A[i]);
+				}
+				else	/* Single message since common increment for all axes */
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unit %c is ignored as no axis is geographic\n", p[last]);
 				p[last] = 0;
 			}
 		}
