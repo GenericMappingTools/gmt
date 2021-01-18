@@ -6931,10 +6931,24 @@ bool gmt_getinc (struct GMT_CTRL *GMT, char *line, double inc[]) {
 	return (false);
 }
 
+GMT_LOCAL unsigned int gmtsupport_set_geo (struct GMT_CTRL *GMT) {
+	/* Returns 0 for all Cartesian, or sum of GMT_IS_LON if longitudes and GMT_IS_LAT if latitudes */
+	unsigned int x = GMT_IS_LON, y = GMT_IS_LAT;
+	if (!GMT->common.R.active[RSET]) return x + y;	/* Just as before to avoid breaking things */
+	/* Here we have -Rw/e/s/n.  If it clearly is not geographic then we return 0, else we return one or the sum of GMT_IS_LON and GMT_IS_LAT */
+	if ((GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) > 360.0) x = 0;	/* Cannot exceed 360 degrees longitude */
+	if ((GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) > 180.0) y = 0;	/* Cannot exceed 180 degrees latitude */
+	if (GMT->common.R.wesn[XLO] < -720.0 || GMT->common.R.wesn[XLO] > 360.0) x = 0;	/* Clearly outside normal longitude range */
+	if (GMT->common.R.wesn[XHI] < -360.0 || GMT->common.R.wesn[XHI] > 720.0) x = 0;	/* Clearly outside normal longitude range */
+	if (GMT->common.R.wesn[YLO] < -90.0 || GMT->common.R.wesn[YLO] > 90.0) y = 0;	/* Clearly outside normal latitude range */
+	if (GMT->common.R.wesn[YHI] < -90.0 || GMT->common.R.wesn[YHI] > 90.0) y = 0;	/* Clearly outside normal latitude range */
+	return x+y;	/* Might still be geographic for the purpose of parsing -I */
+}
+
 /*! . */
 int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n) {
-	unsigned int last, i, pos;
-	bool geo = true;	/* Until proven wrong in the switch */
+	bool separate;
+	unsigned int last, i, pos, bit = 1, geo = gmtsupport_set_geo (GMT);	/* true unless clearly -R is Cartesian */
 	char p[GMT_BUFSIZ];
 	double scale = 1.0;
 
@@ -6945,7 +6959,7 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 	gmt_M_memset (inc, n, double);
 
 	i = pos = GMT->current.io.inc_code[GMT_X] = GMT->current.io.inc_code[GMT_Y] = 0;
-
+	separate = (strchr (line, '/') != NULL);
 	while (i < n && (gmt_strtok (line, "/", &pos, p))) {
 		last = (unsigned int)strlen (p) - 1;
 		if (last && p[last] == 'e' && p[last-1] == '+') {	/* +e: Let -I override -R */
@@ -6967,6 +6981,17 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 			p[last] = 0;
 			if (i < 2) GMT->current.io.inc_code[i] |= GMT_INC_IS_NNODES;
 			if (last) last--;	/* Coverity rightly points out that if last == 0 it would become 4294967295 */
+		}
+		if (geo == 0 || (separate && (geo & bit) == 0) ) {	/* Gave a unit to a Cartesian axes that does not take any unit */
+			if (p[last] && strchr (GMT_LEN_UNITS "c", p[last])) {
+				if (separate) {	/* Report per axis since separate increments where given */
+					static char *A = "xyzvuw";
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unit %c is ignored as the %c-axis is not geographic\n", p[last], A[i]);
+				}
+				else	/* Single message since common increment for all axes */
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unit %c is ignored as no axis is geographic\n", p[last]);
+				p[last] = 0;
+			}
 		}
 		switch (p[last]) {
 			case 'd':	/* Gave arc degree */
@@ -7025,8 +7050,16 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 		}
 		inc[i] *= scale;
 		i++;	/* Goto next increment */
+		bit <<= 1;
 	}
-	if (geo) gmt_set_geographic (GMT, GMT_IN);
+	if (geo) {
+		if (geo == (GMT_IS_LON+GMT_IS_LAT))	/* Regular lon/lat region presumably */
+			gmt_set_geographic (GMT, GMT_IN);
+		else if (geo & GMT_IS_LON)
+			gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_LON);
+		else if (geo & GMT_IS_LAT)
+			gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
+	}
 
 	return (i);	/* Returns the number of increments found */
 }
