@@ -179,10 +179,11 @@ EXTERN_MSC int gmtlib_grd_sample (void *V_API, struct GMT_GRID *Gin, double *wes
 	 * err = gmtlib_grdsample (API, Gin, wesn, incs, registration, mode, G)
 	 *
 	 * Input arguments:
+	 *	API:	Pointer to the GMT API structure
 	 *	Gin:	The input GMT grid
 	 *	wesn:	Array with xmin, xmax, ymin, ymax for output, or NULL if same as input
-	 *	incs:	Array with xinc and yinc,  If yinc == 0 we set it to xinc
-	 *	reg:	Registration (pixel or gridline)
+	 *	incs:	Array with xinc and yinc,  If yinc == 0 we set it to xinc, NULL means same as input grid
+	 *	reg:	Registration (pixel or gridline). GMT_NOTSET means same as input grid
 	 *	mode:	Currently unused
 	 * Output arguments
 	 *	G:		The resulting grid structure with allocated memory
@@ -202,14 +203,18 @@ EXTERN_MSC int gmtlib_grd_sample (void *V_API, struct GMT_GRID *Gin, double *wes
 	if (V_API == NULL) return (GMT_NOT_A_SESSION);
 	if (Gin == NULL) return (GMT_PTR_IS_NULL);
 	if (G == NULL) return (GMT_PTR_IS_NULL);
-	if (!(registration == GMT_GRID_NODE_REG || registration == GMT_GRID_PIXEL_REG)) return (GMT_VALUE_NOT_SET);
+	if (!(registration == GMT_NOTSET || registration == GMT_GRID_NODE_REG || registration == GMT_GRID_PIXEL_REG)) return (GMT_VALUE_NOT_SET);
+	if (incs && gmt_M_is_zero (incs[GMT_X])) return (GMT_VALUE_NOT_SET);
+
+	/* Get API and GMT pointers */
 	API = gmt_get_api_ptr (V_API);
 	GMT = API->GMT;
 
 	gmt_M_memcpy (wesn_o, (wesn ? wesn : Gin->header->wesn), 4, double);	/* wesn_o is the region we want for the output [Same as input] */
 	gmt_M_memcpy (inc, (incs ? incs : Gin->header->inc), 2, double);	/* Either a new increment is given or we use the one from the input grid */
-
- 	if (wesn) {		/* Gave a specific region */
+	if (gmt_M_is_zero (inc[GMT_Y])) inc[GMT_Y] = inc[GMT_X];
+ 	if (registration == GMT_NOTSET) registration = Gin->header->registration;
+	if (wesn) {		/* Gave a specific region */
 		bool wrap_360_i = (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_360_range (Gin->header->wesn[XLO], Gin->header->wesn[XHI]));
 		bool wrap_360_o = (gmt_M_is_geographic (GMT, GMT_OUT) && gmt_M_360_range (wesn_o[XLO], wesn_o[XHI]));
 
