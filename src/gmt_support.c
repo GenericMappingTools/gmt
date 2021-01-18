@@ -6919,7 +6919,7 @@ GMT_LOCAL unsigned int gmtsupport_set_geo (struct GMT_CTRL *GMT) {
 	/* Returns 0 for all Cartesian, or sum of GMT_IS_LON if longitudes and GMT_IS_LAT if latitudes */
 	unsigned int x = GMT_IS_LON, y = GMT_IS_LAT;
 	if (!GMT->common.R.active[RSET]) return x + y;	/* Just as before to avoid breaking things */
-	/* Here we have -Rw/e/s/n.  If it clearly is not geographic we return false, else true */
+	/* Here we have -Rw/e/s/n.  If it clearly is not geographic then we return 0, else we return one or the sum of GMT_IS_LON and GMT_IS_LAT */
 	if ((GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) > 360.0) x = 0;	/* Cannot exceed 360 degrees longitude */
 	if ((GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) > 180.0) y = 0;	/* Cannot exceed 180 degrees latitude */
 	if (GMT->common.R.wesn[XLO] < -720.0 || GMT->common.R.wesn[XLO] > 360.0) x = 0;	/* Clearly outside normal longitude range */
