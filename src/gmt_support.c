@@ -9899,6 +9899,13 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 					bad++;
 				break;
 
+			case 'T':	/* Deprecated, just give a warning that it is the same as +t and deliberately fall through to case 't' */
+				if (gmt_M_compat_check (GMT, 6))
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+T in contour label spec is deprecated, use +t instead\n");
+				else {
+					bad++;
+					break;
+				}
 			case 't':	/* Save contour label locations to given file [x y angle label] */
 				G->save_labels = 1;
 				if (p[1]) strncpy (G->label_file, &p[1], PATH_MAX-1);
