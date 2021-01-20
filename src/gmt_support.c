@@ -14703,7 +14703,10 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 		if (strchr (type, 'i')) n_int++;
 		if (strchr (type, 'a')) n_annot++;
 		x[k] = S->data[GMT_X][row];
-		if (text && nc == 2) L[k] = strdup (txt);
+		if (text && nc == 2) {
+			gmtlib_enforce_rgb_triplets (GMT, txt, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+			L[k] = strdup (txt);
+		}
 		k++;
 	}
 
