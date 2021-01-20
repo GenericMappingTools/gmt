@@ -336,8 +336,8 @@
         with the same pen as set for the line (i.e., via **-W**). To use an
         alternate pen, append **+p**\ *pen*. To skip the outline, just use
         **+p** with no argument.  To make the main front line invisible, add **+i**.  **Note**:
-        By placing **-Sf** options in the segment header you can change the front
-        types on a segment-by-segment basis.
+        By placing **-Sf** options in the segment headers that differ from the one on
+        the command line you can change the front types on a segment-by-segment basis.
 
     The next type of embellished line is called a *quoted* line, which is our term for
     a line with text along it, similar to an annotated contour in a contour map. There is
@@ -517,8 +517,8 @@
             **+=**\ *prefix*
                 Prepend *prefix* to all line labels [Default is no prefix].
 
-        **Note**: By placing **-Sq** options in the segment header you can change
-        the quoted text attributes on a segment-by-segment basis.
+        **Note**: By placing **-Sq** options in the segment headers that differ from the one on
+        the command line you can change the quoted text attributes on a segment-by-segment basis.
 
     The final type of embellished line is called a *decorated* line (**-S~**).  It is a hybrid
     between a *front* and *quoted* lines in that it offers symbols similar to a front
@@ -622,5 +622,5 @@
                 symbol angles [Default is 10].
 
         If neither **+g** nor **+p** are set we select the default pen outline (:term:`MAP_DEFAULT_PEN`).
-        **Note**: By placing **-S~** options in the segment header you can change
-        the decorated lines on a segment-by-segment basis.
+        **Note**: By placing **-S~** options in the segment headers that differ from the one on
+        the command line you can change the decorated lines on a segment-by-segment basis.
