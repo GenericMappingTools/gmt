@@ -9901,7 +9901,7 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 
 			case 'T':	/* Deprecated, just give a warning that it is the same as +t and deliberately fall through to case 't' */
 				if (gmt_M_compat_check (GMT, 6))
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+T in contour label spec is deprecated, use +t instead\n");
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+T in contour label spec is deprecated; only +t is supported\n");
 				else {
 					bad++;
 					break;
