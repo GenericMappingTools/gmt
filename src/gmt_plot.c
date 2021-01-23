@@ -4038,7 +4038,9 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon (struct GMT_CTRL *GMT, double *lon, doubl
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Polygon wraps in y-direction for TM global projection\n");
 
 		/* Polygon wraps and we will plot it up to three times by truncating the part that would wrap the wrong way.
-		 * Here we cannot use the clipped/wrapped polygon to draw outline - that is done at the end, separately */
+		 * Here we cannot use the clipped/wrapped polygon to draw outline - that is done at the end, separately.
+		 * Note: We may still have problems if a polygon that wraps across the top/bottom boundary also is clipped
+		 * by the left or right boundary. */
 
 		/* Temporary array to hold the modified y values */
 
