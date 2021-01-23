@@ -2,22 +2,15 @@
 #
 # Makes RGB and CMYK color circles
 #
+# Create circles of radius 1.3 centered on different (x,y) origins
+gmt project -N -Z2.6+e -G0.02 -C-0.75/1.3 > R.d
+gmt project -N -Z2.6+e -G0.02 -C0.75/1.3  > G.d
+gmt project -N -Z2.6+e -G0.02 -C0/0       > B.d
+gmt project -N -Z2.6+e -G0.02 -C4.25/1.3  > M.d
+gmt project -N -Z2.6+e -G0.02 -C5.75/1.3  > C.d
+gmt project -N -Z2.6+e -G0.02 -C5/0       > Y.d
 
-# Make various circles of radius 1.3 centered on different (x,y) origins
-gmt project -N -Z1.3+e -G0.02 -C-0.75/1.299038 > R.d
-gmt project -N -Z1.3+e -G0.02 -C0.75/1.299038 > G.d
-gmt project -N -Z1.3+e -G0.02 -C0/0 > B.d
-gmt project -N -Z1.3+e -G0.02 -C4.25/1.299038 > M.d
-gmt project -N -Z1.3+e -G0.02 -C-5.75/1.299038 > C.d
-gmt project -N -Z1.3+e -G0.02 -C5/0 > Y.d
-#gmt math -T0/360/1 T -C0 COSD 1.3 MUL -0.75 ADD -C1 SIND 1.3 MUL 1.299038 ADD = R.d
-#gmt math -T0/360/1 T -C0 COSD 1.3 MUL +0.75 ADD -C1 SIND 1.3 MUL 1.299038 ADD = G.d
-#gmt math -T0/360/1 T -C0 COSD 1.3 MUL -C1 SIND 1.3 MUL = B.d
-#gmt math -T0/360/1 T -C0 COSD 1.3 MUL 4.25 ADD -C1 SIND 1.3 MUL 1.299038 ADD = M.d
-#gmt math -T0/360/1 T -C0 COSD 1.3 MUL 5.75 ADD -C1 SIND 1.3 MUL 1.299038 ADD = C.d
-#gmt math -T0/360/1 T -C0 COSD 1.3 MUL 5 ADD -C1 SIND 1.3 MUL = Y.d
-
-gmt begin GMT_colors ps
+gmt begin GMT_cmyk ps
 	gmt plot -R-2.25/7.25/-1.8/2.75 -Jx0.6i R.d -Gred -B0
 	gmt plot G.d -Ggreen
 	gmt plot B.d -Gblue
@@ -64,12 +57,12 @@ gmt begin GMT_colors ps
 	5		-1.7	PAINT
 	EOF
 	gmt text -F+f18p,Bookman-Demi+jCM <<- EOF
-	-1.5	1.299038	R
-	1.5		1.299038	G
-	0		-0.75		B
-	3.5		1.299038	M
-	6.5		1.299038	C
-	5		-0.75		Y
+	-1.5	1.3		R
+	1.5		1.3		G
+	0		-0.75	B
+	3.5		1.3		M
+	6.5		1.3		C
+	5		-0.75	Y
 	EOF
 gmt end show
 rm -f [GRBCMY].d [rgbcmy].txt
