@@ -71,8 +71,9 @@ Required Arguments
 .. _-G:
 
 **-G**\ *outgrid*
-    *outgrid* is the name of the binary output grid file. (See GRID FILE
-    FORMATS below). Only netCDF and native binary grid formats are can
+    *outgrid* is the name of the binary output grid file. (See 
+    :ref:`Grid File Formats <grd_inout_full>`).
+. Only netCDF and native binary grid formats are can
     be written directly. Other output format choices will be handled by
     reformatting the output once blending is complete.
 
@@ -139,8 +140,6 @@ Optional Arguments
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_output.rst_
 
 .. include:: explain_grd_coord.rst_
 
