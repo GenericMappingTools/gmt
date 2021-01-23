@@ -3980,6 +3980,8 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon (struct GMT_CTRL *GMT, double *lon, doubl
 
 #define JUMP_L 0
 #define JUMP_R 1
+#define JUMP_B 0
+#define JUMP_T 1
 
 	uint64_t total = 0;
 	double *xp = NULL, *yp = NULL;
@@ -4008,13 +4010,100 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon (struct GMT_CTRL *GMT, double *lon, doubl
 		gmt_M_free (GMT, yp);
 		total = GMT->current.plot.n;
 	}
+	else if (GMT->current.proj.projection_GMT == GMT_TM && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) {	/* Here, any jumps are in the y-direction */
+		uint64_t k, first, i;
+		int jump_dir = JUMP_B;
+		bool jump, plot_main = true;
+		double y_on_border[2] = {GMT->current.proj.rect[YHI], GMT->current.proj.rect[YLO]};
+
+		/* Here we come for the periodic Transverse Mercator projection where longitude wrapping happens in the y-direction */
+
+		if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, lon, lat, n)) == 0) return 0;		/* Convert to (x,y,pen) - return if nothing to do */
+		if (init) {
+			PSL_comment (PSL, "Temporarily set FO to P for complex polygon building\n");
+			PSL_command (PSL, "/FO {P}!\n");		/* Temporarily replace FO so we can build a complex path of closed polygons using {P} */
+		}
+		PSL_comment (PSL, comment);
+		//gmtplot_dumpfile (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, "raw.txt");
+
+		/* Check if there are any boundary jumps in the data as evidenced by pen up [PSL_MOVE] */
+
+		jump = (*GMT->current.map.will_it_wrap) (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &first);	/* Polygon does indeed wrap */
+
+		if (!jump) {	/* We happened to avoid the periodic boundary - just paint and return */
+			PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);
+			return GMT->current.plot.n;
+		}
+
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Polygon wraps in y-direction for TM global projection\n");
+
+		/* Polygon wraps and we will plot it up to three times by truncating the part that would wrap the wrong way.
+		 * Here we cannot use the clipped/wrapped polygon to draw outline - that is done at the end, separately.
+		 * Note: We may still have problems if a polygon that wraps across the top/bottom boundary also is clipped
+		 * by the left or right boundary. */
+
+		/* Temporary array to hold the modified y values */
+
+		yp = gmt_M_memory (GMT, NULL, GMT->current.plot.n, double);
+
+		/* Do the main truncation of bulk of polygon */
+
+		for (i = 0, jump = false; i < GMT->current.plot.n; i++) {
+			if (GMT->current.plot.pen[i] & PSL_MOVE && i) {
+				jump = !jump;
+				jump_dir = (GMT->current.plot.y[i] > GMT->current.map.half_height) ? JUMP_T : JUMP_B;
+			}
+			yp[i] = (jump) ? y_on_border[jump_dir] : GMT->current.plot.y[i];
+		}
+
+		//gmtplot_dumpfile (GMT, GMT->current.plot.x, yp, NULL, GMT->current.plot.n, "main.txt");
+		if (plot_main) {
+			PSL_plotpolygon (PSL, GMT->current.plot.x, yp, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
+			total = GMT->current.plot.n;
+		}
+
+		/* Then do the Bottom truncation since some wrapped pieces might not have been plotted (k > 0 means we found a piece) */
+
+		jump_dir = (GMT->current.plot.y[first] > GMT->current.map.half_height) ? JUMP_B : JUMP_T;	/* Opposite */
+		for (i = k = 0, jump = true; i < GMT->current.plot.n; i++) {
+			if ((GMT->current.plot.pen[i] & PSL_MOVE) && i) {
+				jump = !jump;
+				jump_dir = (GMT->current.plot.y[i] > GMT->current.map.half_height) ? JUMP_T : JUMP_B;
+			}
+			yp[i] = (jump || jump_dir == JUMP_T) ? y_on_border[JUMP_T]: GMT->current.plot.y[i], k++;
+		}
+		if (k) {
+			//gmtplot_dumpfile (GMT, GMT->current.plot.x, yp, NULL, GMT->current.plot.n, "B.txt");
+			PSL_plotpolygon (PSL, GMT->current.plot.x, yp, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
+			total += GMT->current.plot.n;
+		}
+
+		/* Then do the Top truncation since some wrapped pieces might not have been plotted (k > 0 means we found a piece) */
+
+		jump_dir = (GMT->current.plot.y[first] > GMT->current.map.half_height) ? JUMP_T : JUMP_B;	/* Opposite */
+		for (i = k = 0, jump = true; i < GMT->current.plot.n; i++) {
+			if ((GMT->current.plot.pen[i] & PSL_MOVE) && i) {
+				jump = !jump;
+				jump_dir = (GMT->current.plot.y[i] > GMT->current.map.half_height) ? JUMP_T : JUMP_B;
+			}
+			yp[i] = (jump || jump_dir == JUMP_L) ? y_on_border[JUMP_B] : GMT->current.plot.y[i], k++;
+		}
+		if (k) {
+			//gmtplot_dumpfile (GMT, GMT->current.plot.x, yp, NULL, GMT->current.plot.n, "T.txt");
+			PSL_plotpolygon (PSL, GMT->current.plot.x, yp, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
+			total = GMT->current.plot.n;
+		}
+
+		/* Free the memory we are done with */
+		gmt_M_free (GMT, yp);
+	}
 	else {
 		uint64_t k, first, i;
 		int jump_dir = JUMP_L;
 		bool jump, plot_main = true;
 		double (*x_on_border[2]) (struct GMT_CTRL *, double) = {NULL, NULL};
 
-		/* Here we come for all non-azimuthal projections */
+		/* Here we come for all other non-azimuthal projections */
 
 		if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, lon, lat, n)) == 0) return 0;		/* Convert to (x,y,pen) - return if nothing to do */
 		if (init) {
