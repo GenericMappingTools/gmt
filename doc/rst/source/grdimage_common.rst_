@@ -35,8 +35,8 @@ Required Arguments
 ------------------
 
 *grid* \| *image*
-    2-D gridded data set or image to be plotted (See
-    GRID FILE FORMATS below.)
+    2-D gridded data set or image to be plotted (see :ref:`Grid File Formats 
+    <grd_inout_full>`).
 
 .. _-J:
 
@@ -170,7 +170,5 @@ Optional Arguments
 .. include:: explain_core.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: earth_relief.rst_

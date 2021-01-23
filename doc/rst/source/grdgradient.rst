@@ -38,7 +38,8 @@ Required Arguments
 ------------------
 
 *ingrid*
-    2-D grid file from which to compute directional derivative. (See GRID FILE FORMATS below).
+    2-D grid file from which to compute directional derivative. (See :ref:`Grid File Formats 
+    <grd_inout_full>`).
 
 .. _-G:
 
@@ -182,8 +183,6 @@ and *offset* to **grdgradient** for each map. A good guess is *offset* =
 unnormalized gradient grd.
 
 If you simply need the *x*- or *y*-derivatives of the grid, use :doc:`grdmath`.
-
-.. include:: explain_grd_inout_short.rst_
 
 Tiles
 -----

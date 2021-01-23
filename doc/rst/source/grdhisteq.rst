@@ -60,7 +60,7 @@ Required Arguments
 ------------------
 
 *ingrid*
-    2-D grid file to be equalized. (See GRID FILE FORMATS below).
+    2-D grid file to be equalized. (See :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -105,8 +105,6 @@ Optional Arguments
 .. include:: explain_-V.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

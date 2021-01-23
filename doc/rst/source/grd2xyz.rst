@@ -43,8 +43,8 @@ Required Arguments
 ------------------
 
 *grid*
-    Names of 2-D binary grid files to be converted. (See GRID FILE
-    FORMATS below.)
+    Names of 2-D binary grid files to be converted (see :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -139,8 +139,6 @@ Optional Arguments
 .. include:: explain_distunits.rst_
 
 .. include:: explain_precision.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Non-equidistant x/y Coordinates
 -------------------------------

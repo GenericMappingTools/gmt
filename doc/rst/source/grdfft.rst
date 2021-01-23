@@ -50,7 +50,7 @@ Required Arguments
     file *ingrid2*.
 **-G**\ *outfile*
     Specify the name of the output grid file or the 1-D spectrum table
-    (see **-E**). (See GRID FILE FORMATS below).
+    (see **-E**). (See :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------

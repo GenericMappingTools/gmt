@@ -49,7 +49,7 @@ Required Arguments
 ------------------
 
 *grid*
-    Name of the 2-D grid file to modify. (See GRID FILE FORMATS below).
+    Name of the 2-D grid file to modify. (See :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -159,8 +159,6 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: explain_grd_coord.rst_
 

@@ -81,7 +81,7 @@ Required Arguments
 *grid*
     Names of one or more grid files used to derive the color palette
     table. All grids need to have the same size and dimensions. (See
-    :ref:`Grid File Formats) <grd_inout_full>`
+    :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------

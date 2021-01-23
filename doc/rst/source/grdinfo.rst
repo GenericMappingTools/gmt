@@ -48,7 +48,8 @@ Required Arguments
 ------------------
 
 *grdfile*
-    The name of one or several 2-D grid files. (See GRID FILE FORMATS below.)
+    The name of one or several 2-D grid files. (See :ref:`Grid File Formats 
+    <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -178,8 +179,6 @@ Optional Arguments
 .. include:: explain_-ocols.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

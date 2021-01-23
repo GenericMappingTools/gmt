@@ -12,7 +12,8 @@ Required Arguments
 ------------------
 
 *grid*
-    2-D gridded data set to be contoured. (See GRID FILE FORMATS below).
+    2-D gridded data set to be contoured (see :ref:`Grid File Formats 
+    <grd_inout_full>`).
 
 .. _-J:
 
@@ -228,4 +229,3 @@ Optional Arguments
 
 .. include:: explain_precision.rst_
 
-.. include:: explain_grd_inout_short.rst_
