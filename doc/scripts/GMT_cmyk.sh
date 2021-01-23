@@ -4,12 +4,18 @@
 #
 
 # Make various circles of radius 1.3 centered on different (x,y) origins
-gmt math -T0/360/1 T -C0 COSD 1.3 MUL -0.75 ADD -C1 SIND 1.3 MUL 1.299038 ADD = R.d
-gmt math -T0/360/1 T -C0 COSD 1.3 MUL +0.75 ADD -C1 SIND 1.3 MUL 1.299038 ADD = G.d
-gmt math -T0/360/1 T -C0 COSD 1.3 MUL -C1 SIND 1.3 MUL = B.d
-gmt math -T0/360/1 T -C0 COSD 1.3 MUL 4.25 ADD -C1 SIND 1.3 MUL 1.299038 ADD = M.d
-gmt math -T0/360/1 T -C0 COSD 1.3 MUL 5.75 ADD -C1 SIND 1.3 MUL 1.299038 ADD = C.d
-gmt math -T0/360/1 T -C0 COSD 1.3 MUL 5 ADD -C1 SIND 1.3 MUL = Y.d
+gmt project -N -Z1.3+e -G0.02 -C-0.75/1.299038 > R.d
+gmt project -N -Z1.3+e -G0.02 -C0.75/1.299038 > G.d
+gmt project -N -Z1.3+e -G0.02 -C0/0 > B.d
+gmt project -N -Z1.3+e -G0.02 -C4.25/1.299038 > M.d
+gmt project -N -Z1.3+e -G0.02 -C-5.75/1.299038 > C.d
+gmt project -N -Z1.3+e -G0.02 -C5/0 > Y.d
+#gmt math -T0/360/1 T -C0 COSD 1.3 MUL -0.75 ADD -C1 SIND 1.3 MUL 1.299038 ADD = R.d
+#gmt math -T0/360/1 T -C0 COSD 1.3 MUL +0.75 ADD -C1 SIND 1.3 MUL 1.299038 ADD = G.d
+#gmt math -T0/360/1 T -C0 COSD 1.3 MUL -C1 SIND 1.3 MUL = B.d
+#gmt math -T0/360/1 T -C0 COSD 1.3 MUL 4.25 ADD -C1 SIND 1.3 MUL 1.299038 ADD = M.d
+#gmt math -T0/360/1 T -C0 COSD 1.3 MUL 5.75 ADD -C1 SIND 1.3 MUL 1.299038 ADD = C.d
+#gmt math -T0/360/1 T -C0 COSD 1.3 MUL 5 ADD -C1 SIND 1.3 MUL = Y.d
 
 gmt begin GMT_colors ps
 	gmt plot -R-2.25/7.25/-1.8/2.75 -Jx0.6i R.d -Gred -B0
