@@ -256,6 +256,25 @@ space which correspond more closely to what we mean by "tint" and
 "shade"; an instruction like "add white" is easy in HSV and not so
 obvious in RGB.
 
+.. _color_hsv:
+
+.. figure:: /_images/GMT_color_hsv.*
+   :width: 500 px
+   :align: center
+
+   The red circle represents the RGB color (217, 271, 54).  This color has a hue that
+   is yellow, which is H = 60 degrees in the HSV system.  Here we show a slice through
+   the color RGB cube at H = 60.  All the colors in this slice have a yellow hue but
+   there saturation and values vary.  Our point has an S of 0.75 and a V of 0.85. In
+   applications that take intensity values we use an intensity (in the range of ±1)
+   to move the color towards the  black (B) or white (W) point for negative and positive
+   intensities, respectively (an intensity of 0 leaves the color unchanged).  Because (a) printers
+   are not good at yielding near-black or near-white colors, and (2) to avoid colors
+   with saturating intensities being pushed into black and white, we do not use the
+   B and W points as terminal points but instead end at the two white circles.  Their
+   coordinates are given by (:term:`COLOR_HSV_MIN_S`, :term:`COLOR_HSV_MIN_V`) [1, 0.3]
+   and (:term:`COLOR_HSV_MAX_S`, :term:`COLOR_HSV_MAX_V`) [0.1, 1].
+
 Thinking in RGB or HSV
 ----------------------
 
