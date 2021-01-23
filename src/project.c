@@ -372,10 +372,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Check the width across the projected track and use only certain points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This will use only those points whose q is [w_min <= q <= w_max].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note that q is positive to your LEFT as you walk from C toward E in <azimuth> direction.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note that q is positive to your LEFT as you walk from C toward E in the <azimuth> direction.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z With -G and -C, generate an ellipse of given major and minor axes (in km if geographic) and azimuth\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of major axis. Append +e for adjusting increment to fix perimeter exactly [use increment as given in -G].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a degenerate ellipse, just supply the diameter.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a degenerate ellipse, just append the single argument the <diameter> instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian ellipses, add -N and provide <direction> (CCW from horizontal) instead of <azimuth>.\n");
 	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -527,17 +528,27 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 					Ctrl->Z.exact = true;
 					ce[0] = '\0';	/* Chop off +e */
 				}
-				k = sscanf(opt->arg, "%lf/%lf/%lf", &Ctrl->Z.major, &Ctrl->Z.minor, &Ctrl->Z.azimuth);
-				if (k == 1)	/* Just got a radius */
+				k = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Z.major, &Ctrl->Z.minor, &Ctrl->Z.azimuth);
+				if (k == 1)	/* Just got a degenerate diameter */
 					Ctrl->Z.minor = Ctrl->Z.major;
-				else if (k != 3) {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major/minor/azimuth>[+e] or -Z<radius>[+e]\n");
+				else if (k == 3) {	/* Ellipse, check that major >= minor */
+					if (Ctrl->Z.major < Ctrl->Z.minor) {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Major axis must be equal to or larger than the minor axis\n");
+						n_errors++;
+					}
+				}
+				else {	/* Bad number of arguments */
+					if (Ctrl->N.active)
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major/minor/direction>[+e] or -Z<diameter>[+e]\n");
+					else
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major/minor/azimuth>[+e] or -Z<diameter>[+e]\n");
 					n_errors++;
 				}
 				if (ce) ce[0] = '+';	/* Restore the plus-sign */
-				if (Ctrl->N.active) {	/* Convert to semi-axis or radius since that is now the Cartesian code operates */
+				if (Ctrl->N.active) {	/* Convert to semi-axis or radius and azimuth since that is now the Cartesian code operates */
 					Ctrl->Z.minor /= 2.0;
 					Ctrl->Z.major /= 2.0;
+					if (k == 3) Ctrl->Z.azimuth = 90.0 - Ctrl->Z.azimuth;
 				}
 				break;
 			default:	/* Report bad options */
