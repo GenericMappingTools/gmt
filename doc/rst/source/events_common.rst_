@@ -56,7 +56,7 @@ Optional Arguments
     must be either of the format *begin*/*length*\|\ *end* or *begin*,\ *length*\|\ *end*.  Use a comma to
     separate absolute time specifications, otherwise a slash is also supported. **Note**:
     Neither lines nor polygons allow for any labels to be placed. Finally, you can use **-Ar**\ *dpu* to
-    perform no plotting but instead convert your *x, y\[, *zcols* ], time* data into *densely sampled points* so that
+    perform no plotting but instead convert your *x, y*\ [, *zcols* ], *time* data into *densely sampled points* so that
     later calls to **events** may use this sampled data set instead and plot it as circles with **-Sc**\ [*width*].
     This way you can plot "lines" that can have variable pen color and fixed or variable pen width as well as
     taking advantage of the full machinery of **-Es** and **-Et** and all the effects controlled by **-M** for symbols.
@@ -133,10 +133,14 @@ Optional Arguments
 .. _-M:
 
 **-M**\ **i**\|\ **s**\|\ **t**\ [*val1*]\ [**+c**\ *val2*]
-    Modify the initial **i**\ ntensity, **s**\ ize magnification, or **t**\ ransparency of the symbol during
-    the *rise* interval [1, 1, and 100, respectively].  Repeatable for the different attributes.
+    Modify the initial **i**\ ntensity of the color, **s**\ ize of the symbol, or its **t**\ ransparency during
+    the *rise* interval [Defaults are 1, 1, and 100, respectively].  Option **-M** is repeatable for the different attributes.
     Optionally, for finite-duration events you may append **+c** to set the corresponding terminal value
-    during the coda [0, 0, 100, respectively].  Polygons can only use **-Mt**.
+    during the coda [0, 0, 100, respectively].  The intensity setting (normally in the interval ±1, with 0
+    having no effect) is used to brighten (*intensity* > 0) or darken (*intensity* < 0)
+    the symbol color during this period, the size setting is a magnifying factor that temporarily changes the
+    size of the symbol, while the transparency setting affects the symbols transparency. **Note**: Polygons
+    can only use **-Mt** setting.
 
 .. _-N:
 
