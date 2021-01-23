@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt dimfilter** *grid*
+**gmt dimfilter** *ingrid*
 |-D|\ *distance_flag*
 |-F|\ **x**\ *width*\ [*modifier*]
 |-G|\ *outgrid*
