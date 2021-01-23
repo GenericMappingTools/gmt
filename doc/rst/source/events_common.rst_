@@ -139,7 +139,7 @@ Optional Arguments
     during the coda [0, 0, 100, respectively].  The intensity setting (normally in the interval ±1, with 0
     having no effect) is used to brighten (*intensity* > 0) or darken (*intensity* < 0)
     the symbol color during this period, the size setting is a magnifying factor that temporarily changes the
-    size of the symbol, while the transparency setting affects the symbols transparency. **Note**: Polygons
+    size of the symbol, while the transparency setting affects the symbol's transparency. **Note**: Polygons
     can only use **-Mt** setting.
 
 .. _-N:
