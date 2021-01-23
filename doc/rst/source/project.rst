@@ -209,8 +209,8 @@ Optional Arguments
     with *major* and *minor* axes given in km (unless **-N** is given) and the *azimuth* of the
     major axis in degrees.  Append **+e** to adjust the increment set via
     **-G** so that the the ellipse has equal distance increments [Default
-    uses the given increment and closes the ellipse].
-
+    uses the given increment and closes the ellipse].  For degenerate ellipses
+    you can just supply a single *diameter* instead.
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
