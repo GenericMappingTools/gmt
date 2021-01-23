@@ -47,12 +47,14 @@ Required Arguments
 ------------------
 
 *ingrid*
-    The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)
+    The name of the input 2-D binary grid file. (See
+    :ref:`Grid File Formats <grd_inout_full>`).
 
 .. _-G:
 
 **-G**\ *outgrid*
-    The name of the output grid file. (See GRID FILE FORMAT below.)
+    The name of the output grid file. (See
+    :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -91,8 +93,6 @@ Optional Arguments
 .. include:: explain_help.rst_
 
 .. include:: explain_float.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: explain_grdresample2.rst_
 

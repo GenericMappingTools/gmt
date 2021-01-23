@@ -47,7 +47,7 @@ Required Arguments
 ------------------
 
 *grdfile*
-    The name of a 2-D binary grid file.
+    The name of a 2-D binary grid file. (See :ref:`Grid File Formats <grd_inout_full>`).
 
 .. _-N:
 
@@ -99,8 +99,6 @@ equivalent to the m#s in the equation described above. The description
 above is to allow the user to match **-N** with the order of the
 polynomial surface. See :doc:`grdmath` if you need to evaluate the trend
 using the reported coefficients.
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

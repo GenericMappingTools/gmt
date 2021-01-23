@@ -38,14 +38,14 @@ Required Arguments
 ------------------
 
 *ingrid*
-    2-D grid file from which to compute directional derivative. (See :ref:`Grid File Formats 
+    2-D grid file from which to compute directional derivative. (See :ref:`Grid File Formats
     <grd_inout_full>`).
 
 .. _-G:
 
 **-G**\ *outgrid*
-    Name of the output grid file for the directional derivative. (See
-    GRID FILE FORMATS below).
+    Name of the output grid file for the directional derivative. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 Optional Arguments
 ------------------

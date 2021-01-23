@@ -60,7 +60,7 @@ Required Arguments
 .. _-G:
 
 **-G**\ *mask_grd_file*
-    Name of resulting output mask grid file. (See :ref:`Grid File Formats 
+    Name of resulting output mask grid file. (See :ref:`Grid File Formats
     <grd_inout_full>`).
 
 .. _-I:

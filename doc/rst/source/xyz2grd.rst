@@ -58,7 +58,7 @@ Required Arguments
 .. _-G:
 
 **-G**\ *grdfile*
-    *grdfile* is the name of the binary output grid file. (See 
+    *grdfile* is the name of the binary output grid file. (See
     :ref:`Grid File Formats <grd_inout_full>`).
 
 

@@ -78,7 +78,8 @@ Optional Arguments
 .. _-G:
 
 **-G**\ *outgrid*
-    Name of output 2-D grid file. Used with **-N** only. (See GRID FILE FORMATS below).
+    Name of output 2-D grid file. Used with **-N** only. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 .. _-N:
 

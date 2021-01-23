@@ -41,7 +41,7 @@ Required Arguments
 .. _-G:
 
 **-G**\ *outfile.nc*
-    The name for the combined output.
+    The name for the combined output. (See :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -55,8 +55,6 @@ Optional Arguments
 .. include:: explain_-f.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

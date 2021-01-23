@@ -43,7 +43,7 @@ Required Arguments
 ------------------
 
 *ingrid*
-    The grid file of points to be filtered. (See :ref:`Grid File Formats 
+    The grid file of points to be filtered. (See :ref:`Grid File Formats
     <grd_inout_full>`).
 
 .. _-D:
@@ -141,7 +141,8 @@ Required Arguments
 .. _-G:
 
 **-G**\ *outgrid*
-    *outgrid* is the output grid file of the filter. (See GRID FILE FORMATS below).
+    *outgrid* is the output grid file of the filter. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 Optional Arguments
 ------------------

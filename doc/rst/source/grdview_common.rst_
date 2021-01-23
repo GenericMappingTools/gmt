@@ -15,7 +15,7 @@ Required Arguments
 
 *reliefgrid*
     2-D gridded data set to be imaged (the relief of the surface). (See
-    GRID FILE FORMAT below.)
+    :ref:`Grid File Formats <grd_inout_full>`).
 
 .. _-J:
 
@@ -156,7 +156,5 @@ Optional Arguments
 .. include:: explain_-t.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: explain_grdresample.rst_

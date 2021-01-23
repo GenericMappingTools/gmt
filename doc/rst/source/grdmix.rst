@@ -60,7 +60,8 @@ Required Arguments
 
 **-G**\ *outfile*
     The name for the output raster.  For images, use one of these extensions:
-    tif (GeoTIFF), gif, png, jpg, bmp, or ppm.
+    tif (GeoTIFF), gif, png, jpg, bmp, or ppm. For grids, see
+    :ref:`Grid File Formats <grd_inout_full>`.
 
 Optional Arguments
 ------------------
@@ -135,8 +136,6 @@ Optional Arguments
 .. include:: explain_-f.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

@@ -35,7 +35,7 @@ Required Arguments
 ------------------
 
 *grid* \| *image*
-    2-D gridded data set or image to be plotted (see :ref:`Grid File Formats 
+    2-D gridded data set or image to be plotted (see :ref:`Grid File Formats
     <grd_inout_full>`).
 
 .. _-J:

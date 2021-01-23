@@ -48,7 +48,7 @@ Required Arguments
 ------------------
 
 *grdfile*
-    The name of one or several 2-D grid files. (See :ref:`Grid File Formats 
+    The name of one or several 2-D grid files. (See :ref:`Grid File Formats
     <grd_inout_full>`).
 
 Optional Arguments

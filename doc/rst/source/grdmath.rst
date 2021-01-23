@@ -61,7 +61,7 @@ Required Arguments
 
 *outgrid*
     The name of a 2-D grid file that will hold the final result. (See
-    GRID FILE FORMATS below).
+    :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -740,8 +740,6 @@ Notes On Operators
    0 or 1, but close, and the smaller C the closer we get.
 
 .. include:: explain_float.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: explain_grd_coord.rst_
 

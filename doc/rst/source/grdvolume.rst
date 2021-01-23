@@ -41,7 +41,7 @@ Required Arguments
 ------------------
 
 *grdfile*
-    The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)
+    The name of the input 2-D binary grid file. (See :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -109,8 +109,6 @@ Optional Arguments
 .. include:: explain_-ocols.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------
