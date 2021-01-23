@@ -30,22 +30,6 @@ see Chapter :doc:`/cookbook/gmt-latex` for more details.
 Required Arguments
 ------------------
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-J.rst_
-
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-R.rst_
-
-.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-Rz.rst_
-
-Optional Arguments
-------------------
-
 *textfiles*
     This is one or more files containing 1 or more records with (*x*,
     *y*\ [, *font*, *angle*, *justify*], *text*). The attributes in
@@ -62,6 +46,22 @@ Optional Arguments
     onto the (*x*,\ *y*) point. Choose a 2 character combination of L,
     C, R (for left, center, or right) and T, M, B for top, middle, or
     bottom. e.g., BL for lower left.
+
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-J.rst_
+
+.. _-R:
+
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-R.rst_
+
+.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-Rz.rst_
+
+Optional Arguments
+------------------
 
 .. _-A:
 
