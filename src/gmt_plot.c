@@ -4013,7 +4013,7 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon (struct GMT_CTRL *GMT, double *lon, doubl
 	else if (GMT->current.proj.projection_GMT == GMT_TM && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) {	/* Here, any jumps are in the y-direction */
 		uint64_t k, first, i;
 		int jump_dir = JUMP_B;
-		bool jump;
+		bool jump, plot_main = true;
 		double y_on_border[2] = {GMT->current.proj.rect[YHI], GMT->current.proj.rect[YLO]};
 
 		/* Here we come for the periodic Transverse Mercator projection where longitude wrapping happens in the y-direction */
