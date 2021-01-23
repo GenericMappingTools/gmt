@@ -309,6 +309,21 @@ combined into one), and black. They form the CMYK system of colors, each
 value running from 0 to 1 (or 100%). In GMT CMYK color coding can be
 achieved using *c/m/y/k* quadruplets.
 
+.. _color_cmyk:
+
+.. figure:: /_images/GMT_color_cmyk.*
+   :width: 500 px
+   :align: center
+
+   (left) Mixing of light on a computer screen shows that the mixing
+   of primary colors red (R), green (G) and blue (B) yields the other
+   primary colors of magenta (M), cyan (C) and yellow (Y), plus white.
+   (right) Mixing of colors for printing uses C, M and Y and when these
+   mix completely we get black (K).  To get a better representation of black
+   the amount of black in any particular color is removed from the color
+   and painted with a specific black ink instead, leading to under-color
+   removal of the remaining three pigments.
+
 Obviously, there is no unique way to go from the 3-dimensional RGB
 system to the 4-dimensional CMYK system. So, again, there is a lot of
 hand waving applied in the transformation. Strikingly, CMYK actually
