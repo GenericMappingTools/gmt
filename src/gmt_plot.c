@@ -3941,7 +3941,7 @@ void gmtlib_ellipsoid_name_convert (char *inname, char outname[]) {
 		sprintf(outname, "unnamed");
 }
 
-#if 1
+#if 0
 /* Used to dump an array to file for debug */
 GMT_LOCAL void gmtplot_dumpfile (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pen, uint64_t n, char *file) {
 	FILE *fp = fopen (file, "w");
@@ -4012,11 +4012,11 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon (struct GMT_CTRL *GMT, double *lon, doubl
 	}
 	else if (GMT->current.proj.projection_GMT == GMT_TM && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) {	/* Here, any jumps are in the y-direction */
 		uint64_t k, first, i;
-		int jump_dir = JUMP_L;
-		bool jump, plot_main = true;
-		double y_on_border[2] = {GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI]};
+		int jump_dir = JUMP_B;
+		bool jump;
+		double y_on_border[2] = {GMT->current.proj.rect[YHI], GMT->current.proj.rect[YLO]};
 
-		/* Here we come for all non-azimuthal projections */
+		/* Here we come for the periodic Transverse Mercator projection where longitude wrapping happens in the y-direction */
 
 		if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, lon, lat, n)) == 0) return 0;		/* Convert to (x,y,pen) - return if nothing to do */
 		if (init) {
@@ -4024,7 +4024,7 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon (struct GMT_CTRL *GMT, double *lon, doubl
 			PSL_command (PSL, "/FO {P}!\n");		/* Temporarily replace FO so we can build a complex path of closed polygons using {P} */
 		}
 		PSL_comment (PSL, comment);
-		gmtplot_dumpfile (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, "raw.txt");
+		//gmtplot_dumpfile (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, "raw.txt");
 
 		/* Check if there are any boundary jumps in the data as evidenced by pen up [PSL_MOVE] */
 
@@ -4035,12 +4035,12 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon (struct GMT_CTRL *GMT, double *lon, doubl
 			return GMT->current.plot.n;
 		}
 
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Polygon wraps in y-direction for TM global projection. half-height = %g\n", GMT->current.map.half_height);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Polygon wraps in y-direction for TM global projection\n");
 
 		/* Polygon wraps and we will plot it up to three times by truncating the part that would wrap the wrong way.
 		 * Here we cannot use the clipped/wrapped polygon to draw outline - that is done at the end, separately */
 
-		/* Temporary array to hold the modified x values */
+		/* Temporary array to hold the modified y values */
 
 		yp = gmt_M_memory (GMT, NULL, GMT->current.plot.n, double);
 
@@ -4054,7 +4054,7 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon (struct GMT_CTRL *GMT, double *lon, doubl
 			yp[i] = (jump) ? y_on_border[jump_dir] : GMT->current.plot.y[i];
 		}
 
-		gmtplot_dumpfile (GMT, GMT->current.plot.x, yp, NULL, GMT->current.plot.n, "main.txt");
+		//gmtplot_dumpfile (GMT, GMT->current.plot.x, yp, NULL, GMT->current.plot.n, "main.txt");
 		if (plot_main) {
 			PSL_plotpolygon (PSL, GMT->current.plot.x, yp, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
 			total = GMT->current.plot.n;
@@ -4071,7 +4071,7 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon (struct GMT_CTRL *GMT, double *lon, doubl
 			yp[i] = (jump || jump_dir == JUMP_T) ? y_on_border[JUMP_T]: GMT->current.plot.y[i], k++;
 		}
 		if (k) {
-			gmtplot_dumpfile (GMT, GMT->current.plot.x, yp, NULL, GMT->current.plot.n, "B.txt");
+			//gmtplot_dumpfile (GMT, GMT->current.plot.x, yp, NULL, GMT->current.plot.n, "B.txt");
 			PSL_plotpolygon (PSL, GMT->current.plot.x, yp, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
 			total += GMT->current.plot.n;
 		}
@@ -4087,7 +4087,7 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon (struct GMT_CTRL *GMT, double *lon, doubl
 			yp[i] = (jump || jump_dir == JUMP_L) ? y_on_border[JUMP_B] : GMT->current.plot.y[i], k++;
 		}
 		if (k) {
-			gmtplot_dumpfile (GMT, GMT->current.plot.x, yp, NULL, GMT->current.plot.n, "T.txt");
+			//gmtplot_dumpfile (GMT, GMT->current.plot.x, yp, NULL, GMT->current.plot.n, "T.txt");
 			PSL_plotpolygon (PSL, GMT->current.plot.x, yp, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
 			total = GMT->current.plot.n;
 		}
@@ -4101,7 +4101,7 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon (struct GMT_CTRL *GMT, double *lon, doubl
 		bool jump, plot_main = true;
 		double (*x_on_border[2]) (struct GMT_CTRL *, double) = {NULL, NULL};
 
-		/* Here we come for all non-azimuthal projections */
+		/* Here we come for all other non-azimuthal projections */
 
 		if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, lon, lat, n)) == 0) return 0;		/* Convert to (x,y,pen) - return if nothing to do */
 		if (init) {
