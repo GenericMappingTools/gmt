@@ -238,9 +238,26 @@ terribly wrong when you do the interpolation in the other system.
 Artificial illumination
 -----------------------
 
+.. _slope2intensity:
+
+.. figure:: /_images/GMT_slope2intensity.*
+   :width: 500 px
+   :align: center
+
+   For digital elevation models (DEM) one can specify an illumination azimuth
+   and elevation and compute the unit vector **s**. Then, at any point on the grid
+   we can compute the normal vector **n**. Their dot products can be used to compute an
+   *intensity* grid that will be positive if the surface faces the light, negative if facing
+   away, and zero if the vectors are orthogonal.  In GMT, uses may wish to add artificial
+   illumination on non-DEM data, such as geopotential data.  In those cases, while an
+   illumination azimuth still makes sense, an elevation does not since the normal vectors
+   no longer can easily be related to elevation. GMT thus only uses the directions of these
+   vectors and normalizes the intensities to yield suitable shading; see :ref:`/grdgradient`
+   for more details.
+
 GMT uses the HSV system to achieve artificial illumination of colored
 images (e.g., **-I** option in :doc:`/grdimage`) by changing the saturation
-*s* and value *v* coordinates of the color. When the intensity is zero
+*s* and value *v* coordinates of the color. As explained above, when the *intensity* is zero
 (flat illumination), the data are colored according to the CPT. If
 the intensity is non-zero, the color is either lightened or darkened
 depending on the illumination. The color is first converted to HSV (if
