@@ -206,11 +206,13 @@ Optional Arguments
 **-Z**\ *major*/*minor*/*azimuth*\ [**+e**]
     Used in conjunction with **-C** (sets its center) and **-G** (sets the
     distance increment) to create the coordinates of an ellipse
-    with *major* and *minor* axes given in km (unless **-N** is given) and the *azimuth* of the
-    major axis in degrees.  Append **+e** to adjust the increment set via
-    **-G** so that the the ellipse has equal distance increments [Default
-    uses the given increment and closes the ellipse].
-
+    with *major* and *minor* axes given in km (unless **-N** is given for a
+    Cartesian ellipse) and the *azimuth* of the major axis in degrees.
+    Append **+e** to adjust the increment set via **-G** so that the the ellipse
+    has equal distance increments [Default uses the given increment and closes
+    the ellipse].  For degenerate ellipses you can just supply a single *diameter*
+    instead.  **Note**: For the Cartesian ellipse (which requires **-N**), we
+    expect *direction* counter-clockwise from the horizontal instead of an *azimuth*.
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -287,7 +289,7 @@ defined by the great circle from the pole to a point 15E,15N, try
 
     gmt project -C15/15 -T40/85 -G1/80 -L-45/45 > some_circle.xyp
 
-To generate points approximately every 10km along an ellipse centered on (30W,70N) with
+To generate points approximately every 10 km along an ellipse centered on (30W,70N) with
 major axis of 1500 km with azimuth of 30 degree and a minor axis of 600 km, try
 
    ::

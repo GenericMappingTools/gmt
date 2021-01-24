@@ -44,26 +44,6 @@ netCDF and native binary grid formats for both input and output.
 Required Arguments
 ------------------
 
-.. _-G:
-
-**-G**\ *outgrid*
-    *outgrid* is the name of the binary output grid file. (See GRID FILE
-    FORMATS below). Only netCDF and native binary grid formats are can
-    be written directly. Other output format choices will be handled by
-    reformatting the output once blending is complete.
-
-.. _-I:
-
-.. include:: explain_-I.rst_
-
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-R.rst_
-
-Optional Arguments
-------------------
-
 *blendfile*
     ASCII file with one record per grid file to include in the blend.
     Each record may contain up to three items, separated by spaces or tabs:
@@ -87,6 +67,26 @@ Optional Arguments
     desired output layout implied by **-R**, **-I** (and |SYN_OPT-r|) will
     first be resampled via :doc:`grdsample`. Also, grids that are not in
     netCDF or native binary format will first be reformatted via :doc:`grdconvert`.
+
+.. _-G:
+
+**-G**\ *outgrid*
+    *outgrid* is the name of the binary output grid file. (See
+    :ref:`Grid File Formats <grd_inout_full>`). Only netCDF and native binary
+    grid formats are can be written directly. Other output format choices will
+    be handled by reformatting the output once blending is complete.
+
+.. _-I:
+
+.. include:: explain_-I.rst_
+
+.. _-R:
+
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-R.rst_
+
+Optional Arguments
+------------------
 
 .. _-C:
 
@@ -139,8 +139,6 @@ Optional Arguments
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_output.rst_
 
 .. include:: explain_grd_coord.rst_
 

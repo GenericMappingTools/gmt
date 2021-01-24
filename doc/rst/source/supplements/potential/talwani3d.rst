@@ -90,9 +90,9 @@ Optional Arguments
 .. _-G:
 
 **-G**\ *outfile*
-    Specify the name of the output data (for grids, see GRID FILE FORMATS below).
-    Required when an equidistant grid is implied for output.  If **-N** is used
-    then output is written to stdout unless **-G** specifies an output file.
+    Specify the name of the output data (for grids, see :ref:`Grid File Formats
+    <grd_inout_full>`). Required when an equidistant grid is implied for output.
+    If **-N** is used then output is written to stdout unless **-G** specifies an output file.
 
 .. _-M:
 
