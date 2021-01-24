@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Test that -Jz1:zzzz always means 1 m == zzzz z-units (mGal, degree T, meter)
+# regardless of chosen projection distance unit (cm. inch, point)
 
 ps=zscaling.ps
 
