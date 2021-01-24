@@ -27,7 +27,7 @@ gmt begin GMT_cap ps
 	gmt plot --PS_LINE_CAP=square -W10p,lightorange,,20_20:0 square.txt
 	gmt plot -Wfaint square.txt
 	gmt plot -Sc3p -Gwhite -Wfaint square.txt
-	gmt text -F+f12p,Helvetica-Bold+j -Dj5p <<- EOF
+	gmt text -F+f8p,Helvetica-Bold+j -Dj5p <<- EOF
 	180	50	ML	BUTT
 	180	90	ML	SQUARE
 	180	70	ML	ROUND
