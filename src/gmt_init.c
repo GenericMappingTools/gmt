@@ -4648,10 +4648,6 @@ GMT_LOCAL int gmtinit_scale_or_width (struct GMT_CTRL *GMT, char *scale_or_width
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot specify map width with 1:xxxx format in -J option\n");
 			return (1);
 		}
-		if (!xy_plane) {	/* z-units are not necessarily meter so here we want 1:1 to mean 1 zunit = 1 plot unit [cm] */
-			*value /= 100;	/* Undo the cm/meter ration */
-			*value /= GMT->session.u2u[GMT_CM][GMT->current.setting.proj_length_unit];	/* Use selected distance unit */
-		}
 	}
 	if (gmt_M_is_zero (*value)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your scale or width (%s) resulted in a zero value.\n", scale_or_width);
