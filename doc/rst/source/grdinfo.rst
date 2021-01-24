@@ -16,6 +16,7 @@ Synopsis
 [ |-D|\ [*xoff*\ [/*yoff*]][**+i**] ]
 [ |-E|\ [**x**\|\ **y**][**+l**\|\ **L**\|\ **u**\|\ **U**] ]
 [ |-F| ]
+[ |-G| ]
 [ |-I|\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**] ]
 [ |-L|\ [**0**\|\ **1**\|\ **2**\|\ **p**\|\ **a**] ]
 [ |-M| ]
@@ -97,6 +98,12 @@ Optional Arguments
 **-F**
     Report grid domain and x/y-increments in world mapping format
     [Default is generic]. Does not apply to the **-C** option.
+
+.. _-G:
+
+**-G**
+    Force (possible) download of all tiles of tiled global remote grids in order
+    to report the requested information [refuse to give the information for tiled grids].
 
 .. _-I:
 
