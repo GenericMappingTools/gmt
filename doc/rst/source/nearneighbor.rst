@@ -14,7 +14,7 @@ Synopsis
 
 **gmt nearneighbor** [ *table* ] |-G|\ *outgrid*
 |SYN_OPT-I|
-|-N|\ *sectors*\ [**+m**\ *min_sectors*] | \ **n**
+|-N|\ *sectors*\ [**+m**\ *min_sectors*]\ \|\ **n**
 |SYN_OPT-R|
 |-S|\ *search_radius*
 [ |-E|\ *empty* ]
@@ -43,10 +43,23 @@ Description
 neighbor algorithm to assign an average value to each node that have one
 or more points within a radius centered on the node. The average value
 is computed as a weighted mean of the nearest point from each sector
-inside the search radius. The weighting function used is w(r) = 1 / (1 +
-d ^ 2), where d = 3 \* r / search_radius and r is distance from the
-node. This weight is modulated by the weights of the observation points [if
-supplied].
+inside the search radius, *R*. The weighting function used is
+
+
+.. math::
+
+    w(r) = \frac{1}{1 + d(r) ^ 2}, \quad d(r) = \frac {3r}{R}
+
+and *r* is the distance from the node to the data point. This weight is
+modulated by the weights of the observation points [if supplied].
+
+.. figure:: /_images/GMT_nearneighbor.*
+   :width: 300 px
+   :align: center
+
+   Search geometry includes the search radius (R) which limits the points
+   considered and the number of sectors, which restricts how points inside
+   the search radius contribute to the value at the node.
 
 Required Arguments
 ------------------
