@@ -58,8 +58,9 @@ modulated by the weights of the observation points [if supplied].
    :align: center
 
    Search geometry includes the search radius (R) which limits the points
-   considered and the number of sectors, which restricts how points inside
-   the search radius contribute to the value at the node.
+   considered and the number of sectors (here 4), which restricts how points inside
+   the search radius contribute to the value at the node.  Only the closest point
+   in each sector enters into the weighted estimage.
 
 Required Arguments
 ------------------
