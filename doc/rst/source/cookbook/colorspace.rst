@@ -252,7 +252,7 @@ Artificial illumination
    illumination on non-DEM data, such as geopotential data.  In those cases, while an
    illumination azimuth still makes sense, an elevation does not since the normal vectors
    no longer can easily be related to elevation. GMT thus only uses the directions of these
-   vectors and normalizes the intensities to yield suitable shading; see :ref:`/grdgradient`
+   vectors and normalizes the intensities to yield suitable shading; see :doc:`/grdgradient`
    for more details.
 
 GMT uses the HSV system to achieve artificial illumination of colored
@@ -328,7 +328,7 @@ achieved using *c/m/y/k* quadruplets.
 
 .. _color_cmyk:
 
-.. figure:: /_images/GMT_color_cmyk.*
+.. figure:: /_images/GMT_cmyk.*
    :width: 500 px
    :align: center
 
