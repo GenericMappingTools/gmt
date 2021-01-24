@@ -14,7 +14,7 @@ Synopsis
 
 **gmt nearneighbor** [ *table* ] |-G|\ *outgrid*
 |SYN_OPT-I|
-|-N|\ *sectors*\ [**+m**\ *min_sectors*] | \ **n**
+|-N|\ *sectors*\ [**+m**\ *min_sectors*]\ \|\ **n**
 |SYN_OPT-R|
 |-S|\ *search_radius*
 [ |-E|\ *empty* ]
@@ -48,24 +48,18 @@ inside the search radius, *R*. The weighting function used is
 
 .. math::
 
-    w(r) = \frac{1}{1 + d(r) ^ 2},
-
-where
-
-.. math::
-
-    d(r) = \frac {3r}{R}
+    w(r) = \frac{1}{1 + d(r) ^ 2}, \quad d(r) = \frac {3r}{R}
 
 and *r* is the distance from the node to the data point. This weight is
 modulated by the weights of the observation points [if supplied].
 
 .. figure:: /_images/GMT_nearneighbor.*
-   :width: 200 px
+   :width: 300 px
    :align: center
 
-   Search geometry includes the search radius which limits the points
-   considered and the number of sectors, which restricts how points
-   are used.
+   Search geometry includes the search radius (R) which limits the points
+   considered and the number of sectors, which restricts how points inside
+   the search radius contribute to the value at the node.
 
 Required Arguments
 ------------------
