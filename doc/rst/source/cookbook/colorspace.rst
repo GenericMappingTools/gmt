@@ -1,7 +1,7 @@
 .. _Color Space:
 
-Color Space: The Final Frontier
-===============================
+Color Systems and Artificial Illumination
+=========================================
 
 In this Chapter, we are going to try to explain the relationship
 between the RGB, CMYK, and HSV color systems so as to (hopefully) make
@@ -238,9 +238,26 @@ terribly wrong when you do the interpolation in the other system.
 Artificial illumination
 -----------------------
 
+.. _slope2intensity:
+
+.. figure:: /_images/GMT_slope2intensity.*
+   :width: 500 px
+   :align: center
+
+   For digital elevation models (DEM) one can specify an illumination azimuth
+   and elevation and compute the unit vector **s**. Then, at any point on the grid
+   we can compute the normal vector **n**. Their dot products can be used to compute an
+   *intensity* grid that will be positive if the surface faces the light, negative if facing
+   away, and zero if the vectors are orthogonal.  In GMT, uses may wish to add artificial
+   illumination on non-DEM data, such as geopotential data.  In those cases, while an
+   illumination azimuth still makes sense, an elevation does not since the normal vectors
+   no longer can easily be related to elevation. GMT thus only uses the directions of these
+   vectors and normalizes the intensities to yield suitable shading; see :doc:`/grdgradient`
+   for more details.
+
 GMT uses the HSV system to achieve artificial illumination of colored
 images (e.g., **-I** option in :doc:`/grdimage`) by changing the saturation
-*s* and value *v* coordinates of the color. When the intensity is zero
+*s* and value *v* coordinates of the color. As explained above, when the *intensity* is zero
 (flat illumination), the data are colored according to the CPT. If
 the intensity is non-zero, the color is either lightened or darkened
 depending on the illumination. The color is first converted to HSV (if
@@ -308,6 +325,21 @@ probably find four cartridges: cyan, magenta, yellow (often these are
 combined into one), and black. They form the CMYK system of colors, each
 value running from 0 to 1 (or 100%). In GMT CMYK color coding can be
 achieved using *c/m/y/k* quadruplets.
+
+.. _color_cmyk:
+
+.. figure:: /_images/GMT_cmyk.*
+   :width: 500 px
+   :align: center
+
+   (left) Mixing of light on a computer screen shows that the mixing
+   of primary colors red (R), green (G) and blue (B) yields the other
+   primary colors of magenta (M), cyan (C) and yellow (Y), plus white.
+   (right) Mixing of colors for printing uses C, M and Y and when these
+   mix completely we get black (K).  To get a better representation of black
+   the amount of black in any particular color is removed from the color
+   and painted with a specific black ink instead, leading to under-color
+   removal of the remaining three pigments.
 
 Obviously, there is no unique way to go from the 3-dimensional RGB
 system to the 4-dimensional CMYK system. So, again, there is a lot of
