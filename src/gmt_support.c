@@ -9915,6 +9915,13 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 					bad++;
 				break;
 
+			case 'T':	/* Deprecated, just give a warning that it is the same as +t and deliberately fall through to case 't' */
+				if (gmt_M_compat_check (GMT, 6))
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+T in contour label spec is deprecated; only +t is supported\n");
+				else {
+					bad++;
+					break;
+				}
 			case 't':	/* Save contour label locations to given file [x y angle label] */
 				G->save_labels = 1;
 				if (p[1]) strncpy (G->label_file, &p[1], PATH_MAX-1);
@@ -14712,7 +14719,10 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 		if (strchr (type, 'i')) n_int++;
 		if (strchr (type, 'a')) n_annot++;
 		x[k] = S->data[GMT_X][row];
-		if (text && nc == 2) L[k] = strdup (txt);
+		if (text && nc == 2) {
+			gmtlib_enforce_rgb_triplets (GMT, txt, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+			L[k] = strdup (txt);
+		}
 		k++;
 	}
 

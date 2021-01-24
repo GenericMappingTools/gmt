@@ -50,12 +50,14 @@ Required Arguments
 ------------------
 
 *ingrid*
-    2-D binary grid file to be transformed. (See GRID FILE FORMATS below.)
+    2-D binary grid file to be transformed. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 .. _-G:
 
 **-G**\ *outgrid*
-    Specify the name of the output grid file. (See GRID FILE FORMATS below.)
+    Specify the name of the output grid file. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 .. _-J:
 
@@ -145,8 +147,6 @@ Optional Arguments
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

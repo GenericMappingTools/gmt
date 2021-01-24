@@ -67,6 +67,9 @@ struct GRDINFO_CTRL {
 	struct GRDINFO_F {	/* -F */
 		bool active;
 	} F;
+	struct GRDINFO_G {	/* -G */
+		bool active;
+	} G;
 	struct GRDINFO_I {	/* -Ir|b|i|dx[/dy] */
 		bool active;
 		unsigned int status;
@@ -109,8 +112,8 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-C[n|t]] [-D[<offx>[/<offy>]][+i]] [-E[x|y][+l|L|u|U]] [-F] [-I[<dx>[/<dy>]|b|i|r]] [-L[a|0|1|2|p]] [-M] [-Q]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T[<dv>][+a[<alpha>]][+s]] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-C[n|t]] [-D[<offx>[/<offy>]][+i]] [-E[x|y][+l|L|u|U]] [-F] [-G] [-I[<dx>[/<dy>]|b|i|r]] [-L[a|0|1|2|p]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-Q] [%s] [-T[<dv>][+a[<alpha>]][+s]] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -130,6 +133,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l|L for minima and +u|U for maxima [Default]. Only one input grid is accepted.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +L to consider only positive values and +U to consider only negative values [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Report domain in world mapping format [Default is generic].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Return textstring -Rw/e/s/n{/b/t} to nearest multiple of dx/dy{/dz}.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is set then rounding off will occur but no -R string is issued.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no argument is given then the -I<xinc>/<yinc>{/<zinc>} string is issued.\n");
@@ -235,6 +239,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'F':	/* World mapping format */
 				Ctrl->F.active = true;
+				break;
+			case 'G':	/* Force download of tiled grids if information is requested */
+				Ctrl->G.active = true;
 				break;
 			case 'I':	/* Increment rounding */
 				Ctrl->I.active = true;
@@ -493,7 +500,7 @@ GMT_LOCAL void grdinfo_smart_increments (struct GMT_CTRL *GMT, double inc[], uns
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_set_pad (GMT, GMT_PAD_DEFAULT); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
-	int error = 0, k_data;
+	int error = 0, k_data, k_tile_id;
 	unsigned int n_grds = 0, n_cols = 0, col, level, i_status, gtype, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
 	unsigned int x_col_min, x_col_max, y_col_min, y_col_max, z_col_min, z_col_max, GMT_W = GMT_Z;
 	bool subset, delay, num_report, is_cube;
@@ -608,8 +615,14 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (opt->option != '<') continue;	/* We are only processing filenames here */
 
 		gmt_set_cartesian (GMT, GMT_IN);	/* Reset since we may get a bunch of files, some geo, some not */
-		if ((k_data = gmt_remote_dataset_id (API, opt->arg)) != GMT_NOTSET || (k_data = gmt_get_tile_id (API, opt->arg)) != GMT_NOTSET)
+		k_tile_id = k_data = GMT_NOTSET;
+		if ((k_data = gmt_remote_dataset_id (API, opt->arg)) != GMT_NOTSET || (k_tile_id = gmt_get_tile_id (API, opt->arg)) != GMT_NOTSET) {
+			if (k_tile_id != GMT_NOTSET && !Ctrl->G.active) {
+				GMT_Report (API, GMT_MSG_WARNING, "Information on tiled remote global grids requires -G since download or all tiles may be required\n");
+				continue;
+			}
 			gmt_set_geographic (GMT, GMT_IN);	/* Since this will be returned as a memory grid */
+		}
 
 		is_cube = gmt_nc_is_cube (API, opt->arg);	/* Determine if this file is a cube or not */
 		if (Ctrl->Q.active != is_cube) {

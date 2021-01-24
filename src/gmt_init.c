@@ -11375,7 +11375,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		/* TIME GROUP */
 
 		case GMTCASE_TIME_EPOCH:
-			strncpy (GMT->current.setting.time_system.epoch, value, GMT_LEN64-1);
+			strncpy (GMT->current.setting.time_system.epoch, lower_value, GMT_LEN64-1);
 			(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
 			break;
 		case GMTCASE_TIME_IS_INTERVAL:
@@ -13059,7 +13059,7 @@ bool gmt_get_time_system (struct GMT_CTRL *GMT, char *name, struct GMT_TIME_SYST
 		strcpy (time_system->epoch, "1970-01-01T00:00:00");
 		time_system->unit = 's';
 	}
-	else if (!strcmp (name, "dr0001")) {
+	else if (!strcmp (name, "dr0001") || !strcmp (name, "rd0001")) {	/* rd & dr because gmt.conf man says RD0001 */
 		strcpy (time_system->epoch, "0001-01-01T00:00:00");
 		time_system->unit = 's';
 	}

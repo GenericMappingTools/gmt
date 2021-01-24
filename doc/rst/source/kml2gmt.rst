@@ -39,14 +39,12 @@ somefile.kml.
 Required Arguments
 ------------------
 
-None.
+*kmlfiles*
+    Name of one or more KML files to work on. If none are given, then
+    standard input is read.
 
 Optional Arguments
 ------------------
-
-*kmlfiles*
-    Name of one or more KML files to work on. If not are given, then
-    standard input is read.
 
 .. _-E:
 

@@ -61,7 +61,7 @@ Required Arguments
 
 *topogrd*
     2-D binary grid file with the topography of the load (in meters);
-    See GRID FILE FORMATS below.
+    (See :ref:`Grid File Formats <grd_inout_full>`).
     If **-T** is used, *topogrd* may be a filename template with a
     floating point format (C syntax) and a different load file name
     will be set and loaded for each time step.  The load times thus
@@ -200,8 +200,6 @@ Optional Arguments
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
 .. include:: ../../explain_help.rst_
-
-.. include:: ../../explain_grd_inout_short.rst_
 
 Grid Distance Units
 -------------------
