@@ -1,7 +1,7 @@
 .. _Color Space:
 
-Color Space: The Final Frontier
-===============================
+Color Systems and Artificial Illumination
+=========================================
 
 In this Chapter, we are going to try to explain the relationship
 between the RGB, CMYK, and HSV color systems so as to (hopefully) make
