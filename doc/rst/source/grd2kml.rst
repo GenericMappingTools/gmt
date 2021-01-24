@@ -51,7 +51,7 @@ Required Arguments
 ------------------
 
 *grid*
-    A 2-D gridded data set (See GRID FILE FORMATS below.)
+    A 2-D gridded data set (see :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------

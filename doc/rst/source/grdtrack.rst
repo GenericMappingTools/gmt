@@ -69,7 +69,7 @@ Required Arguments
 .. _-G:
 
 **-G**\ *gridfile*
-    *grdfile* is a 2-D binary grid file with the function f(x,y). If the
+    *gridfile* is a 2-D binary grid file with the function f(x,y). If the
     specified grid is in Sandwell/Smith Mercator format you must append
     a comma-separated list of arguments that includes a scale to
     multiply the data (usually 1 or 0.1), the mode which stand for the
@@ -82,7 +82,7 @@ Required Arguments
     **-G** as many times as you have grids you wish to sample.
     Alternatively, use **-G+l**\ *list* to pass a list of file names.
     The grids are sampled and results are output in the order given.
-    (See GRID FILE FORMAT below.)
+    (See :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -292,8 +292,6 @@ Optional Arguments
 .. include:: explain_distunits.rst_
 
 .. include:: explain_precision.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: explain_grdresample2.rst_
 

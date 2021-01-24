@@ -13,9 +13,12 @@ Required Arguments
 ------------------
 
 *compx.nc*
-    Contains the x-components of the vector field.
+    Contains the x-components of the vector field. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
+    
 *compy.nc*
-    Contains the y-components of the vector field. (See GRID FILE FORMATS below.)
+    Contains the y-components of the vector field. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 .. _-J:
 
@@ -72,7 +75,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ [**i**\|\ **l**]\ *scale*
-    Sets scale for vector plot lengths in data units per plot distance measurement unit. 
+    Sets scale for vector plot lengths in data units per plot distance measurement unit.
     Append **c**, **i**, or **p** to indicate the desired plot distance measurement
     unit (cm, inch, or point); if no unit is given we use the default value that
     is controlled by :term:`PROJ_LENGTH_UNIT`.  Vector lengths converted via plot unit
@@ -131,7 +134,5 @@ Optional Arguments
 .. include:: explain_help.rst_
 
 .. include:: explain_distunits.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: explain_vectors.rst_

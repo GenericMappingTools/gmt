@@ -60,7 +60,8 @@ Required Arguments
 .. _-G:
 
 **-G**\ *mask_grd_file*
-    Name of resulting output mask grid file. (See GRID FILE FORMATS below).
+    Name of resulting output mask grid file. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 .. _-I:
 
@@ -165,8 +166,6 @@ Optional Arguments
 .. include:: explain_help.rst_
 
 .. include:: explain_distunits.rst_
-
-.. include:: explain_grd_output.rst_
 
 .. include:: explain_grd_coord.rst_
 

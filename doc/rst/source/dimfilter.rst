@@ -12,10 +12,10 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt dimfilter** *input_file.nc*
+**gmt dimfilter** *ingrid*
 |-D|\ *distance_flag*
 |-F|\ **x**\ *width*\ [*modifier*]
-|-G|\ *output_file.nc*
+|-G|\ *outgrid*
 |-N|\ **x**\ *sectors*\ [*modifier*]
 [ |-L| ]
 [ |-Q| ]
@@ -31,7 +31,7 @@ Synopsis
 Description
 -----------
 
-**dimfilter** will filter a *.nc* file in the space (or time) domain by
+**dimfilter** will filter a *grid* file in the space (or time) domain by
 dividing the given filter circle into *n\_sectors*, applying one of the
 selected primary convolution or non-convolution filters to each sector,
 and choosing the final outcome according to the selected secondary
@@ -51,8 +51,8 @@ DiM-filtered data is generally recommended.
 Required Arguments
 ------------------
 
-*input\_file.nc*
-    The data grid to be filtered.
+*ingrid*
+    The input grid to be filtered (see :ref:`Grid File Formats <grd_inout_full>`).
 
 .. _-D:
 
@@ -119,8 +119,9 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *output_file.nc*
-    *output_file.nc* is the output of the filter.
+**-G**\ *outgrid*
+    *outgrid* is the name of the binary output grid file. (See
+    :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -172,7 +173,7 @@ Optional Arguments
 .. include:: explain_-f.rst_
 
 .. include:: explain_help.rst_
-.. include:: explain_grd_inout_short.rst_
+
 .. include:: explain_grd_coord.rst_
 
 Examples
