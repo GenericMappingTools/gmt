@@ -210,6 +210,14 @@ modifier is typically used to darken an entire image by subtracting a constant f
 all the intensities.  E.g., if you use **+a**\ -0.5 then you subtract 0.5 from all
 intensities, making them more negative and hence darken the image.
 
+Special Effects
+---------------
+
+Users who wishes to highlight just an area of a grid are encouraged to consider creative uses
+of the vast number of operators in :doc:`grdmath` and the grid clipping schemes in :doc:`grdmask`
+and :doc:`grdclip`.  Many separate intensity grids can be combined into one via grid algebra
+and boolean operators in :doc:`grdmath`.  The sky is the limit.
+
 Examples
 --------
 

@@ -43,10 +43,29 @@ Description
 neighbor algorithm to assign an average value to each node that have one
 or more points within a radius centered on the node. The average value
 is computed as a weighted mean of the nearest point from each sector
-inside the search radius. The weighting function used is w(r) = 1 / (1 +
-d ^ 2), where d = 3 \* r / search_radius and r is distance from the
-node. This weight is modulated by the weights of the observation points [if
-supplied].
+inside the search radius, *R*. The weighting function used is
+
+
+.. math::
+
+    w(r) = \frac{1}{1 + d(r) ^ 2},
+
+where
+
+.. math::
+
+    d(r) = \frac {3r}{R}
+
+and *r* is the distance from the node to the data point. This weight is
+modulated by the weights of the observation points [if supplied].
+
+.. figure:: /_images/GMT_nearneighbor.*
+   :width: 200 px
+   :align: center
+
+   Search geometry includes the search radius which limits the points
+   considered and the number of sectors, which restricts how points
+   are used.
 
 Required Arguments
 ------------------
