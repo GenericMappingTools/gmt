@@ -4875,6 +4875,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			break;
 
 		case GMT_ZAXIS:	/* 3D plot */
+
 			GMT->current.proj.compute_scale[GMT_Z] = width_given;
 			error += (n_slashes > 0) ? 1 : 0;
 			gmt_set_column_type (GMT, GMT_IN, GMT_Z, GMT_IS_UNKNOWN);
@@ -4904,7 +4905,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				args_cp[i] = 0;
 			else if (t_pos[GMT_Z] > 0)
 				args_cp[t_pos[GMT_Z]] = 0;
-			GMT->current.proj.z_pars[0] = gmt_M_to_inch (GMT, args_cp);	/* z-scale */
+			//GMT->current.proj.z_pars[0] = gmt_M_to_inch (GMT, args_cp);	/* z-scale */
+			error += gmtinit_scale_or_width (GMT, args_cp, &GMT->current.proj.z_pars[0]);
 
 			GMT->current.proj.xyz_projection[GMT_Z] = GMT_LINEAR;
 			if (l_pos[GMT_Z] > 0)
