@@ -193,7 +193,7 @@ anomalies. Try this:
 
    ::
 
-    gmt mgd77list JA020015 -R300/315/12/20 -Flon,lat,mag,dist,azim | gmt gmtsplit -A90/15 -F100/-500 \
+    gmt mgd77list JA020015 -R300/315/12/20 -Flon,lat,mag,dist,azim | gmt split -A90/15 -F100/-500 \
         -D100 -S -V -fg | gmt wiggle -R300/315/12/20 -Jm0.6i -Baf -B+tJA020015 -T1 \
         -W0.75p -Ggray -Z200 -pdf JA020015_wiggles
 
