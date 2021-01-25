@@ -51,6 +51,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     gmtset
     gmtsimplify
     gmtspatial
+    gmtsplit
     gmtvector
     gmtwhich
     grd2cpt
@@ -112,7 +113,6 @@ All modules are requested via a call to the :doc:`gmt` program.
     sphdistance
     sphinterpolate
     sphtriangulate
-    splitxyz
     surface
     trend1d
     trend2d
@@ -207,6 +207,7 @@ Core Modules
     - :doc:`gmtset`
     - :doc:`gmtsimplify`
     - :doc:`gmtspatial`
+    - :doc:`gmtsplit`
     - :doc:`gmtvector`
     - :doc:`gmtwhich`
     - :doc:`grd2cpt`
@@ -268,7 +269,6 @@ Core Modules
     - :doc:`sphdistance`
     - :doc:`sphinterpolate`
     - :doc:`sphtriangulate`
-    - :doc:`splitxyz`
     - :doc:`surface`
     - :doc:`trend1d`
     - :doc:`trend2d`
@@ -501,6 +501,8 @@ Convert or extract subsets of data
 +-----------------------+-----------------------+
 | :doc:`gmtspatial`     | |gmtspatial_purpose|  |
 +-----------------------+-----------------------+
+| :doc:`gmtsplit`       | |gmtsplit_purpose|    |
++-----------------------+-----------------------+
 | :doc:`gmtvector`      | |gmtvector_purpose|   |
 +-----------------------+-----------------------+
 | :doc:`grd2kml`        | |grd2kml_purpose|     |
@@ -514,8 +516,6 @@ Convert or extract subsets of data
 | :doc:`grdcut`         | |grdcut_purpose|      |
 +-----------------------+-----------------------+
 | :doc:`grdpaste`       | |grdpaste_purpose|    |
-+-----------------------+-----------------------+
-| :doc:`splitxyz`       | |splitxyz_purpose|    |
 +-----------------------+-----------------------+
 | :doc:`xyz2grd`        | |xyz2grd_purpose|     |
 +-----------------------+-----------------------+
