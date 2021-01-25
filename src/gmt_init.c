@@ -4621,7 +4621,7 @@ GMT_LOCAL int gmtinit_project_type (char *args, int *pos, bool *width_given) {
 }
 
 /*! . */
-GMT_LOCAL int gmtinit_scale_or_width (struct GMT_CTRL *GMT, char *scale_or_width, double *value) {
+GMT_LOCAL int gmtinit_scale_or_width (struct GMT_CTRL *GMT, char *scale_or_width, double *value, bool xy_plane) {
 	/* Scans character that may contain a scale (1:xxxx or units per degree) or a width.
 	   Return 1 upon error. Here we want to make an exception for users giving a scale
 	   of 1 in grdproject and mapproject as it is most likely meant to be 1:1. */
@@ -4634,7 +4634,7 @@ GMT_LOCAL int gmtinit_scale_or_width (struct GMT_CTRL *GMT, char *scale_or_width
 		if (k == 1 && scale_or_width[0] == '1' && gmt_M_is_grdmapproject (GMT)) {	/* OK, pretend we got 1:1 */
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your scale of 1 in -J was interpreted to mean 1:1 since no plotting is involved.\n");
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "If a scale of 1 was intended, please append a unit from %s.\n", GMT_DIM_UNITS_DISPLAY);
-			gmtinit_scale_or_width (GMT, strcat(scale_or_width,":1"), value);
+			gmtinit_scale_or_width (GMT, strcat(scale_or_width,":1"), value, xy_plane);
 			return (GMT_NOERROR);
 		}
 
@@ -4653,7 +4653,7 @@ GMT_LOCAL int gmtinit_scale_or_width (struct GMT_CTRL *GMT, char *scale_or_width
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your scale or width (%s) resulted in a zero value.\n", scale_or_width);
 		return (1);
 	}
-	else if (gmt_M_is_geographic (GMT, GMT_IN) && (*value) < 0.0) {
+	else if (xy_plane && gmt_M_is_geographic (GMT, GMT_IN) && (*value) < 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Geographic scale (%s) cannot be negative.\n", scale_or_width);
 		return (1);
 	}
@@ -4875,6 +4875,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			break;
 
 		case GMT_ZAXIS:	/* 3D plot */
+
 			GMT->current.proj.compute_scale[GMT_Z] = width_given;
 			error += (n_slashes > 0) ? 1 : 0;
 			gmt_set_column_type (GMT, GMT_IN, GMT_Z, GMT_IS_UNKNOWN);
@@ -4904,7 +4905,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				args_cp[i] = 0;
 			else if (t_pos[GMT_Z] > 0)
 				args_cp[t_pos[GMT_Z]] = 0;
-			GMT->current.proj.z_pars[0] = gmt_M_to_inch (GMT, args_cp);	/* z-scale */
+			error += gmtinit_scale_or_width (GMT, args_cp, &GMT->current.proj.z_pars[0], false);	/* z-scale */
 
 			GMT->current.proj.xyz_projection[GMT_Z] = GMT_LINEAR;
 			if (l_pos[GMT_Z] > 0)
@@ -5035,7 +5036,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
 				GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = 0.0;
 			}
-			error += gmtinit_scale_or_width (GMT, txt_b, &GMT->current.proj.pars[1]);
+			error += gmtinit_scale_or_width (GMT, txt_b, &GMT->current.proj.pars[1], true);
 			error += !(n == n_slashes + 1);
 			break;
 
@@ -5063,7 +5064,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
 				GMT->current.proj.lat0 = GMT->current.proj.pars[1];
 			}
-			error += gmtinit_scale_or_width (GMT, txt_c, &GMT->current.proj.pars[2]);
+			error += gmtinit_scale_or_width (GMT, txt_c, &GMT->current.proj.pars[2], true);
 			error += ((project == GMT_CYL_EQ || project == GMT_MERCATOR || project == GMT_POLYCONIC)
 				&& fabs (GMT->current.proj.pars[1]) >= 90.0);
 			error += !(n == n_slashes + 1);
@@ -5077,7 +5078,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
 			error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_c, GMT_IS_LAT, &GMT->current.proj.pars[2]), txt_c);
 			error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_d, GMT_IS_LAT, &GMT->current.proj.pars[3]), txt_d);
-			error += gmtinit_scale_or_width (GMT, txt_e, &GMT->current.proj.pars[4]);
+			error += gmtinit_scale_or_width (GMT, txt_e, &GMT->current.proj.pars[4], true);
 			error += !(n_slashes == 4 && n == 5);
 			GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
 			break;
@@ -5351,7 +5352,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_c, GMT_IS_LON, &GMT->current.proj.pars[2]), txt_c);
 				error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_d, GMT_IS_LAT, &GMT->current.proj.pars[3]), txt_d);
 			}
-			error += gmtinit_scale_or_width (GMT, txt_e, &GMT->current.proj.pars[4]);
+			error += gmtinit_scale_or_width (GMT, txt_e, &GMT->current.proj.pars[4], true);
 			GMT->current.proj.pars[6] = 0.0;
 			error += !(n == n_slashes + 1);
 			GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
@@ -5371,7 +5372,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				GMT->current.proj.pars[2] += 180.0;
 				if (GMT->current.proj.pars[2] >= 360.0) GMT->current.proj.pars[2] -= 360.0;
 			}
-			error += gmtinit_scale_or_width (GMT, txt_e, &GMT->current.proj.pars[4]);
+			error += gmtinit_scale_or_width (GMT, txt_e, &GMT->current.proj.pars[4], true);
 			GMT->current.proj.pars[6] = 1.0;
 			error += !(n_slashes == 4 && n == 5);
 			project = GMT_OBLIQUE_MERC;
@@ -5381,7 +5382,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 		case GMT_UTM:	/* Universal Transverse Mercator */
 			if (!strchr (args, '/')) {	/* No UTM zone given, must obtain from -R */
 				GMT->current.proj.pars[0] = -1.0;	/* Flag we need zone to be set later */
-				error += gmtinit_scale_or_width (GMT, args, &GMT->current.proj.pars[1]);
+				error += gmtinit_scale_or_width (GMT, args, &GMT->current.proj.pars[1], true);
 			}
 			else {
 				n = sscanf (args, "%[^/]/%s", txt_a, txt_b);
@@ -5412,7 +5413,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 
 				error += (k < 1 || k > 60);	/* Zones must be 1-60 */
 				GMT->current.proj.utm_zonex = k;
-				error += gmtinit_scale_or_width (GMT, txt_b, &GMT->current.proj.pars[1]);
+				error += gmtinit_scale_or_width (GMT, txt_b, &GMT->current.proj.pars[1], true);
 				error += !(n_slashes == 1 && n == 2);
 			}
 			break;

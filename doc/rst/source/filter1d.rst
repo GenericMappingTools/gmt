@@ -228,4 +228,4 @@ See Also
 
 :doc:`gmt` ,
 :doc:`sample1d` ,
-:doc:`splitxyz`
+:doc:`gmtsplit`
