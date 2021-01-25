@@ -344,6 +344,14 @@ accomplish these effects:
 Your Canvas
 -----------
 
+.. figure:: /_images/GMT_movie_canvas.*
+   :width: 400 px
+   :align: center
+
+   The **MOVIE_WIDTH** and **MOVIE_HEIGHT** parameters reflect your canvas dimension.  You can use the
+   regular **-X** and **-Y** options to set a logical origin for your intended plot [72p, 72p] and use your
+   projection parameters (**-J**) to indicate the area selected for plotting (green).
+
 As you can see from **-C**, unless you specified a custom format you are given a canvas size that is either 24 x 13.5 cm (16:9)
 or 24 x 18 cm (4:3).  If your :term:`PROJ_LENGTH_UNIT` setting is inch then the custom canvas sizes are just
 slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4" or 9.6 x 7.2"); this has no effect on the size of the movie

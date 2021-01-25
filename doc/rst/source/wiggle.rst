@@ -99,4 +99,4 @@ See Also
 :doc:`gmt`, :doc:`gmtcolors`,
 :doc:`filter1d`,
 :doc:`basemap`,
-:doc:`splitxyz`
+:doc:`gmtsplit`

@@ -54,6 +54,8 @@
 
 .. |gmtspatial_purpose| replace:: Geospatial operations on points, lines and polygons
 
+.. |gmtsplit_purpose| replace:: Split xyz[dh] data tables into individual segments
+
 .. |gmtvector_purpose| replace:: Operations on Cartesian vectors in 2-D and 3-D
 
 .. |gmtwhich_purpose| replace:: Find full path to specified files
@@ -217,8 +219,6 @@
 .. |sphinterpolate_purpose| replace:: Spherical gridding in tension of data on a sphere
 
 .. |sphtriangulate_purpose| replace:: Delaunay or Voronoi construction of spherical data
-
-.. |splitxyz_purpose| replace:: Split xyz[dh] data tables into individual segments
 
 .. |subplot_purpose| replace:: Manage modern mode figure subplot configuration and selection
 
