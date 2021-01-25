@@ -207,7 +207,7 @@ profiles named *survey*\ \_\ *###.txt* (when gap exceeds 100 km). Try this:
 
    ::
 
-    gmt gmtsplit survey.bin -Nsurvey_%03d.txt -V -gd100k -D100 -: -fg -bi3d
+    gmt split survey.bin -Nsurvey_%03d.txt -V -gd100k -D100 -: -fg -bi3d
 
 See Also
 --------
