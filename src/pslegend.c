@@ -1095,6 +1095,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 						if (do_width) {
 							row_base_y -= row_height;
 							PSL_setcurrentpoint (PSL, Ctrl->D.refpoint->x, row_base_y + d_off);
+							PSL_setfont (PSL, ifont.id);
 							PSL_command (PSL, "PSL_legend_box_width 2 div 0 G\n");
 							PSL_plottext (PSL, 0.0, 0.0, -ifont.size, text, 0.0, PSL_BC, 0);
 						}
@@ -1181,6 +1182,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 						justify = gmt_just_decode (GMT, key, 0);
 						if (do_width) {
 							PSL_setcurrentpoint (PSL, Ctrl->D.refpoint->x + Ctrl->C.off[GMT_X], row_base_y + d_off);
+							PSL_setfont (PSL, ifont.id);
 							if (justify == PSL_BR)
 								PSL_command (PSL, "PSL_legend_box_width PSL_legend_clear_x sub 0 G\n");
 							else if (justify == PSL_BC)
