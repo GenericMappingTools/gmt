@@ -4446,7 +4446,39 @@ void gmt_skip_xy_duplicates (struct GMT_CTRL *GMT, bool mode) {
 	GMT->current.io.skip_duplicates = mode;
 }
 
-/*! Determine if two points are "far enough apart" to constitude a data gap and thus "pen up" */
+void gmtlib_modulo_time_calculator (struct GMT_CTRL *GMT, double *val) {
+	/* Only called if any of the -f<col>y|m|w|d statements were given to yield periodic data.
+	 * Here time_operator is the kind of period, and time_range is the period length in current units */
+	int L;
+	struct GMT_GCAL cal;
+	switch (GMT->current.io.cycle_time_operator) {
+		case GMT_PERIODIC_DAY:	/* Return 0.000-0.999999 day */
+			*val = fmod (*val, GMT_DAY2SEC_F) * GMT_SEC2DAY;	/* Yields 0.000-0.999999 day */
+			break;
+		case GMT_PERIODIC_WEEK:	/* Return 0.00000-6.9999999 days */
+			gmt_gcal_from_dt (GMT, *val, &cal);
+			*val = (GMT->current.setting.time_week_start) ? (7 + cal.day_w - GMT->current.setting.time_week_start) % 7 : cal.day_w;
+			*val += cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY;
+			break;
+		case GMT_PERIODIC_MONTH:	/* Return 0.000000-11.999999 months */
+			gmt_gcal_from_dt (GMT, *val, &cal);
+			L = gmtlib_gmonth_length (cal.year, cal.month + 1);	/* Days in this month */
+			*val = cal.month + (cal.day_m - 1 + cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY) / L;
+			break;
+		case GMT_PERIODIC_YEAR:	/* Return 0.00000-0.99999999 years */
+			gmt_gcal_from_dt (GMT, *val, &cal);
+			L = gmtlib_is_gleap (cal.year) ? 366 : 365;	/* Length of this year in days */
+			*val = (cal.day_y - 1 + cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY) / L;
+			break;
+	}
+	/* Handle wrapping around given range */
+	if (*val > GMT->current.io.cycle_time_max)
+		*val -= GMT->current.io.cycle_time_range;
+	if (*val > GMT->current.io.cycle_time_max)
+		*val -= GMT->current.io.cycle_time_range;
+}
+
+/*! Determine if two points are "far enough apart" to constitute a data gap and thus "pen up" */
 bool gmtlib_gap_detected (struct GMT_CTRL *GMT) {
 	uint64_t i;
 

@@ -170,6 +170,13 @@ enum GMT_enum_basemap {
 	GMT_BASEMAP_ANNOT_BEFORE	= 0,
 	GMT_BASEMAP_ANNOT_AFTER		= 4};
 
+/*! Handling of swap/no swap in i/o */
+enum GMT_time_period {
+	GMT_PERIODIC_DAY = 1,
+	GMT_PERIODIC_WEEK,
+	GMT_PERIODIC_MONTH,
+	GMT_PERIODIC_YEAR};
+
 /* Since -I is not a global option but we almost use it as such, we define the long-option for it here.
  * Modules that need it in their module_kw[] array can just add it to their list. */
 #define GMT_INCREMENT_KW { '/', 'I', "increment", "", "", "e,n", "exact,number" }
