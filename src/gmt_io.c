@@ -431,6 +431,9 @@ GMT_LOCAL uint64_t gmtio_bin_colselect (struct GMT_CTRL *GMT) {
 			case GMT_IS_DIMENSION:	/* Convert to internal inches */
 				tmp[order] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 				break;
+			case GMT_IS_ABSTIME: GMT_IS_RELTIME:	/* Possibly convert to periodic time */
+				if (GMT->current.io.cycle_time_operator && GMT->current.io.cycle_time_col == order)
+					gmtlib_modulo_time_calculator (GMT, &(tmp[order]));
 			default:	/* Nothing to do */
 				break;
 		}
@@ -3649,6 +3652,8 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				GMT->current.io.curr_rec[col_pos] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
 				if (col_pos == GMT_X && gmt_M_type (GMT, GMT_IN, col_pos) & GMT_IS_LON)	/* Must account for periodicity in 360 as per current rule */
 					gmtio_adjust_periodic_lon (GMT, &GMT->current.io.curr_rec[col_pos]);
+				else if (GMT->current.io.cycle_time_col == col_pos)	/* Convert periodic times */
+					gmtlib_modulo_time_calculator (GMT, &(GMT->current.io.curr_rec[col_pos]));
 				col_no++;		/* Count up number of columns found */
 				n_ok++;
 				while (GMT->common.i.select && col_no < GMT->common.i.n_cols && GMT->current.io.col[GMT_IN][col_no].col == GMT->current.io.col[GMT_IN][col_no-1].col) {
@@ -4580,6 +4585,9 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 					case GMT_IS_DIMENSION:	/* Convert to internal inches */
 						GMT->current.io.curr_rec[col_no] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 						break;
+					case GMT_IS_ABSTIME: GMT_IS_RELTIME:	/* Possibly convert to periodic time */
+						if (GMT->current.io.cycle_time_operator && GMT->current.io.cycle_time_col == col_no)
+							gmtlib_modulo_time_calculator (GMT, &(GMT->current.io.curr_rec[col_no]));
 					default:	/* Nothing to do */
 						break;
 				}
@@ -5710,6 +5718,8 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 	gmt_M_memset (GMT->current.io.curr_rec, GMT_MAX_COLUMNS, double);	/* Initialize current and previous records to zero */
 	gmt_M_memset (GMT->current.io.prev_rec, GMT_MAX_COLUMNS, double);
 	GMT->current.io.record.data = GMT->current.io.curr_rec;
+	/* Time periodicity column */
+	GMT->current.io.cycle_time_col = GMT_NOTSET;
 }
 
 /*! Routine will temporarily suspend any -b, -i, -g, h selections for secondary inputs */
