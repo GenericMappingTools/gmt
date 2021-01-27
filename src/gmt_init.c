@@ -1336,7 +1336,7 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 	return (error);
 }
 
-GMT_LOCAL void gmtinit_get_cycle (struct GMT_CTRL *GMT, char code, int64_t start, int64_t stop) {
+GMT_LOCAL void gmtinit_get_cycle (struct GMT_CTRL *GMT, char code, unsigned int *dir, int64_t start, int64_t stop) {
 	/* Process trailing y|m|w|d periodicity indicator */
 	if (GMT->current.io.cycle_time_operator) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -f: Time periodicity can only apply to a single input column!\n");
@@ -1356,6 +1356,10 @@ GMT_LOCAL void gmtinit_get_cycle (struct GMT_CTRL *GMT, char code, int64_t start
 		return;
 	}
 	GMT->current.io.cycle_time_col = start;
+	if (*dir == GMT_IN || *dir == GMT_IO) {	/* OUtput column is no longer unknown or abstime but float */
+		gmt_set_column_type (GMT, GMT_OUT, start, GMT_IS_FLOAT);
+		*dir = GMT_IN;
+	}
 	/* Because -f is always parsed before -R, we must wait until the end of GMT_Parse_Common, maybe in gmt_init_module
 	 * to set the auxiliary parameters cycle_time_min, cycle_time_max, and cycle_time_range. We must then also check
 	 * that (after consulting any -i settings), the cyclical time is either x or y */
@@ -1365,7 +1369,7 @@ GMT_LOCAL void gmtinit_get_cycle (struct GMT_CTRL *GMT, char code, int64_t start
 GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
-	unsigned int dir, k = 1, c, pos = 0, code, *col = NULL;
+	unsigned int dir, d, k = 1, c, pos = 0, code, *col = NULL;
 	int64_t i, start = -1, stop = -1, inc;
 	enum gmt_enum_units unit = GMT_IS_METER;
 
@@ -1427,14 +1431,15 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		if ((inc = gmtlib_parse_index_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
 		for (c = 0; p[c] && strchr ("0123456789-:", p[c]); c++);	/* Wind to position after the column or column range */
+		d = dir;
 		switch (p[c]) {	/* p[c] is the potential code T, t, x, y, or f. */
 			case 'T':	/* Absolute calendar time, check for periodicity indicator */
 				code = GMT_IS_ABSTIME;
-				if (p[c+1]) gmtinit_get_cycle (GMT, p[c+1], start, stop);
+				if (p[c+1]) gmtinit_get_cycle (GMT, p[c+1], &d, start, stop);
 				break;
 			case 't':	/* Relative time (units since epoch), check for periodicity indicator */
 				code = GMT_IS_RELTIME;
-				if (p[c+1]) gmtinit_get_cycle (GMT, p[c+1], start, stop);
+				if (p[c+1]) gmtinit_get_cycle (GMT, p[c+1], &d, start, stop);
 				break;
 			case 'x':	/* Longitude coordinates */
 				code = GMT_IS_LON;
@@ -1457,7 +1462,7 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		/* Now set the code for these columns */
 
 		for (i = start; i <= stop; i += inc)
-			gmt_set_column_type (GMT, dir, (unsigned int)i, code);
+			gmt_set_column_type (GMT, d, (unsigned int)i, code);
 	}
 	return (GMT_NOERROR);
 }

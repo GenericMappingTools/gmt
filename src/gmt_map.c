@@ -579,8 +579,8 @@ GMT_LOCAL bool gmtmap_wesn_outside (struct GMT_CTRL *GMT, double lon, double lat
 	 */
 
 	if (GMT->current.map.lon_wrap) {
-		while (lon < GMT->common.R.wesn[XLO] && lon + 360.0 <= GMT->common.R.wesn[XHI]) lon += 360.0;
-		while (lon > GMT->common.R.wesn[XHI] && lon - 360.0 >= GMT->common.R.wesn[XLO]) lon -= 360.0;
+		while (lon < GMT->common.R.wesn[XLO] && (lon + GMT->current.map.lon_wrap_range) <= GMT->common.R.wesn[XHI]) lon += GMT->current.map.lon_wrap_range;
+		while (lon > GMT->common.R.wesn[XHI] && (lon - GMT->current.map.lon_wrap_range) >= GMT->common.R.wesn[XLO]) lon -= GMT->current.map.lon_wrap_range;
 	}
 
 	/* Note PW: 8-20-2014: Was GMT_CONV4_LIMIT instead of GMT_CONV8_LIMIT.  Trying the latter */
@@ -723,15 +723,15 @@ GMT_LOCAL unsigned int gmtmap_wesn_crossing (struct GMT_CTRL *GMT, double lon0, 
 	 * This may cause the points to span the eastern boundary */
 
 	if (GMT->current.map.lon_wrap) {
-		while (lon0 < GMT->common.R.wesn[XLO]) lon0 += 360.0;
-		while (lon0 > GMT->common.R.wesn[XHI]) lon0 -= 360.0;
-		while (lon1 < GMT->common.R.wesn[XLO]) lon1 += 360.0;
-		while (lon1 > GMT->common.R.wesn[XHI]) lon1 -= 360.0;
-		if (fabs (lon0 - lon1) <= 180.0) { /* Nothing */ }
+		while (lon0 < GMT->common.R.wesn[XLO]) lon0 += GMT->current.map.lon_wrap_range;
+		while (lon0 > GMT->common.R.wesn[XHI]) lon0 -= GMT->current.map.lon_wrap_range;
+		while (lon1 < GMT->common.R.wesn[XLO]) lon1 += GMT->current.map.lon_wrap_range;
+		while (lon1 > GMT->common.R.wesn[XHI]) lon1 -= GMT->current.map.lon_wrap_range;
+		if (fabs (lon0 - lon1) <= 0.5 * GMT->current.map.lon_wrap_range) { /* Nothing */ }
 		else if (lon0 < lon1)
-			lon0 += 360.0;
+			lon0 += GMT->current.map.lon_wrap_range;
 		else
-			lon1 += 360.0;
+			lon1 += GMT->current.map.lon_wrap_range;
 	}
 
 	/* Then set 'almost'-corners to corners */
@@ -761,7 +761,7 @@ GMT_LOCAL unsigned int gmtmap_wesn_crossing (struct GMT_CTRL *GMT, double lon0, 
 
 	/* Now adjust the longitudes so that they might span the western boundary */
 	if (GMT->current.map.lon_wrap && MAX(lon0, lon1) > GMT->common.R.wesn[XHI]) {
-		lon0 -= 360.0; lon1 -= 360.0;
+		lon0 -= GMT->current.map.lon_wrap_range; lon1 -= GMT->current.map.lon_wrap_range;
 	}
 
 	/* Crossing North */
@@ -2579,6 +2579,10 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.proj.central_meridian = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 		GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	}
+	else if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && GMT->current.io.cycle_time_operator) {
+		GMT->current.map.lon_wrap_range = GMT->current.io.cycle_time_range;
+		GMT->current.map.is_world = doubleAlmostEqual (fabs(GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]), GMT->current.io.cycle_time_range);
+	}
 	else
 		GMT->current.map.lon_wrap = false;
 	if (gmt_M_y_is_lon (GMT, GMT_IN)) {	/* y is longitude */
@@ -2590,7 +2594,7 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 	GMT->current.proj.xyz_pos[GMT_Y] = (GMT->current.proj.scale[GMT_Y] >= 0.0);	/* False if user wants y to increase down */
 	switch ( (GMT->current.proj.xyz_projection[GMT_X]%3)) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
-			if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_X] != GMT_TIME)
+			if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_X] != GMT_TIME && !GMT->current.io.cycle_time_operator)
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -JX|x: Your x-column contains absolute time but -JX|x...T was not specified!\n");
 			GMT->current.proj.fwd_x = ((gmt_M_x_is_lon (GMT, GMT_IN)) ? &gmtproj_translind  : &gmtlib_translin);
 			GMT->current.proj.inv_x = ((gmt_M_x_is_lon (GMT, GMT_IN)) ? &gmtproj_itranslind : &gmtlib_itranslin);
@@ -2625,7 +2629,7 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 	}
 	switch (GMT->current.proj.xyz_projection[GMT_Y]%3) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
-			if (gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_Y] != GMT_TIME)
+			if (gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_Y] != GMT_TIME && !GMT->current.io.cycle_time_operator)
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -JX|x:  Your y-column contains absolute time but -JX|x...T was not specified!\n");
 			GMT->current.proj.fwd_y = ((gmt_M_y_is_lon (GMT, GMT_IN)) ? &gmtproj_translind  : &gmtlib_translin);
 			GMT->current.proj.inv_y = ((gmt_M_y_is_lon (GMT, GMT_IN)) ? &gmtproj_itranslind : &gmtlib_itranslin);
@@ -9343,6 +9347,7 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	GMT->current.map.get_crossings = &gmtmap_get_crossings_x;
 
 	GMT->current.map.lon_wrap = true;
+	GMT->current.map.lon_wrap_range = 360.0;
 
 	switch (GMT->current.proj.projection) {
 

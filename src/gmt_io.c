@@ -417,6 +417,8 @@ GMT_LOCAL uint64_t gmtio_bin_colselect (struct GMT_CTRL *GMT) {
 	for (col = 0; col < GMT->common.i.n_cols; col++) {
 		S = &(GMT->current.io.col[GMT_IN][col]);
 		order = S->order;
+		if (GMT->current.io.cycle_time_col == order)
+			gmtlib_modulo_time_calculator (GMT, &(tmp[order]));
 		tmp[order] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col], GMT->current.io.curr_rec[S->col]);
 		switch (gmt_M_type (GMT, GMT_IN, order)) {
 			case GMT_IS_LON:	/* Must account for periodicity in 360 as per current rule */
@@ -431,9 +433,6 @@ GMT_LOCAL uint64_t gmtio_bin_colselect (struct GMT_CTRL *GMT) {
 			case GMT_IS_DIMENSION:	/* Convert to internal inches */
 				tmp[order] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 				break;
-			case GMT_IS_ABSTIME: GMT_IS_RELTIME:	/* Possibly convert to periodic time */
-				if (GMT->current.io.cycle_time_operator && GMT->current.io.cycle_time_col == order)
-					gmtlib_modulo_time_calculator (GMT, &(tmp[order]));
 			default:	/* Nothing to do */
 				break;
 		}
@@ -3649,11 +3648,11 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				col_no++;		/* Count up number of columns found */
 			}
 			else {					/* Successful decode, assign the value to the input array */
+				if (GMT->current.io.cycle_time_col == col_pos)	/* Convert periodic times */
+					gmtlib_modulo_time_calculator (GMT, &val);
 				GMT->current.io.curr_rec[col_pos] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
 				if (col_pos == GMT_X && gmt_M_type (GMT, GMT_IN, col_pos) & GMT_IS_LON)	/* Must account for periodicity in 360 as per current rule */
 					gmtio_adjust_periodic_lon (GMT, &GMT->current.io.curr_rec[col_pos]);
-				else if (GMT->current.io.cycle_time_col == col_pos)	/* Convert periodic times */
-					gmtlib_modulo_time_calculator (GMT, &(GMT->current.io.curr_rec[col_pos]));
 				col_no++;		/* Count up number of columns found */
 				n_ok++;
 				while (GMT->common.i.select && col_no < GMT->common.i.n_cols && GMT->current.io.col[GMT_IN][col_no].col == GMT->current.io.col[GMT_IN][col_no-1].col) {
@@ -4467,8 +4466,8 @@ void gmtlib_modulo_time_calculator (struct GMT_CTRL *GMT, double *val) {
 			break;
 		case GMT_PERIODIC_MONTH:	/* Return 0.000000-11.999999 months */
 			gmt_gcal_from_dt (GMT, *val, &cal);
-			L = gmtlib_gmonth_length (cal.year, cal.month + 1);	/* Days in this month */
-			*val = cal.month + (cal.day_m - 1 + cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY) / L;
+			L = gmtlib_gmonth_length (cal.year, cal.month);	/* Days in this month */
+			*val = cal.month - 1 + (cal.day_m - 1 + cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY) / L;
 			break;
 		case GMT_PERIODIC_YEAR:	/* Return 0.00000-0.99999999 years */
 			gmt_gcal_from_dt (GMT, *val, &cal);
@@ -4477,10 +4476,12 @@ void gmtlib_modulo_time_calculator (struct GMT_CTRL *GMT, double *val) {
 			break;
 	}
 	/* Handle wrapping around given range */
-	if (*val > GMT->current.io.cycle_time_max)
-		*val -= GMT->current.io.cycle_time_range;
-	if (*val > GMT->current.io.cycle_time_max)
-		*val -= GMT->current.io.cycle_time_range;
+	if (GMT->common.R.active[RSET]) {
+		if (*val > GMT->current.io.cycle_time_max)
+			*val -= GMT->current.io.cycle_time_range;
+		else if (*val < GMT->current.io.cycle_time_min)
+			*val += GMT->current.io.cycle_time_range;
+	}
 }
 
 /*! Determine if two points are "far enough apart" to constitute a data gap and thus "pen up" */
