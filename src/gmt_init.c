@@ -6326,6 +6326,9 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	/* FONT_TITLE */
 	error += gmt_getfont (GMT, "auto,Helvetica-Bold,black", &GMT->current.setting.font_title);
 	GMT->current.setting.given_unit[GMTCASE_FONT_TITLE] = 'p';
+	/* FONT_SUBTITLE */
+	error += gmt_getfont (GMT, "auto,Helvetica-Bold,black", &GMT->current.setting.font_subtitle);
+	GMT->current.setting.given_unit[GMTCASE_FONT_SUBTITLE] = 'p';
 	/* FONT_LABEL */
 	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_label);
 	GMT->current.setting.given_unit[GMTCASE_FONT_LABEL] = 'p';
@@ -9743,6 +9746,8 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim) {
 		GMT->current.setting.font_tag.size = scale * 16.0;		/* Modern 16p vs 10p */
 	if (gmt_M_is_dnan (GMT->current.setting.font_title.size))
 		GMT->current.setting.font_title.size = scale * 22.0;	/* Modern 22p vs 10p */
+	if (gmt_M_is_dnan (GMT->current.setting.font_subtitle.size))
+		GMT->current.setting.font_subtitle.size = scale * 18.0;	/* Modern 18p vs 10p */
 	if (gmt_M_is_dnan (GMT->current.setting.font_logo.size))
 		GMT->current.setting.font_logo.size = scale * 8.0;		/* Classic 8p vs 10p */
 
