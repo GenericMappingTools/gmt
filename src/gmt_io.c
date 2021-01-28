@@ -4451,9 +4451,11 @@ void gmt_skip_xy_duplicates (struct GMT_CTRL *GMT, bool mode) {
 }
 
 void gmtlib_modulo_time_calculator (struct GMT_CTRL *GMT, double *val) {
-	/* Only called if any of the -f<col>y|m|w|d statements were given to yield periodic data.
-	 * Here time_operator is the kind of period, and time_range is the period length in current units */
-	int L;
+	/* Only called if the -f<col>y|m|w|d option was given to select periodic temporal data.
+	 * Here, time_operator is the kind of period/treatment, and time_range is the period
+	 * length in current units.  If -R is set then we also handle wrapping.
+	 * Note: Below, items month, day_y (Julian day) and day_m all start at 1.  */
+	int period;
 	struct GMT_GCAL cal;
 	switch (GMT->current.io.cycle_time_operator) {
 		case GMT_PERIODIC_DAY:	/* Return 0.000-0.999999 day */
@@ -4466,13 +4468,13 @@ void gmtlib_modulo_time_calculator (struct GMT_CTRL *GMT, double *val) {
 			break;
 		case GMT_PERIODIC_MONTH:	/* Return 0.000000-11.999999 months */
 			gmt_gcal_from_dt (GMT, *val, &cal);
-			L = gmtlib_gmonth_length (cal.year, cal.month);	/* Days in this month */
-			*val = cal.month - 1 + (cal.day_m - 1 + cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY) / L;
+			period = gmtlib_gmonth_length (cal.year, cal.month);	/* Days in this month */
+			*val = cal.month - 1 + (cal.day_m - 1 + cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY) / period;
 			break;
 		case GMT_PERIODIC_YEAR:	/* Return 0.00000-0.99999999 years */
 			gmt_gcal_from_dt (GMT, *val, &cal);
-			L = gmtlib_is_gleap (cal.year) ? 366 : 365;	/* Length of this year in days */
-			*val = (cal.day_y - 1 + cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY) / L;
+			period = gmtlib_is_gleap (cal.year) ? 366 : 365;	/* Length of this year in days */
+			*val = (cal.day_y - 1 + cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY) / period;
 			break;
 	}
 	/* Handle wrapping around given range */
