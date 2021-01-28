@@ -11296,7 +11296,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			if (strlen (value) < GMT_LEN64) {
 				strncpy (GMT->current.setting.theme, value, GMT_LEN64-1);
 				GMT->current.setting.update_theme = (strcmp (GMT->current.setting.theme, "off") != 0);
-				if (core == false)	/* Must deal with this right away */
+				//if (core == false)	/* Must deal with this right away */
 					error = gmtinit_update_theme (GMT);
 			}
 			else {
