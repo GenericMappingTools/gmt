@@ -211,9 +211,10 @@ struct MOVIE_CTRL {
 	struct MOVIE_L {	/* Repeatable: -L[e|f|c#|t#|s<string>][+c<clearance>][+f<font>][+g<fill>][+j<justify>][+o<offset>][+p<pen>][+t<fmt>][+s<scl>] */
 		bool active;
 	} L;
-	struct MOVIE_M {	/* -M[<frame>][,format] */
+	struct MOVIE_M {	/* -M[<frame>|f|l|m][,format] */
 		bool active;
 		bool exit;
+		bool update;
 		unsigned int frame;	/* Frame selected as master frame */
 		char *format;	/* Plot format for master frame */
 	} M;
@@ -401,6 +402,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +t to provide a C-format statement to be used with the item selected [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Create a master frame plot as well; append comma-separated frame number [0] and format [pdf].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Master plot will be named <prefix>.<format> and placed in the current directory.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Instead of frame number you can specify f(irst), m(iddle), or l(last) frame.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-P Automatic plotting of progress indicator(s); repeatable (max 32).  Places chosen indicator at frame perimeter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append desired indicator (a-f) [a] and consult the movie documentation for which attributes are needed:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j<refpoint> to specify where the indicator should be plotted [TR for circles, BC for axes].\n");
@@ -914,17 +916,28 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				if ((c = strchr (opt->arg, ',')) ) {	/* Gave frame and format */
 					Ctrl->M.format = strdup (&c[1]);
 					c[0] = '\0';	/* Chop off format */
-					Ctrl->M.frame = atoi (opt->arg);
+					switch (opt->arg[0]) {
+						case 'f':	Ctrl->M.frame = 0; break;
+						case 'm':	Ctrl->M.frame = -1; break;
+						case 'l':	Ctrl->M.frame = -2; break;
+						default:	Ctrl->M.frame = atoi (opt->arg); break;
+					}
 					c[0] = ',';	/* Restore format */
 				}
-				else if (isdigit (opt->arg[0])) {	/* Gave just a frame, default to PDF format */
+				else if (isdigit (opt->arg[0]) || (strchr ("fml", opt->arg[0]) && opt->arg[1] == '\0')) {	/* Gave just a frame, default to PDF format */
 					Ctrl->M.format = strdup ("pdf");
-					Ctrl->M.frame = atoi (opt->arg);
+					switch (opt->arg[0]) {
+						case 'f':	Ctrl->M.frame = 0; break;
+						case 'm':	Ctrl->M.frame = -1; break;
+						case 'l':	Ctrl->M.frame = -2; break;
+						default:	Ctrl->M.frame = atoi (opt->arg); break;
+					}
 				}
 				else if (opt->arg[0])	/* Must be format, with frame = 0 implicit */
 					Ctrl->M.format = strdup (opt->arg);
 				else /* Default is PDF of frame 0 */
 					Ctrl->M.format = strdup ("pdf");
+				if (Ctrl->M.frame < 0) Ctrl->M.update = true;	/* Must reset once we know the frame numbers */
 				break;
 
 			case 'N':	/* Movie prefix and directory name */
@@ -1070,7 +1083,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					"Option -Z: Cannot be used without specifying a GIF (-A), master (-M) or movie (-F) product\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.skip && !(Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]),
 					"Option -A: Cannot specify a GIF stride > 1 without selecting a movie product (-F)\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->M.frame < Ctrl->T.start_frame,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->M.update && Ctrl->M.frame < Ctrl->T.start_frame,
 					"Option -M: Cannot specify a frame before the first frame number set via -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->W.active && Ctrl->W.dir && !strcmp (Ctrl->W.dir, "/tmp"),
 					"Option -Z: Cannot delete working directory %s\n", Ctrl->W.dir);
@@ -1252,7 +1265,14 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	if (Ctrl->Q.scripts) {	/* No movie, but scripts will be produced */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Dry-run enabled - Movie scripts will be created and any pre/post scripts will be executed.\n");
-		if (Ctrl->M.active) GMT_Report (API, GMT_MSG_INFORMATION, "A single plot for frame %d will be create and named %s.%s\n", Ctrl->M.frame, Ctrl->N.prefix, Ctrl->M.format);
+		if (Ctrl->M.active) {
+			if (Ctrl->M.update || Ctrl->M.frame == 0) {
+				char *page[3] = {"last", "middle", "first"};
+				GMT_Report (API, GMT_MSG_INFORMATION, "A single plot for the %s frame will be create and named %s.%s\n", page[Ctrl->M.frame+2], Ctrl->N.prefix, Ctrl->M.format);
+			}
+			else
+				GMT_Report (API, GMT_MSG_INFORMATION, "A single plot for frame %d will be create and named %s.%s\n", Ctrl->M.frame, Ctrl->N.prefix, Ctrl->M.format);
+		}
 		run_script = gmt_dry_run_only;	/* This prevents the main frame loop from executing the script */
 	}
 	else {	/* Will run scripts and may even need to make a movie */
@@ -1539,6 +1559,9 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		fclose (Ctrl->In.fp);
 		Return (GMT_RUNTIME_ERROR);
 	}
+
+	if (Ctrl->M.update)	/* Now we can determine last or middle frame */
+		Ctrl->M.frame = (Ctrl->M.frame == -2) ? n_frames - 1 : n_frames / 2;
 
 	if (Ctrl->K.active) {
 		n_fade_frames = Ctrl->K.fade[GMT_IN] + Ctrl->K.fade[GMT_OUT];	/* Extra frames if preserving */
