@@ -9640,6 +9640,7 @@ GMT_LOCAL int gmtinit_update_theme (struct GMT_CTRL *GMT) {
 	char theme_file[PATH_MAX] = {""};
 
 	if (!GMT->current.setting.update_theme) return GMT_NOERROR;	/* Nothing to do */
+	if (!strcmp (GMT->current.setting.theme, "off")) return GMT_NOERROR;	/* Nothing to do */
 
 	/* Got a GMT_THEME setting, take delayed action now */
 	GMT->current.setting.update_theme = false;
@@ -11294,7 +11295,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_GMT_THEME:
 			if (strlen (value) < GMT_LEN64) {
 				strncpy (GMT->current.setting.theme, value, GMT_LEN64-1);
-				GMT->current.setting.update_theme = true;
+				GMT->current.setting.update_theme = (strcmp (GMT->current.setting.theme, "off") != 0);
 				if (core == false)	/* Must deal with this right away */
 					error = gmtinit_update_theme (GMT);
 			}
