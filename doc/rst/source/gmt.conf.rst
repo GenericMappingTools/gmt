@@ -130,7 +130,7 @@ FONT Parameters
         This setting is not included in the **gmt.conf** file.
 
     **FONT_ANNOT_PRIMARY**
-        Font used for primary annotations, etc. [:ref:`theme dependent <theme_settings>`].
+        Font used for primary annotations, etc [:ref:`theme dependent <theme_settings>`].
         When **+** is prepended, scale fonts, offsets and tick-lengths relative
         to :term:`FONT_ANNOT_PRIMARY`.
 
