@@ -1,0 +1,33 @@
+.. _auto_scaling:
+
+Auto scaling for GMT parameters
+-------------------------------
+
+The auto setting can be used to automatically scale GMT parameters based on
+the map size. The following table shows the parameter value for a 10 cm plot
+and a 50 cm plot and the scaling equation, where :math:`s` (points) is maximum
+of the plot width and height (cm)
+
+================================= ========================= ============================================
+Parameter                         [10cm value, 50cm value]  Scaling equation
+================================= ========================= ============================================
+FONT_ANNOT_PRIMARY                [9.0p, 14.3p]             :math:`(2/15 * (s - 10) + 9)`
+FONT_ANNOT_SECONDARY              [10.8p, 17.2p]            :math:`(2/15 * (s - 10) + 9) * 6/5`
+FONT_HEADING                      [25.2p, 40.1p]            :math:`(2/15 * (s - 10) + 9) * 14/5`
+FONT_LABEL                        [12.6p, 20.1p]            :math:`(2/15 * (s - 10) + 9) * 7/5`
+FONT_LOGO                         [7.2p, 11.5p]             :math:`(2/15 * (s - 10) + 9) * 4/5`
+FONT_TAG                          [14.4p, 22.9p]            :math:`(2/15 * (s - 10) + 9) * 8/5`
+FONT_TITLE                        [10.8p, 17.2p]            :math:`(2/15 * (s - 10) + 9) * 11/5`
+MAP_ANNOT_OFFSET_PRIMARY          [2.7p, 4.3p]              :math:`(2/15 * (s - 10) + 9) * 3/10`
+MAP_ANNOT_OFFSET_SECONDARY        [2.7p, 4.3p]              :math:`(2/15 * (s - 10) + 9) * 3/10`
+MAP_FRAME_WIDTH                   [2.7p, 4.3p]              :math:`(2/15 * (s - 10) + 9) * 3/10`
+MAP_GRID_PEN_PRIMARY                                        :math:`(2/15 * (s - 10) + 9) * 1/40`
+MAP_GRID_PEN_SECONDARY                                      :math:`(2/15 * (s - 10) + 9) * 1/20`
+MAP_HEADING_OFFSET                                          :math:`(2/15 * (s - 10) + 9) * 8/5`
+MAP_LABEL_OFFSET                                            :math:`(2/15 * (s - 10) + 9) * 3/5`
+MAP_TICK_LENGTH_PRIMARY                                     :math:`(2/15 * (s - 10) + 9) * 1/5`
+MAP_TICK_LENGTH_SECONDARY                                   :math:`(2/15 * (s - 10) + 9) * 1/10`
+MAP_TICK_PEN_PRIMARY                                        :math:`(2/15 * (s - 10) + 9) * 1/20`
+MAP_TICK_PEN_SECONDARY                                      :math:`(2/15 * (s - 10) + 9) * 1/40`
+MAP_TITLE_OFFSET                                            :math:`(2/15 * (s - 10) + 9) * 6/5`
+================================= ========================= ============================================
