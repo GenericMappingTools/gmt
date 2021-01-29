@@ -132,35 +132,43 @@ FONT Parameters
     **FONT_ANNOT_PRIMARY**
         Font used for primary annotations, etc [:doc:`theme dependent <theme-settings>`].
         When **+** is prepended, scale fonts, offsets and tick-lengths relative
-        to :term:`FONT_ANNOT_PRIMARY`.
+        to :term:`FONT_ANNOT_PRIMARY`. Choose **auto** for :ref:`automatic scaling
+        with plot size <auto-scaling>`.
 
     **FONT_ANNOT_SECONDARY**
-        Font to use for time axis secondary annotations
-        [:doc:`theme dependent <theme-settings>`].
+        Font to use for time axis secondary annotations [:doc:`theme dependent
+        <theme-settings>`] Choose **auto** for :ref:`automatic scaling with plot
+        size <auto-scaling>`.
 
     **FONT_HEADING**
-        Font to use when plotting headings above subplots
-        [:doc:`theme dependent <theme-settings>`].
+        Font to use when plotting headings above subplots [:doc:`theme dependent
+        <theme-settings>`]. Choose **auto** for :ref:`automatic scaling with plot
+        size <auto-scaling>`.
 
     **FONT_LABEL**
-        Font to use when plotting labels below axes
-        [:doc:`theme dependent <theme-settings>`].
+        Font to use when plotting labels below axes [:doc:`theme dependent
+        <theme-settings>`]. Choose **auto** for :ref:`automatic scaling with plot
+        size <auto-scaling>`.
 
     **FONT_LOGO**
-        Font to use for text plotted as part of the GMT time logo
-        [:doc:`theme dependent <theme-settings>`].
+        Font to use for text plotted as part of the GMT time logo [:doc:`theme
+        dependent <theme-settings>`]. Choose **auto** for :ref:`automatic scaling
+        with plot size <auto-scaling>`.
 
     **FONT_SUBTITLE**
         Font to use when plotting titles over graphs that involve a subtitle
-        [:doc:`theme dependent <theme-settings>`].
+        [:doc:`theme dependent <theme-settings>`]. Choose **auto** for  :ref:`automatic
+        scaling with plot size <auto-scaling>`.
 
     **FONT_TAG**
         Font to use for subplot panel tags such as a), ii)
-        [:doc:`theme dependent <theme-settings>`].
+        [:doc:`theme dependent <theme-settings>`]. Choose **auto** for :ref:`automatic
+        scaling with plot size <auto-scaling>`.
 
     **FONT_TITLE**
-        Font to use when plotting titles over graphs
-        [:doc:`theme dependent <theme-settings>`].
+        Font to use when plotting titles over graphs [:doc:`theme dependent
+        <theme-settings>`]. Choose **auto** for :ref:`automatic scaling with plot
+        size <auto-scaling>`.
 
 .. _FORMAT Parameters:
 
@@ -627,13 +635,15 @@ MAP Parameters
         This setting is not included in the **gmt.conf** file.
 
     **MAP_ANNOT_OFFSET_PRIMARY**
-        Distance from end of tick-mark to start of annotation
-        [:doc:`theme dependent <theme-settings>`].
+        Distance from end of tick-mark to start of annotation [:doc:`theme dependent
+        <theme-settings>`]. Choose **auto** for :ref:`automatic scaling with plot
+        size <auto-scaling>`.
 
     **MAP_ANNOT_OFFSET_SECONDARY**
         Distance from base of primary annotation to the top of the secondary
         annotation (Only applies to time axes with both primary and
-        secondary annotations). [:doc:`theme dependent <theme-settings>`].
+        secondary annotations). [:doc:`theme dependent <theme-settings>`]. Choose
+        **auto** for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_ANNOT_ORTHO**
         Determines which axes will get their annotations (for Cartesian
@@ -666,6 +676,7 @@ MAP Parameters
 
     **MAP_FRAME_PEN**
         Pen attributes used to draw plain map frame [:doc:`theme dependent <theme-settings>`].
+        Choose **auto** for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_FRAME_PERCENT**
         Percentage of the fancy frame width to use for the internal checkerboard
@@ -696,6 +707,7 @@ MAP Parameters
         Width (> 0) of map borders for fancy map frame [:doc:`theme dependent
         <theme-settings>`]. **Note**: For fancy frames, :term:`MAP_FRAME_PEN`
         is automatically set to 0.1 times the :term:`MAP_FRAME_WIDTH` setting.
+        Choose **auto** for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_GRID_CROSS_SIZE**
         Sets both :term:`MAP_GRID_CROSS_SIZE_PRIMARY` and :term:`MAP_GRID_CROSS_SIZE_SECONDARY` to the value specified.
@@ -723,19 +735,23 @@ MAP Parameters
 
     **MAP_GRID_PEN_PRIMARY**
         Pen attributes used to draw primary grid lines in dpi units or
-        points (append p) [:doc:`theme dependent <theme-settings>`].
+        points (append p) [:doc:`theme dependent <theme-settings>`]. Choose **auto**
+        for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_GRID_PEN_SECONDARY**
         Pen attributes used to draw secondary grid lines in dpi units or
-        points (append p) [:doc:`theme dependent <theme-settings>`]
+        points (append p) [:doc:`theme dependent <theme-settings>`]. Choose **auto**
+        for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_HEADING_OFFSET**
         Distance from top of subplot panel titles to the base of the heading
-        [:doc:`theme dependent <theme-settings>`].
+        [:doc:`theme dependent <theme-settings>`]. Choose **auto** for :ref:`automatic
+        scaling with plot size <auto-scaling>`.
 
     **MAP_LABEL_OFFSET**
         Distance from base of axis annotations to the top of the axis label
-        [:doc:`theme dependent <theme-settings>`].
+        [:doc:`theme dependent <theme-settings>`]. Choose **auto** for :ref:`automatic
+        scaling with plot size <auto-scaling>`.
 
     **MAP_LINE_STEP**
         Determines the maximum length (> 0) of individual straight
@@ -784,12 +800,14 @@ MAP Parameters
     **MAP_TICK_LENGTH_PRIMARY**
         The length of a primary major/minor tick-marks [:doc:`theme dependent
         <theme-settings>`]. If only the first value is set, the second
-        is assumed to be 50% of the first.
+        is assumed to be 50% of the first. Choose **auto** for :ref:`automatic
+        scaling with plot size <auto-scaling>`.
 
     **MAP_TICK_LENGTH_SECONDARY**
         The length of a secondary major/minor tick-marks [:doc:`theme dependent
-        <theme-settings>`]. If only the first value is set, the second
-        is assumed to be 25% of the first.
+        <theme-settings>`]. If only the first value is set, the second is assumed
+        to be 25% of the first. Choose **auto** for :ref:`automatic scaling with
+        plot size <auto-scaling>`.
 
     **MAP_TICK_PEN**
         Sets both :term:`MAP_TICK_PEN_PRIMARY` and :term:`MAP_TICK_PEN_SECONDARY` to the value specified.
@@ -797,15 +815,18 @@ MAP Parameters
 
     **MAP_TICK_PEN_PRIMARY**
         Pen attributes to be used for primary tick-marks in dpi units or
-        points (append p) [:doc:`theme dependent <theme-settings>`].
+        points (append p) [:doc:`theme dependent <theme-settings>`]. Choose **auto**
+        for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_TICK_PEN_SECONDARY**
         Pen attributes to be used for secondary tick-marks in dpi units or
-        points (append p) [:doc:`theme dependent <theme-settings>`].
+        points (append p) [:doc:`theme dependent <theme-settings>`]. Choose **auto**
+        for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_TITLE_OFFSET**
         Distance from top of axis annotations (or axis label, if present) to
-        base of plot title [:doc:`theme dependent <theme-settings>`].
+        base of plot title [:doc:`theme dependent <theme-settings>`]. Choose **auto**
+        for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_VECTOR_SHAPE**
         Determines the shape of the head of a vector. Normally (i.e., for

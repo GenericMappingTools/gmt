@@ -311,12 +311,12 @@ annotation font size will be computed as::
 
     size = (2/15) * (map_size_in_cm - 10) + 9 [in points]
 
-where *map_size_in_cm = sqrt(map_height * map_width).  All other items will have 
-their reference sizes scaled by *scale = size / 10*. In modern mode, if you do 
-nothing then all of the above dimensions will be automatically set based on your 
-plot dimensions.  However, you are free to override any of them using the methods 
-described in the next section. **Note**: The particular scaling relationship is 
-experimental in 6.2 and we reserve the right to adjust it pending further 
+where *map_size_in_cm = sqrt(map_height * map_width).  All other items will have
+their reference sizes scaled by *scale = size / 10*. In modern mode, if you do
+nothing then all of the above dimensions will be automatically set based on your
+plot dimensions.  However, you are free to override any of them using the methods
+described in the next section. **Note**: The particular scaling relationship is
+experimental in 6.2 and we reserve the right to adjust it pending further
 experimentation and user feedback.
 
 Changing GMT defaults
