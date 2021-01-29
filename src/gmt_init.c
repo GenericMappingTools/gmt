@@ -6355,11 +6355,7 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = 'p';
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = 'p';
 	/* MAP_FRAME_AXES */
-	//strcpy (GMT->current.setting.map_frame_axes, "WrStZ");
 	strcpy (GMT->current.setting.map_frame_axes, "auto");
-	for (i = 0; i < 5; i++) GMT->current.map.frame.side[i] = 0;	/* Unset default settings */
-	GMT->current.map.frame.draw_box = false;
-	//error += gmtinit_decode5_wesnz (GMT, GMT->current.setting.map_frame_axes, false);
 	/* MAP_FRAME_TYPE (plain) */
 	GMT->current.setting.map_frame_type = GMT_IS_FANCY;
 	/* MAP_FRAME_WIDTH */
