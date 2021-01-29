@@ -460,7 +460,7 @@ GMT Miscellaneous Parameters
         and *minimal*. You can also create and use your own themes by compiling
         files of desired settings and place them in your GMT user themes directory
         (usually ~/.gmt/themes) and name them *theme*.conf. See the
-        [:ref:`theme settings table<theme_settings>` for parameters associated with
+        :ref:`theme settings table<theme_settings>` for parameters associated with
         each theme.
 
     **GMT_TRIANGULATE**
