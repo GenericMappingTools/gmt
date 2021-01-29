@@ -16,6 +16,7 @@ FONT_ANNOT_SECONDARY              [10.80p, 17.20p]          :math:`(2/15 * (s - 
 FONT_HEADING                      [25.20p, 40.13p]          :math:`(2/15 * (s - 10) + 9) * 14/5`
 FONT_LABEL                        [12.60p, 20.10p]          :math:`(2/15 * (s - 10) + 9) * 7/5`
 FONT_LOGO                         [7.20p,  11.47p]          :math:`(2/15 * (s - 10) + 9) * 4/5`
+FONT_SUBTITLE                     [16.20p, 25.80p]          :math:`(2/15 * (s - 10) + 9) * 9/5`
 FONT_TAG                          [14.40p, 22.93p]          :math:`(2/15 * (s - 10) + 9) * 8/5`
 FONT_TITLE                        [19.80p, 31.53p]          :math:`(2/15 * (s - 10) + 9) * 11/5`
 MAP_ANNOT_OFFSET_PRIMARY          [2.70p,  4.30p]           :math:`(2/15 * (s - 10) + 9) * 3/10`
