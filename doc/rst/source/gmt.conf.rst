@@ -252,7 +252,7 @@ FORMAT Parameters
         :term:`FORMAT_GEO_OUT` for details. In addition, you can append A
         which plots the absolute value of the coordinate. Not all items may be
         plotted as this depends on the annotation interval. [:ref:`theme dependent
-        <theme_settings>`]
+        <theme_settings>`].
 
     **FORMAT_GEO_OUT**
         Formatting template that indicates how an output geographical
@@ -666,7 +666,8 @@ MAP Parameters
         [:ref:`theme dependent <theme_settings>`].
 
     **MAP_FRAME_PEN**
-        Pen attributes used to draw plain map frame [thicker,black].
+        Pen attributes used to draw plain map frame [:ref:`theme dependent
+        <theme_settings>`].
 
     **MAP_FRAME_PERCENT**
         Percentage of the fancy frame width to use for the internal checkerboard
@@ -694,9 +695,9 @@ MAP Parameters
         respectively.  You may control its shape via :term:`MAP_VECTOR_SHAPE`.
 
     **MAP_FRAME_WIDTH**
-        Width (> 0) of map borders for fancy map frame [5p]. **Note**: For fancy
-        frames, :term:`MAP_FRAME_PEN` is automatically set to 0.1 times the
-        :term:`MAP_FRAME_WIDTH` setting.
+        Width (> 0) of map borders for fancy map frame [:ref:`theme dependent
+        <theme_settings>`]. **Note**: For fancy frames, :term:`MAP_FRAME_PEN`
+        is automatically set to 0.1 times the :term:`MAP_FRAME_WIDTH` setting.
 
     **MAP_GRID_CROSS_SIZE**
         Sets both :term:`MAP_GRID_CROSS_SIZE_PRIMARY` and :term:`MAP_GRID_CROSS_SIZE_SECONDARY` to the value specified.
