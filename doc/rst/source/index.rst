@@ -25,6 +25,7 @@ Quick links
    - :ref:`Pen Syntax <-Wpen_attrib>`
    - :ref:`Fill Syntax <-Gfill_attrib>`
    - :ref:`Grid Format Specifications <tbl-grdformats>`
+   - :doc:`theme-settings`
 
 .. Add a hidden toctree to suppress "document isn't included in any toctree" warnings
 .. toctree::
@@ -34,6 +35,7 @@ Quick links
    proj-codes
    gmt.conf
    gmtcolors
+   theme-settings
 
 .. toctree::
    :maxdepth: 1

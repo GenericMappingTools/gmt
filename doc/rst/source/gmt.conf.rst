@@ -13,7 +13,7 @@ The following is a list of the parameters that are user-definable in
 GMT. The parameter names are always given in **UPPER CASE**. The
 parameter values are case-insensitive unless otherwise noted. Theme-independent
 system defaults are given in brackets [ for SI (or US) ] while theme-dependent
-defaults are outlined in the GMT_THEME :ref:`settings table <theme_settings>`.
+defaults are outlined in the GMT_THEME :doc:`settings table <theme-settings>`.
 Note that default distances and lengths below are
 given in both cm or inch; the chosen default depends on your choice of
 default unit (see :term:`PROJ_LENGTH_UNIT`). You can explicitly specify
@@ -130,37 +130,37 @@ FONT Parameters
         This setting is not included in the **gmt.conf** file.
 
     **FONT_ANNOT_PRIMARY**
-        Font used for primary annotations, etc [:ref:`theme dependent <theme_settings>`].
+        Font used for primary annotations, etc [:doc:`theme dependent <theme-settings>`].
         When **+** is prepended, scale fonts, offsets and tick-lengths relative
         to :term:`FONT_ANNOT_PRIMARY`.
 
     **FONT_ANNOT_SECONDARY**
         Font to use for time axis secondary annotations
-        [:ref:`theme dependent <theme_settings>`].
+        [:doc:`theme dependent <theme-settings>`].
 
     **FONT_HEADING**
         Font to use when plotting headings above subplots
-        [:ref:`theme dependent <theme_settings>`].
+        [:doc:`theme dependent <theme-settings>`].
 
     **FONT_LABEL**
         Font to use when plotting labels below axes
-        [:ref:`theme dependent <theme_settings>`].
+        [:doc:`theme dependent <theme-settings>`].
 
     **FONT_LOGO**
         Font to use for text plotted as part of the GMT time logo
-        [:ref:`theme dependent <theme_settings>`].
+        [:doc:`theme dependent <theme-settings>`].
 
     **FONT_SUBTITLE**
         Font to use when plotting titles over graphs that involve a subtitle
-        [:ref:`theme dependent <theme_settings>`].
+        [:doc:`theme dependent <theme-settings>`].
 
     **FONT_TAG**
         Font to use for subplot panel tags such as a), ii)
-        [:ref:`theme dependent <theme_settings>`].
+        [:doc:`theme dependent <theme-settings>`].
 
     **FONT_TITLE**
         Font to use when plotting titles over graphs
-        [:ref:`theme dependent <theme_settings>`].
+        [:doc:`theme dependent <theme-settings>`].
 
 .. _FORMAT Parameters:
 
@@ -251,8 +251,7 @@ FORMAT Parameters
         plotting of geographical coordinates in data fields. See
         :term:`FORMAT_GEO_OUT` for details. In addition, you can append A
         which plots the absolute value of the coordinate. Not all items may be
-        plotted as this depends on the annotation interval. [:ref:`theme dependent
-        <theme_settings>`].
+        plotted as this depends on the annotation interval. [:doc:`theme dependent <theme-settings>`].
 
     **FORMAT_GEO_OUT**
         Formatting template that indicates how an output geographical
@@ -460,7 +459,7 @@ GMT Miscellaneous Parameters
         and *minimal*. You can also create and use your own themes by compiling
         files of desired settings and place them in your GMT user themes directory
         (usually ~/.gmt/themes) and name them *theme*.conf. See the
-        :ref:`theme settings table<theme_settings>` for parameters associated with
+        :doc:`theme settings table<theme-settings>` for parameters associated with
         each theme.
 
     **GMT_TRIANGULATE**
@@ -629,12 +628,12 @@ MAP Parameters
 
     **MAP_ANNOT_OFFSET_PRIMARY**
         Distance from end of tick-mark to start of annotation
-        [:ref:`theme dependent <theme_settings>`].
+        [:doc:`theme dependent <theme-settings>`].
 
     **MAP_ANNOT_OFFSET_SECONDARY**
         Distance from base of primary annotation to the top of the secondary
         annotation (Only applies to time axes with both primary and
-        secondary annotations). [:ref:`theme dependent <theme_settings>`].
+        secondary annotations). [:doc:`theme dependent <theme-settings>`].
 
     **MAP_ANNOT_ORTHO**
         Determines which axes will get their annotations (for Cartesian
@@ -663,11 +662,10 @@ MAP Parameters
         without annotation and ticks you can use the **l**\ (eft), **r**\ (ight),
         **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes. Add an
         optional **+b** to draw a cube of axes in perspective view.
-        [:ref:`theme dependent <theme_settings>`].
+        [:doc:`theme dependent <theme-settings>`].
 
     **MAP_FRAME_PEN**
-        Pen attributes used to draw plain map frame [:ref:`theme dependent
-        <theme_settings>`].
+        Pen attributes used to draw plain map frame [:doc:`theme dependent <theme-settings>`].
 
     **MAP_FRAME_PERCENT**
         Percentage of the fancy frame width to use for the internal checkerboard
@@ -676,7 +674,7 @@ MAP Parameters
     **MAP_FRAME_TYPE**
         Choose between **inside**, **plain** and **fancy** (thick boundary,
         alternating black/white frame; append **-rounded** for rounded corners)
-        [:ref:`theme dependent <theme_settings>`]. For some map
+        [:doc:`theme dependent <theme-settings>`]. For some map
         projections (e.g., Oblique Mercator), plain is the only option even if
         fancy is set as default. In general, fancy only applies to situations
         where the projected x and y directions parallel the longitude and
@@ -695,8 +693,8 @@ MAP Parameters
         respectively.  You may control its shape via :term:`MAP_VECTOR_SHAPE`.
 
     **MAP_FRAME_WIDTH**
-        Width (> 0) of map borders for fancy map frame [:ref:`theme dependent
-        <theme_settings>`]. **Note**: For fancy frames, :term:`MAP_FRAME_PEN`
+        Width (> 0) of map borders for fancy map frame [:doc:`theme dependent
+        <theme-settings>`]. **Note**: For fancy frames, :term:`MAP_FRAME_PEN`
         is automatically set to 0.1 times the :term:`MAP_FRAME_WIDTH` setting.
 
     **MAP_GRID_CROSS_SIZE**
@@ -725,19 +723,19 @@ MAP Parameters
 
     **MAP_GRID_PEN_PRIMARY**
         Pen attributes used to draw primary grid lines in dpi units or
-        points (append p) [:ref:`theme dependent <theme_settings>`].
+        points (append p) [:doc:`theme dependent <theme-settings>`].
 
     **MAP_GRID_PEN_SECONDARY**
         Pen attributes used to draw secondary grid lines in dpi units or
-        points (append p) [:ref:`theme dependent <theme_settings>`]
+        points (append p) [:doc:`theme dependent <theme-settings>`]
 
     **MAP_HEADING_OFFSET**
         Distance from top of subplot panel titles to the base of the heading
-        [:ref:`theme dependent <theme_settings>`].
+        [:doc:`theme dependent <theme-settings>`].
 
     **MAP_LABEL_OFFSET**
         Distance from base of axis annotations to the top of the axis label
-        [:ref:`theme dependent <theme_settings>`].
+        [:doc:`theme dependent <theme-settings>`].
 
     **MAP_LINE_STEP**
         Determines the maximum length (> 0) of individual straight
@@ -784,13 +782,13 @@ MAP Parameters
         This setting is not included in the **gmt.conf** file.
 
     **MAP_TICK_LENGTH_PRIMARY**
-        The length of a primary major/minor tick-marks [:ref:`theme dependent
-        <theme_settings>`]. If only the first value is set, the second
+        The length of a primary major/minor tick-marks [:doc:`theme dependent
+        <theme-settings>`]. If only the first value is set, the second
         is assumed to be 50% of the first.
 
     **MAP_TICK_LENGTH_SECONDARY**
-        The length of a secondary major/minor tick-marks [:ref:`theme dependent
-        <theme_settings>`]. If only the first value is set, the second
+        The length of a secondary major/minor tick-marks [:doc:`theme dependent
+        <theme-settings>`]. If only the first value is set, the second
         is assumed to be 25% of the first.
 
     **MAP_TICK_PEN**
@@ -799,22 +797,22 @@ MAP Parameters
 
     **MAP_TICK_PEN_PRIMARY**
         Pen attributes to be used for primary tick-marks in dpi units or
-        points (append p) [:ref:`theme dependent <theme_settings>`].
+        points (append p) [:doc:`theme dependent <theme-settings>`].
 
     **MAP_TICK_PEN_SECONDARY**
         Pen attributes to be used for secondary tick-marks in dpi units or
-        points (append p) [:ref:`theme dependent <theme_settings>`].
+        points (append p) [:doc:`theme dependent <theme-settings>`].
 
     **MAP_TITLE_OFFSET**
         Distance from top of axis annotations (or axis label, if present) to
-        base of plot title [:ref:`theme dependent <theme_settings>`].
+        base of plot title [:doc:`theme dependent <theme-settings>`].
 
     **MAP_VECTOR_SHAPE**
         Determines the shape of the head of a vector. Normally (i.e., for
         vector_shape = 0), the head will be triangular, but can be changed
         to an arrow (1) or an open V (2).
         Intermediate settings give something in between. Negative values (up
-        to -2) are allowed as well [:ref:`theme dependent <theme_settings>`].
+        to -2) are allowed as well [:doc:`theme dependent <theme-settings>`].
 
 .. _Projection Parameters:
 
@@ -1171,8 +1169,6 @@ Calendar/Time Parameters
         :term:`TIME_Y2K_OFFSET_YEAR` is 1729, then numbers 29 through 99
         correspond to 1729 through 1799, while numbers 00 through 28
         correspond to 1800 through 1828. [1950].
-
-.. include:: explain_theme_settings.rst_
 
 .. include:: explain_auto_scaling.rst_
 

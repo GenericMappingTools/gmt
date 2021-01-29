@@ -1,7 +1,17 @@
-.. _theme_settings:
+##########
+GMT Themes
+##########
 
-Default settings for GMT Themes
--------------------------------
+GMT offers 3 build-in themes (classic, modern, and minimal). Classic theme is the
+default for classic mode and modern theme is the default for modern mode. You can
+also create and use your own themes by compiling files of desired settings and
+placing them in your GMT user themes directory (usually ~/.gmt/themes) and name
+them *theme*.conf. The GMT_THEME parameter (see :doc:`gmt.conf`) is
+used to set the current theme. The table below lists the default settings for the
+classic, modern, and minimal themes.
+
+Default settings for build-in themes
+------------------------------------
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
 | Parameter                 | Classic                         | Modern                          | Minimal                         |
 +===========================+=================================+=================================+=================================+
