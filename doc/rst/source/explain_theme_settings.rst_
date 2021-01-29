@@ -15,7 +15,7 @@ Default settings for GMT Themes
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
 | FONT_LOGO                 | 8p,Helvetica,black              | auto,Helvetica,black            | auto,Helvetica,black            |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
-| FONT_SUBTITLE             | 24p,Helvetica,black             | auto,Helvetica-Bold,black       | auto,AvantGarde-Book,black      |
+| FONT_SUBTITLE             | 18p,Helvetica,black             | auto,Helvetica-Bold,black       | auto,AvantGarde-Book,black      |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
 | FONT_TAG                  | 20p,Helvetica,black             | auto,Helvetica,black            | auto,AvantGarde-Book,black      |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
