@@ -3983,6 +3983,8 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 
 	unsigned int k, error = 0, f_side[5] = {0, 0, 0, 0, 0}, z_axis[4] = {0, 0, 0, 0};
 	bool s_given = false;
+
+	if (!strcmp (GMT->current.setting.map_frame_axes, "auto")) return GMT_NOERROR;	/* Not ready yet */
 	if (check) {	/* true if coming via -B, false if parsing gmt.conf */
 		GMT->current.map.frame.set_frame[GMT_PRIMARY]++, GMT->current.map.frame.set_frame[GMT_SECONDARY]++;
 		if (GMT->current.map.frame.set_frame[GMT_PRIMARY] > 1 || GMT->current.map.frame.set_frame[GMT_SECONDARY] > 1) {
@@ -6353,10 +6355,11 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = 'p';
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = 'p';
 	/* MAP_FRAME_AXES */
-	strcpy (GMT->current.setting.map_frame_axes, "WrStZ");
+	//strcpy (GMT->current.setting.map_frame_axes, "WrStZ");
+	strcpy (GMT->current.setting.map_frame_axes, "auto");
 	for (i = 0; i < 5; i++) GMT->current.map.frame.side[i] = 0;	/* Unset default settings */
 	GMT->current.map.frame.draw_box = false;
-	error += gmtinit_decode5_wesnz (GMT, GMT->current.setting.map_frame_axes, false);
+	//error += gmtinit_decode5_wesnz (GMT, GMT->current.setting.map_frame_axes, false);
 	/* MAP_FRAME_TYPE (plain) */
 	GMT->current.setting.map_frame_type = GMT_IS_FANCY;
 	/* MAP_FRAME_WIDTH */
@@ -9709,6 +9712,29 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim) {
 
 	/* Refuse to do this in gmtset */
 	if (!strcmp (GMT->init.module_name, "gmtset")) {fprintf (stderr, "Not doing it\n"); return; }
+
+	if (!strcmp (GMT->current.setting.map_frame_axes, "auto")) {	/* Determine suitable MAP_FRAME_AXES for plot */
+		double az = (gmt_M_is_zero (GMT->common.p.z_rotation)) ? GMT->current.proj.z_project.view_azimuth : GMT->common.p.z_rotation;
+		if (GMT->current.proj.projection == GMT_POLAR) {	/* May need to switch what is south and north */
+			strcpy (GMT->current.setting.map_frame_axes, GMT->current.proj.flip ? "WrStZ" : "WrbNZ");
+			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Given polar projection flip = %d, set MAP_FRAME_AXES = %s\n",
+				GMT->current.proj.flip, GMT->current.setting.map_frame_axes);
+		}
+		else if (!doubleAlmostEqual (az, 180.0)) {	/* Rotated, so must adjust */
+			unsigned int quadrant = urint (floor (az / 90.0)) + 1;
+			switch (quadrant) {
+				case 1: strcpy (GMT->current.setting.map_frame_axes, "lEbNZ"); break;
+				case 2: strcpy (GMT->current.setting.map_frame_axes, "lEStZ"); break;
+				case 3: strcpy (GMT->current.setting.map_frame_axes, "WrStZ"); break;
+				case 4: strcpy (GMT->current.setting.map_frame_axes, "WrbNZ"); break;
+			}
+			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Given view angle = %g, set MAP_FRAME_AXES = %s\n",
+				az, GMT->current.setting.map_frame_axes);
+		}
+		else	/* Default modern mode setting */
+			strcpy (GMT->current.setting.map_frame_axes, "WrStZ");
+		(void)gmtinit_decode5_wesnz (GMT, GMT->current.setting.map_frame_axes, false);
+	}
 
 	/* If a geographic map frame is fancy then we cannot have lrbt regardless of mode */
 
