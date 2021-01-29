@@ -1170,8 +1170,6 @@ Calendar/Time Parameters
         correspond to 1729 through 1799, while numbers 00 through 28
         correspond to 1800 through 1828. [1950].
 
-.. include:: explain_auto_scaling.rst_
-
 See Also
 --------
 

@@ -33,35 +33,35 @@ Default settings for build-in themes
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
 | FORMAT_GEO_MAP            | ddd:mm:ssF                      | ddd:mm:ssF                      | ddd:mm:ssF                      |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
-| MAP_ANNOT_OFFSET_PRIMARY  | 5p                              | auto                            | auto                            |
+| MAP_ANNOT_OFFSET_PRIMARY  | 5p                              | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
-| MAP_ANNOT_OFFSET_SECONDARY| 5p                              | auto                            | auto                            |
+| MAP_ANNOT_OFFSET_SECONDARY| 5p                              | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
 | MAP_FRAME_AXES            | WESNZ                           | WrStZ                           | WrStZ                           |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
-| MAP_FRAME_PEN             | thicker,black                   | auto                            | auto                            |
+| MAP_FRAME_PEN             | thicker,black                   | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
 | MAP_FRAME_TYPE            | fancy                           | fancy                           | plain                           |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
-| MAP_FRAME_WIDTH           | 5p                              | auto                            | n/a                             |
+| MAP_FRAME_WIDTH           | 5p                              | :ref:`auto <auto-scaling>`      | n/a                             |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
-| MAP_GRID_PEN_PRIMARY      | default,black                   | auto                            | thinner, lightgrey              |
+| MAP_GRID_PEN_PRIMARY      | default,black                   | :ref:`auto <auto-scaling>`      | thinner, lightgrey              |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
-| MAP_GRID_PEN_SECONDARY    | thinner,black                   | auto                            | thinnest, lightgrey             |
+| MAP_GRID_PEN_SECONDARY    | thinner,black                   | :ref:`auto <auto-scaling>`      | thinnest, lightgrey             |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
-| MAP_HEADING_OFFSET        | 18p                             | auto                            | auto                            |
+| MAP_HEADING_OFFSET        | 18p                             | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
-| MAP_LABEL_OFFSET          | 8p                              | auto                            | auto                            |
+| MAP_LABEL_OFFSET          | 8p                              | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
-| MAP_TICK_LENGTH_PRIMARY   | 5p/2.5p                         | auto                            | auto                            |
+| MAP_TICK_LENGTH_PRIMARY   | 5p/2.5p                         | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
-| MAP_TICK_LENGTH_SECONDARY | 15p/3.75p                       | auto                            | auto                            |
+| MAP_TICK_LENGTH_SECONDARY | 15p/3.75p                       | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
-| MAP_TICK_PEN_PRIMARY      | default,black                   | auto                            | auto                            |
+| MAP_TICK_PEN_PRIMARY      | default,black                   | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
-| MAP_TICK_PEN_SECONDARY    | thinner,black                   | auto                            | auto                            |
+| MAP_TICK_PEN_SECONDARY    | thinner,black                   | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
-| MAP_TITLE_OFFSET          | 14p                             | auto                            | auto                            |
+| MAP_TITLE_OFFSET          | 14p                             | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+
 | MAP_VECTOR_SHAPE          | 0                               | 0.5                             | 0.5                             |
 +---------------------------+---------------------------------+---------------------------------+---------------------------------+

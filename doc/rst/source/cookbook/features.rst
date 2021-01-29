@@ -270,6 +270,9 @@ placed in a separate parameter file:
    scenarios into separate ``gmt.conf`` files will minimize headaches associated with
    micro-editing of illustrations.
 
+
+.. _auto-scaling:
+
 Automatic GMT settings
 ~~~~~~~~~~~~~~~~~~~~~~
 
