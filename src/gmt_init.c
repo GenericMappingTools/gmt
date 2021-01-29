@@ -3990,6 +3990,8 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 			return (1);
 		}
 	}
+	else
+		GMT->current.map.frame.draw_box = GMT_3D_NONE;
 	for (k = 0; in[k]; k++) {
 		switch (in[k]) {
 			/* Draw, Annotate, and Tick */
@@ -5979,8 +5981,6 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_degree_symbol = gmt_degree;
 	/* MAP_FRAME_AXES */
 	strcpy (GMT->current.setting.map_frame_axes, "WESNZ");
-	for (i = 0; i < 5; i++) GMT->current.map.frame.side[i] = 0;	/* Unset default settings */
-	GMT->current.map.frame.draw_box = GMT_3D_NONE;
 	error += gmtinit_decode5_wesnz (GMT, "WESNZ", false);
 	/* MAP_DEFAULT_PEN */
 	error += gmt_getpen (GMT, "default,black", &GMT->current.setting.map_default_pen);
@@ -9951,8 +9951,6 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_MAP_FRAME_AXES:
 			strncpy (GMT->current.setting.map_frame_axes, value, 5U);
-			for (i = 0; i < 5; i++) GMT->current.map.frame.side[i] = 0;	/* Unset default settings */
-			GMT->current.map.frame.draw_box = GMT_3D_NONE;
 			error += (bool)gmtinit_decode5_wesnz (GMT, value, false);
 			break;
 
