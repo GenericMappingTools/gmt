@@ -1677,7 +1677,7 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (wesn, 4, double);
 	if (!(GMT->common.R.active[RSET] && GMT->common.J.active)) {	/* When no projection specified, use fake linear projection */
-		gmt_set_undefined_defaults (GMT, 0.0);	/* Must set undefined to their reference values */
+		gmt_set_undefined_defaults (GMT, 0.0, false);	/* Must set undefined to their reference values */
 		GMT->common.R.active[RSET] = true;
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', text);

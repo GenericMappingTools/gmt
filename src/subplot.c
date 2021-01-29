@@ -84,6 +84,8 @@
 #define SUBPLOT_PLACE_AT_MAX	2
 #define SUBPLOT_PLACE_AT_BOTH	3
 
+EXTERN_MSC unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *value, bool core);
+
 struct SUBPLOT_CTRL {
 	struct SUBPLOT_In {	/* begin | end | set */
 		bool active;
@@ -674,6 +676,14 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				else if (strchr (GMT->current.setting.map_frame_axes, 'e')) Ctrl->S[GMT_Y].axes[py++] = 'e';
 				else if (strchr (GMT->current.setting.map_frame_axes, 'r')) Ctrl->S[GMT_Y].axes[py++] = 'r';
 			}
+			/* Update MAP_FRAME_AXES for this subplot settings */
+			if (!strcmp (GMT->current.setting.map_frame_axes, "auto")) {
+				char axes[GMT_LEN32] = {""};
+				strcpy (axes, Ctrl->S[GMT_X].axes);
+				strcat (axes, Ctrl->S[GMT_Y].axes);
+				strcat (axes, "Z");
+				gmtlib_setparameter (GMT, "MAP_FRAME_AXES", axes, true);
+			}
 		}
 		if (Ctrl->S[GMT_X].b == NULL) Ctrl->S[GMT_X].b = strdup ("af");	/* Default is -Baf if not set */
 		if (Ctrl->S[GMT_Y].b == NULL) Ctrl->S[GMT_Y].b = strdup ("af");
@@ -791,7 +801,8 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_NOTICE, "Subplot max panel dimension estimated: %g inch\n", PD);
 
-		gmt_set_undefined_defaults (GMT, PD);	/* We must change any undefined defaults given max panel dimension */
+		gmt_set_undefined_defaults (GMT, PD, true);	/* We must change any undefined defaults given max panel dimension */
+
 		/* Update defaults settings that depend on fonts etc */
 		if (gmt_M_is_dnan (Ctrl->A.off[GMT_X]))
 			Ctrl->A.off[GMT_X] = Ctrl->A.off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% */
@@ -1314,6 +1325,8 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			GMT->init.history[RG_id] = strdup (GMT->init.history[RP_id]);
 		else if (GMT->init.history[RG_id] && !GMT->init.history[RP_id])	/* History for -RP but not -RG, duplicate*/
 			GMT->init.history[RP_id] = strdup (GMT->init.history[RG_id]);
+
+		gmt_putdefaults (GMT, NULL);	/* Finalize the gmt.conf file with specific settings for the entire subplot */
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* SUBPLOT_SET */
 		char legend_justification[4] = {""}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};
