@@ -798,11 +798,11 @@ MAP Parameters
 
     **MAP_TICK_PEN_PRIMARY**
         Pen attributes to be used for primary tick-marks in dpi units or
-        points (append p) [thinner,black].
+        points (append p) [:ref:`theme dependent <theme_settings>`].
 
     **MAP_TICK_PEN_SECONDARY**
         Pen attributes to be used for secondary tick-marks in dpi units or
-        points (append p) [thinner,black].
+        points (append p) [:ref:`theme dependent <theme_settings>`].
 
     **MAP_TITLE_OFFSET**
         Distance from top of axis annotations (or axis label, if present) to
