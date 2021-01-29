@@ -6,7 +6,7 @@ Auto scaling for GMT parameters
 The auto option can be used to automatically scale GMT parameters based on
 the map size. The following table shows the parameter value for a 10 cm plot
 and a 50 cm plot and the scaling equation, where :math:`s` is maximum
-of the plot width and height (cm), for parameters that support the *auto* option.
+of the plot width and height (cm), for parameters that support the auto option.
 
 ================================= ========================= ============================================
 Parameter                         [10cm value, 50cm value]  Scaling equation
