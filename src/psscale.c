@@ -1603,6 +1603,7 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
+	strcpy (GMT->current.setting.map_frame_axes, "WESN");
 	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = GMT_AXIS_ALL;
 	GMT->current.map.frame.draw = false;	/* No -B parsed explicitly yet */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);

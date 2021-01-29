@@ -656,6 +656,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 			}
 		}
 		if (!Bframe) {	/* No override, examine the default frame setting instead */
+			gmt_set_undefined_axes (GMT, true);
 			if (Ctrl->S[GMT_X].active)	/* Automatic selection of row sides, so set to WE */
 				strcpy (Ctrl->S[GMT_X].axes, "WE");
 			else {	/* Extract what the MAP_FRAME_AXES has in store instead*/
