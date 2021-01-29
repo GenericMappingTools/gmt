@@ -151,7 +151,8 @@ FONT Parameters
         [:ref:`theme dependent <theme_settings>`].
 
     **FONT_SUBTITLE**
-        Font to use when plotting titles over graphs that involve a subtitle [18p,Helvetica,black].
+        Font to use when plotting titles over graphs that involve a subtitle
+        [:ref:`theme dependent <theme_settings>`].
 
     **FONT_TAG**
         Font to use for subplot panel tags such as a), ii)
