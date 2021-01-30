@@ -1559,9 +1559,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	if (Ctrl->M.update)	/* Now we can determine last or middle frame */
+	if (Ctrl->M.update)	/* Now we can determine and update last or middle frame number */
 		Ctrl->M.frame = (Ctrl->M.update == 2) ? n_frames - 1 : n_frames / 2;
-fprintf (stderr, "M.frame = %d\n", Ctrl->M.frame);
 	if (Ctrl->K.active) {
 		n_fade_frames = Ctrl->K.fade[GMT_IN] + Ctrl->K.fade[GMT_OUT];	/* Extra frames if preserving */
 		if (!(Ctrl->K.preserve[GMT_IN] || Ctrl->K.preserve[GMT_OUT]) && n_fade_frames > n_data_frames) {
