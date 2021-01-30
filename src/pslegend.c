@@ -529,8 +529,10 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	}
 
 	/* When no projection specified (i.e, -Dx is used), we cannot autoscale so must set undefined dimensions and font sizes to nominal sizes */
-	if (!(GMT->common.R.active[RSET] && GMT->common.J.active))
+	if (!(GMT->common.R.active[RSET] && GMT->common.J.active)) {
+		GMT_Report (API, GMT_MSG_INFORMATION, "Without -R -J we must select default font sizes and dimensions regardless of plot size\n");
 		gmt_set_undefined_defaults (GMT, 0.0, false);	/* Must set undefined to their reference values */
+	}
 	else if (gmt_map_setup (GMT, GMT->common.R.wesn))	/* gmt_map_setup will call gmt_set_undefined_defaults as well */
 		Return (GMT_PROJECTION_ERROR);
 

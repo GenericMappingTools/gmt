@@ -85,6 +85,7 @@
 #define SUBPLOT_PLACE_AT_BOTH	3
 
 EXTERN_MSC unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *value, bool core);
+EXTERN_MSC void gmtlib_panel_B_file (struct GMTAPI_CTRL *API, int fig, int row, int col, char *file);
 
 struct SUBPLOT_CTRL {
 	struct SUBPLOT_In {	/* begin | end | set */
@@ -778,7 +779,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		int RP_id, RG_id;
 		unsigned int row, col, k, panel, nx, ny, factor, last_row, last_col, *Lx = NULL, *Ly = NULL;
 		uint64_t seg;
-		double PD = 0.0, x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
+		double gmean_dim, x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
 		double *cx = NULL, *cy = NULL, *px = NULL, *py = NULL, y_heading, fluff[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, GMT_LETTER_HEIGHT = 0.736;
 		double master_scale = (GMT->current.setting.map_frame_type == GMT_IS_INSIDE) ? 0.0 : 1.0;	/* THe 0 helps wipe any dimensions outside the panel to zero */
 		char **Bx = NULL, **By = NULL, *cmd = NULL, axes[3] = {""}, Bopt[GMT_LEN256] = {""};
@@ -786,25 +787,26 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		bool add_annot, no_frame = false;
 		FILE *fp = NULL;
 
-		/* Need an approximate panel dimension here to set the undefined quantities */
+		/* Need geometric mean dimension of subplot to calculate the undefined quantities */
 
-		if (Ctrl->F.mode == SUBPLOT_FIGURE) {	/* Got figure dimension, compute subplot dimensions */
-			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) PD = MAX (PD, Ctrl->F.w[col] * Ctrl->F.dim[GMT_X]);
-			for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) PD = MAX (PD, Ctrl->F.h[row] * Ctrl->F.dim[GMT_Y]);
-		}
-		else {	/* Already got subplot dimension, compute total figure dimension */
+		if (Ctrl->F.mode == SUBPLOT_FIGURE)	/* Got figure dimensions */
+			gmean_dim = sqrt (Ctrl->F.dim[GMT_X] * Ctrl->F.dim[GMT_Y]);
+		else {	/* Got panel dimension(s), compute total figure dimensions */
 			if (Ctrl->F.reset_h) {	/* Update h based on map aspect ratio and width of a constant column */
 				for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.h[row] = Ctrl->F.w[0] * (GMT->current.map.height / GMT->current.map.width);
 			}
 			/* Sum up individual widths or heights and add the fluff space */
-			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) PD = MAX (PD, Ctrl->F.w[col]);
-			for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) PD = MAX (PD, Ctrl->F.h[row]);
+			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) width  += Ctrl->F.w[col];
+			for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) height += Ctrl->F.h[row];
+			gmean_dim = sqrt (width * height);
+			width = height = 0.0;	/* Reset */
 		}
-		GMT_Report (API, GMT_MSG_NOTICE, "Subplot max panel dimension estimated: %g inch\n", PD);
+		GMT_Report (API, GMT_MSG_NOTICE, "Subplot max panel dimension estimated: %g inch\n", gmean_dim);
 
-		/* We must change any undefined defaults given max panel dimension now so that font sizes and dimensions
-		 * can be written to this subplot's gmt.conf file and thus give the same settings for all panels. */
-		gmt_set_undefined_defaults (GMT, PD, true);
+		/* We must change any undefined defaults given this representative dimension now so that font sizes and dimensions
+		 * can be written to this subplot's gmt.conf file and thus give the same settings for all panels. The gmt.conf is
+		 * automatically deleted when the subplot ends. */
+		gmt_set_undefined_defaults (GMT, gmean_dim, true);
 
 		/* Update defaults settings that depend on fonts etc */
 		if (gmt_M_is_dnan (Ctrl->A.off[GMT_X]))
@@ -1361,7 +1363,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		gmt_reload_settings (GMT);	/* Start fresh in this panel */
 	}
 	else {	/* SUBPLOT_END */
-		int k, id;
+		int k, id, row, col;
 		char *wmode[2] = {"w","a"}, vfile[GMT_VF_LEN] = {""}, Rtxt[GMT_LEN64] = {""}, off[GMT_LEN32] = {""};
 		char legend_justification[4] = {""}, Jstr[3] = {"J"}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""};
 		double legend_width = 0.0, legend_scale = 1.0;
@@ -1409,6 +1411,12 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		gmt_remove_file (GMT, file);
 		sprintf (file, "%s/gmt.panel.%d", API->gwf_dir, fig);
 		gmt_remove_file (GMT, file);
+		for (row = 0; row < P->nrows; row++) {
+			for (col = 0; col < P->ncolumns; col++) {
+				gmtlib_panel_B_file (API, fig, row, col, file);
+				if (!access (file, F_OK)) gmt_remove_file (GMT, file);
+			}
+		}
 		/* Check if we should draw debug lines */
 		sprintf (file, "%s/gmt.subplotdebug.%d", API->gwf_dir, fig);
 		if (!access (file, R_OK)) {	/* Yes, must draw debug lines on top */

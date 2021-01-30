@@ -14249,10 +14249,16 @@ GMT_LOCAL bool gmtinit_build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_O
  * an empty file called gmt.B.<fig>.<row>.<col> after applying -B, and once that file
  * exist we do not apply -B again. */
 
+void gmtlib_panel_B_file (struct GMTAPI_CTRL *API, int fig, int row, int col, char *file) {
+	/* Create the B_setting file name for this subplot panel */
+	sprintf (file, "%s/gmt.B.%d.%d.%d", API->gwf_dir, fig, row, col);
+}
+
 GMT_LOCAL void gmtinit_panel_B_set (struct GMTAPI_CTRL *API, int fig, int row, int col) {
 	/* Mark that -B options have been applied for this subplot panel */
 	char Bfile[PATH_MAX] = {""};
 	FILE *fp = NULL;
+	gmtlib_panel_B_file (API, fig, row, col, Bfile);
 	sprintf (Bfile, "%s/gmt.B.%d.%d.%d", API->gwf_dir, fig, row, col);
 	if ((fp = fopen (Bfile, "w"))) fclose (fp);
 }
@@ -14260,7 +14266,7 @@ GMT_LOCAL void gmtinit_panel_B_set (struct GMTAPI_CTRL *API, int fig, int row, i
 GMT_LOCAL bool gmtinit_panel_B_get (struct GMTAPI_CTRL *API, int fig, int row, int col) {
 	/* Determine if -B options have been applied to this panel before */
 	char Bfile[PATH_MAX] = {""};
-	sprintf (Bfile, "%s/gmt.B.%d.%d.%d", API->gwf_dir, fig, row, col);
+	gmtlib_panel_B_file (API, fig, row, col, Bfile);
 	if (access (Bfile, F_OK) == 0) {	/* Return true if file is found */
 		GMT_Report (API, GMT_MSG_DEBUG, "B already set for fig %d subplot panel (%d, %d)\n", fig, row, col);
 		return true;

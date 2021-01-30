@@ -1677,6 +1677,7 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (wesn, 4, double);
 	if (!(GMT->common.R.active[RSET] && GMT->common.J.active)) {	/* When no projection specified, use fake linear projection */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Without -R -J we must select default font sizes and dimensions regardless of plot size\n");
 		gmt_set_undefined_defaults (GMT, 0.0, false);	/* Must set undefined to their reference values */
 		GMT->common.R.active[RSET] = true;
 		GMT->common.J.active = false;
