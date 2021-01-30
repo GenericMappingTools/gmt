@@ -6324,6 +6324,9 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 /*! . */
 GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	int i, error = 0;
+#if NO_THEMES
+	return;		/* Ignore all the modern theme stuff */
+#endif
 
 	/* These settings override the classic defaults settings and make the modern settings.
 	 * In addition to some changes in font names, the key thing is lack of dimension as those
@@ -9750,6 +9753,10 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 	bool geo_frame = false;
 	double fontsize, scale;
 	double const pt = 1.0/72.0;	/* points to inch */
+
+#if NO_THEMES
+	return;		/* Ignore all the modern theme stuff */
+#endif
 
 	/* Refuse to do this in gmtset */
 	if (!strcmp (GMT->init.module_name, "gmtset")) {fprintf (stderr, "Not doing it\n"); return; }
