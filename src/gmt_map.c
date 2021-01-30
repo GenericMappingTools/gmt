@@ -9517,7 +9517,7 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 
 	if ((error = gmt_proj_setup (GMT, wesn)) != GMT_NOERROR) goto gmt_map_setup_end;
 
-	gmt_set_undefined_defaults (GMT, MAX (GMT->current.map.width, GMT->current.map.height));	/* We must change any undefined defaults given max plot dimension */
+	gmt_set_undefined_defaults (GMT, sqrt (GMT->current.map.width * GMT->current.map.height), false);	/* We must change any undefined defaults given max plot dimension */
 
 	search = GMT->current.proj.search;
 

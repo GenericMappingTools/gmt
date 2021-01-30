@@ -8374,7 +8374,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 
 	PSL = GMT->PSL;	/* Shorthand */
 
-	gmt_set_undefined_defaults (GMT, MAX (GMT->current.map.width, GMT->current.map.height));	/* We must change any undefined defaults given max plot dimension */
+	gmt_set_undefined_defaults (GMT, sqrt (GMT->current.map.width * GMT->current.map.height), false);	/* We must change any undefined defaults given max plot dimension */
 
 	if (GMT->current.map.frame.paint[GMT_Z]) {	/* Must squirrel this away for now since we may call psbasemap during the movie-indicators below */
 		do_paint = true;
