@@ -529,7 +529,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	}
 
 	if (!(GMT->common.R.active[RSET] && GMT->common.J.active))	/* When no projection specified (i.e, -Dx is used), we cannot autoscale so set to nominal sizes */
-		gmt_set_undefined_defaults (GMT, 0.0);	/* Must set undefined to their reference values */
+		gmt_set_undefined_defaults (GMT, 0.0, false);	/* Must set undefined to their reference values */
 	else {
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
 			Return (GMT_PROJECTION_ERROR);

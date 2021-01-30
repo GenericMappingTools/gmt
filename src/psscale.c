@@ -1603,6 +1603,7 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
+	strcpy (GMT->current.setting.map_frame_axes, "WESN");
 	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = GMT_AXIS_ALL;
 	GMT->current.map.frame.draw = false;	/* No -B parsed explicitly yet */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
@@ -1677,7 +1678,7 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (wesn, 4, double);
 	if (!(GMT->common.R.active[RSET] && GMT->common.J.active)) {	/* When no projection specified, use fake linear projection */
-		gmt_set_undefined_defaults (GMT, 0.0);	/* Must set undefined to their reference values */
+		gmt_set_undefined_defaults (GMT, 0.0, false);	/* Must set undefined to their reference values */
 		GMT->common.R.active[RSET] = true;
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', text);
