@@ -735,7 +735,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							if (x > 0.0) line_size = x;
 						}
 						if (x > def_size) def_size = x;
-						if (n_scan > 1 && strcmp (txt_b, "-")) {
+						if (n_scan > 2 && strcmp (txt_b, "-")) {
 							x = gmt_M_to_inch (GMT, txt_b);
 							if (x > def_dx2) def_dx2 = x;
 						}
