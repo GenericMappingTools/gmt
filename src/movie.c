@@ -214,7 +214,7 @@ struct MOVIE_CTRL {
 	struct MOVIE_M {	/* -M[<frame>|f|l|m][,format] */
 		bool active;
 		bool exit;
-		bool update;
+		unsigned int update;	/* 1 = set middle, 2 = set last frame */
 		unsigned int frame;	/* Frame selected as master frame */
 		char *format;	/* Plot format for master frame */
 	} M;
@@ -917,9 +917,9 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					Ctrl->M.format = strdup (&c[1]);
 					c[0] = '\0';	/* Chop off format */
 					switch (opt->arg[0]) {
-						case 'f':	Ctrl->M.frame = 0; break;
-						case 'm':	Ctrl->M.frame = -1; break;
-						case 'l':	Ctrl->M.frame = -2; break;
+						case 'f':	Ctrl->M.frame  = 0; break;
+						case 'm':	Ctrl->M.update = 1; break;
+						case 'l':	Ctrl->M.update = 2; break;
 						default:	Ctrl->M.frame = atoi (opt->arg); break;
 					}
 					c[0] = ',';	/* Restore format */
@@ -927,9 +927,9 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				else if (isdigit (opt->arg[0]) || (strchr ("fml", opt->arg[0]) && opt->arg[1] == '\0')) {	/* Gave just a frame, default to PDF format */
 					Ctrl->M.format = strdup ("pdf");
 					switch (opt->arg[0]) {
-						case 'f':	Ctrl->M.frame = 0; break;
-						case 'm':	Ctrl->M.frame = -1; break;
-						case 'l':	Ctrl->M.frame = -2; break;
+						case 'f':	Ctrl->M.frame  = 0; break;
+						case 'm':	Ctrl->M.update = 1; break;
+						case 'l':	Ctrl->M.update = 2; break;
 						default:	Ctrl->M.frame = atoi (opt->arg); break;
 					}
 				}
@@ -937,7 +937,6 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					Ctrl->M.format = strdup (opt->arg);
 				else /* Default is PDF of frame 0 */
 					Ctrl->M.format = strdup ("pdf");
-				if (Ctrl->M.frame < 0) Ctrl->M.update = true;	/* Must reset once we know the frame numbers */
 				break;
 
 			case 'N':	/* Movie prefix and directory name */
@@ -1267,8 +1266,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Dry-run enabled - Movie scripts will be created and any pre/post scripts will be executed.\n");
 		if (Ctrl->M.active) {
 			if (Ctrl->M.update || Ctrl->M.frame == 0) {
-				char *page[3] = {"last", "middle", "first"};
-				GMT_Report (API, GMT_MSG_INFORMATION, "A single plot for the %s frame will be create and named %s.%s\n", page[Ctrl->M.frame+2], Ctrl->N.prefix, Ctrl->M.format);
+				char *page[3] = {"first", "middle", "last"};
+				GMT_Report (API, GMT_MSG_INFORMATION, "A single plot for the %s frame will be create and named %s.%s\n", page[Ctrl->M.update], Ctrl->N.prefix, Ctrl->M.format);
 			}
 			else
 				GMT_Report (API, GMT_MSG_INFORMATION, "A single plot for frame %d will be create and named %s.%s\n", Ctrl->M.frame, Ctrl->N.prefix, Ctrl->M.format);
@@ -1561,8 +1560,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->M.update)	/* Now we can determine last or middle frame */
-		Ctrl->M.frame = (Ctrl->M.frame == -2) ? n_frames - 1 : n_frames / 2;
-
+		Ctrl->M.frame = (Ctrl->M.update == 2) ? n_frames - 1 : n_frames / 2;
+fprintf (stderr, "M.frame = %d\n", Ctrl->M.frame);
 	if (Ctrl->K.active) {
 		n_fade_frames = Ctrl->K.fade[GMT_IN] + Ctrl->K.fade[GMT_OUT];	/* Extra frames if preserving */
 		if (!(Ctrl->K.preserve[GMT_IN] || Ctrl->K.preserve[GMT_OUT]) && n_fade_frames > n_data_frames) {
