@@ -389,7 +389,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 
-			case 'B':	/* Get a handle on -B args if any */
+			case 'B':	/* Get a handle on -B args, if any */
 				B_args = true;
 				if (strstr (opt->arg, "+n")) noB = true;	/* Turn off all annotations */
 				if (opt->arg[0] == 'x') Bx = opt;		/* Got options for x-axis only */
@@ -656,10 +656,10 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 			}
 		}
 		if (!Bframe) {	/* No override, examine the default frame setting instead */
-			gmt_set_undefined_axes (GMT, true);
-			if (Ctrl->S[GMT_X].active)	/* Automatic selection of row sides, so set to WE */
-				strcpy (Ctrl->S[GMT_X].axes, "WE");
-			else {	/* Extract what the MAP_FRAME_AXES has in store instead*/
+			gmt_set_undefined_axes (GMT, true);	/* We cannot have MAP_FRAME_AXES=auto in subplot during -B parsing, so do the update now */
+			if (Ctrl->S[GMT_X].active)	/* Automatic selection of row sides via -SR, so set to SN */
+				strcpy (Ctrl->S[GMT_X].axes, "SN");
+			else {	/* Extract what the MAP_FRAME_AXES has for this axis instead */
 				if (strchr (GMT->current.setting.map_frame_axes, 'S')) Ctrl->S[GMT_X].axes[px++] = 'S';
 				else if (strchr (GMT->current.setting.map_frame_axes, 's')) Ctrl->S[GMT_X].axes[px++] = 's';
 				else if (strchr (GMT->current.setting.map_frame_axes, 'b')) Ctrl->S[GMT_X].axes[px++] = 'b';
@@ -667,9 +667,9 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				else if (strchr (GMT->current.setting.map_frame_axes, 'n')) Ctrl->S[GMT_X].axes[px++] = 'n';
 				else if (strchr (GMT->current.setting.map_frame_axes, 't')) Ctrl->S[GMT_X].axes[px++] = 't';
 			}
-			if (Ctrl->S[GMT_Y].active)	/* Automatic selection of column sides, so set to SN */
-				strcpy (Ctrl->S[GMT_Y].axes, "SN");
-			else {	/* Extract what the MAP_FRAME_AXES has in store instead */
+			if (Ctrl->S[GMT_Y].active)	/* Automatic selection of column sides via -SC, so set to WE */
+				strcpy (Ctrl->S[GMT_Y].axes, "WE");
+			else {	/* Extract what the MAP_FRAME_AXES has for this axis instead */
 				if (strchr (GMT->current.setting.map_frame_axes, 'W')) Ctrl->S[GMT_Y].axes[py++] = 'W';
 				else if (strchr (GMT->current.setting.map_frame_axes, 'w')) Ctrl->S[GMT_Y].axes[py++] = 'w';
 				else if (strchr (GMT->current.setting.map_frame_axes, 'l')) Ctrl->S[GMT_Y].axes[py++] = 'l';
@@ -802,7 +802,9 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_NOTICE, "Subplot max panel dimension estimated: %g inch\n", PD);
 
-		gmt_set_undefined_defaults (GMT, PD, true);	/* We must change any undefined defaults given max panel dimension */
+		/* We must change any undefined defaults given max panel dimension now so that font sizes and dimensions
+		 * can be written to this subplot's gmt.conf file and thus give the same settings for all panels. */
+		gmt_set_undefined_defaults (GMT, PD, true);
 
 		/* Update defaults settings that depend on fonts etc */
 		if (gmt_M_is_dnan (Ctrl->A.off[GMT_X]))
@@ -1327,7 +1329,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		else if (GMT->init.history[RG_id] && !GMT->init.history[RP_id])	/* History for -RP but not -RG, duplicate*/
 			GMT->init.history[RP_id] = strdup (GMT->init.history[RG_id]);
 
-		gmt_putdefaults (GMT, NULL);	/* Finalize the gmt.conf file with specific settings for the entire subplot */
+		gmt_putdefaults (GMT, NULL);	/* Finalize the gmt.conf file with settings that will apply to all panels in the subplot */
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* SUBPLOT_SET */
 		char legend_justification[4] = {""}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};

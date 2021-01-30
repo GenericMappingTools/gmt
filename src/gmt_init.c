@@ -3977,7 +3977,7 @@ void gmt_handle5_plussign (struct GMT_CTRL *GMT, char *in, char *mods, unsigned 
 }
 
 GMT_LOCAL void gmtinit_sides2axes (struct GMT_CTRL *GMT) {
-	/* Convert GMT->current.map.frame.side to string */
+	/* Convert GMT->current.map.frame.side to corresponding MAP_FRAME_AXES string */
 	unsigned int k, i = 0;
 	char *all = {"WESNZ"}, *tick = {"wesnz"}, *draw = {"lrbtu"};
 	for (k = 0; k <= Z_SIDE; k++) {
@@ -4008,7 +4008,7 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 	}
 	else {
 		GMT->current.map.frame.draw_box = GMT_3D_NONE;
-		if (!strcmp (GMT->current.setting.map_frame_axes, "auto")) return GMT_NOERROR;	/* Not ready yet */
+		if (!strcmp (GMT->current.setting.map_frame_axes, "auto")) return GMT_NOERROR;	/* Not ready to parse yet */
 	}
 	for (k = 0; in[k]; k++) {
 		switch (in[k]) {
