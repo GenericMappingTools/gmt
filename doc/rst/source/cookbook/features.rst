@@ -315,9 +315,12 @@ where *map_size_in_cm = sqrt(map_height \* map_width)*.  All other items will ha
 their reference sizes scaled by *scale = size / 10*. In modern mode, if you do
 nothing then all of the above dimensions will be automatically set based on your
 plot dimensions.  However, you are free to override any of them using the methods
-described in the next section. **Note**: The particular scaling relationship is
-experimental in 6.2 and we reserve the right to adjust it pending further
-experimentation and user feedback.
+described in the next section. **Note**: Selecting **auto** for font sizes and
+dimensions requires GMT to know the plot dimensions. If the plot dimensions are
+not available (e.g., :doc:`/pslegend` with **-Dx** and no **-R -J**), the settings
+will be updated using the nominal font sizes and dimensions for a 10 x 1 cm plot.
+**Note**: The particular scaling relationship is experimental in 6.2 and we
+reserve the right to adjust it pending further experimentation and user feedback.
 
 Changing GMT defaults
 ~~~~~~~~~~~~~~~~~~~~~
