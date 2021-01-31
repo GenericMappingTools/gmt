@@ -99,10 +99,15 @@ struct PSTEXT_CTRL {
 		bool active;
 		int mode;	/* 0 = do nothing, -1 = force lower case, +1 = force upper case */
 	} Q;
-	struct PSTEXT_S {	/* -S<pen> */
+	struct PSTEXT_S {	/* -S[dx>/<dy>/][<fill>] */
+		bool active;
+		double off[2];
+		struct GMT_FILL fill;
+	} S;
+	struct PSTEXT_S_OLD {	/* -S<pen> GMT 4 syntax - deprecated */
 		bool active;
 		struct GMT_PEN pen;
-	} S;
+	} S_old;
 	struct PSTEXT_W {	/* -W[<pen>] */
 		bool active;
 		struct GMT_PEN pen;
@@ -143,7 +148,10 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->F.font = GMT->current.setting.font_annot[GMT_PRIMARY];		/* Default font */
 	C->F.font.set = 0;
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* No fill */
-	C->S.pen = GMT->current.setting.map_default_pen;
+	C->S_old.pen = GMT->current.setting.map_default_pen;
+	C->S.off[GMT_X] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
+	C->S.off[GMT_Y] = -C->S.off[GMT_X];	/* Set the shadow offsets [default is (4p, -4p)] */
+	gmt_init_fill (GMT, &C->S.fill, gmt_M_is255 (127), gmt_M_is255 (127), gmt_M_is255 (127));	/* Default if gray shade is used */
 
 	return (C);
 }
@@ -381,7 +389,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 	int j, k;
 	unsigned int pos, n_errors = 0;
 	bool explicit_justify = false, mess = false;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""}, *c = NULL, *q = NULL;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""}, *c = NULL, *q = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -569,10 +577,29 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				Ctrl->N.active = true;
 				break;
 			case 'S':
-				if (gmt_M_compat_check (GMT, 4)) { /* Warn and pass through */
-					GMT_Report (API, GMT_MSG_COMPAT, "-S option is deprecated; use font pen setting instead.\n");
+				if (opt->arg[0] == '\0' || (k = gmt_count_char (GMT, opt->arg, '/')) == 3 || k == 2 || gmt_is_fill (GMT, opt->arg)) {
+					/* -S[<dx>/<dy>/][>shade>]; requires -G */
 					Ctrl->S.active = true;
-					if (gmt_getpen (GMT, opt->arg, &Ctrl->S.pen)) {
+					if (opt->arg[0]) {
+						k = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+						if (k == 1) {	/* Just got a new fill */
+							if (gmt_getfill (GMT, txt_a, &Ctrl->S.fill)) n_errors++;
+						}
+						else if (k == 2) {	/* Just got a new offset */
+							if (gmt_get_pair (GMT, opt->arg, GMT_PAIR_DIM_DUP, Ctrl->S.off) < 0) n_errors++;
+						}
+						else if (k == 3) {	/* Got offset and fill */
+							Ctrl->S.off[GMT_X] = gmt_M_to_inch (GMT, txt_a);
+							Ctrl->S.off[GMT_Y] = gmt_M_to_inch (GMT, txt_b);
+							if (gmt_getfill (GMT, txt_c, &Ctrl->S.fill)) n_errors++;
+						}
+						else n_errors++;
+					} /* else we stick with the defaults */
+				}
+				else if (gmt_M_compat_check (GMT, 4)) { /* Warn and pass through */
+					GMT_Report (API, GMT_MSG_COMPAT, "-S<pen> option is deprecated; use font pen setting instead.\n");
+					Ctrl->S_old.active = true;
+					if (gmt_getpen (GMT, opt->arg, &Ctrl->S_old.pen)) {
 						gmt_pen_syntax (GMT, 'S', NULL, "draws outline of characters.  Append pen attributes [Default pen is %s]", 0);
 						n_errors++;
 					}
@@ -652,6 +679,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->W.active, "Option -Gc: Cannot be used with -W.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->D.line, "Option -Gc: Cannot be used with -D...v<pen>.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.get_text, "Option -M: Cannot be used with -F...+l|h.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(Ctrl->G.active && Ctrl->G.mode == 0), "Option -S: Requires -G as well.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -887,6 +915,10 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			else {
 				offset[0] = T.x_space;
 				offset[1] = T.y_space;
+			}
+			if (Ctrl->S.active) {	/* Lay down shaded box first */
+				PSL_setfill (PSL, Ctrl->S.fill.rgb, 0);	/* shade color */
+				PSL_plottextbox (PSL, plot_x + Ctrl->S.off[GMT_X], plot_y + Ctrl->S.off[GMT_Y], T.font.size, use_text, T.paragraph_angle, T.block_justify, offset, T.boxflag & 4);
 			}
 			gmt_setpen (GMT, &T.boxpen);			/* Box pen */
 			PSL_setfill (PSL, T.boxfill.rgb, T.boxflag & 1);	/* Box color */
@@ -1179,9 +1211,9 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 							T.font = Ctrl->F.font;
 							if (gmt_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_ERROR, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
 							if (gmt_M_compat_check (GMT, 4)) {
-								if (Ctrl->S.active) {
+								if (Ctrl->S_old.active) {
 									T.font.form |= 2;
-									T.font.pen = Ctrl->S.pen;
+									T.font.pen = Ctrl->S_old.pen;
 								}
 							}
 							break;
