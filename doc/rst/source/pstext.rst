@@ -24,6 +24,7 @@ Synopsis
 [ |-L| ] [ |-M| ] [ |-N| ]
 [ |-O| ] [ |-P| ]
 [ |-Q|\ **l**\|\ **u** ]
+[ |-S|\ [*dx*/*dy*/][*shade*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -81,6 +82,10 @@ To add a text without using input data but only the fixed text option::
 To place a line containing a Latex equation, try::
 
     echo 3 3 'Use @[\Delta g = 2\pi\rho Gh@[' | gmt pstext -R0/6/0/6 -JX15c -Baf -F+f32p+a30 -P > map.ps
+
+To place text with a surrounding box and an underlying, shifted shade, both using a rounded rectangle, try::
+
+    gmt pstext -R0/10/0/5 -Jx1c -F+f32p+cCM+tWELCOME -Baf -Gyellow -Wfaint -S -C+tO -P > map.ps
 
 .. include:: text_notes.rst_
 

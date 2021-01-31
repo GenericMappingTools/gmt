@@ -22,6 +22,7 @@ Synopsis
 [ |-G|\ [*fill*][**+n**] ]
 [ |-L| ] [ |-M| ] [ |-N| ]
 [ |-Q|\ **l**\|\ **u** ]
+[ |-S|\ [*dx*/*dy*/][*shade*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -72,6 +73,10 @@ To add a typeset figure caption for a 3-inch wide illustration, use
 To place a line containing a Latex equation, try::
 
     echo 3 3 'Use @[\Delta g = 2\pi\rho Gh@[' | gmt text -R0/6/0/6 -JX15c -B -F+f32p+a30 -pdf map
+
+To place text with a surrounding box and an underlying, shifted shade, both using a rounded rectangle, try::
+
+    gmt text -R0/10/0/5 -Jx1c -F+f32p+cCM+tWELCOME -B -Gyellow -Wfaint -S -C+tO -pdf map
 
 .. include:: text_notes.rst_
 

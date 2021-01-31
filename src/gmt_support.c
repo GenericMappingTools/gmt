@@ -6107,7 +6107,15 @@ int gmtlib_detrend (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, doub
 }
 
 /*! . */
-#define gmt_is_fill(GMT,word) (!strcmp(word,"-") || gmtsupport_is_pattern (GMT,word) || gmtlib_is_color (GMT, word))
+bool gmt_is_fill (struct GMT_CTRL *GMT, char *word) {
+	/* Return true if argument is an image fill or color or no fill (-) */
+	if (!strcmp (word,"-")) return true;	/* Or skip */
+	if (gmtsupport_is_pattern (GMT, word)) return true;
+	if (gmtlib_is_color (GMT, word)) return true;
+	return false;
+}
+
+//#define gmt_is_fill(GMT,word) (!strcmp(word,"-") || gmtsupport_is_pattern (GMT,word) || gmtlib_is_color (GMT, word))
 
 /* The two flip_angle functions are needed when vectors given by angle/length is to be plotted
  * using Cartesian projections in which the direction of positive x and/or y-axis might have

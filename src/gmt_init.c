@@ -6324,6 +6324,9 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 /*! . */
 GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	int i, error = 0;
+#if NO_THEMES
+	return;		/* Ignore all the modern theme stuff */
+#endif
 
 	/* These settings override the classic defaults settings and make the modern settings.
 	 * In addition to some changes in font names, the key thing is lack of dimension as those
@@ -9750,6 +9753,10 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 	bool geo_frame = false;
 	double fontsize, scale;
 	double const pt = 1.0/72.0;	/* points to inch */
+
+#if NO_THEMES
+	return;		/* Ignore all the modern theme stuff */
+#endif
 
 	/* Refuse to do this in gmtset */
 	if (!strcmp (GMT->init.module_name, "gmtset")) {fprintf (stderr, "Not doing it\n"); return; }
@@ -14462,38 +14469,43 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			GMT_Report (API, GMT_MSG_DEBUG, "Given -E, add equivalent -R%s for pscoast.\n", opt->arg);
 		}
 	}
-	else if (options && gmt_M_compat_check (GMT, 6) && !strncmp (mod_name, "psrose", 6U) && (opt = GMT_Find_Option (API, 'J', *options)) == NULL) {
-		/* Running psrose with old -S[n]<radius syntax.  Need to replace with new -J [-S] syntax */
-		struct GMT_OPTION *S = GMT_Find_Option (API, 'S', *options);
-		if (S && S->arg[0]) {	/* Gave -S option with some arguments */
-			char j_code[GMT_LEN256] = {""};
-			unsigned int k, norm = (S->arg[0] == 'n') ? 1 : 0;
-			double radius;
-			k = norm;
-			if (norm == 0 && S->arg[strlen(S->arg)-1] == 'n') {	/* Old-style -S<radius>n syntax */
-				norm = 2;
-				S->arg[strlen(S->arg)-1] = '\0';
+	else if (options && gmt_M_compat_check (GMT, 6) && !strncmp (mod_name, "psrose", 6U)) {
+		if ((opt = GMT_Find_Option (API, 'J', *options)) == NULL) {
+			/* Running psrose with old -S[n]<radius syntax and no -J.  Need to replace with new -J [-S] syntax */
+			struct GMT_OPTION *S = GMT_Find_Option (API, 'S', *options);
+			if (S && S->arg[0]) {	/* Gave -S option with some arguments */
+				char j_code[GMT_LEN256] = {""};
+				unsigned int k, norm = (S->arg[0] == 'n') ? 1 : 0;
+				double radius;
+				k = norm;
+				if (norm == 0 && S->arg[strlen(S->arg)-1] == 'n') {	/* Old-style -S<radius>n syntax */
+					norm = 2;
+					S->arg[strlen(S->arg)-1] = '\0';
+				}
+				radius = (S->arg[k]) ? gmt_M_to_inch (GMT, &S->arg[k]) : 0.5 * 15 / 2.54;	/* Get the radius or default to (7.5 = 15/2 cm), now in inches */
+				snprintf (j_code, GMT_LEN256, "X%gi", 2 * radius);
+				if ((opt = GMT_Make_Option (API, 'J', j_code)) == NULL) return NULL;		/* Failed to make -J option */
+				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failed to append -J option */
+				if (norm) {	/* Need a plain -S for normalization */
+					if (GMT_Update_Option (API, S, "")) return NULL;		/* Failed to update -S */
+				}
+				else {	/* Remove the S option */
+					if (GMT_Delete_Option (API, S, options)) return NULL;		/* Failed to remove -S */
+				}
 			}
-			radius = (S->arg[k]) ? gmt_M_to_inch (GMT, &S->arg[k]) : 0.5 * 7.5 / 2.54;	/* Get the radius or default to (7.5/2 cm), now in inches */
-			snprintf (j_code, GMT_LEN256, "X%gi", 2 * radius);
-			if ((opt = GMT_Make_Option (API, 'J', j_code)) == NULL) return NULL;		/* Failed to make -J option */
-			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failed to append -J option */
-			if (norm) {	/* Need a plain -S for normalization */
-				if (GMT_Update_Option (API, S, "")) return NULL;		/* Failed to update -S */
-			}
-			else {	/* Remove the S option */
-				if (GMT_Delete_Option (API, S, options)) return NULL;		/* Failed to remove -S */
+			else {	/* No old-style -S option given either, so user expects default diameter via -J and no normalization */
+				if (GMT->current.setting.run_mode == GMT_MODERN) {
+					if ((opt = GMT_Make_Option (API, 'J', "X?")) == NULL) return NULL;	/* Failure to make -J option */
+					is_psrose = true;
+				}
+				else {
+					if ((opt = GMT_Make_Option (API, 'J', "X15c")) == NULL) return NULL;	/* Failure to make -J option */
+				}
+				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append -J option */
 			}
 		}
-		else {	/* No old-style -S option given either, so user expects default radius and no normalization */
-			if (GMT->current.setting.run_mode == GMT_MODERN) {
-				is_psrose = true;	/* Since psrose does not really parse -J properly we need to flag this */
-				if ((opt = GMT_Make_Option (API, 'J', "X?")) == NULL) return NULL;	/* Failure to make -J option */
-			}
-			else {
-				if ((opt = GMT_Make_Option (API, 'J', "X6i")) == NULL) return NULL;	/* Failure to make -J option */
-			}
-			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append -J option */
+		else {	/* Gave -J, flag if with ? for subplots or insets */
+			is_psrose = (strchr (opt->arg, '?') && GMT->current.setting.run_mode == GMT_MODERN);
 		}
 	}
 
@@ -14759,6 +14771,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 		}
 
+		if (is_psrose && P == NULL && !GMT->current.plot.inset.active && strchr (opt_J->arg, '?')) {	/* If we still have -JX? and not inset or panel, replace by default */
+			if (GMT_Update_Option (API, opt_J, "X15c")) return NULL;		/* Failed to update -J */
+		}
 		if (is_D_module && !got_R && !got_J && P)	/* Module call with -Dx in a subplot, turn on JR since we know both must exist */
 			required = "JR";
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
