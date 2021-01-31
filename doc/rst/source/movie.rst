@@ -215,7 +215,7 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [*frame*],[*format*]
+**-M**\ [*frame*\|\ **f**\|\ **m**\|\ **l**],[*format*]
     In addition to making the animation sequence, select a single master frame [0] for a cover page.  The master frame will
     be written to the current directory with name *prefix.format*, where *format* can one of the
     graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].  Instead of a frame number
