@@ -160,7 +160,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -S<symbol>[<size>]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T<now> [-Ar[<dpu>[c|i]]|s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]] [-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] [-G<fill>] [-L[t|<length>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] [-G<fill>] [-H<labelinfo>] [-L[t|<length>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Mi|s|t<val1>[+c<val2]] [-N[c|r]] [-Q<prefix>] [-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -204,15 +204,16 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Normally, the text is read from the data records.  Alternative ways to provide text:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +r[<first>] will use the current record number, starting at <first> [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +z[<fmt>] will use formatted input z values (requires -C) via format <fmt> [FORMAT_FLOAT_MAP].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Control attributes of optional label bounding box fill, outline, clearance, shade, and shading [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for the clearance between label and surrounding box [%s%%].\n", GMT_TEXT_CLEARANCE);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g<fill> to set the fill for the text box [Default is no fill].\n");
+	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify a fixed symbol fill [no fill].");
+	GMT_Message (API, GMT_TIME_NONE, "\t-H Control attributes of optional label bounding box fill, outline, clearance, shade, and box shape [none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for the clearance between label and surrounding box [%d%% of font size].\n", GMT_TEXT_CLEARANCE);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g<fill> to set the fill for the text box [no fill].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p[<pen>] to set the pen [%s] and draw the outline of the text box [no outline].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[<dx>/<dy>/][<shade>] to plot a shadow behind the text box [Default is %gp/%gp/gray50].\n", GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to select rounded rectangular box shape [straight].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[<dx>/<dy>/][<shade>] to plot a shadow behind the text box [%gp/%gp/gray50].\n", GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set finite length of events, otherwise we assume they are all infinite.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no arg we read lengths from file; append t for reading end times instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -L0 is given the event only lasts one frame.\n");
-	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify a fixed symbol fill [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border [clipping is on].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nr to turn off clipping and plot repeating symbols for periodic maps.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nc to retain clipping but turn off plotting of repeating symbols for periodic maps.\n");
