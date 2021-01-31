@@ -11,8 +11,9 @@ Description
 
 The following is a list of the parameters that are user-definable in
 GMT. The parameter names are always given in **UPPER CASE**. The
-parameter values are case-insensitive unless otherwise noted. The system
-defaults are given in brackets [ for SI (or US) ].
+parameter values are case-insensitive unless otherwise noted. Theme-independent
+system defaults are given in brackets [ for SI (or US) ] while theme-dependent
+defaults are outlined in the GMT_THEME :doc:`settings table <theme-settings>`.
 Note that default distances and lengths below are
 given in both cm or inch; the chosen default depends on your choice of
 default unit (see :term:`PROJ_LENGTH_UNIT`). You can explicitly specify
@@ -129,33 +130,45 @@ FONT Parameters
         This setting is not included in the **gmt.conf** file.
 
     **FONT_ANNOT_PRIMARY**
-        Font used for primary annotations, etc. [12p,Helvetica,black]. When
-        **+** is prepended, scale fonts, offsets and tick-lengths relative
-        to :term:`FONT_ANNOT_PRIMARY`.
+        Font used for primary annotations, etc [:doc:`theme dependent <theme-settings>`].
+        When **+** is prepended, scale fonts, offsets and tick-lengths relative
+        to :term:`FONT_ANNOT_PRIMARY`. Choose **auto** for :ref:`automatic scaling
+        with plot size <auto-scaling>`.
 
     **FONT_ANNOT_SECONDARY**
-        Font to use for time axis secondary annotations
-        [14p,Helvetica,black].
+        Font to use for time axis secondary annotations [:doc:`theme dependent
+        <theme-settings>`] Choose **auto** for :ref:`automatic scaling with plot
+        size <auto-scaling>`.
 
     **FONT_HEADING**
-        Font to use when plotting headings above subplots [32p,Helvetica,black].
+        Font to use when plotting headings above subplots [:doc:`theme dependent
+        <theme-settings>`]. Choose **auto** for :ref:`automatic scaling with plot
+        size <auto-scaling>`.
 
     **FONT_LABEL**
-        Font to use when plotting labels below axes [16p,Helvetica,black].
+        Font to use when plotting labels below axes [:doc:`theme dependent
+        <theme-settings>`]. Choose **auto** for :ref:`automatic scaling with plot
+        size <auto-scaling>`.
 
     **FONT_LOGO**
-        Font to use for text plotted as part of the GMT time logo
-        [8p,Helvetica,black].
+        Font to use for text plotted as part of the GMT time logo [:doc:`theme
+        dependent <theme-settings>`]. Choose **auto** for :ref:`automatic scaling
+        with plot size <auto-scaling>`.
 
     **FONT_SUBTITLE**
-        Font to use when plotting titles over graphs that involve a subtitle [18p,Helvetica,black].
+        Font to use when plotting titles over graphs that involve a subtitle
+        [:doc:`theme dependent <theme-settings>`]. Choose **auto** for  :ref:`automatic
+        scaling with plot size <auto-scaling>`.
 
     **FONT_TAG**
         Font to use for subplot panel tags such as a), ii)
-        [20p,Helvetica,black].
+        [:doc:`theme dependent <theme-settings>`]. Choose **auto** for :ref:`automatic
+        scaling with plot size <auto-scaling>`.
 
     **FONT_TITLE**
-        Font to use when plotting titles over graphs [24p,Helvetica,black].
+        Font to use when plotting titles over graphs [:doc:`theme dependent
+        <theme-settings>`]. Choose **auto** for :ref:`automatic scaling with plot
+        size <auto-scaling>`.
 
 .. _FORMAT Parameters:
 
@@ -245,9 +258,8 @@ FORMAT Parameters
         coordinate is to be plotted. This template is then used to guide the
         plotting of geographical coordinates in data fields. See
         :term:`FORMAT_GEO_OUT` for details. In addition, you can append A
-        which plots the absolute value of the coordinate. The default is
-        ddd:mm:ss. Not all items may be plotted as this depends on the
-        annotation interval.
+        which plots the absolute value of the coordinate. Not all items may be
+        plotted as this depends on the annotation interval. [:doc:`theme dependent <theme-settings>`].
 
     **FORMAT_GEO_OUT**
         Formatting template that indicates how an output geographical
@@ -452,9 +464,11 @@ GMT Miscellaneous Parameters
     **GMT_THEME**
         Override GMT default settings with those of the selected theme.  Choose from
         *classic* [Default for classic mode], *modern* [Default for modern mode],
-        and *minimal*. You can also create and use your own themes by compiling 
-        files of desired settings and place them in your GMT user themes directory 
-        (usually ~/.gmt/themes) and name them *theme*.conf.
+        and *minimal*. You can also create and use your own themes by compiling
+        files of desired settings and place them in your GMT user themes directory
+        (usually ~/.gmt/themes) and name them *theme*.conf. See the
+        :doc:`theme settings table<theme-settings>` for parameters associated with
+        each theme.
 
     **GMT_TRIANGULATE**
         Determines if we use the **Watson** [Default] or **Shewchuk**
@@ -599,7 +613,7 @@ MAP Parameters
     **MAP_ANNOT_MIN_SPACING**
         If an annotation would be plotted less than this minimum distance
         from its closest neighbor, the annotation is not plotted (this may
-        occur for certain oblique or polar projections.) [32p]
+        occur for certain oblique or polar projections.) [0p]
 
     **MAP_ANNOT_OBLIQUE**
         This argument is a comma-separated list of up to seven keywords:
@@ -616,16 +630,20 @@ MAP Parameters
         latitude annotations will be plotted parallel to the border. [anywhere].
 
     **MAP_ANNOT_OFFSET**
-        Sets both :term:`MAP_ANNOT_OFFSET_PRIMARY` and :term:`MAP_ANNOT_OFFSET_SECONDARY` to the value specified.
+        Sets both :term:`MAP_ANNOT_OFFSET_PRIMARY` and
+        :term:`MAP_ANNOT_OFFSET_SECONDARY` to the value specified.
         This setting is not included in the **gmt.conf** file.
 
     **MAP_ANNOT_OFFSET_PRIMARY**
-        Distance from end of tick-mark to start of annotation [5p].
+        Distance from end of tick-mark to start of annotation [:doc:`theme dependent
+        <theme-settings>`]. Choose **auto** for :ref:`automatic scaling with plot
+        size <auto-scaling>`.
 
     **MAP_ANNOT_OFFSET_SECONDARY**
         Distance from base of primary annotation to the top of the secondary
-        annotation [5p] (Only applies to time axes with both primary and
-        secondary annotations).
+        annotation (Only applies to time axes with both primary and
+        secondary annotations). [:doc:`theme dependent <theme-settings>`]. Choose
+        **auto** for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_ANNOT_ORTHO**
         Determines which axes will get their annotations (for Cartesian
@@ -653,10 +671,12 @@ MAP Parameters
         to draw the axis only, but not annotate.   To *just* draw an axis
         without annotation and ticks you can use the **l**\ (eft), **r**\ (ight),
         **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes. Add an
-        optional **+b** to draw a cube of axes in perspective view. [WESN].
+        optional **+b** to draw a cube of axes in perspective view.
+        [:doc:`theme dependent <theme-settings>`].
 
     **MAP_FRAME_PEN**
-        Pen attributes used to draw plain map frame [thicker,black].
+        Pen attributes used to draw plain map frame [:doc:`theme dependent <theme-settings>`].
+        Choose **auto** for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_FRAME_PERCENT**
         Percentage of the fancy frame width to use for the internal checkerboard
@@ -665,28 +685,29 @@ MAP Parameters
     **MAP_FRAME_TYPE**
         Choose between **inside**, **plain** and **fancy** (thick boundary,
         alternating black/white frame; append **-rounded** for rounded corners)
-        [fancy]. For some map projections (e.g., Oblique Mercator), plain is
-        the only option even if fancy is set as default. In general, fancy
-        only applies to situations where the projected x and y directions
-        parallel the longitude and latitude directions (e.g., rectangular
-        projections, polar projections). For situations where all boundary
-        ticks and annotations must be inside the maps (e.g., for preparing
-        geotiffs), chose **inside**.  Finally, for Cartesian plots you can
-        also choose **graph**\ , which adds a vector to the end of each axis.
-        This works best when you reduce the number of axes plotted to one
-        per dimension.  By default, the vector tip extends the length of each
-        axis by 7.5%. Alternatively, append ,\ *length*, where the optional *unit*
-        may be % (then *length* is the alternate extension in percent) or one
-        of **c**, **i**, or **p** (then *length* is the absolute extension
-        of the axis to the start of the vector base instead).  The vector stem
-        is set to match :term:`MAP_FRAME_WIDTH`, while the vector
-        head length and width are 10 and 5 times this width, respectively.  You
-        may control its shape via :term:`MAP_VECTOR_SHAPE`.
+        [:doc:`theme dependent <theme-settings>`]. For some map
+        projections (e.g., Oblique Mercator), plain is the only option even if
+        fancy is set as default. In general, fancy only applies to situations
+        where the projected x and y directions parallel the longitude and
+        latitude directions (e.g., rectangular projections, polar projections).
+        For situations where all boundary ticks and annotations must be inside
+        the maps (e.g., for preparing geotiffs), chose **inside**.  Finally,
+        for Cartesian plots you can also choose **graph**\ , which adds a vector
+        to the end of each axis. This works best when you reduce the number of
+        axes plotted to one per dimension.  By default, the vector tip extends
+        the length of each axis by 7.5%. Alternatively, append ,\ *length*,
+        where the optional *unit* may be % (then *length* is the alternate
+        extension in percent) or one of **c**, **i**, or **p** (then *length*
+        is the absolute extension of the axis to the start of the vector base
+        instead).  The vector stem is set to match :term:`MAP_FRAME_WIDTH`, while
+        the vector head length and width are 10 and 5 times this width,
+        respectively.  You may control its shape via :term:`MAP_VECTOR_SHAPE`.
 
     **MAP_FRAME_WIDTH**
-        Width (> 0) of map borders for fancy map frame [5p]. **Note**: For fancy
-        frames, :term:`MAP_FRAME_PEN` is automatically set to 0.1 times the
-        :term:`MAP_FRAME_WIDTH` setting.
+        Width (> 0) of map borders for fancy map frame [:doc:`theme dependent
+        <theme-settings>`]. **Note**: For fancy frames, :term:`MAP_FRAME_PEN`
+        is automatically set to 0.1 times the :term:`MAP_FRAME_WIDTH` setting.
+        Choose **auto** for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_GRID_CROSS_SIZE**
         Sets both :term:`MAP_GRID_CROSS_SIZE_PRIMARY` and :term:`MAP_GRID_CROSS_SIZE_SECONDARY` to the value specified.
@@ -714,17 +735,23 @@ MAP Parameters
 
     **MAP_GRID_PEN_PRIMARY**
         Pen attributes used to draw primary grid lines in dpi units or
-        points (append p) [0.25p,black].
+        points (append p) [:doc:`theme dependent <theme-settings>`]. Choose **auto**
+        for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_GRID_PEN_SECONDARY**
         Pen attributes used to draw secondary grid lines in dpi units or
-        points (append p) [thinner,black].
+        points (append p) [:doc:`theme dependent <theme-settings>`]. Choose **auto**
+        for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_HEADING_OFFSET**
-        Distance from top of subplot panel titles to the base of the heading [18p].
+        Distance from top of subplot panel titles to the base of the heading
+        [:doc:`theme dependent <theme-settings>`]. Choose **auto** for :ref:`automatic
+        scaling with plot size <auto-scaling>`.
 
     **MAP_LABEL_OFFSET**
-        Distance from base of axis annotations to the top of the axis label [8p].
+        Distance from base of axis annotations to the top of the axis label
+        [:doc:`theme dependent <theme-settings>`]. Choose **auto** for :ref:`automatic
+        scaling with plot size <auto-scaling>`.
 
     **MAP_LINE_STEP**
         Determines the maximum length (> 0) of individual straight
@@ -771,12 +798,16 @@ MAP Parameters
         This setting is not included in the **gmt.conf** file.
 
     **MAP_TICK_LENGTH_PRIMARY**
-        The length of a primary major/minor tick-marks [5p/2.5p]. If only
-        the first value is set, the second is assumed to be 50% of the first.
+        The length of a primary major/minor tick-marks [:doc:`theme dependent
+        <theme-settings>`]. If only the first value is set, the second
+        is assumed to be 50% of the first. Choose **auto** for :ref:`automatic
+        scaling with plot size <auto-scaling>`.
 
     **MAP_TICK_LENGTH_SECONDARY**
-        The length of a secondary major/minor tick-marks [15p/3.75p]. If
-        only the first value is set, the second is assumed to be 25% of the first.
+        The length of a secondary major/minor tick-marks [:doc:`theme dependent
+        <theme-settings>`]. If only the first value is set, the second is assumed
+        to be 25% of the first. Choose **auto** for :ref:`automatic scaling with
+        plot size <auto-scaling>`.
 
     **MAP_TICK_PEN**
         Sets both :term:`MAP_TICK_PEN_PRIMARY` and :term:`MAP_TICK_PEN_SECONDARY` to the value specified.
@@ -784,22 +815,25 @@ MAP Parameters
 
     **MAP_TICK_PEN_PRIMARY**
         Pen attributes to be used for primary tick-marks in dpi units or
-        points (append p) [thinner,black].
+        points (append p) [:doc:`theme dependent <theme-settings>`]. Choose **auto**
+        for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_TICK_PEN_SECONDARY**
         Pen attributes to be used for secondary tick-marks in dpi units or
-        points (append p) [thinner,black].
+        points (append p) [:doc:`theme dependent <theme-settings>`]. Choose **auto**
+        for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_TITLE_OFFSET**
         Distance from top of axis annotations (or axis label, if present) to
-        base of plot title [14p].
+        base of plot title [:doc:`theme dependent <theme-settings>`]. Choose **auto**
+        for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_VECTOR_SHAPE**
         Determines the shape of the head of a vector. Normally (i.e., for
         vector_shape = 0), the head will be triangular, but can be changed
         to an arrow (1) or an open V (2).
         Intermediate settings give something in between. Negative values (up
-        to -2) are allowed as well [0].
+        to -2) are allowed as well [:doc:`theme dependent <theme-settings>`].
 
 .. _Projection Parameters:
 

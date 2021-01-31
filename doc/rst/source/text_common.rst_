@@ -179,6 +179,13 @@ Optional Arguments
     Change all text to either **l**\ ower or **u**\ pper case [Default
     leaves all text as is].
 
+.. _-S:
+
+**-S**\ [*dx*/*dy*/][*shade*]
+    Plot an offset background shaded region beneath the text box. Here, *dx*/*dy*
+    indicates the shift relative to the text box [4\ **p**/-4\ **p**] and *shade*
+    sets the fill color to use for shading [gray50].
+
 .. _-U:
 
 .. include:: explain_-U.rst_
