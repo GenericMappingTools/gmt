@@ -206,12 +206,12 @@ Optional Arguments
     Append **+f** to use a specific *font* [:term:`FONT_TAG`].
     Append **+g** to fill the label bounding box with *fill* color [no fill].
     Append **+h**\ [*dx*/*dy*/][*shade*] to place drop-down shade behind the label bounding box. You can
-    adjust the offset with *dx*/*dy* [4p/-4p] and shade color [gray50]. Requires **+g** [no shade].
+    adjust the offset with *dx*/*dy* [4p/-4p] and shade color [gray50]; requires **+g** [no shade].
     Use **+j**\ *refpoint* to specify where the label should be plotted [TL].
     Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*. Append units
     **c**\|\ **i**\|\ **p** or % of the font size [20% of font size].
     Append **+p** to draw the outline of the bounding box using selected *pen* [no outline].
-    Append **+r** in conjunction with **+g** or **p** to select a rounded rectangular label box [straight].
+    Append **+r** in conjunction with **+g** or **+p** to select a rounded rectangular label box [straight].
     Append **+t** to provide a *format* statement to be used with the label item selected [no special formatting].
     If **-Lt** is used then the format statement must contain a %s-like format, else it may have an integer (%d)
     or floating point  (%e, %f, %g) format specification.
