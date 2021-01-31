@@ -3096,8 +3096,8 @@ void gmt_reload_history (struct GMT_CTRL *GMT) {
 }
 
 void gmt_reload_settings (struct GMT_CTRL *GMT) {
-	gmt_conf_SI(GMT);				/* Get the original system defaults */
-	gmt_getdefaults (GMT, NULL);	/* Overload user defaults */
+	gmt_conf_SI(GMT);				/* Get the original system defaults for SI */
+	gmt_getdefaults (GMT, NULL);	/* Overload with any user defaults form initial gmt.conf */
 }
 
 /*! . */
@@ -6319,6 +6319,31 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 
 	if (!strncmp (GMT_DEF_UNITS, "US", 2U))
 		gmtinit_conf_classic_US (GMT);	/* Override with US settings */
+
+	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Means we switch to classic in a modern mode setssion */
+		GMT_keyword_updated[GMTCASE_FONT_ANNOT_PRIMARY] = true;
+		GMT_keyword_updated[GMTCASE_FONT_ANNOT_SECONDARY] = true;
+		GMT_keyword_updated[GMTCASE_FONT_LABEL] = true;
+		GMT_keyword_updated[GMTCASE_FONT_HEADING] = true;
+		GMT_keyword_updated[GMTCASE_FONT_TAG] = true;
+		GMT_keyword_updated[GMTCASE_FONT_TITLE] = true;
+		GMT_keyword_updated[GMTCASE_FONT_SUBTITLE] = true;
+		GMT_keyword_updated[GMTCASE_FONT_LOGO] = true;
+		GMT_keyword_updated[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = true;
+		GMT_keyword_updated[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = true;
+		GMT_keyword_updated[GMTCASE_MAP_LABEL_OFFSET] = true;
+		GMT_keyword_updated[GMTCASE_MAP_TITLE_OFFSET] = true;
+		GMT_keyword_updated[GMTCASE_MAP_HEADING_OFFSET] = true;
+		GMT_keyword_updated[GMTCASE_MAP_TICK_LENGTH_PRIMARY] = true;
+		GMT_keyword_updated[GMTCASE_MAP_TICK_LENGTH_SECONDARY] = true;
+		GMT_keyword_updated[GMTCASE_MAP_FRAME_WIDTH] = true;
+		GMT_keyword_updated[GMTCASE_MAP_FRAME_PEN] = true;
+		GMT_keyword_updated[GMTCASE_MAP_TICK_PEN_PRIMARY] = true;
+		GMT_keyword_updated[GMTCASE_MAP_TICK_PEN_SECONDARY] = true;
+		GMT_keyword_updated[GMTCASE_MAP_GRID_PEN_PRIMARY] = true;
+		GMT_keyword_updated[GMTCASE_MAP_GRID_PEN_SECONDARY] = true;
+		GMT_keyword_updated[GMTCASE_MAP_VECTOR_SHAPE] = true;
+	}
 }
 
 /*! . */
