@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -873,8 +873,7 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 			x = gmt_M_memory (GMT, NULL, max_alloc_points, double);
 			y = gmt_M_memory (GMT, NULL, max_alloc_points, double);
 
-			n_edges = Grid->header->n_rows * (urint (ceil (Grid->header->n_columns / 16.0)));
-			edge = gmt_M_memory (GMT, NULL, n_edges, unsigned int);
+			edge = gmt_contour_edge_init (GMT, Grid->header, &n_edges);
 
 			GMT_Report (API, GMT_MSG_INFORMATION, "Tracing the clip path\n");
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -69,6 +69,7 @@ enum GMT_enum_pars {GMTAPI_TYPE = 0,	/* ipar[0] = data type (GMTAPI_{BYTE|SHORT|
  *===================================================================================*/
 
 struct GMT_CTRL; /* forward declaration of GMT_CTRL */
+struct GMT_COMMON; /* forward declaration of GMT_COMMON */
 
 struct GMTAPI_DATA_OBJECT {
 	/* Information for each input or output data entity, including information
@@ -206,14 +207,16 @@ struct GMTAPI_CTRL {
 	int n_remote_info;	/* How many remote server files we know of */
 	struct GMT_DATA_INFO *remote_info;
 	bool server_announced;	/* Set to true after we have announced which GMT data server we are using */
+	struct GMT_COMMON *common_snapshot;	/* Holds the latest GMT common option settings after a module completes. */
 };
 
 /* Macro to test if filename is a special name indicating memory location */
 
 #define GMTAPI_PREFIX_LEN 9U		/* The length of the unique leading prefix of virtual filenames */
 #define GMTAPI_MEMFILE_LEN 27U		/* The length of the virtual filenames (see gmtapi_encode_id) */
-#define GMTAPI_OBJECT_DIR_START 11U	/* Start position of the encoded object direction in the virtual filename */
-#define GMTAPI_OBJECT_ID_START 21U	/* Start position of the encoded object ID in the virtual filename */
+#define GMTAPI_OBJECT_DIR_START 11U		/* Start position of the encoded object direction in the virtual filename */
+#define GMTAPI_OBJECT_FAMILY_START 15U	/* Start position of the encoded actual family in the virtual filename */
+#define GMTAPI_OBJECT_ID_START 21U		/* Start position of the encoded object ID in the virtual filename */
 #define gmt_M_file_is_memory(file) (file && !strncmp (file, "@GMTAPI@-", GMTAPI_PREFIX_LEN) && strlen (file) == GMTAPI_MEMFILE_LEN)
 
 #ifdef __cplusplus

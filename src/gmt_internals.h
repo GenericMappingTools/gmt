@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -57,7 +57,6 @@ EXTERN_MSC struct GMT_CUBE *gmtlib_duplicate_cube (struct GMT_CTRL *GMT, struct 
 EXTERN_MSC void gmt_free_cube (struct GMT_CTRL *GMT, struct GMT_CUBE **U, bool free_cube);
 EXTERN_MSC unsigned int gmtlib_free_cube_ptr (struct GMT_CTRL *GMT, struct GMT_CUBE *U, bool free_cube);
 EXTERN_MSC void gmtlib_free_cube (struct GMT_CTRL *GMT, struct GMT_CUBE **U, bool free_cube);
-EXTERN_MSC uint64_t gmtlib_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array);
 EXTERN_MSC bool gmtlib_var_inc (double *x, uint64_t n);
 EXTERN_MSC char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, const char *mods);
 EXTERN_MSC char *gmtlib_valid_filemodifiers (struct GMT_CTRL *GMT);
@@ -278,6 +277,8 @@ EXTERN_MSC void gmtlib_module_list_all (void *V_API, struct GMT_MODULEINFO M[]);
 EXTERN_MSC void gmtlib_module_classic_all (void *V_API, struct GMT_MODULEINFO M[]);
 EXTERN_MSC const char *gmtlib_module_keys (void *API, struct GMT_MODULEINFO M[], char *candidate);
 EXTERN_MSC const char *gmtlib_module_group (void *API, struct GMT_MODULEINFO M[], char *candidate);
+
+EXTERN_MSC int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in);
 
 #ifdef HAVE_GDAL
 EXTERN_MSC int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn,

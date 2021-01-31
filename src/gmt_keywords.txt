@@ -107,6 +107,7 @@ MAP_FRAME_AXES			# Which axes should be plotted [WESNZ]
 MAP_FRAME_PEN			# Pen used to draw plain map frame
 MAP_FRAME_TYPE			# Type of map frame (plain or fancy)
 MAP_FRAME_WIDTH			# Width of the fancy map frame
+MAP_FRAME_PERCENT		# Percentage of fat pen to use for fancy frames [100]
 MAP_GRID_CROSS_SIZE		# Size of any grid crosses (0 for gridlines) [does not go in gmt.conf]
 MAP_GRID_CROSS_SIZE_PRIMARY	# Size of primary grid crosses (0 for gridlines)
 MAP_GRID_CROSS_SIZE_SECONDARY	# Size of secondary grid crosses (0 for gridlines)

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_958968e-dirty [64-bit] Document from pscoast
+%%Title: GMT v6.2.0_6d8d2f0-dirty_2020.12.24 [64-bit] Document from pscoast
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Dec 29 11:43:35 2018
+%%CreationDate: Thu Dec 24 12:11:09 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -112,16 +112,18 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /ISO-8859-2_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
-/space		/exclam		/quotedbl	/numbersign	/dollar		/percent	/ampersand	/quoteright
+/space		/exclam		/quotedbl	/numbersign	/dollar		/percent	/ampersand	/quotesingle
 /parenleft	/parenright	/asterisk	/plus		/comma		/hyphen		/period		/slash
 /zero		/one		/two		/three		/four		/five		/six		/seven
 /eight		/nine		/colon		/semicolon	/less		/equal		/greater	/question
@@ -129,26 +131,26 @@
 /H		/I		/J		/K		/L		/M		/N		/O
 /P		/Q		/R		/S		/T		/U		/V		/W
 /X		/Y		/Z		/bracketleft	/backslash	/bracketright	/asciicircum	/underscore
-/quoteleft	/a		/b		/c		/d		/e		/f		/g
+/grave		/a		/b		/c		/d		/e		/f		/g
 /h		/i		/j		/k		/l		/m		/n		/o
 /p		/q		/r		/s		/t		/u		/v		/w
-/x		/y		/z		/braceleft	/bar		/braceright	/tilde		/.notdef
+/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
-/space		/Aogonek	/breve		/Lslash		/currency	/Lcaron		/Sacute		/section
-/dieresis	/Scaron		/Scedilla	/Tcaron		/Zacute		/hyphen		/Zcaron		/Zdotaccent
+/uni00A0	/Aogonek	/breve		/Lslash		/currency	/Lcaron		/Sacute		/section
+/dieresis	/Scaron		/Scedilla	/Tcaron		/Zacute		/uni00AD	/Zcaron		/Zdotaccent
 /degree		/aogonek	/ogonek		/lslash		/acute		/lcaron		/sacute		/caron
 /cedilla	/scaron		/scedilla	/tcaron		/zacute		/hungarumlaut	/zcaron		/zdotaccent
 /Racute		/Aacute		/Acircumflex	/Abreve		/Adieresis	/Lacute		/Cacute		/Ccedilla
 /Ccaron		/Eacute		/Eogonek	/Edieresis	/Ecaron		/Iacute		/Icircumflex	/Dcaron
-/Eth		/Nacute		/Ncaron		/Oacute		/Ocircumflex	/Ohungarumlaut	/Odieresis	/multiply
-/Rcaron		/Uring		/Uacute		/Uhungarumlaut	/Udieresis	/Yacute		/Tcedilla	/germandbls
+/Dcroat		/Nacute		/Ncaron		/Oacute		/Ocircumflex	/Ohungarumlaut	/Odieresis	/multiply
+/Rcaron		/Uring		/Uacute		/Uhungarumlaut	/Udieresis	/Yacute		/Tcommaaccent	/germandbls
 /racute		/aacute		/acircumflex	/abreve		/adieresis	/lacute		/cacute		/ccedilla
 /ccaron		/eacute		/eogonek	/edieresis	/ecaron		/iacute		/icircumflex	/dcaron
-/dbar		/nacute		/ncaron		/oacute		/ocircumflex	/ohungarumlaut	/odieresis	/divide
-/rcaron		/uring		/uacute		/uhungarumlaut	/udieresis	/yacute		/tcedilla	/dotaccent
+/dcroat		/nacute		/ncaron		/oacute		/ocircumflex	/ohungarumlaut	/odieresis	/divide
+/rcaron		/uring		/uacute		/uhungarumlaut	/udieresis	/yacute		/tcommaaccent	/dotaccent
 ] def
 /PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
 /F0 {/Helvetica Y}!
@@ -336,9 +338,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +594,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +637,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -651,6 +648,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -662,8 +660,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -673,14 +672,48 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt pscoast -R14.633/14.892/44.67/44.94 -JM6i -Df -Wfaint,gray -Baf -BWSne+tTest_ISO-8859-2 -Xc -P -K
-%@PROJ: merc 14.63300000 14.89200000 44.67000000 44.94000000 -14415.874 14415.874 5539667.900 5581886.827 +proj=merc +lon_0=14.7625 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%GMTBoundingBox: -216 72 432 632.587
+%@PROJ: merc 14.63300000 14.89200000 44.67000000 44.94000000 -14415.874 14415.874 5539667.900 5581886.827 +proj=merc +lon_0=14.7625 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: -216 72 432 632.586557363
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+8 W
+0 A
+N 936 0 M 0 -83 D S
+N 936 10543 M 0 83 D S
+N 3253 0 M 0 -83 D S
+N 3253 10543 M 0 83 D S
+N 5569 0 M 0 -83 D S
+N 5569 10543 M 0 83 D S
+N 0 3119 M -83 0 D S
+N 7200 3119 M 83 0 D S
+N 0 6372 M -83 0 D S
+N 7200 6372 M 83 0 D S
+N 0 9630 M -83 0 D S
+N 7200 9630 M 83 0 D S
+/PSL_H_y 400 PSL_font_encode 0 get 0 eq {ISO-8859-2_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(100°) sh add def
+3600 10543 PSL_H_y add M
+400 F0
+(Test_ISO-8859-2) bc Z
+936 -167 M 200 F0
+(14°40') tc Z
+3253 -167 M (14°45') tc Z
+5569 -167 M (14°50') tc Z
+-167 3119 M (44°45') mr Z
+-167 6372 M (44°50') mr Z
+-167 9630 M (44°55') mr Z
 0 W
 0.745 A
+clipsave
+0 0 M
+7200 0 D
+0 10543 D
+-7200 0 D
+P
+PSL_clip N
 4003 0 M
 -81 114 D
 -22 0 D
@@ -760,7 +793,7 @@ O0
 0 -30 D
 69 -99 D
 0 -31 D
-S
+0 0 D S
 622 4712 M
 58 -82 D
 23 0 D
@@ -1667,7 +1700,7 @@ S
 11 16 D
 45 0 D
 12 17 D
-S
+0 0 D S
 3703 9762 M
 11 -19 D
 47 0 D
@@ -2242,21 +2275,9 @@ P S
 -24 0 D
 -11 -19 D
 P S
+PSL_cliprestore
 25 W
 0 A
-8 W
-N 936 0 M 0 -83 D S
-N 936 10543 M 0 83 D S
-N 3253 0 M 0 -83 D S
-N 3253 10543 M 0 83 D S
-N 5569 0 M 0 -83 D S
-N 5569 10543 M 0 83 D S
-N 0 3119 M -83 0 D S
-N 7200 3119 M 83 0 D S
-N 0 6372 M -83 0 D S
-N 7200 6372 M 83 0 D S
-N 0 9630 M -83 0 D S
-N 7200 9630 M 83 0 D S
 83 W
 N -42 0 M 0 519 D S
 N 7242 0 M 0 519 D S
@@ -2369,19 +2390,6 @@ N 7283 10543 M -7366 0 D S
 N 7283 10626 M -7366 0 D S
 N 0 10626 M 0 -10709 D S
 N -83 10626 M 0 -10709 D S
-/PSL_H_y 400 PSL_font_encode 0 get 0 eq {ISO-8859-2_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(100°) sh add def
-3600 10543 PSL_H_y add M
-400 F0
-(Test_ISO-8859-2) bc Z
-936 -167 M 200 F0
-(14°40œ) tc Z
-3253 -167 M (14°45œ) tc Z
-5569 -167 M (14°50œ) tc Z
--167 3119 M (44°45œ) mr Z
--167 6372 M (44°50œ) mr Z
--167 9630 M (44°55œ) mr Z
 %%EndObject
 0 A
 FQ
@@ -2389,12 +2397,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext ISO-8859-2.txt -R14.633/14.892/44.67/44.94 -JM6i -F+f12p -O
-%@PROJ: merc 14.63300000 14.89200000 44.67000000 44.94000000 -14415.874 14415.874 5539667.900 5581886.827 +proj=merc +lon_0=14.7625 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext /Users/pwessel/GMTdev/gmt-dev/test/pstext/ISO-8859-2.txt -R14.633/14.892/44.67/44.94 -JM6i -F+f12p -O
+%@PROJ: merc 14.63300000 14.89200000 44.67000000 44.94000000 -14415.874 14415.874 5539667.900 5581886.827 +proj=merc +lon_0=14.7625 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -2422,7 +2430,8 @@ PSL_cliprestore
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U

@@ -719,14 +719,38 @@ controlled via the GMT defaults settings :term:`PS_LINE_CAP`,
 segment ending is rendered, be it at the termination of a solid line or
 at the end of all dashed line segments making up a line, and how a
 straight lines of finite thickness should behave when joined at a common
-point. By default, line segments have rectangular ends, but this can
+point, as shown in Figures :ref:`Cap <Cap_settings>` and :ref:`Miter <Miter_settings>`.
+
+.. _Cap_settings:
+
+.. figure:: /_images/GMT_cap.*
+   :width: 400 px
+   :align: center
+
+   Line appearance can be varied by using :term:`PS_LINE_CAP`, choosing from **SQUARE** [Default],
+   **ROUND**, or **BUTT**.  The circles and thin lines indicate the coordinates.  All lines
+   where plotted with the same width and dash-spacing (-W10p,20_20:0).
+
+.. _Miter_settings:
+
+.. figure:: /_images/GMT_joint.*
+   :width: 550 px
+   :align: center
+
+   Given lines have finite thickness, there are three types of joints where line-segments
+   meet that can be adjusted with :term:`PS_LINE_JOIN`.  There is **BEVEL**, **ROUND**, and
+   **MITER**.  The last setting also depends on :term:`PS_MITER_LIMIT` which sets a limit on
+   the angle at the mitered joint below which we apply a bevel.
+
+By default, line segments have rectangular ends, but this can
 change to give rounded ends. When :term:`PS_LINE_CAP` is set to round the
 a segment length of zero will appear as a circle. This can be used to
 created circular dotted lines, and by manipulating the phase shift in
 the *style* attribute and plotting the same line twice one can even
 alternate the color of adjacent items.
 Figure :ref:`Line appearance <Line_appearance>` shows various lines made in this
-fashion. See the :doc:`/gmt.conf` man page for more information.
+fashion by adjusting the joint and cap settings as well as plotting lines twice with
+different phase *offset* and color. See the :doc:`/gmt.conf` man page for more information.
 
 .. _Line_appearance:
 

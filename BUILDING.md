@@ -1,7 +1,7 @@
 # Building GMT
 
 This document describes how to build GMT from source codes
-(stable release or development version) on Linux, FreeBSD, macOS and Windows.
+(stable release or development version) on Linux, FreeBSD, OpenBSD, macOS and Windows.
 
 ## Contents
 
@@ -141,7 +141,7 @@ with a focus on speed.
 In the build directory, type
 
 ```
-# Linux/macOS/FreeBSD
+# Linux/macOS/FreeBSD/OpenBSD
 cmake --build .
 
 # Windows
@@ -156,7 +156,7 @@ default number is used.
 ## Installing
 
 ```
-# Linux/macOS/FreeBSD
+# Linux/macOS/FreeBSD/OpenBSD
 cmake --build . --target install
 
 # Windows

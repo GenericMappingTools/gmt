@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_CLASSIC_NAME	"splitxyz"
-#define THIS_MODULE_MODERN_NAME	"splitxyz"
+#define THIS_MODULE_CLASSIC_NAME	"gmtsplit"
+#define THIS_MODULE_MODERN_NAME	"gmtsplit"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Split xyz[dh] data tables into individual segments"
 #define THIS_MODULE_KEYS	"<D{,>D}"
@@ -71,7 +71,7 @@ struct SPLITXYZ_CTRL {
 	} S;
 };
 
-GMT_LOCAL double *splitxyz_filterxy_setup (struct GMT_CTRL *GMT) {
+GMT_LOCAL double *gmtsplit_filterxy_setup (struct GMT_CTRL *GMT) {
 	unsigned int i;
 	double tmp, sum = 0.0, *fwork = NULL;
 
@@ -85,7 +85,7 @@ GMT_LOCAL double *splitxyz_filterxy_setup (struct GMT_CTRL *GMT) {
 	return (fwork);
 }
 
-GMT_LOCAL void splitxyz_filter_cols (struct GMT_CTRL *GMT, double *data[], uint64_t begin, uint64_t end, unsigned int d_col, unsigned int n_cols, unsigned int cols[], double filter_width, double *fwork) {
+GMT_LOCAL void gmtsplit_filter_cols (struct GMT_CTRL *GMT, double *data[], uint64_t begin, uint64_t end, unsigned int d_col, unsigned int n_cols, unsigned int cols[], double filter_width, double *fwork) {
 	uint64_t i, j, k, p, istart, istop, ndata;
 	int64_t kk;
 	bool hilow;
@@ -142,7 +142,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *C) {	/* Deall
 }
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
-	/* This displays the splitxyz synopsis and optionally full usage information */
+	/* This displays the gmtsplit synopsis and optionally full usage information */
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
@@ -167,7 +167,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   multisegment file to stdout].  Append file name template which MUST\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   contain a C-style format for a long integer (e.g., %%d) that represents\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a sequential segment number across all tables (if more than one table).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses splitxyz_segment_%%d.txt (or .bin for binary)].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses gmtsplit_segment_%%d.txt (or .bin for binary)].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, supply a template with two long formats and we will\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   replace them with the table number and table segment numbers.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Indicate what output you want as one or more of xyzdh in any order;\n");
@@ -184,7 +184,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 }
 
 static int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GMT_OPTION *options) {
-	/* This parses the options provided to splitxyz and sets parameters in Ctrl.
+	/* This parses the options provided to gmtsplit and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -302,7 +302,7 @@ static int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GMT_O
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC int GMT_splitxyz (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtsplit (void *V_API, int mode, void *args) {
 	unsigned int i, j, d_col, h_col, z_cols, xy_cols[2] = {0, 1}, io_mode = 0;
 	unsigned int output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0, n_in;
 	int error = 0;
@@ -341,7 +341,7 @@ EXTERN_MSC int GMT_splitxyz (void *V_API, int mode, void *args) {
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
-	/*---------------------------- This is the splitxyz main code ----------------------------*/
+	/*---------------------------- This is the gmtsplit main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	n_in = (Ctrl->S.active) ? 5 : 3;
@@ -410,10 +410,9 @@ EXTERN_MSC int GMT_splitxyz (void *V_API, int mode, void *args) {
 	}
 
 	Ctrl->A.tolerance *= D2R;
-	/* if (Ctrl->A.azimuth > 180.0) Ctrl->A.azimuth -= 180.0; */	/* Put in Easterly strikes  */
-	Ctrl->A.azimuth = D2R * (90.0 - Ctrl->A.azimuth);	/* Work in cartesian angle and radians  */
+	Ctrl->A.azimuth = D2R * (90.0 - Ctrl->A.azimuth);	/* Work in Cartesian angle and radians  */
 	Ctrl->C.value *= D2R;
-	if (Ctrl->F.active) fwork = splitxyz_filterxy_setup (GMT);
+	if (Ctrl->F.active) fwork = gmtsplit_filterxy_setup (GMT);
 	if (!Ctrl->N.active)
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 
@@ -489,7 +488,7 @@ EXTERN_MSC int GMT_splitxyz (void *V_API, int mode, void *args) {
 			/* Here a complete segment is ready for further processing */
 			/* Now we have read the data and can filter z, if necessary.  */
 
-			if (Ctrl->F.active) splitxyz_filter_cols (GMT, S->data, 0, S->n_rows, d_col, 1, &z_cols, Ctrl->F.z_filter, fwork);
+			if (Ctrl->F.active) gmtsplit_filter_cols (GMT, S->data, 0, S->n_rows, d_col, 1, &z_cols, Ctrl->F.z_filter, fwork);
 
 			/* Now we are ready to search for segments.  */
 
@@ -525,7 +524,7 @@ EXTERN_MSC int GMT_splitxyz (void *V_API, int mode, void *args) {
 						mean_azim = d_atan2 (ssum, csum);
 						mean_azim = fabs (mean_azim - Ctrl->A.azimuth);
 						if (mean_azim <= Ctrl->A.tolerance) {	/* List has acceptable strike.  */
-							if (Ctrl->F.active) splitxyz_filter_cols (GMT, S->data, begin, end, d_col, 2, xy_cols, Ctrl->F.xy_filter, fwork);
+							if (Ctrl->F.active) gmtsplit_filter_cols (GMT, S->data, begin, end, d_col, 2, xy_cols, Ctrl->F.xy_filter, fwork);
 							nprofiles++;
 
 							n_out = end - begin;
@@ -609,4 +608,15 @@ EXTERN_MSC int GMT_splitxyz (void *V_API, int mode, void *args) {
 	gmt_free_segment (GMT, &S_out);
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_splitxyz (void *V_API, int mode, void *args) {
+	/* This was the GMT6.1.1 name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (gmt_M_compat_check (API->GMT, 6)) {
+		GMT_Report (API, GMT_MSG_COMPAT, "Module splitxyz is deprecated; use gmtsplit.\n");
+		return (GMT_Call_Module (API, "gmtsplit", mode, args));
+	}
+	GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: splitxyz\n");
+	return (GMT_NOT_A_VALID_MODULE);
 }

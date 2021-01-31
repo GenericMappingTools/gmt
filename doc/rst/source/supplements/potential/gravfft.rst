@@ -61,14 +61,15 @@ Required Arguments
 ------------------
 
 *ingrid*
-    2-D binary grid file to be operated on. (See GRID FILE FORMATS below).
+    2-D binary grid file to be operated on. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
     For cross-spectral operations, also give the second grid file *ingrid2*.
 
 .. _-G:
 
 **-G**\ *outfile*
     Specify the name of the output grid file or the 1-D spectrum table
-    (see **-E**). (See GRID FILE FORMATS below).
+    (see **-E**). (See :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -186,8 +187,6 @@ Optional Arguments
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
 .. include:: ../../explain_help.rst_
-
-.. include:: ../../explain_grd_inout_short.rst_
 
 Grid Distance Units
 -------------------

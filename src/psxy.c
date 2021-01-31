@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -361,7 +361,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 				fprintf (fp, "# Rotated custom symbol, read size and rotation from data file\nN: 1 o\n$1 R\n");
 				first = false;
 			}
-			fprintf (fp, "%s", buffer);
+			fprintf (fp, "%s", buffer);	/* Pass remaining lines unchanged */
 		}
 		fclose (fpc);
 	}
@@ -1558,9 +1558,9 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 			if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && !S.par_set) {	/* Ellipses and rectangles */
 				if (S.n_required == 0)	/* Degenerate ellipse or rectangle, got diameter via S.size_x */
-					in[ex2] = in[ex3] = S.size_x;	/* Duplicate diameter as major and minor axes */
+					in[ex2] = in[ex3] = S.size_x, in[ex1] = 0.0;	/* Duplicate diameter as major and minor axes and set azimuth to zero  */
 				else if (S.n_required == 1)	/* Degenerate ellipse or rectangle, expect single diameter via input */
-					in[ex2] = in[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
+					in[ex2] = in[ex3] = in[ex1], in[ex1] = 0.0;	/* Duplicate diameter as major and minor axes and set azimuth to zero */
 			}
 
 			if (S.base_set & GMT_BASE_READ) {

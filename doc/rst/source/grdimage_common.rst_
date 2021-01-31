@@ -35,8 +35,8 @@ Required Arguments
 ------------------
 
 *grid* \| *image*
-    2-D gridded data set or image to be plotted (See
-    GRID FILE FORMATS below.)
+    2-D gridded data set or image to be plotted (see :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 .. _-J:
 
@@ -109,7 +109,9 @@ Optional Arguments
     default arguments (**+a**\ -45\ **+nt**\ 1\ **+m**\ 0). If you want a more
     specific intensity scenario then run :doc:`grdgradient` separately first.
     If we should derive intensities from another file than *grid*, specify the
-    file with suitable modifiers [Default is no illumination].
+    file with suitable modifiers [Default is no illumination].  **Note**: If
+    the input data is an *image* then an *intensfile* or constant *intensity*
+    must be provided.
 
 .. _-M:
 
@@ -125,9 +127,11 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**
-    Make grid nodes with z = NaN transparent, using the color-masking
+**-Q**\ [*color*]
+    Make grid nodes with NaN values transparent, using the color-masking
     feature in PostScript Level 3 (the PS device must support PS Level 3).
+    If input is instead an image then black pixels are set to be transparent;
+    append an alternate color to select another pixel value to be transparent.
 
 .. _-R:
 
@@ -166,7 +170,5 @@ Optional Arguments
 .. include:: explain_core.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: earth_relief.rst_

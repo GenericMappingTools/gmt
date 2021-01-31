@@ -24,6 +24,7 @@ Synopsis
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
 [ |SYN_OPT-:| ]
@@ -120,7 +121,8 @@ Optional Arguments
     from the third and fourth data column in the file, and **x** for cross-product.
     If **-T** is not given then no transformation takes place; the
     output is determined by other options such as **-A**, **-C**,
-    **-E**, and **-N**.
+    **-E**, and **-N**. **Note**: For **-Tt** and geographic coordinates we will
+    perform a great circle calculation unless **-je** is selected.
 
 .. _-V:
 
@@ -146,6 +148,8 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+.. include:: explain_distcalc.rst_
 
 .. include:: explain_-ocols.rst_
 
@@ -207,10 +211,15 @@ the point -30/60 at an azimuth of 105 degrees, use::
     gmt vector -A-30/60 -Tp105 -fg > pole.txt
 
 To translate all locations in the geographic file points.txt
-by 65 km to the NE, try::
+by 65 km to the NE on a spherical Earth, try::
 
     gmt vector points -Tt45/65k -fg > shifted.txt
 
+
+To determine the point that is 23 nautical miles along a geodesic
+with a bearing of 310 degrees from the origin at (8E, 50N), try::
+
+    echo 8 50 | gmt vector -Tt310/23n -je
 
 Rotations
 ---------

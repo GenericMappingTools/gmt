@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -211,9 +211,10 @@ struct GMT_COMMON {
 		bool active;
 		struct GMT_LEGEND_ITEM item;
 	} l;
-	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] */
+	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] (and +A for debugging) */
 		bool active;
 		bool antialias;		/* Defaults to true, if supported */
+		bool save_debug;	/* Write antialias counters to tmp grid */
 		bool truncate;		/* Defaults to false */
 		unsigned int interpolant;	/* Defaults to BCR_BICUBIC */
 		bool bc_set;		/* true if +b was parsed */

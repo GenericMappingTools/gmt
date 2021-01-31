@@ -38,13 +38,14 @@ Required Arguments
 ------------------
 
 *ingrid*
-    2-D grid file from which to compute directional derivative. (See GRID FILE FORMATS below).
+    2-D grid file from which to compute directional derivative. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 .. _-G:
 
 **-G**\ *outgrid*
-    Name of the output grid file for the directional derivative. (See
-    GRID FILE FORMATS below).
+    Name of the output grid file for the directional derivative. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -135,7 +136,7 @@ Optional Arguments
 .. _-R:
 
 .. |Add_-R| replace:: Using the **-R** option
-    will select a subsection of *in\_grdfile* grid. If this subsection
+    will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted.
 .. include:: explain_-R.rst_
 
@@ -183,8 +184,6 @@ unnormalized gradient grd.
 
 If you simply need the *x*- or *y*-derivatives of the grid, use :doc:`grdmath`.
 
-.. include:: explain_grd_inout_short.rst_
-
 Tiles
 -----
 
@@ -210,6 +209,14 @@ The *ambient* light offset is used to darken or brighten all intensities.  This
 modifier is typically used to darken an entire image by subtracting a constant from
 all the intensities.  E.g., if you use **+a**\ -0.5 then you subtract 0.5 from all
 intensities, making them more negative and hence darken the image.
+
+Special Effects
+---------------
+
+Users who wishes to highlight just an area of a grid are encouraged to consider creative uses
+of the vast number of operators in :doc:`grdmath` and the grid clipping schemes in :doc:`grdmask`
+and :doc:`grdclip`.  Many separate intensity grids can be combined into one via grid algebra
+and boolean operators in :doc:`grdmath`.  The sky is the limit.
 
 Examples
 --------

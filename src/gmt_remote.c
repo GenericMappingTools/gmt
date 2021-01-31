@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -427,11 +427,11 @@ GMT_LOCAL void gmtremote_display_attribution (struct GMTAPI_CTRL *API, int key, 
 	}
 	if (key == GMT_NOTSET) {	/* A Cache file */
 		if (strchr (file, ':'))	/* Generic URL */
-			GMT_Report (API, GMT_MSG_NOTICE, "  -> Download URL file: %s\n", file);
+			GMT_Report (API, GMT_MSG_INFORMATION, "  -> Download URL file: %s\n", file);
 		else
-			GMT_Report (API, GMT_MSG_NOTICE, "  -> Download cache file: %s\n", file);
+			GMT_Report (API, GMT_MSG_INFORMATION, "  -> Download cache file: %s\n", file);
 	}
-	else {
+	else {	/* Remote data sets */
 		if (!API->remote_info[key].used) {
 			GMT_Report (API, GMT_MSG_NOTICE, "%s.\n", API->remote_info[key].remark);
 			API->remote_info[key].used = true;

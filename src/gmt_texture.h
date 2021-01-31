@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -87,7 +87,7 @@ struct GMT_FONT {
 
 /*! Holds information for each predefined font [Matches PSL_FONT structure] */
 struct GMT_FONTSPEC {
-	char name[GMT_LEN32];	/* Name of the font */
+	char name[PSL_FONTNAME_LEN];	/* Name of the font */
 	double height;		/* Height of letter "A" for unit fontsize */
 	int encode;
 	int encode_orig;

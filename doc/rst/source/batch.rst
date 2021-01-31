@@ -266,13 +266,13 @@ build the pre.sh, main.sh, and post.sh scripts on the fly, hence we need to esca
 start with a dollar sign that we need to be written verbatim). At the end of the execution we find 20 grids
 (e.g., such as filter_07.grd), as well as the filter_std.grd file obtained by stacking all the individual
 scripts and computing a standard deviation. The information needed to do all of this is hidden from the user;
-the actual batch scripts that we execute are derived from the user-provided main.sh script and **batch***
+the actual batch scripts that we execute are derived from the user-provided main.sh script and **batch**
 supplies the extra machinery. The **batch** module automatically manages the parallel execution loop over all
 jobs using all available cores and launches new jobs as old ones complete.
 
 As another example, we get a list of all European countries and make a simple coast plot of each of them,
 placing their name in the title and the 2-character ISO code in the upper left corner, then in postflight
-we combine all the individual PDFs into a single file and delete them::
+we combine all the individual PDFs into a single PDF file and delete the individual files::
 
     cat << EOF > pre.sh
     gmt begin
@@ -291,7 +291,7 @@ we combine all the individual PDFs into a single file and delete them::
     EOF
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w"\t" -Ncountries -V -W -Zs
 
-Here, the postflight script is not even a GMT script; it simply runs gs and deletes what we don't want.
+Here, the postflight script is not even a GMT script; it simply runs gs (Ghostscript) and deletes what we don't want to keep.
 
 See Also
 --------

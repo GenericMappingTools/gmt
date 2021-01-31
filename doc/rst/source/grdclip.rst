@@ -38,12 +38,12 @@ Required Arguments
 ------------------
 
 *ingrid*
-    The input 2-D binary grid file.
+    The input 2-D binary grid file. (See :ref:`Grid File Formats <grd_inout_full>`).
 
 .. _-G:
 
 **-G**\ *outgrid*
-    *outgrid* is the modified output grid file.
+    *outgrid* is the modified output grid file. (See :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -75,8 +75,6 @@ Optional Arguments
 .. include:: explain_-V.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

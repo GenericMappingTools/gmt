@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -99,10 +99,15 @@ struct PSTEXT_CTRL {
 		bool active;
 		int mode;	/* 0 = do nothing, -1 = force lower case, +1 = force upper case */
 	} Q;
-	struct PSTEXT_S {	/* -S<pen> */
+	struct PSTEXT_S {	/* -S[dx>/<dy>/][<fill>] */
+		bool active;
+		double off[2];
+		struct GMT_FILL fill;
+	} S;
+	struct PSTEXT_S_OLD {	/* -S<pen> GMT 4 syntax - deprecated */
 		bool active;
 		struct GMT_PEN pen;
-	} S;
+	} S_old;
 	struct PSTEXT_W {	/* -W[<pen>] */
 		bool active;
 		struct GMT_PEN pen;
@@ -143,7 +148,10 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->F.font = GMT->current.setting.font_annot[GMT_PRIMARY];		/* Default font */
 	C->F.font.set = 0;
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* No fill */
-	C->S.pen = GMT->current.setting.map_default_pen;
+	C->S_old.pen = GMT->current.setting.map_default_pen;
+	C->S.off[GMT_X] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
+	C->S.off[GMT_Y] = -C->S.off[GMT_X];	/* Set the shadow offsets [default is (4p, -4p)] */
+	gmt_init_fill (GMT, &C->S.fill, gmt_M_is255 (127), gmt_M_is255 (127), gmt_M_is255 (127));	/* Default if gray shade is used */
 
 	return (C);
 }
@@ -154,7 +162,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *C) {	/* Dealloc
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL void pstext_output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, char *text, struct PSTEXT_INFO *T) {
+GMT_LOCAL void pstext_output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, char *text, struct PSTEXT_INFO *T, struct PSTEXT_CTRL *Ctrl) {
 	double offset[2];
 
 	gmt_M_memcpy (PSL->current.rgb[PSL_IS_FILL], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
@@ -180,13 +188,17 @@ GMT_LOCAL void pstext_output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 	if (T->boxflag) {	/* Need to lay down the box first, then place text */
 		int mode = 0;
 		struct GMT_FILL *fill = NULL;
-		if (T->boxflag & 1) gmt_setpen (GMT, &(T->boxpen));		/* Change current pen */
-		if (T->boxflag & 2) fill = &(T->boxfill);			/* Determine if fill or not */
-		if (T->boxflag & 3) gmt_setfill (GMT, fill, T->boxflag & 1);	/* Change current fill and/or outline */
 		if (T->boxflag & 1) mode = PSL_RECT_STRAIGHT;			/* Set correct box shape */
 		if (T->boxflag & 4) mode = PSL_RECT_ROUNDED;
 		if (T->boxflag & 8) mode = PSL_RECT_CONCAVE;
 		if (T->boxflag & 16) mode = PSL_RECT_CONVEX;
+		if (Ctrl->S.active) {	/* Lay down shaded box first */
+			PSL_setfill (PSL, Ctrl->S.fill.rgb, 0);	/* shade color */
+			PSL_plotparagraphbox (PSL, x + Ctrl->S.off[GMT_X], y + Ctrl->S.off[GMT_Y], T->font.size, text, T->paragraph_angle, T->block_justify, offset, mode);
+		}
+		if (T->boxflag & 1) gmt_setpen (GMT, &(T->boxpen));		/* Change current pen */
+		if (T->boxflag & 2) fill = &(T->boxfill);			/* Determine if fill or not */
+		if (T->boxflag & 3) gmt_setfill (GMT, fill, T->boxflag & 1);	/* Change current fill and/or outline */
 		/* Compute text box, draw/fill it, and in the process store the text in the PS file for next command */
 		PSL_plotparagraphbox (PSL, x, y, T->font.size, text, T->paragraph_angle, T->block_justify, offset, mode);
 		/* Passing NULL means we typeset using the last stored paragraph info */
@@ -275,13 +287,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level & PSTEXT_SHOW_FONTS) show_fonts = true, level -= PSTEXT_SHOW_FONTS;	/* Deal with the special bitflag for showing the fonts */
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<dx>/<dy>][+to|O|c|C]] [-D[j|J]<dx>[/<dy>][+v[<pen>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]] [-G[<color>][+n]] %s\n", API->K_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-M] [-N] %s%s[-Q<case>] [%s] [%s]\n", API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-W[<pen>] [%s] [%s] [-Z]\n", GMT_X_OPT, GMT_Y_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C[<dx>/<dy>][+to|O|c|C]] [-D[j|J]<dx>[/<dy>][+v[<pen>]]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]] %s\n", API->K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G[<color>][+n]] [-L] [-M] [-N] %s%s[-Q<case>] [-S[<dx>/<dy>/][<shade>] [%s]\n", API->O_OPT, API->P_OPT, GMT_U_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[<pen>] [%s] [%s] [-Z]\n", GMT_X_OPT, GMT_Y_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s]\n\t[%s] [-it<word>]\n", GMT_a_OPT, API->c_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s]\n\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tReads (x,y[,fontinfo,angle,justify],text) from <table> [or stdin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tOR (with -M) one or more text paragraphs with formatting info in the segment header.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tBuilt-in escape sequences:\n");
@@ -296,6 +308,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   @!<char1><char2> makes one composite character.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   @. prints the degree symbol.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   @@ prints the @ sign itself.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   @[<LaTeX expression>@[ may be used (except for -M).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use @a|c|e|i|n|o|s|u|A|C|E|N|O|U for accented European characters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t(See module documentation for more information).\n\n");
 
@@ -355,6 +368,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not clip text that exceeds the map boundaries [Default will clip].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q For all text to be (l)lower or (u)pper-case [Default leaves text as is].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Plot a shadow behind the text box.  Requires -G<color> to be given as well.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append <dx>/<dy> to change offset [%gp/%gp] and/or <shade> to change the shade [gray50].\n", GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Draw a box around the text with the specified pen [Default pen is %s].", 0);
 	GMT_Option (API, "X");
@@ -380,7 +395,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 	int j, k;
 	unsigned int pos, n_errors = 0;
 	bool explicit_justify = false, mess = false;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""}, *c = NULL, *q = NULL;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""}, *c = NULL, *q = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -401,7 +416,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				Ctrl->C.active = true;
 				c = strstr (opt->arg, "+t");
 				if ((c = strstr (opt->arg, "+t"))) {
-					Ctrl->C.mode = c[2];
+					if (c[2]) Ctrl->C.mode = c[2];
 					n_errors += gmt_M_check_condition (GMT, !strchr("oOcC", Ctrl->C.mode), "Option -C: Modifier +t must add o, O, c, or C\n");
 					c[0] = '\0';	/* Hide modifier */
 				}
@@ -568,10 +583,29 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				Ctrl->N.active = true;
 				break;
 			case 'S':
-				if (gmt_M_compat_check (GMT, 4)) { /* Warn and pass through */
-					GMT_Report (API, GMT_MSG_COMPAT, "-S option is deprecated; use font pen setting instead.\n");
+				if (opt->arg[0] == '\0' || (k = gmt_count_char (GMT, opt->arg, '/')) > 0 || gmt_is_fill (GMT, opt->arg)) {
+					/* -S[<dx>/<dy>/][>shade>]; requires -G */
 					Ctrl->S.active = true;
-					if (gmt_getpen (GMT, opt->arg, &Ctrl->S.pen)) {
+					if (opt->arg[0]) {
+						k = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+						if (k == 1) {	/* Just got a new fill */
+							if (gmt_getfill (GMT, txt_a, &Ctrl->S.fill)) n_errors++;
+						}
+						else if (k == 2) {	/* Just got a new offset */
+							if (gmt_get_pair (GMT, opt->arg, GMT_PAIR_DIM_DUP, Ctrl->S.off) < 0) n_errors++;
+						}
+						else if (k == 3) {	/* Got offset and fill */
+							Ctrl->S.off[GMT_X] = gmt_M_to_inch (GMT, txt_a);
+							Ctrl->S.off[GMT_Y] = gmt_M_to_inch (GMT, txt_b);
+							if (gmt_getfill (GMT, txt_c, &Ctrl->S.fill)) n_errors++;
+						}
+						else n_errors++;
+					} /* else we stick with the defaults */
+				}
+				else if (gmt_M_compat_check (GMT, 4)) { /* Warn and pass through */
+					GMT_Report (API, GMT_MSG_COMPAT, "-S<pen> option is deprecated; use font pen setting instead.\n");
+					Ctrl->S_old.active = true;
+					if (gmt_getpen (GMT, opt->arg, &Ctrl->S_old.pen)) {
 						gmt_pen_syntax (GMT, 'S', NULL, "draws outline of characters.  Append pen attributes [Default pen is %s]", 0);
 						n_errors++;
 					}
@@ -587,7 +621,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 			case 'T':
 				if (gmt_M_compat_check (GMT, 5)) { /* Warn and pass through */
 					GMT_Report (API, GMT_MSG_COMPAT, "-T option is deprecated; use modifier +t in -C instead.\n");
-					Ctrl->C.mode = opt->arg[0];
+					if (opt->arg[0]) Ctrl->C.mode = opt->arg[0];
 					n_errors += gmt_M_check_condition (GMT, !strchr("oOcC", Ctrl->C.mode), "Option -T: must add o, O, c, or C\n");
 				}
 				else
@@ -644,13 +678,15 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.J.active, "Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Option -C: clearances cannot be negative!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx == 0.0 && Ctrl->C.dy == 0.0 && Ctrl->C.mode && Ctrl->C.mode != 'o', "Non-rectangular text boxes require a non-zero -C\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx == 0.0 && Ctrl->C.dy == 0.0  && Ctrl->C.mode != 'o', "Option -C: Non-rectangular text boxes require a non-zero clearance\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dx == 0.0 && Ctrl->D.dy == 0.0 && Ctrl->D.line, "-D<x/y>v requires one nonzero <x/y>\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && abs (Ctrl->Q.mode) > 1, "Option -Q: Use l or u for lower/upper-case.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->M.active, "Option -Gc: Cannot be used with -M.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->W.active, "Option -Gc: Cannot be used with -W.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->D.line, "Option -Gc: Cannot be used with -D...v<pen>.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.get_text, "Option -M: Cannot be used with -F...+l|h.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(Ctrl->G.active && Ctrl->G.mode == 0), "Option -S: Requires -G as well.\n");
+	n_errors += gmt_M_check_condition (GMT, strchr ("cC", Ctrl->C.mode) && !Ctrl->M.active, "Option -C: Box shape mode +tc|C is only available when -M is selected.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -887,6 +923,10 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 				offset[0] = T.x_space;
 				offset[1] = T.y_space;
 			}
+			if (Ctrl->S.active) {	/* Lay down shaded box first */
+				PSL_setfill (PSL, Ctrl->S.fill.rgb, 0);	/* shade color */
+				PSL_plottextbox (PSL, plot_x + Ctrl->S.off[GMT_X], plot_y + Ctrl->S.off[GMT_Y], T.font.size, use_text, T.paragraph_angle, T.block_justify, offset, T.boxflag & 4);
+			}
 			gmt_setpen (GMT, &T.boxpen);			/* Box pen */
 			PSL_setfill (PSL, T.boxfill.rgb, T.boxflag & 1);	/* Box color */
 			PSL_plottextbox (PSL, plot_x, plot_y, T.font.size, use_text, T.paragraph_angle, T.block_justify, offset, T.boxflag & 4);
@@ -996,7 +1036,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 				if (line[0] == '\0') continue;	/* Can happen if reading from API memory */
 				skip_text_records = false;
 				if (n_processed) {	/* Must output what we got */
-					pstext_output_words (GMT, PSL, plot_x, plot_y, paragraph, &T);
+					pstext_output_words (GMT, PSL, plot_x, plot_y, paragraph, &T, Ctrl);
 					n_processed = length = 0;
 					paragraph[0] = 0;	/* Empty existing text */
 					n_paragraphs++;
@@ -1178,9 +1218,9 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 							T.font = Ctrl->F.font;
 							if (gmt_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_ERROR, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
 							if (gmt_M_compat_check (GMT, 4)) {
-								if (Ctrl->S.active) {
+								if (Ctrl->S_old.active) {
 									T.font.form |= 2;
-									T.font.pen = Ctrl->S.pen;
+									T.font.pen = Ctrl->S_old.pen;
 								}
 							}
 							break;
@@ -1232,6 +1272,18 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			gmtlib_enforce_rgb_triplets (GMT, in_txt, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 			if (Ctrl->Q.active) gmt_str_setcase (GMT, in_txt, Ctrl->Q.mode);
 			use_text = pstext_get_label (GMT, Ctrl, in_txt);	/* In case there are words */
+			if (gmt_text_is_latex (GMT, use_text)) {
+				if (T.boxflag & 3) {
+					GMT_Report (API, GMT_MSG_WARNING, "Record %d has LaTeX which cannot be used with box filling - skipping\n", n_read);
+					gmt_M_str_free (use_text);
+					continue;
+				}
+				else if (Ctrl->G.mode) {
+					GMT_Report (API, GMT_MSG_WARNING, "Record %d has LaTeX which cannot be used with -G - skipping\n", n_read);
+					gmt_M_str_free (use_text);
+					continue;
+				}
+			}
 			n_read++;
 			if (Ctrl->F.get_xy_from_justify) {
 				plot_x = coord[GMT_X], plot_y = coord[GMT_Y];
@@ -1315,6 +1367,10 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 					offset[0] = T.x_space;
 					offset[1] = T.y_space;
 				}
+				if (Ctrl->S.active) {	/* Lay down shaded box first */
+					PSL_setfill (PSL, Ctrl->S.fill.rgb, 0);	/* shade color */
+					PSL_plottextbox (PSL, plot_x + Ctrl->S.off[GMT_X], plot_y + Ctrl->S.off[GMT_Y], T.font.size, use_text, T.paragraph_angle, T.block_justify, offset, T.boxflag & 4);
+				}
 				gmt_setpen (GMT, &T.boxpen);			/* Box pen */
 				PSL_setfill (PSL, T.boxfill.rgb, T.boxflag & 1);	/* Box color */
 				PSL_plottextbox (PSL, plot_x, plot_y, T.font.size, use_text, T.paragraph_angle, T.block_justify, offset, T.boxflag & 4);
@@ -1339,7 +1395,8 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 				m++;
 			}
 			else {
-				PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, fmode);
+				gmt_map_text (GMT, plot_x, plot_y, &T.font, curr_txt, T.paragraph_angle, T.block_justify, fmode);
+				//PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, fmode);
 			}
 			if (Ctrl->A.active) T.paragraph_angle = save_angle;	/* Restore original angle */
 			gmt_M_str_free (use_text);
@@ -1362,7 +1419,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 
 	if (Ctrl->M.active) {
 		if (n_processed) {	/* Must output the last paragraph */
-			pstext_output_words (GMT, PSL, plot_x, plot_y, paragraph, &T);
+			pstext_output_words (GMT, PSL, plot_x, plot_y, paragraph, &T, Ctrl);
 			n_paragraphs++;
 		}
 	 	gmt_M_free (GMT, paragraph);

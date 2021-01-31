@@ -42,7 +42,7 @@ Required Arguments
 ------------------
 
 *ingrid*
-    This is the input grid file.
+    This is the input grid file (see :ref:`Grid File Formats <grd_inout_full>`).
 
 .. _-G:
 
@@ -103,8 +103,6 @@ Optional Arguments
 .. include:: explain_help.rst_
 
 .. include:: explain_distunits.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: explain_grd_coord.rst_
 

@@ -131,7 +131,7 @@ Optional Arguments
 
 **-I**\ [*max_intens*\|\ *low\_i*/*high_i*]
     Add illumination effects. Optionally, set the range of intensities
-    from - to + *max\_intens*. If not specified, 1 is used.
+    from -*max\_intens* to +\ *max\_intens*. If not specified, 1 is used.
     Alternatively, append *low/high* intensities to specify an
     asymmetric range [Default is no illumination].
 

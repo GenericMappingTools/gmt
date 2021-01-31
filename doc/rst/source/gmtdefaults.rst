@@ -23,13 +23,14 @@ Description
 **-D** is used. There are three ways to change some of the settings: (1)
 Use the command :doc:`gmtset`, (2) in classic mode you may use any text editor to edit the file
 :doc:`gmt.conf` in your home, ~/.gmt or current directory (if you do not
-have this file, run :doc:`gmtset` **-D** to get one with the system default
-settings), or (3) override any parameter by specifying one
+have this file, run :doc:`gmtdefaults` **-D** > gmt.conf to get one with the 
+system default settings), or (3) override any parameter by specifying one
 or more **-**\ **-PARAMETER**\ =\ *VALUE* statements on the command line of any
 GMT command (**PARAMETER** and *VALUE* are any combination listed
-below). The first two options are permanent changes until explicitly
-changed back, while the last option is ephemeral and only applies to the
-single GMT command that received the override. GMT can provide
+below). In classic mode, the first two options are permanent changes until 
+explicitly changed back, while the last option is ephemeral and only applies to 
+the single GMT command that received the override. In modern mode, changes made using
+:doc:`gmtset` stay in effect for the duration of the current session. GMT can provide
 default values in US or SI units. This choice is determined at compile time.
 
 Required Arguments

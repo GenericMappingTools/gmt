@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -265,7 +265,7 @@ endif (APPLE)
 find_package (OpenMP)
 if (GMT_OPENMP)
 	set (GMT_ENABLE_OPENMP TRUE)
-	message (WARNING "CMake variable GMT_OPENMP is deprecated and will be removed in the futhure releases. Use GMT_ENABLE_OPENMP instead.")
+	message (WARNING "CMake variable GMT_OPENMP is deprecated and will be removed in the future releases. Use GMT_ENABLE_OPENMP instead.")
 endif (GMT_OPENMP)
 if (OPENMP_FOUND AND GMT_ENABLE_OPENMP)
 	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -364,7 +364,7 @@ set (GMT_PROGS_SRCS batch.c blockmean.c blockmedian.c blockmode.c dimfilter.c do
 	mapproject.c movie.c nearneighbor.c project.c psbasemap.c psclip.c pscoast.c pscontour.c
 	psconvert.c psevents.c pshistogram.c psimage.c pslegend.c psmask.c psrose.c psscale.c
 	pssolar.c psternary.c pstext.c pswiggle.c psxy.c psxyz.c sample1d.c spectrum1d.c sph2grd.c
-	sphdistance.c sphinterpolate.c sphtriangulate.c splitxyz.c surface.c trend1d.c trend2d.c
+	sphdistance.c sphinterpolate.c sphtriangulate.c gmtsplit.c surface.c trend1d.c trend2d.c
 	triangulate.c xyz2grd.c)
 
 # libpslib
@@ -372,7 +372,8 @@ set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h PSL_Standard+.h
 	PSL_Standard.h PSL_ISOLatin1+.h PSL_ISOLatin1.h PSL_ISO-8859-1.h
 	PSL_ISO-8859-2.h PSL_ISO-8859-3.h PSL_ISO-8859-4.h PSL_ISO-8859-5.h
 	PSL_ISO-8859-6.h PSL_ISO-8859-7.h PSL_ISO-8859-8.h PSL_ISO-8859-9.h
-	PSL_ISO-8859-10.h PSL_ISO-8859-13.h PSL_ISO-8859-14.h PSL_ISO-8859-15.h
+	PSL_ISO-8859-10.h PSL_ISO-8859-11.h PSL_ISO-8859-13.h PSL_ISO-8859-14.h
+	PSL_ISO-8859-15.h PSL_ISO-8859-16.h
 	PSL_strings.h PSL_patterns.h)
 
 set (GMT_MBSYSTEM_SRCS gmt_mbsystem_glue.c)
@@ -382,7 +383,7 @@ set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	gmt_common_runpath.h gmt_common_sighandler.c gmt_common_string.h clear.c begin.c
 	gmt_color_rgb.h gmt_colornames.h gmt_media_size.h gmt_mgg_header2.h
 	gmt_modern.c end.c declspec.h gmt_hidden.h gmt_remote.h gmt_remote.c
-	figure.c gmt_dev.h gmt_common.h gmt_constants.h compat/qsort.h
+	figure.c gmt_dev.h gmt_common.h gmt_common_longoptions.h gmt_constants.h compat/qsort.h
 	gmt_contour.h gmt_customio.h gmt_datums.h gmt_dcw.h gmt_decorate.h gmt_defaults.h
 	gmt_ellipsoids.h gmt_error.h gmt_gdalread.h gmt_glib.h gmt_grd.h gmt_grdio.h gmt_hash.h
 	gmt_internals.h gmt_io.h gmt_macros.h gmt_media_name.h gmt_modern.h

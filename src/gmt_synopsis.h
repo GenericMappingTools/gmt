@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -93,7 +93,8 @@
 
 /* Used in tools that sets grdheader information via a -D option */
 
-#define GMT_GRDEDIT	"-D[+x<xname>][+y<yname>][+z<zname>][+s<scale>][+o<offset>][+n<invalid>][+t<title>][+r<remark>]"
+#define GMT_GRDEDIT2D	"-D[+x<xname>][+y<yname>][+d<dname>][+s<scale>][+o<offset>][+n<invalid>][+t<title>][+r<remark>][+v<name>]"
+#define GMT_GRDEDIT3D	"-D[+x<xname>][+y<yname>][+z<zname>][+d<dname>][+s<scale>][+o<offset>][+n<invalid>][+t<title>][+r<remark>][+v<name>]"
 
 /*! Macros for the common GMT options used in a program's usage synopsis */
 

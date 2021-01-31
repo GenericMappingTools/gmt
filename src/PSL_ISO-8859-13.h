@@ -19,10 +19,10 @@
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
-/space		/exclamdown	/cent		/sterling	/currency	/quotedblbase	/brokenbar	/section\n\
-/dieresis	/copyright	/ordfeminine	/guillemotleft	/logicalnot	/hyphen		/registered	/macron\n\
+/uni00A0	/quotedblright	/cent		/sterling	/currency	/quotedblbase	/brokenbar	/section\n\
+/Oslash		/copyright	/Rcommaaccent	/guillemotleft	/logicalnot	/uni00AD	/registered	/AE\n\
 /degree		/plusminus	/twosuperior	/threesuperior	/quotedblleft	/mu		/paragraph	/periodcentered\n\
-/cedilla	/onesuperior	/ordmasculine	/guillemotright	/onequarter	/onehalf	/threequarters	/questiondown\n\
+/oslash		/onesuperior	/rcommaaccent	/guillemotright	/onequarter	/onehalf	/threequarters	/ae\n\
 /Aogonek	/Iogonek	/Amacron	/Cacute		/Adieresis	/Aring		/Eogonek	/Emacron\n\
 /Ccaron		/Eacute		/Zacute		/Edotaccent	/Gcommaaccent	/Kcommaaccent	/Imacron	/Lcommaaccent\n\
 /Scaron		/Nacute		/Ncommaaccent	/Oacute		/Omacron	/Otilde		/Odieresis	/multiply\n\

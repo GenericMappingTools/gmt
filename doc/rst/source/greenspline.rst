@@ -15,7 +15,7 @@ Synopsis
 **gmt greenspline** [ *table* ]
 [ |-A|\ *gradfile*\ **+f**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
 [ |-C|\ [**n**]\ *value*\ [%][**+f**\ *file*][**+m**\|\ **M**] ]
-[ |-D|\ *mode* ]
+[ |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+v**\ *vname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*] ]
 [ |-E|\ [*misfitfile*] ]
 [ |-G|\ *grdfile* ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
@@ -26,6 +26,7 @@ Synopsis
 [ |-S|\ **c\|t\|l\|r\|p\|q**\ [*pars*] ] [ |-T|\ *maskgrid* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**]]
+[ |-Z|\ *mode* ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -117,21 +118,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *mode*
-    Sets the distance flag that determines how we calculate distances
-    between data points. Select *mode* 0 for Cartesian 1-D spline
-    interpolation: **-D**\ 0 means (*x*) in user units, Cartesian
-    distances, Select *mode* 1-3 for Cartesian 2-D surface spline
-    interpolation: **-D**\ 1 means (*x*,\ *y*) in user units, Cartesian
-    distances, **-D**\ 2 for (*x*,\ *y*) in degrees, Flat Earth
-    distances, and **-D**\ 3 for (*x*,\ *y*) in degrees, Spherical
-    distances in km. Then, if :term:`PROJ_ELLIPSOID` is spherical, we
-    compute great circle arcs, otherwise geodesics. Option *mode* = 4
-    applies to spherical surface spline interpolation only: **-D**\ 4
-    for (*x*,\ *y*) in degrees, use cosine of great circle (or geodesic)
-    arcs. Select *mode* 5 for Cartesian 3-D surface spline
-    interpolation: **-D**\ 5 means (*x*,\ *y*,\ *z*) in user units,
-    Cartesian distances.
+.. include:: explain_-D_cap.rst_
 
 .. _-E:
 
@@ -167,7 +154,7 @@ Optional Arguments
 .. _-L:
 
 **-L**
-    Do *not* remove a linear (1-D) or planer (2-D) trend when **-D**
+    Do *not* remove a linear (1-D) or planer (2-D) trend when **-Z**
     selects mode 0-3 [For those Cartesian cases a least-squares line or
     plane is modeled and removed, then restored after fitting a spline
     to the residuals]. However, in mixed cases with both data values and
@@ -218,7 +205,7 @@ Optional Arguments
 
 **-S**\ **c\|t\|l\|r\|p\|q**\ [*pars*]
     Select one of six different splines. The first two are used for
-    1-D, 2-D, or 3-D Cartesian splines (see **-D** for discussion). Note
+    1-D, 2-D, or 3-D Cartesian splines (see **-Z** for discussion). Note
     that all tension values are expected to be normalized tension in the
     range 0 < *t* < 1: (**c**) Minimum curvature spline [*Sandwell*,
     1987], (**t**) Continuous curvature spline in tension [*Wessel and
@@ -229,7 +216,7 @@ Optional Arguments
     not exceed the range of the given data.  The next is a 2-D or 3-D spline: (**r**)
     Regularized spline in tension [*Mitasova and Mitas*, 1993]; again,
     append *tension* and optional *scale*. The last two are spherical
-    surface splines and both imply **-D**\ 4: (**p**) Minimum
+    surface splines and both imply **-Z**\ 4: (**p**) Minimum
     curvature spline [*Parker*, 1994], (**q**) Continuous curvature
     spline in tension [*Wessel and Becker*, 2008]; append *tension*. The
     G(\ **x'**; **x'**) for the last method is slower to compute (a series solution) so we
@@ -259,6 +246,24 @@ Optional Arguments
    Append **w** if weights are given instead of uncertainties and then they will be used
    as is (no squaring).  This results in a weighted least squares fit.  Note that this
    only has an effect if **-C** is used.  [Default uses no weights or uncertainties].
+
+.. _-Z:
+
+**-Z**\ *mode*
+    Sets the distance flag that determines how we calculate distances
+    between data points. Select *mode* 0 for Cartesian 1-D spline
+    interpolation: **-Z**\ 0 means (*x*) in user units, Cartesian
+    distances, Select *mode* 1-3 for Cartesian 2-D surface spline
+    interpolation: **-Z**\ 1 means (*x*,\ *y*) in user units, Cartesian
+    distances, **-Z**\ 2 for (*x*,\ *y*) in degrees, Flat Earth
+    distances, and **-Z**\ 3 for (*x*,\ *y*) in degrees, Spherical
+    distances in km. Then, if :term:`PROJ_ELLIPSOID` is spherical, we
+    compute great circle arcs, otherwise geodesics. Option *mode* = 4
+    applies to spherical surface spline interpolation only: **-Z**\ 4
+    for (*x*,\ *y*) in degrees, use cosine of great circle (or geodesic)
+    arcs. Select *mode* 5 for Cartesian 3-D surface spline
+    interpolation: **-Z**\ 5 means (*x*,\ *y*,\ *z*) in user units,
+    Cartesian distances.
 
 .. |Add_-bi| replace:: [Default is 2-4 input
    columns (**x**,\ *w*); the number depends on the chosen dimension].
@@ -320,7 +325,7 @@ Cartesian data set from Table 5.11 in Davis (1986) that is used in the
 GMT Technical Reference and Cookbook example 16, try::
 
     gmt begin 2D
-      gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Sc -V -D1 -GS1987.nc
+      gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Sc -V -Z1 -GS1987.nc
       gmt plot -R0/6.5/-0.2/6.5 -JX6i -B -Sc0.1 -Gblack @Table_5_11.txt
       gmt grdcontour -C25 -A50 S1987.nc
     gmt end show
@@ -328,24 +333,24 @@ GMT Technical Reference and Cookbook example 16, try::
 To use Cartesian splines in tension but only evaluate the solution where
 the input mask grid is not NaN, try::
 
-    gmt greenspline @Table_5_11.txt -Tmask.nc -St0.5 -V -D1 -GWB1998.nc
+    gmt greenspline @Table_5_11.txt -Tmask.nc -St0.5 -V -Z1 -GWB1998.nc
 
 To use Cartesian generalized splines in tension and return the magnitude
 of the surface slope in the NW direction, try::
 
-    gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Sr0.95 -V -D1 -Q-45 -Gslopes.nc
+    gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Sr0.95 -V -Z1 -Q-45 -Gslopes.nc
 
 To use Cartesian cubic splines and evaluate the cumulative solution as a function of eigenvalue,
 using the output template with three digits for the eigenvalue, try::
 
-    gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Gcontribution_%3.3d.nc -Sc -D1 -C+M
+    gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Gcontribution_%3.3d.nc -Sc -Z1 -C+M
 
 Finally, to use Cartesian minimum curvature splines in recovering a
 surface where the input data is a single surface value (pt.txt) and the
 remaining constraints specify only the surface slope and direction
 (slopes.txt), use::
 
-    gmt greenspline pt.txt -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -D1 -Aslopes.txt+f1 -Gslopes.nc
+    gmt greenspline pt.txt -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -Z1 -Aslopes.txt+f1 -Gslopes.nc
 
 3-d Examples
 ------------
@@ -354,15 +359,15 @@ To create a uniform 3-D Cartesian grid table based on the data in
 Table 5.23 in Davis (1986) that contains *x*,\ *y*,\ *z* locations and
 a measure of uranium oxide concentrations (in percent), try::
 
-    gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 > 3D_UO2.txt
+    gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -Z5 > 3D_UO2.txt
 
 To instead write the results as a series of 2-D layer grids called layer_*z*.grd, try::
 
-    gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D_UO2_%g.grd
+    gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -Z5 -G3D_UO2_%g.grd
 
 Finally, to write the result to a 3-D netCDF grid, try::
 
-    gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D_UO2.nc
+    gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -Z5 -G3D_UO2.nc
 
 2-d Spherical Surface Examples
 ------------------------------
@@ -370,11 +375,11 @@ Finally, to write the result to a 3-D netCDF grid, try::
 To recreate Parker's [1994] example on a global 1x1 degree grid,
 assuming the data are in the remote file mag_obs_1990.txt, try::
 
-    gmt greenspline -V -Rg -Sp -D3 -I1 -GP1994.nc @mag_obs_1990.txt
+    gmt greenspline -V -Rg -Sp -Z3 -I1 -GP1994.nc @mag_obs_1990.txt
 
 To do the same problem but applying tension of 0.85, use::
 
-    gmt greenspline -V -Rg -Sq0.85 -D3 -I1 -GWB2008.nc @mag_obs_1990.txt
+    gmt greenspline -V -Rg -Sq0.85 -Z3 -I1 -GWB2008.nc @mag_obs_1990.txt
 
 Considerations
 --------------

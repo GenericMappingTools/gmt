@@ -17,6 +17,7 @@ Quick links
    - :doc:`Default Settings (gmt.conf) <gmt.conf>`
    - :doc:`Colors <gmtcolors>`
    - :doc:`35 Postscript Fonts </cookbook/postscript-fonts>`
+   - :doc:`Using LaTeX in text </cookbook/gmt-latex>`
    - :doc:`Built-in CPTs </cookbook/cpts>`
    - :doc:`Built-in patterns </cookbook/predefined-patterns>`
    - :doc:`Octal Codes of Characters </cookbook/octal-codes>`
@@ -78,3 +79,4 @@ Quick links
    Debugging GMT <debug>
    GMT C API <api>
    PostScriptLight C API <postscriptlight>
+   devdocs

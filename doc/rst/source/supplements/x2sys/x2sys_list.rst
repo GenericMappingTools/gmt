@@ -47,12 +47,12 @@ Required Arguments
 
 .. include:: explain_tag.rst_
 
-Optional Arguments
-------------------
-
 *coedbase.txt*
     The name of the input ASCII crossover error data base as produced by
     :doc:`x2sys_cross`. If not given we read standard input instead.
+
+Optional Arguments
+------------------
 
 .. _-A:
 

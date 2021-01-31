@@ -1,18 +1,18 @@
-.. index:: ! splitxyz
+.. index:: ! gmtsplit
 .. include:: module_core_purpose.rst_
 
 ********
-splitxyz
+gmtsplit
 ********
 
-|splitxyz_purpose|
+|gmtsplit_purpose|
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt splitxyz** [ *table* ]
+**gmt gmtsplit** [ *table* ]
 [ |-A|\ *azimuth*/*tolerance* ]
 [ |-C|\ *course_change*]
 [ |-D|\ *minimum_distance* ]
@@ -37,13 +37,13 @@ Synopsis
 Description
 -----------
 
-**splitxyz** reads a series of (x,y[,z]) records [or optionally
+**gmtsplit** reads a series of (x,y[,z]) records [or optionally
 (x,y[,z],d,h); see **-S** option] from standard input [or *xy[z][dh]file*]
 and splits this into separate lists of (x,y[,z]) series, such that each
 series has a nearly constant azimuth through the x,y plane. There are
 options to choose only those series which have a certain orientation, to
 set a minimum length for series, and to high- or low-pass filter the z
-values and/or the x,y values. **splitxyz** is a useful filter between
+values and/or the x,y values. **gmtsplit** is a useful filter between
 data extraction and :doc:`wiggle` plotting, and can also be used to
 divide a large x,y[,z] dataset into segments.
 
@@ -55,7 +55,7 @@ Required Arguments
     files with 2, 3, or 5 columns holding (x,y,[z[,d,h]])
     data values. To use (x,y,z,d,h) input, sorted so that d is
     non-decreasing, specify the **-S** option; default expects (x,y,z)
-    only. If no files are specified, **splitxyz** will read from
+    only. If no files are specified, **gmtsplit** will read from
     standard input.
 
 Optional Arguments
@@ -109,7 +109,7 @@ Optional Arguments
     specifier that can format an integer argument (the running segment
     number across all tables); this is usually %d but could be %08d
     which gives leading zeros, etc. [Default is
-    splitxyz\_segment\_%d.{txt\|bin}, depending on
+    gmtsplit\_segment\_%d.{txt\|bin}, depending on
     **-bo**]. Alternatively, give a template with
     two C format specifiers and we will supply the table number and the
     segment number within the table to build the file name.
@@ -193,13 +193,13 @@ anomalies. Try this:
 
    ::
 
-    gmt mgd77list JA020015 -R300/315/12/20 -Flon,lat,mag,dist,azim | gmt splitxyz -A90/15 -F100/-500 \
+    gmt mgd77list JA020015 -R300/315/12/20 -Flon,lat,mag,dist,azim | gmt split -A90/15 -F100/-500 \
         -D100 -S -V -fg | gmt wiggle -R300/315/12/20 -Jm0.6i -Baf -B+tJA020015 -T1 \
         -W0.75p -Ggray -Z200 -pdf JA020015_wiggles
 
 MGD-77 users: For this application we recommend that you extract dist,azim
 from :doc:`mgd77list <supplements/mgd77/mgd77list>` rather than have
-**splitxyz** compute them separately.
+**gmtsplit** compute them separately.
 
 Suppose you have been given a binary, double-precision file containing
 lat, lon, gravity values from a survey, and you want to split it into
@@ -207,7 +207,7 @@ profiles named *survey*\ \_\ *###.txt* (when gap exceeds 100 km). Try this:
 
    ::
 
-    gmt splitxyz survey.bin -Nsurvey_%03d.txt -V -gd100k -D100 -: -fg -bi3d
+    gmt split survey.bin -Nsurvey_%03d.txt -V -gd100k -D100 -: -fg -bi3d
 
 See Also
 --------

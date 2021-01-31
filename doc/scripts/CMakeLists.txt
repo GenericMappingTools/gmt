@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -75,6 +75,11 @@ file (GLOB _scripts_tests RELATIVE ${CMAKE_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_D
 foreach (skip_test GMT_-U.sh GMT_encoding.sh gen_data_App_O.sh gen_data_dummy.sh)
 	list (REMOVE_ITEM _scripts_tests doc/scripts/${skip_test})
 endforeach()
+
+# Remove GMT_latex.sh if latex or dvips not found
+if (NOT LATEX OR NOT DVIPS)
+	list (REMOVE_ITEM _scripts_tests doc/scripts/GMT_latex.sh doc/scripts/GMT_slope2intensity.sh)
+endif (NOT LATEX OR NOT DVIPS)
 
 if (DO_TESTS AND BASH)
 	foreach (_job ${_scripts_tests})

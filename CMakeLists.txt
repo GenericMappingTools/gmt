@@ -1,5 +1,5 @@
 #
-#	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+#	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 #	See LICENSE.TXT file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -86,6 +86,10 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 	message (FATAL_ERROR "Cannot proceed without GraphicsMagick. "
 		"Need to either install GraphicsMagick or disable tests.")
 endif (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
+
+# Find latex and dvips for LaTeX integration
+find_program (LATEX latex)
+find_program (DVIPS dvips)
 
 # Add subdirectories
 add_subdirectory (src)
