@@ -78,6 +78,7 @@ two ways to ensure that GMT understands which unit you intend to use:
 
 #. Set the parameter :term:`PROJ_LENGTH_UNIT` to the desired unit. Then,
    all dimensions without explicit units will be interpreted accordingly.
+   By default, GMT always initializes :term:`PROJ_LENGTH_UNIT` to cm.
 
 The latter method is less robust as other users may have a different
 default unit set and then your script may not work as intended. For portability,
