@@ -189,7 +189,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ *labelinfo*
+**-L**\ *labelinfo*\ [*modifiers*]
     Automatic labeling of individual frames.  Repeatable up to 32 labels.  Places the chosen label at the frame perimeter:
     **e** selects the elapsed time in seconds as the label; append **+s**\ *scale* to set the length
     in seconds of each frame [Default is 1/*framerate*],
@@ -205,10 +205,13 @@ Optional Arguments
     used if **+g** or **+p** are set.  Append units **c**\|\ **i**\|\ **p** or % of the font size [15%].
     Append **+f** to use a specific *font* [:term:`FONT_TAG`].
     Append **+g** to fill the label bounding box with *fill* color [no fill].
+    Append **+h**\ [*dx*/*dy*/][*shade*] to place drop-down shade behind the label bounding box. You can
+    adjust the offset with *dx*/*dy* [4p/-4p] and shade color [gray50] [no shade].
     Use **+j**\ *refpoint* to specify where the label should be plotted [TL].
     Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*. Append units
     **c**\|\ **i**\|\ **p** or % of the font size [20% of font size].
     Append **+p** to draw the outline of the bounding box using selected *pen* [no outline].
+    Append **+r** in conjunction with **+g** or **p** to select a rounded rectangular label box [straight].
     Append **+t** to provide a *format* statement to be used with the label item selected [no special formatting].
     If **-Lt** is used then the format statement must contain a %s-like format, else it may have an integer (%d)
     or floating point  (%e, %f, %g) format specification.
@@ -223,7 +226,7 @@ Optional Arguments
 
 .. _-P:
 
-**-P**\ *progress*
+**-P**\ *progress*\ [*modifiers*]
     Automatic placement of progress indicator(s). Repeatable up to 32 indicators.  Places the chosen indicator at the frame perimeter.
     Select from six indicators called a-f [a].  Indicators a-c are different types of circular indicators while d-f are
     linear (axis-like) indicators.  Specify dimension of the indicator with **+w**\ *width* [5% of max canvas dimension for
