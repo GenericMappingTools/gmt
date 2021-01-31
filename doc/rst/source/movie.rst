@@ -206,7 +206,7 @@ Optional Arguments
     Append **+f** to use a specific *font* [:term:`FONT_TAG`].
     Append **+g** to fill the label bounding box with *fill* color [no fill].
     Append **+h**\ [*dx*/*dy*/][*shade*] to place drop-down shade behind the label bounding box. You can
-    adjust the offset with *dx*/*dy* [4p/-4p] and shade color [gray50] [no shade].
+    adjust the offset with *dx*/*dy* [4p/-4p] and shade color [gray50]. Requires **+g** [no shade].
     Use **+j**\ *refpoint* to specify where the label should be plotted [TL].
     Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*. Append units
     **c**\|\ **i**\|\ **p** or % of the font size [20% of font size].
