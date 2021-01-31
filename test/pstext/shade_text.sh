@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # Test pstext paragraph mode
-ps=book.ps
-gmt pstext -R0/6/0/9 -Jx1i -P -B0 -F+f+jCM -K << EOF > $ps
-3	8	46p	A Tale of Two Cities
-3	7	32p	Dickens, Charles
-3	6.4	24p	1812-1973
+ps=shade_text.ps
+gmt pstext -R0/6/0/9 -Jx1i -P -B0 -F+f+jCM -K -Glightgreen -S -Xc << EOF > $ps
+3	8	46p	A TALE OF
+EOF
+gmt pstext -R -J -F+f+jCM -O -K -Gwhite -W0.5p -S -C+tO << EOF >> $ps
+3	7	46p	TWO CITIES!
 EOF
 # First Paragraph
-gmt pstext -R -J -F+f16p,Times-Roman,red+jTC -O -M << EOF >> $ps
+gmt pstext -R -J -F+f16p,Times-Roman,red+jTC -O -M -Glightblue -W2p -S8p/-8p/darkblue -C8p+tc << EOF >> $ps
 > 3 5 18p 5i j
 	@_It was the best of times, it was the worst of times@_,
 it was the age of wisdom, it was the age of foolishness,
@@ -20,11 +21,4 @@ the other way--in short, the period was so far like the present
 period, that some of its noisiest authorities insisted on its
 being received, for good or for evil, in the superlative degree
 of comparison only.
-
-	There were a king with a large jaw and a queen with a plain face,
-on the throne of England; there were a king with a large jaw and
-a queen with a fair face, on the throne of France.  In both
-countries it was clearer than crystal to the lords of the State
-preserves of loaves and fishes, that things in general were
-settled for ever.
 EOF

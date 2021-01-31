@@ -122,7 +122,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Format report in fields on a single line using the format\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <file w e s n {b t} v0 v1 dx dy {dz} n_columns n_rows {n_layers} [x0 y0 {z0} x1 y1 {z1}] [med L1scale] [mean std rms] [n_nan] [mode LMSscale] registration type>,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   where -M adds [x0 y0 x1 y1] and [n_nan], -L1 adds [median L1scale], -L2 adds [mean std rms],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and -Lp adds [mode LMSscale]). Ends with registration (0=gridline), 1=pixel) and type (0=Cartesian, 1=geographic).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and -Lp adds [mode LMSscale]). Ends with registration (0=gridline, 1=pixel) and type (0=Cartesian, 1=geographic).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ct to place <file> at the end of the output record, or -Cn to write only numerical columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The items in {} are only output when -Q is used for 3-D data cubes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Report tiles using tile size set in -I. Optionally, extend each tile region by <offx>/<offy>.\n");
@@ -689,7 +689,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			double *x = NULL, *y = NULL;
 			x = gmt_grd_coord (GMT, header, GMT_X);
 			y = gmt_grd_coord (GMT, header, GMT_Y);
-		
+
 			if (Ctrl->E.mode == GMT_Y) {
 				gmt_M_row_loop (GMT, G, row) {	/* Along each row; y is the monotonically increasing coordinate */
 					out[GMT_Y] = y[row];
@@ -1057,7 +1057,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 					gmt_ascii_format_col (GMT, text, U->z_range[0], GMT_OUT, GMT_Z);	strcat (record, text);
 					strcat (record, " z_max: ");
 					gmt_ascii_format_col (GMT, text, U->z_range[1], GMT_OUT, GMT_Z);	strcat (record, text);
-					strcat (record, " z_inc: ");	
+					strcat (record, " z_inc: ");
 					if (gmt_M_is_zero (U->z_inc)) strcat (record, "(variable)");
 					else {gmt_ascii_format_col (GMT, text, U->z_inc, GMT_OUT, GMT_Z);	strcat (record, text); }
 					strcat (record, " name: ");		strcat (record, U->units);
