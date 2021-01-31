@@ -7730,7 +7730,7 @@ void gmt_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 	gmt_message (GMT, "\t   Append +p[<pen>] to draw the border and optionally change the border pen [%s].\n",
 		gmt_putpen (GMT, &GMT->current.setting.map_frame_pen));
 	gmt_message (GMT, "\t   Append +r[<radius>] to plot rounded rectangles instead [Default radius is %gp].\n", GMT_FRAME_RADIUS);
-	gmt_message (GMT, "\t   Append +s[<dx>/<dy>/][<shade>] to plot a shadow behind the %s panel [Default is %gp/%g/gray50].\n", type[kind], GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
+	gmt_message (GMT, "\t   Append +s[<dx>/<dy>/][<shade>] to plot a shadow behind the %s panel [Default is %gp/%gp/gray50].\n", type[kind], GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
 }
 /*! .
 	\param GMT ...
