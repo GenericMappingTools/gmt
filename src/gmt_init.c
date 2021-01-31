@@ -14100,7 +14100,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				}
 			}
 			else {	/* No old-style -S option given either, so user expects default diameter via -J and no normalization */
-				if ((opt = GMT_Make_Option (API, 'J', "X15c")) == NULL) return NULL;	/* Failure to make -J option */
+				if (GMT->current.setting.run_mode == GMT_MODERN) {
+					if ((opt = GMT_Make_Option (API, 'J', "X?")) == NULL) return NULL;	/* Failure to make -J option */
+					is_psrose = true;
+				}
+				else {
+					if ((opt = GMT_Make_Option (API, 'J', "X15c")) == NULL) return NULL;	/* Failure to make -J option */
+				}
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append -J option */
 			}
 		}
@@ -14371,6 +14377,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 		}
 
+		if (is_psrose && P == NULL && !GMT->current.plot.inset.active && strchr (opt_J->arg, '?')) {	/* If we still have -JX? and not inset or panel, replace by default */
+			if (GMT_Update_Option (API, opt_J, "X15c")) return NULL;		/* Failed to update -J */
+		}
 		if (is_D_module && !got_R && !got_J && P)	/* Module call with -Dx in a subplot, turn on JR since we know both must exist */
 			required = "JR";
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
