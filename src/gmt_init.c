@@ -6331,6 +6331,7 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 		GMT_keyword_updated[GMTCASE_FONT_LOGO] = true;
 		GMT_keyword_updated[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = true;
 		GMT_keyword_updated[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = true;
+		GMT_keyword_updated[GMTCASE_MAP_FRAME_AXES] = true;
 		GMT_keyword_updated[GMTCASE_MAP_LABEL_OFFSET] = true;
 		GMT_keyword_updated[GMTCASE_MAP_TITLE_OFFSET] = true;
 		GMT_keyword_updated[GMTCASE_MAP_HEADING_OFFSET] = true;
