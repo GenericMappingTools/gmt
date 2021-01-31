@@ -70,7 +70,7 @@
  * the user, her script is actually embellished by movie in various ways.  For instance,
  * we call gmt figure to define the plot format before the user's commands are appended.
  * When gmt figure runs we end up calling gmt_add_figure (gmt_init.c) and it actually
- * is passed a special option -I<parameterfile>.  if gmt figure is given this s[pecial option]
+ * is passed a special option -I<parameterfile>.  if gmt figure is given this special option
  * we get its value and learn (1) that gmt figure is called from a movie script and (2)
  * that we have labels to place.  Now, we extract all such labels (here just 1) from
  * that parameter file.  These labels are then written to a file under the session directory
@@ -127,9 +127,10 @@ enum enum_label {MOVIE_LABEL_IS_FRAME = 1,
 struct MOVIE_ITEM {
 	struct GMT_FONT font;
 	char format[GMT_LEN128];
-	char fill[GMT_LEN64], fill2[GMT_LEN64];
+	char fill[GMT_LEN64], fill2[GMT_LEN64], sfill[GMT_LEN64];
 	char pen[GMT_LEN64], pen2[GMT_LEN64];
 	char kind;				/* Either a-f|A-F for progress indicators or L for label */
+	unsigned int box;		/* 1 if rounded text box, 0 if rectangular */
 	unsigned int mode;		/* What type of "time" selected for label */
 	unsigned int justify;	/* Placement location of label or indicator */
 	unsigned int col;		/* Which data column to use for labels (if active) */
@@ -140,6 +141,7 @@ struct MOVIE_ITEM {
 	double x, y;			/* Placement of progress indicator or label in inches */
 	double off[2];			/* Offset from justification point for progress indicators */
 	double clearance[2];	/* Space between label and text box (if selected) for -L labels */
+	double soff[2];			/* Space between text box and shaded box background (if selected) for -L labels */
 };
 
 /* Control structure for movie */
@@ -208,7 +210,7 @@ struct MOVIE_CTRL {
 		char *fill;		/* Fade color [black] */
 		unsigned int fade[2];	/* Duration of movie in and movie out fades [none]*/
 	} K;
-	struct MOVIE_L {	/* Repeatable: -L[e|f|c#|t#|s<string>][+c<clearance>][+f<font>][+g<fill>][+j<justify>][+o<offset>][+p<pen>][+t<fmt>][+s<scl>] */
+	struct MOVIE_L {	/* Repeatable: -L[e|f|c#|t#|s<string>][+c<clearance>][+f<font>][+g<fill>][+h[<dx>/<dy>/][<shade>]][+j<justify>][+o<offset>][+p<pen>][+r][+t<fmt>][+s<scl>] */
 		bool active;
 	} L;
 	struct MOVIE_M {	/* -M[<frame>|f|l|m][,format] */
@@ -396,8 +398,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f[<fontinfo>] to set the size, font, and optionally the label color [%s].\n",
 		gmt_putfont (API->GMT, &API->GMT->current.setting.font_tag));
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to fill the label textbox with <fill> color [no fill].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h to set offset label textbox shade color fill (requires +g also).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append <dx>/<dy> to change offset [%gp/%gp] and/or <shade> to change the shade [gray50].\n", GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j<refpoint> to specify where the label should be plotted [TL].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +o<dx>[/<dy>] to offset label in direction implied by <justify> [%d%% of font size].\n", GMT_TEXT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to select a rounded rectangular textbox (requires +g or +p) [rectangular].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the textbox using selected pen [no outline].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +t to provide a C-format statement to be used with the item selected [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Create a master frame plot as well; append comma-separated frame number [0] and format [pdf].\n");
@@ -514,11 +519,11 @@ GMT_LOCAL unsigned int movie_parse_common_item_attributes (struct GMT_CTRL *GMT,
 	/* Initialize and parse the modifiers for item attributes for both labels and progress indicators */
 	unsigned int n_errors = 0;
 	char *c = NULL, *t = NULL, string[GMT_LEN128] = {""}, placement[4] = {""};
-	char *allowed_mods = (option == 'L') ? "cfgjopst" : "acfgGjopPstw";	/* Tolerate +G+P for progress bars even if not processed in this function */
+	char *allowed_mods = (option == 'L') ? "cfghjoprst" : "acfgGjopPstw";	/* Tolerate +G+P for progress bars even if not processed in this function */
 	struct GMT_FILL fill;	/* Only used to make sure any fill is given with correct syntax */
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
 
-	I->fill[0] = I->fill2[0] = I->pen[0] = I->pen2[0] = '-';	/* No fills or pens set yet */
+	I->fill[0] = I->fill2[0] = I->sfill[0] = I->pen[0] = I->pen2[0] = '-';	/* No fills or pens set yet */
 	I->off[GMT_X] = I->off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% offset of TAG font size */
 	I->clearance[GMT_X] = I->clearance[GMT_Y] = 0.01 * GMT_TEXT_CLEARANCE * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH;	/* 15% of TAG font size */
 	if (I->kind == 'L')	/* Default label placement is top left of canvas */
@@ -530,7 +535,11 @@ GMT_LOCAL unsigned int movie_parse_common_item_attributes (struct GMT_CTRL *GMT,
 
 		/* The modifiers for labels and progress bars are not identical, so we need to be specific here */
 
-	/* Check for common modifiers [+c<dx/dy>][+f<fmt>][+g<fill>][+j<justify>][+o<dx/dy>][+p<pen>][+s<scl>][+t<fmt>] and the extra +a<labelinfo>+w<width> for progress bars */
+	/* Check for:
+	 *	1) common modifiers [+c<dx/dy>][+f<fmt>][+g<fill>][+j<justify>][+o<dx/dy>][+p<pen>][+s<scl>][+t<fmt>]
+	 *  2) the extra [+h[<dx>/<dy>/][<shade>]][+r] for labels
+	 *  3) the extra +a<labelinfo>+w<width> for progress bars
+	 */
 	if (gmt_validate_modifiers (GMT, arg, option, allowed_mods, GMT_MSG_ERROR)) n_errors++;
 	if (gmt_get_modifier (arg, 'c', string) && string[0])	/* Clearance for a text box */
 		if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, I->clearance) < 0) n_errors++;
@@ -544,6 +553,34 @@ GMT_LOCAL unsigned int movie_parse_common_item_attributes (struct GMT_CTRL *GMT,
 	}
 	if (gmt_get_modifier (arg, 'g', I->fill) && I->fill[0]) {	/* Primary fill color */
 		if (gmt_getfill (GMT, I->fill, &fill)) n_errors++;
+	}
+	if (gmt_get_modifier (arg, 'r', string))	/* Rounded text box */
+		I->box = 4;
+	if (gmt_get_modifier (arg, 'h', string)) {	/* Shaded text box fill color*/
+		strcpy (I->sfill, "gray50");	/* Default shade color */
+		I->soff[GMT_X] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
+		I->soff[GMT_Y] = -I->soff[GMT_X];	/* Set the shadow offsets [default is (4p, -4p)] */
+		I->box++;	/* Rectangular shade = 1 and rounded rectangular shade = 5*/
+		if (I->fill[0] == '-') {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Modifier +h requires +g as well\n", option);
+			n_errors++;
+		}
+		else if (string[0]) {	/* Gave an argument to +b */
+			char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""};
+			int n = sscanf (string, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+			if (n == 1)	/* Just got a new fill */
+				strcpy (I->sfill, txt_a);
+			else if (n == 2) {	/* Just got a new offset */
+				if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, I->soff) < 0) n_errors++;
+			}
+			else if (n == 3) {	/* Got offset and fill */
+				I->soff[GMT_X] = gmt_M_to_inch (GMT, txt_a);
+				I->soff[GMT_Y] = gmt_M_to_inch (GMT, txt_b);
+				strcpy (I->sfill, txt_c);
+			}
+			else n_errors++;
+		}
+		if (gmt_getfill (GMT, I->sfill, &fill)) n_errors++;
 	}
 	if (gmt_get_modifier (arg, 'j', placement)) {	/* Placement on canvas for this item */
 		if (I->kind == 'L')	/* Default label placement is top left of canvas */
@@ -1913,9 +1950,9 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 						sprintf (font, "+%s", gmt_putfont (GMT, &I->font));
 					else	/* Default font */
 						sprintf (font, "%s", gmt_putfont (GMT, F));
-					/* Place kind|x|y|t|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */
-					sprintf (label, "MOVIE_%c: %c|%g|%g|%g|%g|%d|%g|%g|%s|%s|%s|%s|%s|", which[k], I->kind, I->x, I->y, t, I->width,
-						I->justify, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2, I->fill, I->fill2, font);
+					/* Place kind|x|y|t|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|box|box_X|box_Y|sfill|font|txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */
+					sprintf (label, "MOVIE_%c: %c|%g|%g|%g|%g|%d|%g|%g|%s|%s|%s|%s|%d|%g|%g|%s|%s|", which[k], I->kind, I->x, I->y, t, I->width,
+						I->justify, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2, I->fill, I->fill2, I->box, I->soff[GMT_X], I->soff[GMT_Y], I->sfill, font);
 					string[0] = '\0';
 					for (p = 0; p < I->n_labels; p++) {	/* Here, n_labels is 0 (no labels), 1 (just at the current time) or 2 (start/end times) */
 						if (I->n_labels == 2)	/* Want start/stop values, not current frame value */
