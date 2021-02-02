@@ -70,6 +70,7 @@ Optional Arguments
 **-D**\ *dx*/*dy*
     Offset the plot symbol or line locations by the given amounts *dx/dy*
     [Default is no offset]. If *dy* is not given it is set equal to *dx*.
+    You may append dimensional units from **c**\ \|\ **i**\ \|\ **p** to each value.
 
 .. _-E:
 

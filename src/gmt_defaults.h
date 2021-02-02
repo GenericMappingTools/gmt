@@ -173,6 +173,7 @@ struct GMT_DEFAULTS {
 	struct ELLIPSOID ref_ellipsoid[GMT_N_ELLIPSOIDS];	/* Ellipsoid parameters */
 	/* PS group [These are arguments to pass to PSL_beginsession and PSL_setdefaults] */
 	/* [All other internal PSL settings are set directly when parsing PSL settings ] */
+	double ps_def_page_size[2];			/* Default Width and height of paper to plot on in points [Letter or A4] */
 	double ps_page_size[2];			/* Width and height of paper to plot on in points [Letter or A4] */
 	double ps_page_rgb[4];			/* Default paper color [white] */
 	double ps_magnify[2];			/* Width and height of paper to plot on in points [Letter or A4] */

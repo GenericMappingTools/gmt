@@ -119,7 +119,7 @@ EXTERN_MSC void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode);
 EXTERN_MSC void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode);
 EXTERN_MSC void gmt_img_syntax (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_GSHHG_syntax (struct GMT_CTRL *GMT, char option);
-EXTERN_MSC void gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file);
+EXTERN_MSC int gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file);
 EXTERN_MSC void gmt_putdefaults (struct GMT_CTRL *GMT, char *this_file);
 EXTERN_MSC int gmt_hash_init (struct GMT_CTRL *GMT, struct GMT_HASH *hashnode , char **keys, unsigned int n_hash, unsigned int n_keys);
 EXTERN_MSC void gmt_extract_label (struct GMT_CTRL *GMT, char *line, char *label, struct GMT_OGR_SEG *G);
