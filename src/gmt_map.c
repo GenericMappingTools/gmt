@@ -2579,9 +2579,9 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.proj.central_meridian = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 		GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	}
-	else if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && GMT->current.io.cycle_time_operator) {
-		GMT->current.map.lon_wrap_range = GMT->current.io.cycle_time_range;
-		GMT->current.map.is_world = doubleAlmostEqual (fabs(GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]), GMT->current.io.cycle_time_range);
+	else if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && GMT->current.io.cycle_operator) {
+		GMT->current.map.lon_wrap_range = GMT->current.io.cycle_range;
+		GMT->current.map.is_world = doubleAlmostEqual (fabs(GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]), GMT->current.io.cycle_range);
 	}
 	else
 		GMT->current.map.lon_wrap = false;
@@ -2594,7 +2594,7 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 	GMT->current.proj.xyz_pos[GMT_Y] = (GMT->current.proj.scale[GMT_Y] >= 0.0);	/* False if user wants y to increase down */
 	switch ( (GMT->current.proj.xyz_projection[GMT_X]%3)) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
-			if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_X] != GMT_TIME && !GMT->current.io.cycle_time_operator)
+			if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_X] != GMT_TIME && !GMT->current.io.cycle_operator)
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -JX|x: Your x-column contains absolute time but -JX|x...T was not specified!\n");
 			GMT->current.proj.fwd_x = ((gmt_M_x_is_lon (GMT, GMT_IN)) ? &gmtproj_translind  : &gmtlib_translin);
 			GMT->current.proj.inv_x = ((gmt_M_x_is_lon (GMT, GMT_IN)) ? &gmtproj_itranslind : &gmtlib_itranslin);
@@ -2629,7 +2629,7 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 	}
 	switch (GMT->current.proj.xyz_projection[GMT_Y]%3) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
-			if (gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_Y] != GMT_TIME && !GMT->current.io.cycle_time_operator)
+			if (gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_Y] != GMT_TIME && !GMT->current.io.cycle_operator)
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -JX|x:  Your y-column contains absolute time but -JX|x...T was not specified!\n");
 			GMT->current.proj.fwd_y = ((gmt_M_y_is_lon (GMT, GMT_IN)) ? &gmtproj_translind  : &gmtlib_translin);
 			GMT->current.proj.inv_y = ((gmt_M_y_is_lon (GMT, GMT_IN)) ? &gmtproj_itranslind : &gmtlib_itranslin);

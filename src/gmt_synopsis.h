@@ -125,6 +125,7 @@
 #define GMT_s_OPT	"-s[<cols>][+a][+r]"
 #define GMT_t_OPT	"-t<transp>[/<transp2>[+f|s]"
 #define GMT_tv_OPT	"-t[<transp>[/<transp2>[+f][+s]]"
+#define GMT_w_OPT	"-w[<col>]y|m|w|d|p<period][/<phase>]"
 #define GMT_colon_OPT	"-:[i|o]"
 
 /*! Macro for tools that need to specify FFT information (prepend option flag, e.g., -N and put GMT_FFT_OPT inside [] ) */

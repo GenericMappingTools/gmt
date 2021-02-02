@@ -1336,35 +1336,6 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 	return (error);
 }
 
-GMT_LOCAL void gmtinit_get_cycle (struct GMT_CTRL *GMT, char code, unsigned int *dir, int64_t start, int64_t stop) {
-	/* Process trailing y|m|w|d periodicity indicator */
-	if (GMT->current.io.cycle_time_operator) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -f: Time periodicity can only apply to a single input column!\n");
-		return;
-	}
-	switch (code) {
-		case 'd': GMT->current.io.cycle_time_operator = GMT_PERIODIC_DAY; break;
-		case 'w': GMT->current.io.cycle_time_operator = GMT_PERIODIC_WEEK; break;
-		case 'm': GMT->current.io.cycle_time_operator = GMT_PERIODIC_MONTH; break;
-		case 'y': GMT->current.io.cycle_time_operator = GMT_PERIODIC_YEAR; break;
-		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -f: Unrecognized time periodicity code %c - ignored\n", code);
-			return;
-	}
-	if (start != stop) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -f: Time periodicity code %c can only apply to a single input column!\n", code);
-		return;
-	}
-	GMT->current.io.cycle_time_col = start;
-	if (*dir == GMT_IN || *dir == GMT_IO) {	/* OUtput column is no longer unknown or abstime but float */
-		gmt_set_column_type (GMT, GMT_OUT, start, GMT_IS_FLOAT);
-		*dir = GMT_IN;
-	}
-	/* Because -f is always parsed before -R, we must wait until the end of GMT_Parse_Common, maybe in gmt_init_module
-	 * to set the auxiliary parameters cycle_time_min, cycle_time_max, and cycle_time_range. We must then also check
-	 * that (after consulting any -i settings), the cyclical time is either x or y */
-}
-
 /*! Routine will decode the -f[i|o]<col>|<colrange>[t|T|g|c],... arguments */
 GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 
@@ -1433,13 +1404,11 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		for (c = 0; p[c] && strchr ("0123456789-:", p[c]); c++);	/* Wind to position after the column or column range */
 		d = dir;
 		switch (p[c]) {	/* p[c] is the potential code T, t, x, y, or f. */
-			case 'T':	/* Absolute calendar time, check for periodicity indicator */
+			case 'T':	/* Absolute calendar time */
 				code = GMT_IS_ABSTIME;
-				if (p[c+1]) gmtinit_get_cycle (GMT, p[c+1], &d, start, stop);
 				break;
-			case 't':	/* Relative time (units since epoch), check for periodicity indicator */
+			case 't':	/* Relative time (units since epoch) */
 				code = GMT_IS_RELTIME;
-				if (p[c+1]) gmtinit_get_cycle (GMT, p[c+1], &d, start, stop);
 				break;
 			case 'x':	/* Longitude coordinates */
 				code = GMT_IS_LON;
@@ -2501,6 +2470,47 @@ bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 	if (c) c[0] = '+';	/* Restore the modifiers */
 	if (!GMT->common.t.variable && GMT->common.t.mode == 0) GMT->common.t.mode = GMT_SET_FILL_TRANSP | GMT_SET_PEN_TRANSP;	/* Sets both fill and stroke transparencies unless when we read from files */
 	return (n_errors > 0);
+}
+
+/*! Routine will decode the -w[<col>]y|m|w|d|p<period>[/<phase>] arguments */
+GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
+
+	char *c = NULL;
+	unsigned int k;
+
+	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -w requires an argument */
+
+	if (isdigit (arg[0])) {	/* Got a specific column */
+		for (k = 0; isdigit (arg[k]); k++);	/* Wind past the column number */
+		GMT->current.io.cycle_col = atoi (arg);
+	}
+	if (arg[k] == '\0') return (GMT_PARSE_ERROR);
+
+	switch (arg[k]) {	/* Look at which valid code we got */
+		case 'd': GMT->current.io.cycle_operator = GMT_PERIODIC_DAY; break;
+		case 'w': GMT->current.io.cycle_operator = GMT_PERIODIC_WEEK; break;
+		case 'm': GMT->current.io.cycle_operator = GMT_PERIODIC_MONTH; break;
+		case 'y': GMT->current.io.cycle_operator = GMT_PERIODIC_YEAR; break;
+		case 'p': GMT->current.io.cycle_operator = GMT_PERIODIC_CUSTOM;
+			if (arg[k+1] == '\0') return (GMT_PARSE_ERROR);	/* Gave us nuthin' */
+			if ((c = strchr (arg, '/'))) {	/* Got period/phase */
+				c[0] = ' ';	/* Replace slash by space temporarily */
+				sscanf (&arg[k+1], "%lg %lg", &GMT->current.io.cycle_period, &GMT->current.io.cycle_phase);
+				c[0] = '/';	/* Restore slash */
+			}
+			else 	/* Just got the period, woth phase = 0 */
+				GMT->current.io.cycle_period = atof (&arg[k+1]);
+			break;
+		default:
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Unrecognized periodicity code %c\n", arg[k]);
+			return (GMT_PARSE_ERROR);
+	}
+	/* Output column is no longer unknown or abstime but float */
+	gmt_set_column_type (GMT, GMT_OUT, GMT->current.io.cycle_col, GMT_IS_FLOAT);
+
+	strncpy (GMT->common.w.string, arg, GMT_LEN64-1);	/* Verbatim copy */
+
+	return (GMT_NOERROR);
 }
 
 /*! Check that special map-related codes are present - if not give warning */
@@ -7333,6 +7343,13 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead.\n");
 			gmt_message (GMT, "\t   Append +f or +s to reset row counters per table or segment [per set (+a)].\n");
 			gmt_message (GMT, "\t   For limits on data values instead, append +c<col> and give data limits for output column <col>.\n");
+			break;
+
+		case 'w':	/* -w option for cyclicity */
+
+			gmt_message (GMT, "\t-w Append input column [0] to process with specified periodicity:\n");
+			gmt_message (GMT, "\t   Absolute time: Append y, m, w, or d for annual, monthly, weekly, or daily cycles.\n");
+			gmt_message (GMT, "\t   Other: Append p<period>[/<phase>] for custom periodicity.\n");
 			break;
 
 		case 's':	/* Output control for records where z are NaN */
@@ -16359,7 +16376,7 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
 #endif
 
 /*! gmt_parse_common_options interprets the command line for the common, unique options
- * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -j, -l, -n, -o, -p, -q, -r, -s, -t, -:, -- and -^.
+ * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -a, -b, -c, -d, -e, -f, -g, -h, -i, -j, -l, -n, -o, -p, -q, -r, -s, -t, -w, -:, -- and -^.
  * The list passes all of these that we should consider.
  * The API will also consider -I for grid increments.
  */
@@ -16733,6 +16750,10 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 
 		case 't':
 			error += GMT_more_than_once (GMT, GMT->common.t.active) || gmtinit_parse_t_option (GMT, item);
+			break;
+
+		case 'w':
+			error += GMT_more_than_once (GMT, GMT->common.w.active) || gmtinit_parse_w_option (GMT, item);
 			break;
 
 #ifdef GMT_MP_ENABLED

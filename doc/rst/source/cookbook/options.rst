@@ -63,6 +63,8 @@ importance (some are used a lot more than others).
 +----------+--------------------------------------------------------------------+
 | **-t**   | Change layer transparency                                          |
 +----------+--------------------------------------------------------------------+
+| **-w**   | Convert selected coordinate to repeating cycles                    |
++----------+--------------------------------------------------------------------+
 | **-x**   | Set number of cores to be used in multi-threaded applications      |
 +----------+--------------------------------------------------------------------+
 | **-:**   | Assume input geographic data are (*lat,lon*) and not (*lon,lat*)   |

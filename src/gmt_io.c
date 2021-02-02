@@ -417,7 +417,7 @@ GMT_LOCAL uint64_t gmtio_bin_colselect (struct GMT_CTRL *GMT) {
 	for (col = 0; col < GMT->common.i.n_cols; col++) {
 		S = &(GMT->current.io.col[GMT_IN][col]);
 		order = S->order;
-		if (GMT->current.io.cycle_time_col == order)
+		if (GMT->current.io.cycle_col == order)
 			gmtlib_modulo_time_calculator (GMT, &(tmp[order]));
 		tmp[order] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col], GMT->current.io.curr_rec[S->col]);
 		switch (gmt_M_type (GMT, GMT_IN, order)) {
@@ -3648,7 +3648,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				col_no++;		/* Count up number of columns found */
 			}
 			else {					/* Successful decode, assign the value to the input array */
-				if (GMT->current.io.cycle_time_col == col_pos)	/* Convert periodic times */
+				if (GMT->current.io.cycle_col == col_pos)	/* Convert periodic times */
 					gmtlib_modulo_time_calculator (GMT, &val);
 				GMT->current.io.curr_rec[col_pos] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
 				if (col_pos == GMT_X && gmt_M_type (GMT, GMT_IN, col_pos) & GMT_IS_LON)	/* Must account for periodicity in 360 as per current rule */
@@ -4451,13 +4451,13 @@ void gmt_skip_xy_duplicates (struct GMT_CTRL *GMT, bool mode) {
 }
 
 void gmtlib_modulo_time_calculator (struct GMT_CTRL *GMT, double *val) {
-	/* Only called if the -f<col>y|m|w|d option was given to select periodic temporal data.
+	/* Only called if the -w<col>y|m|w|d|p option was given to select periodic temporal data.
 	 * Here, time_operator is the kind of period/treatment, and time_range is the period
 	 * length in current units.  If -R is set then we also handle wrapping.
 	 * Note: Below, items month, day_y (Julian day) and day_m all start at 1.  */
 	int period;
 	struct GMT_GCAL cal;
-	switch (GMT->current.io.cycle_time_operator) {
+	switch (GMT->current.io.cycle_operator) {
 		case GMT_PERIODIC_DAY:	/* Return 0.000-0.999999 day */
 			*val = fmod (*val, GMT_DAY2SEC_F) * GMT_SEC2DAY;	/* Yields 0.000-0.999999 day */
 			break;
@@ -4476,13 +4476,16 @@ void gmtlib_modulo_time_calculator (struct GMT_CTRL *GMT, double *val) {
 			period = gmtlib_is_gleap (cal.year) ? 366 : 365;	/* Length of this year in days */
 			*val = (cal.day_y - 1 + cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY) / period;
 			break;
+		case GMT_PERIODIC_CUSTOM:	/* Return 0.00000-0.99999999 for a cycle */
+			*val = fmod (*val - GMT->current.io.cycle_phase, GMT->current.io.cycle_period) / GMT->current.io.cycle_period;	/* Yields 0.000-0.999999 cycles */
+			break;
 	}
 	/* Handle wrapping around given range */
 	if (GMT->common.R.active[RSET]) {
-		if (*val > GMT->current.io.cycle_time_max)
-			*val -= GMT->current.io.cycle_time_range;
-		else if (*val < GMT->current.io.cycle_time_min)
-			*val += GMT->current.io.cycle_time_range;
+		if (*val > GMT->current.io.cycle_max)
+			*val -= GMT->current.io.cycle_range;
+		else if (*val < GMT->current.io.cycle_min)
+			*val += GMT->current.io.cycle_range;
 	}
 }
 
@@ -4589,9 +4592,11 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 						GMT->current.io.curr_rec[col_no] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 						break;
 					case GMT_IS_ABSTIME: GMT_IS_RELTIME:	/* Possibly convert to periodic time */
-						if (GMT->current.io.cycle_time_operator && GMT->current.io.cycle_time_col == col_no)
+						if (GMT->current.io.cycle_operator && GMT->current.io.cycle_col == col_no)
 							gmtlib_modulo_time_calculator (GMT, &(GMT->current.io.curr_rec[col_no]));
-					default:	/* Nothing to do */
+					default:	/* Nothing to do unless periodic */
+						if (GMT->current.io.cycle_operator && GMT->current.io.cycle_col == col_no)
+							gmtlib_modulo_time_calculator (GMT, &(GMT->current.io.curr_rec[col_no]));
 						break;
 				}
 				continue;
@@ -5722,7 +5727,7 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 	gmt_M_memset (GMT->current.io.prev_rec, GMT_MAX_COLUMNS, double);
 	GMT->current.io.record.data = GMT->current.io.curr_rec;
 	/* Time periodicity column */
-	GMT->current.io.cycle_time_col = GMT_NOTSET;
+	GMT->current.io.cycle_col = GMT_NOTSET;
 }
 
 /*! Routine will temporarily suspend any -b, -i, -g, h selections for secondary inputs */

@@ -316,11 +316,13 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
 	struct GMT_RECORD record;	/* Current record with pointers to data columns and text */
 	double *nc_xarray, *nc_yarray;	/* For grids with variable x,y arrays */
-	enum GMT_time_period cycle_time_operator;
-	int64_t cycle_time_col;	/* The input column with periodic time [-1 meaning no such thing] */
-	double cycle_time_min;	/* Min cyclical time requested via -R */
-	double cycle_time_max;	/* Max cyclical time requested via -R */
-	double cycle_time_range;	/* A full period of time */
+	enum GMT_time_period cycle_operator;
+	int64_t cycle_col;	/* The input column with periodic time [-1 meaning no such thing] */
+	double cycle_min;	/* Min cyclical time requested via -R */
+	double cycle_max;	/* Max cyclical time requested via -R */
+	double cycle_range;	/* A full period of time */
+	double cycle_period;	/* Custom period */
+	double cycle_phase;		/* Custom phase */
 	/* The remainder are just pointers to memory allocated elsewhere */
 	int *grpid, *varid;			/* Arrays of group and variable IDs (netCDF only) */
 	double *scale_factor;		/* Array of scale factors (netCDF only) */
