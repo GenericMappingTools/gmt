@@ -317,7 +317,12 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 
 	/* Read the supplied default file or the users defaults to override system settings */
 
-	if (Ctrl->G.active || API->external) gmt_getdefaults (GMT, Ctrl->G.file);	/* Update defaults if using external API */
+	if (Ctrl->G.active || API->external) {
+		if (gmt_getdefaults (GMT, Ctrl->G.file) && Ctrl->G.file) {	/* Update defaults if using external API */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to access or read %s\n", Ctrl->G.file);
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
 
 	error = gmt_pickdefaults (GMT, Ctrl->L.active, options);		/* Process command line arguments */
 
