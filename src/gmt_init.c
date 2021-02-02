@@ -3097,7 +3097,7 @@ void gmt_reload_history (struct GMT_CTRL *GMT) {
 
 void gmt_reload_settings (struct GMT_CTRL *GMT) {
 	gmt_conf (GMT);				/* Get the original system defaults */
-	gmt_getdefaults (GMT, NULL);	/* Overload user defaults */
+	(void)gmt_getdefaults (GMT, NULL);	/* Overload user defaults */
 }
 
 /*! . */
@@ -12465,21 +12465,23 @@ void gmt_putdefaults (struct GMT_CTRL *GMT, char *this_file) {
 }
 
 /*! Read user's gmt.conf file and initialize parameters */
-void gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file) {
+int gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file) {
 	char file[PATH_MAX];
+	int err = GMT_NOTSET;
 
 	if (this_file)	/* Defaults file is specified */
-		gmtinit_loaddefaults (GMT, this_file);
+		err = gmtinit_loaddefaults (GMT, this_file);
 	else {	/* Use local dir, tempdir, or workflow dir (modern mode) */
 		if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory */
 			char path[PATH_MAX] = {""}, tag[GMT_LEN32] = {""};
 			gmt_hierarchy_tag (GMT->parent, GMT_SETTINGS_FILE, GMT_IN, tag);
 			snprintf (path, PATH_MAX, "%s/%s%s", GMT->parent->gwf_dir, GMT_SETTINGS_FILE, tag);
-			gmtinit_loaddefaults (GMT, path);
+			err = gmtinit_loaddefaults (GMT, path);
 		}
 		else if (gmtlib_getuserpath (GMT, GMT_SETTINGS_FILE, file))
-			gmtinit_loaddefaults (GMT, file);
+			err = gmtinit_loaddefaults (GMT, file);
 	}
+	return (err);
 }
 
 /*! Creates the name (if equivalent) or the string r[/g/b] corresponding to the RGB triplet or a pattern.
@@ -18108,11 +18110,10 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 
 			gmt_conf (API->GMT);				/* Get the GMT system defaults */
 			if (!clean_start) {
+				/*  Overload any user-supplied defaults via a gmt.conf file but reset PS_MEDIA to the original system default */
 				int default_media = API->GMT->current.setting.ps_media;
-				gmt_getdefaults (API->GMT, NULL);		/* Overload any user-supplied defaults via a gmt.conf file */
-				gmtinit_setautopagesize (API->GMT);
-				/* But reset PS_MEDIA to the original system default */
-				//API->GMT->current.setting.ps_media = default_media;
+				if (gmt_getdefaults (API->GMT, NULL) == GMT_NOERROR)	/* Ingested a gmt.conf file */
+					gmtinit_setautopagesize (API->GMT);	/* Reset to auto */
 			}
 			snprintf (dir, PATH_MAX, "%s/%s", API->gwf_dir, GMT_SETTINGS_FILE);	/* Reuse dir string for saving gmt.conf to this dir */
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode here so putdefaults can skip writing PS_MEDIA if not PostScript output */
