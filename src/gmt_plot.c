@@ -8392,9 +8392,9 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Write PS to hidden gmt_#.ps- file.  No -O -K allowed */
 		char *verb[2] = {"Create", "Append to"};
 		bool wants_PS;
-		double paper_margin = GMT_PAPER_MARGIN;
+		double paper_margin = GMT_PAPER_MARGIN_AUTO;
 		if (gmtlib_fixed_paper_size (GMT->parent)) {	/* Must honor paper sized and regular margin */
-			double paper_margin = 1.0;
+			double paper_margin = GMT_PAPER_MARGIN_FIXED;
 			gmt_M_memcpy (media_size, GMT->current.setting.ps_def_page_size, 2, double);
 		}
 
