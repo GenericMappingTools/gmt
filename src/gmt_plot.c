@@ -8392,6 +8392,12 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Write PS to hidden gmt_#.ps- file.  No -O -K allowed */
 		char *verb[2] = {"Create", "Append to"};
 		bool wants_PS;
+		double paper_margin = GMT_PAPER_MARGIN;
+		if (gmtlib_fixed_paper_size (GMT->parent)) {	/* Must honor paper sized and regular margin */
+			double paper_margin = 1.0;
+			gmt_M_memcpy (media_size, GMT->current.setting.ps_def_page_size, 2, double);
+		}
+
 		if ((k = gmt_set_psfilename (GMT)) == GMT_NOTSET) {	/* Get hidden file name for PS */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No workflow directory\n");
 			GMT->parent->error = GMT_ERROR_ON_FOPEN;
@@ -8424,9 +8430,9 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Use PS_MEDIA and/or PS_PAGE_ORIENTATION to specify correct paper dimensions and/or orientation if our guesses are inadequate.\n");
 			}
 		}
-		else if (!O_active) {	/* Not desiring PS output so we can add safety margin of GMT_PAPER_MARGIN inches for initial layer unless PS_MEDIA was set */
+		else if (!O_active) {	/* Not desiring PS output so we can add safety margin of paper_margin inches for initial layer unless PS_MEDIA was set */
 			if (!(GMT->common.X.active || GMT->common.Y.active) && auto_media)
-				GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = GMT_PAPER_MARGIN;
+				GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = paper_margin;
 		}
 		if (!O_active) {	/* See if special movie labeling file exists under modern mode */
 			char file[PATH_MAX] = {""}, record[GMT_LEN256] = {""};

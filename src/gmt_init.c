@@ -6097,12 +6097,16 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	error += gmt_getrgb (GMT, "white", GMT->current.setting.ps_page_rgb);
 	/* PS_PAGE_ORIENTATION */
 	/* PS_MEDIA */
+	/* Set default media size */
+	i = gmtinit_key_lookup ("a4", GMT_media_name, GMT_N_MEDIA);
+	/* Use the specified standard format */
+	GMT->current.setting.ps_def_page_size[0] = GMT_media[i].width;
+	GMT->current.setting.ps_def_page_size[1] = GMT_media[i].height;
 	if (GMT->current.setting.run_mode == GMT_MODERN) {
 		gmtinit_setautopagesize (GMT);
 	}
 	else {
 		GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
-		i = gmtinit_key_lookup ("a4", GMT_media_name, GMT_N_MEDIA);
 		/* Use the specified standard format */
 		GMT->current.setting.ps_media = i;
 		GMT->current.setting.ps_page_size[0] = GMT_media[i].width;
@@ -6282,12 +6286,14 @@ void gmt_conf_US (struct GMT_CTRL *GMT) {
 	strcpy (GMT->current.setting.ps_encoding.name, "Standard+");
 	gmtinit_load_encoding (GMT);
 	/* PS_MEDIA */
+	i = gmtinit_key_lookup ("letter", GMT_media_name, GMT_N_MEDIA);
+	GMT->current.setting.ps_def_page_size[0] = GMT_media[i].width;
+	GMT->current.setting.ps_def_page_size[1] = GMT_media[i].height;
 	if (GMT->current.setting.run_mode == GMT_MODERN)
 		gmtinit_setautopagesize (GMT);
 	else {
 		case_val = gmt_hash_lookup (GMT, "PS_MEDIA", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 		if (case_val >= 0) GMT_keyword_updated[case_val] = true;
-		i = gmtinit_key_lookup ("letter", GMT_media_name, GMT_N_MEDIA);
 		/* Use the specified standard format */
 		GMT->current.setting.ps_media = i;
 		GMT->current.setting.ps_page_size[0] = GMT_media[i].width;
@@ -10497,6 +10503,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.ps_media = -USER_MEDIA_OFFSET;
 			}
 			if (!error && manual) GMT->current.setting.ps_page_size[0] = -GMT->current.setting.ps_page_size[0];
+			GMT->current.setting.ps_def_page_size[0] = GMT->current.setting.ps_page_size[0];
+			GMT->current.setting.ps_def_page_size[1] = GMT->current.setting.ps_page_size[1];
 			break;
 		case GMTCASE_GLOBAL_X_SCALE:
 			GMT_COMPAT_TRANSLATE ("PS_SCALE_X");
@@ -17504,6 +17512,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			if (fig[k].options[0]) {	/* Append figure-specific psconvert settings */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
+					if (!strcmp (p, "A+n")) p[2] = 'M';	/* This means crop to media */
 					if (!auto_size && (p[0] == 'A' && !strstr (p, "+n"))) continue;	/* Cannot do cropping when a specific media size was given, unless crop is off via +n */
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the format */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
@@ -17517,6 +17526,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			else if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (API->GMT->current.setting.ps_convert, ",", &pos, p))) {
+					if (!strcmp (p, "A+n")) p[2] = 'M';	/* This means crop to media */
 					if (!auto_size && (p[0] == 'A' && !strstr (p, "+n"))) continue;	/* Cannot do cropping when a specific media size was given */
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the formst */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
@@ -17744,6 +17754,29 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg, char *parfile) {
 		if (fpM[k]) fclose (fpM[k]);
 
 	return GMT_NOERROR;
+}
+
+bool gmtlib_fixed_paper_size (struct GMTAPI_CTRL *API) {	/* Return true if this should have a fixed paper size */
+	int no = gmt_get_current_figure (API);	/* Get figure number 1-? or 0 if a session plot */
+	bool fixed = false;
+
+	if (no == 0) {	/* Session figure */
+		if (API->GMT->current.setting.ps_convert[0] && strstr (API->GMT->current.setting.ps_convert, "+n"))
+			fixed = true;	/* GMT default margin */
+	}
+	else {	/* Must check a specific figure other than session */
+		int n_figs;
+		struct GMT_FIGURE *fig = NULL;
+		if ((n_figs = gmtinit_read_figures (API->GMT, 1, &fig)) == GMT_NOTSET) {	/* Auto-insert the hidden gmt_0.ps- file which may not have been used */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to open gmt.figures for reading\n");
+			return GMT_ERROR_ON_FOPEN;
+		}
+		no--;	/* Since now 0 is figure 1 */
+		if (fig[no].options[0] && strstr (fig[no].options, "+n"))
+			fixed = true;	/* GMT default margin */
+		gmt_M_free (API->GMT, fig);
+	}
+	return fixed;
 }
 
 int gmt_truncate_file (struct GMTAPI_CTRL *API, char *file, size_t size) {
