@@ -3097,7 +3097,7 @@ void gmt_reload_history (struct GMT_CTRL *GMT) {
 
 void gmt_reload_settings (struct GMT_CTRL *GMT) {
 	gmt_conf_SI(GMT);				/* Get the original system defaults for SI */
-	(void)gmt_getdefaults (GMT, NULL);	/* Overload with any user defaults form initial gmt.conf */
+	(void)gmt_getdefaults (GMT, NULL);	/* Overload with any user defaults from initial gmt.conf */
 }
 
 /*! . */
