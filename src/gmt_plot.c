@@ -9919,6 +9919,8 @@ int gmt_ps_append (struct GMT_CTRL *GMT, char *source, unsigned int mode, FILE *
 	FILE *fp = NULL;
 	char buffer[GMT_BUFSIZ] = {""};
 	bool go = true;
+	if (mode == 0 || mode == 2)
+		fprintf (dest, "/PSL_xorig 0 def /PSL_yorig 0 def\n");	/* Reset these since we did not use -K in making these pieces */
 
 	if ((fp = fopen (source, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not open PostScript file %s\n", source);
