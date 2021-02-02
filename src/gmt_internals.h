@@ -52,6 +52,7 @@ struct GMT_XINGS {
 EXTERN_MSC char *dlerror (void);
 #endif
 
+EXTERN_MSC bool gmtlib_fixed_paper_size (struct GMTAPI_CTRL *API);
 EXTERN_MSC struct GMT_CUBE *gmtlib_create_cube (struct GMT_CTRL *GMT);
 EXTERN_MSC struct GMT_CUBE *gmtlib_duplicate_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *U, unsigned int mode);
 EXTERN_MSC void gmt_free_cube (struct GMT_CTRL *GMT, struct GMT_CUBE **U, bool free_cube);

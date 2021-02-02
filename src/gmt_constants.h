@@ -88,7 +88,8 @@
 #define GMT_TOP_MODULE	1	/* func_level of top-level module being called */
 
 #define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode, in points (~11.6 meters) */
-#define GMT_PAPER_MARGIN	5	/* Default paper margin under modern mode, in inches (12.7 centimeter) */
+#define GMT_PAPER_MARGIN_AUTO	5	/* Default paper margin under modern mode, in inches (12.7 centimeter) for auto-size mode */
+#define GMT_PAPER_MARGIN_FIXED	1	/* Default paper margin under modern mode, in inches (12.7 centimeter) for fixed-size mode */
 
 /*! whether to ignore/read/write history file gmt.history */
 enum GMT_enum_history {

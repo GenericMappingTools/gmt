@@ -416,7 +416,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				Ctrl->C.active = true;
 				c = strstr (opt->arg, "+t");
 				if ((c = strstr (opt->arg, "+t"))) {
-					Ctrl->C.mode = c[2];
+					if (c[2]) Ctrl->C.mode = c[2];
 					n_errors += gmt_M_check_condition (GMT, !strchr("oOcC", Ctrl->C.mode), "Option -C: Modifier +t must add o, O, c, or C\n");
 					c[0] = '\0';	/* Hide modifier */
 				}
@@ -621,7 +621,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 			case 'T':
 				if (gmt_M_compat_check (GMT, 5)) { /* Warn and pass through */
 					GMT_Report (API, GMT_MSG_COMPAT, "-T option is deprecated; use modifier +t in -C instead.\n");
-					Ctrl->C.mode = opt->arg[0];
+					if (opt->arg[0]) Ctrl->C.mode = opt->arg[0];
 					n_errors += gmt_M_check_condition (GMT, !strchr("oOcC", Ctrl->C.mode), "Option -T: must add o, O, c, or C\n");
 				}
 				else
@@ -678,7 +678,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.J.active, "Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Option -C: clearances cannot be negative!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx == 0.0 && Ctrl->C.dy == 0.0 && Ctrl->C.mode && Ctrl->C.mode != 'o', "Non-rectangular text boxes require a non-zero -C\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx == 0.0 && Ctrl->C.dy == 0.0  && Ctrl->C.mode != 'o', "Option -C: Non-rectangular text boxes require a non-zero clearance\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dx == 0.0 && Ctrl->D.dy == 0.0 && Ctrl->D.line, "-D<x/y>v requires one nonzero <x/y>\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && abs (Ctrl->Q.mode) > 1, "Option -Q: Use l or u for lower/upper-case.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->M.active, "Option -Gc: Cannot be used with -M.\n");
