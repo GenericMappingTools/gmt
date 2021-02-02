@@ -18111,7 +18111,6 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			gmt_conf (API->GMT);				/* Get the GMT system defaults */
 			if (!clean_start) {
 				/*  Overload any user-supplied defaults via a gmt.conf file but reset PS_MEDIA to the original system default */
-				int default_media = API->GMT->current.setting.ps_media;
 				if (gmt_getdefaults (API->GMT, NULL) == GMT_NOERROR)	/* Ingested a gmt.conf file */
 					gmtinit_setautopagesize (API->GMT);	/* Reset to auto */
 			}
