@@ -12467,7 +12467,7 @@ void gmt_putdefaults (struct GMT_CTRL *GMT, char *this_file) {
 /*! Read user's gmt.conf file and initialize parameters */
 int gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file) {
 	char file[PATH_MAX];
-	int err = GMT_NOTSET;
+	int err = GMT_NOTSET;	/* Returned if this_file == NULL, classic mode, and no gmt.conf found */
 
 	if (this_file)	/* Defaults file is specified */
 		err = gmtinit_loaddefaults (GMT, this_file);
