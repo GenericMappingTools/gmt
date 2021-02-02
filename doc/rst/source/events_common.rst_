@@ -119,6 +119,18 @@ Optional Arguments
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Set constant shade or color for all symbols or polygons.
 
+.. _-H:
+
+**-H**\ [**+c**\ *dx*/*dy*][**+g**\ *fill*][**+p**\ [*pen*]][**+r**][**+s**\ [[*dx*/*dy*/][*shade*]]]
+    Enable bounding boxes around text labels and provide one or more of these specific parameters:
+    Add **+c** to adjust the clearance between the text and the surrounding box [15% of font size].
+    Add **+p** to draw the box outline with :term:`MAP_DEFAULT_PEN` or append a different pen.
+    Add **+g**\ *fill* to fill the text box [no fill].
+    Append **+r** to use a rounded rectangular box instead of straight rectangular box.
+    Append **+s** to place an offset, background shaded box behind the text box. Here, *dx*/*dy*
+    indicates the shift relative to the foreground text box [4\ **p**/-4\ **p**] and *shade* changes
+    the fill used for shading [gray50]. **Note**: Modifier **+s** requires **+g** as well.
+
 .. include:: explain_-Jz.rst_
 
 .. _-L:

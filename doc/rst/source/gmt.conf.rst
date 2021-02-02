@@ -959,11 +959,11 @@ Projection Parameters
         The default **Vincenty** is accurate to about 0.5 mm.
 
     **PROJ_LENGTH_UNIT**
-        Sets the unit length. Choose between **c**\ m, **i**\ nch, or
-        **p**\ oint [c (or i)]. Note that, in GMT, one point is defined
-        as 1/72 inch (the PostScript definition), while it is often
-        defined as 1/72.27 inch in the typesetting industry. There is no
-        universal definition.
+        Sets the default unit length. Choose between **c**\ m, **i**\ nch, or
+        **p**\ oint [c (or i)].  The default GMT unit is cm (**Note**: In GMT,
+        one point is defined as 1/72 inch (the PostScript definition), while it
+        is often defined as 1/72.27 inch in the typesetting industry. There is no
+        universal definition.)
 
     **PROJ_MEAN_RADIUS**
         Applies when geodesics are approximated by great circle distances on
