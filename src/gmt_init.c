@@ -6340,7 +6340,7 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	 * dimension (font size, length, etc.) with gmt set or --PAR=value. Below, all modern
 	 * font sizes are set to auto [->NaN] and all dimensions are set to NaN.  If these remain
 	 * NaN after reading gmt.conf then they are auto-scaled in gmt_set_undefined_defaults. */
-	
+
 	/* FONT group */
 
 	/* FONT_ANNOT_PRIMARY */
