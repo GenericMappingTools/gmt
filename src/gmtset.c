@@ -166,10 +166,16 @@ EXTERN_MSC int GMT_gmtset (void *V_API, int mode, void *args) {
 		if (Ctrl->D.mode == 'u')
 			gmt_conf_US (GMT);	/* Change a few to US defaults */
 	}
-	else if (Ctrl->C.active)
-		gmt_getdefaults (GMT, ".gmtdefaults4");
-	else if (Ctrl->G.active)
-		gmt_getdefaults (GMT, Ctrl->G.file);
+	else if (Ctrl->C.active) {	/* Convert deprecated .gmtdefaults4 files */
+		if (gmt_getdefaults (GMT, ".gmtdefaults4")) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to find or read .gmtdefaults4 settings file\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
+	else if (Ctrl->G.active && gmt_getdefaults (GMT, Ctrl->G.file)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to access or read %s\n", Ctrl->G.file);
+		Return (GMT_RUNTIME_ERROR);
+	}
 
 	if (gmt_setdefaults (GMT, options)) Return (GMT_PARSE_ERROR);		/* Process command line arguments, return error if failures */
 

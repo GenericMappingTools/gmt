@@ -79,7 +79,7 @@ Optional Arguments
     override this radius by appending another value. Finally, append
     **+s** to draw an offset background shaded region. Here, *dx*/*dy*
     indicates the shift relative to the foreground frame
-    [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
+    [4\ **p**/-4\ **p**] and *shade* changes the fill used for shading [gray50].
 
 .. _-M:
 

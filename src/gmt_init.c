@@ -3097,7 +3097,7 @@ void gmt_reload_history (struct GMT_CTRL *GMT) {
 
 void gmt_reload_settings (struct GMT_CTRL *GMT) {
 	gmt_conf (GMT);				/* Get the original system defaults */
-	gmt_getdefaults (GMT, NULL);	/* Overload user defaults */
+	(void)gmt_getdefaults (GMT, NULL);	/* Overload user defaults */
 }
 
 /*! . */
@@ -6097,12 +6097,16 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	error += gmt_getrgb (GMT, "white", GMT->current.setting.ps_page_rgb);
 	/* PS_PAGE_ORIENTATION */
 	/* PS_MEDIA */
+	/* Set default media size */
+	i = gmtinit_key_lookup ("a4", GMT_media_name, GMT_N_MEDIA);
+	/* Use the specified standard format */
+	GMT->current.setting.ps_def_page_size[0] = GMT_media[i].width;
+	GMT->current.setting.ps_def_page_size[1] = GMT_media[i].height;
 	if (GMT->current.setting.run_mode == GMT_MODERN) {
 		gmtinit_setautopagesize (GMT);
 	}
 	else {
 		GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
-		i = gmtinit_key_lookup ("a4", GMT_media_name, GMT_N_MEDIA);
 		/* Use the specified standard format */
 		GMT->current.setting.ps_media = i;
 		GMT->current.setting.ps_page_size[0] = GMT_media[i].width;
@@ -6282,12 +6286,14 @@ void gmt_conf_US (struct GMT_CTRL *GMT) {
 	strcpy (GMT->current.setting.ps_encoding.name, "Standard+");
 	gmtinit_load_encoding (GMT);
 	/* PS_MEDIA */
+	i = gmtinit_key_lookup ("letter", GMT_media_name, GMT_N_MEDIA);
+	GMT->current.setting.ps_def_page_size[0] = GMT_media[i].width;
+	GMT->current.setting.ps_def_page_size[1] = GMT_media[i].height;
 	if (GMT->current.setting.run_mode == GMT_MODERN)
 		gmtinit_setautopagesize (GMT);
 	else {
 		case_val = gmt_hash_lookup (GMT, "PS_MEDIA", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 		if (case_val >= 0) GMT_keyword_updated[case_val] = true;
-		i = gmtinit_key_lookup ("letter", GMT_media_name, GMT_N_MEDIA);
 		/* Use the specified standard format */
 		GMT->current.setting.ps_media = i;
 		GMT->current.setting.ps_page_size[0] = GMT_media[i].width;
@@ -7730,7 +7736,7 @@ void gmt_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 	gmt_message (GMT, "\t   Append +p[<pen>] to draw the border and optionally change the border pen [%s].\n",
 		gmt_putpen (GMT, &GMT->current.setting.map_frame_pen));
 	gmt_message (GMT, "\t   Append +r[<radius>] to plot rounded rectangles instead [Default radius is %gp].\n", GMT_FRAME_RADIUS);
-	gmt_message (GMT, "\t   Append +s[<dx>/<dy>/][<shade>] to plot a shadow behind the %s panel [Default is %gp/%g/gray50].\n", type[kind], GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
+	gmt_message (GMT, "\t   Append +s[<dx>/<dy>/][<shade>] to plot a shadow behind the %s panel [Default is %gp/%gp/gray50].\n", type[kind], GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
 }
 /*! .
 	\param GMT ...
@@ -10497,6 +10503,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.ps_media = -USER_MEDIA_OFFSET;
 			}
 			if (!error && manual) GMT->current.setting.ps_page_size[0] = -GMT->current.setting.ps_page_size[0];
+			GMT->current.setting.ps_def_page_size[0] = GMT->current.setting.ps_page_size[0];
+			GMT->current.setting.ps_def_page_size[1] = GMT->current.setting.ps_page_size[1];
 			break;
 		case GMTCASE_GLOBAL_X_SCALE:
 			GMT_COMPAT_TRANSLATE ("PS_SCALE_X");
@@ -12457,21 +12465,23 @@ void gmt_putdefaults (struct GMT_CTRL *GMT, char *this_file) {
 }
 
 /*! Read user's gmt.conf file and initialize parameters */
-void gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file) {
+int gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file) {
 	char file[PATH_MAX];
+	int err = GMT_NOTSET;	/* Returned if this_file == NULL, classic mode, and no gmt.conf found */
 
 	if (this_file)	/* Defaults file is specified */
-		gmtinit_loaddefaults (GMT, this_file);
+		err = gmtinit_loaddefaults (GMT, this_file);
 	else {	/* Use local dir, tempdir, or workflow dir (modern mode) */
 		if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory */
 			char path[PATH_MAX] = {""}, tag[GMT_LEN32] = {""};
 			gmt_hierarchy_tag (GMT->parent, GMT_SETTINGS_FILE, GMT_IN, tag);
 			snprintf (path, PATH_MAX, "%s/%s%s", GMT->parent->gwf_dir, GMT_SETTINGS_FILE, tag);
-			gmtinit_loaddefaults (GMT, path);
+			err = gmtinit_loaddefaults (GMT, path);
 		}
 		else if (gmtlib_getuserpath (GMT, GMT_SETTINGS_FILE, file))
-			gmtinit_loaddefaults (GMT, file);
+			err = gmtinit_loaddefaults (GMT, file);
 	}
+	return (err);
 }
 
 /*! Creates the name (if equivalent) or the string r[/g/b] corresponding to the RGB triplet or a pattern.
@@ -17504,6 +17514,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			if (fig[k].options[0]) {	/* Append figure-specific psconvert settings */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
+					if (!strcmp (p, "A+n")) p[2] = 'M';	/* This means crop to media */
 					if (!auto_size && (p[0] == 'A' && !strstr (p, "+n"))) continue;	/* Cannot do cropping when a specific media size was given, unless crop is off via +n */
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the format */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
@@ -17517,6 +17528,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			else if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (API->GMT->current.setting.ps_convert, ",", &pos, p))) {
+					if (!strcmp (p, "A+n")) p[2] = 'M';	/* This means crop to media */
 					if (!auto_size && (p[0] == 'A' && !strstr (p, "+n"))) continue;	/* Cannot do cropping when a specific media size was given */
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the formst */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
@@ -17744,6 +17756,29 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg, char *parfile) {
 		if (fpM[k]) fclose (fpM[k]);
 
 	return GMT_NOERROR;
+}
+
+bool gmtlib_fixed_paper_size (struct GMTAPI_CTRL *API) {	/* Return true if this should have a fixed paper size */
+	int no = gmt_get_current_figure (API);	/* Get figure number 1-? or 0 if a session plot */
+	bool fixed = false;
+
+	if (no == 0) {	/* Session figure */
+		if (API->GMT->current.setting.ps_convert[0] && strstr (API->GMT->current.setting.ps_convert, "+n"))
+			fixed = true;	/* GMT default margin */
+	}
+	else {	/* Must check a specific figure other than session */
+		int n_figs;
+		struct GMT_FIGURE *fig = NULL;
+		if ((n_figs = gmtinit_read_figures (API->GMT, 1, &fig)) == GMT_NOTSET) {	/* Auto-insert the hidden gmt_0.ps- file which may not have been used */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to open gmt.figures for reading\n");
+			return GMT_ERROR_ON_FOPEN;
+		}
+		no--;	/* Since now 0 is figure 1 */
+		if (fig[no].options[0] && strstr (fig[no].options, "+n"))
+			fixed = true;	/* GMT default margin */
+		gmt_M_free (API->GMT, fig);
+	}
+	return fixed;
 }
 
 int gmt_truncate_file (struct GMTAPI_CTRL *API, char *file, size_t size) {
@@ -18073,8 +18108,12 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			if (error) return (error);		/* Bail at this point */
 			gmt_reset_history (API->GMT);	/* No old classic history shall affect a new modern mode session */
 
-			gmt_conf (API->GMT);				/* Get the original system defaults */
-			if (!clean_start) gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
+			gmt_conf (API->GMT);				/* Get the GMT system defaults */
+			if (!clean_start) {
+				/*  Overload any user-supplied defaults via a gmt.conf file but reset PS_MEDIA to the original system default */
+				if (gmt_getdefaults (API->GMT, NULL) == GMT_NOERROR)	/* Ingested a gmt.conf file */
+					gmtinit_setautopagesize (API->GMT);	/* Reset to auto */
+			}
 			snprintf (dir, PATH_MAX, "%s/%s", API->gwf_dir, GMT_SETTINGS_FILE);	/* Reuse dir string for saving gmt.conf to this dir */
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode here so putdefaults can skip writing PS_MEDIA if not PostScript output */
 			error = gmtinit_put_session_name (API, text);		/* Store session name, possibly setting psconvert options */

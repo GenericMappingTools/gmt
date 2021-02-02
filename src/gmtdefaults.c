@@ -149,7 +149,7 @@ EXTERN_MSC int GMT_gmtdefaults (void *V_API, int mode, void *args) {
 			gmt_conf_US (GMT);	/* Change a few to US defaults */
 	}
 	else
-		gmt_getdefaults (GMT, NULL);	/* Get local GMT default settings (if any) [and PSL if selected] */
+		(void)gmt_getdefaults (GMT, NULL);	/* Get local GMT default settings (if any) [and PSL if selected] */
 
 	/* To ensure that all is written to stdout we must set updated to true */
 

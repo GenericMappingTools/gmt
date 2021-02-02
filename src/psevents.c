@@ -87,6 +87,16 @@ struct PSEVENTS_CTRL {
 		bool active;
 		char *fill;
 	} G;
+	struct PSEVENTS_H {	/* 	-H[+c<dx/dy>][+g<fill>]]+p<pen>][+r][+s[<dx/dy>/][<fill>][ */
+		bool active;
+		bool boxoutline, boxfill, boxshade;
+		int box;	/* Box shape */
+		char fill[GMT_LEN64];	/* Textbox fill [none] */
+		char sfill[GMT_LEN64];	/* Shade fill [gray50] */
+		char pen[GMT_LEN64];	/* Textbox outline */
+		char clearance[GMT_LEN64];	/* Text box clearance */
+		double soff[2];	/* Shade box offset */
+	} H;
 	struct PSEVENTS_L {	/* 	-L[t|<length>] */
 		bool active;
 		unsigned int mode;
@@ -124,6 +134,10 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	struct PSEVENTS_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSEVENTS_CTRL);
+	sprintf (C->H.clearance, "%d%%", GMT_TEXT_CLEARANCE);	/* 15% of font size */
+	C->H.soff[GMT_X] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
+	C->H.soff[GMT_Y] = -C->H.soff[GMT_X];	/* Set the shadow offsets [default is (4p, -4p)] */
+	strcpy (C->H.pen, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));	/* Default outline pen */
 	C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] = C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] = 100.0;	/* Rise from and fade to invisibility */
 	return (C);
 }
@@ -146,7 +160,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -S<symbol>[<size>]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T<now> [-Ar[<dpu>[c|i]]|s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]] [-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] [-G<fill>] [-L[t|<length>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] [-G<fill>] [-H<labelinfo>] [-L[t|<length>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Mi|s|t<val1>[+c<val2]] [-N[c|r]] [-Q<prefix>] [-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -190,10 +204,16 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Normally, the text is read from the data records.  Alternative ways to provide text:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +r[<first>] will use the current record number, starting at <first> [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +z[<fmt>] will use formatted input z values (requires -C) via format <fmt> [FORMAT_FLOAT_MAP].\n");
+	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify a fixed symbol fill [no fill].");
+	GMT_Message (API, GMT_TIME_NONE, "\t-H Control attributes of optional label bounding box fill, outline, clearance, shade, and box shape [none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for the clearance between label and surrounding box [%d%% of font size].\n", GMT_TEXT_CLEARANCE);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g<fill> to set the fill for the text box [no fill].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p[<pen>] to set the pen [%s] and draw the outline of the text box [no outline].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to select rounded rectangular box shape [straight].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[<dx>/<dy>/][<shade>] to plot a shadow behind the text box [%gp/%gp/gray50].\n", GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set finite length of events, otherwise we assume they are all infinite.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no arg we read lengths from file; append t for reading end times instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -L0 is given the event only lasts one frame.\n");
-	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify a fixed symbol fill [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border [clipping is on].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nr to turn off clipping and plot repeating symbols for periodic maps.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nc to retain clipping but turn off plotting of repeating symbols for periodic maps.\n");
@@ -219,7 +239,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	 */
 
 	unsigned int n_errors = 0, pos, n_col = 3, k = 0, id = 0;
-	char *c = NULL, txt[GMT_LEN128] = {""}, *t_string = NULL;
+	char *c = NULL,*t_string = NULL;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -276,22 +297,22 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				if ((c = gmt_first_modifier (GMT, &opt->arg[k], PSEVENTS_MODS)) == NULL) {	/* Just sticking to the event range */
 					break;
 				}
-				pos = 0;	txt[0] = 0;
-				while (gmt_getmodopt (GMT, 'E', c, PSEVENTS_MODS, &pos, txt, &n_errors) && n_errors == 0) {
-					switch (txt[0]) {
-						case 'd': Ctrl->E.dt[id][PSEVENTS_DECAY]   = atof (&txt[1]);	break;	/* Decay duration */
-						case 'f': Ctrl->E.dt[id][PSEVENTS_FADE]    = atof (&txt[1]);	break;	/* Fade duration */
-						case 'p': Ctrl->E.dt[id][PSEVENTS_PLATEAU] = atof (&txt[1]);	break;	/* Plateau duration */
-						case 'r': Ctrl->E.dt[id][PSEVENTS_RISE]    = atof (&txt[1]);	break;	/* Rise duration */
+				pos = 0;	txt_a[0] = 0;
+				while (gmt_getmodopt (GMT, 'E', c, PSEVENTS_MODS, &pos, txt_a, &n_errors) && n_errors == 0) {
+					switch (txt_a[0]) {
+						case 'd': Ctrl->E.dt[id][PSEVENTS_DECAY]   = atof (&txt_a[1]);	break;	/* Decay duration */
+						case 'f': Ctrl->E.dt[id][PSEVENTS_FADE]    = atof (&txt_a[1]);	break;	/* Fade duration */
+						case 'p': Ctrl->E.dt[id][PSEVENTS_PLATEAU] = atof (&txt_a[1]);	break;	/* Plateau duration */
+						case 'r': Ctrl->E.dt[id][PSEVENTS_RISE]    = atof (&txt_a[1]);	break;	/* Rise duration */
 						case 'O': Ctrl->E.trim[id] = true;	/* Intentionally fall through - offset start but not end. Fall through to case 'o' */
-						case 'o': Ctrl->E.dt[id][PSEVENTS_OFFSET]   = atof (&txt[1]);	break;	/* Event time offset */
+						case 'o': Ctrl->E.dt[id][PSEVENTS_OFFSET]   = atof (&txt_a[1]);	break;	/* Event time offset */
 						case 'l':	/* Event length override for text */
 							if (id == PSEVENTS_SYMBOL) {
 								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E[s]: The +l modifier is only allowed for -Et\n");
 								n_errors++;
 							}
 							else
-								Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_LENGTH] = atof (&txt[1]);
+								Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_LENGTH] = atof (&txt_a[1]);
 							break;
 						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					}
@@ -310,6 +331,56 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 			case 'G':	/* Set a fixed symbol fill */
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.fill = strdup (opt->arg);
+				break;
+
+			case 'H':	/* Label text box settings */
+				Ctrl->H.active = true;
+				if (opt->arg[0] == '\0' || gmt_validate_modifiers (GMT, opt->arg, 'H', "cgprs", GMT_MSG_ERROR))
+					n_errors++;
+				else {
+					struct GMT_FILL fill;	/* Only used to make sure any fill is given with correct syntax */
+					struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
+					char string[GMT_LEN128] = {""};
+					if (gmt_get_modifier (opt->arg, 'c', string) && string[0])	/* Clearance around text in textbox */
+						strncpy (Ctrl->H.clearance, string, GMT_LEN64);
+					if (gmt_get_modifier (opt->arg, 'g', Ctrl->H.fill) && Ctrl->H.fill[0]) {	/* Textbox fill color */
+						if (gmt_getfill (GMT, Ctrl->H.fill, &fill)) n_errors++;
+						Ctrl->H.boxfill = true;
+					}
+					if (gmt_get_modifier (opt->arg, 'p', string)) {	/* Textbox outline pen */
+						if (string[0]) strcpy (Ctrl->H.pen, string);	/* Gave specific pen */
+						if (gmt_getpen (GMT, Ctrl->H.pen, &pen)) n_errors++;
+						Ctrl->H.boxoutline = true;
+					}
+					if (gmt_get_modifier (opt->arg, 'r', string))	/* Rounded text box */
+						Ctrl->H.box = 1;
+					if (gmt_get_modifier (opt->arg, 's', string)) {	/* Shaded text box fill color */
+						Ctrl->H.boxshade = true;
+						strcpy (Ctrl->H.sfill, "gray50");	/* Default shade color */
+						Ctrl->H.soff[GMT_X] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
+						Ctrl->H.soff[GMT_Y] = -Ctrl->H.soff[GMT_X];	/* Set the shadow offsets [default is (4p, -4p)] */
+						if (!Ctrl->H.boxfill) {
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -H: Modifier +h requires +g as well\n");
+							n_errors++;
+						}
+						else if (string[0]) {	/* Gave an argument to +b */
+							char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""};
+							int n = sscanf (string, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+							if (n == 1)	/* Just got a new fill */
+								strcpy (Ctrl->H.sfill, txt_a);
+							else if (n == 2) {	/* Just got a new offset */
+								if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->H.soff) < 0) n_errors++;
+							}
+							else if (n == 3) {	/* Got offset and fill */
+								Ctrl->H.soff[GMT_X] = gmt_M_to_inch (GMT, txt_a);
+								Ctrl->H.soff[GMT_Y] = gmt_M_to_inch (GMT, txt_b);
+								strcpy (Ctrl->H.sfill, txt_c);
+							}
+							else n_errors++;
+						}
+						if (gmt_getfill (GMT, Ctrl->H.sfill, &fill)) n_errors++;
+					}
+				}
 				break;
 
 			case 'L':	/* Set length of events */
@@ -353,8 +424,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					n_errors++;
 				}
 				else {	/* Create option to pass to plot/text */
-					snprintf (txt, GMT_LEN128, " -N%s", opt->arg);
-					Ctrl->N.arg = strdup (txt);
+					snprintf (txt_a, GMT_LEN128, " -N%s", opt->arg);
+					Ctrl->N.arg = strdup (txt_a);
 				}
 				break;
 			case 'Q':	/* Save events file for posterity */
@@ -388,14 +459,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					if (opt->arg[1] && !strchr (GMT_DIM_UNITS, opt->arg[1])) {	/* Gave a fixed size */
 						Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);	/* Now in inches */
 						GMT->current.setting.proj_length_unit = GMT_INCH;	/* Since S.size is now in inches */
-						sprintf (txt, "%c", opt->arg[0]);			/* Just the symbol code */
-						Ctrl->S.symbol = strdup (txt);
+						sprintf (txt_a, "%c", opt->arg[0]);			/* Just the symbol code */
+						Ctrl->S.symbol = strdup (txt_a);
 					}
 					else if (opt->arg[1] && strchr (GMT_DIM_UNITS, opt->arg[1])) {	/* Must read symbol sizes in this unit from file */
 						Ctrl->S.mode = 1;
 						gmt_set_measure_unit (GMT, opt->arg[1]);
-						sprintf (txt, "%c", opt->arg[0]);	/* Just the symbol code */
-						Ctrl->S.symbol = strdup (txt);
+						sprintf (txt_a, "%c", opt->arg[0]);	/* Just the symbol code */
+						Ctrl->S.symbol = strdup (txt_a);
 					}
 					else {	/* Must read individual event symbol sizes for file using prevailing length-unit setting */
 						Ctrl->S.mode = 1;
@@ -993,11 +1064,22 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 	}
 	if (fp_labels) { /* Here we have event labels to plot as an overlay via a call to pstext */
 		fclose (fp_labels);	/* First close the file so label output is flushed */
-		/* Build pstext command with fixed options and those that depend on -D -F */
+		/* Build pstext command with fixed options and those that depend on -D -F -H */
 		sprintf (cmd, "%s -R -J -O -K -t --GMT_HISTORY=readonly", tmp_file_labels);
 		if (Ctrl->D.active) {strcat (cmd, " -D"); strcat (cmd, Ctrl->D.string);}
 		if (Ctrl->F.active) {strcat (cmd, " -F"); strcat (cmd, Ctrl->F.string);}
 		if (Ctrl->N.active) strcat (cmd, " -N");
+		if (Ctrl->H.active) {	/* Combinations of -Cdx/dy[+tO], -G<fill>, -S<dx>/<dy>/<shade>, -W<pen> */
+			strcat (cmd, " -C"); strcat (cmd, Ctrl->H.clearance);
+			if (Ctrl->H.box) strcat (string, "+tO");
+			strcat (cmd, string);
+			if (Ctrl->H.boxfill) {strcat (cmd, " -G"); strcat (cmd, Ctrl->H.fill);}
+			if (Ctrl->H.boxshade) {
+				sprintf (string, " -S%lgi/%lgi/%s", Ctrl->H.soff[GMT_X], Ctrl->H.soff[GMT_Y], Ctrl->H.sfill);
+				strcat (cmd, string);
+			}
+			if (Ctrl->H.boxoutline) {strcat (cmd, " -W"); strcat (cmd, Ctrl->H.pen);}
+		}
 		GMT_Report (API, GMT_MSG_DEBUG, "cmd: gmt pstext %s\n", cmd);
 
 		if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Plot the labels */
