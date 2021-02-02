@@ -2476,7 +2476,7 @@ bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char *c = NULL;
-	unsigned int k;
+	unsigned int k = 0;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -w requires an argument */
 
@@ -2484,6 +2484,8 @@ GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 		for (k = 0; isdigit (arg[k]); k++);	/* Wind past the column number */
 		GMT->current.io.cycle_col = atoi (arg);
 	}
+	else	/* Default column is the first (x) */
+		GMT->current.io.cycle_col = GMT_X;
 	if (arg[k] == '\0') return (GMT_PARSE_ERROR);
 
 	switch (arg[k]) {	/* Look at which valid code we got */
@@ -2509,6 +2511,7 @@ GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 	gmt_set_column_type (GMT, GMT_OUT, GMT->current.io.cycle_col, GMT_IS_FLOAT);
 
 	strncpy (GMT->common.w.string, arg, GMT_LEN64-1);	/* Verbatim copy */
+	GMT->common.w.active = true;
 
 	return (GMT_NOERROR);
 }
@@ -8241,6 +8244,7 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 		case 'r': error += GMT->common.R.active[GSET] == false; break;
 		case 's': error += GMT->common.s.active == false; break;
 		case 't': error += GMT->common.t.active == false; break;
+		case 'w': error += GMT->common.w.active == false; break;
 #ifdef GMT_MP_ENABLED
 		case 'x': error += GMT->common.x.active == false; break;
 #endif
