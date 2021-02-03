@@ -1394,11 +1394,11 @@ Examining data cycles: The **-w** option
 
 Temporal data (i.e., regular time series) can be analyzed for periods
 via standard spectral analysis, such as offered by :doc:`/spectrum1d`
-and :doc:`/grdfft`.  However, it is often of interest to examine
+and :doc:`/grdfft`.  However, it is often of interest to examine aspects of
 such periodicities in the time domain.  To enable such analyses we need to
-convert our monotonically increasing time coordinates to periodic or cyclic
-coordinates so that data from many cycles can be stacked, binned, made into
-histograms, etc.  The **-w** option is a powerful option that can simplify
+convert our monotonically increasing time coordinates to periodic or *cyclic*
+coordinates so that data from many cycles can be stacked, binned, displayed in
+histograms, etc.  Here, **-w** is a powerful option that can simplify
 such analyses.  The conversion from input coordinates to wrapped, periodic
 coordinates follows the simple equation
 
@@ -1407,11 +1407,11 @@ coordinates follows the simple equation
 
     t' = (t - \tau) \;\mathrm{mod}\; T,
 
-where *t* is the input time, :math:`\tau` is a phase-shift, and *T* is the
-desired period for the modulus operator, yielding the cyclic coordinates *t'*.
-GMT offers many standard time cycles plus a custom cycle.  Table :ref:`cycles <tbl-cycletype>`
-shows the values for phase and period that is recognized and only requires the user
-to specify the corresponding code:
+where *t* is the input time, :math:`\tau` is a phase-shift (typically zero), and *T* is the
+desired period for the modulus operator, yielding cyclic coordinates :math:`t'`.
+GMT offers many standard time cycles plus a custom cycle for other types of Cartesian coordinates.
+Table :ref:`cycles <tbl-cycletype>` shows the values for phase and period that is
+prescribed and only requires the user to specify the corresponding wrapping code:
 
 .. _tbl-cycletype:
 
@@ -1435,17 +1435,18 @@ to specify the corresponding code:
 | **p**      | Custom cycles (normalized)       |  :math:`T` | :math:`\tau` |   0–1     |
 +------------+----------------------------------+------------+--------------+-----------+
 
-The **-w** option should append the input column with the coordinate to be wrapped
-[if not given we default to the first column, i.e., 0].  Then, append one of the available
-codes from Table :ref:`cycles <tbl-cycletype>`, and if the custom cycle is chosen you
-must append the *period* and optionally any phase [0].
+You can append the input column with the coordinate to be wrapped to the **-w** option
+[we default to the first column, i.e., 0 if no column is specified].  Then, append one
+of the available codes from Table :ref:`cycles <tbl-cycletype>`. If the custom cycle
+**p** is chosen then you must also supply the *period* and optionally any *phase* [0]
+in the same units of your data.
 
 To demonstrate the use of **-w** we will make a few plots of the daily discharge rate of
 the Mississippi river during the 1930-1940 period.  This time series is created by
 
 .. literalinclude:: /_verbatim/GMT_cycle_1.txt
 
-which results in the plot in Figure :ref:`Mississippi discharge <gmt_cycle_1>` 
+which results in the plot in Figure :ref:`Mississippi discharge <gmt_cycle_1>`:
 
 .. _gmt_cycle_1:
 
@@ -1455,13 +1456,13 @@ which results in the plot in Figure :ref:`Mississippi discharge <gmt_cycle_1>`
 
    Regular time-series plot of the daily Mississippi river discharge.
 
-Given the clearly annual signal we wish to plot this data using a normalized
-annual coordinate so that all the years are plotted on top of the same year.
-We accomplish this feature via **-wy** and the suitable range::
+Given the clear annual signal we wish to plot this data using a normalized
+annual coordinate so that all the years are plotted on top of a single normalized year.
+We accomplish this feature via **-wy** and use the prescribed range.
 
 .. literalinclude:: /_verbatim/GMT_cycle_2.txt
 
-which results in the plot in Figure :ref:`Mississippi annual discharge <gmt_cycle_2>` 
+These commands result in Figure :ref:`Mississippi annual discharge <gmt_cycle_2>` 
 
 .. _gmt_cycle_2:
 
@@ -1473,14 +1474,14 @@ which results in the plot in Figure :ref:`Mississippi annual discharge <gmt_cycl
    normalized year.
 
 In this representation, both regular and leap years are normalized by their respective lengths.
-If we are interested to examine the discharge variation as a function of calendar month,
-then we want all the values belonging to a particular month to be binned into the same bin,
-even though the bins represent variable ranges (28-31 days).  For such analysis we are better
+If we prefer to examine the discharge variation as a function of calendar month,
+then we want all the values belonging to a particular month to fall into the same bin,
+even though the bins represent variable ranges (28-31 days).  For such analyses we are better
 off using **-wo** which normalizes the data per month, then adds the integer month number.
 In other words, all timestamps in March of any year are converted by taking the time since the
 start of March normalized by the length of March, and then add 2.  Thus, all March data from
 any year will result in coordinates 2.00000–2.999999..... This allows us to easily make a
-histogram of monthly discharge::
+histogram of monthly discharge shown in Figure :ref:`Mississippi monthly discharge <gmt_cycle_3>`.
 
 .. _gmt_cycle_3:
 
