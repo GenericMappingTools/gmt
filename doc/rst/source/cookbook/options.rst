@@ -1483,13 +1483,18 @@ start of March normalized by the length of March, and then add 2.  Thus, all Mar
 any year will result in coordinates 2.00000–2.999999..... This allows us to easily make a
 histogram of monthly discharge shown in Figure :ref:`Mississippi monthly discharge <gmt_cycle_3>`.
 
+.. literalinclude:: /_verbatim/GMT_cycle_3.txt
+
 .. _gmt_cycle_3:
 
 .. figure:: /_images/GMT_cycle_3.*
    :width: 500 px
    :align: center
 
-   Monthly Mississippi river discharge for the 10-year period.
+   Monthly Mississippi river discharge for the 10-year period, from September to September.
+
+Quarterly discharge would similarly be obtained by using **-T**\ 3 in the :doc:`/histogram`
+command.
 
 .. _option_-x_core:
 
