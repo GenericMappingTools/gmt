@@ -1389,11 +1389,12 @@ or if we expect one or two transparencies.
 
 .. _option_-w:
 
-Examining cycles: The **-w** option
--------------------------------------
+Examining data cycles: The **-w** option
+----------------------------------------
 
-Temporal data (i.e., absolute time series) can be analyzed for periods
-via standard spectral analysis.  However, it is often of interest to examine
+Temporal data (i.e., regular time series) can be analyzed for periods
+via standard spectral analysis, such as offered by :doc:`/spectrum1d`
+and :doc:`/grdfft`.  However, it is often of interest to examine
 such periodicities in the time domain.  To enable such analyses we need to
 convert our monotonically increasing time coordinates to periodic or cyclic
 coordinates so that data from many cycles can be stacked, binned, made into
@@ -1500,7 +1501,7 @@ You may append *n* to only use *n* cores (if *n* is too large it will be truncat
 to the maximum number of cores available).  Finally, give a negative *n* to select
 all - *n*) cores (but at least one if *n* equals or exceeds all).  The **-x**
 option is only available to GMT modules compiled with OpenMP support, with
-the exception of :doc:`/movie` which handles its own parallel execution.
+the exception of :doc:`/movie` and :doc:`/batch` which handle their own parallel execution.
 
 .. _option_colon:
 
