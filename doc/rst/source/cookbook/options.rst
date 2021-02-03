@@ -1478,7 +1478,7 @@ In this representation, both regular and leap years are normalized by their resp
 If we prefer to examine the discharge variation as a function of calendar month,
 then we want all the values belonging to a particular month to fall into the same bin,
 even though the bins represent variable ranges (28-31 days).  For such analyses we are better
-off using **-wo** which normalizes the data per month, then adds the integer month number.
+off using **-wa** which normalizes the data per month, then adds the integer month number.
 In other words, all timestamps in March of any year are converted by taking the time since the
 start of March normalized by the length of March, and then add 2.  Thus, all March data from
 any year will result in coordinates 2.00000–2.999999..... This allows us to easily make a
