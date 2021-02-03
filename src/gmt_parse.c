@@ -1078,6 +1078,15 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 		API->GMT->current.io.cycle_min = API->GMT->common.R.wesn[k];
 		API->GMT->current.io.cycle_max = API->GMT->common.R.wesn[k+1];
 		switch (API->GMT->current.io.cycle_operator) {
+			case GMT_PERIODIC_SEC:	/* Return 0.000-0.999999 second */
+				API->GMT->current.io.cycle_range = 1.0;
+				break;
+			case GMT_PERIODIC_MIN:	/* Return 0.000-0.999999 minute */
+				API->GMT->current.io.cycle_range = 1.0;
+				break;
+			case GMT_PERIODIC_HOUR:	/* Return 0.000-0.999999 hour */
+				API->GMT->current.io.cycle_range = 1.0;
+				break;
 			case GMT_PERIODIC_DAY:	/* Return 0.000-0.999999 day */
 				API->GMT->current.io.cycle_range = 1.0;
 				break;

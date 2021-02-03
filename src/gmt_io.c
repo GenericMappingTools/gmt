@@ -4458,6 +4458,15 @@ void gmtlib_modulo_time_calculator (struct GMT_CTRL *GMT, double *val) {
 	int period;
 	struct GMT_GCAL cal;
 	switch (GMT->current.io.cycle_operator) {
+		case GMT_PERIODIC_SEC:	/* Return 0.000-0.999999 sec */
+			*val = fmod (*val, 1.0);	/* Yields 0.000-0.999999 second */
+			break;
+		case GMT_PERIODIC_MIN:	/* Return 0.000-0.999999 day */
+			*val = fmod (*val, GMT_MIN2SEC_F) * GMT_SEC2MIN;	/* Yields 0.000-0.999999 minute */
+			break;
+		case GMT_PERIODIC_HOUR:	/* Return 0.000-0.999999 hour */
+			*val = fmod (*val, GMT_HR2SEC_F) * GMT_SEC2HR;		/* Yields 0.000-0.999999 hour */
+			break;
 		case GMT_PERIODIC_DAY:	/* Return 0.000-0.999999 day */
 			*val = fmod (*val, GMT_DAY2SEC_F) * GMT_SEC2DAY;	/* Yields 0.000-0.999999 day */
 			break;

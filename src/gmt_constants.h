@@ -173,7 +173,10 @@ enum GMT_enum_basemap {
 
 /*! Handling of periodic data */
 enum GMT_time_period {
-	GMT_PERIODIC_DAY = 1,
+	GMT_PERIODIC_SEC = 1,
+	GMT_PERIODIC_MIN,
+	GMT_PERIODIC_HOUR,
+	GMT_PERIODIC_DAY,
 	GMT_PERIODIC_WEEK,
 	GMT_PERIODIC_MONTH,
 	GMT_PERIODIC_YEAR,
