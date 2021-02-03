@@ -11,6 +11,8 @@
     Use a range of 0/12 for these data.  **w* converts data to calendar weeks that
     are each normalized to a range 0-6.  Coordinates in the range 0-1 correspond to the
     first day of the week, controllable via :term:`TIME_WEEK_START`.
-    **d**, **h**, **m** and **s** convert time to a cyclic day, hour, miinute, or second  of range 0-1.
+    **d**, **h**, **m** and **s** convert time to a cyclic day, hour, minute, or second of range 0-1.
     For non-time data one can select a custom *period* and optional *phase* [0]
     via the **p** selection, which results in normalized data in the range 0-1.
+    **Note**: If a temporal cycle is indicated then we implicitly set **-f** to
+    indicate absolute time (unless already set).

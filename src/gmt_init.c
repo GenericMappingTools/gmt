@@ -2510,6 +2510,9 @@ GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Unrecognized periodicity code %c\n", arg[k]);
 			return (GMT_PARSE_ERROR);
 	}
+	/* If input column is not set (yet) then we set it to abstime unless custom period */
+	if (GMT->current.io.cycle_operator != GMT_PERIODIC_CUSTOM && gmt_get_column_type (GMT, GMT_IN, GMT->current.io.cycle_col) == GMT_IS_UNKNOWN)
+		gmt_set_column_type (GMT, GMT_IN, GMT->current.io.cycle_col, GMT_IS_ABSTIME);
 	/* Output column is no longer unknown or abstime but float */
 	gmt_set_column_type (GMT, GMT_OUT, GMT->current.io.cycle_col, GMT_IS_FLOAT);
 

@@ -64,6 +64,8 @@
 
 .. |SYN_OPT-r| replace:: **-r**\ :ref:`reg <nodereg_full>`
 
+.. |SYN_OPT-w| replace:: **-w**\ :ref:`transp <-w_full>`
+
 .. |SYN_OPT-x| replace:: **-x**\ [[-]\ *n*]
 
 .. |SYN_OPT-:| replace:: **-:**\ [**i**\|\ **o**]
