@@ -1,17 +1,19 @@
 .. _-w_full:
 
-**-w**\ [*col*]\ **y**\ \|\ **o**\ \|\ **w**\ \|\ **d**\ \|\ **h**\ \|\ **m**\ \|\ **s**\ \|\ **p**\ *period*\ [/*phase*]
+**-w**\ [*col*]\ **y**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **p**\ *period*\ [/*phase*]
     Convert an input coordinate to a cyclic coordinate.  Optionally specify
     which input column should be converted [0].  Append the cycle of interest.
-    If the selected column contains absolute time then choose between these
-    four cycles: **y** converts input time to a normalized annual cycle with
-    range of 0-1.  Such data can be plotted by using 0/1 as range.
-    **o** converts input time to calendar m\ **o**\ nths that are each normalized to 0-1
-    but then we add in the integer month, yielding coordinates in the 0-12 range.
+    If the selected column contains absolute time then choose between these cycles:
+    **y** (yearly) converts input time to a normalized year (0-1).
+    **a** (annual) converts input time to calendar months that are each normalized to 0-1
+    then added to the integer month, yielding coordinates in the 0-12 range.
     Use a range of 0/12 for these data.  **w* converts data to calendar weeks that
-    are each normalized to a range 0-6.  Coordinates in the range 0-1 correspond to the
+    are each normalized to a range 0-7.  Coordinates in the range 0-1 correspond to the
     first day of the week, controllable via :term:`TIME_WEEK_START`.
-    **d**, **h**, **m** and **s** convert time to a cyclic day, hour, minute, or second of range 0-1.
+    **d** converts time to a cyclic day of range 0-24 hours.
+    **h** converts time to a cyclic hour of range 0-60 minutes.
+    **m** converts time to a cyclic minute of range 0-60 seconds.
+    **s** converts time to a cyclic second of range 0-1 seconds.
     For non-time data one can select a custom *period* and optional *phase* [0]
     via the **p** selection, which results in normalized data in the range 0-1.
     **Note**: If a temporal cycle is indicated then we implicitly set **-f** to

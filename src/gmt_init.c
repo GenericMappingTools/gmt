@@ -2472,7 +2472,7 @@ bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 	return (n_errors > 0);
 }
 
-/*! Routine will decode the -w[<col>]y|m|w|d|p<period>[/<phase>] arguments */
+/*! Routine will decode the -w[<col>]y|a|w|d|h|m|s|p<period>[/<phase>] arguments */
 GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char *c = NULL;
@@ -2494,7 +2494,7 @@ GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 		case 'h': GMT->current.io.cycle_operator = GMT_PERIODIC_HOUR; break;
 		case 'd': GMT->current.io.cycle_operator = GMT_PERIODIC_DAY; break;
 		case 'w': GMT->current.io.cycle_operator = GMT_PERIODIC_WEEK; break;
-		case 'o': GMT->current.io.cycle_operator = GMT_PERIODIC_MONTH; break;
+		case 'a': GMT->current.io.cycle_operator = GMT_PERIODIC_ANNUAL; break;
 		case 'y': GMT->current.io.cycle_operator = GMT_PERIODIC_YEAR; break;
 		case 'p': GMT->current.io.cycle_operator = GMT_PERIODIC_CUSTOM;
 			if (arg[k+1] == '\0') return (GMT_PARSE_ERROR);	/* Gave us nuthin' */
@@ -7356,9 +7356,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'w':	/* -w option for cyclicity */
 
-			gmt_message (GMT, "\t-w Append input column [0] to process with specified periodicity:\n");
-			gmt_message (GMT, "\t   Absolute time: Append y|o|w|d|h|m|s for annual, month, week, day, hour, minute, or second cycles.\n");
-			gmt_message (GMT, "\t   Other: Append p<period>[/<phase>] for custom periodicity.\n");
+			gmt_message (GMT, "\t-w Append input column [0] to be wrapped with specified periodicity:\n");
+			gmt_message (GMT, "\t   Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles.\n");
+			gmt_message (GMT, "\t   Cartesian data: Append p<period>[/<phase>] for custom periodicity.\n");
 			break;
 
 		case 's':	/* Output control for records where z are NaN */

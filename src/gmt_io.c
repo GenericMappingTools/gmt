@@ -4451,7 +4451,7 @@ void gmt_skip_xy_duplicates (struct GMT_CTRL *GMT, bool mode) {
 }
 
 void gmtlib_modulo_time_calculator (struct GMT_CTRL *GMT, double *val) {
-	/* Only called if the -w<col>y|m|w|d|p option was given to select periodic temporal data.
+	/* Only called if the -w<col>y|a|w|d|h|m|s|p option was given to select periodic temporal data.
 	 * Here, time_operator is the kind of period/treatment, and time_range is the period
 	 * length in current units.  If -R is set then we also handle wrapping.
 	 * Note: Below, items month, day_y (Julian day) and day_m all start at 1.  */
@@ -4459,23 +4459,23 @@ void gmtlib_modulo_time_calculator (struct GMT_CTRL *GMT, double *val) {
 	struct GMT_GCAL cal;
 	switch (GMT->current.io.cycle_operator) {
 		case GMT_PERIODIC_SEC:	/* Return 0.000-0.999999 sec */
-			*val = fmod (*val, 1.0);	/* Yields 0.000-0.999999 second */
+			*val = fmod (*val, 1.0);
 			break;
-		case GMT_PERIODIC_MIN:	/* Return 0.000-0.999999 day */
-			*val = fmod (*val, GMT_MIN2SEC_F) * GMT_SEC2MIN;	/* Yields 0.000-0.999999 minute */
+		case GMT_PERIODIC_MIN:	/* Return 0.000-59.999999 seconds */
+			*val = fmod (*val, GMT_MIN2SEC_F);
 			break;
-		case GMT_PERIODIC_HOUR:	/* Return 0.000-0.999999 hour */
-			*val = fmod (*val, GMT_HR2SEC_F) * GMT_SEC2HR;		/* Yields 0.000-0.999999 hour */
+		case GMT_PERIODIC_HOUR:	/* Return 0.000-59.999999 minutes */
+			*val = fmod (*val, GMT_HR2SEC_F) * GMT_SEC2MIN;
 			break;
-		case GMT_PERIODIC_DAY:	/* Return 0.000-0.999999 day */
-			*val = fmod (*val, GMT_DAY2SEC_F) * GMT_SEC2DAY;	/* Yields 0.000-0.999999 day */
+		case GMT_PERIODIC_DAY:	/* Return 0.000-23.999999 hours */
+			*val = fmod (*val, GMT_DAY2SEC_F) * GMT_SEC2HR;
 			break;
 		case GMT_PERIODIC_WEEK:	/* Return 0.00000-6.9999999 days */
 			gmt_gcal_from_dt (GMT, *val, &cal);
-			*val = (GMT->current.setting.time_week_start) ? (7 + cal.day_w - GMT->current.setting.time_week_start) % 7 : cal.day_w;
+			*val = (GMT->current.setting.time_week_start) ? (GMT_WEEK2DAY_I + cal.day_w - GMT->current.setting.time_week_start) % GMT_WEEK2DAY_I : cal.day_w;
 			*val += cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY;
 			break;
-		case GMT_PERIODIC_MONTH:	/* Return 0.000000-11.999999 months */
+		case GMT_PERIODIC_ANNUAL:	/* Return 0.000000-11.999999 months */
 			gmt_gcal_from_dt (GMT, *val, &cal);
 			period = gmtlib_gmonth_length (cal.year, cal.month);	/* Days in this month */
 			*val = cal.month - 1 + (cal.day_m - 1 + cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY) / period;
@@ -4485,7 +4485,7 @@ void gmtlib_modulo_time_calculator (struct GMT_CTRL *GMT, double *val) {
 			period = gmtlib_is_gleap (cal.year) ? 366 : 365;	/* Length of this year in days */
 			*val = (cal.day_y - 1 + cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY) / period;
 			break;
-		case GMT_PERIODIC_CUSTOM:	/* Return 0.00000-0.99999999 for a cycle */
+		case GMT_PERIODIC_CUSTOM:	/* Return 0.00000-0.99999999 for a custom cycle */
 			*val = fmod (*val - GMT->current.io.cycle_phase, GMT->current.io.cycle_period) / GMT->current.io.cycle_period;	/* Yields 0.000-0.999999 cycles */
 			break;
 	}
