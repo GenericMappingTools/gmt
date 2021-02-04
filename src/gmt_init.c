@@ -2472,23 +2472,26 @@ bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 	return (n_errors > 0);
 }
 
-/*! Routine will decode the -w[<col>]y|a|w|d|h|m|s|p<period>[/<phase>] arguments */
+/*! Routine will decode the -wy|a|w|d|h|m|s|p<period>[/<phase>][+c<col>] arguments */
 GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 
-	char *c = NULL;
-	unsigned int k = 0;
+	char *c = NULL, *s = NULL;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -w requires an argument */
 
-	if (isdigit (arg[0])) {	/* Got a specific column */
-		for (k = 0; isdigit (arg[k]); k++);	/* Wind past the column number */
-		GMT->current.io.cycle_col = atoi (arg);
+	if ((c = strstr (arg, "+c"))) {	/* Got a specific column */
+		if (c[2]) GMT->current.io.cycle_col = atoi (&c[2]);
+		c[0] = '\0';	/* Chop off modifier */
+		if (GMT->current.io.cycle_col < 0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Cannot give negative (or missing) column number (%s)\n", arg);
+			c[2] = '+';	/* Restore modifier before we return */
+			return (GMT_PARSE_ERROR);			
+		}
 	}
 	else	/* Default column is the first (x) */
 		GMT->current.io.cycle_col = GMT_X;
-	if (arg[k] == '\0') return (GMT_PARSE_ERROR);
 
-	switch (arg[k]) {	/* Look at which valid code we got */
+	switch (arg[0]) {	/* Look at which valid code we got */
 		case 's': GMT->current.io.cycle_operator = GMT_PERIODIC_SEC; break;
 		case 'm': GMT->current.io.cycle_operator = GMT_PERIODIC_MIN; break;
 		case 'h': GMT->current.io.cycle_operator = GMT_PERIODIC_HOUR; break;
@@ -2497,20 +2500,24 @@ GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 		case 'a': GMT->current.io.cycle_operator = GMT_PERIODIC_ANNUAL; break;
 		case 'y': GMT->current.io.cycle_operator = GMT_PERIODIC_YEAR; break;
 		case 'p': GMT->current.io.cycle_operator = GMT_PERIODIC_CUSTOM;
-			if (arg[k+1] == '\0') return (GMT_PARSE_ERROR);	/* Gave us nuthin' */
-			if ((c = strchr (arg, '/'))) {	/* Got period/phase */
-				c[0] = ' ';	/* Replace slash by space temporarily */
-				sscanf (&arg[k+1], "%lg %lg", &GMT->current.io.cycle_period, &GMT->current.io.cycle_phase);
-				c[0] = '/';	/* Restore slash */
+			if (arg[1] == '\0') {	/* Gave us nuthin' */
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Code p syntax is -wp<period>[/<phase]\n");
+				return (GMT_PARSE_ERROR);
 			}
-			else 	/* Just got the period, woth phase = 0 */
-				GMT->current.io.cycle_period = atof (&arg[k+1]);
+			else if ((s = strchr (arg, '/'))) {	/* Got period/phase */
+				s[0] = ' ';	/* Replace slash by space temporarily */
+				sscanf (&arg[1], "%lg %lg", &GMT->current.io.cycle_period, &GMT->current.io.cycle_phase);
+				s[0] = '/';	/* Restore slash */
+			}
+			else 	/* Just got the period, with phase == 0 */
+				GMT->current.io.cycle_period = atof (&arg[1]);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Unrecognized periodicity code %c\n", arg[k]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Unrecognized periodicity code %c\n", arg[0]);
 			return (GMT_PARSE_ERROR);
 	}
-	/* If input column is not set (yet) then we set it to abstime unless custom period */
+	if (c) c[2] = '+';	/* Restore modifier */
+	/* If input column is not set (yet) then we set it to abstime unless it is the custom period */
 	if (GMT->current.io.cycle_operator != GMT_PERIODIC_CUSTOM && gmt_get_column_type (GMT, GMT_IN, GMT->current.io.cycle_col) == GMT_IS_UNKNOWN)
 		gmt_set_column_type (GMT, GMT_IN, GMT->current.io.cycle_col, GMT_IS_ABSTIME);
 	/* Output column is no longer unknown or abstime but float */
@@ -7299,9 +7306,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] Specify the grid interpolation mode.\n");
 			gmt_message (GMT, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default is bicubic].\n");
 #ifdef DEBUG
-			gmt_message (GMT, "\t   Append +A to save the antialiasing counter to a grid for debugging.\n");
+			gmt_message (GMT, "\t   Append +A to save the anti-aliasing counter to a grid for debugging.\n");
 #endif
-			gmt_message (GMT, "\t   Append +a to switch off antialiasing (except for l) [Default: on].\n");
+			gmt_message (GMT, "\t   Append +a to switch off anti-aliasing (except for l) [Default: on].\n");
 			gmt_message (GMT, "\t   Append +b<BC> to change boundary conditions.  <BC> can be either:\n");
 			gmt_message (GMT, "\t     g for geographic, p for periodic, and n for natural boundary conditions.\n");
 			gmt_message (GMT, "\t     For p and n you may optionally append x or y [default is both]:\n");
@@ -7361,9 +7368,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'w':	/* -w option for cyclicity */
 
-			gmt_message (GMT, "\t-w Append input column [0] to be wrapped with specified periodicity:\n");
+			gmt_message (GMT, "\t-w Wrapped selected column [0] with specified periodicity:\n");
 			gmt_message (GMT, "\t   Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles.\n");
 			gmt_message (GMT, "\t   Cartesian data: Append p<period>[/<phase>] for custom periodicity.\n");
+			gmt_message (GMT, "\t   Select another column than x via +c<col>.\n");
 			break;
 
 		case 's':	/* Output control for records where z are NaN */

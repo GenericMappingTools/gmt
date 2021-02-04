@@ -1,2 +1,2 @@
-**-w**\ [*col*]\ **y**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **p**\ *period*\ [/*phase*] :ref:`(more ...) <-w_full>`
+**-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **p**\ *period*\ [/*phase*][**+c**\ *col*] :ref:`(more ...) <-w_full>`
     Convert an input coordinate to a cyclic coordinate.

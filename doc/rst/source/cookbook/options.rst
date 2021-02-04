@@ -1501,9 +1501,10 @@ the settings related to the appearance of month and weekday names, such as :term
 :term:`FORMAT_TIME_PRIMARY_MAP` and :term:`TIME_WEEK_START`, may be used.
 
 Note that the **-w** option can also be applied to the *y*-coordinate instead (or any other
-coordinate).  Below we demonstrate this using the same Mississippi river data but read
-it in so that time is the *y* coordinate. The following script generates a subplot with
-two illustrations similar to the ones above but (basically) transposed:
+coordinate) via the **+c**\ *col* modifier.  Below we demonstrate this using the same
+Mississippi river data but read it in so that time is the *y* coordinate. The following
+script generates a subplot with two illustrations similar to the ones above but (basically)
+transposed:
 
 .. literalinclude:: /_verbatim/GMT_cycle_4.txt
 
