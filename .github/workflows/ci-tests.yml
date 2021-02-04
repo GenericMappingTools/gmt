@@ -164,6 +164,9 @@ jobs:
         run: bash ci/download-coastlines.sh
         if: steps.cache-coastline.outputs.cache-hit != 'true' && (matrix.run_in_pr == true || github.event_name != 'pull_request')
 
+      - name: Checkout a specific commit for testing
+        run: git checkout c94e83f3537c3a5ddadd3641d1b9aaec003b4bef
+
       - name: Configure GMT
         run: |
           if [ "$RUNNER_OS" != "Windows" ]; then
