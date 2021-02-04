@@ -1224,6 +1224,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		}
 		wesn[XLO] = F.wesn[YLO];	wesn[XHI] = F.wesn[YHI];
 		wesn[YLO] = F.wesn[XLO];	wesn[YHI] = F.wesn[XHI];
+		if (GMT->current.io.cycle_col == GMT_X) GMT->current.io.cycle_col = GMT_Y;
 		gmt_M_memcpy (GMT->common.R.wesn, wesn, 4, double);
 		if (gmt_map_setup (GMT, wesn)) Return (GMT_PROJECTION_ERROR);
 	}

@@ -244,6 +244,7 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	bool is_world;			/* true if map has 360 degrees of longitude range */
 	bool is_world_tm;			/* true if GMT_TM map is global? */
 	bool lon_wrap;			/* true when longitude wrapping over 360 degrees is allowed */
+	bool lat_wrap;			/* true when "latitude" wrapping over 180 degrees is allowed (may be periodic time in y-axis instead) */
 	bool z_periodic;			/* true if grid values are 0-360 degrees (phases etc) */
 	bool loxodrome;				/* true if we are computing loxodrome distances */
 	unsigned int meridian_straight;		/* 1 if meridians plot as straight lines, 2 for special case */
@@ -261,6 +262,7 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	double dlat;				/* Steps taken in latitude along gridlines (gets reset in gmt_init.c) */
 	double path_step;			/* Sampling interval if resampling of paths should be done */
 	double lon_wrap_range;		/* 360 for longitudes, but others values for periodic time */
+	double lat_wrap_range;		/* Usually means for for periodic time */
 	bool (*outside) (struct GMT_CTRL *, double, double);	/* Pointer to function checking if a lon/lat point is outside map */
 	bool (*overlap) (struct GMT_CTRL *, double, double, double, double);	/* Pointer to function checking for overlap between 2 regions */
 	bool (*will_it_wrap) (struct GMT_CTRL *, double *, double *, uint64_t, uint64_t *);	/* true if consecutive points indicate wrap */

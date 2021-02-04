@@ -1495,7 +1495,10 @@ histogram of monthly discharge shown in Figure :ref:`Mississippi monthly dischar
    Monthly Mississippi river discharge for the 10-year period, from September to September.
 
 Quarterly discharge would similarly be obtained by using **-T**\ 3 in the :doc:`/histogram`
-command.
+command.  As can be seen in Figure :ref:`Mississippi monthly discharge <gmt_cycle_3>`, the
+annual cycle axis (as well as the weekly cycle axis) is considered a temporal axis and hence
+the settings related to the display of month and weekday names, such as :term:`GMT_LANGUAGE`,
+:term:`FORMAT_TIME_PRIMARY_MAP` and :term:`TIME_WEEK_START`, may be used.
 
 .. _option_-x_core:
 
