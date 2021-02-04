@@ -167,7 +167,7 @@ jobs:
         if: steps.cache-coastline.outputs.cache-hit != 'true' && (matrix.run_in_pr == true || github.event_name != 'pull_request')
 
       - name: Checkout a specific commit for testing
-        run: git checkout 8181c705379619379547b3dd55427eeab3b28c34
+        run: git checkout 8ddbb3fa923f3bebc192df5c3459bc65103f6d1d
         if: matrix.run_in_pr == true
 
       - name: Configure GMT
