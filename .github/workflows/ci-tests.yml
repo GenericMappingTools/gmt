@@ -305,7 +305,9 @@ jobs:
       # Run the tests
       - name: Test with pytest
         shell: bash -l {0}
-        run: make test PYTEST_EXTRA="-r P"
+        run: |
+          cd ${GITHUB_WORKSPACE}/pygmt/
+          make test PYTEST_EXTRA="-r P"
       ##########################################################################
 
       # Run full tests and rerun failed tests
