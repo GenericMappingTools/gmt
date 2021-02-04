@@ -1433,13 +1433,13 @@ corresponding wrapping code:
 +------------+---------------------------+------------+--------------+-----------+
 | **s**      | Second cycle (second)     |  1 second  | 0            |   0–1     |
 +------------+---------------------------+------------+--------------+-----------+
-| **p**      | Custom cycle (normalized) |  :math:`T` | :math:`\tau` |   0–1     |
+| **c**      | Custom cycle (normalized) |  :math:`T` | :math:`\tau` |   0–1     |
 +------------+---------------------------+------------+--------------+-----------+
 
 You can append the input column with the coordinate to be wrapped to the **-w** option
 [we default to the first column, i.e., 0 if no column is specified].  Then, append one
 of the available codes from Table :ref:`cycles <tbl-cycletype>`. If the custom cycle
-**p** is chosen then you must also supply the *period* and optionally any *phase* [0]
+**c** is chosen then you must also supply the *period* and optionally any *phase* [0]
 in the same units of your data.
 
 To demonstrate the use of **-w** we will make a few plots of the daily discharge rate of

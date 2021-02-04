@@ -4,8 +4,6 @@
 gmtcolors
 *********
 
-.. _ColorExplain:
-
 Explanation of color codes in GMT
 
 Description

@@ -1,6 +1,6 @@
 .. _-w_full:
 
-**-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **p**\ *period*\ [/*phase*][**+c**\ *col*]
+**-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\ *period*\ [/*phase*][**+c**\ *col*]
     Convert the input *x*-coordinate to a cyclical coordinate, or select another
     column instead via the **+c** modifier.  Append the cycle code of interest.
     If the selected column contains absolute time then choose between these cycles:
@@ -15,7 +15,7 @@
     **m** converts time to a cyclical minute with range 0-60 seconds, and
     **s** converts time to a cyclical second with range 0-1 seconds.
     For Cartesian data one can select a custom *period* and optional *phase* [0]
-    via the **p** code, which results in normalized data in the range 0-1.
+    via the **c** code, which results in normalized data in the range 0-1.
     **Note**: If a temporal cycle is indicated then we implicitly set **-f** to
     indicate absolute time (unless already set separately).
     See Section :ref:`Examining data cycles: The -w option <option_-w>` for

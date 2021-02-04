@@ -2472,7 +2472,7 @@ bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 	return (n_errors > 0);
 }
 
-/*! Routine will decode the -wy|a|w|d|h|m|s|p<period>[/<phase>][+c<col>] arguments */
+/*! Routine will decode the -wy|a|w|d|h|m|s|c<period>[/<phase>][+c<col>] arguments */
 GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char *c = NULL, *s = NULL;
@@ -2501,15 +2501,15 @@ GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 		case 'y': GMT->current.io.cycle_operator = GMT_CYCLE_YEAR; break;
 		case 'p': GMT->current.io.cycle_operator = GMT_CYCLE_CUSTOM;
 			if (arg[1] == '\0') {	/* Gave us nuthin' */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Code p syntax is -wp<period>[/<phase]\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Code c syntax is -wc<period>[/<phase]\n");
 				return (GMT_PARSE_ERROR);
 			}
-			else if ((s = strchr (arg, '/'))) {	/* Got period/phase */
+			else if ((s = strchr (arg, '/'))) {	/* Got custom period/phase */
 				s[0] = ' ';	/* Replace slash by space temporarily */
 				sscanf (&arg[1], "%lg %lg", &GMT->current.io.cycle_period, &GMT->current.io.cycle_phase);
 				s[0] = '/';	/* Restore slash */
 			}
-			else 	/* Just got the period, with phase == 0 */
+			else 	/* Just got the custom period, with phase == 0 */
 				GMT->current.io.cycle_period = atof (&arg[1]);
 			break;
 		default:
@@ -7368,9 +7368,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'w':	/* -w option for cyclicity */
 
-			gmt_message (GMT, "\t-w Wrapped selected column [0] with specified periodicity:\n");
+			gmt_message (GMT, "\t-w Wrapped selected column [0] with specified cyclicity:\n");
 			gmt_message (GMT, "\t   Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles.\n");
-			gmt_message (GMT, "\t   Cartesian data: Append p<period>[/<phase>] for custom periodicity.\n");
+			gmt_message (GMT, "\t   Cartesian data: Append c<period>[/<phase>] for custom cyclicity.\n");
 			gmt_message (GMT, "\t   Select another column than x via +c<col>.\n");
 			break;
 
