@@ -1078,32 +1078,31 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 		API->GMT->current.io.cycle_min = API->GMT->common.R.wesn[k];
 		API->GMT->current.io.cycle_max = API->GMT->common.R.wesn[k+1];
 		switch (API->GMT->current.io.cycle_operator) {
-			/* The cases are arranged so that the first are normalized ranges, then week. */
-			case GMT_PERIODIC_SEC:	/* Return 0.000-0.999999 second */
+			case GMT_CYCLE_SEC:	/* Return 0.000-0.999999 second */
 				API->GMT->current.io.cycle_range = 1.0;
 				break;
-			case GMT_PERIODIC_YEAR:	/* Return 0.00000-0.99999999 years */
-				API->GMT->current.io.cycle_range = 1.0;
+			case GMT_CYCLE_MIN:	/* Return 0.000-59.999999 seconds */
+				API->GMT->current.io.cycle_range = GMT_MIN2SEC_F;
 				break;
-			case GMT_PERIODIC_CUSTOM:	/* Return 0.00000-0.99999999 custom cycle */
-				API->GMT->current.io.cycle_range = 1.0;
+			case GMT_CYCLE_HOUR:	/* Return 0.000-59.999999 minutes */
+				API->GMT->current.io.cycle_range = GMT_HR2MIN_F;
 				break;
-			case GMT_PERIODIC_WEEK:	/* Return 0.00000-6.9999999 days */
+			case GMT_CYCLE_DAY:	/* Return 0.000-23.999999 hours */
+				API->GMT->current.io.cycle_range = GMT_DAY2HR_F;
+				break;
+			case GMT_CYCLE_WEEK:	/* Return 0.00000-6.9999999 days */
 				API->GMT->current.io.cycle_range = GMT_WEEK2DAY_F;
 				API->GMT->current.io.cycle_interval = true;
 				break;
-			case GMT_PERIODIC_MIN:	/* Return 0.000-59.999999 seconds */
-				API->GMT->current.io.cycle_range = GMT_MIN2SEC_F;
-				break;
-			case GMT_PERIODIC_HOUR:	/* Return 0.000-59.999999 minutes */
-				API->GMT->current.io.cycle_range = GMT_HR2MIN_F;
-				break;
-			case GMT_PERIODIC_DAY:	/* Return 0.000-23.999999 hours */
-				API->GMT->current.io.cycle_range = GMT_DAY2HR_F;
-				break;
-			case GMT_PERIODIC_ANNUAL:	/* Return 0.000000-11.999999 months */
+			case GMT_CYCLE_ANNUAL:	/* Return 0.000000-11.999999 months */
 				API->GMT->current.io.cycle_range = 12.0;
 				API->GMT->current.io.cycle_interval = true;
+				break;
+			case GMT_CYCLE_YEAR:	/* Return 0.00000-0.99999999 years */
+				API->GMT->current.io.cycle_range = 1.0;
+				break;
+			case GMT_CYCLE_CUSTOM:	/* Return 0.00000-0.99999999 custom cycle */
+				API->GMT->current.io.cycle_range = 1.0;
 				break;
 		}
 	}

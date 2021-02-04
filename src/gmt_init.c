@@ -2492,14 +2492,14 @@ GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->current.io.cycle_col = GMT_X;
 
 	switch (arg[0]) {	/* Look at which valid code we got */
-		case 's': GMT->current.io.cycle_operator = GMT_PERIODIC_SEC; break;
-		case 'm': GMT->current.io.cycle_operator = GMT_PERIODIC_MIN; break;
-		case 'h': GMT->current.io.cycle_operator = GMT_PERIODIC_HOUR; break;
-		case 'd': GMT->current.io.cycle_operator = GMT_PERIODIC_DAY; break;
-		case 'w': GMT->current.io.cycle_operator = GMT_PERIODIC_WEEK; break;
-		case 'a': GMT->current.io.cycle_operator = GMT_PERIODIC_ANNUAL; break;
-		case 'y': GMT->current.io.cycle_operator = GMT_PERIODIC_YEAR; break;
-		case 'p': GMT->current.io.cycle_operator = GMT_PERIODIC_CUSTOM;
+		case 's': GMT->current.io.cycle_operator = GMT_CYCLE_SEC; break;
+		case 'm': GMT->current.io.cycle_operator = GMT_CYCLE_MIN; break;
+		case 'h': GMT->current.io.cycle_operator = GMT_CYCLE_HOUR; break;
+		case 'd': GMT->current.io.cycle_operator = GMT_CYCLE_DAY; break;
+		case 'w': GMT->current.io.cycle_operator = GMT_CYCLE_WEEK; break;
+		case 'a': GMT->current.io.cycle_operator = GMT_CYCLE_ANNUAL; break;
+		case 'y': GMT->current.io.cycle_operator = GMT_CYCLE_YEAR; break;
+		case 'p': GMT->current.io.cycle_operator = GMT_CYCLE_CUSTOM;
 			if (arg[1] == '\0') {	/* Gave us nuthin' */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Code p syntax is -wp<period>[/<phase]\n");
 				return (GMT_PARSE_ERROR);
@@ -2518,7 +2518,7 @@ GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 	}
 	if (c) c[2] = '+';	/* Restore modifier */
 	/* If input column is not set (yet) then we set it to abstime unless it is the custom period */
-	if (GMT->current.io.cycle_operator != GMT_PERIODIC_CUSTOM && gmt_get_column_type (GMT, GMT_IN, GMT->current.io.cycle_col) == GMT_IS_UNKNOWN)
+	if (GMT->current.io.cycle_operator != GMT_CYCLE_CUSTOM && gmt_get_column_type (GMT, GMT_IN, GMT->current.io.cycle_col) == GMT_IS_UNKNOWN)
 		gmt_set_column_type (GMT, GMT_IN, GMT->current.io.cycle_col, GMT_IS_ABSTIME);
 	/* Output column is no longer unknown or abstime but float */
 	gmt_set_column_type (GMT, GMT_OUT, GMT->current.io.cycle_col, GMT_IS_FLOAT);

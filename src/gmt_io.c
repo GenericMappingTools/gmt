@@ -4458,34 +4458,34 @@ void gmtlib_modulo_time_calculator (struct GMT_CTRL *GMT, double *val) {
 	int period;
 	struct GMT_GCAL cal;
 	switch (GMT->current.io.cycle_operator) {
-		case GMT_PERIODIC_SEC:	/* Return 0.000-0.999999 sec */
+		case GMT_CYCLE_SEC:	/* Return 0.000-0.999999 sec */
 			*val = fmod (*val, 1.0);
 			break;
-		case GMT_PERIODIC_MIN:	/* Return 0.000-59.999999 seconds */
+		case GMT_CYCLE_MIN:	/* Return 0.000-59.999999 seconds */
 			*val = fmod (*val, GMT_MIN2SEC_F);
 			break;
-		case GMT_PERIODIC_HOUR:	/* Return 0.000-59.999999 minutes */
+		case GMT_CYCLE_HOUR:	/* Return 0.000-59.999999 minutes */
 			*val = fmod (*val, GMT_HR2SEC_F) * GMT_SEC2MIN;
 			break;
-		case GMT_PERIODIC_DAY:	/* Return 0.000-23.999999 hours */
+		case GMT_CYCLE_DAY:	/* Return 0.000-23.999999 hours */
 			*val = fmod (*val, GMT_DAY2SEC_F) * GMT_SEC2HR;
 			break;
-		case GMT_PERIODIC_WEEK:	/* Return 0.00000-6.9999999 days */
+		case GMT_CYCLE_WEEK:	/* Return 0.00000-6.9999999 days */
 			gmt_gcal_from_dt (GMT, *val, &cal);
 			*val = (GMT->current.setting.time_week_start) ? (GMT_WEEK2DAY_I + cal.day_w - GMT->current.setting.time_week_start) % GMT_WEEK2DAY_I : cal.day_w;
 			*val += cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY;
 			break;
-		case GMT_PERIODIC_ANNUAL:	/* Return 0.000000-11.999999 months */
+		case GMT_CYCLE_ANNUAL:	/* Return 0.000000-11.999999 months */
 			gmt_gcal_from_dt (GMT, *val, &cal);
 			period = gmtlib_gmonth_length (cal.year, cal.month);	/* Days in this month */
 			*val = cal.month - 1 + (cal.day_m - 1 + cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY) / period;
 			break;
-		case GMT_PERIODIC_YEAR:	/* Return 0.00000-0.99999999 years */
+		case GMT_CYCLE_YEAR:	/* Return 0.00000-0.99999999 years */
 			gmt_gcal_from_dt (GMT, *val, &cal);
 			period = gmtlib_is_gleap (cal.year) ? 366 : 365;	/* Length of this year in days */
 			*val = (cal.day_y - 1 + cal.hour * GMT_HR2DAY + cal.min * GMT_MIN2DAY + cal.sec * GMT_SEC2DAY) / period;
 			break;
-		case GMT_PERIODIC_CUSTOM:	/* Return 0.00000-0.99999999 for a custom cycle */
+		case GMT_CYCLE_CUSTOM:	/* Return 0.00000-0.99999999 for a custom cycle */
 			*val = fmod (*val - GMT->current.io.cycle_phase, GMT->current.io.cycle_period) / GMT->current.io.cycle_period;	/* Yields 0.000-0.999999 cycles */
 			break;
 	}

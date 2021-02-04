@@ -14831,13 +14831,13 @@ int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_
 #endif
 			code = (GMT->current.io.cycle_col == GMT->current.map.frame.axis[T->parent].id) ? GMT->current.io.cycle_operator : 0;
 			switch (code) {	/* Do special treatment for annual and weekly annotations since they are texts but axis is not a time-axis per se... */
-				case GMT_PERIODIC_WEEK:		/* Must do days of the week or abbreviation */
+				case GMT_CYCLE_WEEK:		/* Must do days of the week or abbreviation */
 					gmtlib_set_case_and_kind (GMT, GMT->current.setting.format_time[GMT_PRIMARY], &upper, &kind);
 					ival = (irint (coord) + GMT_WEEK2DAY_I) % GMT_WEEK2DAY_I;	/* Wrap around */
 					strncpy (string, GMT->current.language.day_name[kind][ival], GMT_LEN16);
 					if (upper) gmt_str_toupper (string);
 					break;
-				case GMT_PERIODIC_ANNUAL:	/* Must write month name or abbreviation */
+				case GMT_CYCLE_ANNUAL:	/* Must write month name or abbreviation */
 					gmtlib_set_case_and_kind (GMT, GMT->current.setting.format_time[GMT_PRIMARY], &upper, &kind);
 					ival = (urint (coord) + 12) % 12;	/* Wrap around */
 					strncpy (string, GMT->current.language.month_name[kind][ival], GMT_LEN16);

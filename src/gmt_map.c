@@ -6705,20 +6705,20 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	/* Now determine 'round' major and minor tick intervals */
 	if (gmt_M_axis_is_geo (GMT, axis))	/* Geographical coordinate */
 		p = (d < GMT_MIN2DEG) ? GMT_SEC2DEG : (d < 1.0) ? GMT_MIN2DEG : 1.0;
-	else if (GMT->current.io.cycle_col == axis && GMT->current.io.cycle_operator != GMT_PERIODIC_CUSTOM) {
+	else if (GMT->current.io.cycle_col == axis && GMT->current.io.cycle_operator != GMT_CYCLE_CUSTOM) {
 		switch (GMT->current.io.cycle_operator) {
-			case GMT_PERIODIC_MIN: case GMT_PERIODIC_HOUR:	/* With a range of 60 it behaves like geo */
+			case GMT_CYCLE_MIN: case GMT_CYCLE_HOUR:	/* With a range of 60 it behaves like geo */
 				p = (d < GMT_MIN2DEG) ? GMT_SEC2DEG : (d < 1.0) ? GMT_MIN2DEG : 1.0;
 				break;
-			case GMT_PERIODIC_DAY:	/* With a range of 24 */
+			case GMT_CYCLE_DAY:	/* With a range of 24 */
 				p = (d < 1.0) ? GMT_HR2DAY : 1.0;
 				maj = Hmaj; sub = Hsub; n = 3;
 				break;
-			case GMT_PERIODIC_ANNUAL:	/* 12 months */
+			case GMT_CYCLE_ANNUAL:	/* 12 months */
 				p = 1.0;
 				maj = Omaj; sub = Osub; n = 1;
 				break;
-			case GMT_PERIODIC_WEEK:	/* Need individual days here */
+			case GMT_CYCLE_WEEK:	/* Need individual days here */
 				d = p = f = 1.0;	n = 0;
 				break;
 			default:	/* This is the normalized ones which we treat like general linear axis */

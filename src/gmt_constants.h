@@ -172,15 +172,15 @@ enum GMT_enum_basemap {
 	GMT_BASEMAP_ANNOT_AFTER		= 4};
 
 /*! Handling of periodic data */
-enum GMT_time_period {	/* The order is deliberate; see gmt_parse.c */
-	GMT_PERIODIC_SEC = 1,
-	GMT_PERIODIC_YEAR,
-	GMT_PERIODIC_CUSTOM,
-	GMT_PERIODIC_WEEK,
-	GMT_PERIODIC_MIN,
-	GMT_PERIODIC_HOUR,
-	GMT_PERIODIC_DAY,
-	GMT_PERIODIC_ANNUAL};
+enum GMT_time_period {
+	GMT_CYCLE_SEC = 1,
+	GMT_CYCLE_MIN,
+	GMT_CYCLE_HOUR,
+	GMT_CYCLE_DAY,
+	GMT_CYCLE_WEEK,
+	GMT_CYCLE_YEAR,
+	GMT_CYCLE_ANNUAL,
+	GMT_CYCLE_CUSTOM};
 
 /* Since -I is not a global option but we almost use it as such, we define the long-option for it here.
  * Modules that need it in their module_kw[] array can just add it to their list. */
