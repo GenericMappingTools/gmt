@@ -1094,10 +1094,10 @@ on columns from the physical record. For instance, to use the 4th,
 **-i**\ 3,6,2 (since 0 is the first column). The chosen data columns
 will be used as given. Optionally, you can specify that input columns
 should be transformed according to a linear or logarithmic conversion.
-Do so by appending [**+l**][**+s**\ *scale*][**+o**\ *offset*] to
+Do so by appending [**+l**][**+d**\ *factor*][**+s**\ *factor*][**+o**\ *offset*] to
 each column (or range of columns). All items are optional: The **+l**
 implies we should first take :math:`\log_{10}` of the data [leave as
-is]. Next, we may scale the result by the given *scale* [1]. Finally, we
+is]. Next, we may multiply or divide the result by the given *factor* [1]. Finally, we
 add in the specified *offset* [0].  If you want the trailing text to remain
 part of your subset logical record then you must also select the special column
 by requesting column **t**, otherwise we ignore trailing text.  If you only

@@ -8783,7 +8783,7 @@ GMT_LOCAL unsigned int gmtinit_parse_e_option (struct GMT_CTRL *GMT, char *arg) 
 	return (GMT_NOERROR);
 }
 
-/*! Routine will decode the -i<col>|<colrange>|t[+l][+s<scale>][+o<offset>],... arguments or just -in */
+/*! Routine will decode the -i<col>|<colrange>|t[+l][+d<divisor>][+s<scale>][+o<offset>],... arguments or just -in */
 int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, word[GMT_LEN256] = {""}, *c = NULL;
@@ -8809,21 +8809,22 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 		return GMT_NOERROR;
 	}
 
-	new_style = (strstr (arg, "+s") || strstr (arg, "+o") || strstr (arg, "+l"));
+	new_style = (strstr (arg, "+d") || strstr (arg, "+s") || strstr (arg, "+o") || strstr (arg, "+l"));
 
 	strncpy (GMT->common.i.string, arg, GMT_LEN64-1);	/* Verbatim copy */
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) GMT->current.io.col_skip[i] = true;	/* Initially, no input column is requested */
 
 	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process the comma-separated sections */
 		convert = 0, scale = 1.0, offset = 0.0;	/* Reset for next column selection */
-		if (new_style) {	/* New format as of 5.4: -i<col>|<colrange>[+l][+s<scale>][+o<offset>],... */
-			if ((c = gmt_first_modifier (GMT, p, "los"))) {	/* Process modifiers */
+		if (new_style) {	/* New format as of 5.4: -i<col>|<colrange>[+l][+d<divide>][+s<scale>][+o<offset>],... */
+			if ((c = gmt_first_modifier (GMT, p, "dlos"))) {	/* Process modifiers */
 				pos_p = 0;	/* Reset to start of new word */
-				while (gmt_getmodopt (GMT, 'i', c, "los", &pos_p, word, &uerr) && uerr == 0) {
+				while (gmt_getmodopt (GMT, 'i', c, "dlos", &pos_p, word, &uerr) && uerr == 0) {
 					switch (word[0]) {
 						case 'l': convert |= 2; break;
 						case 'o': convert |= 1; offset = atof (&word[1]); break;
 						case 's': convert |= 1; scale  = atof (&word[1]); break;
+						case 'd': convert |= 1; scale  = 1.0 / atof (&word[1]); break;
 						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					}
 				}

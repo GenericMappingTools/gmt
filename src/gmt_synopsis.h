@@ -114,7 +114,7 @@
 #define GMT_f_OPT	"-f[i|o]<info>"
 #define GMT_g_OPT	"-g[a]x|y|d|X|Y|D|[<col>]z<gap>[+n|p]"
 #define GMT_h_OPT	"-h[i|o][<nrecs>][+c][+d][+m<segheader>][+r<remark>][+t<title>]"
-#define GMT_i_OPT	"-i<cols>[+l][+s<scale>][+o<offset>][,...][,t[<word>]]"
+#define GMT_i_OPT	"-i<cols>[+l][+d<divide>][+s<scale>][+o<offset>][,...][,t[<word>]]"
 #define GMT_j_OPT	"-je|f|g"
 #define GMT_l_OPT	"-l<label>[<mods>]"
 #define GMT_n_OPT	"-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>]"

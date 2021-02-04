@@ -78,7 +78,9 @@ two ways to ensure that GMT understands which unit you intend to use:
 
 #. Set the parameter :term:`PROJ_LENGTH_UNIT` to the desired unit. Then,
    all dimensions without explicit units will be interpreted accordingly.
-   By default, GMT always initializes :term:`PROJ_LENGTH_UNIT` to cm.
+   By default, GMT always initializes :term:`PROJ_LENGTH_UNIT` to cm and
+   interprets unitless dimensional values as cm, except for fonts and pen
+   thicknesses which are by default interpreted as points.
 
 The latter method is less robust as other users may have a different
 default unit set and then your script may not work as intended. For portability,
@@ -107,10 +109,10 @@ For Cartesian data the data units do not normally matter
 Geographic data are different, as distances can be specified in a variety
 of ways. GMT programs that accept actual Earth length scales like
 search radii or distances can therefore handle a variety of units. These
-choices are listed in Table :ref:`distunits <tbl-distunits>`; simply append the desired
-unit to the distance value you supply. A value without a unit suffix
-will be consider to be in meters. For example, a distance of 30 nautical
-miles should be given as 30\ **n**.
+choices are listed in the Table :ref:`Distance Units <tbl-distunits>`;
+simply append the desired unit to the distance value you supply. A value
+without a unit suffix will be consider to be in meters. For example, a distance
+of 30 nautical miles should be given as 30\ **n**.
 
 Distance calculations
 ~~~~~~~~~~~~~~~~~~~~~
@@ -162,8 +164,7 @@ for an ellipsoid is required (typically for a limited surface area). For
 instance, a search radius of 5000 feet using this mode of computation
 would be specified as **-S**\ 5000\ **f**.
 
-**Note**: There are two additional
-GMT defaults that control how
+**Note**: There are two additional GMT defaults that control how
 great circle (and Flat Earth) distances are computed. One concerns the
 selection of the "mean radius". This is selected by
 :term:`PROJ_MEAN_RADIUS`, which selects one of several possible
