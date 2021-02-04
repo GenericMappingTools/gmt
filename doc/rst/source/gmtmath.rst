@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
 [ |SYN_OPT-s| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT--| ]
 *operand* [ *operand* ] **OPERATOR** [ *operand* ] **OPERATOR** ...
 **=** [ *outfile* ]
@@ -178,6 +179,8 @@ Optional Arguments
 .. include:: explain_-q.rst_
 
 .. include:: explain_-s.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_help.rst_
 
