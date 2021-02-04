@@ -129,6 +129,8 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 200
         if: matrix.run_in_pr == true || github.event_name != 'pull_request'
 
       - name: Setup vcpkg (Windows)
