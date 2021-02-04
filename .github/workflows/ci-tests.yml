@@ -168,6 +168,7 @@ jobs:
 
       - name: Checkout a specific commit for testing
         run: git checkout c94e83f3537c3a5ddadd3641d1b9aaec003b4bef
+        if: matrix.run_in_pr == true
 
       - name: Configure GMT
         run: |
