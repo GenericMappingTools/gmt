@@ -6680,6 +6680,27 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 		p = (d < GMT_MIN2DEG) ? GMT_SEC2DEG : (d < 1.0) ? GMT_MIN2DEG : 1.0;
 	else if (is_time)	/* Time axis coordinate, get p in seconds and the unit it represents */
 		p = gmtmap_auto_time_increment (d, &unit);
+	else if (GMT->current.io.cycle_col == axis && GMT->current.io.cycle_operator != GMT_PERIODIC_CUSTOM) {
+		switch (GMT->current.io.cycle_operator) {
+			case GMT_PERIODIC_MIN: case GMT_PERIODIC_HOUR:	/* With a range of 60 it behaves like geo */
+				p = (d < GMT_MIN2DEG) ? GMT_SEC2DEG : (d < 1.0) ? GMT_MIN2DEG : 1.0;
+				break;
+			case GMT_PERIODIC_DAY:	/* With a range of 24 */
+				p = (d < 1.0) ? GMT_HR2DAY : 1.0;
+				maj = Hmaj; sub = Hsub; n = 3;
+				break;
+			case GMT_PERIODIC_ANNUAL:	/* 12 months */
+				p = 1.0;
+				maj = Omaj; sub = Osub; n = 1;
+				break;
+			case GMT_PERIODIC_WEEK:	/* Need individual days here */
+				d = p = f = 1.0;	n = 0;
+				break;
+			default:	/* This is the normalized ones which we treat like general linear axis */
+				p = pow (10.0, floor (log10 (d)));
+				break;
+		}
+	}
 	else	/* General (linear) axis */
 		p = pow (10.0, floor (log10 (d)));
 	d /= p;	/* d is now in degrees, minutes or seconds (or time seconds), or in the range [1;10) */
@@ -6712,8 +6733,10 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 
 		interval = (unit == 'Y' || unit == 'O' || unit == 'D');
 	}
-	while (i < n && maj[i] < d) i++;	/* Wind up to largest reasonable interval */
-	d = maj[i] * p, f = sub[i] * p;		/* Scale up intervals in multiple of unit */
+	if (n) {
+		while (i < n && maj[i] < d) i++;	/* Wind up to largest reasonable interval */
+		d = maj[i] * p, f = sub[i] * p;		/* Scale up intervals in multiple of unit */
+	}
 	if (is_time) {	/* Last check to change a 12 month unit to 1 year and 24 hours to 1 day */
 		if (unit == 'O' && d == 12.0) d = 1.0, f /= 12.0, unit = 'Y';
 		if (unit == 'H' && d == 24.0) d = 1.0, f /= 24.0, unit = 'D';

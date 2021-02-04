@@ -3605,6 +3605,33 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	return (n_errors);
 }
 
+void gmtlib_set_case_and_kind (struct GMT_CTRL *GMT, char *format, bool *upper_case, unsigned int *flavor) {
+	/* Examine the format string and determine if we want upper/lower case and what type of abbreviation, if any */
+	*upper_case = false;	*flavor = 0;	/* Initialize */
+	switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
+		case 'F':	/* Full name, upper case */
+			*upper_case = true;
+			/* Intentionally fall through - to 'f' */
+		case 'f':	/* Full name, lower case */
+			*flavor = 0;
+			break;
+		case 'A':	/* Abbreviated name, upper case */
+			*upper_case = true;
+			/* Intentionally fall through - to 'a' */
+		case 'a':	/* Abbreviated name, lower case */
+			*flavor = 1;
+			break;
+		case 'C':	/* 1-char name, upper case */
+			*upper_case = true;
+			/* Intentionally fall through - to 'c' */
+		case 'c':	/* 1-char name, lower case */
+			*flavor = 2;
+			break;
+		default:
+			break;
+	}
+}
+
 /*! Load the values into the appropriate GMT_PLOT_AXIS_ITEM structure */
 GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char *in, char flag, char axis, int custom) {
 
@@ -3720,29 +3747,7 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 	if (!custom && in[0] && val == 0.0) I->active = false;
 	I->upper_case = false;
 	format = (GMT->current.map.frame.primary) ? GMT->current.setting.format_time[GMT_PRIMARY] : GMT->current.setting.format_time[GMT_SECONDARY];
-	switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
-		case 'F':	/* Full name, upper case */
-			I->upper_case = true;
-			/* Intentionally fall through - to 'f' */
-		case 'f':	/* Full name, lower case */
-			I->flavor = 0;
-			break;
-		case 'A':	/* Abbreviated name, upper case */
-			I->upper_case = true;
-			/* Intentionally fall through - to 'a' */
-		case 'a':	/* Abbreviated name, lower case */
-			I->flavor = 1;
-			break;
-		case 'C':	/* 1-char name, upper case */
-			I->upper_case = true;
-			/* Intentionally fall through - to 'c' */
-		case 'c':	/* 1-char name, lower case */
-			I->flavor = 2;
-			break;
-		default:
-			break;
-	}
-
+	gmtlib_set_case_and_kind (GMT, format, &(I->upper_case), &(I->flavor));
 	if (axis == 'z')
 		GMT->current.map.frame.drawz = true;
 	else
