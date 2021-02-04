@@ -3292,9 +3292,9 @@ GMT_LOCAL void gmtio_assign_col_type_if_notset (struct GMT_CTRL *GMT, unsigned i
 		}
 	}
 	else {	/* logical equal physical, so no column shopping */
-		if (!GMT->current.io.col_set[GMT_IN][col])
+		if (GMT->current.io.col_set[GMT_IN][col] == GMT_IS_UNKNOWN)
 			gmt_set_column_type (GMT, GMT_IN, col, type);
-		if (!GMT->current.io.col_set[GMT_OUT][col])
+		if (GMT->current.io.col_set[GMT_OUT][col] == GMT_IS_UNKNOWN)
 			gmt_set_column_type (GMT, GMT_OUT, col, type);
 	}
 }
