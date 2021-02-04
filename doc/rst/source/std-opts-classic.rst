@@ -62,7 +62,7 @@ Common Options (Classic Mode)
      - Control treatment of NaN records :ref:`(...) <-s_full>`
    * - **-t**\ *transparency*
      - Set layer transparency :ref:`(...) <-t_full>`
-   * - **-w**\ [*col*]\ **y**\ \|\ **o**\ \|\ **w**\ \|\ **d**\ \|\ **h**\ \|\ **m**\ \|\ **s**\ \|\ **p**\ *period*\ [/*phase*]
+   * - **-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\ *period*\ [/*phase*][**+c**\ *col*]
      - Convert selected coordinate to repeating cycles :ref:`(...) <-w_full>`
    * - **-x**\ [[-]\ *n*]
      - Set number of cores in multi-threaded modules :ref:`(...) <core_full>`
