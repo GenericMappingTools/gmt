@@ -1500,6 +1500,38 @@ annual cycle axis (as well as a weekly cycle axis) is considered a *temporal* ax
 the settings related to the appearance of month and weekday names, such as :term:`GMT_LANGUAGE`,
 :term:`FORMAT_TIME_PRIMARY_MAP` and :term:`TIME_WEEK_START`, may be used.
 
+Note that the **-w** option can also be applied to the *y*-coordinate instead (or any other
+coordinate).  Below we demonstrate this using the same Mississippi river data but read
+it in so that time is the *y* coordinate. The following script generates a subplot with
+two illustrations similar to the ones above but (basically) transposed:
+
+.. literalinclude:: /_verbatim/GMT_cycle_4.txt
+
+.. _gmt_cycle_4:
+
+.. figure:: /_images/GMT_cycle_4.*
+   :width: 500 px
+   :align: center
+
+   a) Daily Mississippi river discharge data plotted over the duration of a single,
+   normalized year. b) Monthly Mississippi river discharge for the 10-year period,
+   from September to September.
+
+Because **-w** is a global GMT option it is available in all modules that read
+tables. Because of this, we can grid the data and make an image of the wrapped
+dataset:
+
+.. literalinclude:: /_verbatim/GMT_cycle_5.txt
+
+.. _gmt_cycle_5:
+
+.. figure:: /_images/GMT_cycle_5.*
+   :width: 500 px
+   :align: center
+
+   Daily Mississippi river discharge data converted to a grid and imaged with
+   the default (turbo) color table.
+
 .. _option_-x_core:
 
 Selecting number of CPU cores: The **-x** option
