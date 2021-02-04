@@ -29,7 +29,7 @@ which is pretty self-explanatory.  In the case of GMT, similar long-options alte
 implemented.  For instance, the above :doc:`/blockmean` command can also be written
 
 ::
-    
+
     gmt blockmean --region=0/5/0/6 --increment=1 my_table.txt > new_table.txt
 
 which now becomes much easier to parse (for humans). Unfortunately, GMT syntax is a bit
@@ -106,7 +106,7 @@ when building GMT.
 The translations for the GMT common options are encapsulated in a single include file
 (gmt_common_longoptions.h) that populates a *gmt_common_kw* structure and looks like this:
 
-.. literalinclude:: ../../../../../src/gmt_common_longoptions.h
+.. literalinclude:: ../gmt_common_longoptions.h
     :language: C
     :lines: 10-39
 
@@ -121,7 +121,7 @@ include files as was done for the common options above.  Instead, the translatio
 can be stored directly in the module C file.  For instance, the local *module_kw* structure
 embedded in the blockmean.c module C code looks like this:
 
-.. literalinclude:: ../../../../../src/blockmean.c
+.. literalinclude:: ../blockmean.c
     :language: C
     :lines: 44-52
 

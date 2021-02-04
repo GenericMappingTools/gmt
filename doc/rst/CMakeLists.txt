@@ -41,6 +41,14 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_BINARY_DIR}/source/_images
 		DEPENDS _docs_copy_rst_tree_source)
 
+	add_custom_target (_docs_rst_src
+		COMMAND ${CMAKE_COMMAND} -E copy
+			${CMAKE_SOURCE_DIR}/src/gmt_common_longoptions.h
+			${CMAKE_SOURCE_DIR}/src/blockmean.c
+			${CMAKE_CURRENT_BINARY_DIR}/source/
+			DEPENDS _docs_copy_rst_tree_source)
+	add_depend_to_target (docs_depends _docs_rst_src)
+
 	# clean target
 	add_custom_target (_rst_clean
 		# cmake<3.15 can't remove multiple directories using cmake -E remove_directory
