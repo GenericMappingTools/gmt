@@ -41,6 +41,7 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_BINARY_DIR}/source/_images
 		DEPENDS _docs_copy_rst_tree_source)
 
+	# Copy two C codes into the build tree, so that they can be included in the documentation
 	add_custom_target (_docs_rst_src
 		COMMAND ${CMAKE_COMMAND} -E copy
 			${CMAKE_SOURCE_DIR}/src/gmt_common_longoptions.h
