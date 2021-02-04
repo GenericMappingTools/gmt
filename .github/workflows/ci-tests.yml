@@ -259,6 +259,55 @@ jobs:
           gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
         if: runner.os == 'Windows' && (matrix.run_in_pr == true || github.event_name != 'pull_request')
 
+      ##########################################################################
+      # DEBUG PYGMT
+      - name: Checkout PyGMT
+        uses: actions/checkout@v2.3.4
+        with:
+          repository: "GenericMappingTools/pygmt"
+          ref: "master"
+          path: pygmt
+          # fecth all history so that setuptools-scm works
+          fetch-depth: 0
+
+      # Setup Miniconda
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v2.0.0
+        with:
+          python-version: 3.9
+          channels: conda-forge
+          miniconda-version: "latest"
+
+      - name: Install GMT and required dependencies
+        shell: bash -l {0}
+        run: |
+          cd ${GITHUB_WORKSPACE}/pygmt/
+          requirements_file=full-conda-requirements.txt
+          cat requirements.txt requirements-dev.txt > $requirements_file
+          cat << EOF >> $requirements_file
+          make
+          EOF
+          conda install --yes --file $requirements_file
+
+      # Show installed pkg information for postmortem diagnostic
+      - name: List installed packages
+        shell: bash -l {0}
+        run: conda list
+
+      # Install the package that we want to test
+      - name: Install the package
+        shell: bash -l {0}
+        run: |
+          cd ${GITHUB_WORKSPACE}/pygmt/
+          python setup.py sdist --formats=zip
+          pip install dist/*
+
+      # Run the tests
+      - name: Test with pytest
+        shell: bash -l {0}
+        run: make test PYTEST_EXTRA="-r P"
+      ##########################################################################
+
       # Run full tests and rerun failed tests
       - name: Run full tests
         run: |
