@@ -1,21 +1,21 @@
 .. _-w_full:
 
 **-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **p**\ *period*\ [/*phase*][**+c**\ *col*]
-    Convert the input *x*-coordinate to a cyclic coordinate.  Optionally select
-    another column via the **+c** modifier.  Append the cycle code of interest.
+    Convert the input *x*-coordinate to a cyclical coordinate, or select another
+    column instead via the **+c** modifier.  Append the cycle code of interest.
     If the selected column contains absolute time then choose between these cycles:
-    **y** (yearly) convert time to a normalized year (0-1),
-    **a** (annual) convert time to calendar months that are each normalized to 0-1,
-    then added to the integer month, yielding coordinates in the 0-12 range,
-    **w** converts time to 7 weekdays that are normalized to a range 0-7.
+    **y** (yearly) converts time to a normalized year (0-1), while
+    **a** (annual) converts time to calendar months that are each normalized to 0-1,
+    then adds the integer month, yielding coordinates in the 0-12 range.
+    Code **w** converts time to 7 repeating weekdays yielding the range 0-7.
     **Note**: Coordinates in the range 0-1 correspond to the
-    first day of the week, controllable via :term:`TIME_WEEK_START`.
-    **d** converts time to a cyclic day of range 0-24 hours,
-    **h** converts time to a cyclic hour of range 0-60 minutes,
-    **m** converts time to a cyclic minute of range 0-60 seconds, and
-    **s** converts time to a cyclic second of range 0-1 seconds.
+    first day of the week [Monday] but can be changed via :term:`TIME_WEEK_START`.
+    Code **d** converts time to a cyclical day with range 0-24 hours,
+    **h** converts time to a cyclical hour with range 0-60 minutes,
+    **m** converts time to a cyclical minute with range 0-60 seconds, and
+    **s** converts time to a cyclical second with range 0-1 seconds.
     For Cartesian data one can select a custom *period* and optional *phase* [0]
-    via the **p** selection, which results in normalized data in the range 0-1.
+    via the **p** code, which results in normalized data in the range 0-1.
     **Note**: If a temporal cycle is indicated then we implicitly set **-f** to
     indicate absolute time (unless already set separately).
     See Section :ref:`Examining data cycles: The -w option <option_-w>` for
