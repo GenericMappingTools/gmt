@@ -1533,6 +1533,32 @@ dataset:
    Daily Mississippi river discharge data converted to a grid and imaged with
    the default (turbo) color table.
 
+Our final example will explore the weekly and daily time-cycles using a 3-year data
+set of traffic (vehicles/hour) crossing the Verrazano-Narrows bridge between
+Staten Island and Brooklyn (i.e., mostly traffic destined for Manhattan). We will
+show the raw time-series, a wrapped week, a weekly histogram and finally a
+hourly histogram.  The figure caption of Figure :ref:`NY traffic <gmt_cycle_6>`
+discusses the four panels resulting from running the script below:
+
+.. literalinclude:: /_verbatim/GMT_cycle_6.txt
+
+.. _gmt_cycle_6:
+
+.. figure:: /_images/GMT_cycle_6.*
+   :width: 500 px
+   :align: center
+
+   a) Time-series of traffic over a 3-year period.  Note the dramatic drop as
+   Covid-19 became a major issue in mid-March 2020, as well as some data-gaps
+   and possibly a glitch in May 2018. b) Wrapped weekly signals makes it easy
+   to see the bimodal daily morning and evening rush-hour pattern for the weekdays
+   with a different pattern on the weekends (the "spike" in (a) turned out to be
+   a single Thursday and Sunday data that seem questionable). c) A weekly histogram
+   shows how traffic slowly builds up towards the weekend then drops off towards
+   Sunday. The script calculates the number of Monday hours to normalize the plots.
+   d) A daily histogram is created by wrapping to a daily cycle, then normalizing
+   by the number of midnight hours.
+
 .. _option_-x_core:
 
 Selecting number of CPU cores: The **-x** option
