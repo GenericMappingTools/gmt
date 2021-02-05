@@ -58,6 +58,7 @@ struct GMTINFO_CTRL {	/* All control options for this program (except common arg
 	} A;
 	struct GMTINFO_C {	/* -C */
 		bool active;
+		unsigned int extra;	/* Undocumented hidden feature only needed via gmt_init_module to get -R */
 	} C;
 	struct GMTINFO_D {	/* -D[dx[/dy[/<dz>..]]] */
 		bool active;
@@ -217,6 +218,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* Column output */
 				Ctrl->C.active = true;
+				if (opt->arg[0] && !strcmp (opt->arg, "coltypes")) Ctrl->C.extra = 2;	/* Need to report back x and y data types */
 				break;
 			case 'D':	/* Region adjustment Granularity */
 				Ctrl->D.active = true;
@@ -761,9 +763,14 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			if (do_report)
+			if (do_report) {
+				if (Ctrl->C.extra) {	/* Needed by gmtinit_get_region_from_data */
+					Out->data[4] = gmt_get_column_type (GMT, GMT_IN, GMT_X);
+					Out->data[5] = gmt_get_column_type (GMT, GMT_IN, GMT_Y);
+				}
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write data record to output destination */
-			got_stuff = true;		/* We have at lwesn[XHI] reported something */
+			}
+			got_stuff = true;		/* We have at least reported something */
 			for (col = 0; col < ncol; col++) {	/* Reset counters for next block */
 				xyzmin[col] = DBL_MAX;
 				xyzmax[col] = -DBL_MAX;
@@ -838,7 +845,7 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			if (Ctrl->I.active && ncol < 2 && !Ctrl->C.active) Ctrl->I.active = false;
 			first_data_record = false;
 			if (Ctrl->C.active) {
-				if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)(2*ncol), GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
+				if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)(2*ncol+Ctrl->C.extra), GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
 					Return (error);
 			}
 			else if (Ctrl->E.active) {
