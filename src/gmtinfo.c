@@ -218,7 +218,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* Column output */
 				Ctrl->C.active = true;
-				if (opt->arg[0] && !strcmp (opt->arg, "coltypes")) Ctrl->C.extra = 2;	/* Need to report back x and y data types */
+				break;
+			case '0':	/* Hidden option to get 2 more columns back with column types */
+				Ctrl->C.extra = 2;	/* Need to report back x and y data types */
 				break;
 			case 'D':	/* Region adjustment Granularity */
 				Ctrl->D.active = true;
