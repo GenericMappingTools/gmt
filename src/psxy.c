@@ -1779,9 +1779,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							if (may_intrude_inside) {	/* Must plot fill and outline separately */
 								gmt_setfill (GMT, &current_fill, 0);
 								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
-								gmt_setpen (GMT, &current_pen);
-								PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
-								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
+								if (outline_setting) {
+									gmt_setpen (GMT, &current_pen);
+									PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
+									gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
+								}
 							}
 							else
 								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
@@ -1790,9 +1792,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							if (may_intrude_inside) {	/* Must plot fill and outline separately */
 								gmt_setfill (GMT, &current_fill, 0);
 								gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
-								gmt_setpen (GMT, &current_pen);
-								PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
-								gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
+								if (outline_setting) {
+									gmt_setpen (GMT, &current_pen);
+									PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
+									gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
+								}
 							}
 							else
 								gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);

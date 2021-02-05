@@ -12,17 +12,19 @@ Description
 The following is a list of the parameters that are user-definable in
 GMT. The parameter names are always given in **UPPER CASE**. The
 parameter values are case-insensitive unless otherwise noted. The system
-defaults are given in brackets [ for SI (or US) ].
-Note that default distances and lengths below are
-given in both cm or inch; the chosen default depends on your choice of
-default unit (see :term:`PROJ_LENGTH_UNIT`). You can explicitly specify
-the unit used for distances and lengths by appending **c** (cm), **i**
-(inch), or **p** (points). When no unit is indicated the value will be
-assumed to be in the unit set by :term:`PROJ_LENGTH_UNIT`. Several
-parameters take only **true** or **false**. Finally, most of these
-parameters can be changed on-the-fly via the **--PARAMETER**\ =\ *VALUE*
-option to any GMT program. However, a few are static and are only
-read via the **gmt.conf** file; these are labeled (static).
+defaults are given in brackets [ ], with units specified for dimensional
+quantities. Most parameters can be changed by using :doc:`gmtset`, editing a
+**gmt.conf** file that can be aqcuired using :doc:`gmtdefaults`, or setting
+parameters on-the-fly via the **--PARAMETER**\ =\ *VALUE* option to any GMT
+program. However, a few are static and are only read via the **gmt.conf** file;
+these are labeled (static). Several parameters take only **true** or **false**.
+It is recommended that users specify the units for distances and lengths by
+appending **c** (cm), **i** (inch), or **p** (points) when changing parameters
+using any of these methods. By default, when no unit is specified the value will
+be assumed to be cm for parameters not related to fonts or pen thicknesses and
+will be assumed to be points for parameters related to fonts or pen thicknesses.
+The interpretation of unitless dimensional quantities can be changed using the
+parameter :term:`PROJ_LENGTH_UNIT` or specifying US units when building GMT.
 
 Common Specifications
 ---------------------

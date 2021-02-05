@@ -1,14 +1,15 @@
 .. _-icols_full:
 
-**-i**\ *cols*\ [**+l**][**+s**\ *scale*][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
+**-i**\ *cols*\ [**+l**][**+d**\ *divide*][**+s**\ *scale*][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
     Select specific data columns for primary input, in arbitrary order. Columns
     not listed will be skipped. Give individual columns (or column ranges
     in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if
     not specified) separated by commas [Default reads all columns in order,
     starting with the first column (0)]. Columns may be repeated.  To each
     column, optionally add any of  the following: **+l** takes **log10** of
-    the input values first; **+s**\ *scale*, subsequently multiplies by a
-    given  scale factor [1]; **+o**\ *offset*, finally adds a given offset [0].
+    the input values first; **+d**\ *divide*, subsequently divides by a
+    given factor [1]; alternatively, **+s**\ *scale* instead multiplies by the
+    given factor [1]; **+o**\ *offset*, finally adds a given offset [0].
     To read from a given column until the end of the record, leave off *stop*.
     Normally, any trailing text is read but when **-i** is used you must explicitly add
     the column **t** to retain the text. To only ingest a single word from the
