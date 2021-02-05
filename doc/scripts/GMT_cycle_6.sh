@@ -6,7 +6,7 @@ gmt begin GMT_cycle_6
 	gmt set TIME_WEEK_START Monday
 	gmt subplot begin 2x2 -Fs15c/8c -M14p/6p -A -T"Verrazzano-Narrows Bridge @%34%\337@%% Brooklyn Traffic [2018-2020]" -BWSrt
  		# Raw time-series
-		gmt plot @NY_traffic.txt -Wfaint,red-By+l"Vehicles/hour" -gx21600 -f0T -c
+		gmt plot @NY_traffic.txt -Wfaint,red-By+l"Vehicles/hour" -gx21600 -c
 		# Weekly wrapped time-series
  		gmt plot @NY_traffic.txt -R0/7/0/17000 -Wfaint,red -ww -gx0.25 -c
 		# Weekly histogram normalized for number of hours for a weekday in the 3-year data
