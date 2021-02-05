@@ -1063,6 +1063,7 @@ static void psl_rgb_to_hsv (double rgb[], double hsv[]) {
 	hsv[0] = 120.0 * imax + 60.0 * (rgb[(imax + 1) % 3] - rgb[(imax + 2) % 3]) / diff;
 	if (hsv[0] < 0.0) hsv[0] += 360.0;
 	if (hsv[0] > 360.0) hsv[0] -= 360.0;
+	hsv[0] /= 360.0;	/* All h,s,v values in PostScript are 0-1 range */
 }
 
 #if 0 /* Not used */
