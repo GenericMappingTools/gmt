@@ -13443,6 +13443,8 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 			}
 			if ((tmp = GMT_Make_Option (API, 'C', NULL)) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
 				return API->error;	/* Failure to make new option -C or append to list */
+			if ((tmp = GMT_Make_Option (API, '0', NULL)) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
+				return API->error;	/* Failure to make new option -0 for requesting column feedback */
 			if ((tmp = GMT_Make_Option (API, '-', "GMT_HISTORY=readonly")) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
 				return API->error;	/* Failure to make new option -- or append to list */
 
@@ -13481,6 +13483,8 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 			wesn[XHI] = Out->table[0]->segment[0]->data[1][0];
 			wesn[YLO] = Out->table[0]->segment[0]->data[2][0];
 			wesn[YHI] = Out->table[0]->segment[0]->data[3][0];
+			gmt_set_column_type (API->GMT, GMT_IN, GMT_X, irint (Out->table[0]->segment[0]->data[4][0]));
+			gmt_set_column_type (API->GMT, GMT_IN, GMT_Y, irint (Out->table[0]->segment[0]->data[5][0]));
 			if (GMT_Destroy_Data (API, &Out) != GMT_OK)
 				return (API->error);
 			geo = gmt_M_is_geographic (API->GMT, GMT_IN);
@@ -13633,7 +13637,7 @@ GMT_LOCAL unsigned int gmtinit_strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, 
 }
 
 GMT_LOCAL bool gmtinit_is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OPTION *options, const char *module) {
-	/* Determine of -R<args> imply geographic or Cartesian domain */
+	/* Determine if -R<args> imply geographic or Cartesian domain */
 	struct GMT_OPTION *opt = NULL;
 	unsigned int n_slashes;
 	size_t len;
@@ -13660,7 +13664,7 @@ GMT_LOCAL bool gmtinit_is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OP
 	if (!strncmp (module, "grdspotter", 10U)) return true;
 	if (!strncmp (module, "polespotter", 11U)) return true;
 	if ((opt = GMT_Find_Option (GMT->parent, 'R', options)) == NULL) return false;	/* Should not happen but lets just say Cartesian for now */
-	n_slashes = gmt_count_char (GMT, opt->arg, '/');	/* Distinguies -Rw/e/s/n from other things */
+	n_slashes = gmt_count_char (GMT, opt->arg, '/');	/* Distinguishes -Rw/e/s/n from other things */
 	/* Check if -R[=]<code>[,<code>,...][+r|R] which means use country name etc to set region; clearly geographical */
 	if (n_slashes == 0 && ((isupper ((int)opt->arg[0]) && isupper ((int)opt->arg[1])) || opt->arg[0] == '=' || strchr (opt->arg, ',') || strstr (opt->arg, "+r") || strstr (opt->arg, "+R"))) return true;
 	if (!gmt_access (GMT, opt->arg, F_OK)) {	/* Gave a grid file */
@@ -14425,13 +14429,20 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					got_J = true;
 				}
 			}
-			if (got_J == false) {	/* No history, apply default projection, but watch out for subplots */
-				static char *arg[2] = {"X15c", "Q15c+"};
+			if (got_J == false) {	/* No history, apply default projection, but watch out for subplots and time-axis */
 				unsigned int geo = gmtinit_is_region_geographic (GMT, *options, mod_name);
-				if (P && (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1))	/* Nonstandard Cartesian axes directions */
-					snprintf (scl, GMT_LEN64, "X%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
-				else	/* Just append dummy width */
-					snprintf (scl, GMT_LEN64, "%s",  arg[geo]);
+				if (geo) 	/* Max dimension lon/lat plot of 15 cm */
+					snprintf (scl, GMT_LEN64, "Q15c+");
+				else {	/* Use 15cm square but watch out for panels and time-axes */
+					char *Tcode[2] = {"", "T"};
+					unsigned int xy[2];
+					xy[GMT_X] = (gmt_get_column_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME);
+					xy[GMT_Y] = (gmt_get_column_type (GMT, GMT_IN, GMT_Y) == GMT_IS_ABSTIME);
+					if (P && (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1))	/* Nonstandard Cartesian axes directions */
+						snprintf (scl, GMT_LEN64, "X%gi%s/%gi%s",  P->dir[GMT_X]*P->w, Tcode[xy[GMT_X]], P->dir[GMT_Y]*P->h, Tcode[xy[GMT_Y]]);
+					else
+						snprintf (scl, GMT_LEN64, "X15c%s/15c%s",  Tcode[xy[GMT_X]], Tcode[xy[GMT_Y]]);
+				}
 				if ((opt = GMT_Make_Option (API, 'J', scl)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J%s to options since there is no history available.\n", scl);
