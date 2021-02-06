@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.2.0_7805261_2020.10.11 [64-bit] Document from psxy
+%%Title: GMT v6.2.0_8305634-dirty_2021.02.04 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Oct 11 17:13:18 2020
+%%CreationDate: Thu Feb  4 15:39:22 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -112,9 +112,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -253,9 +255,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -279,6 +288,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -326,8 +338,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -554,6 +568,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -568,7 +585,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -638,6 +663,20 @@ end
     psl_label dup sd neg 0 exch G show
     U
 } def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
+    U
+} def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
@@ -677,6 +716,8 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 8 W
+0 A
+V
 clipsave
 7200 3600 M
 -1 98 D
@@ -1020,7 +1061,9 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
 4 W
+0 A
 3600 0 M
 0 3914 D
 S
@@ -2486,7 +2529,6 @@ P S
 78 -9 D
 108 -6 D
 P S
-0 A [] 0 B
 25 W
 N 3600 3600 3600 0 360 arc S
 %%EndObject
@@ -2504,6 +2546,7 @@ O0
 3.32550952342 setmiterlimit
 4 W
 [4 17] 0 B
+0 A
 2790 92 M
 154 -30 D
 139 -17 D
@@ -3652,9 +3695,9 @@ S
 P S
 [] 0 B
 8 W
-0 A [] 0 B
 25 W
 N 3600 3600 3600 0 360 arc S
+0 A
 %%EndObject
 0 A
 FQ
@@ -3922,8 +3965,8 @@ clipsave
 3 137 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 /FO {P}!
 2725 2653 M
@@ -3956,34 +3999,6 @@ P
 FO
 /FO {fs os}!
 FO
-FQ
-2725 2653 M
--12 5 D
--12 2 D
--12 0 D
--12 -3 D
--10 -5 D
--9 -8 D
--7 -10 D
--4 -11 D
--2 -12 D
-5 -24 D
-7 -11 D
-8 -9 D
-11 -7 D
-11 -5 D
-12 -3 D
-12 1 D
-12 3 D
-11 5 D
-8 8 D
-7 10 D
-4 11 D
-2 12 D
--1 12 D
--4 11 D
--15 21 D
-P S
 U
 PSL_cliprestore
 %%EndObject
@@ -3999,6 +4014,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 8 W
 0 0 1 C
 clipsave
@@ -4344,6 +4360,7 @@ PSL_clip N
 6 6 D
 S
 PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -4357,6 +4374,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 8 W
 0 0 1 C
 clipsave
@@ -4737,6 +4755,7 @@ PSL_clip N
 -1 0 D
 S
 PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -5005,9 +5024,9 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 1 0 0 C [] 0 B} def
+V
 8 W
 1 0 0 C
-V
 V
 {1 0 0 C} FS
 /FO {P}!
@@ -5319,9 +5338,9 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 1 0 0 C [] 0 B} def
+V
 8 W
 1 0 0 C
-V
 V
 {1 0 0 C} FS
 /FO {P}!
@@ -5636,8 +5655,8 @@ clipsave
 3 137 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
 /FO {P}!
 5892 6002 M
@@ -5661,25 +5680,6 @@ P
 FO
 /FO {fs os}!
 FO
-FQ
-5892 6002 M
-19 -17 D
-19 -12 D
-15 -4 D
-6 1 D
-5 9 D
--4 14 D
--12 19 D
--17 18 D
--9 8 D
--19 11 D
--16 4 D
--5 -1 D
--4 -3 D
--1 -5 D
-4 -15 D
-11 -18 D
-P S
 U
 PSL_cliprestore
 %%EndObject
@@ -5977,8 +5977,8 @@ clipsave
 3 137 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 0 1 C} FS
 /FO {P}!
 1749 2861 M
@@ -6005,28 +6005,6 @@ P
 FO
 /FO {fs os}!
 FO
-FQ
-1749 2861 M
--8 9 D
--10 7 D
--21 2 D
--10 -5 D
--7 -7 D
--5 -10 D
--2 -12 D
-1 -12 D
-4 -12 D
-7 -10 D
-10 -8 D
-10 -5 D
-11 -1 D
-10 2 D
-9 6 D
-6 9 D
-3 11 D
-1 13 D
--3 12 D
-P S
 U
 PSL_cliprestore
 %%EndObject
@@ -6296,8 +6274,8 @@ clipsave
 3 137 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 0 1 C} FS
 /FO {P}!
 4380 1972 M
@@ -6325,29 +6303,6 @@ P
 FO
 /FO {fs os}!
 FO
-FQ
-4380 1972 M
--11 -5 D
--9 -9 D
--7 -10 D
--3 -11 D
-1 -11 D
-4 -10 D
-7 -8 D
-10 -6 D
-12 -2 D
-12 1 D
-12 4 D
-11 7 D
-8 10 D
-4 11 D
-2 11 D
--3 10 D
--6 10 D
--8 6 D
--11 4 D
--12 1 D
-P S
 U
 PSL_cliprestore
 %%EndObject
@@ -6366,6 +6321,7 @@ O0
 {0.565 0.933 0.565 C} FS
 -7432 0 0 3249 7432 0 3 0 0 SP
 4 W
+0 A
 -2 2283 M
 2 11 D
 73 370 D
@@ -6576,7 +6532,6 @@ N 7254 0 M 27 -32 D S
 N 0 714 M -41 7 D S
 N 0 1603 M -41 7 D S
 N 0 2495 M -41 8 D S
-0 A [] 0 B
 25 W
 2 setlinecap
 N 0 0 M 0 3249 D S
@@ -6589,6 +6544,7 @@ V -88.0525862772 R (45èW) ml Z U
 4933 -147 M V -61.7482022015 R (15èW) ml Z U
 7362 -126 M V -49.3283090993 R (0è) ml Z U
 -164 1632 M V -9.90537721055 R (60èN) mr Z U
+0 A
 %%EndObject
 0 A
 FQ
@@ -6602,6 +6558,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 8 W
 0 0 1 C
 clipsave
@@ -6615,6 +6572,7 @@ PSL_clip N
 7432 0 D
 0 0 D S
 PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -6628,6 +6586,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+V
 8 W
 0 0 1 C
 clipsave
@@ -6641,6 +6600,7 @@ PSL_clip N
 0 3249 D
 0 0 D S
 PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -6661,8 +6621,8 @@ clipsave
 -7432 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 /FO {P}!
 2450 1790 M
@@ -6698,37 +6658,6 @@ P
 FO
 /FO {fs os}!
 FO
-FQ
-2450 1790 M
--11 -4 D
--21 -13 D
--15 -19 D
--6 -11 D
--5 -25 D
-0 -12 D
-7 -24 D
-6 -11 D
-7 -9 D
-9 -9 D
-10 -7 D
-23 -9 D
-25 -1 D
-12 2 D
-12 4 D
-11 6 D
-18 17 D
-7 10 D
-9 23 D
-1 25 D
--2 12 D
--4 11 D
--6 11 D
--17 19 D
--10 7 D
--11 5 D
--24 5 D
--12 0 D
-P S
 U
 PSL_cliprestore
 %%EndObject
@@ -6752,9 +6681,9 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {17 W 1 0 0 C [] 0 B} def
+V
 17 W
 1 0 0 C
-V
 V
 {1 0 0 C} FS
 /FO {P}!
@@ -6946,9 +6875,9 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {17 W 1 0 0 C [] 0 B} def
+V
 17 W
 1 0 0 C
-V
 V
 {1 0 0 C} FS
 /FO {P}!
@@ -7013,25 +6942,13 @@ clipsave
 -7432 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 0 1 C} FS
 /FO {P}!
 -12 3 -11 5 -11 6 -10 7 -10 9 -8 9 -8 10 -7 10 -5 12 -4 12 -3 12 -2 12 0 9 120 0 0 -120 -4 0 -12 1 17 16 119 SP
 /FO {fs os}!
 FO
-FQ
-120 0 M
--2 21 D
--7 24 D
--5 12 D
--23 29 D
--10 9 D
--21 13 D
--11 5 D
--25 6 D
--16 1 D
-S
 U
 PSL_cliprestore
 %%EndObject
@@ -7054,25 +6971,13 @@ clipsave
 -7432 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 0 1 C} FS
 /FO {P}!
 0 119 11 0 12 -2 12 -3 12 -4 11 -6 11 -7 9 -7 9 -9 8 -10 7 -10 6 -11 5 -12 3 -12 2 -12 1 -12 0 -2 17 7313 3249 SP
 /FO {fs os}!
 FO
-FQ
-7313 3249 M
-3 -26 D
-3 -12 D
-11 -23 D
-15 -20 D
-9 -9 D
-20 -14 D
-11 -6 D
-24 -7 D
-23 -2 D
-0 0 D S
 U
 PSL_cliprestore
 %%EndObject
@@ -7109,6 +7014,7 @@ O0
 3.32550952342 setmiterlimit
 4 W
 [4 17] 0 B
+0 A
 896 0 M
 0 3249 D
 S
@@ -7137,7 +7043,6 @@ S
 7432 0 D
 S
 [] 0 B
-0 A [] 0 B
 25 W
 /PSL_slant_y 0 def
 2 setlinecap
@@ -7238,6 +7143,7 @@ N 6880 0 M 0 42 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -3249 T
 0 setlinecap
+0 A
 %%EndObject
 0 A
 FQ
