@@ -337,7 +337,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 			struct GMT_DATASEGMENT *S = NULL;
 			if (gmtlib_convert_eps_to_def (GMT, &symbol_code[1], path))
 				return GMT_RUNTIME_ERROR;
-			strcpy (name, path);	name[strlen(name)-4] = '\0';	/* Chop off extension in temp symbol file name */
+			sprintf (name, "k%s", path);	name[strlen(name)-4] = '\0';	/* Chop off extension in temp symbol file name */
 			for (seg = 0; seg < D->n_segments; seg++) {
 				S = D->table[0]->segment[seg];
 				for (row = 0; row < S->n_rows; row++) {
@@ -345,6 +345,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 					S->text[row] = strdup (name);	/* Allocate and store new name */
 				}
 			}
+			type = GMT_CUSTOM_DEF;	/* Update the symbol type */
 		}
 	}
 
