@@ -4799,6 +4799,79 @@ int gmt_locate_custom_symbol (struct GMT_CTRL *GMT, const char *in_name, char *n
 
 }
 
+#if 0
+/* Redo how the EPS symbols are done.  Instead of being a different kind of custom symbol thatn the macros
+ * Give it a special command, like i for include EPS.  Then, in addition to just taking -Skepsfile, one can
+ * have a custom macro symbol that does many things, include having this macro code:
+ *  0 0 1 epsfilename i
+ * and we when place that EPS file.  This will allow users to rotate such symbols, for instance, and
+ * draw other things on top.
+ * What i currently the PS_BB and PS_macro and PS below should be members of a new structure to handle these
+ * EPS symbols:
+ * 
+ * struct GMT_CUSTOM_SYMBOL_EPS *eps {
+ *	  char  *EPS_macro;   	Contains all the EPS commands in one array
+ *    double EPS_BB[4]; 	Will hold the BoundingBox as [x0 x1 y0 y1]
+ * };
+ *
+ * and there is no need to have a PS true/false since this pointer is either NULL or allocated.
+ * To handle -Skepsfile as before, we simply turn there into a custom symbol with a single "i" record
+ * under the hood and then process that symbol instead - to avoid having two places to deal with EPS.
+ * The code in gmtsupport_init_custom_symbol:
+ 	if (type == GMT_CUSTOM_EPS) {
+		if (stat (path, &buf)) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of EPS macro %s\n", path);
+			return GMT_RUNTIME_ERROR;
+		}
+	}
+
+    sHould be something like
+
+ 	if (type == GMT_CUSTOM_EPS) {
+ 		1. Create a 1-line file in temp with content "0 0 1 <in_name> i"
+ 		2. 	if ((type = gmt_locate_custom_symbol (GMT, tmpname, name, path, &pos)) == 0) return GMT_RUNTIME_ERROR;
+	}
+	THen, as we continue we are just dealing with a regular custom symbol with a single "i" command
+ */ 
+ 
+GMT_LOCAL struct GMT_CUSTOM_SYMBOL_EPS *eps gmtsupport_load_eps_symbol (struct GMT_CTRL *GMT, char *path) {
+	unsigned int bb;
+	static char *BB_string[2] = {"%%HiResBoundingBox:", "%%BoundingBox:"};
+	char buffer[GMT_BUFSIZ] = {""};
+	struct stat buf;
+	struct GMT_CUSTOM_SYMBOL_EPS *E = NULL;
+
+	if (stat (path, &buf)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of EPS symbol %s\n", path);
+		return NULL;
+	}
+	if ((fp = fopen (path, "r")) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find custom symbol %s\n", path);
+		return NULL;
+	}
+	E = gmt_M_memory (GMT, NULL, 1U, struct GMT_CUSTOM_SYMBOL_EPS);
+	E->EPS_macro = gmt_M_memory (GMT, NULL, (size_t)buf.st_size, char);
+	while (fgets (buffer, GMT_BUFSIZ, fp)) {
+		for (bb = 0; bb < 2; bb++) {	/* Check for both flavors of BoundingBox unless found */
+			if (!got_BB[bb] && (strstr (buffer, BB_string[bb]))) {
+				char c1[GMT_VF_LEN] = {""}, c2[GMT_VF_LEN] = {""}, c3[GMT_VF_LEN] = {""}, c4[GMT_VF_LEN] = {""};
+				sscanf (&buffer[strlen(BB_string[bb])], "%s %s %s %s", c1, c2, c3, c4);
+				E->EPS_BB[0] = atof (c1);	E->EPS_BB[2] = atof (c2);
+				E->EPS_BB[1] = atof (c3);	E->EPS_BB[3] = atof (c4);
+				got_BB[bb] = true;
+				if (bb == 0) got_BB[1] = true;	/* If we find HighRes BB then we don't need to look for LowRes BB */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Custom EPS symbol %s has width %g and height %g inches [%s]\n",
+					path, (EE->PS_BB[1] - EE->PS_BB[0]) / 72, (EE->PS_BB[3] - EE->PS_BB[2]) / 72, &BB_string[bb][2]);
+			}
+		}
+		if (buffer[0] == '%' && (buffer[1] == '%' || buffer[1] == '!')) continue;	/* Skip comments */
+		strcat (E->PS_macro, buffer);	/* Keep appending to the macro until EOF */
+	}
+	gmt_fclose (GMT, fp);
+	return (E);
+}
+#endif
+
 /*! . */
 GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
 	/* Load in an initialize a new custom symbol.  These files can live in many places:
