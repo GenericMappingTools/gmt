@@ -4850,9 +4850,29 @@ GMT_LOCAL struct GMT_CUSTOM_SYMBOL_EPS * gmtsupport_load_eps_symbol (struct GMT_
 	gmt_fclose (GMT, fp);
 	if (strstr (E->macro, "%%Creator: GMT")) {	/* Check if a GMT EPS or not */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "EPS symbol %s is a GMT-produced macro\n", path);
-		E->GMT = true;	/* So we know to scale the EPS by 1200/72 or not in gmt_plot.c */
+		E->GMT_made = true;	/* So we know to scale the EPS by 1200/72 or not in gmt_plot.c */
 	}
 	return (E);
+}
+
+int gmtlib_convert_eps_to_def (struct GMT_CTRL *GMT, char *in_name, char *path) {
+	/* Replace an EPS file with a simple 1-liner custom file using an inline EPS command P instead.
+	 * path is updated to point to the replacement temp file */
+
+	FILE *fp = NULL;
+	snprintf (path, PATH_MAX, "%s/gmt_epssymbol_XXXXXX", GMT->parent->tmp_dir);	/* The XXXXXX will be replaced by mktemp */
+	if (mktemp (path) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtlib_convert_eps_to_def: Could not create temporary file name from template %s.\n", path);
+		return GMT_RUNTIME_ERROR;
+	}
+	strcat (path, ".def");	/* Append the right extension for a custom symbol */
+	if ((fp = fopen (path, "w")) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtlib_convert_eps_to_def: Unable to create custom symbol file %s\n", path);
+		return GMT_RUNTIME_ERROR;
+	}
+	fprintf (fp, "# Custom symbol for placing a single EPS file\n0 0 1 %s %c\n", in_name, GMT_SYMBOL_EPS);	/* The EPS placement item */
+	fclose (fp);
+	return GMT_NOERROR;
 }
 
 /*! . */
@@ -4864,7 +4884,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 	 * 4. In the user data dir [~/.gmt/data]
 	 * 5. In the system share/custom dir
 	 * THus we must use both gmt_getsharepath and gmtlib_getuserpath when looking */
-	unsigned int k, bb, nc = 0, nv, error = 0, var_symbol = 0, pos = 0, n_txt = 0, type;
+	unsigned int k, nc = 0, nv, error = 0, var_symbol = 0, pos = 0, n_txt = 0, type;
 	int last;
 	bool do_fill, do_pen, first = true;
 	char name[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN128], OP[GMT_LEN8] = {""}, right[GMT_LEN64] = {""};
@@ -4876,20 +4896,8 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 
 	if ((type = gmt_locate_custom_symbol (GMT, in_name, name, path, &pos)) == 0) return GMT_RUNTIME_ERROR;
 
-	if (type == GMT_CUSTOM_EPS) {	/* Replace name with a simple 1-liner custom file with an inline EPS command */
-		snprintf (path, PATH_MAX, "%s/gmt_epssymbol_XXXXXX", GMT->parent->tmp_dir);	/* The XXXXXX will be replaced by mktemp */
-		if (mktemp (path) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtsupport_init_custom_symbol: Could not create temporary name from template %s.\n", path);
-			return GMT_RUNTIME_ERROR;
-		}
-		strcat (path, ".def");	/* Append the right extension for a custom symbol */
-		if ((fp = fopen (path, "w")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create custom symbol file %s\n", path);
-			return GMT_RUNTIME_ERROR;
-		}
-		fprintf (fp, "0 0 1 %s p\n", in_name);	/* The EPS placement item */
-		fclose (fp);	/* Now continue to open and process this file below */
-	}
+	if (type == GMT_CUSTOM_EPS && gmtlib_convert_eps_to_def (GMT, in_name, path))	/* Must replace EPS with a simple 1-liner custom file with EPS command */
+		return GMT_RUNTIME_ERROR;
 
 	if ((fp = fopen (path, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find custom symbol %s\n", &name[pos]);

@@ -6978,7 +6978,7 @@ GMT_LOCAL void gmtplot_draw_eps_symbol (struct GMT_CTRL *GMT, double x0, double 
 		PSL_command (PSL, "/Sk_%s {\nPSL_eps_begin\n", E->name);
 		/* We use the symbol's bounding box and scale its width to 1 inch since PSL uses inches */
 		PSL_command (PSL, "%.8f dup scale\n", scl);
-		if (!E->GMT)	/* non-GMT-produced EPS macro - scale points to GMT's unit */
+		if (!E->GMT_made)	/* Non-GMT-produced EPS macro - must scale points to GMT's unit */
 			PSL_command (PSL, "1200 72 div dup scale\n");
 		PSL_command (PSL, "%%%%BeginDocument: %s.eps\n", E->name);
 		PSL_copy (PSL, E->macro);	/* Since it may be quite large */

@@ -86,7 +86,7 @@ enum gmt_enum_custsymb {
 };
 
  struct GMT_CUSTOM_SYMBOL_EPS {
- 	bool GMT;		/* True if the EPS was made by GMT modules */
+ 	bool GMT_made;	/* True if the EPS was made by GMT modules */
  	bool placed;	/* True after we place the EPS code in the output PS file */
 	char *name;		/* Name of the EPS macro file */
 	char  *macro;	/* Contains all the EPS commands in one array */

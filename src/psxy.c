@@ -312,6 +312,8 @@ GMT_LOCAL void psxy_decorate_debug (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 	}
 }
 
+EXTERN_MSC int gmtlib_convert_eps_to_def (struct GMT_CTRL *GMT, char *in_name, char *path);
+
 GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D, struct GMT_DECORATE *G, bool decorate_custom) {
 	/* Accept the dataset D with records of {x, y, size, angle, symbol} and plot rotated symbols at those locations.
 	 * Note: The x,y are projected coordinates in inches, hence our -R -J choice below. */
@@ -324,14 +326,25 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 	if (D->n_records == 0)	/* No symbols to plot */
 		return GMT_NOERROR;
 
-	/* Here we have symbols.  Open up virtual file for the call to psxy */
+	/* Here we have symbols.  Open up a virtual input file for the call to psxy */
 	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, D, string) != GMT_NOERROR)
 		return (GMT->parent->error);
 	if (decorate_custom) {	/* Must find the custom symbol */
 		if ((type = gmt_locate_custom_symbol (GMT, &symbol_code[1], name, path, &pos)) == 0) return (GMT_RUNTIME_ERROR);
-		if (type == GMT_CUSTOM_EPS) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot use EPS custom symbol in the decorated line specification: %s\n", name);
-			return (GMT_RUNTIME_ERROR);
+		if (type == GMT_CUSTOM_EPS) {	/* Must replace an EPS symbol with a simple 1-liner custom file */
+			/* Update data file trailing text with new symbol name */
+			uint64_t seg, row;
+			struct GMT_DATASEGMENT *S = NULL;
+			if (gmtlib_convert_eps_to_def (GMT, &symbol_code[1], path))
+				return GMT_RUNTIME_ERROR;
+			strcpy (name, path);	name[strlen(name)-4] = '\0';	/* Chop off extension in temp symbol file name */
+			for (seg = 0; seg < D->n_segments; seg++) {
+				S = D->table[0]->segment[seg];
+				for (row = 0; row < S->n_rows; row++) {
+					gmt_M_str_free (S->text[row]);	/* Free old name */
+					S->text[row] = strdup (name);	/* Allocate and store new name */
+				}
+			}
 		}
 	}
 
@@ -353,7 +366,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 		while (fgets (buffer, GMT_BUFSIZ, fpc)) {
 			if (buffer[0] == '#') { fprintf (fp, "%s", buffer); continue; }	/* Pass comments */
 			if (!strncmp (buffer, "N: ", 3U)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot use custom symbols that expect extra parameters: %s\n", name);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Decorated lines cannot use custom symbols that expect extra parameters: %s\n", name);
 				fclose (fpc);
 				return (GMT_RUNTIME_ERROR);
 			}
