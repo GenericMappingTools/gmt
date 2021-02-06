@@ -9,18 +9,18 @@ Background
 The GMT tools :doc:`/plot` and :doc:`/plot3d` are capable of using custom
 symbols as alternatives to the built-in, standard geometrical shapes
 such as circles, triangles, and many others. One the command line, custom
-symbols are selected via the **-Sk**\ *symbolname*\ [*size*] symbol
+symbols are selected via the **-Sk**\ *symbolname*\ [/*size*] symbol
 selection, where *symbolname* refers
 
-#. An Encapsulated PostScript File named ``symbolname.eps``.
+#. An Encapsulated PostScript File named ``symbolname.eps``
 #. A special symbol definition file called ``symbolname.def``
 
 Either type of file must be available via the standard GMT user paths. EPS symbols
 are widely available on the Internet or can be created, even with GMT.  If all you
-want to do is to use such a plot as a custom symbol, then selecting the option
-**-Sk**\ *symbolname*\ [*size*] is all you need to do.  For using an EPS file within
-a more general custom symbol or for using it with the decorated line option in
-:doc:`/plot`, then read on.
+want to do is to use an EPS file as a custom symbol, then selecting the option
+**-Sk** is all you need to do.  For using an EPS file as
+part of a more general custom symbol, for instance to allow rotation, then you will
+find more information provided below.
 
 Several custom symbol definitions comes included with GMT (see Figure :ref:`Custom symbols <Custom_symbols>`)
 
