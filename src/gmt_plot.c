@@ -6967,29 +6967,30 @@ GMT_LOCAL void gmtplot_get_the_fill (struct GMT_FILL *f, struct GMT_CUSTOM_SYMBO
 	if (f->rgb[0] >= 0.0 && s->var_pen < 0 && (abs(s->var_pen) & GMT_USE_PEN_RGB) && cp) gmt_M_rgb_copy (f->rgb, cp->rgb);
 }
 
-GMT_LOCAL void gmtplot_draw_eps_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol) {
+GMT_LOCAL void gmtplot_draw_eps_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL_ITEM *symbol) {
 	/* Special Encapsulated PostScript-only symbol */
-	double off = 0.5*size[0], fy = (symbol->PS_BB[3] - symbol->PS_BB[2]) / (symbol->PS_BB[1] - symbol->PS_BB[0]);
+	struct GMT_CUSTOM_SYMBOL_EPS *E = symbol->eps;	/* SHorthand */
+	double off = 0.5*size[0], fy = (E->BB[3] - E->BB[2]) / (E->BB[1] - E->BB[0]);
 	struct PSL_CTRL *PSL= GMT->PSL;
-	if (symbol->PS & 1) {	/* First time we must dump the PS code definition */
-		double scl = 72.0 / (symbol->PS_BB[1] - symbol->PS_BB[0]);
-		PSL_comment (PSL, "Start of symbol %s\n", symbol->name);
-		PSL_command (PSL, "/Sk_%s {\nPSL_eps_begin\n", symbol->name);
+	if (!E->placed) {	/* First time we must dump the PS code definition */
+		double scl = 72.0 / (E->BB[1] - E->BB[0]);
+		PSL_comment (PSL, "Start of symbol %s\n", E->name);
+		PSL_command (PSL, "/Sk_%s {\nPSL_eps_begin\n", E->name);
 		/* We use the symbol's bounding box and scale its width to 1 inch since PSL uses inches */
 		PSL_command (PSL, "%.8f dup scale\n", scl);
-		if ((symbol->PS & 4) == 0)	/* non-GMT-produced EPS macro - scale points to GMT's unit */
+		if (!E->GMT)	/* non-GMT-produced EPS macro - scale points to GMT's unit */
 			PSL_command (PSL, "1200 72 div dup scale\n");
-		PSL_command (PSL, "%%%%BeginDocument: %s.eps\n", symbol->name);
-		PSL_copy (PSL, symbol->PS_macro);	/* Since it may be quite large */
+		PSL_command (PSL, "%%%%BeginDocument: %s.eps\n", E->name);
+		PSL_copy (PSL, E->macro);	/* Since it may be quite large */
 		PSL_command (PSL, "%%%%EndDocument\n");
 		PSL_command (PSL, "PSL_eps_end } def\n");
-		PSL_comment (PSL, "End of symbol %s\n", symbol->name);
-		symbol->PS++;	/* Flag now says we have dumped the PS code */
+		PSL_comment (PSL, "End of symbol %s\n", E->name);
+		E->placed = true;	/* Flag now says we have dumped the EPS code */
 	}
 	PSL_command (PSL, "V ");
 	PSL_setorigin (PSL, x0-off, y0-fy*off, 0.0, PSL_FWD);
 	PSL_command (PSL, "%.12g dup scale ", size[0]);
-	PSL_command (PSL, "Sk_%s U\n", symbol->name);
+	PSL_command (PSL, "Sk_%s U\n", E->name);
 }
 
 int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], char *tr_text, struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline) {
@@ -7005,11 +7006,6 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	struct GMT_PEN save_pen, p, *current_pen = pen;
 	struct GMT_FONT font = GMT->current.setting.font_annot[GMT_PRIMARY];
 	struct PSL_CTRL *PSL= GMT->PSL;
-
-	if (symbol->PS) {	/* Special Encapsulated PostScript-only symbol */
-		gmtplot_draw_eps_symbol (GMT, x0, y0, size, symbol);
-		return (GMT_OK);
-	}
 
 	/* Regular macro symbol */
 
@@ -7283,6 +7279,11 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 					PSL_setfill (PSL, GMT->session.no_rgb, this_outline);
 				PSL_command (PSL, "%d PSL_symbol_%s_setfont_%d\n", ifs, symbol->name, id++);
 				PSL_plottext (PSL, x, y, font.size, user_text, 0.0, s->justify, this_outline);
+				break;
+
+			case GMT_SYMBOL_EPS:
+				/* Special Encapsulated PostScript-only symbol */
+				gmtplot_draw_eps_symbol (GMT, x, y, dim, s);
 				break;
 
 			default:

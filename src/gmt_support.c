@@ -4718,9 +4718,13 @@ GMT_LOCAL void gmtsupport_free_one_custom_symbol (struct GMT_CTRL *GMT, struct G
 		gmt_M_free (GMT, current->fill);
 		gmt_M_free (GMT, current->pen);
 		gmt_M_free (GMT, current->string);
+		if (current->eps) {
+			gmt_M_free (GMT, current->eps->macro);
+			gmt_M_str_free (current->eps->name);
+			gmt_M_free (GMT, current->eps);
+		}
 		gmt_M_free (GMT, current);
 	}
-	gmt_M_free (GMT, sym->PS_macro);
 	gmt_M_free (GMT, sym->type);
 	gmt_M_free (GMT, sym);
 }
@@ -4799,47 +4803,22 @@ int gmt_locate_custom_symbol (struct GMT_CTRL *GMT, const char *in_name, char *n
 
 }
 
-#if 0
-/* Redo how the EPS symbols are done.  Instead of being a different kind of custom symbol thatn the macros
+/* Redo how the EPS symbols are done.  Instead of being a different kind of custom symbol that the macros
  * Give it a special command, like i for include EPS.  Then, in addition to just taking -Skepsfile, one can
  * have a custom macro symbol that does many things, include having this macro code:
- *  0 0 1 epsfilename i
+ *     0 0 1 epsfilename I
  * and we when place that EPS file.  This will allow users to rotate such symbols, for instance, and
  * draw other things on top.
- * What i currently the PS_BB and PS_macro and PS below should be members of a new structure to handle these
- * EPS symbols:
- * 
- * struct GMT_CUSTOM_SYMBOL_EPS *eps {
- *	  char  *EPS_macro;   	Contains all the EPS commands in one array
- *    double EPS_BB[4]; 	Will hold the BoundingBox as [x0 x1 y0 y1]
- * };
- *
- * and there is no need to have a PS true/false since this pointer is either NULL or allocated.
- * To handle -Skepsfile as before, we simply turn there into a custom symbol with a single "i" record
- * under the hood and then process that symbol instead - to avoid having two places to deal with EPS.
- * The code in gmtsupport_init_custom_symbol:
- 	if (type == GMT_CUSTOM_EPS) {
-		if (stat (path, &buf)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of EPS macro %s\n", path);
-			return GMT_RUNTIME_ERROR;
-		}
-	}
-
-    sHould be something like
-
- 	if (type == GMT_CUSTOM_EPS) {
- 		1. Create a 1-line file in temp with content "0 0 1 <in_name> i"
- 		2. 	if ((type = gmt_locate_custom_symbol (GMT, tmpname, name, path, &pos)) == 0) return GMT_RUNTIME_ERROR;
-	}
-	THen, as we continue we are just dealing with a regular custom symbol with a single "i" command
  */ 
  
-GMT_LOCAL struct GMT_CUSTOM_SYMBOL_EPS *eps gmtsupport_load_eps_symbol (struct GMT_CTRL *GMT, char *path) {
+GMT_LOCAL struct GMT_CUSTOM_SYMBOL_EPS * gmtsupport_load_eps_symbol (struct GMT_CTRL *GMT, char *name, char *path) {
 	unsigned int bb;
+	bool got_BB[2] = {false, false};
 	static char *BB_string[2] = {"%%HiResBoundingBox:", "%%BoundingBox:"};
 	char buffer[GMT_BUFSIZ] = {""};
 	struct stat buf;
 	struct GMT_CUSTOM_SYMBOL_EPS *E = NULL;
+	FILE *fp = NULL;
 
 	if (stat (path, &buf)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of EPS symbol %s\n", path);
@@ -4850,27 +4829,31 @@ GMT_LOCAL struct GMT_CUSTOM_SYMBOL_EPS *eps gmtsupport_load_eps_symbol (struct G
 		return NULL;
 	}
 	E = gmt_M_memory (GMT, NULL, 1U, struct GMT_CUSTOM_SYMBOL_EPS);
-	E->EPS_macro = gmt_M_memory (GMT, NULL, (size_t)buf.st_size, char);
+	E->macro = gmt_M_memory (GMT, NULL, (size_t)buf.st_size, char);
+	E->name = strdup (name);
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
 		for (bb = 0; bb < 2; bb++) {	/* Check for both flavors of BoundingBox unless found */
 			if (!got_BB[bb] && (strstr (buffer, BB_string[bb]))) {
 				char c1[GMT_VF_LEN] = {""}, c2[GMT_VF_LEN] = {""}, c3[GMT_VF_LEN] = {""}, c4[GMT_VF_LEN] = {""};
 				sscanf (&buffer[strlen(BB_string[bb])], "%s %s %s %s", c1, c2, c3, c4);
-				E->EPS_BB[0] = atof (c1);	E->EPS_BB[2] = atof (c2);
-				E->EPS_BB[1] = atof (c3);	E->EPS_BB[3] = atof (c4);
+				E->BB[0] = atof (c1);	E->BB[2] = atof (c2);
+				E->BB[1] = atof (c3);	E->BB[3] = atof (c4);
 				got_BB[bb] = true;
 				if (bb == 0) got_BB[1] = true;	/* If we find HighRes BB then we don't need to look for LowRes BB */
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Custom EPS symbol %s has width %g and height %g inches [%s]\n",
-					path, (EE->PS_BB[1] - EE->PS_BB[0]) / 72, (EE->PS_BB[3] - EE->PS_BB[2]) / 72, &BB_string[bb][2]);
+					path, (E->BB[1] - E->BB[0]) / 72, (E->BB[3] - E->BB[2]) / 72, &BB_string[bb][2]);
 			}
 		}
 		if (buffer[0] == '%' && (buffer[1] == '%' || buffer[1] == '!')) continue;	/* Skip comments */
-		strcat (E->PS_macro, buffer);	/* Keep appending to the macro until EOF */
+		strcat (E->macro, buffer);	/* Keep appending to the macro until EOF */
 	}
 	gmt_fclose (GMT, fp);
+	if (strstr (E->macro, "%%Creator: GMT")) {	/* Check if a GMT EPS or not */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "EPS symbol %s is a GMT-produced macro\n", path);
+		E->GMT = true;	/* So we know to scale the EPS by 1200/72 or not in gmt_plot.c */
+	}
 	return (E);
 }
-#endif
 
 /*! . */
 GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
@@ -4883,21 +4866,29 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 	 * THus we must use both gmt_getsharepath and gmtlib_getuserpath when looking */
 	unsigned int k, bb, nc = 0, nv, error = 0, var_symbol = 0, pos = 0, n_txt = 0, type;
 	int last;
-	bool do_fill, do_pen, first = true, got_BB[2] = {false, false};
-	char name[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[GMT_LEN8] = {""}, right[GMT_LEN64] = {""};
+	bool do_fill, do_pen, first = true;
+	char name[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN128], OP[GMT_LEN8] = {""}, right[GMT_LEN64] = {""};
 	char arg[3][GMT_LEN64] = {"", "", ""}, *fill_p = NULL, *pen_p = NULL, *c = NULL;
-	char *BB_string[2] = {"%%HiResBoundingBox:", "%%BoundingBox:"};
 	FILE *fp = NULL;
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
 	struct stat buf;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
 
 	if ((type = gmt_locate_custom_symbol (GMT, in_name, name, path, &pos)) == 0) return GMT_RUNTIME_ERROR;
-	if (type == GMT_CUSTOM_EPS) {
-		if (stat (path, &buf)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of EPS macro %s\n", path);
+
+	if (type == GMT_CUSTOM_EPS) {	/* Replace name with a simple 1-liner custom file with an inline EPS command */
+		snprintf (path, PATH_MAX, "%s/gmt_epssymbol_XXXXXX", GMT->parent->tmp_dir);	/* The XXXXXX will be replaced by mktemp */
+		if (mktemp (path) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtsupport_init_custom_symbol: Could not create temporary name from template %s.\n", path);
 			return GMT_RUNTIME_ERROR;
 		}
+		strcat (path, ".def");	/* Append the right extension for a custom symbol */
+		if ((fp = fopen (path, "w"))) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create custom symbol file %s\n", path);
+			return GMT_RUNTIME_ERROR;
+		}
+		fprintf (fp, "0 0 1 %s I\n", in_name);	/* The EPS placement item */
+		fclose (fp);	/* Now continue to open and process this file below */
 	}
 
 	if ((fp = fopen (path, "r")) == NULL) {
@@ -4908,27 +4899,6 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 	head = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
 	strncpy (head->name, basename (&name[pos]), GMT_LEN64-1);
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
-		if (type == GMT_CUSTOM_EPS) {	/* Working on an EPS symbol, just append the text as is */
-			if (head->PS == 0) {	/* Allocate memory for the EPS symbol */
-				head->PS_macro = gmt_M_memory (GMT, NULL, (size_t)buf.st_size, char);
-				head->PS = 1;	/* Flag to indicate we already allocated memory */
-			}
-			for (bb = 0; bb < 2; bb++) {	/* Check for both flavors of BoundingBox unless found */
-				if (!got_BB[bb] && (strstr (buffer, BB_string[bb]))) {
-					char c1[GMT_VF_LEN] = {""}, c2[GMT_VF_LEN] = {""}, c3[GMT_VF_LEN] = {""}, c4[GMT_VF_LEN] = {""};
-					sscanf (&buffer[strlen(BB_string[bb])], "%s %s %s %s", c1, c2, c3, c4);
-					head->PS_BB[0] = atof (c1);	head->PS_BB[2] = atof (c2);
-					head->PS_BB[1] = atof (c3);	head->PS_BB[3] = atof (c4);
-					got_BB[bb] = true;
-					if (bb == 0) got_BB[1] = true;	/* If we find HighRes BB then we don't need to look for LowRes BB */
-					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Custom EPS symbol %s has width %g and height %g inches [%s]\n",
-						&name[pos], (head->PS_BB[1] - head->PS_BB[0]) / 72, (head->PS_BB[3] - head->PS_BB[2]) / 72, &BB_string[bb][2]);
-				}
-			}
-			if (buffer[0] == '%' && (buffer[1] == '%' || buffer[1] == '!')) continue;	/* Skip comments */
-			strcat (head->PS_macro, buffer);
-			continue;
-		}
 		if (buffer[0] == '#') continue;	/* Skip comments */
 		gmt_chop (buffer);	/* Get rid of \n \r */
 		if (gmt_is_a_blank_line (buffer)) continue;	/* Skip blank lines */
@@ -5211,6 +5181,13 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 				gmtsupport_decode_arg (col[4], 2, s);	/* angle2 could be a variable or constant degrees */
 				break;
 
+			case 'I':		/* Insert EPS file */
+				if (last != 4) error++;
+				s->p[0] = atof (col[2]);
+				if ((type = gmt_locate_custom_symbol (GMT, col[3], name, path, &pos)) == 0) return GMT_RUNTIME_ERROR;
+				if ((s->eps = gmtsupport_load_eps_symbol (GMT, name, path)) == NULL) return GMT_RUNTIME_ERROR;
+				break;
+
 			default:
 				error++;
 				break;
@@ -5280,10 +5257,6 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 		previous = s;
 	}
 	fclose (fp);
-	if (head->PS && strstr (head->PS_macro, "%%Creator: GMT")) {	/* Check if a GMT EPS or not */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "EPS symbol %s is a GMT-produced macro\n", head->name);
-		head->PS |= 4;	/* So we know to scale the EPS by 1200/72 or not in gmt_plot.c */
-	}
 	head->n_required -= n_txt;	/* WOrds from trailing text is not part of required arguments (which are all numerical) */
 	*S = head;
 	return (GMT_NOERROR);
