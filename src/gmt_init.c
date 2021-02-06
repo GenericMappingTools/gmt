@@ -13821,6 +13821,8 @@ GMT_LOCAL bool gmtinit_replace_missing_with_questionmark (struct GMTAPI_CTRL *AP
 		else if (!(strchr ("hHiIjJmMnNqQrRsSuU", arg[0]) || (strchr ("kK", arg[0]) && strchr ("fs", arg[1]))))
 			return false;	/* Nothing to change */
 	}
+	/* Guard against old scripts where the -J option has an actual dimension/scale even though it will be auto-scaled */
+	if (strchr (GMT_DIM_UNITS, arg[L]) && L && strchr ("0123456789.", arg[L-1])) return false;	/* Ended with a unit-appended number */
 
 	/* Here we need to insert or append the missing ?-mark(s)
 	 * Look for Cartesian -Jx|X[-][d|l|p<pow>][/[-][d|l|p<pow>]] which needs one or two ?-marks to be inserted for the two dummy Cartesian scales.
