@@ -763,7 +763,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 	/* Now we are ready to take on some input values */
 
-	if (Ctrl->S.active) {	/* We read as points */
+	if (Ctrl->S.active || !Ctrl->A.active) {	/* We read points for symbols OR we are in fact just doing labels */
 		if (Ctrl->C.active) n_cols_needed++;	/* Must allow for z in input */
 		if (Ctrl->S.mode) n_cols_needed++;	/* Must allow for size in input */
 		if (Ctrl->L.mode == PSEVENTS_VAR_DURATION || Ctrl->L.mode == PSEVENTS_VAR_ENDTIME) n_cols_needed++;	/* Must allow for length/time in input */
