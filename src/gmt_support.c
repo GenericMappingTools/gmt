@@ -4803,14 +4803,6 @@ int gmt_locate_custom_symbol (struct GMT_CTRL *GMT, const char *in_name, char *n
 
 }
 
-/* Redo how the EPS symbols are done.  Instead of being a different kind of custom symbol that the macros
- * Give it a special command, like i for include EPS.  Then, in addition to just taking -Skepsfile, one can
- * have a custom macro symbol that does many things, include having this macro code:
- *     0 0 1 epsfilename I
- * and we when place that EPS file.  This will allow users to rotate such symbols, for instance, and
- * draw other things on top.
- */ 
- 
 GMT_LOCAL struct GMT_CUSTOM_SYMBOL_EPS * gmtsupport_load_eps_symbol (struct GMT_CTRL *GMT, char *name, char *path) {
 	unsigned int bb;
 	bool got_BB[2] = {false, false};
