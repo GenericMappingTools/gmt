@@ -76,8 +76,8 @@ cat > pathEW_z+ap.txt << END
 -0.5  0.5
 END
 
-gmt begin symbol_orientation ps
-  gmt subplot begin 4x2 -Fs5.5c -M5p -A -Bwsentr -Bag1d -R-1/1/-1/1 -JM5.5c -X5c -Y1c -T"Symbol Orientation @%10%-S~:+sk+ap@%%"
+gmt begin symbol_orientation_cart ps
+  gmt subplot begin 4x2 -Fs5.5c -M5p -A -Bwsentr -Bag1d -R-1/1/-1/1 -JX5.5c -X5c -Y1c -T"Symbol Orientation @%10%-S~:+sk+ap@%%"
     gmt subplot set
       gmt basemap
       gmt plot pathWE+ap.txt -W2p,darkgrey,8_4 -S~n1:+skdir/1c+p1p,black+gwhite+ap
