@@ -6784,10 +6784,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   (e.g. 'cyl_stere/'). When using a lower-case ID <scale> can be given either\n");
 			gmt_message (GMT, "\t   as 1:<xxxx> or in %s/degree along the standard parallel. Alternatively, when\n",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			gmt_message (GMT, "\t   the projection ID is Capitalized, <scale>|<width> denotes the width of the plot\n");
-			gmt_message (GMT, "\t   in %s. Append +dh for map height, +du for max map dimension, or +dl for min map\n",
+			gmt_message (GMT, "\t   the projection ID is Capitalized, <scale>|<width> denotes the width of the\n");
+			gmt_message (GMT, "\t   plot in %s. Append +dh for map height, +du for maximum map dimension, or +dl\n",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			gmt_message (GMT, "\t   dimension [Default +dw is width].\n",
+			gmt_message (GMT, "\t   for minimum map dimension [Default +dw is width].\n");
 			gmt_message (GMT, "\t   When the central meridian (lon0) is optional and omitted, the center of the\n");
 			gmt_message (GMT, "\t   longitude range set by -R is used. The default standard parallel is the equator.\n");
 			gmt_message (GMT, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>+r is given.\n\n");
