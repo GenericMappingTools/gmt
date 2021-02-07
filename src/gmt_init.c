@@ -853,7 +853,7 @@ GMT_LOCAL void gmtinit_setautopagesize (struct GMT_CTRL *GMT) {
 
 /*! . */
 GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double out_wesn[], bool get_R) {
-	/* If user gives -Re|f|k|M|n<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][r] then we must
+	/* If user gives -Re|f|k|M|n<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][+r] then we must
 	 * call GMT_mapproject to convert this to geographic degrees.
 	 * get_R is true when this is done to obtain the -R setting.  */
 
@@ -6842,15 +6842,16 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t-J Select the map proJection. The projection type is identified by a 1- or\n");
 			gmt_message (GMT, "\t   2-character ID (e.g. 'm' or 'kf') or by an abbreviation followed by a slash\n");
-			gmt_message (GMT, "\t   (e.g. 'cyl_stere/'). When using a lower-case ID <scale> can be given either as 1:<xxxx>\n");
-			gmt_message (GMT, "\t   or in %s/degree along the standard parallel. Alternatively, when the projection ID is\n",
+			gmt_message (GMT, "\t   (e.g. 'cyl_stere/'). When using a lower-case ID <scale> can be given either\n");
+			gmt_message (GMT, "\t   as 1:<xxxx> or in %s/degree along the standard parallel. Alternatively, when\n",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			gmt_message (GMT, "\t   Capitalized, <scale>|<width> denotes the width of the plot in %s\n",
+			gmt_message (GMT, "\t   the projection ID is Capitalized, <scale>|<width> denotes the width of the\n");
+			gmt_message (GMT, "\t   plot in %s. Append +dh for map height, +du for maximum map dimension, or +dl\n",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			gmt_message (GMT, "\t   Append +dh for map height, +du for max map dimension, and +dl for min map dimension [Default +dw is width].\n");
+			gmt_message (GMT, "\t   for minimum map dimension [Default +dw is width].\n");
 			gmt_message (GMT, "\t   When the central meridian (lon0) is optional and omitted, the center of the\n");
-			gmt_message (GMT, "\t   longitude range specified by -R is used. The default standard parallel is the equator\n");
-			gmt_message (GMT, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>+r is given.\n");
+			gmt_message (GMT, "\t   longitude range set by -R is used. The default standard parallel is the equator.\n");
+			gmt_message (GMT, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>+r is given.\n\n");
 
 			gmt_message (GMT, "\t   -Ja|A<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Lambert Azimuthal Equal Area)\n");
 			gmt_message (GMT, "\t     <lon0>/<lat0> is the center of the projection.\n");
@@ -6861,7 +6862,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   -Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Albers Equal-Area Conic)\n");
 			gmt_message (GMT, "\t     Give origin, 2 standard parallels, and true scale\n");
 
-			gmt_message (GMT, "\t   -Jc|C<lon0>/<lat0><scale>|<width> (Cassini)\n\t     Give central point and scale\n");
+			gmt_message (GMT, "\t   -Jc|C<lon0>/<lat0>/<scale>|<width> (Cassini)\n\t     Give central point and scale\n");
 
 			gmt_message (GMT, "\t   -Jcyl_stere|Cyl_stere/[<lon0>/[<lat0>/]]<scale>|<width> (Cylindrical Stereographic)\n");
 			gmt_message (GMT, "\t     Give central meridian (opt), standard parallel (opt) and scale\n");
@@ -6891,10 +6892,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   -Jg|G<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale>|<width> (General Perspective)\n");
 			gmt_message (GMT, "\t     <lon0>/<lat0> is the center of the projection.\n");
 			gmt_message (GMT, "\t     <altitude> is the height (in km) of the viewpoint above local sea level\n");
-			gmt_message (GMT, "\t        - if <altitude> less than 10 then it is the distance \n");
-			gmt_message (GMT, "\t        from center of earth to viewpoint in earth radii\n");
-			gmt_message (GMT, "\t        - if <altitude> has a suffix of 'r' then it is the radius \n");
-			gmt_message (GMT, "\t        from the center of earth in kilometers\n");
+			gmt_message (GMT, "\t        1. If <altitude> less than 10 then it is the distance\n");
+			gmt_message (GMT, "\t           from center of earth to viewpoint in earth radii\n");
+			gmt_message (GMT, "\t        2. If <altitude> has a suffix of 'r' then it is the radius\n");
+			gmt_message (GMT, "\t           from the center of earth in kilometers\n");
 			gmt_message (GMT, "\t     <azimuth> is azimuth east of North of view\n");
 			gmt_message (GMT, "\t     <tilt> is the upward tilt of the plane of projection\n");
 			gmt_message (GMT, "\t       if <tilt> < 0 then viewpoint is centered on the horizon\n");
@@ -6928,7 +6929,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t       Give origin, second point on oblique equator, and scale at oblique equator\n");
 			gmt_message (GMT, "\t     -Jo|Oc|C<lon0>/<lat0>/<lonp>/<latp>/<scale>|<width>\n");
 			gmt_message (GMT, "\t       Give origin, pole of projection, and scale at oblique equator\n");
-			gmt_message (GMT, "\t       Specify region in oblique degrees OR use -R<>r\n");
+			gmt_message (GMT, "\t       Specify region in oblique degrees OR use -R<...>+r\n");
 			gmt_message (GMT, "\t       Upper-case A|B|C removes enforcement of a northern hemisphere pole.\n");
 			gmt_message (GMT, "\t       Append +v to make the oblique Equator the y-axis [x-axis].\n");
 
@@ -8624,7 +8625,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 				"Option -R: Given west and east values [%g %g] were adjusted so not exceed multiples of 360 [%g %g]\n", w, e, p[0], p[1]);
 		}
-		else if (p[0] > p[1] && GMT->common.R.oblique && !GMT->common.J.active) {	/* Used -Rw/s/e/nr for non mapping */
+		else if (p[0] > p[1] && GMT->common.R.oblique && !GMT->common.J.active) {	/* Used -Rw/s/e/n+r for non mapping */
 			if (GMT->current.io.geo.range == GMT_IS_M180_TO_P180_RANGE) p[0] -= 360.0; else p[1] += 360.0;
 		}
 		else if (p[0] > p[1] && strchr (string, 'W') && strchr (string, 'E')) {	/* Used -R<lon>E/<lon>W so we must add 360 to east */

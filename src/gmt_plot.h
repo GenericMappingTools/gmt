@@ -53,6 +53,7 @@
 #define GMT_SYMBOL_TEXTURE	((int)'T')
 #define GMT_SYMBOL_GEOVECTOR	((int)'=')
 #define GMT_SYMBOL_VARTEXT	((int)'L')
+#define GMT_SYMBOL_EPS	((int)'P')
 
 #define GMT_SYMBOL_LINE		0
 #define GMT_SYMBOL_NONE		((int)' ')
