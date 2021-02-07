@@ -522,7 +522,8 @@
 
     The final type of embellished line is called a *decorated* line (**-S~**).  It is a hybrid
     between a *front* and *quoted* lines in that it offers symbols similar to a front
-    but the placement can be specified in ways similar to the quoted line:
+    but the placement can be specified in ways similar to the quoted line.  However, no built-in
+    clipping exists, such as for quoted lines:
 
     .. figure:: /_images/GMT_base_symbols9.*
         :width: 600 px
@@ -615,7 +616,8 @@
 
             **+s**\ <symbol><size> or **+sk**\ *customsymbol*/*size*
                 Specify the code and size of the decorative symbol.
-                Custom symbols need to be simple, i.e., not require data columns.
+                Custom symbols need to be simple, i.e., not require data columns,
+                or give a single EPS file.
 
             **+w**
                 Specify how many (*x*,\ *y*) points will be used to estimate
