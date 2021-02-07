@@ -6801,7 +6801,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   -Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Albers Equal-Area Conic)\n");
 			gmt_message (GMT, "\t     Give origin, 2 standard parallels, and true scale\n");
 
-			gmt_message (GMT, "\t   -Jc|C<lon0>/<lat0><scale>|<width> (Cassini)\n\t     Give central point and scale\n");
+			gmt_message (GMT, "\t   -Jc|C<lon0>/<lat0>/<scale>|<width> (Cassini)\n\t     Give central point and scale\n");
 
 			gmt_message (GMT, "\t   -Jcyl_stere|Cyl_stere/[<lon0>/[<lat0>/]]<scale>|<width> (Cylindrical Stereographic)\n");
 			gmt_message (GMT, "\t     Give central meridian (opt), standard parallel (opt) and scale\n");
