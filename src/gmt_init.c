@@ -2499,7 +2499,7 @@ GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 		case 'w': GMT->current.io.cycle_operator = GMT_CYCLE_WEEK; break;
 		case 'a': GMT->current.io.cycle_operator = GMT_CYCLE_ANNUAL; break;
 		case 'y': GMT->current.io.cycle_operator = GMT_CYCLE_YEAR; break;
-		case 'p': GMT->current.io.cycle_operator = GMT_CYCLE_CUSTOM;
+		case 'c': GMT->current.io.cycle_operator = GMT_CYCLE_CUSTOM;
 			if (arg[1] == '\0') {	/* Gave us nuthin' */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Code c syntax is -wc<period>[/<phase]\n");
 				return (GMT_PARSE_ERROR);
