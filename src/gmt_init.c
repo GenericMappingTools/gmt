@@ -13806,68 +13806,67 @@ GMT_LOCAL int gmtinit_set_last_dimensions (struct GMTAPI_CTRL *API) {
 }
 
 GMT_LOCAL bool gmtinit_replace_missing_with_questionmark (struct GMTAPI_CTRL *API, char *arg, char *newarg) {
-	/* If this -J argument is like the '?' args but the '?' is missing, leaving // or trailing /, or missing final arg, then
-	 * we insert the missing ? so that the gmtinit_build_new_J_option can work as is.
-	 * We assume newarg is completely blank. */
-	char *c = NULL;
+	/* If this -J argument is like the '?' args (but with the '?' missing) and having trailing /, or missing an only arg, then
+	 * we append or insert the missing ? so that the gmtinit_build_new_J_option can work as is.
+	 * We assume newarg is completely blank.  We only get here if there is no ? in arg. */
 	size_t o = 0, i = 0, L = strlen (arg) - 1;	/* Index of last character in arg (we know arg has at least length 1) */
-	if (! ((c == strstr (arg, "//")) || (arg[L] == '/'))) {
-		/* Must check for third situation: -J<code> with no arguments */
-		if (strchr ("pP", arg[0])) {	/* This is polar cylindrical - must check if arg is given */
-			int k = 1;
-			if (arg[k] == '-') k++;
-			if (!(isdigit (arg[k]) || arg[k] == '.'))	/* Got a size/scale argument */
-				return false;
+
+	/* Category 1 projections: Always has slashes and need to end in /? */
+	if ((strchr ("cC", arg[0]) && !strncmp (&arg[1], "yl_stere", 8U)) || strchr ("aAbBcCdDeEfFgGlLoOsStT", arg[0])) {	/* These projection all must end in / and if no ? then append it */
+		if (arg[L] == '/')	/* User followed instructions and left a trailing / */
+			sprintf (newarg, "%s?", arg);
+		else {
+			GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_replace_missing_with_questionmark: -J%s has no trailing slash. Assumed to be a complete geographic projection\n", arg);
+			return false;		
 		}
-		else if (!(strchr ("hHiIjJmMnNqQrRsSuU", arg[0]) || (strchr ("kK", arg[0]) && strchr ("fs", arg[1]))))
-			return false;	/* Nothing to change */
 	}
-	/* Guard against old scripts where the -J option has an actual dimension/scale even though it will be auto-scaled */
-	if (strchr (GMT_DIM_UNITS, arg[L]) && L && strchr ("0123456789.", arg[L-1])) return false;	/* Ended with a unit-appended number */
-
-	/* Here we need to insert or append the missing ?-mark(s)
-	 * Look for Cartesian -Jx|X[-][d|l|p<pow>][/[-][d|l|p<pow>]] which needs one or two ?-marks to be inserted for the two dummy Cartesian scales.
-	 * Otherwise, -J<code>, -J<code>/ or -J<code><arg>/<arg>//... which needs only one ?-mark to be inserted or appended . */
-
-	if (strchr ("xX", arg[0])) {	/* Cartesian projection, must worry about separate x and y settings if a slash is found */
-		/* But don't touch things like -Jx|X[+|-]<number> */
+	else if ((strchr ("pP", arg[0]) && !strncmp (&arg[1], "oly", 3U)) || strchr ("hHiIjJkKmMnNqQrRvVwWyYuU", arg[0])) {	/* These may or may not have a trailing slash */
+		if (arg[L] == '/') {	/* Multiple argument so left a trailing / */
+			sprintf (newarg, "%s?", arg);
+		}
+		else {	/* Used defaults so here we have things like -JM, -Jkf, or -Jpoly; otherwise it is -JM15c etc (i.e., with argument) */
+			if (L == 0 || (L == 1 && strchr ("kK", arg[0]) && strchr ("fs", arg[1])))	/* No argument, just append ? */
+				sprintf (newarg, "%s?", arg);
+			else {
+				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_replace_missing_with_questionmark: -J%s has no trailing slash. Assumed to be a complete geographic projection\n", arg);
+				return false;		
+			}
+		}
+	}
+	else if (strchr ("xX", arg[0])) {	/* Cartesian projection, must worry about separate x and y settings if a slash is found */
+		/* Look for Cartesian -Jx|X[-][d|l|p<pow>][/[-][d|l|p<pow>]] which needs one or two ?-marks to be inserted for the two dummy Cartesian scales.
+		 * But don't touch things like -Jx|X[+|-]<number> */
 		newarg[o++] = arg[i++];	/* This is x or X */
-		if (arg[i] && strchr ("-+", arg[i])) newarg[o++] = arg[i++];	/* Placing an optional sign */
-		if (isdigit (arg[i]) || arg[i] == '.') return false; /* Got -Jx-.5, -JX3c, -JX-2 or similar */
+		if (arg[i] && strchr ("-+", arg[i])) newarg[o++] = arg[i++];	/* Placing an optional sign (-Jx has no modifiers) */
+		if (isdigit (arg[i]) || arg[i] == '.') { /* Got -Jx-.5, -JX3c, -JX-2 or similar, do nothing */
+			GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_replace_missing_with_questionmark: -J%s assumed to be a complete Cartesian projection\n", arg);
+			return false;
+		}
+		/* Here we must insert or append one or two ? */
 		newarg[o++] = '?';	/* Insert the first ?-mark */
 		if (strchr (arg, '/')) {	/* slash[0] == '/' means we got separate x and y scale args for linear[d]/log/power axes */
-			while (arg[i] != '/') newarg[o++] = arg[i++];	/* Copying any linear[d]/log etc args for x-axis until slash */
+			while (arg[i] != '/') newarg[o++] = arg[i++];	/* Copying any linear[d]/log etc args for x-axis until the slash */
 			newarg[o++] = arg[i++];	/* This is the / */
-			if (arg[i] && strchr ("-+", arg[i])) newarg[o++] = arg[i++];	/* placing the optional second sign */
+			if (arg[i] && strchr ("-+", arg[i])) newarg[o++] = arg[i++];	/* Placing the optional second sign */
 			newarg[o++] = '?';	/* Insert the second ?-mark */
 			while (arg[i]) newarg[o++] = arg[i++];	/* Copying any linear[d]/log etc args for y-axis until the end */
 		}
-		else {	/* Just a single scale/width */
+		else {	/* Just a single scale/width. With ? already appended, check for the log,power,degree args */
 			while (arg[i]) newarg[o++] = arg[i++];	/* Copying any linear[d]/log etc args until the end */
 		}
 	}
-	else if (strchr ("pP", arg[0])) {	/* Polar projection, must inset missing ?-mark */
+	else if (strchr ("pP", arg[0])) {	/* Polar (cylindrical) projection, must insert missing ?-mark if no scale/width given */
 		newarg[o++] = arg[i++];	/* This is p or P */
+		if (isdigit (arg[i]) || arg[i] == '.') { /* Got -Jp.5, -JP15c or similar (there are no signs here */
+			GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_replace_missing_with_questionmark: -J%s assumed to be a complete Polar projection\n", arg);
+			return false;
+		}
 		newarg[o++] = '?';	/* Insert the ?-mark */
-		while (arg[i]) newarg[o++] = arg[i++];	/* Copying any polar args until the end */
+		while (arg[i]) newarg[o++] = arg[i++];	/* Copying any polar modifiers until the end */
 	}
-	else if ((c = strstr (arg, "//"))) {	/* Have the missing argument in the middle of the -J args */
-		c++;	/* Go past the first slash */
-		c[0] = '\0';	/* Chop off temporarily */
-		strcpy (newarg, arg);	/* Copies up to and including the first slash */
-		strcat (newarg, "?");	/* Insert the ?-mark */
-		c[0] = '/';	/* Restore 2nd slash */
-		strcat (newarg, c);	/* Append the rest of the arg including the second slash */
-	}
-	else if	(arg[L] == '/')	/* This is the -J<code>/arg1/arg2/.../ or -J<code>/ cases */
-		sprintf (newarg, "%s?", arg);
-	else if (L == 0 || L == 1 && strchr ("fs", arg[1]))	/* This is the -J<code> cases, e.g., -JM */
-		sprintf (newarg, "%s?", arg);
-	else	/* This is the -J<code>/arg1/arg2 cases taht need a final /? */
-		sprintf (newarg, "%s/?", arg);
-	GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: First updated -J%s to -J%s.\n", arg, newarg);
+	GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: First converted -J%s to -J%s.\n", arg, newarg);
 
-	return true;
+	return true;	/* yes, we made changes */
 }
 
 GMT_LOCAL bool gmtinit_build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt_J, struct GMT_SUBPLOT *P, struct GMT_INSET *I, bool is_psrose) {
