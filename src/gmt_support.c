@@ -1790,9 +1790,10 @@ GMT_LOCAL uint64_t gmtsupport_determine_circle (struct GMT_CTRL *GMT, double x0,
 }
 
 /*! . */
-GMT_LOCAL void gmtsupport_line_angle_ave (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, int half, int angle_type, struct GMT_LABEL *L) {
-	int64_t j, sstart, sstop, nn;
-	double sum_x2 = 0.0, sum_xy = 0.0, sum_y2 = 0.0, dx, dy;
+GMT_LOCAL void gmtsupport_line_angle_ave (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, int half, int angle_type, bool directed, struct GMT_LABEL *L) {
+	int64_t j, sstart, sstop;
+	double sum_x = 0.0, sum_x2 = 0.0, sum_xy = 0.0, sum_y = 0.0, sum_y2 = 0.0, dx, dy;
+	/* If directed is true then we want the direction of the line, else orientation is fine */
 
 	if (start == stop) {	/* Can happen if we want no smoothing but landed exactly on a knot point */
 		if (start > 0)
@@ -1800,9 +1801,10 @@ GMT_LOCAL void gmtsupport_line_angle_ave (struct GMT_CTRL *GMT, double x[], doub
 		else if (stop < (n-1))
 			stop++;
 	}
-	sstart = start - half;	sstop = stop + half;	nn = n;
+	sstart = MAX (0, ((int64_t)start) - half);	/* Must cast since start is unsigned */
+	sstop  = MIN (n-1, stop + half);
 	for (j = sstart; j <= sstop; j++) {	/* L2 fit for slope over this range of points */
-		if (j < 0 || j >= nn) continue;
+		if (j > sstart) sum_x += (x[j] - x[j-1]), sum_y += (y[j] - y[j-1]);
 		dx = x[j] - L->x;
 		dy = y[j] - L->y;
 		sum_x2 += dx * dx;
@@ -1810,16 +1812,23 @@ GMT_LOCAL void gmtsupport_line_angle_ave (struct GMT_CTRL *GMT, double x[], doub
 		sum_xy += dx * dy;
 	}
 	if (sum_y2 < GMT_CONV8_LIMIT)	/* Line is horizontal */
-		L->line_angle = 0.0;
+		L->line_angle = (directed && sum_x < 0.0) ? 180.0 : 0.0;
 	else if (sum_x2 < GMT_CONV8_LIMIT)	/* Line is vertical */
-		L->line_angle = 90.0;
-	else
+		L->line_angle = (directed && sum_y < 0.0) ? -90.0 : 90.0;
+	else {	/* Least-squares fit of slope */
 		L->line_angle = (gmt_M_is_zero (sum_xy)) ? 90.0 : d_atan2d (sum_xy, sum_x2);
+		if (directed && !(gmt_M_is_zero (sum_x) && gmt_M_is_zero (sum_y))) {
+			/* If the line_angle points more or less in the opposite direction as indicated by
+			 * sum_x and sum_y we add 180 to it */
+			double angle = d_atan2d (sum_y, sum_x);
+			if (fabs (L->line_angle - angle) > 145.0) L->line_angle += 180.0;
+		}
+	}
 	if (angle_type == 2) {	/* Just return the fixed angle given (unless NaN) */
 		if (gmt_M_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
 			angle_type = 0;
 		else
-			L->angle = cangle;
+			L->angle = L->line_angle = cangle;
 	}
 	if (angle_type != 2) {	/* Must base label angle on the contour angle */
 		L->angle = L->line_angle + angle_type * 90.0;	/* May add 90 to get normal */
@@ -1830,7 +1839,7 @@ GMT_LOCAL void gmtsupport_line_angle_ave (struct GMT_CTRL *GMT, double x[], doub
 }
 
 /*! . */
-GMT_LOCAL void gmtsupport_line_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, int angle_type, struct GMT_LABEL *L) {
+GMT_LOCAL void gmtsupport_line_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, int angle_type, bool directed, struct GMT_LABEL *L) {
 	double dx, dy;
 
 	if (start == stop) {	/* Can happen if we want no smoothing but landed exactly on a knot point */
@@ -1859,12 +1868,12 @@ GMT_LOCAL void gmtsupport_line_angle_line (struct GMT_CTRL *GMT, double x[], dou
 
 /*! . */
 GMT_LOCAL void gmtsupport_contlabel_angle_ave (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_CONTOUR *G) {
-	gmtsupport_line_angle_ave (GMT, x, y, start, stop, cangle, n, G->half_width, G->angle_type, L);
+	gmtsupport_line_angle_ave (GMT, x, y, start, stop, cangle, n, G->half_width, G->angle_type, false, L);
 }
 
 /*! . */
 GMT_LOCAL void gmtsupport_contlabel_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_CONTOUR *G) {
-	gmtsupport_line_angle_line (GMT, x, y, start, stop, cangle, n, G->angle_type, L);
+	gmtsupport_line_angle_line (GMT, x, y, start, stop, cangle, n, G->angle_type, false, L);
 }
 
 /*! . */
@@ -1895,12 +1904,12 @@ GMT_LOCAL void gmtsupport_contlabel_angle (struct GMT_CTRL *GMT, double x[], dou
 
 /*! . */
 GMT_LOCAL void gmtsupport_decorated_angle_ave (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_DECORATE *G) {
-	gmtsupport_line_angle_ave (GMT, x, y, start, stop, cangle, n, G->half_width, G->angle_type, L);
+	gmtsupport_line_angle_ave (GMT, x, y, start, stop, cangle, n, G->half_width, G->angle_type, true, L);
 }
 
 /*! . */
 GMT_LOCAL void gmtsupport_decorated_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_DECORATE *G) {
-	gmtsupport_line_angle_line (GMT, x, y, start, stop, cangle, n, G->angle_type, L);
+	gmtsupport_line_angle_line (GMT, x, y, start, stop, cangle, n, G->angle_type, true, L);
 }
 
 /*! . */
@@ -2989,7 +2998,7 @@ GMT_LOCAL void gmtsupport_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATAS
 	S->data[GMT_X][S->n_rows] = L->x;
 	S->data[GMT_Y][S->n_rows] = L->y;
 	S->data[GMT_Z][S->n_rows] = gmt_M_to_inch (GMT, G->size);
-	S->data[3][S->n_rows] = L->angle;	/* Change this in inches internally instead of string */
+	S->data[3][S->n_rows] = L->line_angle;	/* Change this in inches internally instead of string */
 	S->text[S->n_rows++] = strdup (G->symbol_code);
 }
 

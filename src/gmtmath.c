@@ -6291,6 +6291,16 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 				/* Read but request IO reset since the file (which may be a memory reference) will be read again later */
 				Return (API->error);
 			}
+			 /* When operating on time (1 column file) the output is no longer abstime unless the user set -fo */
+			if (gmt_get_column_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && !GMT->common.f.active[GMT_OUT]) {	/* Special check if detected time in x and no -fo setting */
+				uint64_t col, start_col = (D_in->n_columns == 1) ? GMT_X : GMT_Y;
+				/* Any time columns subject to calculation will be set to relative time */
+				for (col = start_col; col < D_in->n_columns; col++) {
+					if (gmt_get_column_type (GMT, GMT_IN, col) == GMT_IS_ABSTIME)
+						gmt_set_column_type (GMT, GMT_OUT, col, GMT_IS_RELTIME);
+				}
+			}
+
 			got_t_from_file = 1;
 		}
 	}
@@ -6466,7 +6476,11 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if (strchr (SPECIFIC_OPTIONS THIS_MODULE_OPTIONS GMT_OPT("F"), opt->option)) continue;
 		if (opt->option == 'C') {	/* Change affected columns */
 			no_C = false;
-			if (gmtmath_decode_columns (opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol)) touched_t_col = true;
+			if (gmtmath_decode_columns (opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol)) {
+				touched_t_col = true;
+				if (gmt_get_column_type (GMT, GMT_IN, Ctrl->N.tcol) == GMT_IS_ABSTIME && !GMT->common.f.active[GMT_OUT])	/* If no -fo setting and still abstime we change to reltime */
+					gmt_set_column_type (GMT, GMT_OUT, Ctrl->N.tcol, GMT_IS_RELTIME);
+			}
 			continue;
 		}
 		if (opt->option == GMT_OPT_OUTFILE) continue;	/* We do output after the loop */

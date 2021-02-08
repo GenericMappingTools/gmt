@@ -700,6 +700,21 @@ in the data then only those columns will be updated, hence the unspecified colum
 On the other hand, if you load the file first and then issue **-C**\ *cols* then the unspecified
 columns will have been loaded but are then ignored until you undo the effect of **-C**.
 
+Absolute Time Column(s)
+-----------------------
+
+If input data have more than one column and the "time" column (id set via **-N** [0])
+contains absolute time, then the default output format for any *other* columns containing
+absolute time will be reset to relative time.  Likewise, in scalar mode (**-Q**) the
+time column will be operated on and hence it also will be formatted as relative
+time.  Finally, if **-C** is used to include "time" in the columns operated on then
+we likewise will reset that column's format to relative time. The user can override this behavior with a
+suitable **-f** or **-fo** setting.  **Note**: We cannot guess what your operations on the
+time column will do, hence this default behavior.  As examples, if you are computing time differences
+then clearly relative time formatting is required, while if you are computing new absolute times
+by, say, adding an interval to absolute times then you will need to use **-fo** to set
+the output format for such columns to absolute time.
+
 Examples
 --------
 
