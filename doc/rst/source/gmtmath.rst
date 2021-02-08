@@ -701,7 +701,7 @@ Absolute Time Column(s)
 -----------------------
 
 If input data have more than one column and the "time" column (id set via **-N** [0])
-in contains absolute time, then the default output format for any *other* columns containing
+contains absolute time, then the default output format for any *other* columns containing
 absolute time will be reset to relative time.  Likewise, in scalar mode (**-Q**) the
 time column will be operated on and hence it also will be formatted as relative
 time.  Finally, if **-C** is used to include "time" in the columns operated on then
