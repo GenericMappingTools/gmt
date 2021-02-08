@@ -154,7 +154,8 @@ Optional Arguments
     for the entire subplot.
     Append **+p** to make all annotations axis-parallel [horizontal]; if not used you may have to set **-C** to secure
     extra space for long horizontal annotations.
-    Append **+w** to draw horizontal and vertical lines between interior panels using selected pen [no lines].
+    Append **+w** to the **-F** argument to draw horizontal and vertical lines
+    between interior panels using selected pen [no lines].
 
 .. _-T:
 
