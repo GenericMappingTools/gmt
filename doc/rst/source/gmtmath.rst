@@ -705,7 +705,7 @@ contains absolute time, then the default output format for any *other* columns c
 absolute time will be reset to relative time.  Likewise, in scalar mode (**-Q**) the
 time column will be operated on and hence it also will be formatted as relative
 time.  Finally, if **-C** is used to include "time" in the columns operated on then
-we likewise will reset that column's formatting. The user can override this behavior with a
+we likewise will reset that column's format to relative time. The user can override this behavior with a
 suitable **-f** or **-fo** setting.  **Note**: We cannot guess what your operations on the
 time column will do, hence this default behavior.  As examples, if you are computing time differences
 then clearly relative time formatting is required, while if you are computing new absolute times
