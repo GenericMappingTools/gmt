@@ -1222,7 +1222,7 @@ EXTERN_MSC int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			flags = gmt_M_memory (GMT, NULL, D->H.n_records, unsigned int);
 			n_E77_flags = n_E77_headers = n_E77_scales = n_E77_offsets = n_E77_recalcs = 0;
 
-			MGD77_nc_status (GMT, nc_open (In.path, NC_WRITE, &In.nc_id));	/* Open the file */
+			MGD77_nc_status (GMT, gmt_nc_open (GMT, In.path, NC_WRITE, &In.nc_id));	/* Open the file */
 			MGD77_nc_status (GMT, nc_redef (In.nc_id));				/* Enter define mode */
 			(void)MGD77_Remove_E77 (GMT, &In);				/* Remove any previously revised header parameters */
 			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Data", 14U)) {	/* Read until we get to data record section */
@@ -1544,7 +1544,7 @@ EXTERN_MSC int GMT_mgd77manage (void *V_API, int mode, void *args) {
 
 		if (MGD77_Open_File (GMT, list[argno], &In, MGD77_UPDATE_MODE)) return (-1);	/* Only creates the full path to the new file */
 
-		MGD77_nc_status (GMT, nc_open (In.path, NC_WRITE, &In.nc_id));	/* Open the file */
+		MGD77_nc_status (GMT, gmt_nc_open (GMT, In.path, NC_WRITE, &In.nc_id));	/* Open the file */
 		MGD77_nc_status (GMT, nc_redef (In.nc_id));				/* Enter define mode */
 
 		dims[0] = In.nc_recid;	dims[1] = LEN;
