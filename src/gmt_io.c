@@ -4646,8 +4646,8 @@ GMT_LOCAL int gmtio_get_precision_width (struct GMT_CTRL *GMT, double x) {
 GMT_LOCAL void gmtio_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	bool abstime_found = false;
 	unsigned int col, row;
-    int w_max = 0, this_w;
-    double sub, sub_max = 0;
+	int w_max = 0, this_w;
+	double sub, sub_max = 0;
 	struct GMT_DATASEGMENT *S = NULL;
 
 	if (GMT->common.b.active[GMT_OUT]) return;	/* Nothing to do if using binary i/o */
