@@ -8763,7 +8763,9 @@ void gmtlib_union_transpose(struct GMT_CTRL *GMT, union GMT_UNIVECTOR *m, const 
 }
 
 int gmt_convert_double (struct GMT_CTRL *GMT, char *text, double *value) {
-	/* Convert text to floating point number and return an error if it failed and set value to NaN. */
+	/* Convert text to floating point number and return an error if it failed and set value to NaN.
+	 * Eventually, all options passing in floating point numbers should be validated with this function.
+	 * Numbers such as dimensions with trailing units are handled by other functions. */
 	char *endptr = NULL;
 	int error;
 	if (text == NULL || text[0] == '\0') return GMT_NOTSET;	/* Not given anything */
