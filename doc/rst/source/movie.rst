@@ -330,9 +330,10 @@ Custom gmt.conf files
 ---------------------
 
 If you have a gmt.conf file in the top directory with your main script prior to running **movie** then it will be
-used and shared across all the scripts created and executed. The preferred ways of changing GMT defaults is via
-:doc:`gmtset` calls in your input scripts.  **Note**: Each script is run in isolation (modern) mode so trying to
-create a gmt.conf file via the *preflight* script to be used by other scripts is futile.
+used and shared across all the scripts created and executed *unless* your scripts use **-C** when starting a new
+modern mode session. The preferred ways of changing GMT defaults is via :doc:`gmtset` calls in your input scripts.
+**Note**: Each script is run in isolation (modern) mode so trying to create a gmt.conf file via the *preflight*
+script to be used by other scripts is futile.
 
 Plotting Temporal Changes
 -------------------------
