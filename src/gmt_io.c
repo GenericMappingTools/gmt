@@ -4639,7 +4639,7 @@ GMT_LOCAL int gmtio_get_precision_width (struct GMT_CTRL *GMT, double x) {
 		k++;	/* First time k becomes 0 */
 		trunc_err = fabs (x - rint (x * power_U[k]) * power_D[k]) * inv_x;
 		// fprintf (stderr, "k = %d x = %g trunc_err = %g\n", k, x, trunc_err);
-	} while (k < 8 && trunc_err > GMT_CONV4_LIMIT);	/* Stop at nanoseconds if things go off the rails */
+	} while (k < 5 && trunc_err > GMT_CONV4_LIMIT);	/* Stop at 10e-5s if things go off the rails */
 	return (k + 1);
 }
 
