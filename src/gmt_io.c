@@ -8773,10 +8773,10 @@ int gmt_convert_double (struct GMT_CTRL *GMT, char *text, double *value) {
     *value = strtod (text, &endptr);
 	if ((*endptr == '\0') || (isspace(*endptr) != 0)) {
         error = GMT_NOERROR;
-        *value = GMT->session.d_NaN;
 	}
     else {
-		GMT_Report(GMT, GMT_MSG_ERROR, "Cannot convert %s to floating point as it contains invalid characters (%s).\n", text, endptr);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot convert %s to floating point as it contains invalid characters (%s).\n", text, endptr);
+        *value = GMT->session.d_NaN;
         error = GMT_PARSE_ERROR;
     }
     return (error);

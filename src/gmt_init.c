@@ -7376,7 +7376,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t-w Wrapped selected column [0] with specified cyclicity:\n");
 			gmt_message (GMT, "\t   Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles.\n");
-			gmt_message (GMT, "\t   Cartesian data: Append c<period>[/<phase>] for custom cyclicity.\n");
+			gmt_message (GMT, "\t   Alternatively, append c<period>[/<phase>] for custom cyclicity.\n");
 			gmt_message (GMT, "\t   Select another column than x via +c<col>.\n");
 			break;
 
@@ -8192,6 +8192,15 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 			gmt_message (GMT, "\t   -x+a Use all available processors.\n");
 			gmt_message (GMT, "\t   -xn Use n processors (not more than max available off course).\n");
 			gmt_message (GMT, "\t   -x-n Use (all - n) processors.\n");
+			break;
+
+		case 'w':	/* -w option for cyclicity */
+
+			gmt_message (GMT, "\t%s\n", GMT_w_OPT);
+			gmt_message (GMT, "\t-w Wrapped selected column [0] with specified cyclicity:\n");
+			gmt_message (GMT, "\t   Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles.\n");
+			gmt_message (GMT, "\t   Alternatively append c<period>[/<phase>] for custom cyclicity.\n");
+			gmt_message (GMT, "\t   Select another column than x via +c<col>.\n");
 			break;
 
 		case ':':	/* lon/lat vs lat/lon i/o option  */
