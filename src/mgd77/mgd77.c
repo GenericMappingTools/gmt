@@ -1742,7 +1742,7 @@ static int mgd77_write_header_record_cdf (struct GMT_CTRL *GMT, char *file, stru
 	 * written as scalars.  The read routine will replicate these to columns.
 	 * This function simply defines the file and header attributes and is called by
 	 * mgd77_write_file_cdf which also writes the data.  Note that no optional factors
-	 * such as 2ndary correction scale and offset are defined since they do not exist
+	 * such as secondary correction scale and offset are defined since they do not exist
 	 * for MGD77 standard files.  Such terms can be added by mgd77manage.
 	 */
 
@@ -1754,7 +1754,7 @@ static int mgd77_write_header_record_cdf (struct GMT_CTRL *GMT, char *file, stru
 
 	if (!F->path[0] && MGD77_Open_File (GMT, file, F, MGD77_WRITE_MODE)) return (-1);	/* Basically creates the full path */
 
-	MGD77_nc_status (GMT, nc_create (F->path, NC_NOCLOBBER, &F->nc_id));	/* Create the file */
+	MGD77_nc_status (GMT, gmt_nc_create (GMT, F->path, NC_NOCLOBBER, &F->nc_id));	/* Create the file */
 
 	/* Put attributes header, author, title and history */
 
@@ -1942,7 +1942,7 @@ static int mgd77_write_file_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_
 	err = mgd77_write_data_cdf (GMT, file, F, S);
 	if (err) return (err);
 
-	MGD77_nc_status (GMT, nc_close (F->nc_id));
+	MGD77_nc_status (GMT, gmt_nc_close (GMT, F->nc_id));
 
 	return (MGD77_NO_ERROR);
 }
@@ -2246,7 +2246,7 @@ static int mgd77_read_file_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 	err = mgd77_read_data_cdf (GMT, file, F, S);
 	if (err) return (err);
 
-	MGD77_nc_status (GMT, nc_close (F->nc_id));
+	MGD77_nc_status (GMT, gmt_nc_close (GMT, F->nc_id));
 
 	return (MGD77_NO_ERROR);
 }
@@ -2308,7 +2308,7 @@ static int mgd77_read_header_record_cdf (struct GMT_CTRL *GMT, char *file, struc
 
 	if (!F->path[0] && MGD77_Open_File (GMT, file, F, MGD77_READ_MODE)) return (-1);			/* Basically sets the path */
 
-	MGD77_nc_status (GMT, nc_open (F->path, NC_NOWRITE, &F->nc_id));	/* Open the file */
+	MGD77_nc_status (GMT, gmt_nc_open (GMT, F->path, NC_NOWRITE, &F->nc_id));	/* Open the file */
 
 	gmt_M_memset (H, 1, struct MGD77_HEADER);	/* Initialize header */
 
@@ -2866,7 +2866,7 @@ int MGD77_Close_File (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 			error = fclose (F->fp);
 			break;
 		case MGD77_FORMAT_CDF:	/* netCDF file is accessed by ID*/
-			MGD77_nc_status (GMT, nc_close (F->nc_id));
+			MGD77_nc_status (GMT, gmt_nc_close (GMT, F->nc_id));
 			error = 0;
 			break;
 		default:
@@ -3087,7 +3087,7 @@ GMT_LOCAL int mgd77_read_file_cdf_nohdr (struct GMT_CTRL *GMT, char *file, struc
 	err = mgd77_read_data_cdf (GMT, file, F, S);
 	if (err) return (err);
 
-	MGD77_nc_status (GMT, nc_close (F->nc_id));
+	MGD77_nc_status (GMT, gmt_nc_close (GMT, F->nc_id));
 
 	return (MGD77_NO_ERROR);
 }

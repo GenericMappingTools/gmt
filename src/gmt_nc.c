@@ -457,10 +457,10 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 	if (!strcmp (HH->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	switch (job) {
 		case 'r':
-			gmt_M_err_trap (nc_open (HH->name, NC_NOWRITE, &ncid));
+			gmt_M_err_trap (gmt_nc_open (GMT, HH->name, NC_NOWRITE, &ncid));
 			break;
 		case 'u':
-			gmt_M_err_trap (nc_open (HH->name, NC_WRITE, &ncid));
+			gmt_M_err_trap (gmt_nc_open (GMT, HH->name, NC_WRITE, &ncid));
 			gmt_M_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode));
 			break;
 		default:
@@ -468,12 +468,12 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			gmtnc_set_optimal_chunksize (GMT, header);
 			if (GMT->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic) {
 				/* create chunked nc4 file */
-				gmt_M_err_trap (nc_create (HH->name, NC_NETCDF4, &ncid));
+				gmt_M_err_trap (gmt_nc_create (GMT, HH->name, NC_NETCDF4, &ncid));
 				HH->is_netcdf4 = true;
 			}
 			else {
 				/* create nc using classic data model */
-				gmt_M_err_trap (nc_create (HH->name, NC_CLOBBER, &ncid));
+				gmt_M_err_trap (gmt_nc_create (GMT, HH->name, NC_CLOBBER, &ncid));
 				HH->is_netcdf4 = false;
 			}
 			gmt_M_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode));
@@ -1074,7 +1074,7 @@ L100:
 
 	/* Close NetCDF file, unless job == 'W' */
 
-	if (job != 'W') gmt_M_err_trap (nc_close (ncid));
+	if (job != 'W') gmt_M_err_trap (gmt_nc_close (GMT, ncid));
 	return (GMT_NOERROR);
 }
 
@@ -1465,6 +1465,24 @@ GMT_LOCAL int gmtnc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	return GMT_NOERROR;
 }
 
+int gmt_nc_create (struct GMT_CTRL *GMT, char *path, int mode, int *id) {
+	int err = nc_create (path, mode, id);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Calling nc_create on %s, ncid = %d, err = %d\n", path, *id, err);
+	return (err);
+}
+
+int gmt_nc_open (struct GMT_CTRL *GMT, char *path, int mode, int *id) {
+	int err = nc_open (path, NC_WRITE, id);	/* Open the file, return error code */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Calling nc_open on %s, ncid = %d, err = %d\n", path, *id, err);
+	return err;	/* Open the file, return error code */
+}
+
+int gmt_nc_close (struct GMT_CTRL *GMT, int id) {
+	int err = nc_close (id);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Calling nc_close on ncid %d, err = %d\n", id, err);
+	return err;
+}
+
 int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Returns GMT_NOERROR if NetCDF grid */
 	int ncid, z_id = -1, j = 0, nvars, ndims, err, old = false;
@@ -1486,7 +1504,7 @@ int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Open the file and look for the required variable */
 	if (gmt_access (GMT, HH->name, F_OK))
 		return (GMT_GRDIO_FILE_NOT_FOUND);
-	if ((err = nc_open (HH->name, NC_NOWRITE, &ncid)))
+	if ((err = gmt_nc_open (GMT, HH->name, NC_NOWRITE, &ncid)))
 		return (GMT_GRDIO_OPEN_FAILED);
 	if (!nc_inq_dimid (ncid, "xysize", &z_id)) {
 		/* Old style GMT netCDF grid */
@@ -1529,7 +1547,7 @@ int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		case NC_DOUBLE: header->type = old ? GMT_GRID_IS_CD : GMT_GRID_IS_ND; HH->orig_datatype = GMT_DOUBLE; break;
 		default:        header->type = k_grd_unknown_fmt; break;
 	}
-	nc_close (ncid);
+	gmt_nc_close (GMT, ncid);
 	return GMT_NOERROR;
 }
 
@@ -1604,7 +1622,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 	if (!strcmp (HH->name,"="))
 		return (GMT_GRDIO_NC_NO_PIPE);
 	gmtnc_setup_chunk_cache();
-	gmt_M_err_trap (nc_open (HH->name, NC_NOWRITE, &HH->ncid));
+	gmt_M_err_trap (gmt_nc_open (GMT, HH->name, NC_NOWRITE, &HH->ncid));
 
 	/* Read grid */
 	if (dim2[1] == 0)
@@ -1703,7 +1721,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 	header->n_columns = width;
 	header->n_rows = height;
 
-	gmt_M_err_trap (nc_close (HH->ncid));
+	gmt_M_err_trap (gmt_nc_close (GMT, HH->ncid));
 
 	return GMT_NOERROR;
 }
@@ -1844,7 +1862,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 		goto nc_err;
 
 	/* Close grid */
-	status = nc_close (HH->ncid);
+	status = gmt_nc_close (GMT, HH->ncid);
 	if (status != NC_NOERR)
 		goto nc_err;
 
@@ -1854,7 +1872,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 
 nc_err:
 	/* exit gracefully */
-	nc_close(HH->ncid); /* close nc-file */
+	gmt_nc_close (GMT, HH->ncid); /* close nc-file */
 	unlink (HH->name);  /* remove nc-file */
 	if (status == NC_ERANGE) {
 		/* report out of range z variable */
@@ -1866,7 +1884,8 @@ nc_err:
 
 bool gmt_nc_is_cube (struct GMTAPI_CTRL *API, char *file) {
 	/* Return true if the file is a 3-D netCDF cube */
-	int i, ID = -1, ncid, z_id = -1, dim = 0, nvars, ndims = 0;
+	bool is_cube = false;
+	int i, ID = GMT_NOTSET, ncid, z_id = GMT_NOTSET, dim = 0, nvars, ndims = 0;
 	char varname[GMT_GRID_NAME_LEN256] = {""}, *c = NULL;
 	gmt_M_unused (API);
 
@@ -1877,35 +1896,37 @@ bool gmt_nc_is_cube (struct GMTAPI_CTRL *API, char *file) {
 		strcpy (varname, &c[1]);
 		c[0] = '\0';	/* Chop off for now */
 	}
-	if (nc_open (file, NC_NOWRITE, &ncid)) {
+	if (gmt_nc_open (API->GMT, file, NC_NOWRITE, &ncid)) {
 		if (c) c[0] = '?';	/* Restore */
 		return false;	/* Unable to open, so probably not netCDF file */
 	}
+	/* Here file is open so must close before returning */
 	if (c) c[0] = '?';	/* Restore */
-	if (nc_inq_nvars (ncid, &nvars)) return false;	/* No variables, no good */
+	if (nc_inq_nvars (ncid, &nvars)) goto nc_cube_return;	/* No variables, no good */
 	if (c) {
 		if (nc_inq_varid (ncid, varname, &z_id) == NC_NOERR) {	/* Gave a named variable that exist, is it 2-4 D? */
-			if (nc_inq_varndims (ncid, z_id, &ndims)) return false;	/* Not god */
-			if (ndims != 3) z_id = -1;	/* But not 3-D */
+			if (nc_inq_varndims (ncid, z_id, &ndims)) goto nc_cube_return;	/* Not god */
+			if (ndims != 3) z_id = GMT_NOTSET;	/* But not 3-D */
 			if (ndims > 2 && ndims <= 5) ID = z_id;
 		}
 	}
 	else {	/* Must search */
 		i = 0;
 		while (i < nvars && z_id < 0) {	/* Look for first 3D grid, with fallback to first higher-dimension (4-%D) grid if 3D not found */
-			if (nc_inq_varndims (ncid, i, &ndims)) return false;	/* Not good */
+			if (nc_inq_varndims (ncid, i, &ndims)) goto nc_cube_return;	/* Not good */
 			if (ndims == 3)	/* Found the first 3-D grid */
 				z_id = i;
-			else if (ID == -1 && ndims > 3 && ndims < 5) {	/* Also look for higher-dim grid in case no 3-D */
+			else if (ID == GMT_NOTSET && ndims > 3 && ndims < 5) {	/* Also look for higher-dim grid in case no 3-D */
 				ID = i;
 				dim = ndims;
 			}
 			i++;
 		}
 	}
-	if (z_id >= 0) return true;	/* Found  3-D grid */
-	/* No 3-D grid found, check if we found a higher dimension cube */
-	return ((ID == -1) ? false : true);
+	if (ID != GMT_NOTSET || z_id >= 0) is_cube = true;	/* Found  3-D grid */
+nc_cube_return:
+	gmt_nc_close (API->GMT, ncid); /* close nc-file */
+	return (is_cube);
 }
 
 /* Examine the netCDF data cube and determine if it is a 3-D cube and return the knots */
@@ -1918,7 +1939,7 @@ int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, ui
 	char varname[GMT_GRID_VARNAME_LEN80], dimname[GMT_GRID_UNIT_LEN80], z_units[GMT_GRID_UNIT_LEN80];
 	double *z = NULL, dummy[2] = {0.0, 0.0};
 
-	gmt_M_err_trap (nc_open (file, NC_NOWRITE, &ncid));
+	gmt_M_err_trap (gmt_nc_open (GMT, file, NC_NOWRITE, &ncid));
 
 	gmt_M_err_trap (nc_inq_nvars (ncid, &nvars));
 	i = 0;
@@ -2204,7 +2225,7 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 		if (status != NC_NOERR)
 			goto nc_err;
 		/* Close grid */
-		status = nc_close (HH->ncid);
+		status = gmt_nc_close (GMT, HH->ncid);
 		if (status != NC_NOERR)
 			goto nc_err;
 
@@ -2212,7 +2233,7 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 
 nc_err:
 		/* exit gracefully */
-		nc_close(HH->ncid); /* close nc-file */
+		gmt_nc_close (GMT, HH->ncid); /* close nc-file */
 		unlink (HH->name);  /* remove nc-file */
 		if (status == NC_ERANGE) {
 			/* report out of range z variable */
