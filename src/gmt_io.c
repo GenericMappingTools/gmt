@@ -4646,8 +4646,8 @@ GMT_LOCAL int gmtio_get_precision_width (struct GMT_CTRL *GMT, double x) {
 GMT_LOCAL void gmtio_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	bool abstime_found = false;
 	unsigned int col, row;
-	int w_max = 0, this_w;
-	double sub;
+    int w_max = 0, this_w;
+    double sub, sub_max = 0;
 	struct GMT_DATASEGMENT *S = NULL;
 
 	if (GMT->common.b.active[GMT_OUT]) return;	/* Nothing to do if using binary i/o */
@@ -4667,12 +4667,13 @@ GMT_LOCAL void gmtio_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATA
 		if (GMT->current.io.col_type[GMT_OUT][col] != GMT_IS_ABSTIME) continue;	/* Not an abstime column */
 		for (row = 0; row < MIN (S->n_rows, 20); row++) {	/* Maximum 20 rows are examined */
 			sub = S->data[col][row] - floor (S->data[col][row]);	/* Fractional second */
+            if (sub > sub_max) sub_max = sub;
 			if (gmt_M_is_zero (sub)) continue;	/* Not checking zeros for width */
 			if ((this_w = gmtio_get_precision_width (GMT, sub)) > w_max)
 				w_max = this_w;
 		}
 	}
-	if (w_max) {	/* Need to append w_max "x" to the default format */
+	if (w_max && (sub_max >= 1E-6)) {	/* Need to append w_max "x" to the default format */
 		strcat (GMT->current.setting.format_clock_out, ".");
 		while (w_max) {
 			strcat (GMT->current.setting.format_clock_out, "x");
