@@ -2475,7 +2475,7 @@ bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 /*! Routine will decode the -wy|a|w|d|h|m|s|c<period>[/<phase>][+c<col>] arguments */
 GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 
-	char *c = NULL, *s = NULL;
+	char *c = NULL;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -w requires an argument */
 
@@ -2504,13 +2504,18 @@ GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Code c syntax is -wc<period>[/<phase]\n");
 				return (GMT_PARSE_ERROR);
 			}
-			else if ((s = strchr (arg, '/'))) {	/* Got custom period/phase */
-				s[0] = ' ';	/* Replace slash by space temporarily */
-				sscanf (&arg[1], "%lg %lg", &GMT->current.io.cycle_period, &GMT->current.io.cycle_phase);
-				s[0] = '/';	/* Restore slash */
+			if (strchr (arg, '/')) {	/* Got custom period/phase */
+				char PE[GMT_LEN64] = {""}, PH[GMT_LEN64] = {""};
+				sscanf (&arg[1], "%[^/]/%s", PE, PH);
+				if (gmt_convert_double (GMT, PE, &GMT->current.io.cycle_period))
+					return (GMT_PARSE_ERROR);
+				if (gmt_convert_double (GMT, PH, &GMT->current.io.cycle_phase))
+					return (GMT_PARSE_ERROR);
 			}
-			else 	/* Just got the custom period, with phase == 0 */
-				GMT->current.io.cycle_period = atof (&arg[1]);
+			else {	/* Just got the custom period, with phase == 0 */
+				if (gmt_convert_double (GMT, &arg[1], &GMT->current.io.cycle_period))
+					return (GMT_PARSE_ERROR);
+			}
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Unrecognized periodicity code %c\n", arg[0]);

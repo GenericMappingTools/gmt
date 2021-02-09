@@ -1440,7 +1440,7 @@ You can append the input column with the coordinate to be wrapped to the **-w** 
 [we default to the first column, i.e., 0 if no column is specified].  Then, append one
 of the available codes from Table :ref:`cycles <tbl-cycletype>`. If the custom cycle
 **c** is chosen then you must also supply the *period* and optionally any *phase* [0]
-in the same units of your data.
+in the same units of your data (i.e., no units should be appended to **-w**).
 
 To demonstrate the use of **-w** we will make a few plots of the daily discharge rate of
 the Mississippi river during the 1930-1940 period.  A simple time series plot is created by

@@ -8762,6 +8762,24 @@ void gmtlib_union_transpose(struct GMT_CTRL *GMT, union GMT_UNIVECTOR *m, const 
 
 }
 
+int gmt_convert_double (struct GMT_CTRL *GMT, char *text, double *value) {
+	/* Convert text to floating point number and return an error if it failed and set value to NaN. */
+	char *endptr = NULL;
+	int error;
+	if (text == NULL || text[0] == '\0') return GMT_NOTSET;	/* Not given anything */
+
+    *value = strtod (text, &endptr);
+	if ((*endptr == '\0') || (isspace(*endptr) != 0)) {
+        error = GMT_NOERROR;
+        *value = GMT->session.d_NaN;
+	}
+    else {
+		GMT_Report(GMT, GMT_MSG_ERROR, "Cannot convert %s to floating point as it contains invalid characters (%s).\n", text, endptr);
+        error = GMT_PARSE_ERROR;
+    }
+    return (error);
+}
+
 /*! . */
 bool gmt_not_numeric (struct GMT_CTRL *GMT, char *text) {
 	/* true if text cannot represent a valid number  However,
