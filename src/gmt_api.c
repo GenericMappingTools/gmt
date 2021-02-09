@@ -14042,6 +14042,7 @@ void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out
 					API->error = GMT_NOT_A_VALID_FAMILY;
 					break;
 			}
+			break;
 		case GMT_IS_GRID:
 			switch (family_out) {
 				case GMT_IS_MATRIX:
