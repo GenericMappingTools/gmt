@@ -4014,7 +4014,7 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 		file, varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9], varnm[10],
 		varnm[11], varnm[12], varnm[13], varnm[14], varnm[15], varnm[16], varnm[17], varnm[18], varnm[19]) - 1;
 	if (gmt_getdatapath (GMT, file, path, R_OK) == NULL) return (NULL);	/* No such file */
-	if (nc_open (path, NC_NOWRITE, &GMT->current.io.ncid)) return (NULL);
+	if (gmt_nc_open (GMT, path, NC_NOWRITE, &GMT->current.io.ncid)) return (NULL);
 	pstr = strrchr (filename, ',');
 	qstr = strchr (filename, '?');
 
@@ -4409,7 +4409,7 @@ int gmt_fclose (struct GMT_CTRL *GMT, FILE *stream) {
 	if (stream == GMT->session.std[GMT_ERR]) return (0);
 	if ((size_t)stream == (size_t)-GMT->current.io.ncid) {
 		/* Special treatment for netCDF files */
-		nc_close (GMT->current.io.ncid);
+		gmt_nc_close (GMT, GMT->current.io.ncid);
 		gmt_M_free (GMT, GMT->current.io.grpid);
 		gmt_M_free (GMT, GMT->current.io.varid);
 		gmt_M_free (GMT, GMT->current.io.add_offset);

@@ -2299,13 +2299,13 @@ GMT_LOCAL int gmtapi_open_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID
 	if (R->open) return (GMT_NOERROR);	/* Already set the first time */
 	fmt = GMT->session.grdformat[G->header->type];
 	if (fmt[0] == 'c') {		/* Open netCDF file, old format */
-		gmt_M_err_trap (nc_open (HH->name, cdf_mode[r_w], &R->fid));
+		gmt_M_err_trap (gmt_nc_open (GMT, HH->name, cdf_mode[r_w], &R->fid));
 		R->edge[0] = G->header->n_columns;
 		R->start[0] = 0;
 		R->start[1] = 0;
 	}
 	else if (fmt[0] == 'n') {	/* Open netCDF file, COARDS-compliant format */
-		gmt_M_err_trap (nc_open (HH->name, cdf_mode[r_w], &R->fid));
+		gmt_M_err_trap (gmt_nc_open (GMT, HH->name, cdf_mode[r_w], &R->fid));
 		R->edge[0] = 1;
 		R->edge[1] = G->header->n_columns;
 		R->start[0] = HH->row_order == k_nc_start_north ? 0 : G->header->n_rows-1;
@@ -7727,7 +7727,7 @@ void gmtlib_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	struct GMT_GRID_ROWBYROW *R = gmtapi_get_rbr_ptr (GH->extra);	/* Shorthand to row-by-row book-keeping structure */
 	gmt_M_free (GMT, R->v_row);
 	if (GMT->session.grdformat[G->header->type][0] == 'c' || GMT->session.grdformat[G->header->type][0] == 'n')
-		nc_close (R->fid);
+		gmt_nc_close (GMT, R->fid);
 	else
 		gmt_fclose (GMT, R->fp);
 	gmt_M_free (GMT, GH->extra);
@@ -14042,6 +14042,7 @@ void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out
 					API->error = GMT_NOT_A_VALID_FAMILY;
 					break;
 			}
+			break;
 		case GMT_IS_GRID:
 			switch (family_out) {
 				case GMT_IS_MATRIX:

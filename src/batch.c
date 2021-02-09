@@ -923,7 +923,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			n_cores_unused++;		/* Free up the core */
 			percent = 100.0 * n_jobs_completed / n_jobs;
 			(void) gmt_remove_file (GMT, completion_file);	/* Delete the completion file */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Job %*.*d of %d completed [%5.1f %%]\n", precision, precision, k, n_jobs, percent);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Job %*.*d of %d completed [%5.1f %%]\n", precision, precision, k+1, n_jobs, percent);
 		}
 		/* Adjust first_job, if needed */
 		while (first_job < n_jobs && status[first_job].completed) first_job++;
