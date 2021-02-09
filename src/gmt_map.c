@@ -2488,7 +2488,7 @@ GMT_LOCAL double gmtmap_az_backaz_vincenty (struct GMT_CTRL *GMT, double lonE, d
 	} while (fabs (d - x) > VINCENTY_EPS && n_iter <= VINCENTY_MAX_ITER);
 	if (n_iter > VINCENTY_MAX_ITER) {
 		GMT->current.proj.n_geodesic_approx++;	/* Count inaccurate results */
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
+		if (GMT->current.proj.n_geodesic_approx == 1) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "At least one near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
 	}
 	GMT->current.proj.n_geodesic_calls++;
 	/* To give the same sense of results as all other codes, we must basically swap baz and faz; here done in the ? test */
@@ -2590,8 +2590,10 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 	GMT->current.proj.xyz_pos[GMT_Y] = (GMT->current.proj.scale[GMT_Y] >= 0.0);	/* False if user wants y to increase down */
 	switch ( (GMT->current.proj.xyz_projection[GMT_X]%3)) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
-			if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_X] != GMT_TIME)
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -JX|x: Your x-column contains absolute time but -JX|x...T was not specified!\n");
+			if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_X] != GMT_TIME) {
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Option -JX|x: Your x-column contains absolute time but -JX|x...T was not specified!\n");
+				GMT->current.proj.xyz_projection[GMT_X] = GMT_TIME;
+			}
 			GMT->current.proj.fwd_x = ((gmt_M_x_is_lon (GMT, GMT_IN)) ? &gmtproj_translind  : &gmtlib_translin);
 			GMT->current.proj.inv_x = ((gmt_M_x_is_lon (GMT, GMT_IN)) ? &gmtproj_itranslind : &gmtlib_itranslin);
 			if (GMT->current.proj.xyz_pos[GMT_X]) {
@@ -2625,8 +2627,10 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 	}
 	switch (GMT->current.proj.xyz_projection[GMT_Y]%3) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
-			if (gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_Y] != GMT_TIME)
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -JX|x:  Your y-column contains absolute time but -JX|x...T was not specified!\n");
+			if (gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_Y] != GMT_TIME) {
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Option -JX|x:  Your y-column contains absolute time but -JX|x...T was not specified!\n");
+				GMT->current.proj.xyz_projection[GMT_Y] = GMT_TIME;
+			}
 			GMT->current.proj.fwd_y = ((gmt_M_y_is_lon (GMT, GMT_IN)) ? &gmtproj_translind  : &gmtlib_translin);
 			GMT->current.proj.inv_y = ((gmt_M_y_is_lon (GMT, GMT_IN)) ? &gmtproj_itranslind : &gmtlib_itranslin);
 			if (GMT->current.proj.xyz_pos[GMT_Y]) {
@@ -5582,7 +5586,7 @@ GMT_LOCAL double gmtmap_vincenty_dist_meter (struct GMT_CTRL *GMT, double lonS, 
 	} while (fabs (d - x) > VINCENTY_EPS && n_iter <= 50);
 	if (n_iter > VINCENTY_MAX_ITER) {
 		GMT->current.proj.n_geodesic_approx++;	/* Count inaccurate results */
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
+		if (GMT->current.proj.n_geodesic_approx == 1) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "At least one near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
 		s = M_PI;
 	}
 	else {
@@ -5592,7 +5596,8 @@ GMT_LOCAL double gmtmap_vincenty_dist_meter (struct GMT_CTRL *GMT, double lonS, 
 		d = (x * 0.375 * x - 1.0) * x;
 		s = ((((sy * sy * 4.0 - 3.0) * (1.0 - e - e) * cz * d / 6.0 - e * cy) * d / 4.0 + cz) * sy * d + y) * c * r;
 		if (s > M_PI) {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
+			GMT->current.proj.n_geodesic_approx++;	/* Count inaccurate results */
+			if (GMT->current.proj.n_geodesic_approx == 1) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "At least one near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
 			s = M_PI;
 		}
 	}
@@ -6714,6 +6719,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 		if (unit == 'O' && d == 12.0) d = 1.0, f /= 12.0, unit = 'Y';
 		if (unit == 'H' && d == 24.0) d = 1.0, f /= 24.0, unit = 'D';
 		sunit[0] = unit;	/* Since we need a string in strcat */
+		A->type = GMT_TIME;
 	}
 
 	/* Set annotation/major tick interval */

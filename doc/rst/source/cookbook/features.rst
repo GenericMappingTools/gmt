@@ -629,7 +629,7 @@ option argument, with commas separating the given attributes, e.g.,
     you zoom in on the feature in a display, the line thickness stays
     at the minimum. Finally, a few predefined
     pen names can be used: default, faint, and {thin, thick,
-    fat}[er\|\ est], and obese. Table :ref:`pennames <tbl-pennames>` shows this
+    fat}[er\|\ est], and wide. Table :ref:`pennames <tbl-pennames>` shows this
     list and the corresponding pen widths.
 
 .. _tbl-pennames:
@@ -646,7 +646,7 @@ option argument, with commas separating the given attributes, e.g.,
     +------------+---------+------------+--------+
     | thin       | 0.75p   | fattest    | 10p    |
     +------------+---------+------------+--------+
-    | thick      | 1.0p    | obese      | 18p    |
+    | thick      | 1.0p    | wide       | 18p    |
     +------------+---------+------------+--------+
 
 .. _color_attrib:
