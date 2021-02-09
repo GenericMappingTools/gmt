@@ -396,16 +396,17 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	unsigned int n_values = 0, n_jobs = 0, job, i_job, col, k, n_cores_unused, n_to_run;
 	unsigned int n_jobs_not_started = 0, n_jobs_completed = 0, first_job = 0, data_job;
 
-	bool done = false, n_written = false, has_text = false, is_classic = false;
+	bool done = false, n_written = false, has_text = false, is_classic = false, has_conf = false;
 
 	static char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, var_token[4] = "$$%";
 	static char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
 	static char *mvfile[3] = {"mv -f", "mv -f", "move /Y"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
 	static char *createfile[3] = {"touch", "touch", "copy /b NUL"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
+	static char *cpconf[3] = {"cp -f %s .", "cp -f %s .", "copy %s ."};
 
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""};
-	char string[GMT_LEN128] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
+	char string[GMT_LEN128] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""}, conf_file[PATH_MAX];
 	char completion_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""};
 
 	double percent = 0.0;
@@ -482,6 +483,12 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 	gmt_replace_backslash_in_path (topdir);
+
+	if (!access ("gmt.conf", R_OK)) {	/* User has a gmt.conf file in the top directory that needs to be shared with the jobs */
+		has_conf = true;
+		sprintf (conf_file, "%s/gmt.conf", topdir);
+		gmt_replace_backslash_in_path (conf_file);
+	}
 
 	/* Create a working directory which will house every local file and all subdirectories created */
 	if (gmt_mkdir (workdir)) {
@@ -570,6 +577,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[BATCH_PREFLIGHT].fp)) {	/* Read the preflight script and copy to the temporary preflight script with some exceptions */
 			if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert the DIR_DATA statement */
 				fprintf (fp, "%s", line);
+				if (has_conf) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
 				fprintf (fp, "\tgmt set DIR_DATA \"%s\"\n", datadir);
 			}
 			else if (!strstr (line, "#!/"))	 {	/* Skip any leading shell incantation since already placed by gmt_set_script */
@@ -705,6 +713,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[BATCH_POSTFLIGHT].fp)) {	/* Read the postflight script and copy to the temporary postflight script with some exceptions */
 			if (gmt_is_gmtmodule (line, "begin")) {
 				fprintf (fp, "%s", line);	/* Allow args since the script may make a plot */
+				if (has_conf) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
 				fprintf (fp, "\tgmt set DIR_DATA \"%s\"\n", datadir);
 			}
 			else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
@@ -794,6 +803,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the main script and copy to loop script, with some exceptions */
 		if (gmt_is_gmtmodule (line, "begin")) {	/* Must insert DIR_DATA setting */
 			fprintf (fp, "%s", line);
+			if (has_conf) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
 			fprintf (fp, "\tgmt set DIR_DATA \"%s\"\n", datadir);
 		}
 		else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
