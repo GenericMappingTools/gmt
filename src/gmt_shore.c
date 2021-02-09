@@ -575,7 +575,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		gmt_M_memset (c, 1, struct GMT_SHORE);
 
 	/* Open shoreline file */
-	gmt_M_err_trap (nc_open (path, NC_NOWRITE, &c->cdfid));
+	gmt_M_err_trap (gmt_nc_open (GMT, path, NC_NOWRITE, &c->cdfid));
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "NetCDF Library Version: %s\n", nc_inq_libvers());
 
@@ -999,7 +999,7 @@ int gmt_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, d
 	if (!gmtshore_getpathname (GMT, stem, path, true, true))
 		return (GMT_GRDIO_FILE_NOT_FOUND); /* Failed to find file */
 
-	gmt_M_err_trap (nc_open (path, NC_NOWRITE, &c->cdfid));
+	gmt_M_err_trap (gmt_nc_open (GMT, path, NC_NOWRITE, &c->cdfid));
 
 	/* Get all id tags */
 	gmt_M_err_trap (nc_inq_varid (c->cdfid, "Bin_size_in_minutes", &c->bin_size_id));
@@ -1511,14 +1511,14 @@ void gmt_shore_cleanup (struct GMT_CTRL *GMT, struct GMT_SHORE *c) {
 	gmt_M_free (GMT, c->GSHHS_area_fraction);
 	if (c->min_area > 0.0) gmt_M_free (GMT, c->GSHHS_node);
 	gmt_M_free (GMT, c->GSHHS_parent);
-	nc_close (c->cdfid);
+	gmt_nc_close (GMT, c->cdfid);
 }
 
 void gmt_br_cleanup (struct GMT_CTRL *GMT, struct GMT_BR *c) {
 	gmt_M_free (GMT, c->bins);
 	gmt_M_free (GMT, c->bin_nseg);
 	gmt_M_free (GMT, c->bin_firstseg);
-	nc_close (c->cdfid);
+	gmt_nc_close (GMT, c->cdfid);
 }
 
 int gmt_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old, unsigned int np, bool sample, double step, int anti_bin) {
