@@ -1472,7 +1472,7 @@ int gmt_nc_create (struct GMT_CTRL *GMT, char *path, int mode, int *id) {
 }
 
 int gmt_nc_open (struct GMT_CTRL *GMT, char *path, int mode, int *id) {
-	int err = nc_open (path, NC_WRITE, id);	/* Open the file, return error code */
+	int err = nc_open (path, mode, id);	/* Open the file, return error code */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Calling nc_open on %s, ncid = %d, err = %d\n", path, *id, err);
 	return err;	/* Open the file, return error code */
 }
