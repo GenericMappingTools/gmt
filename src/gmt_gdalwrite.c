@@ -583,9 +583,9 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 
 	if (!prhs->H.active && gmt_strlcmp(pszFormat,"netCDF")) { /* Change some attributes written by GDAL (not finished) */
 		int ncid;
-		error = nc_open (fname, NC_WRITE, &ncid);
+		error = gmt_nc_open (GMT, fname, NC_WRITE, &ncid);
 		error += nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(prhs->command), prhs->command);
-		error += nc_close (ncid);
+		error += gmt_nc_close (GMT, ncid);
 		if (error) GMT_Report(GMT->parent,GMT_MSG_ERROR,"Error adding history: %d\n", error);
 	}
 
