@@ -4667,7 +4667,7 @@ GMT_LOCAL void gmtio_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATA
 		if (GMT->current.io.col_type[GMT_OUT][col] != GMT_IS_ABSTIME) continue;	/* Not an abstime column */
 		for (row = 0; row < MIN (S->n_rows, 20); row++) {	/* Maximum 20 rows are examined */
 			sub = S->data[col][row] - floor (S->data[col][row]);	/* Fractional second */
-            if (sub > sub_max) sub_max = sub;
+			if (sub > sub_max) sub_max = sub;
 			if (gmt_M_is_zero (sub)) continue;	/* Not checking zeros for width */
 			if ((this_w = gmtio_get_precision_width (GMT, sub)) > w_max)
 				w_max = this_w;
