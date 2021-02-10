@@ -16,7 +16,7 @@ Synopsis
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [*out*/*in*] ]
-[ |-C|\ [**c**\|\ **d**\|\ **g**\|\ **p**] ]
+[ |-C|\ [**c**\|\ **d**\|\ **g**\|\ **op**\|\ **p**] ]
 [ |-D|\ *unit* ]
 [ |-E| ]
 [ |-F|\ [*flattening*] ]
@@ -43,7 +43,7 @@ Description
 
 **grdseamount** will compute the combined shape of multiple synthetic seamounts given their individual shape
 parameters.  We read from *table* (or stdin) a list of seamount locations and sizes and can evaluate either
-Gaussian, parabolic, conical, or disc shapes, which may be circular or elliptical, and optionally truncated.
+Gaussian, parabolic, conical, polynomial or disc shapes, which may be circular or elliptical, and optionally truncated.
 Various scaling options are available to modify the result, including an option to add in
 a background depth (more complicated backgrounds may be added via :doc:`grdmath </grdmath>`).
 The input must contain *lon*, *lat*, *radius*, *height* for each seamount.
@@ -81,12 +81,13 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**c**\|\ **d**\|\ **g**\|\ **p**]
+**-C**\ [**c**\|\ **d**\|\ **g**\|\ **o**\|\ **p**]
     Select seamount shape function: choose among **c** (cone), **d** (disc), **g** (Gaussian)
-    and **p** (parabolic) shape [Default is Gaussian].  All but the disc can furthermore
-    be truncated via a flattening parameter *f* set by **-F**.  If **-C** is not given any
+    **o** (polynomial) and **p** (parabolic) shape [Default is Gaussian].  All but the disc can
+    furthermore be truncated via a flattening parameter *f* set by **-F**.  If **-C** is not given any
     argument then we will read the shape code from the last input column.  If **-C** is not given
-    at all then we default to Gaussian shapes [**g**].
+    at all then we default to Gaussian shapes [**g**].  **Note**: The polynomial used gives an amplitude
+    for a normal radius *r* that is given by :math:`h(r) = \frac{(1+r)^3(1-r)^3)}{1+r^3}`.
 
 .. figure:: /_images/GMT_seamount_types.*
    :width: 500 px
