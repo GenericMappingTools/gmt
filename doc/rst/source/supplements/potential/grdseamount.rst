@@ -16,7 +16,7 @@ Synopsis
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [*out*/*in*] ]
-[ |-C|\ [**c**\|\ **d**\|\ **g**\|\ **op**\|\ **p**] ]
+[ |-C|\ [**c**\|\ **d**\|\ **g**\|\ **o**\|\ **p**] ]
 [ |-D|\ *unit* ]
 [ |-E| ]
 [ |-F|\ [*flattening*] ]
@@ -43,17 +43,18 @@ Description
 
 **grdseamount** will compute the combined shape of multiple synthetic seamounts given their individual shape
 parameters.  We read from *table* (or stdin) a list of seamount locations and sizes and can evaluate either
-Gaussian, parabolic, conical, polynomial or disc shapes, which may be circular or elliptical, and optionally truncated.
-Various scaling options are available to modify the result, including an option to add in
+Gaussian, parabolic, conical, polynomial or disc shapes, which may be circular or elliptical, and optionally
+truncated. Various scaling options are available to modify the result, including an option to add in
 a background depth (more complicated backgrounds may be added via :doc:`grdmath </grdmath>`).
-The input must contain *lon*, *lat*, *radius*, *height* for each seamount.
+The input data must contain *lon*, *lat*, *radius*, *height* for each seamount.
 For elliptical features (**-E**) we expect *lon*, *lat*, *azimuth*, *semi-major*, *semi-minor*,
-*height* instead. If flattening is specified (**-F**) with no value appended
+*height* instead. If flattening is specified (via **-F**) with no value appended
 then a final column with *flattening* is expected (cannot be used for plateaus).
 For temporal evolution of topography the **-T** option may be used, in which case the
 data file must have two final columns with the start and stop time of seamount construction.
 In this case you may choose to write out a cumulative shape or just the increments produced
-by each time step (see **-Q**).
+by each time step (see **-Q**).  Finally, for mixing shapes you can use the trailing text to set
+the shape by using **-C** without an argument.
 
 Required Arguments
 ------------------
@@ -86,8 +87,8 @@ Optional Arguments
     **o** (polynomial) and **p** (parabolic) shape [Default is Gaussian].  All but the disc can
     furthermore be truncated via a flattening parameter *f* set by **-F**.  If **-C** is not given any
     argument then we will read the shape code from the last input column.  If **-C** is not given
-    at all then we default to Gaussian shapes [**g**].  **Note**: The polynomial used gives an amplitude
-    for a normal radius *r* that is given by :math:`h(r) = \frac{(1+r)^3(1-r)^3)}{1+r^3}`.
+    at all then we default to Gaussian shapes [**g**].  **Note**: The polynomial model has an amplitude
+    for a normalized radius *r* that is given by :math:`h(r) = \frac{(1+r)^3(1-r)^3)}{1+r^3}`.
 
 .. figure:: /_images/GMT_seamount_types.*
    :width: 500 px
