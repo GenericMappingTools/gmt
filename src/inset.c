@@ -85,7 +85,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin -D%s |\n\t-D%s\n", name, GMT_INSET_A, GMT_INSET_B);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s] [-M<margins>] [-N] [%s] [%s]\n\n", GMT_PANEL, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n\t[-M<margins>] [-N] [%s] [%s]\n\n", GMT_PANEL, GMT_V_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s end [%s]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
