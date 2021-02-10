@@ -4,10 +4,11 @@ Specifying Color
 *color*
     The *color* of lines, areas and patterns can be specified by a valid
     color name, by a gray shade (in the range 0-255), by a decimal color
-    code (r/g/b, each in range 0-255; h-s-v, ranges 0-360, 0-1, 0-1; or
-    c/m/y/k, each in range 0-1), or by a hexadecimal color code
-    (#rrggbb, as used in HTML). For transparency, append
-    @\ *transparency* in the 0-100 percent range [0 or opaque]
-    (Only visible when PDF or raster format output is selected.).
-    See :doc:`gmtcolors` for more information and a full list of color
-    names.
+    triplet RGB (r/g/b, each in the range 0–255), by hue-saturation-value
+    HSV (h-s-v, with ranges of 0-360, 0-1, 0-1), by cyan/magenta/yellow/black
+    CMYK (c/m/y/k, each in the range 0-1), or by a hexadecimal color code
+    (#rrggbb, as used in HTML). For a transparency effect, append
+    @\ *transparency* in the 0–100 percent range [Default is 0 (opaque)]
+    **Note**: Transparency effects are only visible when PDF or a raster
+    graphics format is selected.  See :doc:`Explanation of color codes in
+    GMT <gmtcolors>` for more information and a full list of color names.
