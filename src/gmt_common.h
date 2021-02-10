@@ -253,6 +253,10 @@ struct GMT_COMMON {
 		unsigned int n_transparencies;	/* How many to read from file if no values given */
 		double value[2];
 	} t;
+	struct w {	/* -w[<col>]y|m|w|d|p<period>[/<phase>] */
+		bool active;
+		char string[GMT_LEN64];
+	} w;
 	struct x {	/* -x[[-]<n>] */
 		bool active;
 		int n_threads;

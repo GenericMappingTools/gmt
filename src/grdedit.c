@@ -39,7 +39,7 @@
 #define THIS_MODULE_PURPOSE	"Modify header or content of a grid"
 #define THIS_MODULE_KEYS	"<G{,ND(,GG}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:JRVbdefhi" GMT_OPT("H")
+#define THIS_MODULE_OPTIONS "-:JRVbdefhiw" GMT_OPT("H")
 
 struct GRDEDIT_CTRL {
 	struct GRDEDIT_In {
@@ -105,7 +105,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A] [-C] [%s]\n", name, GMT_GRDEDIT2D);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E[a|e|h|l|r|t|v]] [-G<outgrid>] [%s] [-L[+n|p]] [-N<table>] [%s] [-S] [-T]\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -136,7 +136,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   This shrinks -R by 0.5*{dx,dy} going from pixel to grid-line registration\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and expands  -R by 0.5*{dx,dy} going from grid-line to pixel registration.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   No grid values will be changed (a non-destructive change to the grid).\n");
-	GMT_Option (API, "V,bi3,di,e,f,h,i.:,.");
+	GMT_Option (API, "V,bi3,di,e,f,h,i,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

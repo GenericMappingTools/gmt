@@ -579,8 +579,12 @@ GMT_LOCAL bool gmtmap_wesn_outside (struct GMT_CTRL *GMT, double lon, double lat
 	 */
 
 	if (GMT->current.map.lon_wrap) {
-		while (lon < GMT->common.R.wesn[XLO] && lon + 360.0 <= GMT->common.R.wesn[XHI]) lon += 360.0;
-		while (lon > GMT->common.R.wesn[XHI] && lon - 360.0 >= GMT->common.R.wesn[XLO]) lon -= 360.0;
+		while (lon < GMT->common.R.wesn[XLO] && (lon + GMT->current.map.lon_wrap_range) <= GMT->common.R.wesn[XHI]) lon += GMT->current.map.lon_wrap_range;
+		while (lon > GMT->common.R.wesn[XHI] && (lon - GMT->current.map.lon_wrap_range) >= GMT->common.R.wesn[XLO]) lon -= GMT->current.map.lon_wrap_range;
+	}
+	else if (GMT->current.map.lat_wrap) {
+		while (lat < GMT->common.R.wesn[YLO] && (lat + GMT->current.map.lon_wrap_range) <= GMT->common.R.wesn[YHI]) lat += GMT->current.map.lon_wrap_range;
+		while (lat > GMT->common.R.wesn[YHI] && (lat - GMT->current.map.lon_wrap_range) >= GMT->common.R.wesn[YLO]) lat -= GMT->current.map.lon_wrap_range;
 	}
 
 	/* Note PW: 8-20-2014: Was GMT_CONV4_LIMIT instead of GMT_CONV8_LIMIT.  Trying the latter */
@@ -723,15 +727,26 @@ GMT_LOCAL unsigned int gmtmap_wesn_crossing (struct GMT_CTRL *GMT, double lon0, 
 	 * This may cause the points to span the eastern boundary */
 
 	if (GMT->current.map.lon_wrap) {
-		while (lon0 < GMT->common.R.wesn[XLO]) lon0 += 360.0;
-		while (lon0 > GMT->common.R.wesn[XHI]) lon0 -= 360.0;
-		while (lon1 < GMT->common.R.wesn[XLO]) lon1 += 360.0;
-		while (lon1 > GMT->common.R.wesn[XHI]) lon1 -= 360.0;
-		if (fabs (lon0 - lon1) <= 180.0) { /* Nothing */ }
+		while (lon0 < GMT->common.R.wesn[XLO]) lon0 += GMT->current.map.lon_wrap_range;
+		while (lon0 > GMT->common.R.wesn[XHI]) lon0 -= GMT->current.map.lon_wrap_range;
+		while (lon1 < GMT->common.R.wesn[XLO]) lon1 += GMT->current.map.lon_wrap_range;
+		while (lon1 > GMT->common.R.wesn[XHI]) lon1 -= GMT->current.map.lon_wrap_range;
+		if (fabs (lon0 - lon1) <= 0.5 * GMT->current.map.lon_wrap_range) { /* Nothing */ }
 		else if (lon0 < lon1)
-			lon0 += 360.0;
+			lon0 += GMT->current.map.lon_wrap_range;
 		else
-			lon1 += 360.0;
+			lon1 += GMT->current.map.lon_wrap_range;
+	}
+	else if (GMT->current.map.lat_wrap) {
+		while (lat0 < GMT->common.R.wesn[YLO]) lat0 += GMT->current.map.lat_wrap_range;
+		while (lat0 > GMT->common.R.wesn[YHI]) lat0 -= GMT->current.map.lat_wrap_range;
+		while (lat1 < GMT->common.R.wesn[YLO]) lat1 += GMT->current.map.lat_wrap_range;
+		while (lat1 > GMT->common.R.wesn[YHI]) lat1 -= GMT->current.map.lat_wrap_range;
+		if (fabs (lat0 - lat1) <= 0.5 * GMT->current.map.lat_wrap_range) { /* Nothing */ }
+		else if (lat0 < lat1)
+			lat0 += GMT->current.map.lat_wrap_range;
+		else
+			lat1 += GMT->current.map.lat_wrap_range;
 	}
 
 	/* Then set 'almost'-corners to corners */
@@ -761,7 +776,10 @@ GMT_LOCAL unsigned int gmtmap_wesn_crossing (struct GMT_CTRL *GMT, double lon0, 
 
 	/* Now adjust the longitudes so that they might span the western boundary */
 	if (GMT->current.map.lon_wrap && MAX(lon0, lon1) > GMT->common.R.wesn[XHI]) {
-		lon0 -= 360.0; lon1 -= 360.0;
+		lon0 -= GMT->current.map.lon_wrap_range; lon1 -= GMT->current.map.lon_wrap_range;
+	}
+	else if (GMT->current.map.lat_wrap && MAX(lat0, lat1) > GMT->common.R.wesn[YHI]) {
+		lat0 -= GMT->current.map.lat_wrap_range; lat1 -= GMT->current.map.lat_wrap_range;
 	}
 
 	/* Crossing North */
@@ -2565,6 +2583,8 @@ GMT_LOCAL void gmtmap_ilinearxy (struct GMT_CTRL *GMT, double *x, double *y, dou
 	(*GMT->current.proj.inv_y) (GMT, y, y_i);
 }
 
+GMT_LOCAL unsigned int gmtmap_wrap_around_check_tm (struct GMT_CTRL *GMT, double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, unsigned int *sides);
+
 /*! . */
 GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 	bool positive;
@@ -2579,8 +2599,19 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.proj.central_meridian = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 		GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	}
-	else
+	else if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && GMT->current.io.cycle_col == GMT_X) {
+		GMT->current.map.lon_wrap_range = GMT->current.io.cycle_range;
+		GMT->current.map.is_world = doubleAlmostEqual (fabs(GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]), GMT->current.io.cycle_range);
+		GMT->current.map.lat_wrap = false;
+	}
+	else if (gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_ABSTIME && GMT->current.io.cycle_col == GMT_Y) {
+		GMT->current.map.lat_wrap_range = GMT->current.io.cycle_range;
+		GMT->current.map.is_world = doubleAlmostEqual (fabs(GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]), GMT->current.io.cycle_range);
+		GMT->current.map.wrap_around_check = &gmtmap_wrap_around_check_tm;
 		GMT->current.map.lon_wrap = false;
+	}
+	else
+		GMT->current.map.lon_wrap = GMT->current.map.lat_wrap = false;
 	if (gmt_M_y_is_lon (GMT, GMT_IN)) {	/* y is longitude */
 		GMT->current.proj.central_meridian = 0.5 * (GMT->common.R.wesn[YLO] + GMT->common.R.wesn[YHI]);
 	}
@@ -2590,7 +2621,7 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 	GMT->current.proj.xyz_pos[GMT_Y] = (GMT->current.proj.scale[GMT_Y] >= 0.0);	/* False if user wants y to increase down */
 	switch ( (GMT->current.proj.xyz_projection[GMT_X]%3)) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
-			if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_X] != GMT_TIME) {
+			if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_X] != GMT_TIME && !GMT->current.io.cycle_operator) {
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Option -JX|x: Your x-column contains absolute time but -JX|x...T was not specified!\n");
 				GMT->current.proj.xyz_projection[GMT_X] = GMT_TIME;
 			}
@@ -2627,7 +2658,7 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 	}
 	switch (GMT->current.proj.xyz_projection[GMT_Y]%3) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
-			if (gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_Y] != GMT_TIME) {
+			if (gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_Y] != GMT_TIME && !GMT->current.io.cycle_operator) {
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Option -JX|x:  Your y-column contains absolute time but -JX|x...T was not specified!\n");
 				GMT->current.proj.xyz_projection[GMT_Y] = GMT_TIME;
 			}
@@ -6650,7 +6681,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 
 	if (A->special == GMT_CUSTOM) return;	/* Got custom annotation/tick information via user file */
 	if (A->type == GMT_LOG10 || A->type == GMT_POW) return;	/* These axes still needs to have automatic selections implemented */
-
+	if (GMT->current.io.cycle_operator) is_time = false;	/* This axis is time, but now wrapped so treated differently */
 	if (!(A->item[item].active && A->item[item].interval == 0.0) &&
 		!(A->item[item+2].active && A->item[item+2].interval == 0.0) &&
 		!(A->item[item+4].active && A->item[item+4].interval == 0.0)) return;
@@ -6679,6 +6710,27 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	/* Now determine 'round' major and minor tick intervals */
 	if (gmt_M_axis_is_geo (GMT, axis))	/* Geographical coordinate */
 		p = (d < GMT_MIN2DEG) ? GMT_SEC2DEG : (d < 1.0) ? GMT_MIN2DEG : 1.0;
+	else if (GMT->current.io.cycle_col == axis && GMT->current.io.cycle_operator != GMT_CYCLE_CUSTOM) {
+		switch (GMT->current.io.cycle_operator) {
+			case GMT_CYCLE_MIN: case GMT_CYCLE_HOUR:	/* With a range of 60 it behaves like geo */
+				p = (d < GMT_MIN2DEG) ? GMT_SEC2DEG : (d < 1.0) ? GMT_MIN2DEG : 1.0;
+				break;
+			case GMT_CYCLE_DAY:	/* With a range of 24 */
+				p = (d < 1.0) ? GMT_HR2DAY : 1.0;
+				maj = Hmaj; sub = Hsub; n = 3;
+				break;
+			case GMT_CYCLE_ANNUAL:	/* 12 months */
+				p = 1.0;
+				maj = Omaj; sub = Osub; n = 1;
+				break;
+			case GMT_CYCLE_WEEK:	/* Need individual days here */
+				d = p = f = 1.0;	n = 0;
+				break;
+			default:	/* This is the normalized ones which we treat like general linear axis */
+				p = pow (10.0, floor (log10 (d)));
+				break;
+		}
+	}
 	else if (is_time)	/* Time axis coordinate, get p in seconds and the unit it represents */
 		p = gmtmap_auto_time_increment (d, &unit);
 	else	/* General (linear) axis */
@@ -6713,8 +6765,10 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 
 		interval = (unit == 'Y' || unit == 'O' || unit == 'D');
 	}
-	while (i < n && maj[i] < d) i++;	/* Wind up to largest reasonable interval */
-	d = maj[i] * p, f = sub[i] * p;		/* Scale up intervals in multiple of unit */
+	if (n) {
+		while (i < n && maj[i] < d) i++;	/* Wind up to largest reasonable interval */
+		d = maj[i] * p, f = sub[i] * p;		/* Scale up intervals in multiple of unit */
+	}
 	if (is_time) {	/* Last check to change a 12 month unit to 1 year and 24 hours to 1 day */
 		if (unit == 'O' && d == 12.0) d = 1.0, f /= 12.0, unit = 'Y';
 		if (unit == 'H' && d == 24.0) d = 1.0, f /= 24.0, unit = 'D';
@@ -9349,6 +9403,8 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	GMT->current.map.get_crossings = &gmtmap_get_crossings_x;
 
 	GMT->current.map.lon_wrap = true;
+	GMT->current.map.lat_wrap = false;
+	GMT->current.map.lon_wrap_range = 360.0;
 
 	switch (GMT->current.proj.projection) {
 

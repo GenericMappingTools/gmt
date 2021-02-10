@@ -1073,5 +1073,38 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 	if (n_errors) return_error (API, GMT_PARSE_ERROR);	/* One or more options failed to parse */
 	if (gmt_M_is_geographic (API->GMT, GMT_IN)) API->GMT->current.io.warn_geo_as_cartesion = false;	/* Don't need this warning */
 
+	if (API->GMT->current.io.cycle_col != GMT_NOTSET) {
+		unsigned int k = 2 * API->GMT->current.io.cycle_col;
+		API->GMT->current.io.cycle_min = API->GMT->common.R.wesn[k];
+		API->GMT->current.io.cycle_max = API->GMT->common.R.wesn[k+1];
+		switch (API->GMT->current.io.cycle_operator) {
+			case GMT_CYCLE_SEC:	/* Return 0.000-0.999999 second */
+				API->GMT->current.io.cycle_range = 1.0;
+				break;
+			case GMT_CYCLE_MIN:	/* Return 0.000-59.999999 seconds */
+				API->GMT->current.io.cycle_range = GMT_MIN2SEC_F;
+				break;
+			case GMT_CYCLE_HOUR:	/* Return 0.000-59.999999 minutes */
+				API->GMT->current.io.cycle_range = GMT_HR2MIN_F;
+				break;
+			case GMT_CYCLE_DAY:	/* Return 0.000-23.999999 hours */
+				API->GMT->current.io.cycle_range = GMT_DAY2HR_F;
+				break;
+			case GMT_CYCLE_WEEK:	/* Return 0.00000-6.9999999 days */
+				API->GMT->current.io.cycle_range = GMT_WEEK2DAY_F;
+				API->GMT->current.io.cycle_interval = true;
+				break;
+			case GMT_CYCLE_ANNUAL:	/* Return 0.000000-11.999999 months */
+				API->GMT->current.io.cycle_range = 12.0;
+				API->GMT->current.io.cycle_interval = true;
+				break;
+			case GMT_CYCLE_YEAR:	/* Return 0.00000-0.99999999 years */
+				API->GMT->current.io.cycle_range = 1.0;
+				break;
+			case GMT_CYCLE_CUSTOM:	/* Return 0.00000-0.99999999 custom cycle */
+				API->GMT->current.io.cycle_range = 1.0;
+				break;
+		}
+	}
 	return (GMT_OK);
 }

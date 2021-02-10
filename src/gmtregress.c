@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Linear regression of 1-D data sets"
 #define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vabdefghioqs"
+#define THIS_MODULE_OPTIONS "-:>Vabdefghioqsw"
 
 /* Various integer constants for flags and modes */
 
@@ -143,7 +143,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[<min>/<max>/<inc>]+f[n|p]] [-C<level>] [-Ex|y|o|r] [-F<flags>] [-N1|2|r|w]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[r]] [-T[<min>/<max>/]<inc>[+i|n] [%s] [-W[w][x][y][r]] [-Z<limit>] [%s]\n", GMT_V_OPT, GMT_a_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_w_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -197,7 +197,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Except for -N1 we square the weights when computing misfits.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set z-score absolute value cutoff for outlier detection [%g].\n", GMTREGRESS_ZSCORE_LIMIT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   To only flag negative or positive outliers, specify a leading sign.\n");
-	GMT_Option (API, "a,bi,bo,d,e,g,h,i,o,q,.");
+	GMT_Option (API, "a,bi,bo,d,e,g,h,i,o,q,w,.");
 
 	return (GMT_MODULE_USAGE);
 }
