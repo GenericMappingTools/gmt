@@ -1818,7 +1818,7 @@ GMT_LOCAL void gmtsupport_line_angle_ave (struct GMT_CTRL *GMT, double x[], doub
 	else if (sum_x2 < GMT_CONV8_LIMIT)	/* Line is vertical */
 		L->line_angle = (directed && sum_y < 0.0) ? -90.0 : 90.0;
 	else {	/* Least-squares fit of slope */
-		L->line_angle = (gmt_M_is_zero (sum_xy)) ? 90.0 : d_atan2d (sum_xy, sum_x2);
+		L->line_angle = d_atan2d (sum_xy, sum_x2);
 		if (directed && !(gmt_M_is_zero (sum_x) && gmt_M_is_zero (sum_y))) {
 			/* If the line_angle points more or less in the opposite direction as indicated by
 			 * sum_x and sum_y we add 180 to it */
