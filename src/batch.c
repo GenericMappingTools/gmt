@@ -579,8 +579,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				fprintf (fp, "\tgmt set DIR_DATA \"%s\"\n", datadir);
 			}
 			else if (!strstr (line, "#!/"))	 {	/* Skip any leading shell incantation since already placed by gmt_set_script */
-				if (gmt_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script since we are running these in batch */
-				else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
 			rec++;
