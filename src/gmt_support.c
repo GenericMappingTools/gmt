@@ -937,12 +937,12 @@ int gmt_getfonttype (struct GMT_CTRL *GMT, char *name) {
 
 	if (!name[0]) return (-1);
 	if (!isdigit ((unsigned char) name[0])) {	/* Does not start with number. Try font name */
-		int ret = -1;
+		int ret = GMT_NOTSET;
 		for (i = 0; i < GMT->session.n_fonts && strcmp (name, GMT->session.font[i].name); i++);
 		if (i < GMT->session.n_fonts) ret = i;
 		return (ret);
 	}
-	if (!isdigit ((unsigned char) name[strlen(name)-1])) return (-1);	/* Starts with digit, ends with something else: cannot be */
+	if (!isdigit ((unsigned char) name[strlen(name)-1])) return (GMT_NOTSET);	/* Starts with digit, ends with something else: cannot be */
 	return (atoi (name));
 }
 
@@ -966,7 +966,9 @@ GMT_LOCAL int gmtsupport_name2pen (char *name) {
 
 	strncpy (Lname, name, GMT_LEN64-1);
 	gmt_str_tolower (Lname);
-	for (i = 0, k = -1; k < 0 && i < GMT_N_PEN_NAMES; i++) if (!strcmp (Lname, GMT_penname[i].name)) k = i;
+	for (i = 0, k = GMT_NOTSET; k < 0 && i < GMT_N_PEN_NAMES; i++) if (!strcmp (Lname, GMT_penname[i].name)) k = i;
+	/* Backwards compatibility for old, inappropriate input pen name "obese" */
+	if (k == GMT_NOTSET && !strcmp (Lname, "obese")) k = GMT_N_PEN_NAMES - 1;
 
 	return (k);
 }
@@ -977,7 +979,7 @@ GMT_LOCAL int gmtsupport_pen2name (double width) {
 
 	int i, k;
 
-	for (i = 0, k = -1; k < 0 && i < GMT_N_PEN_NAMES; i++) if (gmt_M_eq (width, GMT_penname[i].width)) k = i;
+	for (i = 0, k = GMT_NOTSET; k < 0 && i < GMT_N_PEN_NAMES; i++) if (gmt_M_eq (width, GMT_penname[i].width)) k = i;
 
 	return (k);
 }
