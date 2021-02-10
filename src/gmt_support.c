@@ -14710,7 +14710,7 @@ unsigned int gmtlib_time_array (struct GMT_CTRL *GMT, double min, double max, st
 	if (!T->active) return (0);
 	interval = (T->type == 'i' || T->type == 'I');	/* Only true for i/I axis items */
 	if (T->unit == 's' && T->interval <= 1.0)
-		n = (unsigned int)  gmtlib_linear_array (GMT, min, max, T->interval, 0.0, array);
+		n = gmtlib_linear_array (GMT, min, max, T->interval, 0.0, array);
 	else
 		n = (unsigned int)gmtsupport_time_array (GMT, min, max, T->interval, T->unit, interval, array);
 
