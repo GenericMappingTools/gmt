@@ -828,14 +828,14 @@ GMT_LOCAL void gmtplot_timey_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 	unsigned int ny;
 	double *y = NULL;
 
-	if (gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_RELTIME) {	/* Works like Cartesian */
-		gmtplot_lineary_grid (GMT, PSL, w, e, s, n, GMT->current.map.frame.axis[GMT_Y].item[item].interval);
-	}
-	else {
+//	if (gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_RELTIME) {	/* Works like Cartesian */
+//		gmtplot_lineary_grid (GMT, PSL, w, e, s, n, GMT->current.map.frame.axis[GMT_Y].item[item].interval);
+//	}
+//	else {
 		ny = gmtlib_time_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item], &y);
 		gmtplot_y_grid (GMT, PSL, w, e, y, ny);
 		if (y) gmt_M_free (GMT, y);
-	}
+//	}
 }
 
 GMT_LOCAL void gmtplot_logx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
