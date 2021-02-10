@@ -343,17 +343,17 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 	}
 
 	if (Ctrl->C.mode == SHAPE_POLY) {	/* A few things area not yet implemented */
-		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active, "The -F for polynomial seamounts is not implemented yet\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->L.active, "The -L for polynomial seamounts is not implemented yet\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active, "The -Q for polynomial seamounts is not implemented yet\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == SHAPE_DISC && Ctrl->F.active, "Cannot specify -F for discs; ignored\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->N.active || Ctrl->Z.active || Ctrl->L.active || Ctrl->T.active), "Option -A: Cannot use -L, -N, -T or -Z with -A\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Option -G: Must specify output file or template\n");
+	if (!Ctrl->L.active)  {
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
+		n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Option -G: Must specify output file or template\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'), "Option -G: Filename template must contain format specifier when -T is used\n");
+	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Q.bmode == SMT_INCREMENTAL, "Option -Z: Cannot be used with -Qi\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'), "Option -G: Filename template must contain format specifier when -T is used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Option -M: Requires time information via -T\n");
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time */
@@ -427,13 +427,47 @@ GMT_LOCAL double poly_smt_func (double r) {
 	return (pow ((1.0 + r) * (1.0 - r), 3.0) / (1.0 + pow (r, 3.0)));
 }
 
+GMT_LOCAL double ddr_poly_smt_func (double r) {
+	/* Radial derivative of polynomial radial function similar to a Gaussian */
+	double r2 = r * r;
+	return (-(3.0 * r * pow (r - 1.0, 2.0) * (r2 * r + r + 2.0)) / pow (r2 - r + 1.0, 2.0));
+}
+
+GMT_LOCAL double poly_smt_rc (double hc) {
+	/* Determine the radius where h(rc) == hc via Newton-Rhapson */
+	unsigned int k = 0;
+	double r0 = 0.5, r1, dr;
+	do {
+		k++;
+    	r1 = r0 - (poly_smt_func (r0) - hc) / ddr_poly_smt_func (r0);
+    	dr = fabs (r1 - r0);
+    	r0 = r1;
+    }
+    while (k < 20 && dr > GMT_CONV12_LIMIT);
+    return (r0);
+}
+
+GMT_LOCAL double poly_smt_vol (double r) {
+	/* Volume of polynomial seamount of unit amplitude */
+	double r2 = r * r, r3 = r2 * r, r5 = r2 * r3, V;
+	V = sqrt (3.0) * atan (sqrt (3.0) * (2.0 * r - 1.0) / 3.0) - 0.5 * (3.0 * log (r2 - r + 1.0)) - 3.0 * r + 0.5 * r2 + r3 - 0.2 * r5;
+	return (V);
+}
+
 GMT_LOCAL void grdseamount_poly_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical parabolic seamounts. */
-	/* NOT IMPLEMENTED YET */
-
-	*A = 0.0;
-	*V = 0.0;
-	*z = 0.0;
+	bool circular = doubleAlmostEqual (a, b);
+	double hstar, r2, r, rc = (hc > 0.0) ? poly_smt_rc (hc / h) : 1.0;	/* Fraction of normalized radius */
+	a *= rc;	b *= rc;	h -= hc;	/* Now just remove the noise floor and shrink a, b, h */
+	r2 = (circular) ? a * a : a * b;
+	r = sqrt (r2);	/* Mean radius */
+	hstar = h / poly_smt_func (f);	/* This is h* in the notes */
+	*A = M_PI * r2;
+	if (fabs (f) > 0.0)	/* Truncated */
+		*V = hstar * poly_smt_vol (r) - (hstar - h) * poly_smt_vol (f*r);
+	else
+		*V = h * poly_smt_vol (r);
+	*z = (*V) / (*A);
 }
 
 GMT_LOCAL double grdseamount_cone_solver (double in[], double f, double v, bool elliptical) {
