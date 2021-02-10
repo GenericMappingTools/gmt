@@ -53,7 +53,7 @@
 #define THIS_MODULE_PURPOSE	"Interpolate using Green's functions for splines in 1-3 dimensions"
 #define THIS_MODULE_KEYS	"<D{,AD(=,ED),ND(,TG(,CD)=f,G?},GDN"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:>Vbdefghioqrs" GMT_OPT("FH") GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-:>Vbdefghioqrsw" GMT_OPT("FH") GMT_ADD_x_OPT
 
 EXTERN_MSC int gmtlib_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *c);
 
@@ -230,8 +230,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[n]<val>[%%][+f<file>][+m|M]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D<information>] [-E[<misfitfile>] [-I<dx>[/<dy>[/<dz>]] [-L] [-N<nodefile>] [-Q<az>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[w]] [-Z<mode>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]%s[%s] [%s]\n\n", GMT_V_OPT,
-		GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[w]] [-Z<mode>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]%s[%s] [%s]\n\n", GMT_V_OPT,
+		GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -305,7 +305,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   For option 3-4, use PROJ_ELLIPSOID to select geodesic or great circle arcs.\n");
 	GMT_Option (API, "V,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2-5 input columns depending on dimensionality (see -Z) and weights (see -W).\n");
-	GMT_Option (API, "d,e,g,h,i,o,q,r,s,x,:,.");
+	GMT_Option (API, "d,e,g,h,i,o,q,r,s,w,x,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

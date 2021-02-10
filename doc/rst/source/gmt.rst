@@ -277,6 +277,8 @@ modules. No space between the option flag and the associated arguments.
 
 .. include:: explain_-t_full.rst_
 
+.. include:: explain_-w_full.rst_
+
 .. include:: explain_core_full.rst_
 
 .. include:: explain_colon_full.rst_

@@ -205,6 +205,8 @@ Optional Arguments
 
 .. include:: explain_-tv_full.rst_
 
+.. include:: explain_-w.rst_
+
 .. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_

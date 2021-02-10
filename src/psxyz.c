@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols in 3-D"
 #define THIS_MODULE_KEYS	"<D{,CC(,T-<,S?(=2,ZD(=,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghilpqtxy" GMT_OPT("EHMmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghilpqtwxy" GMT_OPT("EHMmc")
 
 /* Control structure for psxyz */
 
@@ -155,8 +155,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>][/size_y]] [-T]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	else
 		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>][/size_y]]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", API->P_OPT, GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<value>|<file>[+f|l]] [%s]\n\t[%s] %s[%s] [%s] [%s]\n\t[%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<value>|<file>[+f|l]] [%s]\n\t[%s] %s[%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -302,7 +302,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   For plotting symbols with variable transparency read from file, append no value\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and give the transparency as the last numerical value in the data record.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use the +f and +s modifiers to indicate which one or if we expect one or two transparencies.\n");
-	GMT_Option (API, ":,.");
+	GMT_Option (API, "w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

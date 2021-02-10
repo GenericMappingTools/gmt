@@ -14864,6 +14864,10 @@ bool gmtlib_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_
 	}
 	else if (coord[0] < (min - GMT_CONV8_LIMIT) || coord[0] > (max + GMT_CONV8_LIMIT))		/* Outside axis range */
 		return (true);
+	else if (T->parent == GMT->current.io.cycle_col && GMT->current.io.cycle_interval) {
+		*pos = coord[0] + 0.5;	/* Since we know this only happens for "months" (all same width) or weekdays */
+		if (*pos > max) return (true);
+	}
 	else
 		*pos = coord[0];
 
@@ -14873,13 +14877,33 @@ bool gmtlib_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_
 /*! . */
 int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord) {
 	/* Returns the formatted annotation string for the non-geographic axes */
+	bool upper = false;
+	unsigned int kind = 0, code;
+	int ival;
 
 	switch (GMT->current.map.frame.axis[T->parent].type) {
 		case GMT_LINEAR:
 #if 0
 			GMT_near_zero_roundoff_fixer_upper (&coord, T->parent);	/* Try to adjust those ~0 "gcc -O" values to exact 0 */
 #endif
-			gmt_sprintf_float (GMT, string, format, coord);
+			code = (GMT->current.io.cycle_col == GMT->current.map.frame.axis[T->parent].id) ? GMT->current.io.cycle_operator : 0;
+			switch (code) {	/* Do special treatment for annual and weekly annotations since they are texts but axis is not a time-axis per se... */
+				case GMT_CYCLE_WEEK:		/* Must do days of the week or abbreviation */
+					gmtlib_set_case_and_kind (GMT, GMT->current.setting.format_time[GMT_PRIMARY], &upper, &kind);
+					ival = (irint (coord) + GMT->current.setting.time_week_start + GMT_WEEK2DAY_I) % GMT_WEEK2DAY_I;	/* Wrap around */
+					strncpy (string, GMT->current.language.day_name[kind][ival], GMT_LEN16);
+					if (upper) gmt_str_toupper (string);
+					break;
+				case GMT_CYCLE_ANNUAL:	/* Must write month name or abbreviation */
+					gmtlib_set_case_and_kind (GMT, GMT->current.setting.format_time[GMT_PRIMARY], &upper, &kind);
+					ival = (urint (coord) + 12) % 12;	/* Wrap around */
+					strncpy (string, GMT->current.language.month_name[kind][ival], GMT_LEN16);
+					if (upper) gmt_str_toupper (string);
+					break;
+				default:
+					gmt_sprintf_float (GMT, string, format, coord);
+					break;
+			}
 			break;
 		case GMT_LOG10:
 			sprintf (string, "%ld", lrint (d_log10 (GMT, coord)));

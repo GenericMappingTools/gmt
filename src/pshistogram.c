@@ -30,7 +30,7 @@
 #define THIS_MODULE_PURPOSE	"Calculate and plot histograms"
 #define THIS_MODULE_KEYS	"<D{,CC(,>X},>D),>DI"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhilpqstxy" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhilpqstwxy" GMT_OPT("c")
 
 /* Note: The NEEDS must be JR.  Although pshistogram can create a region from data, it
  * does so indirectly by building the histogram and setting the ymin/ymax that way, NOT by
@@ -530,8 +530,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s -T[<min>/<max>/]<inc>[+i|n] [-A] [%s] [-C<cpt>] [-D[+b][+f<font>][+o<off>][+r]]\n", name, GMT_Jx_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E<width>[+o<offset>]] [-F] [-G<fill>] [-I[o|O]] %s[-Ll|h|b] [-N[<mode>][+p<pen>]] %s%s[-Q[r]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s]\n\t[%s] [-W<pen>] [%s] [%s] [-Z[0-5][+w]]\n", GMT_Rx_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", API->c_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
-		GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
+		GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_w_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -583,7 +583,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   4 - Log10 (1+counts).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   5 - Log10 (1+frequency percent).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to use bin weights in 2nd column rather than counts.\n");
-	GMT_Option (API, "bi2,c,di,e,f,h,i,l,p,qi,s,t,.");
+	GMT_Option (API, "bi2,c,di,e,f,h,i,l,p,qi,s,t,w,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -1224,6 +1224,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		}
 		wesn[XLO] = F.wesn[YLO];	wesn[XHI] = F.wesn[YHI];
 		wesn[YLO] = F.wesn[XLO];	wesn[YHI] = F.wesn[XHI];
+		if (GMT->current.io.cycle_col == GMT_X) GMT->current.io.cycle_col = GMT_Y;
 		gmt_M_memcpy (GMT->common.R.wesn, wesn, 4, double);
 		if (gmt_map_setup (GMT, wesn)) Return (GMT_PROJECTION_ERROR);
 	}
