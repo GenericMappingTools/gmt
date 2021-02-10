@@ -13807,7 +13807,7 @@ unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char option, const char 
 }
 
 /*! . */
-double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T) {
+double gmtlib_get_map_interval (struct GMT_CTRL *GMT, unsigned int type, struct GMT_PLOT_AXIS_ITEM *T) {
 	switch (T->unit) {
 		case 'd':	/* arc Degrees */
 			return (T->interval);
@@ -13822,8 +13822,8 @@ double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM 
 			else
 				return (T->interval);
 			/* Intentionally fall through - to 's' */
-		case 's':	/* arc Seconds */
-			return (T->interval * GMT_SEC2DEG);
+		case 's':	/* arc Seconds or time seconds */
+			return ((type == GMT_TIME) ? T->interval : T->interval * GMT_SEC2DEG);
 			break;
 		default:
 			return (T->interval);
@@ -14709,7 +14709,10 @@ unsigned int gmtlib_time_array (struct GMT_CTRL *GMT, double min, double max, st
 
 	if (!T->active) return (0);
 	interval = (T->type == 'i' || T->type == 'I');	/* Only true for i/I axis items */
-	n = (unsigned int)gmtsupport_time_array (GMT, min, max, T->interval, T->unit, interval, array);
+	if (T->unit == 's' && T->interval <= 1.0)
+		n = gmtlib_linear_array (GMT, min, max, T->interval, 0.0, array);
+	else
+		n = (unsigned int)gmtsupport_time_array (GMT, min, max, T->interval, T->unit, interval, array);
 
 	return (n);
 }
@@ -14804,13 +14807,13 @@ unsigned int gmtlib_coordinate_array (struct GMT_CTRL *GMT, double min, double m
 
 	switch (GMT->current.proj.xyz_projection[T->parent]) {
 		case GMT_LINEAR:
-			n = gmtlib_linear_array (GMT, min, max, gmtlib_get_map_interval (GMT, T), GMT->current.map.frame.axis[T->parent].phase, array);
+			n = gmtlib_linear_array (GMT, min, max, gmtlib_get_map_interval (GMT, GMT_LINEAR, T), GMT->current.map.frame.axis[T->parent].phase, array);
 			break;
 		case GMT_LOG10:
-			n = gmtlib_log_array (GMT, min, max, gmtlib_get_map_interval (GMT, T), array);
+			n = gmtlib_log_array (GMT, min, max, gmtlib_get_map_interval (GMT, GMT_LOG10, T), array);
 			break;
 		case GMT_POW:
-			n = gmtlib_pow_array (GMT, min, max, gmtlib_get_map_interval (GMT, T), T->parent, array);
+			n = gmtlib_pow_array (GMT, min, max, gmtlib_get_map_interval (GMT, GMT_POW, T), T->parent, array);
 			break;
 		case GMT_TIME:
 			n = gmtlib_time_array (GMT, min, max, T, array);

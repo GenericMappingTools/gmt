@@ -158,7 +158,7 @@ EXTERN_MSC int gmtlib_plot_C_format (struct GMT_CTRL *GMT);
 EXTERN_MSC int gmtlib_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_IO *S, unsigned int mode);
 EXTERN_MSC int gmtlib_date_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_DATE_IO *S, unsigned int mode);
 EXTERN_MSC void * gmtlib_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *ncol, int *status);
-EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T);
+EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, unsigned int type, struct GMT_PLOT_AXIS_ITEM *T);
 EXTERN_MSC unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
 EXTERN_MSC int gmtlib_nc_get_att_text (struct GMT_CTRL *GMT, int ncid, int varid, char *name, char *text, size_t textlen);
 EXTERN_MSC int gmtlib_akima (struct GMT_CTRL *GMT, double *x, double *y, uint64_t nx, double *c);
@@ -310,7 +310,7 @@ EXTERN_MSC int gmtlib_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 #define gmt_M_0_255_truncate(s) ((s < 0) ? 0 : ((s > 255) ? 255 : s))	/* Truncate to allowable 0-255 range */
 
 #define gmt_M_axis_is_geo(C,axis) (C->current.io.col_type[GMT_IN][axis] & GMT_IS_GEO)
-#define gmt_M_axis_is_time(C,axis) (C->current.io.col_type[GMT_IN][axis] & GMT_IS_ABSTIME && GMT->current.io.cycle_col != axis)
+#define gmt_M_axis_is_time(C,axis) (C->current.io.col_type[GMT_IN][axis] & GMT_IS_RATIME && GMT->current.io.cycle_col != axis)
 
 #define gmt_M_is_perspective(C) (C->current.proj.projection == GMT_ORTHO || C->current.proj.projection == GMT_GENPER)
 #define gmt_M_pole_is_point(C) ((C->current.proj.projection == GMT_OBLIQUE_MERC || C->current.proj.projection == GMT_OBLIQUE_MERC_POLE) || (C->current.proj.projection >= GMT_LAMBERT && C->current.proj.projection <= GMT_VANGRINTEN && C->current.proj.projection != GMT_POLAR))
