@@ -288,6 +288,7 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 
 EXTERN_MSC void gmt_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t chunk);
 EXTERN_MSC int gmt_get_precision_width (struct GMT_CTRL *GMT, double x);
+EXTERN_MSC int gmt_convert_double (struct GMT_CTRL *GMT, char *text, double *value);
 EXTERN_MSC void gmt_increase_abstime_format_precision (struct GMT_CTRL *GMT, unsigned int col, double dt);
 EXTERN_MSC char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const char *mods);
 EXTERN_MSC void gmt_quit_bad_record (struct GMTAPI_CTRL *API, struct GMT_RECORD *In);

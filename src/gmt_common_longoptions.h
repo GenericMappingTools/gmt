@@ -33,7 +33,8 @@
 	{ ',', 'q', "inrows",        "~",       "invert",                                   "a,c,f,s",   				"perset,column,perfile,persegment"},	/* Actually -qi */
 	{ ',', 'q', "outrows",       "~",       "invert",                                   "a,c,f,s",   				"perset,column,perfile,persegment"},	/* Actually -qo */
 	{   0, 'r', "registration",  "g,p",     "gridline,pixel",                           "",        					""},
-	{   0, 's', "skiprows",      "",       "",                                         "a,r",     					"any,reverse"},
-	{   0, 't', "transparency",  "",        "",                                         "",        					""},
+	{   0, 's', "skiprows",      "",        "",                                         "a,r",     					"any,reverse"},
+	{   0, 't', "transparency",  "",        "",                                         "",        				    ""},
+	{   0, 'w', "wrap",  "a,y,w,d,h,m,s,p", "annual,year,week,day,hour,min,sec,period", "c",        			    "column"},
 	{   0, 'x', "cores",         "",        "",                                         "",        					""},
 	{   0, '\0', "",             "",        "",                                         "",        					""}	/* End of list is marked with empty short-option code and strings */

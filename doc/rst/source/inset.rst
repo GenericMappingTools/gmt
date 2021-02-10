@@ -34,8 +34,8 @@ Description
 The **begin** directive of **inset** defines the dimension and placement of the inset canvas.  It
 records the current region and projection so that we may return to the initial
 plot environment when  the inset is completed.  The user may select any plot region
-and projection once plotting in the inset, but if the first command uses
-? as scale or width then we adjust the scale or width to fill the inset as best
+and projection once plotting in the inset, but if the first command uses a projection
+that leaves off the scale or width then we supply a scale or width to fill the inset as best
 as possible, given the inset size and margins (if selected).
 
 
@@ -129,7 +129,7 @@ To make a simple basemap plot called inset.pdf that demonstrates the inset modul
     gmt begin inset pdf
       gmt basemap -R0/40/20/60 -JM6.5i -Bafg -B+glightgreen
       gmt inset begin -DjTR+w2.5i+o0.2i -F+gpink+p0.5p -M0.25i
-        gmt basemap -Rg -JA20/20/2i -Bafg
+        gmt basemap -Rg -JA20/20/ -Bafg
         gmt text -F+f18p+cTR+tINSET -Dj-0.15i -N
       gmt inset end
       gmt text -F+f18p+cBL+tMAP -Dj0.2i

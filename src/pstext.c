@@ -33,7 +33,7 @@
 #define THIS_MODULE_PURPOSE	"Plot or typeset text"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYaefhpqtxy" GMT_OPT("Ec")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYaefhpqtxyw" GMT_OPT("Ec")
 
 EXTERN_MSC void gmtlib_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int size);
 
@@ -293,7 +293,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G[<color>][+n]] [-L] [-M] [-N] %s%s[-Q<case>] [-S[<dx>/<dy>/][<shade>] [%s]\n", API->O_OPT, API->P_OPT, GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[<pen>] [%s] [%s] [-Z]\n", GMT_X_OPT, GMT_Y_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s]\n\t[%s] [-it<word>]\n", GMT_a_OPT, API->c_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tReads (x,y[,fontinfo,angle,justify],text) from <table> [or stdin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tOR (with -M) one or more text paragraphs with formatting info in the segment header.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tBuilt-in escape sequences:\n");
@@ -379,7 +379,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-i Append t<word> to use word number <word> (0 is first) in the text as the label [all the text].\n");
 	GMT_Option (API, "p,qi,t");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For plotting text with variable transparency read from file, give no value.\n");
-	GMT_Option (API, ":,.");
+	GMT_Option (API, "w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

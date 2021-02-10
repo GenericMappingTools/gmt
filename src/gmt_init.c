@@ -1340,8 +1340,7 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
-	unsigned int dir, k = 1, ic, pos = 0, code, *col = NULL;
-	size_t len;
+	unsigned int dir, d, k = 1, c, pos = 0, code, *col = NULL;
 	int64_t i, start = -1, stop = -1, inc;
 	enum gmt_enum_units unit = GMT_IS_METER;
 
@@ -1402,9 +1401,9 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 
 	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		if ((inc = gmtlib_parse_index_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
-		len = strlen (p);	/* Length of the string p */
-		ic = (int) p[len-1];	/* Last char in p is the potential code T, t, x, y, or f. */
-		switch (ic) {
+		for (c = 0; p[c] && strchr ("0123456789-:", p[c]); c++);	/* Wind to position after the column or column range */
+		d = dir;
+		switch (p[c]) {	/* p[c] is the potential code T, t, x, y, or f. */
 			case 'T':	/* Absolute calendar time */
 				code = GMT_IS_ABSTIME;
 				break;
@@ -1432,7 +1431,7 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		/* Now set the code for these columns */
 
 		for (i = start; i <= stop; i += inc)
-			gmt_set_column_type (GMT, dir, (unsigned int)i, code);
+			gmt_set_column_type (GMT, d, (unsigned int)i, code);
 	}
 	return (GMT_NOERROR);
 }
@@ -2471,6 +2470,68 @@ bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 	if (c) c[0] = '+';	/* Restore the modifiers */
 	if (!GMT->common.t.variable && GMT->common.t.mode == 0) GMT->common.t.mode = GMT_SET_FILL_TRANSP | GMT_SET_PEN_TRANSP;	/* Sets both fill and stroke transparencies unless when we read from files */
 	return (n_errors > 0);
+}
+
+/*! Routine will decode the -wy|a|w|d|h|m|s|c<period>[/<phase>][+c<col>] arguments */
+GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
+
+	char *c = NULL;
+
+	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -w requires an argument */
+
+	if ((c = strstr (arg, "+c"))) {	/* Got a specific column */
+		if (c[2]) GMT->current.io.cycle_col = atoi (&c[2]);
+		c[0] = '\0';	/* Chop off modifier */
+		if (GMT->current.io.cycle_col < 0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Cannot give negative (or missing) column number (%s)\n", arg);
+			c[2] = '+';	/* Restore modifier before we return */
+			return (GMT_PARSE_ERROR);			
+		}
+	}
+	else	/* Default column is the first (x) */
+		GMT->current.io.cycle_col = GMT_X;
+
+	switch (arg[0]) {	/* Look at which valid code we got */
+		case 's': GMT->current.io.cycle_operator = GMT_CYCLE_SEC; break;
+		case 'm': GMT->current.io.cycle_operator = GMT_CYCLE_MIN; break;
+		case 'h': GMT->current.io.cycle_operator = GMT_CYCLE_HOUR; break;
+		case 'd': GMT->current.io.cycle_operator = GMT_CYCLE_DAY; break;
+		case 'w': GMT->current.io.cycle_operator = GMT_CYCLE_WEEK; break;
+		case 'a': GMT->current.io.cycle_operator = GMT_CYCLE_ANNUAL; break;
+		case 'y': GMT->current.io.cycle_operator = GMT_CYCLE_YEAR; break;
+		case 'c': GMT->current.io.cycle_operator = GMT_CYCLE_CUSTOM;
+			if (arg[1] == '\0') {	/* Gave us nuthin' */
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Code c syntax is -wc<period>[/<phase]\n");
+				return (GMT_PARSE_ERROR);
+			}
+			if (strchr (arg, '/')) {	/* Got custom period/phase */
+				char PE[GMT_LEN64] = {""}, PH[GMT_LEN64] = {""};
+				sscanf (&arg[1], "%[^/]/%s", PE, PH);
+				if (gmt_convert_double (GMT, PE, &GMT->current.io.cycle_period))
+					return (GMT_PARSE_ERROR);
+				if (gmt_convert_double (GMT, PH, &GMT->current.io.cycle_phase))
+					return (GMT_PARSE_ERROR);
+			}
+			else {	/* Just got the custom period, with phase == 0 */
+				if (gmt_convert_double (GMT, &arg[1], &GMT->current.io.cycle_period))
+					return (GMT_PARSE_ERROR);
+			}
+			break;
+		default:
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Unrecognized periodicity code %c\n", arg[0]);
+			return (GMT_PARSE_ERROR);
+	}
+	if (c) c[2] = '+';	/* Restore modifier */
+	/* If input column is not set (yet) then we set it to abstime unless it is the custom period */
+	if (GMT->current.io.cycle_operator != GMT_CYCLE_CUSTOM && gmt_get_column_type (GMT, GMT_IN, GMT->current.io.cycle_col) == GMT_IS_UNKNOWN)
+		gmt_set_column_type (GMT, GMT_IN, GMT->current.io.cycle_col, GMT_IS_ABSTIME);
+	/* Output column is no longer unknown or abstime but float */
+	gmt_set_column_type (GMT, GMT_OUT, GMT->current.io.cycle_col, GMT_IS_FLOAT);
+
+	strncpy (GMT->common.w.string, arg, GMT_LEN64-1);	/* Verbatim copy */
+	GMT->common.w.active = true;
+
+	return (GMT_NOERROR);
 }
 
 /*! Check that special map-related codes are present - if not give warning */
@@ -3556,6 +3617,33 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	return (n_errors);
 }
 
+void gmtlib_set_case_and_kind (struct GMT_CTRL *GMT, char *format, bool *upper_case, unsigned int *flavor) {
+	/* Examine the format string and determine if we want upper/lower case and what type of abbreviation, if any */
+	*upper_case = false;	*flavor = 0;	/* Initialize */
+	switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
+		case 'F':	/* Full name, upper case */
+			*upper_case = true;
+			/* Intentionally fall through - to 'f' */
+		case 'f':	/* Full name, lower case */
+			*flavor = 0;
+			break;
+		case 'A':	/* Abbreviated name, upper case */
+			*upper_case = true;
+			/* Intentionally fall through - to 'a' */
+		case 'a':	/* Abbreviated name, lower case */
+			*flavor = 1;
+			break;
+		case 'C':	/* 1-char name, upper case */
+			*upper_case = true;
+			/* Intentionally fall through - to 'c' */
+		case 'c':	/* 1-char name, lower case */
+			*flavor = 2;
+			break;
+		default:
+			break;
+	}
+}
+
 /*! Load the values into the appropriate GMT_PLOT_AXIS_ITEM structure */
 GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char *in, char flag, char axis, int custom) {
 
@@ -3671,29 +3759,7 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 	if (!custom && in[0] && val == 0.0) I->active = false;
 	I->upper_case = false;
 	format = (GMT->current.map.frame.primary) ? GMT->current.setting.format_time[GMT_PRIMARY] : GMT->current.setting.format_time[GMT_SECONDARY];
-	switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
-		case 'F':	/* Full name, upper case */
-			I->upper_case = true;
-			/* Intentionally fall through - to 'f' */
-		case 'f':	/* Full name, lower case */
-			I->flavor = 0;
-			break;
-		case 'A':	/* Abbreviated name, upper case */
-			I->upper_case = true;
-			/* Intentionally fall through - to 'a' */
-		case 'a':	/* Abbreviated name, lower case */
-			I->flavor = 1;
-			break;
-		case 'C':	/* 1-char name, upper case */
-			I->upper_case = true;
-			/* Intentionally fall through - to 'c' */
-		case 'c':	/* 1-char name, lower case */
-			I->flavor = 2;
-			break;
-		default:
-			break;
-	}
-
+	gmtlib_set_case_and_kind (GMT, format, &(I->upper_case), &(I->flavor));
 	if (axis == 'z')
 		GMT->current.map.frame.drawz = true;
 	else
@@ -7246,9 +7312,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] Specify the grid interpolation mode.\n");
 			gmt_message (GMT, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default is bicubic].\n");
 #ifdef DEBUG
-			gmt_message (GMT, "\t   Append +A to save the antialiasing counter to a grid for debugging.\n");
+			gmt_message (GMT, "\t   Append +A to save the anti-aliasing counter to a grid for debugging.\n");
 #endif
-			gmt_message (GMT, "\t   Append +a to switch off antialiasing (except for l) [Default: on].\n");
+			gmt_message (GMT, "\t   Append +a to switch off anti-aliasing (except for l) [Default: on].\n");
 			gmt_message (GMT, "\t   Append +b<BC> to change boundary conditions.  <BC> can be either:\n");
 			gmt_message (GMT, "\t     g for geographic, p for periodic, and n for natural boundary conditions.\n");
 			gmt_message (GMT, "\t     For p and n you may optionally append x or y [default is both]:\n");
@@ -7304,6 +7370,14 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead.\n");
 			gmt_message (GMT, "\t   Append +f or +s to reset row counters per table or segment [per set (+a)].\n");
 			gmt_message (GMT, "\t   For limits on data values instead, append +c<col> and give data limits for output column <col>.\n");
+			break;
+
+		case 'w':	/* -w option for cyclicity */
+
+			gmt_message (GMT, "\t-w Wrapped selected column [0] with specified cyclicity:\n");
+			gmt_message (GMT, "\t   Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles.\n");
+			gmt_message (GMT, "\t   Alternatively, append c<period>[/<phase>] for custom cyclicity.\n");
+			gmt_message (GMT, "\t   Select another column than x via +c<col>.\n");
 			break;
 
 		case 's':	/* Output control for records where z are NaN */
@@ -8120,6 +8194,15 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 			gmt_message (GMT, "\t   -x-n Use (all - n) processors.\n");
 			break;
 
+		case 'w':	/* -w option for cyclicity */
+
+			gmt_message (GMT, "\t%s\n", GMT_w_OPT);
+			gmt_message (GMT, "\t-w Wrapped selected column [0] with specified cyclicity:\n");
+			gmt_message (GMT, "\t   Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles.\n");
+			gmt_message (GMT, "\t   Alternatively append c<period>[/<phase>] for custom cyclicity.\n");
+			gmt_message (GMT, "\t   Select another column than x via +c<col>.\n");
+			break;
+
 		case ':':	/* lon/lat vs lat/lon i/o option  */
 			gmt_message (GMT, "\t%s\n", GMT_colon_OPT);
 			gmt_message (GMT, "\t   Interpret first two columns, add i for input, o for output [Default is both].\n");
@@ -8195,6 +8278,7 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 		case 'r': error += GMT->common.R.active[GSET] == false; break;
 		case 's': error += GMT->common.s.active == false; break;
 		case 't': error += GMT->common.t.active == false; break;
+		case 'w': error += GMT->common.w.active == false; break;
 #ifdef GMT_MP_ENABLED
 		case 'x': error += GMT->common.x.active == false; break;
 #endif
@@ -13805,6 +13889,70 @@ GMT_LOCAL int gmtinit_set_last_dimensions (struct GMTAPI_CTRL *API) {
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL bool gmtinit_replace_missing_with_questionmark (struct GMTAPI_CTRL *API, char *arg, char *newarg) {
+	/* If this -J argument is like the '?' args (but with the '?' missing) and having trailing /, or missing an only arg, then
+	 * we append or insert the missing ? so that the gmtinit_build_new_J_option can work as is.
+	 * We assume newarg is completely blank.  We only get here if there is no ? in arg. */
+	size_t o = 0, i = 0, L = strlen (arg) - 1;	/* Index of last character in arg (we know arg has at least length 1) */
+
+	/* Category 1 projections: Always has slashes and need to end in /? */
+	if ((strchr ("cC", arg[0]) && !strncmp (&arg[1], "yl_stere", 8U)) || strchr ("aAbBcCdDeEfFgGlLoOsStT", arg[0])) {	/* These projection all must end in / and if no ? then append it */
+		if (arg[L] == '/')	/* User followed instructions and left a trailing / */
+			sprintf (newarg, "%s?", arg);
+		else {
+			GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_replace_missing_with_questionmark: -J%s has no trailing slash. Assumed to be a complete geographic projection\n", arg);
+			return false;		
+		}
+	}
+	else if ((strchr ("pP", arg[0]) && !strncmp (&arg[1], "oly", 3U)) || strchr ("hHiIjJkKmMnNqQrRvVwWyYuU", arg[0])) {	/* These may or may not have a trailing slash */
+		if (arg[L] == '/') {	/* Multiple argument so left a trailing / */
+			sprintf (newarg, "%s?", arg);
+		}
+		else {	/* Used defaults so here we have things like -JM, -Jkf, or -Jpoly; otherwise it is -JM15c etc (i.e., with argument) */
+			if (L == 0 || (L == 1 && strchr ("kK", arg[0]) && strchr ("fs", arg[1])))	/* No argument, just append ? */
+				sprintf (newarg, "%s?", arg);
+			else {
+				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_replace_missing_with_questionmark: -J%s has no trailing slash. Assumed to be a complete geographic projection\n", arg);
+				return false;		
+			}
+		}
+	}
+	else if (strchr ("xX", arg[0])) {	/* Cartesian projection, must worry about separate x and y settings if a slash is found */
+		/* Look for Cartesian -Jx|X[-][d|l|p<pow>][/[-][d|l|p<pow>]] which needs one or two ?-marks to be inserted for the two dummy Cartesian scales.
+		 * But don't touch things like -Jx|X[+|-]<number> */
+		newarg[o++] = arg[i++];	/* This is x or X */
+		if (arg[i] && strchr ("-+", arg[i])) newarg[o++] = arg[i++];	/* Placing an optional sign (-Jx has no modifiers) */
+		if (isdigit (arg[i]) || arg[i] == '.') { /* Got -Jx-.5, -JX3c, -JX-2 or similar, do nothing */
+			GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_replace_missing_with_questionmark: -J%s assumed to be a complete Cartesian projection\n", arg);
+			return false;
+		}
+		/* Here we must insert or append one or two ? */
+		newarg[o++] = '?';	/* Insert the first ?-mark */
+		if (strchr (arg, '/')) {	/* slash[0] == '/' means we got separate x and y scale args for linear[d]/log/power axes */
+			while (arg[i] != '/') newarg[o++] = arg[i++];	/* Copying any linear[d]/log etc args for x-axis until the slash */
+			newarg[o++] = arg[i++];	/* This is the / */
+			if (arg[i] && strchr ("-+", arg[i])) newarg[o++] = arg[i++];	/* Placing the optional second sign */
+			newarg[o++] = '?';	/* Insert the second ?-mark */
+			while (arg[i]) newarg[o++] = arg[i++];	/* Copying any linear[d]/log etc args for y-axis until the end */
+		}
+		else {	/* Just a single scale/width. With ? already appended, check for the log,power,degree args */
+			while (arg[i]) newarg[o++] = arg[i++];	/* Copying any linear[d]/log etc args until the end */
+		}
+	}
+	else if (strchr ("pP", arg[0])) {	/* Polar (cylindrical) projection, must insert missing ?-mark if no scale/width given */
+		newarg[o++] = arg[i++];	/* This is p or P */
+		if (isdigit (arg[i]) || arg[i] == '.') { /* Got -Jp.5, -JP15c or similar (there are no signs here */
+			GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_replace_missing_with_questionmark: -J%s assumed to be a complete Polar projection\n", arg);
+			return false;
+		}
+		newarg[o++] = '?';	/* Insert the ?-mark */
+		while (arg[i]) newarg[o++] = arg[i++];	/* Copying any polar modifiers until the end */
+	}
+	GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: First converted -J%s to -J%s.\n", arg, newarg);
+
+	return true;	/* yes, we made changes */
+}
+
 GMT_LOCAL bool gmtinit_build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt_J, struct GMT_SUBPLOT *P, struct GMT_INSET *I, bool is_psrose) {
 	/* Look for Cartesian -Jx|X[-]?[d|l|p<pow>][/[-]?[d|l|p<pow>]] which needs one or two ?-marks to be replaced with dummy Cartesian scales.
 	 * Otherwise, -J<code>? or -J<code><arg>/<arg>/.../? which needs only one ?-mark to be replaced with dummy map scale. */
@@ -13814,12 +13962,17 @@ GMT_LOCAL bool gmtinit_build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_O
 	int Iyscl = 1;
 
 	if (opt_J == NULL) return false;	/* No -J option to update */
-	if ((c = strchr (opt_J->arg, '?')) == NULL) return false;	/* No questionmark in the argument to update */
-	strncpy (oldarg, opt_J->arg, GMT_LEN128-1);
+	if (opt_J->arg == NULL || opt_J->arg[0] == '\0') return false;	/* No argument to update */
+	if (strchr (opt_J->arg, '?'))	/* Found ?, we must go to work, make a copy of oldargs */
+		strncpy (oldarg, opt_J->arg, GMT_LEN128-1);
+	else if (!gmtinit_replace_missing_with_questionmark (API, opt_J->arg, oldarg))	/* Not an argument we should update */
+		/* If an argument with nothing instead of ? then we insert ? so the rest of the function can work */
+		return false;
 
+	c = strchr (oldarg, '?');	/* Pointer to questionmark in the argument */
 	/* Here, c[0] is the first question mark (there may be one or two) */
-	if (strchr ("xX", opt_J->arg[0])) {	/* Cartesian projection, must worry about separate x and y settings if a slash is found */
-		slash = strchr (opt_J->arg, '/');	/* slash[0] == '/' means we got separate x and y scale args for linear[d]/log/power axes */
+	if (strchr ("xX", oldarg[0])) {	/* Cartesian projection, must worry about separate x and y settings if a slash is found */
+		slash = strchr (oldarg, '/');	/* slash[0] == '/' means we got separate x and y scale args for linear[d]/log/power axes */
 		if (slash && slash[1] == '-') {	/* While any negative x-scale will automatically be included, for y we just make sure we scale by -1 if a hyphen is found after the slash */
 			if (P) P->dir[GMT_Y] = -1; else if (I) Iyscl = -1;	/* Only use P or I if defined */
 		}
@@ -13849,7 +14002,7 @@ GMT_LOCAL bool gmtinit_build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_O
 			snprintf (sclX, GMT_LEN64, "%gi", I->w);
 	}
 	arg[0] = c[0] = '\0';	/* Chop off everything from first ? to end */
-	snprintf (arg, GMT_LEN128, "%s%s", opt_J->arg, sclX);	/* Build new -J<arg> from initial J arg, then replace first ? with sclX */
+	snprintf (arg, GMT_LEN128, "%s%s", oldarg, sclX);	/* Build new -J<arg> from initial J arg, then replace first ? with sclX */
 	c[0] = '?';	/* Put back the ? we removed */
 	if (c[1] == 'l')	/* Must add the log character after the scale */
 		strcat (arg, "l");
@@ -16342,7 +16495,7 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
 #endif
 
 /*! gmt_parse_common_options interprets the command line for the common, unique options
- * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -j, -l, -n, -o, -p, -q, -r, -s, -t, -:, -- and -^.
+ * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -a, -b, -c, -d, -e, -f, -g, -h, -i, -j, -l, -n, -o, -p, -q, -r, -s, -t, -w, -:, -- and -^.
  * The list passes all of these that we should consider.
  * The API will also consider -I for grid increments.
  */
@@ -16716,6 +16869,10 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 
 		case 't':
 			error += GMT_more_than_once (GMT, GMT->common.t.active) || gmtinit_parse_t_option (GMT, item);
+			break;
+
+		case 'w':
+			error += GMT_more_than_once (GMT, GMT->common.w.active) || gmtinit_parse_w_option (GMT, item);
 			break;
 
 #ifdef GMT_MP_ENABLED
