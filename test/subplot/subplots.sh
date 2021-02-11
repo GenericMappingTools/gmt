@@ -12,7 +12,7 @@
 # This results in 16 different 2x2 subplot examples
 
 gmt begin
-	gmt set GMT_GRAPHICS_FORMAT png FONT_HEADING 28p,Helvetica,black
+	gmt set FONT_HEADING 28p,Helvetica,black
 
 # 1.0 No -S no override
 	gmt figure subplot_1.0
