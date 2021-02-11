@@ -814,28 +814,18 @@ void plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, doub
 	unsigned int nx;
 	double *x = NULL;
 
-	if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_RELTIME) {	/* Works like Cartesian */
-		gmt_linearx_grid (GMT, PSL, w, e, s, n, GMT->current.map.frame.axis[GMT_X].item[item].interval);
-	}
-	else {
-		nx = gmtlib_time_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[item], &x);
-		gmtplot_x_grid (GMT, PSL, s, n, x, nx);
-		if (x) gmt_M_free (GMT, x);
-	}
+	nx = gmtlib_time_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[item], &x);
+	gmtplot_x_grid (GMT, PSL, s, n, x, nx);
+	if (x) gmt_M_free (GMT, x);
 }
 
 GMT_LOCAL void gmtplot_timey_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item) {
 	unsigned int ny;
 	double *y = NULL;
 
-	if (gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_RELTIME) {	/* Works like Cartesian */
-		gmtplot_lineary_grid (GMT, PSL, w, e, s, n, GMT->current.map.frame.axis[GMT_Y].item[item].interval);
-	}
-	else {
-		ny = gmtlib_time_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item], &y);
-		gmtplot_y_grid (GMT, PSL, w, e, y, ny);
-		if (y) gmt_M_free (GMT, y);
-	}
+	ny = gmtlib_time_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item], &y);
+	gmtplot_y_grid (GMT, PSL, w, e, y, ny);
+	if (y) gmt_M_free (GMT, y);
 }
 
 GMT_LOCAL void gmtplot_logx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
@@ -930,7 +920,7 @@ GMT_LOCAL void gmtplot_fancy_frame_straightlon_checkers (struct GMT_CTRL *GMT, s
 	for (k = 0; k < 1 + secondary_too; k++) {
 		T = &GMT->current.map.frame.axis[GMT_X].item[item[k]];
 		if (T->active) {
-			dx = gmtlib_get_map_interval (GMT, T);
+			dx = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_X].type, T);
 			shade = (urint (floor ((w - GMT->current.map.frame.axis[GMT_X].phase)/ dx))) % 2;
 			w1 = floor ((w - GMT->current.map.frame.axis[GMT_X].phase)/ dx) * dx + GMT->current.map.frame.axis[GMT_X].phase;
 			nx = (w1 > e) ? -1 : irint (((e - w1) / dx + GMT_CONV4_LIMIT));
@@ -974,7 +964,7 @@ GMT_LOCAL void gmtplot_fancy_frame_curvedlon_checkers (struct GMT_CTRL *GMT, str
 	for (k = 0; k < 1 + secondary_too; k++) {
 		T = &GMT->current.map.frame.axis[GMT_X].item[item[k]];
 		if (T->active) {
-			dx = gmtlib_get_map_interval (GMT, T);
+			dx = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_X].type, T);
 			shade = urint (floor ((w - GMT->current.map.frame.axis[GMT_X].phase) / dx)) % 2;
 			w1 = floor ((w - GMT->current.map.frame.axis[GMT_X].phase)/dx) * dx + GMT->current.map.frame.axis[GMT_X].phase;
 			nx = (w1 > e) ? -1 : irint ((e-w1) / dx + GMT_CONV4_LIMIT);
@@ -1041,7 +1031,7 @@ GMT_LOCAL void gmtplot_fancy_frame_straightlat_checkers (struct GMT_CTRL *GMT, s
 	for (k = 0; k < 1 + secondary_too; k++) {
 		T = &GMT->current.map.frame.axis[GMT_Y].item[item[k]];
 		if (T->active) {
-			dy = gmtlib_get_map_interval (GMT, T);
+			dy = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_Y].type, T);
 			shade = urint (floor ((s - GMT->current.map.frame.axis[GMT_Y].phase) / dy)) % 2;
 			s1 = floor((s - GMT->current.map.frame.axis[GMT_Y].phase)/dy) * dy + GMT->current.map.frame.axis[GMT_Y].phase;
 			ny = (s1 > n) ? -1 : irint ((n-s1) / dy + GMT_CONV4_LIMIT);
@@ -1815,7 +1805,7 @@ GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 	for (k = 0; k < 2; k++) {
 		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) continue;
 
-		dz = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Z].item[item[k]]);	/* Gridline spacing in z */
+		dz = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_Z].type, &GMT->current.map.frame.axis[GMT_Z].item[item[k]]);	/* Gridline spacing in z */
 
 		if (!GMT->current.map.frame.axis[GMT_Z].item[item[k]].active || fabs(dz) == 0.0) continue;
 
@@ -1832,7 +1822,7 @@ GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		z0 = gmt_z_to_zz (GMT, zmin);	/* These are the projected min and max z values, i.e., the ends of vertical gridlines on the back walls */
 		z1 = gmt_z_to_zz (GMT, zmax);
 
-		dd = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[qplane].item[item[k]]);
+		dd = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[qplane].type, &GMT->current.map.frame.axis[qplane].item[item[k]]);
 		if (!GMT->current.map.frame.axis[qplane].item[item[k]].active || fabs(dd) == 0.0) continue;
 		n = gmtlib_coordinate_array (GMT, GMT->common.R.wesn[2*qplane], GMT->common.R.wesn[2*qplane+1], &GMT->current.map.frame.axis[qplane].item[item[k]], &d, NULL);
 		for (i = 0; i < n; i++) {	/* Here z acts as y and x|y acts as x */
@@ -1861,8 +1851,8 @@ GMT_LOCAL int gmtplot_save_current_gridlines (struct GMT_CTRL *GMT) {
 	if (!(GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].active || GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].active)) return (GMT_NOERROR);	/* Primary gridlines not selected, so bail */
 	if (GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_LOWER].active || GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_LOWER].active) return (GMT_NOERROR);		/* Secondary gridlines selected, so bail */
 
-	GMT->current.plot.gridline_spacing[GMT_X] = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER]);
-	GMT->current.plot.gridline_spacing[GMT_Y] = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER]);
+	GMT->current.plot.gridline_spacing[GMT_X] = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_X].type, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER]);
+	GMT->current.plot.gridline_spacing[GMT_Y] = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_Y].type, &GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER]);
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Save current gridline information to gmt.history\n");
 	return (GMT_NOERROR);
 }
@@ -1900,8 +1890,8 @@ GMT_LOCAL void gmtplot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 
 		A[GMT_X] = &GMT->current.map.frame.axis[GMT_X];	/* Short-hand for x-axis */
 		A[GMT_Y] = &GMT->current.map.frame.axis[GMT_Y];	/* Short-hand for y-axis */
-		dx = gmtlib_get_map_interval (GMT, &A[GMT_X]->item[item[k]]);	/* x grid spacing; will be 0 if custom intervals */
-		dy = gmtlib_get_map_interval (GMT, &A[GMT_Y]->item[item[k]]);	/* y grid spacing; will be 0 if custom intervals */
+		dx = gmtlib_get_map_interval (GMT, A[GMT_X]->type, &A[GMT_X]->item[item[k]]);	/* x grid spacing; will be 0 if custom intervals */
+		dy = gmtlib_get_map_interval (GMT, A[GMT_Y]->type, &A[GMT_Y]->item[item[k]]);	/* y grid spacing; will be 0 if custom intervals */
 
 		if (!(A[GMT_X]->item[item[k]].active || A[GMT_Y]->item[item[k]].active)) continue;	/* Neither is active */
 
@@ -2240,17 +2230,17 @@ GMT_LOCAL void gmtplot_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 
 	if (! (GMT->current.map.frame.axis[GMT_X].item[item].active || GMT->current.map.frame.axis[GMT_Y].item[item].active)) return;
 
-	dx = (GMT->current.map.frame.axis[GMT_X].file_custom) ? 1.0 : gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[item]);
-	dy = (GMT->current.map.frame.axis[GMT_Y].file_custom) ? 1.0 : gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[item]);
+	dx = (GMT->current.map.frame.axis[GMT_X].file_custom) ? 1.0 : gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_X].type, &GMT->current.map.frame.axis[GMT_X].item[item]);
+	dy = (GMT->current.map.frame.axis[GMT_Y].file_custom) ? 1.0 : gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_Y].type, &GMT->current.map.frame.axis[GMT_Y].item[item]);
 
 	if (dx <= 0.0 && dy <= 0.0) return;
 
 	do_x = dx > 0.0 && GMT->current.map.frame.axis[GMT_X].item[item].active && (item == GMT_ANNOT_UPPER ||
-		(item == GMT_TICK_UPPER && dx != gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER])) ||
-		(item == GMT_TICK_LOWER && dx != gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_LOWER])));
+		(item == GMT_TICK_UPPER && dx != gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_X].type, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER])) ||
+		(item == GMT_TICK_LOWER && dx != gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_X].type, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_LOWER])));
 	do_y = dy > 0.0 && GMT->current.map.frame.axis[GMT_Y].item[item].active && (item == GMT_ANNOT_UPPER ||
-		(item == GMT_TICK_UPPER && dy != gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER])) ||
-		(item == GMT_TICK_LOWER && dy != gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_LOWER])));
+		(item == GMT_TICK_UPPER && dy != gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_Y].type, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER])) ||
+		(item == GMT_TICK_LOWER && dy != gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_Y].type, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_LOWER])));
 	len = GMT->current.setting.map_tick_length[item];
 	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) len = -fabs (len);	/* Negative to become inside */
 
@@ -2390,7 +2380,7 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 	PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus signs */
 
 	if (GMT->current.map.frame.internal_annot == 1) {	/* Placement of latitude or radial annotations along selected meridian */
-		dy = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER]);
+		dy = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_Y].type, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER]);
 		if (gmt_M_y_is_lat (GMT, GMT_IN)) {
 			do_minutes = (fabs (fmod (dy, 1.0)) > GMT_CONV4_LIMIT);
 			do_seconds = gmtplot_set_do_seconds (GMT, dy);
@@ -2448,8 +2438,8 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 
 		gmtplot_radial_annot_setup (GMT, GMT->current.map.frame.internal_arg, &justify, &text_angle, &line_angle, &dc, &ds);
 		/* Shall we place grid crosses or have user selected gridlines? */
-		if ((dyg = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER])) > 0.0) {
-			if ((dx = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER])) > 0.0) {
+		if ((dyg = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_Y].type, &GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER])) > 0.0) {
+			if ((dx = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_X].type, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER])) > 0.0) {
 				if (fabs (fmod (GMT->current.map.frame.internal_arg, dx)) > GMT_CONV4_LIMIT)
 					do_grid = true;
 				else if (dyg > dy)
@@ -2499,7 +2489,7 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 	}
 
 	if (GMT->current.map.frame.internal_annot == 2) {	/* Placement of longitude annotations along selected parallel */
-		dx = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER]);
+		dx = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_X].type, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER]);
 		do_minutes = (fabs (fmod (dx, 1.0)) > GMT_CONV4_LIMIT);
 		do_seconds = gmtplot_set_do_seconds (GMT, dx);
 
@@ -2510,8 +2500,8 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 		//if (nx && doubleAlmostEqualZero (val[0], w)) first = 1;
 		if (nx && doubleAlmostEqualZero (val[nx-1], e)) nx--;
 
-		if ((dyg = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER])) > 0.0) {
-			if ((dxg = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER])) > 0.0) {
+		if ((dyg = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_X].type, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER])) > 0.0) {
+			if ((dxg = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_X].type, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER])) > 0.0) {
 				if (fabs (fmod (GMT->current.map.frame.internal_arg, dxg)) > GMT_CONV4_LIMIT)
 					do_grid = true;
 				else if (dxg > dx)
@@ -2598,8 +2588,8 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 	gmtplot_consider_internal_annotations (GMT, PSL, w, e, s, n);	/* Handle any special case of internal annotations */
 
 	if (GMT->current.proj.edge[S_SIDE] || GMT->current.proj.edge[N_SIDE]) {
-		dx[0] = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER]);
-		dx[1] = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_LOWER]);
+		dx[0] = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_X].type, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER]);
+		dx[1] = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_X].type, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_LOWER]);
 		/* Determine if we should annotate both 0 and 360 degrees */
 
 		full_lat_range = (fabs (180.0 - fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO])) < GMT_CONV4_LIMIT);
@@ -2617,8 +2607,8 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 	else
 		dx[0] = dx[1] = 0.0;
 	if (GMT->current.proj.edge[E_SIDE] || GMT->current.proj.edge[W_SIDE]) {
-		dy[0] = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER]);
-		dy[1] = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_LOWER]);
+		dy[0] = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_Y].type, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER]);
+		dy[1] = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_Y].type, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_LOWER]);
 	}
 	else
 		dy[0] = dy[1] = 0.0;
@@ -5297,7 +5287,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) neg = !neg;	/* Annotations go either below or above the axis */
 	faro = (neg == (horizontal && !ortho));			/* Current point is at the far side of the tickmark? */
 	if (A->type != GMT_TIME)						/* Set the annotation format template */
-		gmt_get_format (GMT, gmtlib_get_map_interval (GMT, &A->item[GMT_ANNOT_UPPER]), A->unit, A->prefix, format);
+		gmt_get_format (GMT, gmtlib_get_map_interval (GMT, A->type, &A->item[GMT_ANNOT_UPPER]), A->unit, A->prefix, format);
 	text_angle = (ortho == horizontal) ? 90.0 : 0.0;
 	justify = (ortho) ? PSL_MR : PSL_BC;
 	if (axis == GMT_X && A->use_angle && !skip) {	/* User override annotation angle */
@@ -5907,8 +5897,8 @@ GMT_LOCAL void gmtplot_check_primary_secondary (struct GMT_CTRL *GMT) {
 			if ((P->active + S->active) < 2) continue;	/* Primary and secondary not both set */
 			if (P->special || S->special) continue;		/* Primary and/or secondary are custom so no fixed interval to compare with */
 			/* Here they are both set, check the intervals */
-			dP = gmtlib_get_map_interval (GMT, P);
-			dS = gmtlib_get_map_interval (GMT, S);
+			dP = gmtlib_get_map_interval (GMT, A->type, P);
+			dS = gmtlib_get_map_interval (GMT, A->type, S);
 			if (dP > dS) {	/* Must warn since primary should be the finer-grained interval */
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your primary %s %s interval exceeds the secondary interval.\n", axis[type][no], kind[k]);
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT expects it to be the other way around (primary annotations are closest to axis, secondary are further away)\n");
