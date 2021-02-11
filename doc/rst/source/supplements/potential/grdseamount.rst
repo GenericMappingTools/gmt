@@ -88,7 +88,9 @@ Optional Arguments
     furthermore be truncated via a flattening parameter *f* set by **-F**.  If **-C** is not given any
     argument then we will read the shape code from the last input column.  If **-C** is not given
     at all then we default to Gaussian shapes [**g**].  **Note**: The polynomial model has an amplitude
-    for a normalized radius *r* that is given by :math:`h(r) = \frac{(1+r)^3(1-r)^3)}{1+r^3}`.
+    for a normalized radius *r* that is given by :math:`h(r) = \frac{(1+r)^3(1-r)^3)}{1+r^3}`.  It is
+    very similar to the Gaussian model (volume is just ~2.4% larger) but *h* goes exactly to zero at
+    the basal radius.
 
 .. figure:: /_images/GMT_seamount_types.*
    :width: 500 px
