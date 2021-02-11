@@ -4773,44 +4773,58 @@ GMT_LOCAL int gmtsupport_decode_arg (char *txt, int column, struct GMT_CUSTOM_SY
 }
 
 int gmt_locate_custom_symbol (struct GMT_CTRL *GMT, const char *in_name, char *name, char *path, unsigned int *pos) {
-	unsigned int type = 0;	/* 0 = not found, 1 = def, 2 = eps */
-	size_t length;
-	char file[PATH_MAX] = {""};
-	/* Determine if in_name ends in ".def" or not */
+	/* Return codes are 0 = not found, 1 = def, 2 = eps */
+	bool try[3] = {false, true, true};	/* Try to look for either .def or .eps (index [0] is not used) */
+	bool try_remote = false;
+	size_t k, length;
+	char file[PATH_MAX] = {""}, *ext[3] = {"", ".def", ".eps"};
+	/* Because we do not necessarily know if the custom symbol requested is an EPS or DEF file, we must check
+	 * for both unless an extension is given and then we know.  To minimize checking on the remote server, we
+	 * decide to look for one or both files only locally first, and if that fails then we start looking in the\
+	 * remote cache. */
+
+	/* Determine if in_name ends in ".def", ".eps" or neither */
 	length = strlen (in_name);
-	if (length > 4 && !strcmp (&in_name[length-4], ".def"))	/* User gave trailing .def extension (not needed) - just chop */
-		strncpy (name, in_name, length-4);
-	else	/* Use as is */
+	if (length > 4 && !strcmp (&in_name[length-4], ext[GMT_CUSTOM_DEF])) {	/* User gave trailing .def extension */
+		strncpy (name, in_name, length-4);	/* Eliminate extension in name */
+		try[GMT_CUSTOM_EPS] = false;	/* No need looking for eps files */
+	}
+	else if (length > 4 && !strcmp (&in_name[length-4], ext[GMT_CUSTOM_EPS])) {	/* User gave trailing .eps extension */
+		strncpy (name, in_name, length-4);	/* Eliminate extension in name */
+		try[GMT_CUSTOM_DEF] = false;	/* No need looking for def files */
+	}
+	else	/* Use as is, extension remains unknown */
 		strcpy (name, in_name);
 
-	snprintf (file, PATH_MAX, "%s.def", name);	/* Full name of potential def file */
-	/* Deal with downloadable GMT data sets first.  Passing 4 to avoid hearing about missing remote file
-	 * which can happen when we look for *.def but the file is actually a *.eps [Example 46] */
-	if (gmt_file_is_cache (GMT->parent, file))	/* Must be a cache file */
-		*pos = gmt_download_file_if_not_found (GMT, file, 4);
-	/* Here, pos is position of first character in the name after any leading URLs or @ [0] */
-	if (!gmt_getsharepath (GMT, "custom", &name[*pos], ".def", path, R_OK) && !gmtlib_getuserpath (GMT, &file[*pos], path)) {	/* No *.def file found */
-		/* See if we got EPS macro */
-		if (length > 4 && !strcmp (&in_name[length-4], ".eps"))	/* User gave trailing .eps extension (not needed) - just chop */
-			strncpy (name, in_name, length-4);
-		else	/* Use as is */
-			strcpy (name, in_name);
-		/* First check for eps macro */
-		snprintf (file, PATH_MAX, "%s.eps", name);	/* Full name of eps file */
-		if (gmt_file_is_cache (GMT->parent, file))	/* Must be a cache file */
-			*pos = gmt_download_file_if_not_found (GMT, file, 0);	/* Deal with downloadable GMT data sets first */
-		if (gmt_getsharepath (GMT, "custom", &name[*pos], ".eps", path, R_OK) || gmtlib_getuserpath (GMT, &file[*pos], path)) {
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found EPS macro %s\n", path);
-			type = GMT_CUSTOM_EPS;
+	if (gmt_file_is_cache (GMT->parent, name)) {
+		try_remote = true;	/* Is a cache file */
+		*pos = 1;
+	}
+	for (k = GMT_CUSTOM_DEF; k <= GMT_CUSTOM_EPS; k++) {
+		if (!try[k]) continue;	/* No need to check for this type of custom symbol*/
+		snprintf (file, PATH_MAX, "%s%s", name, ext[k]);	/* Full name of potential def|eps file */
+		if (gmt_getsharepath (GMT, "custom", &name[*pos], ext[k], path, R_OK) || gmtlib_getuserpath (GMT, &file[*pos], path)) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found custom symbol %s in %s\n", name, path);
+			return k;	/* Found local *.def or *.eps file */
 		}
-		else
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find either custom symbol or EPS macro %s\n", name);
 	}
-	else {
-		type = GMT_CUSTOM_DEF;
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found custom symbol %s\n", path);
+	if (!try_remote) return 0;	/* Not found, and since not a cache file we don't need to look further */
+
+	/* Here we failed to find the cache file locally.  Now try remote cache */
+	for (k = GMT_CUSTOM_DEF; k <= GMT_CUSTOM_EPS; k++) {
+		if (!try[k]) continue;	/* No need to check this on */
+		snprintf (file, PATH_MAX, "%s%s", name, ext[k]);	/* Full name of potential def|eps file */
+		/* Look for remote files.  Passing 4 to avoid hearing about missing remote files
+		 * which can happen when we look for *.def but the file is actually a *.eps [Example 46] */
+		*pos = gmt_download_file_if_not_found (GMT, file, 4);
+		/* Here, pos is position of first character in the name after any leading URLs or @ [0] */
+		if (gmt_getsharepath (GMT, "custom", &name[*pos], ext[k], path, R_OK) || gmtlib_getuserpath (GMT, &file[*pos], path)) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found custom symbol %s in %s\n", name, path);
+			return k;	/* Found local *.def or *.eps file */
+		}
 	}
-	return (type);
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find either custom symbol or EPS macro %s\n", name);
+	return (0);
 
 }
 
@@ -13807,7 +13821,7 @@ unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char option, const char 
 }
 
 /*! . */
-double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T) {
+double gmtlib_get_map_interval (struct GMT_CTRL *GMT, unsigned int type, struct GMT_PLOT_AXIS_ITEM *T) {
 	switch (T->unit) {
 		case 'd':	/* arc Degrees */
 			return (T->interval);
@@ -13822,8 +13836,8 @@ double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM 
 			else
 				return (T->interval);
 			/* Intentionally fall through - to 's' */
-		case 's':	/* arc Seconds */
-			return (T->interval * GMT_SEC2DEG);
+		case 's':	/* arc Seconds or time seconds */
+			return ((type == GMT_TIME) ? T->interval : T->interval * GMT_SEC2DEG);
 			break;
 		default:
 			return (T->interval);
@@ -14709,7 +14723,10 @@ unsigned int gmtlib_time_array (struct GMT_CTRL *GMT, double min, double max, st
 
 	if (!T->active) return (0);
 	interval = (T->type == 'i' || T->type == 'I');	/* Only true for i/I axis items */
-	n = (unsigned int)gmtsupport_time_array (GMT, min, max, T->interval, T->unit, interval, array);
+	if (T->unit == 's' && T->interval <= 1.0)
+		n = gmtlib_linear_array (GMT, min, max, T->interval, 0.0, array);
+	else
+		n = (unsigned int)gmtsupport_time_array (GMT, min, max, T->interval, T->unit, interval, array);
 
 	return (n);
 }
@@ -14804,13 +14821,13 @@ unsigned int gmtlib_coordinate_array (struct GMT_CTRL *GMT, double min, double m
 
 	switch (GMT->current.proj.xyz_projection[T->parent]) {
 		case GMT_LINEAR:
-			n = gmtlib_linear_array (GMT, min, max, gmtlib_get_map_interval (GMT, T), GMT->current.map.frame.axis[T->parent].phase, array);
+			n = gmtlib_linear_array (GMT, min, max, gmtlib_get_map_interval (GMT, GMT_LINEAR, T), GMT->current.map.frame.axis[T->parent].phase, array);
 			break;
 		case GMT_LOG10:
-			n = gmtlib_log_array (GMT, min, max, gmtlib_get_map_interval (GMT, T), array);
+			n = gmtlib_log_array (GMT, min, max, gmtlib_get_map_interval (GMT, GMT_LOG10, T), array);
 			break;
 		case GMT_POW:
-			n = gmtlib_pow_array (GMT, min, max, gmtlib_get_map_interval (GMT, T), T->parent, array);
+			n = gmtlib_pow_array (GMT, min, max, gmtlib_get_map_interval (GMT, GMT_POW, T), T->parent, array);
 			break;
 		case GMT_TIME:
 			n = gmtlib_time_array (GMT, min, max, T, array);

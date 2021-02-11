@@ -423,7 +423,7 @@ L_use_it:			row = 0;	/* Get here by goto and use is still true */
 					gmt_ascii_format_col (GMT, text, out[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
 					gmt_ascii_format_col (GMT, text, out[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
 					gmt_ascii_format_col (GMT, text, out[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
-					gmt_ascii_format_col (GMT, text, out[YHI], GMT_OUT, GMT_X);	strcat (record, text);
+					gmt_ascii_format_col (GMT, text, out[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
 					GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, Out);
 				}
 			}
