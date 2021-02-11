@@ -342,8 +342,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		}
 	}
 
-	if (Ctrl->C.mode == SHAPE_POLY) {	/* A few things area not yet implemented */
-		n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active, "The -Q for polynomial seamounts is not implemented yet\n");
+	if (Ctrl->C.mode == SHAPE_POLY && Ctrl->Q.dis) {	/* A few things area not yet implemented */
+		n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active, "The -Q..+d for polynomial seamounts is not implemented yet\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == SHAPE_DISC && Ctrl->F.active, "Cannot specify -F for discs; ignored\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->N.active || Ctrl->Z.active || Ctrl->L.active || Ctrl->T.active), "Option -A: Cannot use -L, -N, -T or -Z with -A\n");
