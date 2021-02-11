@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Plot four different seamount types selectable in grdseamount
+# Plot five different seamount types selectable in grdseamount
+# organized by smallest to largest volume for same r,h
 gmt set MAP_VECTOR_SHAPE 0.5
 ps=GMT_seamount_types.ps
 # 1. Gaussian seamount
@@ -69,7 +70,7 @@ gmt pstext -R -J -O -K -F+f16p,Times-Italic+j -N << EOF >> $ps
 -0.2	1	RM	h@-0@-
 EOF
 echo "@%1%o@%% (Polynomial)" | gmt pstext -R -J -O -K -F+f18p+cTL -Dj0.1i >> $ps
-# 1. Conical seamount
+# 3. Conical seamount
 cat << EOF > tmp
 0	1
 1	1
@@ -112,7 +113,7 @@ gmt pstext -R -J -O -K -F+f16p,Times-Italic+j -N << EOF >> $ps
 -0.2	1	RM	h@-0@-
 EOF
 echo "@%1%c@%% (cone)" | gmt pstext -R -J -O -K -F+f18p+cTL -Dj0.1i >> $ps
-# 2. Parabolic seamount
+# 4. Parabolic seamount
 echo "0	1" > tmp
 echo "1	1" >> tmp
 gmt math -T1/4/0.1 T 4 DIV 2 POW NEG 1 ADD 1 0.25 2 POW SUB DIV = >> tmp
@@ -145,7 +146,7 @@ gmt pstext -R -J -O -K -F+f16p,Times-Italic+j -N << EOF >> $ps
 -0.2	1	RM	h@-0@-
 EOF
 echo "@%1%p@%% (parabolic)" | gmt pstext -R -J -O -K -F+f18p+cTL -Dj0.1i >> $ps
-# Disc
+# 5. Disc
 cat << EOF > tmp
 0	1
 4	1
