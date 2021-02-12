@@ -1312,7 +1312,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 #ifdef HAVE_GDAL
 		if (!Ctrl->A.active && gmtlib_ind2rgb(GMT, &I)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error convering from indexed to RGB\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Error converting from indexed to RGB\n");
 			Return (API->error);
 		}
 #endif

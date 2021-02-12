@@ -3470,6 +3470,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 	 * check for repeated input column usage.
 	 */
 
+	GMT->current.io.status = 0;	/* Reset status before reading next record */
 	while (!done) {	/* Done becomes true when we successfully have read a data record */
 
 		/* First read until we get a non-blank, non-comment record, or reach EOF */

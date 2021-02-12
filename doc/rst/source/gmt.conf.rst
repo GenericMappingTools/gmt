@@ -14,7 +14,7 @@ GMT. The parameter names are always given in **UPPER CASE**. The
 parameter values are case-insensitive unless otherwise noted. The system
 defaults are given in brackets [ ], with units specified for dimensional
 quantities. Most parameters can be changed by using :doc:`gmtset`, editing a
-**gmt.conf** file that can be aqcuired using :doc:`gmtdefaults`, or setting
+**gmt.conf** file that can be acquired using :doc:`gmtdefaults`, or setting
 parameters on-the-fly via the **--PARAMETER**\ =\ *VALUE* option to any GMT
 program. However, a few are static and are only read via the **gmt.conf** file;
 these are labeled (static). Several parameters take only **true** or **false**.
