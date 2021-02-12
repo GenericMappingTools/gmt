@@ -258,6 +258,8 @@ enum GMT_time_period {
 #define GMT_CPT_CATEGORICAL_KEY		2	/* Categorical CPT with text key */
 #define GMT_COLOR_AUTO_TABLE		1	/* Flag in rgb for auto-color changing per table */
 #define GMT_COLOR_AUTO_SEGMENT		2	/* Flag in rgb for auto-color changing per segment */
+#define GMT_CPT_INDEX_LBL		0	/* Index into hidden alloc_mode_text[] for labels */
+#define GMT_CPT_INDEX_KEY		1	/* Index into hidden alloc_mode_text[] for keys */
 
 /* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"

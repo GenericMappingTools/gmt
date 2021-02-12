@@ -14620,6 +14620,7 @@ void * GMT_Get_Matrix_ (struct GMT_MATRIX *M) {
 int GMT_Put_Strings (void *V_API, unsigned int family, void *object, char **array) {
 	/* Hook pointer to the text array in a matrix or vector */
 	bool dup = false;
+	enum GMT_enum_CPT code;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (object == NULL) return_error (V_API, GMT_PTR_IS_NULL);
 	if (array == NULL) return_error (V_API, GMT_PTR_IS_NULL);
@@ -14629,8 +14630,16 @@ int GMT_Put_Strings (void *V_API, unsigned int family, void *object, char **arra
 	}
 	else if (family & GMT_IS_REFERENCE)	/* This is the default action, just remove the mode */
 		family -= GMT_IS_REFERENCE;
+	else if (family & GMT_IS_KEY) {	/* This is specific to CPTs */
+		family -= GMT_IS_KEY;
+		code = GMT_IS_KEY;
+	}
+	else if (family & GMT_IS_LABEL) {	/* This is specific to CPTs */
+		family -= GMT_IS_LABEL;
+		code = GMT_IS_LABEL;
+	}
 
-	if (!(family == GMT_IS_VECTOR || family == GMT_IS_MATRIX)) return_error (V_API, GMT_NOT_A_VALID_FAMILY);
+	if (!(family == GMT_IS_VECTOR || family == GMT_IS_MATRIX || family == GMT_IS_PALETTE)) return_error (V_API, GMT_NOT_A_VALID_FAMILY);
 	if (family == GMT_IS_VECTOR) {
 		struct GMT_VECTOR *V = gmtapi_get_vector_data (object);
 		struct GMT_VECTOR_HIDDEN *VH = gmt_get_V_hidden (V);
@@ -14668,6 +14677,23 @@ int GMT_Put_Strings (void *V_API, unsigned int family, void *object, char **arra
 			M->text = array;
 			MH->alloc_mode_text = GMT_ALLOC_EXTERNALLY;
 		}
+	}
+	else if (family == GMT_IS_PALETTE) {
+		unsigned int k, item = (code == GMT_IS_LABEL) ? GMT_CPT_INDEX_LBL : GMT_CPT_INDEX_KEY;
+		struct GMT_PALETTE *P = gmtapi_get_palette_data (object);
+		struct GMT_PALETTE_HIDDEN *CH = gmt_get_C_hidden (P);
+		for (k = 0; k < P->n_colors; k++) {
+			if (array[k] == NULL) continue;	/* No string given for this entry */
+			if (code == GMT_IS_LABEL) {
+				if (dup && P->data[k].label) gmt_M_str_free (P->data[k].label);	/* Free any old entry */
+				P->data[k].label = (dup) ? strdup (array[k]) : array[k];
+			}
+			else if (code == GMT_IS_KEY) {
+				if (dup && P->data[k].key) gmt_M_str_free (P->data[k].key);	/* Free any old entry */
+				P->data[k].key = (dup) ? strdup (array[k]) : array[k];
+			}
+		}
+		CH->alloc_mode_text[item] = (dup) ? GMT_ALLOC_INTERNALLY : GMT_ALLOC_EXTERNALLY;
 	}
 	return (GMT_NOERROR);
 }
