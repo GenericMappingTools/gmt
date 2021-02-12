@@ -60,7 +60,7 @@ int main (int argc, char *argv[]) {
 
 	if (argc > 1) L = atoi (argv[1]);
 	if (argc == 3) type = 1;
-	fprintf (stderr, "ORIG: %s\n\n\n", text);
+	//fprintf (stderr, "ORIG: %s\n\n\n", text);
 	fprintf (stderr, "WRAP: %d characters\n\n", L);
 	gmt_usage_line (GMT_TIME_NONE, L, type, text);
 }
