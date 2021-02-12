@@ -156,8 +156,8 @@ enum GMT_enum_family {
 };
 
 enum GMT_enum_CPT {
-	GMT_IS_KEY    = 1024,	/* Strings to GMT_Put_Strings are keys */
-	GMT_IS_LABEL  = 2048	/* Strings to GMT_Put_Strings are labels */
+	GMT_IS_PALETTE_KEY    = 1024,	/* Strings to GMT_Put_Strings are keys */
+	GMT_IS_PALETTE_LABEL  = 2048	/* Strings to GMT_Put_Strings are labels */
 };
 
 #define GMT_IS_CPT	GMT_IS_PALETTE		/* Backwards compatibility for < 5.3.3; */

@@ -14630,16 +14630,20 @@ int GMT_Put_Strings (void *V_API, unsigned int family, void *object, char **arra
 	}
 	else if (family & GMT_IS_REFERENCE)	/* This is the default action, just remove the mode */
 		family -= GMT_IS_REFERENCE;
-	else if (family & GMT_IS_KEY) {	/* This is specific to CPTs */
-		family -= GMT_IS_KEY;
-		code = GMT_IS_KEY;
+	if (family & GMT_IS_PALETTE) {	/* This is specific to CPTs */
+		if (family & GMT_IS_PALETTE_KEY) {
+			family -= GMT_IS_PALETTE_KEY;
+			code = GMT_IS_PALETTE_KEY;
+		}
+		else if (family & GMT_IS_PALETTE_LABEL) {
+			family -= GMT_IS_PALETTE_LABEL;
+			code = GMT_IS_PALETTE_LABEL;
+		}
+		else
+			return_error (V_API, GMT_VALUE_NOT_SET);
 	}
-	else if (family & GMT_IS_LABEL) {	/* This is specific to CPTs */
-		family -= GMT_IS_LABEL;
-		code = GMT_IS_LABEL;
-	}
-
 	if (!(family == GMT_IS_VECTOR || family == GMT_IS_MATRIX || family == GMT_IS_PALETTE)) return_error (V_API, GMT_NOT_A_VALID_FAMILY);
+
 	if (family == GMT_IS_VECTOR) {
 		struct GMT_VECTOR *V = gmtapi_get_vector_data (object);
 		struct GMT_VECTOR_HIDDEN *VH = gmt_get_V_hidden (V);
@@ -14679,16 +14683,16 @@ int GMT_Put_Strings (void *V_API, unsigned int family, void *object, char **arra
 		}
 	}
 	else if (family == GMT_IS_PALETTE) {
-		unsigned int k, item = (code == GMT_IS_LABEL) ? GMT_CPT_INDEX_LBL : GMT_CPT_INDEX_KEY;
+		unsigned int k, item = (code == GMT_IS_PALETTE_LABEL) ? GMT_CPT_INDEX_LBL : GMT_CPT_INDEX_KEY;
 		struct GMT_PALETTE *P = gmtapi_get_palette_data (object);
 		struct GMT_PALETTE_HIDDEN *CH = gmt_get_C_hidden (P);
 		for (k = 0; k < P->n_colors; k++) {
 			if (array[k] == NULL) continue;	/* No string given for this entry */
-			if (code == GMT_IS_LABEL) {
+			if (code == GMT_IS_PALETTE_LABEL) {
 				if (dup && P->data[k].label) gmt_M_str_free (P->data[k].label);	/* Free any old entry */
 				P->data[k].label = (dup) ? strdup (array[k]) : array[k];
 			}
-			else if (code == GMT_IS_KEY) {
+			else if (code == GMT_IS_PALETTE_KEY) {
 				if (dup && P->data[k].key) gmt_M_str_free (P->data[k].key);	/* Free any old entry */
 				P->data[k].key = (dup) ? strdup (array[k]) : array[k];
 			}
