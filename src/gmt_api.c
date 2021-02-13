@@ -14630,17 +14630,16 @@ int GMT_Put_Strings (void *V_API, unsigned int family, void *object, char **arra
 	}
 	else if (family & GMT_IS_REFERENCE)	/* This is the default action, just remove the mode */
 		family -= GMT_IS_REFERENCE;
-	if (family & GMT_IS_PALETTE) {	/* This is specific to CPTs */
-		if (family & GMT_IS_PALETTE_KEY) {
-			family -= GMT_IS_PALETTE_KEY;
-			code = GMT_IS_PALETTE_KEY;
-		}
-		else if (family & GMT_IS_PALETTE_LABEL) {
-			family -= GMT_IS_PALETTE_LABEL;
-			code = GMT_IS_PALETTE_LABEL;
-		}
-		else
-			return_error (V_API, GMT_VALUE_NOT_SET);
+	if (family & GMT_IS_PALETTE_KEY) {
+		family -= GMT_IS_PALETTE_KEY;
+		code = GMT_IS_PALETTE_KEY;
+	}
+	else if (family & GMT_IS_PALETTE_LABEL) {
+		family -= GMT_IS_PALETTE_LABEL;
+		code = GMT_IS_PALETTE_LABEL;
+	}
+	if (family == GMT_IS_PALETTE && code == 0) {	/* This is specific to CPTs */
+		return_error (V_API, GMT_VALUE_NOT_SET);
 	}
 	if (!(family == GMT_IS_VECTOR || family == GMT_IS_MATRIX || family == GMT_IS_PALETTE)) return_error (V_API, GMT_NOT_A_VALID_FAMILY);
 
