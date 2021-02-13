@@ -840,7 +840,7 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Put_Row_             | Export a grid row                                     |
     +--------------------------+-------------------------------------------------------+
-    | GMT_Put_Strings_         | Put user strings into vector or matrix container      |
+    | GMT_Put_Strings_         | Put user strings into various containers              |
     +--------------------------+-------------------------------------------------------+
     | GMT_Put_Vector_          | Put user vector into container                        |
     +--------------------------+-------------------------------------------------------+
@@ -1398,8 +1398,8 @@ of in *\ *major*, *\ *minor*, *\ *patch* args can be NULL. If they are not, one 
 version component. The *API* pointer is actually not used in this function, so passing NULL is the best
 option.
 
-Finally, for either vectors or matrices you may optionally add a pointer to an
-array of text strings, one per row.  This is done via
+Finally, for either vectors, matrices or palettes you may optionally add a pointer to an
+array of text strings, one per row (or CPT slice).  This is done via
 
 .. _GMT_Put_Strings:
 
@@ -1407,11 +1407,12 @@ array of text strings, one per row.  This is done via
 
     int GMT_Put_Strings (void *API, unsigned int family, void *X, char **array);
 
-where ``family`` is either GMT_IS_VECTOR or GMT_IS_MATRIX, ``X`` is either a
-:ref:`GMT_VECTOR <struct-vector>` or :ref:`GMT_MATRIX <struct-matrix>`, and
+where ``family`` is either GMT_IS_VECTOR, GMT_IS_MATRIX, or GMT_IS_PALETTE, ``X`` is either a
+:ref:`GMT_VECTOR <struct-vector>`, :ref:`GMT_MATRIX <struct-matrix>` or :ref:`GMT_MATRIX <struct-palette>`, and
 ``array`` is the a pointer to your string array.  You may add ``GMT_IS_DUPLICATE`` to
 ``family`` to indicate you want the array of strings to be duplicated; the default
-is to just set a pointer to ``array``.
+is to just set a pointer to ``array``.  For GMT_IS_PALETTE you must also add
+GMT_IS_PALETTE_LABEL or GMT_IS_PALETTE_KEY to indicate which strings are being set.
 
 To access the string array from an output vector or matrix container you will use
 
