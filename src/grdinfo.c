@@ -406,11 +406,13 @@ L_use_it:			row = 0;	/* Get here by goto and use is still true */
 				out[XHI] += Ctrl->D.inc[GMT_X];
 				out[YLO] -= Ctrl->D.inc[GMT_Y];
 				out[YHI] += Ctrl->D.inc[GMT_Y];
-				if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
+				if (gmt_M_y_is_lat (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
 					if (out[YLO] < -90.0)
 						out[YLO] = -90.0;
 					if (out[YHI] > 90.0)
 						out[YHI] = 90.0;
+				}
+				if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
 					if (fabs (out[XHI] - out[XLO]) > 360.0) {
 						out[XLO] = (out[XLO] < 0.0) ? -180.0 : 0.0;
 						out[XHI] = (out[XHI] < 0.0) ? +180.0 : 360.0;
@@ -791,7 +793,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 		if (W) gmt_free_grid (GMT, &W, true);
 
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {
+		if (gmt_M_x_is_lon (GMT, GMT_IN)) {
 			if (gmt_grd_is_global(GMT, header) || (header->wesn[XLO] < 0.0 && header->wesn[XHI] <= 0.0))
 				GMT->current.io.geo.range = GMT_IS_GIVEN_RANGE;
 			else if ((header->wesn[XHI] - header->wesn[XLO]) > 180.0)
@@ -1196,19 +1198,23 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				global_zmax = ceil  (global_zmax / U->z_inc) * U->z_inc;
 			}
 		}
-		if (!Ctrl->D.active && gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
-			if (global_ymin < -90.0) {
-				global_ymin = -90.0;
-				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused south to become < -90.  Reset to -90.\n");
+		if (!Ctrl->D.active) {	/* Must make sure we don't get outside valid bounds */
+			if (gmt_M_y_is_lat (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
+				if (global_ymin < -90.0) {
+					global_ymin = -90.0;
+					GMT_Report (API, GMT_MSG_WARNING, "Using -I caused south to become < -90.  Reset to -90.\n");
+				}
+				if (global_ymax > 90.0) {
+					global_ymax = 90.0;
+					GMT_Report (API, GMT_MSG_WARNING, "Using -I caused north to become > +90.  Reset to +90.\n");
+				}
 			}
-			if (global_ymax > 90.0) {
-				global_ymax = 90.0;
-				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused north to become > +90.  Reset to +90.\n");
-			}
-			if (fabs (global_xmax - global_xmin) > 360.0) {
-				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
-				global_xmin = (global_xmin < 0.0) ? -180.0 : 0.0;
-				global_xmax = (global_xmin < 0.0) ? +180.0 : 360.0;
+			if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
+				if (fabs (global_xmax - global_xmin) > 360.0) {
+					GMT_Report (API, GMT_MSG_WARNING, "Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
+					global_xmin = (global_xmin < 0.0) ? -180.0 : 0.0;
+					global_xmax = (global_xmin < 0.0) ? +180.0 : 360.0;
+				}
 			}
 		}
 		if (Ctrl->D.active)
@@ -1308,19 +1314,23 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				global_zmax = ceil  (global_zmax / U->z_inc) * U->z_inc;
 			}
 		}
-		if (!Ctrl->D.active && gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
-			if (global_ymin < -90.0) {
-				global_ymin = -90.0;
-				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused south to become < -90.  Reset to -90.\n");
+		if (!Ctrl->D.active) {	/* Must make sure we don't get outside valid bounds */
+			if (gmt_M_y_is_lat (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
+				if (global_ymin < -90.0) {
+					global_ymin = -90.0;
+					GMT_Report (API, GMT_MSG_WARNING, "Using -I caused south to become < -90.  Reset to -90.\n");
+				}
+				if (global_ymax > 90.0) {
+					global_ymax = 90.0;
+					GMT_Report (API, GMT_MSG_WARNING, "Using -I caused north to become > +90.  Reset to +90.\n");
+				}
 			}
-			if (global_ymax > 90.0) {
-				global_ymax = 90.0;
-				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused north to become > +90.  Reset to +90.\n");
-			}
-			if (fabs (global_xmax - global_xmin) > 360.0) {
-				GMT_Report (API, GMT_MSG_WARNING, "Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
-				global_xmin = (global_xmin < 0.0) ? -180.0 : 0.0;
-				global_xmax = (global_xmin < 0.0) ? +180.0 : 360.0;
+			if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
+				if (fabs (global_xmax - global_xmin) > 360.0) {
+					GMT_Report (API, GMT_MSG_WARNING, "Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
+					global_xmin = (global_xmin < 0.0) ? -180.0 : 0.0;
+					global_xmax = (global_xmin < 0.0) ? +180.0 : 360.0;
+				}
 			}
 		}
 		if (Ctrl->D.active)
