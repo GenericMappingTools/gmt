@@ -2326,13 +2326,12 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, orig_obs);	gmt_M_free (GMT, predicted);	gmt_M_free (GMT, A_orig);
 		if (Ctrl->E.mode) {	/* Want to write out prediction errors */
 			char header[GMT_LEN64] = {""};
-			if (gmt_M_is_geographic (GMT, GMT_IN))
-				sprintf (header, "#lon\tlat\t");
-			else {
+			if (gmt_M_x_is_lon (GMT, GMT_IN))
+				sprintf (header, "#lon\t");
+			else
 				sprintf (header, "#x\t");
-				if (dimension > 1) strcat (header, "y\t");
-				if (dimension > 2) strcat (header, "z\t");
-			}
+			if (dimension > 1) strcat (header, gmt_M_y_is_lat (GMT, GMT_IN) ? "lat\t" : "y\t");
+			if (dimension > 2) strcat (header, "z\t");
 			strcat (header, "obs\tpredict\tdev");
 			if (Ctrl->W.active) strcat (header, "\tchi2");
 			if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, E)) {

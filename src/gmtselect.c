@@ -610,7 +610,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 		else
 			do_project = true;	/* Only true when the USER selected -J, not when we supply a dummy -Jx1d */
 		Ctrl->dbg.step = 0.01;
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {
+		if (gmt_M_x_is_lon (GMT, GMT_IN)) {
 			while (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] < 0.0) {	/* Make all-negative longitude range positive instead */
 				GMT->common.R.wesn[XLO] += 360.0;
 				GMT->common.R.wesn[XHI] += 360.0;

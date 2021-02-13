@@ -8449,7 +8449,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		if ((G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, &item[first], NULL)) == NULL) {	/* Read header */
 			return (GMT->parent->error);
 		}
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Handle round-off in actual_range for latitudes */
+		if (gmt_M_y_is_lat (GMT, GMT_IN)) {	/* Handle round-off in actual_range for latitudes */
 			if (gmt_M_is_Npole (G->header->wesn[YHI])) G->header->wesn[YHI] = +90.0;
 			if (gmt_M_is_Spole (G->header->wesn[YLO])) G->header->wesn[YLO] = -90.0;
 		}
@@ -8631,7 +8631,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_LON);
 		gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
 	}
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Arrange so geographic region always has w < e */
+	if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Arrange so geographic region always has w < e */
 		double w = p[0], e = p[1];
 		if (p[0] <= -360.0 || p[1] > 360.0) {	/* Arrange so geographic region always has |w,e| <= 360 */
 			double shift = (p[0] <= -360.0) ? 360.0 : -360.0;

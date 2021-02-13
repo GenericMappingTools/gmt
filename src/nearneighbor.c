@@ -370,7 +370,7 @@ EXTERN_MSC int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		x_right += max_d_col * Grid->header->inc[GMT_X];
 	}
 	y_top = Grid->header->wesn[YHI] + d_row * Grid->header->inc[GMT_Y];	y_bottom = Grid->header->wesn[YLO] - d_row * Grid->header->inc[GMT_Y];
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* For geographic grids we must ensure the extended y-domain is physically possible */
+	if (gmt_M_y_is_lat (GMT, GMT_IN)) {	/* For geographic grids we must ensure the extended y-domain is physically possible */
 		if (y_bottom < -90.0) y_bottom = -90.0;
 		if (y_top > 90.0) y_top = 90.0;
 	}

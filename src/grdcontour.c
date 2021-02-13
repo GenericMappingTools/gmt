@@ -777,7 +777,7 @@ GMT_LOCAL enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, stru
 		closed = cont_is_closed;
 		x[n-1] = x[0];	y[n-1] = y[0];	/* Force exact closure */
 	}
-	else if (gmt_M_is_geographic (GMT, GMT_IN) && gmt_grd_is_global (GMT, G->header)) {	/* Global geographic grids are special */
+	else if (gmt_M_x_is_lon (GMT, GMT_IN) && gmt_M_360_range (G->header->wesn[XLO], G->header->wesn[XHI])) {	/* Global geographic grids are special */
 		if (fabs (x[0] - G->header->wesn[XLO]) < small_x && fabs (x[n-1] - G->header->wesn[XLO]) < small_x) {	/* Split periodic boundary contour */
 			closed = cont_is_closed_straddles_west;	/* Left periodic */
 			x[0] = x[n-1] = G->header->wesn[XLO];	/* Force exact closure */

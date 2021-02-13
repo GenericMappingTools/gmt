@@ -737,7 +737,7 @@ GMT_LOCAL void gmtplot_x_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	double x1, y1, x2, y2;
 
 	for (i = 0; i < nx; i++) {
-		if (gmt_M_is_geographic (GMT, GMT_IN))
+		if (gmt_M_x_is_lon (GMT, GMT_IN))
 			gmtplot_map_lonline (GMT, PSL, x[i], s, n);
 		else {
 			gmt_geo_to_xy (GMT, x[i], s, &x1, &y1);
@@ -800,7 +800,7 @@ GMT_LOCAL void gmtplot_y_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	double x1, y1, x2, y2;
 
 	for (i = 0; i < ny; i++) {
-		if (gmt_M_is_geographic (GMT, GMT_IN))
+		if (gmt_M_y_is_lat (GMT, GMT_IN))
 			gmtplot_map_latline (GMT, PSL, y[i], w, e);
 		else {
 			gmt_geo_to_xy (GMT, w, y[i], &x1, &y1);
