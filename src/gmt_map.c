@@ -3398,6 +3398,7 @@ GMT_LOCAL int gmtmap_init_oblique (struct GMT_CTRL *GMT, bool *search) {
 	o_x = GMT->current.proj.pars[0];	o_y = GMT->current.proj.pars[1];
 
 	if (lrint (GMT->current.proj.pars[6]) == 1) {	/* Must get correct origin, then get second point */
+		double distance = 10.0;	/* Default spherical length for gmt_translate_point */
 		p_x = GMT->current.proj.pars[2];	p_y = GMT->current.proj.pars[3];
 
 		GMT->current.proj.o_pole_lon = p_x;
@@ -3409,8 +3410,10 @@ GMT_LOCAL int gmtmap_init_oblique (struct GMT_CTRL *GMT, bool *search) {
 
 		gmtmap_get_origin (GMT, o_x, o_y, p_x, p_y, &o_x, &o_y);
 		az = atand (cosd (p_y) * sind (p_x - o_x) / (cosd (o_y) * sind (p_y) - sind (o_y) * cosd (p_y) * cosd (p_x - o_x))) + 90.0;
-		/* compute point 10 degrees from origin along azimuth */
-		gmt_translate_point (GMT, o_x, o_y, az, 10.0, &b_x, &b_y, NULL);
+		if ((90.0 - fabs (o_y)) < distance)
+			distance = 90.0 - fabs (o_y) - GMT_CONV4_LIMIT;
+		/* compute point <distance> degrees from origin along azimuth */
+		gmt_translate_point (GMT, o_x, o_y, az, distance, &b_x, &b_y, NULL);
 
 		GMT->current.proj.pars[0] = o_x;	GMT->current.proj.pars[1] = o_y;
 		GMT->current.proj.pars[2] = b_x;	GMT->current.proj.pars[3] = b_y;
