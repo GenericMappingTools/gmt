@@ -914,6 +914,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 		}
 	}
 
+	if (Ctrl->G.set_color && !Ctrl->L.polygon) {	/* Otherwise -G+z -Z and open polylines would color only the outline */
+		Ctrl->L.active = Ctrl->L.polygon = true;
+	}
+
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
 	/* Check that the options selected are mutually consistent */
