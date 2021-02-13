@@ -1132,7 +1132,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		/* First check if we have a netCDF grid. This MUST be first, because ?var needs to be stripped off. */
 		if ((val = gmtlib_is_nc_grid (GMT, header)) == GMT_NOERROR)
 			return (GMT_NOERROR);
-		/* Continue only when file was not a pipe or when nc_open didn't like the file or when the grid was COARDS-compliant. */
+		/* Continue only when file was not a pipe or when gmt_nc_open didn't like the file or when the grid was COARDS-compliant. */
 		if (val != GMT_GRDIO_NC_NO_PIPE && val != GMT_GRDIO_OPEN_FAILED && val != GMT_GRDIO_NC_NOT_COARDS)
 			return (val);
 		/* Then check for native binary GMT grid */
@@ -1335,12 +1335,14 @@ GMT_LOCAL void gmtgrdio_round_off_patrol (struct GMT_CTRL *GMT, struct GMT_GRID_
 	double norm_v, round_v, d, slop;
 	static char *type[4] = {"xmin", "xmax", "ymin", "ymax"};
 
-	if (gmt_M_is_geographic (GMT, GMT_IN) && (header->wesn[XHI] - header->wesn[XLO] - header->inc[GMT_X]) <= 360.0) {	/* Correct any slop in geographic increments */
+	if (gmt_M_x_is_lon (GMT, GMT_IN) && (header->wesn[XHI] - header->wesn[XLO] - header->inc[GMT_X]) <= 360.0) {	/* Correct any slop in geographic increments */
 		gmtgrdio_doctor_geo_increments (GMT, header);
-		if ((header->wesn[YLO]+90.0) < (-GMT_CONV4_LIMIT*header->inc[GMT_Y]))
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Round-off patrol found south latitude outside valid range (%.16g)!\n", header->wesn[YLO]);
-		if ((header->wesn[YHI]-90.0) > (GMT_CONV4_LIMIT*header->inc[GMT_Y]))
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Round-off patrol found north latitude outside valid range (%.16g)!\n", header->wesn[YHI]);
+		if (gmt_M_y_is_lat (GMT, GMT_IN)) {
+			if ((header->wesn[YLO]+90.0) < (-GMT_CONV4_LIMIT*header->inc[GMT_Y]))
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Round-off patrol found south latitude outside valid range (%.16g)!\n", header->wesn[YLO]);
+			if ((header->wesn[YHI]-90.0) > (GMT_CONV4_LIMIT*header->inc[GMT_Y]))
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Round-off patrol found north latitude outside valid range (%.16g)!\n", header->wesn[YHI]);
+		}
 	}
 
 	/* If boundaries are close to multiple of inc/2 fix them */

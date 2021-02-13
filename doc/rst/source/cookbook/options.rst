@@ -63,6 +63,8 @@ importance (some are used a lot more than others).
 +----------+--------------------------------------------------------------------+
 | **-t**   | Change layer transparency                                          |
 +----------+--------------------------------------------------------------------+
+| **-w**   | Convert selected coordinate to repeating cycles                    |
++----------+--------------------------------------------------------------------+
 | **-x**   | Set number of cores to be used in multi-threaded applications      |
 +----------+--------------------------------------------------------------------+
 | **-:**   | Assume input geographic data are (*lat,lon*) and not (*lon,lat*)   |
@@ -1092,10 +1094,10 @@ on columns from the physical record. For instance, to use the 4th,
 **-i**\ 3,6,2 (since 0 is the first column). The chosen data columns
 will be used as given. Optionally, you can specify that input columns
 should be transformed according to a linear or logarithmic conversion.
-Do so by appending [**+l**][**+s**\ *scale*][**+o**\ *offset*] to
+Do so by appending [**+l**][**+d**\ *factor*][**+s**\ *factor*][**+o**\ *offset*] to
 each column (or range of columns). All items are optional: The **+l**
 implies we should first take :math:`\log_{10}` of the data [leave as
-is]. Next, we may scale the result by the given *scale* [1]. Finally, we
+is]. Next, we may multiply or divide the result by the given *factor* [1]. Finally, we
 add in the specified *offset* [0].  If you want the trailing text to remain
 part of your subset logical record then you must also select the special column
 by requesting column **t**, otherwise we ignore trailing text.  If you only
@@ -1385,6 +1387,180 @@ input file supplies variable transparencies as the last numerical column value(s
 Use the **+f** and **+s** modifiers to indicate which transparency is provided
 or if we expect one or two transparencies.
 
+.. _option_-w:
+
+Examining data cycles: The **-w** option
+----------------------------------------
+
+Temporal data (i.e., regular time series) can be analyzed for periods
+via standard spectral analysis, such as offered by :doc:`/spectrum1d`
+and :doc:`/grdfft`.  However, it is often of interest to examine aspects of
+such periodicities in the time domain.  To enable such analyses we need to
+convert our monotonically increasing time coordinates to periodic or *cyclic*
+coordinates so that data from many cycles can be stacked, binned, displayed in
+histograms, etc.  Here, **-w** is a powerful option that can simplify
+such analyses.  The conversion from input *x*, *y*, or *z* coordinates to
+wrapped, periodic coordinates follows the simple equation
+
+
+.. math::
+
+    t' = (t - \tau) \;\mathrm{mod}\; T,
+
+where *t* is the input coordinate, :math:`\tau` is a phase-shift (typically zero), and *T* is the
+desired period for the modulus operator, yielding cyclic coordinates :math:`t'`.
+GMT offers many standard time cycles in prescribed units plus a custom cycle for other
+types of Cartesian coordinates. Table :ref:`cycles <tbl-cycletype>` shows the values for
+units, phase and period that are prescribed and only requires the user to specify the
+corresponding wrapping code:
+
+.. _tbl-cycletype:
+
++------------+---------------------------+------------+--------------+-----------+
+| **Code**   | **Purpose** (**unit**)    | **Period** |  **Phase**   | **Range** |
++============+===========================+============+==============+===========+
+| **y**      | Yearly cycle (normalized) |  1 year    | 0            |   0–1     |
++------------+---------------------------+------------+--------------+-----------+
+| **a**      | Annual cycle (month)      |  1 year    | 0            |   0–12    |
++------------+---------------------------+------------+--------------+-----------+
+| **w**      | Weekly cycle (day)        |  1 week    | 0            |   0–7     |
++------------+---------------------------+------------+--------------+-----------+
+| **d**      | Daily cycle (hour)        |  1 day     | 0            |   0–24    |
++------------+---------------------------+------------+--------------+-----------+
+| **h**      | Hourly cycle (minute)     |  1 hour    | 0            |   0–60    |
++------------+---------------------------+------------+--------------+-----------+
+| **m**      | Minute cycle (second)     |  1 minute  | 0            |   0–60    |
++------------+---------------------------+------------+--------------+-----------+
+| **s**      | Second cycle (second)     |  1 second  | 0            |   0–1     |
++------------+---------------------------+------------+--------------+-----------+
+| **c**      | Custom cycle (normalized) |  :math:`T` | :math:`\tau` |   0–1     |
++------------+---------------------------+------------+--------------+-----------+
+
+You can append the input column with the coordinate to be wrapped to the **-w** option
+[we default to the first column, i.e., 0 if no column is specified].  Then, append one
+of the available codes from Table :ref:`cycles <tbl-cycletype>`. If the custom cycle
+**c** is chosen then you must also supply the *period* and optionally any *phase* [0]
+in the same units of your data (i.e., no units should be appended to **-w**).
+
+To demonstrate the use of **-w** we will make a few plots of the daily discharge rate of
+the Mississippi river during the 1930-1940 period.  A simple time series plot is created by
+
+.. literalinclude:: /_verbatim/GMT_cycle_1.txt
+
+which results in the plot in Figure :ref:`Mississippi discharge <gmt_cycle_1>`:
+
+.. _gmt_cycle_1:
+
+.. figure:: /_images/GMT_cycle_1.*
+   :width: 500 px
+   :align: center
+
+   Regular time-series plot of the daily Mississippi river discharge.
+
+Given the clear annual signal we wish to plot this data using a normalized
+yearly coordinate so that all the years are plotted on top of a single normalized year.
+We accomplish this feature via **-wy** and use the prescribed 0–1 year range.
+
+.. literalinclude:: /_verbatim/GMT_cycle_2.txt
+
+These commands result in Figure :ref:`Mississippi annual discharge <gmt_cycle_2>` 
+
+.. _gmt_cycle_2:
+
+.. figure:: /_images/GMT_cycle_2.*
+   :width: 500 px
+   :align: center
+
+   Daily Mississippi river discharge data plotted over the duration of a single,
+   normalized year.
+
+In this representation, both regular and leap years are normalized by their respective lengths.
+If we prefer to examine the discharge variation as a function of calendar month,
+then we want all the values belonging to a particular month to fall into the same bin,
+even though the bins represent variable ranges (28-31 days).  For such analyses we are better
+off using **-wa** which normalizes the data per month, then adds the integer month number.
+In other words, all timestamps in March of any year are converted by taking the time since the
+start of March normalized by the length of March, and then add 2.  Thus, all March data from
+any year will result in coordinates 2.00000–2.999999..... This allows us to easily make a
+histogram of monthly discharge shown in Figure :ref:`Mississippi monthly discharge <gmt_cycle_3>`.
+
+.. literalinclude:: /_verbatim/GMT_cycle_3.txt
+
+.. _gmt_cycle_3:
+
+.. figure:: /_images/GMT_cycle_3.*
+   :width: 500 px
+   :align: center
+
+   Monthly Mississippi river discharge for the 10-year period, from September to September.
+
+Quarterly discharge would similarly be obtained by using **-T**\ 3 in the :doc:`/histogram`
+command.  As can be seen in Figure :ref:`Mississippi monthly discharge <gmt_cycle_3>`, the
+annual cycle axis (as well as a weekly cycle axis) is considered a *temporal* axis and hence
+the settings related to the appearance of month and weekday names, such as :term:`GMT_LANGUAGE`,
+:term:`FORMAT_TIME_PRIMARY_MAP` and :term:`TIME_WEEK_START`, may be used.
+
+Note that the **-w** option can also be applied to the *y*-coordinate instead (or any other
+coordinate) via the **+c**\ *col* modifier.  Below we demonstrate this using the same
+Mississippi river data but read it in so that time is the *y* coordinate. The following
+script generates a subplot with two illustrations similar to the ones above but (basically)
+transposed:
+
+.. literalinclude:: /_verbatim/GMT_cycle_4.txt
+
+.. _gmt_cycle_4:
+
+.. figure:: /_images/GMT_cycle_4.*
+   :width: 500 px
+   :align: center
+
+   a) Daily Mississippi river discharge data plotted over the duration of a single,
+   normalized year. b) Monthly Mississippi river discharge for the 10-year period,
+   from September to September.
+
+Because **-w** is a global GMT option it is available in all modules that read
+tables. Because of this, we can grid the data and make an image of the wrapped
+dataset:
+
+.. literalinclude:: /_verbatim/GMT_cycle_5.txt
+
+.. _gmt_cycle_5:
+
+.. figure:: /_images/GMT_cycle_5.*
+   :width: 500 px
+   :align: center
+
+   Daily Mississippi river discharge data converted to a grid and imaged with
+   the default (turbo) color table.
+
+Our final example will explore the weekly and daily time-cycles using a three-year data
+set of traffic (vehicles/hour) crossing the Verrazano-Narrows bridge between
+Staten Island and Brooklyn (i.e., mostly inbound traffic destined for Manhattan).
+We will show the raw time-series, wrap it to a weekly period, make a weekly histogram
+and finally present an hourly histogram.  The figure caption under Figure :ref:`NY traffic <gmt_cycle_6>`
+discusses the four panels resulting from running the script below:
+
+.. literalinclude:: /_verbatim/GMT_cycle_6.txt
+
+.. _gmt_cycle_6:
+
+.. figure:: /_images/GMT_cycle_6.*
+   :width: 500 px
+   :align: center
+
+   a) Time-series of traffic over a three-year period.  Note the dramatic drop as
+   Covid-19 became a major issue in mid-March 2020, as well as some data-gaps
+   and possibly a spike in May 2018. We use -g to skip drawing lines across data
+   gaps exceeding 6 hours. b) Wrapped weekly signals make it easy
+   to see the bimodal morning and evening rush-hour pattern for the weekdays
+   with a different pattern on the weekends (the "spike" in (a) turned out to be
+   data from a single Thursday and Sunday that seem problematic). Again, we use -g to
+   skip data gaps exceeding 6 hours. c) A weekly histogram
+   shows how traffic slowly builds up towards the weekend then drops off towards
+   Sunday. The script calculates the number of repeated hours to normalize the plots.
+   d) A daily histogram is created by wrapping to a daily cycle, then normalizing
+   by the number of days.
+
 .. _option_-x_core:
 
 Selecting number of CPU cores: The **-x** option
@@ -1396,7 +1572,7 @@ You may append *n* to only use *n* cores (if *n* is too large it will be truncat
 to the maximum number of cores available).  Finally, give a negative *n* to select
 all - *n*) cores (but at least one if *n* equals or exceeds all).  The **-x**
 option is only available to GMT modules compiled with OpenMP support, with
-the exception of :doc:`/movie` which handles its own parallel execution.
+the exception of :doc:`/movie` and :doc:`/batch` which handle their own parallel execution.
 
 .. _option_colon:
 

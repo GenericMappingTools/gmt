@@ -396,16 +396,17 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	unsigned int n_values = 0, n_jobs = 0, job, i_job, col, k, n_cores_unused, n_to_run;
 	unsigned int n_jobs_not_started = 0, n_jobs_completed = 0, first_job = 0, data_job;
 
-	bool done = false, n_written = false, has_text = false, is_classic = false;
+	bool done = false, n_written = false, has_text = false, is_classic = false, has_conf = false;
 
 	static char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, var_token[4] = "$$%";
 	static char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
 	static char *mvfile[3] = {"mv -f", "mv -f", "move /Y"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
 	static char *createfile[3] = {"touch", "touch", "copy /b NUL"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
+	static char *cpconf[3] = {"cp -f %s .", "cp -f %s .", "copy %s ."};
 
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""};
-	char string[GMT_LEN128] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
+	char string[GMT_LEN128] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""}, conf_file[PATH_MAX];
 	char completion_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""};
 
 	double percent = 0.0;
@@ -482,6 +483,12 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 	gmt_replace_backslash_in_path (topdir);
+
+	if (!access ("gmt.conf", R_OK)) {	/* User has a gmt.conf file in the top directory that needs to be shared with the jobs */
+		has_conf = true;
+		sprintf (conf_file, "%s/gmt.conf", topdir);
+		gmt_replace_backslash_in_path (conf_file);
+	}
 
 	/* Create a working directory which will house every local file and all subdirectories created */
 	if (gmt_mkdir (workdir)) {
@@ -564,17 +571,15 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			fprintf (fp, "set GMT_SESSION_NAME=1\n");
 		else	/* On UNIX we may use the calling terminal or script's PID as the GMT_SESSION_NAME */
 			gmt_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
-		fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Turn off auto-display of figures if scrip has gmt end show */
-		gmt_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[BATCH_PREFLIGHT].fp)) {	/* Read the preflight script and copy to the temporary preflight script with some exceptions */
 			if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert the DIR_DATA statement */
 				fprintf (fp, "%s", line);
+				if (has_conf && !strstr (line, "-C")) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
 				fprintf (fp, "\tgmt set DIR_DATA \"%s\"\n", datadir);
 			}
 			else if (!strstr (line, "#!/"))	 {	/* Skip any leading shell incantation since already placed by gmt_set_script */
-				if (gmt_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script since we are running these in batch */
-				else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
 			rec++;
@@ -683,7 +688,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	if (Ctrl->T.precision)	/* Precision was prescribed */
 		precision = Ctrl->T.precision;
 	else	/* Compute width from largest job number */
-		precision = irint (ceil (log10 ((double)(Ctrl->T.start_job+n_jobs))));	/* Width needed to hold largest job number */
+		precision = irint (ceil (log10 ((double)(Ctrl->T.start_job+n_jobs))+0.1));	/* Width needed to hold largest job number, guaranteed to give at least 1 */
 
 	if (Ctrl->S[BATCH_POSTFLIGHT].active) {	/* Prepare the temporary postflight script */
 		sprintf (post_file, "batch_postflight.%s", extension[Ctrl->In.mode]);
@@ -705,11 +710,11 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[BATCH_POSTFLIGHT].fp)) {	/* Read the postflight script and copy to the temporary postflight script with some exceptions */
 			if (gmt_is_gmtmodule (line, "begin")) {
 				fprintf (fp, "%s", line);	/* Allow args since the script may make a plot */
+				if (has_conf && !strstr (line, "-C")) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
 				fprintf (fp, "\tgmt set DIR_DATA \"%s\"\n", datadir);
 			}
 			else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
-				if (gmt_is_gmt_end_show (line)) sprintf (line, "%s", line);		/* Allow show in gmt end here */
-				else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
 		}
@@ -784,8 +789,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		fprintf (fp, "set GMT_SESSION_NAME=%c1\n", var_token[Ctrl->In.mode]);
 	else	/* On UNIX we use the script's PID as GMT_SESSION_NAME */
 		gmt_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
-	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Turn off auto-display of figures if script has gmt end show */
-	gmt_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
 	gmt_set_comment (fp, Ctrl->In.mode, "Include static and job-specific parameters");
 	fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 	fprintf (fp, "%s batch_params_%c1.%s\n", load[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Include the job parameters */
@@ -794,11 +797,11 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the main script and copy to loop script, with some exceptions */
 		if (gmt_is_gmtmodule (line, "begin")) {	/* Must insert DIR_DATA setting */
 			fprintf (fp, "%s", line);
+			if (has_conf && !strstr (line, "-C")) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
 			fprintf (fp, "\tgmt set DIR_DATA \"%s\"\n", datadir);
 		}
 		else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
-			if (gmt_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
-			else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+			if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 			fprintf (fp, "%s", line);	/* Just copy the line as is */
 		}
 	}
@@ -923,7 +926,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			n_cores_unused++;		/* Free up the core */
 			percent = 100.0 * n_jobs_completed / n_jobs;
 			(void) gmt_remove_file (GMT, completion_file);	/* Delete the completion file */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Job %*.*d of %d completed [%5.1f %%]\n", precision, precision, k, n_jobs, percent);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Job %*.*d of %d completed [%5.1f %%]\n", precision, precision, k+1, n_jobs, percent);
 		}
 		/* Adjust first_job, if needed */
 		while (first_job < n_jobs && status[first_job].completed) first_job++;

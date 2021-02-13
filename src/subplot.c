@@ -1046,7 +1046,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 					Ly[row] |= SUBPLOT_PLACE_AT_MAX;
 				}
 			}
-			else if (strchr (Ctrl->S[GMT_X].axes, 'n')) {
+			else if (strchr (Ctrl->S[GMT_X].axes, 'N') || strchr (Ctrl->S[GMT_X].axes, 'n')) {
 				axes[k++] = 'n';	/* Only need ticks at north */
 				if (row) y -= tick_height;
 			}
@@ -1065,7 +1065,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 					if (row < last_row) y -= label_height;	/* Also has label at S */
 				Ly[row] |= SUBPLOT_PLACE_AT_MIN;
 			}
-			else if (strchr (Ctrl->S[GMT_X].axes, 's')) {
+			else if (strchr (Ctrl->S[GMT_X].axes, 'S') || strchr (Ctrl->S[GMT_X].axes, 's')) {
 				axes[k++] = 's';	/* Just needs ticks on south frame */
 				if (row < last_row) y -= tick_height;
 			}
@@ -1104,7 +1104,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 					Lx[col] |= SUBPLOT_PLACE_AT_MIN;
 				}
 			}
-			else if (strchr (Ctrl->S[GMT_Y].axes, 'w')) {
+			else if (strchr (Ctrl->S[GMT_Y].axes, 'W') || strchr (Ctrl->S[GMT_Y].axes, 'w')) {
 				if (col) x += tick_height;
 				axes[k++] = 'w';	/* Only ticks at west frame */
 			}
@@ -1124,7 +1124,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 					Lx[col] |= SUBPLOT_PLACE_AT_MAX;
 				}
 			}
-			else if (strchr (Ctrl->S[GMT_Y].axes, 'e')) {
+			else if (strchr (Ctrl->S[GMT_Y].axes, 'E') || strchr (Ctrl->S[GMT_Y].axes, 'e')) {
 				if (col < last_col) x += tick_height;
 				axes[k++] = 'e';	/* Only add ticks at east frame */
 			}

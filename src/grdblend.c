@@ -377,7 +377,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			B[n].ignore = true;
 			continue;
 		}
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
+		if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
 			if (grdblend_overlap_check (GMT, &B[n], h, 0)) continue;	/* Check header for -+360 issues and overlap */
 			if (grdblend_overlap_check (GMT, &B[n], h, 1)) continue;	/* Check inner region for -+360 issues and overlap */
 		}
@@ -939,7 +939,7 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 
 	Grid->header->z_min = DBL_MAX;	Grid->header->z_max = -DBL_MAX;	/* These will be updated in the loop below */
 	if (gmt_M_is_geographic (GMT, GMT_IN)) gmt_set_geographic (GMT, GMT_OUT);	/* Inherit the flavor of the input */
-	wrap_x = (gmt_M_is_geographic (GMT, GMT_OUT));	/* Periodic geographic grid */
+	wrap_x = (gmt_M_x_is_lon (GMT, GMT_OUT));	/* Periodic geographic grid */
 	if (wrap_x) nx_360 = urint (360.0 * HH->r_inc[GMT_X]);
 
 	for (row = 0; row < Grid->header->n_rows; row++) {	/* For every output row */

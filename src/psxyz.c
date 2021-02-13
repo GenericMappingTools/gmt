@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols in 3-D"
 #define THIS_MODULE_KEYS	"<D{,CC(,T-<,S?(=2,ZD(=,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghilpqtxy" GMT_OPT("EHMmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghilpqtwxy" GMT_OPT("EHMmc")
 
 /* Control structure for psxyz */
 
@@ -155,8 +155,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>][/size_y]] [-T]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	else
 		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>][/size_y]]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", API->P_OPT, GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<value>|<file>[+f|l]] [%s]\n\t[%s] %s[%s] [%s] [%s]\n\t[%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<value>|<file>[+f|l]] [%s]\n\t[%s] %s[%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -302,7 +302,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   For plotting symbols with variable transparency read from file, append no value\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and give the transparency as the last numerical value in the data record.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use the +f and +s modifiers to indicate which one or if we expect one or two transparencies.\n");
-	GMT_Option (API, ":,.");
+	GMT_Option (API, "w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -930,7 +930,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			Return (error);
 		}
 		/* Determine if we need to worry about repeating periodic symbols */
-		if (clip_set && (Ctrl->N.mode == PSXYZ_CLIP_REPEAT || Ctrl->N.mode == PSXYZ_NO_CLIP_REPEAT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_is_geographic (GMT, GMT_IN)) {
+		if (clip_set && (Ctrl->N.mode == PSXYZ_CLIP_REPEAT || Ctrl->N.mode == PSXYZ_NO_CLIP_REPEAT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_x_is_lon (GMT, GMT_IN)) {
 			/* Only do this for projection where west and east are split into two separate repeating boundaries */
 			periodic = gmt_M_is_periodic (GMT);
 			if (S.symbol == GMT_SYMBOL_GEOVECTOR) periodic = false;

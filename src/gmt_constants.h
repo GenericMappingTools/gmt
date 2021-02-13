@@ -171,6 +171,17 @@ enum GMT_enum_basemap {
 	GMT_BASEMAP_ANNOT_BEFORE	= 0,
 	GMT_BASEMAP_ANNOT_AFTER		= 4};
 
+/*! Handling of periodic data */
+enum GMT_time_period {
+	GMT_CYCLE_SEC = 1,
+	GMT_CYCLE_MIN,
+	GMT_CYCLE_HOUR,
+	GMT_CYCLE_DAY,
+	GMT_CYCLE_WEEK,
+	GMT_CYCLE_YEAR,
+	GMT_CYCLE_ANNUAL,
+	GMT_CYCLE_CUSTOM};
+
 /* Since -I is not a global option but we almost use it as such, we define the long-option for it here.
  * Modules that need it in their module_kw[] array can just add it to their list. */
 #define GMT_INCREMENT_KW { '/', 'I', "increment", "", "", "e,n", "exact,number" }
@@ -198,6 +209,9 @@ enum GMT_enum_basemap {
 #define GMT_DAY2HR_F	24.0
 #define GMT_DAY2HR_I	24
 #define GMT_HR2DAY	(1.0 / GMT_DAY2HR_F)
+#define GMT_WEEK2DAY_F	7.0
+#define GMT_WEEK2DAY_I	7
+#define GMT_DAY2WEEK	(1.0 / GMT_WEEK2DAY_F)
 #define GMT_DAY2MIN_F	1440.0
 #define GMT_DAY2MIN_I	1440
 #define GMT_MIN2DAY	(1.0 / GMT_DAY2MIN_F)
@@ -244,6 +258,8 @@ enum GMT_enum_basemap {
 #define GMT_CPT_CATEGORICAL_KEY		2	/* Categorical CPT with text key */
 #define GMT_COLOR_AUTO_TABLE		1	/* Flag in rgb for auto-color changing per table */
 #define GMT_COLOR_AUTO_SEGMENT		2	/* Flag in rgb for auto-color changing per segment */
+#define GMT_CPT_INDEX_LBL		0	/* Index into hidden alloc_mode_text[] for labels */
+#define GMT_CPT_INDEX_KEY		1	/* Index into hidden alloc_mode_text[] for keys */
 
 /* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"

@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols in 2-D"
 #define THIS_MODULE_KEYS	"<D{,CC(,T-<,S?(=2,ZD(=,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghilpqt" GMT_OPT("HMmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghilpqtw" GMT_OPT("HMmc")
 
 /* Control structure for psxy */
 
@@ -312,6 +312,8 @@ GMT_LOCAL void psxy_decorate_debug (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 	}
 }
 
+EXTERN_MSC int gmtlib_convert_eps_to_def (struct GMT_CTRL *GMT, char *in_name, char *path);
+
 GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D, struct GMT_DECORATE *G, bool decorate_custom) {
 	/* Accept the dataset D with records of {x, y, size, angle, symbol} and plot rotated symbols at those locations.
 	 * Note: The x,y are projected coordinates in inches, hence our -R -J choice below. */
@@ -324,14 +326,26 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 	if (D->n_records == 0)	/* No symbols to plot */
 		return GMT_NOERROR;
 
-	/* Here we have symbols.  Open up virtual file for the call to psxy */
+	/* Here we have symbols.  Open up a virtual input file for the call to psxy */
 	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, D, string) != GMT_NOERROR)
 		return (GMT->parent->error);
 	if (decorate_custom) {	/* Must find the custom symbol */
 		if ((type = gmt_locate_custom_symbol (GMT, &symbol_code[1], name, path, &pos)) == 0) return (GMT_RUNTIME_ERROR);
-		if (type == GMT_CUSTOM_EPS) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot use EPS custom symbol in the decorated line specification: %s\n", name);
-			return (GMT_RUNTIME_ERROR);
+		if (type == GMT_CUSTOM_EPS) {	/* Must replace an EPS symbol with a simple 1-liner custom file */
+			/* Update data file trailing text with new symbol name */
+			uint64_t seg, row;
+			struct GMT_DATASEGMENT *S = NULL;
+			if (gmtlib_convert_eps_to_def (GMT, &symbol_code[1], path))
+				return GMT_RUNTIME_ERROR;
+			sprintf (name, "k%s", path);	name[strlen(name)-4] = '\0';	/* Chop off extension in temp symbol file name */
+			for (seg = 0; seg < D->n_segments; seg++) {
+				S = D->table[0]->segment[seg];
+				for (row = 0; row < S->n_rows; row++) {
+					gmt_M_str_free (S->text[row]);	/* Free old name */
+					S->text[row] = strdup (name);	/* Allocate and store new name */
+				}
+			}
+			type = GMT_CUSTOM_DEF;	/* Update the symbol type */
 		}
 	}
 
@@ -353,7 +367,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 		while (fgets (buffer, GMT_BUFSIZ, fpc)) {
 			if (buffer[0] == '#') { fprintf (fp, "%s", buffer); continue; }	/* Pass comments */
 			if (!strncmp (buffer, "N: ", 3U)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot use custom symbols that expect extra parameters: %s\n", name);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Decorated lines cannot use custom symbols that expect extra parameters: %s\n", name);
 				fclose (fpc);
 				return (GMT_RUNTIME_ERROR);
 			}
@@ -457,8 +471,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>]] [-T] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [-Z<value>|<file>[+f|l]] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	else
 		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>]] [%s] [%s] [-W[<pen>][<attr>][+z]]\n\t[%s] [%s] [-Z<arg>[+f|l]] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, \
-		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_q_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, \
+		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_q_OPT, GMT_tv_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -566,7 +580,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     +o<offset> : Plot first symbol when along-front distance is offset [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +p[<pen>]  : Alternate pen for symbol outline; if no <pen> then no outline [Outline with -W pen].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Kustom: Append <symbolname> immediately after 'k'; this will look for\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     <symbolname>.def in the current directory, in $GMT_USERDIR,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     <symbolname>.def or <symbolname>.eps in the current directory, in $GMT_USERDIR,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     or in $GMT_SHAREDIR (searched in that order).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use upper case 'K' if your custom symbol refers a variable symbol, ?.\n");
 	gmt_list_custom_symbols (API->GMT);
@@ -612,7 +626,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   For plotting symbols with variable transparency read from file, append no value\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and give the transparency as the last numerical value in the data record.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use the +f and +s modifiers to indicate which one or if we expect one or two transparencies.\n");
-	GMT_Option (API, ":,.");
+	GMT_Option (API, "w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -1296,7 +1310,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 		}
 		/* Determine if we need to worry about repeating periodic symbols */
-		if ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_NO_CLIP_REPEAT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_is_geographic (GMT, GMT_IN)) {
+		if ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_NO_CLIP_REPEAT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_x_is_lon (GMT, GMT_IN)) {
 			/* Only do this for projection where west and east are split into two separate repeating boundaries */
 			periodic = gmt_M_is_periodic (GMT);
 		}
@@ -1779,9 +1793,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							if (may_intrude_inside) {	/* Must plot fill and outline separately */
 								gmt_setfill (GMT, &current_fill, 0);
 								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
-								gmt_setpen (GMT, &current_pen);
-								PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
-								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
+								if (outline_setting) {
+									gmt_setpen (GMT, &current_pen);
+									PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
+									gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
+								}
 							}
 							else
 								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
@@ -1790,9 +1806,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							if (may_intrude_inside) {	/* Must plot fill and outline separately */
 								gmt_setfill (GMT, &current_fill, 0);
 								gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
-								gmt_setpen (GMT, &current_pen);
-								PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
-								gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
+								if (outline_setting) {
+									gmt_setpen (GMT, &current_pen);
+									PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
+									gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
+								}
 							}
 							else
 								gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
@@ -2502,7 +2520,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							end += 3;
 						}
 						/* Project and get ready */
-						if (gmt_M_is_geographic (GMT, GMT_IN)) {
+						if (gmt_M_x_is_lon (GMT, GMT_IN)) {
 							if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], end)) == 0) continue;
 						}
 						else

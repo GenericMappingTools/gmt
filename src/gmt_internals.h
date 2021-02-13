@@ -52,6 +52,7 @@ struct GMT_XINGS {
 EXTERN_MSC char *dlerror (void);
 #endif
 
+EXTERN_MSC void gmtlib_set_case_and_kind (struct GMT_CTRL *GMT, char *format, bool *upper_case, unsigned int *flavor);
 EXTERN_MSC bool gmtlib_fixed_paper_size (struct GMTAPI_CTRL *API);
 EXTERN_MSC struct GMT_CUBE *gmtlib_create_cube (struct GMT_CTRL *GMT);
 EXTERN_MSC struct GMT_CUBE *gmtlib_duplicate_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *U, unsigned int mode);
@@ -157,7 +158,7 @@ EXTERN_MSC int gmtlib_plot_C_format (struct GMT_CTRL *GMT);
 EXTERN_MSC int gmtlib_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_IO *S, unsigned int mode);
 EXTERN_MSC int gmtlib_date_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_DATE_IO *S, unsigned int mode);
 EXTERN_MSC void * gmtlib_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *ncol, int *status);
-EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T);
+EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, unsigned int type, struct GMT_PLOT_AXIS_ITEM *T);
 EXTERN_MSC unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
 EXTERN_MSC int gmtlib_nc_get_att_text (struct GMT_CTRL *GMT, int ncid, int varid, char *name, char *text, size_t textlen);
 EXTERN_MSC int gmtlib_akima (struct GMT_CTRL *GMT, double *x, double *y, uint64_t nx, double *c);
@@ -202,6 +203,7 @@ EXTERN_MSC void gmtlib_load_rot_matrix (double w, double R[3][3], double E[]);
 EXTERN_MSC int gmtlib_io_banner (struct GMT_CTRL *GMT, unsigned int direction);
 EXTERN_MSC double gmtlib_great_circle_dist_degree (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 EXTERN_MSC int gmtlib_gmonth_length (int year, int month);
+EXTERN_MSC void gmtlib_modulo_time_calculator (struct GMT_CTRL *GMT, double *val);
 EXTERN_MSC int gmtlib_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist);
 EXTERN_MSC void gmtlib_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
 EXTERN_MSC bool gmtlib_found_url_for_gdal (char *fname);
@@ -308,7 +310,7 @@ EXTERN_MSC int gmtlib_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 #define gmt_M_0_255_truncate(s) ((s < 0) ? 0 : ((s > 255) ? 255 : s))	/* Truncate to allowable 0-255 range */
 
 #define gmt_M_axis_is_geo(C,axis) (C->current.io.col_type[GMT_IN][axis] & GMT_IS_GEO)
-#define gmt_M_axis_is_time(C,axis) (C->current.io.col_type[GMT_IN][axis] & GMT_IS_ABSTIME)
+#define gmt_M_axis_is_time(C,axis) (C->current.io.col_type[GMT_IN][axis] & GMT_IS_RATIME && GMT->current.io.cycle_col != axis)
 
 #define gmt_M_is_perspective(C) (C->current.proj.projection == GMT_ORTHO || C->current.proj.projection == GMT_GENPER)
 #define gmt_M_pole_is_point(C) ((C->current.proj.projection == GMT_OBLIQUE_MERC || C->current.proj.projection == GMT_OBLIQUE_MERC_POLE) || (C->current.proj.projection >= GMT_LAMBERT && C->current.proj.projection <= GMT_VANGRINTEN && C->current.proj.projection != GMT_POLAR))

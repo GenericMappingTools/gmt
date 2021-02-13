@@ -34,7 +34,7 @@
 #define THIS_MODULE_NEEDS	"jr"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxyf" GMT_OPT("c")
 
-EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T);
+EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, unsigned int type, struct GMT_PLOT_AXIS_ITEM *T);
 EXTERN_MSC void plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item);
 
 #define H_BORDER 16	/* 16p horizontal border space for -T [not used] */
@@ -1142,7 +1142,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		if (B_set) {	/* Used -B */
 			gmt_xy_axis2 (GMT, xleft, y_base, length, start_val, stop_val, A, !(flip & PSSCALE_FLIP_ANNOT), GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE] & PSSCALE_FLIP_LABEL, GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE]);
 			if (A->item[GMT_GRID_UPPER].active) {
-				dx = gmtlib_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
+				dx = gmtlib_get_map_interval (GMT, A->type, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				if (A->type == GMT_TIME)
 					plot_timex_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, GMT_GRID_UPPER);
@@ -1417,7 +1417,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if (A->item[GMT_GRID_UPPER].generated)  A->item[GMT_GRID_UPPER].interval  = 0.0;	/* Reset grid  so we can redo via automagic */
 			gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			if (A->item[GMT_GRID_UPPER].active) {	/* Gridlines work fine without kludging since no annotations involved */
-				dx = gmtlib_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
+				dx = gmtlib_get_map_interval (GMT, A->type, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				if (A->type == GMT_TIME)
 					plot_timex_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, GMT_GRID_UPPER);

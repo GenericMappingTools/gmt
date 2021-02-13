@@ -36,7 +36,7 @@
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for data tables"
 #define THIS_MODULE_KEYS	"<D(,AD(=,TD(,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdefghioqs" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vbdefghioqsw" GMT_OPT("HMm")
 
 #define SPECIFIC_OPTIONS "AEILNQST"	/* All non-common options except for -C which we will actually process in the loop over args */
 
@@ -471,8 +471,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-A<ftable>[+e][+r][+s|w]] [-C<cols>] [-E<eigen>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q] [-S[f|l]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<min>/<max>/<inc>[+b|i|l|n]] | -T<file|list>] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] A B op C op ... = [outfile]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<min>/<max>/<inc>[+b|i|l|n]] | -T<file|list>] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] A B op C op ... = [outfile]\n\n",
+		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -724,7 +724,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"\t   Alternatively, give a file with output times in the first column, or a comma-separated list.\n"
 		"\t   If no domain is given we assume no time, i.e., only data columns are present.\n"
 		"\t   This choice also implies -Ca.\n", GMT_DIM_UNITS_DISPLAY);
-	GMT_Option (API, "V,bi,bo,d,e,f,g,h,i,o,q,s,.");
+	GMT_Option (API, "V,bi,bo,d,e,f,g,h,i,o,q,s,w,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -6291,6 +6291,16 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 				/* Read but request IO reset since the file (which may be a memory reference) will be read again later */
 				Return (API->error);
 			}
+			 /* When operating on time (1 column file) the output is no longer abstime unless the user set -fo */
+			if (gmt_get_column_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && !GMT->common.f.active[GMT_OUT]) {	/* Special check if detected time in x and no -fo setting */
+				uint64_t col, start_col = (D_in->n_columns == 1) ? GMT_X : GMT_Y;
+				/* Any time columns subject to calculation will be set to relative time */
+				for (col = start_col; col < D_in->n_columns; col++) {
+					if (gmt_get_column_type (GMT, GMT_IN, col) == GMT_IS_ABSTIME)
+						gmt_set_column_type (GMT, GMT_OUT, col, GMT_IS_RELTIME);
+				}
+			}
+
 			got_t_from_file = 1;
 		}
 	}
@@ -6466,7 +6476,11 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if (strchr (SPECIFIC_OPTIONS THIS_MODULE_OPTIONS GMT_OPT("F"), opt->option)) continue;
 		if (opt->option == 'C') {	/* Change affected columns */
 			no_C = false;
-			if (gmtmath_decode_columns (opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol)) touched_t_col = true;
+			if (gmtmath_decode_columns (opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol)) {
+				touched_t_col = true;
+				if (gmt_get_column_type (GMT, GMT_IN, Ctrl->N.tcol) == GMT_IS_ABSTIME && !GMT->common.f.active[GMT_OUT])	/* If no -fo setting and still abstime we change to reltime */
+					gmt_set_column_type (GMT, GMT_OUT, Ctrl->N.tcol, GMT_IS_RELTIME);
+			}
 			continue;
 		}
 		if (opt->option == GMT_OPT_OUTFILE) continue;	/* We do output after the loop */

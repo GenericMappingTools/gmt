@@ -154,7 +154,8 @@ Optional Arguments
     for the entire subplot.
     Append **+p** to make all annotations axis-parallel [horizontal]; if not used you may have to set **-C** to secure
     extra space for long horizontal annotations.
-    Append **+w** to draw horizontal and vertical lines between interior panels using selected pen [no lines].
+    Append **+w** to the **-F** argument to draw horizontal and vertical lines
+    between interior panels using selected pen [no lines].
 
 .. _-T:
 
@@ -179,10 +180,10 @@ Synopsis (set mode)
 **gmt subplot set** [ *row,col*\|\ *index* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ *clearance* ] [ |SYN_OPT-V| ]
 
 Before you start plotting you must first select the active subplot.
-**Note**: If any **-J** option is passed with **?** as scale or width when plotting subplots,
-then the dimensions of the map are automatically determined by the subplot size and your region.
+**Note**: If any **-J** option is passed *without* the scale or width when you first are plotting
+inside the subplot, then the scale of the map is automatically determined by the subplot size and your region.
 For Cartesian plots: If you want the scale to apply *equally* to both dimensions
-then you must specify **-Jx** [The default **-JX** will fill the subplot by using unequal scales].
+then you must specify **-Jx** [The default projection of **-JX** will fill the subplot by using unequal scales].
 
 Optional Arguments
 ------------------

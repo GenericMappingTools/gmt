@@ -2299,13 +2299,13 @@ GMT_LOCAL int gmtapi_open_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID
 	if (R->open) return (GMT_NOERROR);	/* Already set the first time */
 	fmt = GMT->session.grdformat[G->header->type];
 	if (fmt[0] == 'c') {		/* Open netCDF file, old format */
-		gmt_M_err_trap (nc_open (HH->name, cdf_mode[r_w], &R->fid));
+		gmt_M_err_trap (gmt_nc_open (GMT, HH->name, cdf_mode[r_w], &R->fid));
 		R->edge[0] = G->header->n_columns;
 		R->start[0] = 0;
 		R->start[1] = 0;
 	}
 	else if (fmt[0] == 'n') {	/* Open netCDF file, COARDS-compliant format */
-		gmt_M_err_trap (nc_open (HH->name, cdf_mode[r_w], &R->fid));
+		gmt_M_err_trap (gmt_nc_open (GMT, HH->name, cdf_mode[r_w], &R->fid));
 		R->edge[0] = 1;
 		R->edge[1] = G->header->n_columns;
 		R->start[0] = HH->row_order == k_nc_start_north ? 0 : G->header->n_rows-1;
@@ -7727,7 +7727,7 @@ void gmtlib_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	struct GMT_GRID_ROWBYROW *R = gmtapi_get_rbr_ptr (GH->extra);	/* Shorthand to row-by-row book-keeping structure */
 	gmt_M_free (GMT, R->v_row);
 	if (GMT->session.grdformat[G->header->type][0] == 'c' || GMT->session.grdformat[G->header->type][0] == 'n')
-		nc_close (R->fid);
+		gmt_nc_close (GMT, R->fid);
 	else
 		gmt_fclose (GMT, R->fp);
 	gmt_M_free (GMT, GH->extra);
@@ -14042,6 +14042,7 @@ void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out
 					API->error = GMT_NOT_A_VALID_FAMILY;
 					break;
 			}
+			break;
 		case GMT_IS_GRID:
 			switch (family_out) {
 				case GMT_IS_MATRIX:
@@ -14619,6 +14620,7 @@ void * GMT_Get_Matrix_ (struct GMT_MATRIX *M) {
 int GMT_Put_Strings (void *V_API, unsigned int family, void *object, char **array) {
 	/* Hook pointer to the text array in a matrix or vector */
 	bool dup = false;
+	enum GMT_enum_CPT code;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (object == NULL) return_error (V_API, GMT_PTR_IS_NULL);
 	if (array == NULL) return_error (V_API, GMT_PTR_IS_NULL);
@@ -14628,8 +14630,19 @@ int GMT_Put_Strings (void *V_API, unsigned int family, void *object, char **arra
 	}
 	else if (family & GMT_IS_REFERENCE)	/* This is the default action, just remove the mode */
 		family -= GMT_IS_REFERENCE;
+	if (family & GMT_IS_PALETTE_KEY) {
+		family -= GMT_IS_PALETTE_KEY;
+		code = GMT_IS_PALETTE_KEY;
+	}
+	else if (family & GMT_IS_PALETTE_LABEL) {
+		family -= GMT_IS_PALETTE_LABEL;
+		code = GMT_IS_PALETTE_LABEL;
+	}
+	if (family == GMT_IS_PALETTE && code == 0) {	/* This is specific to CPTs */
+		return_error (V_API, GMT_VALUE_NOT_SET);
+	}
+	if (!(family == GMT_IS_VECTOR || family == GMT_IS_MATRIX || family == GMT_IS_PALETTE)) return_error (V_API, GMT_NOT_A_VALID_FAMILY);
 
-	if (!(family == GMT_IS_VECTOR || family == GMT_IS_MATRIX)) return_error (V_API, GMT_NOT_A_VALID_FAMILY);
 	if (family == GMT_IS_VECTOR) {
 		struct GMT_VECTOR *V = gmtapi_get_vector_data (object);
 		struct GMT_VECTOR_HIDDEN *VH = gmt_get_V_hidden (V);
@@ -14667,6 +14680,23 @@ int GMT_Put_Strings (void *V_API, unsigned int family, void *object, char **arra
 			M->text = array;
 			MH->alloc_mode_text = GMT_ALLOC_EXTERNALLY;
 		}
+	}
+	else if (family == GMT_IS_PALETTE) {
+		unsigned int k, item = (code == GMT_IS_PALETTE_LABEL) ? GMT_CPT_INDEX_LBL : GMT_CPT_INDEX_KEY;
+		struct GMT_PALETTE *P = gmtapi_get_palette_data (object);
+		struct GMT_PALETTE_HIDDEN *CH = gmt_get_C_hidden (P);
+		for (k = 0; k < P->n_colors; k++) {
+			if (array[k] == NULL) continue;	/* No string given for this entry */
+			if (code == GMT_IS_PALETTE_LABEL) {
+				if (dup && P->data[k].label) gmt_M_str_free (P->data[k].label);	/* Free any old entry */
+				P->data[k].label = (dup) ? strdup (array[k]) : array[k];
+			}
+			else if (code == GMT_IS_PALETTE_KEY) {
+				if (dup && P->data[k].key) gmt_M_str_free (P->data[k].key);	/* Free any old entry */
+				P->data[k].key = (dup) ? strdup (array[k]) : array[k];
+			}
+		}
+		CH->alloc_mode_text[item] = (dup) ? GMT_ALLOC_INTERNALLY : GMT_ALLOC_EXTERNALLY;
 	}
 	return (GMT_NOERROR);
 }

@@ -49,7 +49,7 @@
 #define THIS_MODULE_PURPOSE	"Select data table subsets based on multiple spatial criteria"
 #define THIS_MODULE_KEYS	"<D{,CD(=,FD(,LD(=,>D},GG("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>JRVabdefghioqs" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>JRVabdefghioqsw" GMT_OPT("HMm")
 
 #define GMTSELECT_N_CLASSES	(GSHHS_MAX_LEVEL + 1)	/* Number of bands separated by the levels */
 
@@ -184,9 +184,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<ptfile|lon/lat>+d%s] [-D<resolution>][+f] [-E[f][n]] [-F<polygon>] [-G<gridmask>] [%s]\n",
 	             GMT_DIST_OPT, GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cfglrsz] [-L<lfile>+d%s[+p]] [-N<info>] [%s]\n\t[%s] [-Z<min>[/<max>][+c<col>][+a][+i]] [%s] "
-	             "[%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+	             "[%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 	             GMT_DIST_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT,
-				 GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+				 GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -245,7 +245,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2 input columns (3 if -Z is used).\n");
 	GMT_Option (API, "bo,d,e,f,g,h,i");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Does not apply to files given via -C, -F, or -L.\n");
-	GMT_Option (API, "o,q,s,:,.");
+	GMT_Option (API, "o,q,s,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -610,7 +610,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 		else
 			do_project = true;	/* Only true when the USER selected -J, not when we supply a dummy -Jx1d */
 		Ctrl->dbg.step = 0.01;
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {
+		if (gmt_M_x_is_lon (GMT, GMT_IN)) {
 			while (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] < 0.0) {	/* Make all-negative longitude range positive instead */
 				GMT->common.R.wesn[XLO] += 360.0;
 				GMT->common.R.wesn[XHI] += 360.0;

@@ -110,6 +110,7 @@ struct GMT_PALETTE_HIDDEN {	/* Supporting information hidden from the API */
 	uint64_t id;			/* The internal number of the data set */
 	size_t n_alloc;            	/* Memory allocated so far */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
+	enum GMT_enum_alloc alloc_mode_text[2];	/* Allocation mode per label|key [GMT_ALLOC_INTERNALLY] */
 	unsigned int alloc_level;	/* The level it was allocated at */
 	unsigned int auto_scale;	/* If 1 then we must resample to fit actual data range */
 	unsigned int skip;		/* true if current z-slice is to be skipped */

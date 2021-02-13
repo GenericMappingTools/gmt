@@ -37,6 +37,7 @@ Synopsis
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-tv| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 

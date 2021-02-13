@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Plot event symbols, lines, polygons and labels for a moment in time"
 #define THIS_MODULE_KEYS	"<D{,CC(,>?}"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS	"-:>BJKOPRUVXYabdefhipq"
+#define THIS_MODULE_OPTIONS	"-:>BJKOPRUVXYabdefhipqw"
 
 enum Psevent {	/* Misc. named array indices */
 	PSEVENTS_SYMBOL = 0,
@@ -162,8 +162,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T<now> [-Ar[<dpu>[c|i]]|s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]] [-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] [-G<fill>] [-H<labelinfo>] [-L[t|<length>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Mi|s|t<val1>[+c<val2]] [-N[c|r]] [-Q<prefix>] [-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -226,7 +226,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Append symbol code and optionally <size>.  If no size we read it from the data file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default plots lines or polygons; see -A for further instructions.\n");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set symbol outline pen attributes [Default pen is %s]:", 0);
-	GMT_Option (API, "V,bi2,c,di,e,f,h,i,p,qi,:,.");
+	GMT_Option (API, "V,bi2,c,di,e,f,h,i,p,qi,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -509,7 +509,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	}
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_col;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_col, "Binary input data (-bi) must have at least %u columns.\n", n_col);
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.active + Ctrl->S.active) != 1, "Must specify either -A or -S.\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.active + Ctrl->S.active) != 1 && Ctrl->E.active[PSEVENTS_SYMBOL], "Must specify either -A or -S unless just plotting labels.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Cannot specify both -C and -G.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == PSEVENTS_LINE_REC && Ctrl->G.active, "Option -G: Cannot be used with lines (-Ar).\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == PSEVENTS_LINE_REC && Ctrl->C.active, "Option -C: Cannot be used with lines (-Ar).\n");
@@ -763,7 +763,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 	/* Now we are ready to take on some input values */
 
-	if (Ctrl->S.active) {	/* We read as points */
+	if (Ctrl->S.active || !Ctrl->A.active) {	/* We read points for symbols OR we are in fact just doing labels */
 		if (Ctrl->C.active) n_cols_needed++;	/* Must allow for z in input */
 		if (Ctrl->S.mode) n_cols_needed++;	/* Must allow for size in input */
 		if (Ctrl->L.mode == PSEVENTS_VAR_DURATION || Ctrl->L.mode == PSEVENTS_VAR_ENDTIME) n_cols_needed++;	/* Must allow for length/time in input */

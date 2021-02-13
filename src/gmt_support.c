@@ -937,12 +937,12 @@ int gmt_getfonttype (struct GMT_CTRL *GMT, char *name) {
 
 	if (!name[0]) return (-1);
 	if (!isdigit ((unsigned char) name[0])) {	/* Does not start with number. Try font name */
-		int ret = -1;
+		int ret = GMT_NOTSET;
 		for (i = 0; i < GMT->session.n_fonts && strcmp (name, GMT->session.font[i].name); i++);
 		if (i < GMT->session.n_fonts) ret = i;
 		return (ret);
 	}
-	if (!isdigit ((unsigned char) name[strlen(name)-1])) return (-1);	/* Starts with digit, ends with something else: cannot be */
+	if (!isdigit ((unsigned char) name[strlen(name)-1])) return (GMT_NOTSET);	/* Starts with digit, ends with something else: cannot be */
 	return (atoi (name));
 }
 
@@ -966,7 +966,9 @@ GMT_LOCAL int gmtsupport_name2pen (char *name) {
 
 	strncpy (Lname, name, GMT_LEN64-1);
 	gmt_str_tolower (Lname);
-	for (i = 0, k = -1; k < 0 && i < GMT_N_PEN_NAMES; i++) if (!strcmp (Lname, GMT_penname[i].name)) k = i;
+	for (i = 0, k = GMT_NOTSET; k < 0 && i < GMT_N_PEN_NAMES; i++) if (!strcmp (Lname, GMT_penname[i].name)) k = i;
+	/* Backwards compatibility for old, inappropriate input pen name "obese" */
+	if (k == GMT_NOTSET && !strcmp (Lname, "obese")) k = GMT_N_PEN_NAMES - 1;
 
 	return (k);
 }
@@ -978,8 +980,8 @@ GMT_LOCAL int gmtsupport_pen2name (double width) {
 	int i, k;
 
 	if (gmt_M_is_dnan (width)) return -2;	/* Pen width undefined */
-
-	for (i = 0, k = -1; k < 0 && i < GMT_N_PEN_NAMES; i++) if (gmt_M_eq (width, GMT_penname[i].width)) k = i;
+	
+	for (i = 0, k = GMT_NOTSET; k < 0 && i < GMT_N_PEN_NAMES; i++) if (gmt_M_eq (width, GMT_penname[i].width)) k = i;
 
 	return (k);
 }
@@ -1139,8 +1141,9 @@ GMT_LOCAL bool gmtsupport_is_penstyle (char *word) {
 }
 
 /*! . */
-GMT_LOCAL void gmtsupport_free_range  (struct GMT_CTRL *GMT, struct GMT_LUT *S) {
-	gmt_M_str_free (S->label);
+GMT_LOCAL void gmtsupport_free_range  (struct GMT_CTRL *GMT, struct GMT_PALETTE_HIDDEN *H, struct GMT_LUT *S) {
+	if (H->alloc_mode_text[GMT_CPT_INDEX_LBL]) gmt_M_str_free (S->label);
+	if (H->alloc_mode_text[GMT_CPT_INDEX_KEY]) gmt_M_str_free (S->key);
 	gmt_M_free (GMT, S->fill);
 }
 
@@ -1794,9 +1797,10 @@ GMT_LOCAL uint64_t gmtsupport_determine_circle (struct GMT_CTRL *GMT, double x0,
 }
 
 /*! . */
-GMT_LOCAL void gmtsupport_line_angle_ave (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, int half, int angle_type, struct GMT_LABEL *L) {
-	int64_t j, sstart, sstop, nn;
-	double sum_x2 = 0.0, sum_xy = 0.0, sum_y2 = 0.0, dx, dy;
+GMT_LOCAL void gmtsupport_line_angle_ave (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, int half, int angle_type, bool directed, struct GMT_LABEL *L) {
+	int64_t j, sstart, sstop;
+	double sum_x = 0.0, sum_x2 = 0.0, sum_xy = 0.0, sum_y = 0.0, sum_y2 = 0.0, dx, dy;
+	/* If directed is true then we want the direction of the line, else orientation is fine */
 
 	if (start == stop) {	/* Can happen if we want no smoothing but landed exactly on a knot point */
 		if (start > 0)
@@ -1804,9 +1808,10 @@ GMT_LOCAL void gmtsupport_line_angle_ave (struct GMT_CTRL *GMT, double x[], doub
 		else if (stop < (n-1))
 			stop++;
 	}
-	sstart = start - half;	sstop = stop + half;	nn = n;
+	sstart = MAX (0, ((int64_t)start) - half);	/* Must cast since start is unsigned */
+	sstop  = MIN (n-1, stop + half);
 	for (j = sstart; j <= sstop; j++) {	/* L2 fit for slope over this range of points */
-		if (j < 0 || j >= nn) continue;
+		if (j > sstart) sum_x += (x[j] - x[j-1]), sum_y += (y[j] - y[j-1]);
 		dx = x[j] - L->x;
 		dy = y[j] - L->y;
 		sum_x2 += dx * dx;
@@ -1814,16 +1819,23 @@ GMT_LOCAL void gmtsupport_line_angle_ave (struct GMT_CTRL *GMT, double x[], doub
 		sum_xy += dx * dy;
 	}
 	if (sum_y2 < GMT_CONV8_LIMIT)	/* Line is horizontal */
-		L->line_angle = 0.0;
+		L->line_angle = (directed && sum_x < 0.0) ? 180.0 : 0.0;
 	else if (sum_x2 < GMT_CONV8_LIMIT)	/* Line is vertical */
-		L->line_angle = 90.0;
-	else
-		L->line_angle = (gmt_M_is_zero (sum_xy)) ? 90.0 : d_atan2d (sum_xy, sum_x2);
+		L->line_angle = (directed && sum_y < 0.0) ? -90.0 : 90.0;
+	else {	/* Least-squares fit of slope */
+		L->line_angle = d_atan2d (sum_xy, sum_x2);
+		if (directed && !(gmt_M_is_zero (sum_x) && gmt_M_is_zero (sum_y))) {
+			/* If the line_angle points more or less in the opposite direction as indicated by
+			 * sum_x and sum_y we add 180 to it */
+			double angle = d_atan2d (sum_y, sum_x);
+			if (fabs (L->line_angle - angle) > 145.0) L->line_angle += 180.0;
+		}
+	}
 	if (angle_type == 2) {	/* Just return the fixed angle given (unless NaN) */
 		if (gmt_M_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
 			angle_type = 0;
 		else
-			L->angle = cangle;
+			L->angle = L->line_angle = cangle;
 	}
 	if (angle_type != 2) {	/* Must base label angle on the contour angle */
 		L->angle = L->line_angle + angle_type * 90.0;	/* May add 90 to get normal */
@@ -1834,7 +1846,7 @@ GMT_LOCAL void gmtsupport_line_angle_ave (struct GMT_CTRL *GMT, double x[], doub
 }
 
 /*! . */
-GMT_LOCAL void gmtsupport_line_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, int angle_type, struct GMT_LABEL *L) {
+GMT_LOCAL void gmtsupport_line_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, int angle_type, bool directed, struct GMT_LABEL *L) {
 	double dx, dy;
 
 	if (start == stop) {	/* Can happen if we want no smoothing but landed exactly on a knot point */
@@ -1863,12 +1875,12 @@ GMT_LOCAL void gmtsupport_line_angle_line (struct GMT_CTRL *GMT, double x[], dou
 
 /*! . */
 GMT_LOCAL void gmtsupport_contlabel_angle_ave (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_CONTOUR *G) {
-	gmtsupport_line_angle_ave (GMT, x, y, start, stop, cangle, n, G->half_width, G->angle_type, L);
+	gmtsupport_line_angle_ave (GMT, x, y, start, stop, cangle, n, G->half_width, G->angle_type, false, L);
 }
 
 /*! . */
 GMT_LOCAL void gmtsupport_contlabel_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_CONTOUR *G) {
-	gmtsupport_line_angle_line (GMT, x, y, start, stop, cangle, n, G->angle_type, L);
+	gmtsupport_line_angle_line (GMT, x, y, start, stop, cangle, n, G->angle_type, false, L);
 }
 
 /*! . */
@@ -1899,12 +1911,12 @@ GMT_LOCAL void gmtsupport_contlabel_angle (struct GMT_CTRL *GMT, double x[], dou
 
 /*! . */
 GMT_LOCAL void gmtsupport_decorated_angle_ave (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_DECORATE *G) {
-	gmtsupport_line_angle_ave (GMT, x, y, start, stop, cangle, n, G->half_width, G->angle_type, L);
+	gmtsupport_line_angle_ave (GMT, x, y, start, stop, cangle, n, G->half_width, G->angle_type, true, L);
 }
 
 /*! . */
 GMT_LOCAL void gmtsupport_decorated_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_DECORATE *G) {
-	gmtsupport_line_angle_line (GMT, x, y, start, stop, cangle, n, G->angle_type, L);
+	gmtsupport_line_angle_line (GMT, x, y, start, stop, cangle, n, G->angle_type, true, L);
 }
 
 /*! . */
@@ -2354,7 +2366,7 @@ GMT_LOCAL int64_t gmtsupport_smooth_contour (struct GMT_CTRL *GMT, double **x_in
 
 	t_in[0] = 0.0;
 	for (i = j = 1; i < n; i++)	{
-		if (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_360_range (x[i-1], x[i])) {
+		if (gmt_M_x_is_lon (GMT, GMT_IN) && gmt_M_360_range (x[i-1], x[i])) {
 			ds = 0.0;	/* 360 degree jumps are excluded */
 		}
 		else
@@ -2708,7 +2720,7 @@ GMT_LOCAL void gmtsupport_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, 
 		for (i = 1; i < nn; i++) {
 			/* Distance from xy */
 			dx = xx[i] - xx[i-1];
-			if (gmt_M_is_geographic (GMT, GMT_IN) && GMT->current.map.is_world && fabs (dx) > (width = gmt_half_map_width (GMT, yy[i-1]))) {
+			if (gmt_M_x_is_lon (GMT, GMT_IN) && GMT->current.map.is_world && fabs (dx) > (width = gmt_half_map_width (GMT, yy[i-1]))) {
 				width *= 2.0;
 				dx = copysign (width - fabs (dx), -dx);
 				if (xx[i] < width)
@@ -2866,7 +2878,7 @@ GMT_LOCAL void gmtsupport_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, 
 			for (line_no = 0; line_no < G->X->n_segments; line_no++) {	/* For each of the crossing lines */
 				S = G->X->table[0]->segment[line_no];	/* Current segment */
 				gmt_init_track (GMT, S->data[GMT_Y], S->n_rows, &(G->ylist_XP));
-				G->nx = (unsigned int)gmt_crossover (GMT, S->data[GMT_X], S->data[GMT_Y], NULL, G->ylist_XP, S->n_rows, xx, yy, NULL, G->ylist, nn, false, gmt_M_is_geographic (GMT, GMT_IN), &G->XC);
+				G->nx = (unsigned int)gmt_crossover (GMT, S->data[GMT_X], S->data[GMT_Y], NULL, G->ylist_XP, S->n_rows, xx, yy, NULL, G->ylist, nn, false, gmt_M_x_is_lon (GMT, GMT_IN), &G->XC);
 				gmt_M_free (GMT, G->ylist_XP);
 				if (G->nx == 0) continue;
 
@@ -2993,7 +3005,7 @@ GMT_LOCAL void gmtsupport_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATAS
 	S->data[GMT_X][S->n_rows] = L->x;
 	S->data[GMT_Y][S->n_rows] = L->y;
 	S->data[GMT_Z][S->n_rows] = gmt_M_to_inch (GMT, G->size);
-	S->data[3][S->n_rows] = L->angle;	/* Change this in inches internally instead of string */
+	S->data[3][S->n_rows] = L->line_angle;	/* Change this in inches internally instead of string */
 	S->text[S->n_rows++] = strdup (G->symbol_code);
 }
 
@@ -3028,7 +3040,7 @@ GMT_LOCAL void gmtsupport_decorated_line_sub (struct GMT_CTRL *GMT, double *xx, 
 	for (i = 1; i < nn; i++) {
 		/* Distance from xy in plot distances (inch) */
 		dx = xx[i] - xx[i-1];
-		if (gmt_M_is_geographic (GMT, GMT_IN) && GMT->current.map.is_world && fabs (dx) > (width = gmt_half_map_width (GMT, yy[i-1]))) {
+		if (gmt_M_x_is_lon (GMT, GMT_IN) && GMT->current.map.is_world && fabs (dx) > (width = gmt_half_map_width (GMT, yy[i-1]))) {
 			width *= 2.0;
 			dx = copysign (width - fabs (dx), -dx);
 			if (xx[i] < width)
@@ -3113,7 +3125,7 @@ GMT_LOCAL void gmtsupport_decorated_line_sub (struct GMT_CTRL *GMT, double *xx, 
 		for (line_no = 0; line_no < G->X->n_segments; line_no++) {	/* For each of the crossing lines */
 			Sd = G->X->table[0]->segment[line_no];	/* Current segment */
 			gmt_init_track (GMT, Sd->data[GMT_Y], Sd->n_rows, &(G->ylist_XP));
-			G->nx = (unsigned int)gmt_crossover (GMT, Sd->data[GMT_X], Sd->data[GMT_Y], NULL, G->ylist_XP, Sd->n_rows, xx, yy, NULL, G->ylist, nn, false, gmt_M_is_geographic (GMT, GMT_IN), &G->XC);
+			G->nx = (unsigned int)gmt_crossover (GMT, Sd->data[GMT_X], Sd->data[GMT_Y], NULL, G->ylist_XP, Sd->n_rows, xx, yy, NULL, G->ylist, nn, false, gmt_M_x_is_lon (GMT, GMT_IN), &G->XC);
 			gmt_M_free (GMT, G->ylist_XP);
 			if (G->nx == 0) continue;
 
@@ -3347,7 +3359,7 @@ GMT_LOCAL unsigned int gmtsupport_inonout_sub (struct GMT_CTRL *GMT, double x, d
 	else {	/* Flat Earth case */
 		if (y < S->min[GMT_Y] || y > S->max[GMT_Y])
 			return (GMT_OUTSIDE);	/* Point outside, no need to assign value */
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Deal with longitude periodicity */
+		if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Deal with longitude periodicity */
 			if (x < S->min[GMT_X]) {
 				x += 360.0;
 				if (x > S->max[GMT_X])
@@ -4722,9 +4734,13 @@ GMT_LOCAL void gmtsupport_free_one_custom_symbol (struct GMT_CTRL *GMT, struct G
 		gmt_M_free (GMT, current->fill);
 		gmt_M_free (GMT, current->pen);
 		gmt_M_free (GMT, current->string);
+		if (current->eps) {
+			gmt_M_free (GMT, current->eps->macro);
+			gmt_M_str_free (current->eps->name);
+			gmt_M_free (GMT, current->eps);
+		}
 		gmt_M_free (GMT, current);
 	}
-	gmt_M_free (GMT, sym->PS_macro);
 	gmt_M_free (GMT, sym->type);
 	gmt_M_free (GMT, sym);
 }
@@ -4762,45 +4778,123 @@ GMT_LOCAL int gmtsupport_decode_arg (char *txt, int column, struct GMT_CUSTOM_SY
 }
 
 int gmt_locate_custom_symbol (struct GMT_CTRL *GMT, const char *in_name, char *name, char *path, unsigned int *pos) {
-	unsigned int type = 0;	/* 0 = not found, 1 = def, 2 = eps */
-	size_t length;
-	char file[PATH_MAX] = {""};
-	/* Determine if in_name ends in ".def" or not */
+	/* Return codes are 0 = not found, 1 = def, 2 = eps */
+	bool try[3] = {false, true, true};	/* Try to look for either .def or .eps (index [0] is not used) */
+	bool try_remote = false;
+	size_t k, length;
+	char file[PATH_MAX] = {""}, *ext[3] = {"", ".def", ".eps"};
+	/* Because we do not necessarily know if the custom symbol requested is an EPS or DEF file, we must check
+	 * for both unless an extension is given and then we know.  To minimize checking on the remote server, we
+	 * decide to look for one or both files only locally first, and if that fails then we start looking in the\
+	 * remote cache. */
+
+	/* Determine if in_name ends in ".def", ".eps" or neither */
 	length = strlen (in_name);
-	if (length > 4 && !strcmp (&in_name[length-4], ".def"))	/* User gave trailing .def extension (not needed) - just chop */
-		strncpy (name, in_name, length-4);
-	else	/* Use as is */
+	if (length > 4 && !strcmp (&in_name[length-4], ext[GMT_CUSTOM_DEF])) {	/* User gave trailing .def extension */
+		strncpy (name, in_name, length-4);	/* Eliminate extension in name */
+		try[GMT_CUSTOM_EPS] = false;	/* No need looking for eps files */
+	}
+	else if (length > 4 && !strcmp (&in_name[length-4], ext[GMT_CUSTOM_EPS])) {	/* User gave trailing .eps extension */
+		strncpy (name, in_name, length-4);	/* Eliminate extension in name */
+		try[GMT_CUSTOM_DEF] = false;	/* No need looking for def files */
+	}
+	else	/* Use as is, extension remains unknown */
 		strcpy (name, in_name);
 
-	snprintf (file, PATH_MAX, "%s.def", name);	/* Full name of potential def file */
-	/* Deal with downloadable GMT data sets first.  Passing 4 to avoid hearing about missing remote file
-	 * which can happen when we look for *.def but the file is actually a *.eps [Example 46] */
-	if (gmt_file_is_cache (GMT->parent, file))	/* Must be a cache file */
-		*pos = gmt_download_file_if_not_found (GMT, file, 4);
-	/* Here, pos is position of first character in the name after any leading URLs or @ [0] */
-	if (!gmt_getsharepath (GMT, "custom", &name[*pos], ".def", path, R_OK) && !gmtlib_getuserpath (GMT, &file[*pos], path)) {	/* No *.def file found */
-		/* See if we got EPS macro */
-		if (length > 4 && !strcmp (&in_name[length-4], ".eps"))	/* User gave trailing .eps extension (not needed) - just chop */
-			strncpy (name, in_name, length-4);
-		else	/* Use as is */
-			strcpy (name, in_name);
-		/* First check for eps macro */
-		snprintf (file, PATH_MAX, "%s.eps", name);	/* Full name of eps file */
-		if (gmt_file_is_cache (GMT->parent, file))	/* Must be a cache file */
-			*pos = gmt_download_file_if_not_found (GMT, file, 0);	/* Deal with downloadable GMT data sets first */
-		if (gmt_getsharepath (GMT, "custom", &name[*pos], ".eps", path, R_OK) || gmtlib_getuserpath (GMT, &file[*pos], path)) {
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found EPS macro %s\n", path);
-			type = GMT_CUSTOM_EPS;
+	if (gmt_file_is_cache (GMT->parent, name)) {
+		try_remote = true;	/* Is a cache file */
+		*pos = 1;
+	}
+	for (k = GMT_CUSTOM_DEF; k <= GMT_CUSTOM_EPS; k++) {
+		if (!try[k]) continue;	/* No need to check for this type of custom symbol*/
+		snprintf (file, PATH_MAX, "%s%s", name, ext[k]);	/* Full name of potential def|eps file */
+		if (gmt_getsharepath (GMT, "custom", &name[*pos], ext[k], path, R_OK) || gmtlib_getuserpath (GMT, &file[*pos], path)) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found custom symbol %s in %s\n", name, path);
+			return k;	/* Found local *.def or *.eps file */
 		}
-		else
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find either custom symbol or EPS macro %s\n", name);
 	}
-	else {
-		type = GMT_CUSTOM_DEF;
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found custom symbol %s\n", path);
-	}
-	return (type);
+	if (!try_remote) return 0;	/* Not found, and since not a cache file we don't need to look further */
 
+	/* Here we failed to find the cache file locally.  Now try remote cache */
+	for (k = GMT_CUSTOM_DEF; k <= GMT_CUSTOM_EPS; k++) {
+		if (!try[k]) continue;	/* No need to check this on */
+		snprintf (file, PATH_MAX, "%s%s", name, ext[k]);	/* Full name of potential def|eps file */
+		/* Look for remote files.  Passing 4 to avoid hearing about missing remote files
+		 * which can happen when we look for *.def but the file is actually a *.eps [Example 46] */
+		*pos = gmt_download_file_if_not_found (GMT, file, 4);
+		/* Here, pos is position of first character in the name after any leading URLs or @ [0] */
+		if (gmt_getsharepath (GMT, "custom", &name[*pos], ext[k], path, R_OK) || gmtlib_getuserpath (GMT, &file[*pos], path)) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found custom symbol %s in %s\n", name, path);
+			return k;	/* Found local *.def or *.eps file */
+		}
+	}
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find either custom symbol or EPS macro %s\n", name);
+	return (0);
+
+}
+
+GMT_LOCAL struct GMT_CUSTOM_SYMBOL_EPS * gmtsupport_load_eps_symbol (struct GMT_CTRL *GMT, char *name, char *path) {
+	unsigned int bb;
+	bool got_BB[2] = {false, false};
+	static char *BB_string[2] = {"%%HiResBoundingBox:", "%%BoundingBox:"};
+	char buffer[GMT_BUFSIZ] = {""};
+	struct stat buf;
+	struct GMT_CUSTOM_SYMBOL_EPS *E = NULL;
+	FILE *fp = NULL;
+
+	if (stat (path, &buf)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of EPS symbol %s\n", path);
+		return NULL;
+	}
+	if ((fp = fopen (path, "r")) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find custom symbol %s\n", path);
+		return NULL;
+	}
+	E = gmt_M_memory (GMT, NULL, 1U, struct GMT_CUSTOM_SYMBOL_EPS);
+	E->macro = gmt_M_memory (GMT, NULL, (size_t)buf.st_size, char);
+	E->name = strdup (name);
+	while (fgets (buffer, GMT_BUFSIZ, fp)) {
+		for (bb = 0; bb < 2; bb++) {	/* Check for both flavors of BoundingBox unless found */
+			if (!got_BB[bb] && (strstr (buffer, BB_string[bb]))) {
+				char c1[GMT_VF_LEN] = {""}, c2[GMT_VF_LEN] = {""}, c3[GMT_VF_LEN] = {""}, c4[GMT_VF_LEN] = {""};
+				sscanf (&buffer[strlen(BB_string[bb])], "%s %s %s %s", c1, c2, c3, c4);
+				E->BB[0] = atof (c1);	E->BB[2] = atof (c2);
+				E->BB[1] = atof (c3);	E->BB[3] = atof (c4);
+				got_BB[bb] = true;
+				if (bb == 0) got_BB[1] = true;	/* If we find HighRes BB then we don't need to look for LowRes BB */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Custom EPS symbol %s has width %g and height %g inches [%s]\n",
+					path, (E->BB[1] - E->BB[0]) / 72, (E->BB[3] - E->BB[2]) / 72, &BB_string[bb][2]);
+			}
+		}
+		if (buffer[0] == '%' && (buffer[1] == '%' || buffer[1] == '!')) continue;	/* Skip comments */
+		strcat (E->macro, buffer);	/* Keep appending to the macro until EOF */
+	}
+	gmt_fclose (GMT, fp);
+	if (strstr (E->macro, "%%Creator: GMT")) {	/* Check if a GMT EPS or not */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "EPS symbol %s is a GMT-produced macro\n", path);
+		E->GMT_made = true;	/* So we know to scale the EPS by 1200/72 or not in gmt_plot.c */
+	}
+	return (E);
+}
+
+int gmtlib_convert_eps_to_def (struct GMT_CTRL *GMT, char *in_name, char *path) {
+	/* Replace an EPS file with a simple 1-liner custom file using an inline EPS command P instead.
+	 * path is updated to point to the replacement temp file */
+
+	FILE *fp = NULL;
+	snprintf (path, PATH_MAX, "%s/gmt_epssymbol_XXXXXX", GMT->parent->tmp_dir);	/* The XXXXXX will be replaced by mktemp */
+	if (mktemp (path) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtlib_convert_eps_to_def: Could not create temporary file name from template %s.\n", path);
+		return GMT_RUNTIME_ERROR;
+	}
+	strcat (path, ".def");	/* Append the right extension for a custom symbol */
+	if ((fp = fopen (path, "w")) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtlib_convert_eps_to_def: Unable to create custom symbol file %s\n", path);
+		return GMT_RUNTIME_ERROR;
+	}
+	fprintf (fp, "# Custom symbol for placing a single EPS file\n0 0 1 %s %c\n", in_name, GMT_SYMBOL_EPS);	/* The EPS placement item */
+	fclose (fp);
+	return GMT_NOERROR;
 }
 
 /*! . */
@@ -4812,24 +4906,20 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 	 * 4. In the user data dir [~/.gmt/data]
 	 * 5. In the system share/custom dir
 	 * THus we must use both gmt_getsharepath and gmtlib_getuserpath when looking */
-	unsigned int k, bb, nc = 0, nv, error = 0, var_symbol = 0, pos = 0, n_txt = 0, type;
+	unsigned int k, nc = 0, nv, error = 0, var_symbol = 0, pos = 0, n_txt = 0, type;
 	int last;
-	bool do_fill, do_pen, first = true, got_BB[2] = {false, false};
-	char name[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[GMT_LEN8] = {""}, right[GMT_LEN64] = {""};
+	bool do_fill, do_pen, first = true;
+	char name[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN128], OP[GMT_LEN8] = {""}, right[GMT_LEN64] = {""};
 	char arg[3][GMT_LEN64] = {"", "", ""}, *fill_p = NULL, *pen_p = NULL, *c = NULL;
-	char *BB_string[2] = {"%%HiResBoundingBox:", "%%BoundingBox:"};
 	FILE *fp = NULL;
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
 	struct stat buf;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
 
 	if ((type = gmt_locate_custom_symbol (GMT, in_name, name, path, &pos)) == 0) return GMT_RUNTIME_ERROR;
-	if (type == GMT_CUSTOM_EPS) {
-		if (stat (path, &buf)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of EPS macro %s\n", path);
-			return GMT_RUNTIME_ERROR;
-		}
-	}
+
+	if (type == GMT_CUSTOM_EPS && gmtlib_convert_eps_to_def (GMT, in_name, path))	/* Must replace EPS with a simple 1-liner custom file with EPS command */
+		return GMT_RUNTIME_ERROR;
 
 	if ((fp = fopen (path, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find custom symbol %s\n", &name[pos]);
@@ -4839,27 +4929,6 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 	head = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
 	strncpy (head->name, basename (&name[pos]), GMT_LEN64-1);
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
-		if (type == GMT_CUSTOM_EPS) {	/* Working on an EPS symbol, just append the text as is */
-			if (head->PS == 0) {	/* Allocate memory for the EPS symbol */
-				head->PS_macro = gmt_M_memory (GMT, NULL, (size_t)buf.st_size, char);
-				head->PS = 1;	/* Flag to indicate we already allocated memory */
-			}
-			for (bb = 0; bb < 2; bb++) {	/* Check for both flavors of BoundingBox unless found */
-				if (!got_BB[bb] && (strstr (buffer, BB_string[bb]))) {
-					char c1[GMT_VF_LEN] = {""}, c2[GMT_VF_LEN] = {""}, c3[GMT_VF_LEN] = {""}, c4[GMT_VF_LEN] = {""};
-					sscanf (&buffer[strlen(BB_string[bb])], "%s %s %s %s", c1, c2, c3, c4);
-					head->PS_BB[0] = atof (c1);	head->PS_BB[2] = atof (c2);
-					head->PS_BB[1] = atof (c3);	head->PS_BB[3] = atof (c4);
-					got_BB[bb] = true;
-					if (bb == 0) got_BB[1] = true;	/* If we find HighRes BB then we don't need to look for LowRes BB */
-					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Custom EPS symbol %s has width %g and height %g inches [%s]\n",
-						&name[pos], (head->PS_BB[1] - head->PS_BB[0]) / 72, (head->PS_BB[3] - head->PS_BB[2]) / 72, &BB_string[bb][2]);
-				}
-			}
-			if (buffer[0] == '%' && (buffer[1] == '%' || buffer[1] == '!')) continue;	/* Skip comments */
-			strcat (head->PS_macro, buffer);
-			continue;
-		}
 		if (buffer[0] == '#') continue;	/* Skip comments */
 		gmt_chop (buffer);	/* Get rid of \n \r */
 		if (gmt_is_a_blank_line (buffer)) continue;	/* Skip blank lines */
@@ -5007,19 +5076,19 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 
 			/* M, D, S, and A allows for arbitrary lines or polygons to be designed - these may be painted or filled with pattern */
 
-			case 'M':		/* Set a new anchor point */
+			case GMT_SYMBOL_MOVE:		/* Set a new anchor point */
 				if (last != 2) error++;
 				break;
 
-			case 'D':		/* Draw to next point */
+			case GMT_SYMBOL_DRAW:		/* Draw to next point */
 				if (last != 2) error++;
 				break;
 
-			case 'S':		/* Stroke current path as line, not polygon */
+			case GMT_SYMBOL_STROKE:		/* Stroke current path as line, not polygon */
 				if (last != 0) error++;
 				break;
 
-			case 'A':		/* Draw arc of a circle */
+			case GMT_SYMBOL_ARC:		/* Draw arc of a circle */
 				if (last != 5) error++;
 				s->p[0] = atof (col[2]);
 				gmtsupport_decode_arg (col[3], 1, s);	/* angle1 could be a variable or constant degrees */
@@ -5031,7 +5100,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 				s->action = gmtsupport_decode_arg (col[0], 0, s);	/* angle could be a variable or constant heading or azimuth in degrees */
 				break;
 
-			case 'T':		/* Texture changes only (modify pen, fill settings) */
+			case GMT_SYMBOL_TEXTURE:		/* Texture changes only (modify pen, fill settings) */
 				if (last != 0) error++;
 				break;
 
@@ -5050,25 +5119,25 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 					head->type[head->n_required] = GMT_IS_DIMENSION;	/* It is actually a symbol code but this gets us passed the test */
 				}
 				/* Intentionally fall through */
-			case 'a':		/* Draw star symbol */
-			case 'c':		/* Draw complete circle */
-			case 'd':		/* Draw diamond symbol */
-			case 'g':		/* Draw octagon symbol */
-			case 'h':		/* Draw hexagon symbol */
-			case 'i':		/* Draw inverted triangle symbol */
-			case 'n':		/* Draw pentagon symbol */
-			case 'p':		/* Draw solid dot */
-			case 's':		/* Draw square symbol */
-			case 't':		/* Draw triangle symbol */
-			case 'x':		/* Draw cross symbol */
-			case 'y':		/* Draw vertical dash symbol */
-			case '+':		/* Draw plus symbol */
-			case '-':		/* Draw horizontal dash symbol */
+			case PSL_STAR:			/* Draw star symbol */
+			case PSL_CIRCLE:		/* Draw complete circle */
+			case PSL_DIAMOND:		/* Draw diamond symbol */
+			case PSL_OCTAGON:		/* Draw octagon symbol */
+			case PSL_HEXAGON:		/* Draw hexagon symbol */
+			case PSL_INVTRIANGLE:	/* Draw inverted triangle symbol */
+			case PSL_PENTAGON:		/* Draw pentagon symbol */
+			case PSL_DOT:			/* Draw solid dot */
+			case PSL_SQUARE:		/* Draw square symbol */
+			case PSL_TRIANGLE:		/* Draw triangle symbol */
+			case PSL_CROSS:			/* Draw cross symbol */
+			case PSL_YDASH:			/* Draw vertical dash symbol */
+			case PSL_PLUS:			/* Draw plus symbol */
+			case PSL_XDASH:			/* Draw horizontal dash symbol */
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
 				break;
 
-			case 'l':		/* Draw letter/text symbol [ expect x, y, size, string l] */
+			case GMT_SYMBOL_TEXT:		/* Draw letter/text symbol [ expect x, y, size, string l] */
 				if (last != 4) error++;	/* Did not get the expected arguments */
 				s->p[0] = atof (col[2]);	/* Text size is either (1) fixed point size of (2) fractional size relative to the 1x1 box */
 				if (col[2][strlen(col[2])-1] == 'p')	/* Gave font size as a fixed point size that will not scale with symbol size */
@@ -5113,33 +5182,40 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 
 				break;
 
-			case 'r':		/* Draw rect symbol */
+			case PSL_RECT:		/* Draw rect symbol */
 				if (last != 4) error++;
 				s->p[0] = atof (col[2]);
 				s->p[1] = atof (col[3]);
 				break;
 
-			case 'R':		/* Draw rounded rect symbol */
+			case PSL_RNDRECT:		/* Draw rounded rect symbol */
 				if (last != 5) error++;
 				s->p[0] = atof (col[2]);
 				s->p[1] = atof (col[3]);
 				s->p[2] = atof (col[4]);
 				break;
 
-			case 'e':		/* Draw ellipse symbol */
-			case 'j':		/* Draw rotated rect symbol */
+			case PSL_ELLIPSE:		/* Draw ellipse symbol */
+			case PSL_ROTRECT:		/* Draw rotated rect symbol */
 				if (last != 5) error++;
 				gmtsupport_decode_arg (col[2], 0, s);	/* angle could be a variable or constant degrees */
 				s->p[1] = atof (col[3]);
 				s->p[2] = atof (col[4]);
 				break;
 
-			case 'm':		/* Draw mathangle symbol */
-			case 'w':		/* Draw wedge (pie) symbol */
+			case PSL_MARC:		/* Draw mathangle symbol */
+			case PSL_WEDGE:		/* Draw wedge (pie) symbol */
 				if (last != 5) error++;
 				s->p[0] = atof (col[2]);
 				gmtsupport_decode_arg (col[3], 1, s);	/* angle1 could be a variable or constant degrees */
 				gmtsupport_decode_arg (col[4], 2, s);	/* angle2 could be a variable or constant degrees */
+				break;
+
+			case GMT_SYMBOL_EPS:		/* Place EPS file */
+				if (last != 4) error++;
+				s->p[0] = atof (col[2]);
+				if ((type = gmt_locate_custom_symbol (GMT, col[3], name, path, &pos)) == 0) return GMT_RUNTIME_ERROR;
+				if ((s->eps = gmtsupport_load_eps_symbol (GMT, name, path)) == NULL) return GMT_RUNTIME_ERROR;
 				break;
 
 			default:
@@ -5211,10 +5287,6 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 		previous = s;
 	}
 	fclose (fp);
-	if (head->PS && strstr (head->PS_macro, "%%Creator: GMT")) {	/* Check if a GMT EPS or not */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "EPS symbol %s is a GMT-produced macro\n", head->name);
-		head->PS |= 4;	/* So we know to scale the EPS by 1200/72 or not in gmt_plot.c */
-	}
 	head->n_required -= n_txt;	/* WOrds from trailing text is not part of required arguments (which are all numerical) */
 	*S = head;
 	return (GMT_NOERROR);
@@ -7351,10 +7423,12 @@ struct GMT_PALETTE * gmtlib_create_palette (struct GMT_CTRL *GMT, uint64_t n_col
 /*! . */
 void gmtlib_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	unsigned int i;
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	if (!P) return;
 	/* Frees all memory used by this palette but does not free the palette itself */
+	PH = gmt_get_C_hidden (P);
 	for (i = 0; i < P->n_colors; i++) {
-		gmtsupport_free_range (GMT, &P->data[i]);
+		gmtsupport_free_range (GMT, PH, &P->data[i]);
 	}
 	for (i = 0; i < 3; i++)
 		if (P->bfn[i].fill)
@@ -7798,6 +7872,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			k--;	/* Position before ; */
 			while (k && (line[k] == '\t' || line[k] == ' ')) k--;
 			line[k+1] = '\0';	/* Chop label and trailing white space off from line */
+			XH->alloc_mode_text[GMT_CPT_INDEX_LBL] = GMT_ALLOC_INTERNALLY;
 		}
 
 		/* Determine if psscale need to label these steps by looking for the optional L|U|B character at the end */
@@ -7820,6 +7895,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			X->data[n].z_low = n;	/* Just use counter as z value dummy */
 			X->data[n].key = (T0[0] == '\\') ? strdup (&T0[1]) : strdup (T0);	/* Skip escape: For user to have a name like B it must be \B to avoid conflict with BNF settings*/
 			X->categorical |= GMT_CPT_CATEGORICAL_KEY;	/* Flag this type of CPT */
+			XH->alloc_mode_text[GMT_CPT_INDEX_KEY] = GMT_ALLOC_INTERNALLY;
 		}
 		else {	/* Floating point lookup values */
 			gmt_scanf_arg (GMT, T0, GMT_IS_UNKNOWN, false, &X->data[n].z_low);
@@ -8925,6 +9001,7 @@ GMT_LOCAL void gmtsupport_reset_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P
 struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
 	/* Truncate this CPT to start and end at z_low, z_high.  If either is NaN we do nothing at that end. */
 	unsigned int k, j, first = 0, last = P->n_colors - 1;
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
 
 	if (gmt_M_is_dnan (z_low) && gmt_M_is_dnan (z_high)) return (P);	/* No change */
 
@@ -8963,10 +9040,11 @@ struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 			gmtsupport_truncate_cpt_slice (&P->data[last], P->model & GMT_HSV, z_high, +1);
 	}
 
+	PH = gmt_get_C_hidden (P);
 	for (k = 0; k < first; k++)
-		gmtsupport_free_range (GMT, &P->data[k]);	/* Free any char strings */
+		gmtsupport_free_range (GMT, PH, &P->data[k]);	/* Free any char strings */
 	for (k = last + 1; k < P->n_colors; k++)
-		gmtsupport_free_range (GMT, &P->data[k]);	/* Free any char strings */
+		gmtsupport_free_range (GMT, PH, &P->data[k]);	/* Free any char strings */
 
 	if (first) {	/* Shuffle CPT down */
 		for (k = 0, j = first; j <= last; k++, j++) {
@@ -13766,7 +13844,7 @@ unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char option, const char 
 }
 
 /*! . */
-double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T) {
+double gmtlib_get_map_interval (struct GMT_CTRL *GMT, unsigned int type, struct GMT_PLOT_AXIS_ITEM *T) {
 	switch (T->unit) {
 		case 'd':	/* arc Degrees */
 			return (T->interval);
@@ -13781,8 +13859,8 @@ double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM 
 			else
 				return (T->interval);
 			/* Intentionally fall through - to 's' */
-		case 's':	/* arc Seconds */
-			return (T->interval * GMT_SEC2DEG);
+		case 's':	/* arc Seconds or time seconds */
+			return ((type == GMT_TIME) ? T->interval : T->interval * GMT_SEC2DEG);
 			break;
 		default:
 			return (T->interval);
@@ -14668,7 +14746,10 @@ unsigned int gmtlib_time_array (struct GMT_CTRL *GMT, double min, double max, st
 
 	if (!T->active) return (0);
 	interval = (T->type == 'i' || T->type == 'I');	/* Only true for i/I axis items */
-	n = (unsigned int)gmtsupport_time_array (GMT, min, max, T->interval, T->unit, interval, array);
+	if (T->unit == 's' && T->interval <= 1.0)
+		n = gmtlib_linear_array (GMT, min, max, T->interval, 0.0, array);
+	else
+		n = (unsigned int)gmtsupport_time_array (GMT, min, max, T->interval, T->unit, interval, array);
 
 	return (n);
 }
@@ -14763,13 +14844,13 @@ unsigned int gmtlib_coordinate_array (struct GMT_CTRL *GMT, double min, double m
 
 	switch (GMT->current.proj.xyz_projection[T->parent]) {
 		case GMT_LINEAR:
-			n = gmtlib_linear_array (GMT, min, max, gmtlib_get_map_interval (GMT, T), GMT->current.map.frame.axis[T->parent].phase, array);
+			n = gmtlib_linear_array (GMT, min, max, gmtlib_get_map_interval (GMT, GMT_LINEAR, T), GMT->current.map.frame.axis[T->parent].phase, array);
 			break;
 		case GMT_LOG10:
-			n = gmtlib_log_array (GMT, min, max, gmtlib_get_map_interval (GMT, T), array);
+			n = gmtlib_log_array (GMT, min, max, gmtlib_get_map_interval (GMT, GMT_LOG10, T), array);
 			break;
 		case GMT_POW:
-			n = gmtlib_pow_array (GMT, min, max, gmtlib_get_map_interval (GMT, T), T->parent, array);
+			n = gmtlib_pow_array (GMT, min, max, gmtlib_get_map_interval (GMT, GMT_POW, T), T->parent, array);
 			break;
 		case GMT_TIME:
 			n = gmtlib_time_array (GMT, min, max, T, array);
@@ -14823,6 +14904,10 @@ bool gmtlib_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_
 	}
 	else if (coord[0] < (min - GMT_CONV8_LIMIT) || coord[0] > (max + GMT_CONV8_LIMIT))		/* Outside axis range */
 		return (true);
+	else if (T->parent == GMT->current.io.cycle_col && GMT->current.io.cycle_interval) {
+		*pos = coord[0] + 0.5;	/* Since we know this only happens for "months" (all same width) or weekdays */
+		if (*pos > max) return (true);
+	}
 	else
 		*pos = coord[0];
 
@@ -14832,13 +14917,33 @@ bool gmtlib_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_
 /*! . */
 int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord) {
 	/* Returns the formatted annotation string for the non-geographic axes */
+	bool upper = false;
+	unsigned int kind = 0, code;
+	int ival;
 
 	switch (GMT->current.map.frame.axis[T->parent].type) {
 		case GMT_LINEAR:
 #if 0
 			GMT_near_zero_roundoff_fixer_upper (&coord, T->parent);	/* Try to adjust those ~0 "gcc -O" values to exact 0 */
 #endif
-			gmt_sprintf_float (GMT, string, format, coord);
+			code = (GMT->current.io.cycle_col == GMT->current.map.frame.axis[T->parent].id) ? GMT->current.io.cycle_operator : 0;
+			switch (code) {	/* Do special treatment for annual and weekly annotations since they are texts but axis is not a time-axis per se... */
+				case GMT_CYCLE_WEEK:		/* Must do days of the week or abbreviation */
+					gmtlib_set_case_and_kind (GMT, GMT->current.setting.format_time[GMT_PRIMARY], &upper, &kind);
+					ival = (irint (coord) + GMT->current.setting.time_week_start + GMT_WEEK2DAY_I) % GMT_WEEK2DAY_I;	/* Wrap around */
+					strncpy (string, GMT->current.language.day_name[kind][ival], GMT_LEN16);
+					if (upper) gmt_str_toupper (string);
+					break;
+				case GMT_CYCLE_ANNUAL:	/* Must write month name or abbreviation */
+					gmtlib_set_case_and_kind (GMT, GMT->current.setting.format_time[GMT_PRIMARY], &upper, &kind);
+					ival = (urint (coord) + 12) % 12;	/* Wrap around */
+					strncpy (string, GMT->current.language.month_name[kind][ival], GMT_LEN16);
+					if (upper) gmt_str_toupper (string);
+					break;
+				default:
+					gmt_sprintf_float (GMT, string, format, coord);
+					break;
+			}
 			break;
 		case GMT_LOG10:
 			sprintf (string, "%ld", lrint (d_log10 (GMT, coord)));
@@ -16561,7 +16666,7 @@ unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 			f1 = (gmt_M_is_zero (ds)) ? 1.0 : (dist - offset) / ds;
 			f2 = 1.0 - f1;
 			y[current] = y[current] * f1 + y[next] * f2;
-			if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must worry about longitude jump */
+			if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must worry about longitude jump */
 				double del = x[next] - x[current];
 				gmt_M_set_delta_lon (x[current], x[next], del);
 				x[current] += del * f2;

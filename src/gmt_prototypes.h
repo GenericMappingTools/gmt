@@ -43,6 +43,9 @@ EXTERN_MSC char * gmt_strdup (struct GMT_CTRL *GMT, const char *s);
 
 EXTERN_MSC bool gmt_nc_is_cube (struct GMTAPI_CTRL *API, char *file);
 EXTERN_MSC int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *wrange, uint64_t *nz, double **zarray);
+EXTERN_MSC int gmt_nc_open (struct GMT_CTRL *GMT, char *path, int mode, int *id);
+EXTERN_MSC int gmt_nc_close (struct GMT_CTRL *GMT, int id);
+EXTERN_MSC int gmt_nc_create (struct GMT_CTRL *GMT, char *path, int mode, int *id);
 
 /* gmt_init.c: */
 
@@ -285,6 +288,7 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 
 /* gmt_io.c: */
 
+EXTERN_MSC int gmt_convert_double (struct GMT_CTRL *GMT, char *text, double *value);
 EXTERN_MSC void gmt_increase_abstime_format_precision (struct GMT_CTRL *GMT, unsigned int col, double dt);
 EXTERN_MSC char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const char *mods);
 EXTERN_MSC void gmt_quit_bad_record (struct GMTAPI_CTRL *API, struct GMT_RECORD *In);
