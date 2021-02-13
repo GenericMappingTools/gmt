@@ -175,7 +175,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Here, height is ignored and -L, -N, -Q, -T and -Z are disallowed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Choose between c(one), d(isc), g(aussian), p(o)lynomial or p(arabola) model [gaussian].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is not given the we default to a Gaussian seamount model.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is given without argument then we expect to find c,d,p,o or d in the last input column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is given without argument then we expect to find c,d,g,o or p in the last input column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Specify horizontal distance unit used by input file if -fg is not used.  Choose among\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e (meter), f (foot) k (km), M (mile), n (nautical mile), or u (survey foot) [e].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Elliptical data format [Default is Circular].\n");
