@@ -440,7 +440,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pslegend task */
 	unsigned int set, tbl, pos, first = 0, ID, n_item = 0;
 	int i, justify = 0, n = 0, n_columns = 1, n_col, col, error = 0, column_number = 0, id, n_scan, status = 0, max_cols = 0;
-	bool flush_paragraph = false, v_line_draw_now = false, gave_label, gave_mapscale_options, did_old = false, use[2] = {false, false};
+	bool flush_paragraph = false, v_line_draw_now = false, gave_label, gave_mapscale_options, did_old = false, use[2] = {false, true};
 	bool drawn = false, b_cpt = false, C_is_active = false, do_width = false, in_PS_ok = true, got_line = false;
 	uint64_t seg, row, n_fronts = 0, n_quoted_lines = 0, n_symbols = 0, n_par_lines = 0, n_par_total = 0, krow[N_DAT], n_records = 0;
 	int64_t n_para = -1;
@@ -511,14 +511,8 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 		GMT->current.setting.io_seg_marker[GMT_IN] = '#';
 	}
 
-	if (GMT->current.setting.run_mode == GMT_MODERN) {
-		if (Ctrl->M.active)	/* use both hidden info and explicit info files */
-			use[INFO_HIDDEN] = use[INFO_GIVEN] = true;
-		else	/* Only read hidden file */
-			use[INFO_HIDDEN] = true;
-	}
-	else
-			use[INFO_GIVEN] = use[1] = true;
+	if (GMT->current.setting.run_mode == GMT_MODERN)	/* Possibly use both hidden info and explicit info files */
+		use[INFO_HIDDEN] =  true;
 
 	if (use[INFO_HIDDEN] && gmt_legend_file (API, legend_file) == 1) {	/* Running modern mode and we have a hidden legend file to read */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Processing hidden legend specification file %s\n", legend_file);
@@ -528,8 +522,12 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (Ctrl->T.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_WRITE_NORMAL, NULL, Ctrl->T.file, INFO[INFO_HIDDEN]) != GMT_NOERROR) {
 			Return (API->error);
 		}
+		if (!Ctrl->M.active) use[INFO_GIVEN] = false;	/* Without -M we only read one source */
 		n_records += INFO[INFO_HIDDEN]->n_records;
 	}
+	else
+		use[INFO_HIDDEN] =  false;
+
 	if (use[INFO_GIVEN]) {	/* Possibly register stdin and/or read specified input file(s) */
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
