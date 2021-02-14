@@ -70,6 +70,14 @@ Optional Arguments
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
+.. _-M:
+
+**-M**
+    Modern mode only: Read both (1) the hidden auto-generated legend information file created by
+    plotting-modules' **-l** option and (2) additional information from input file(s) given on the
+    command line (or via *stdin*) [hidden file only].  For classic mode an input file must be
+    given or else we will read from *stdin*.
+
 .. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
