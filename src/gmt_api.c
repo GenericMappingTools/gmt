@@ -1422,6 +1422,9 @@ GMT_LOCAL unsigned int gmtapi_add_existing (struct GMTAPI_CTRL *API, enum GMT_en
 #define K_PRIMARY			0
 #define K_SECONDARY			1
 
+#define K_OR			0
+#define K_AND			1
+
 #define API_PRIMARY_INPUT		'{'
 #define API_PRIMARY_OUTPUT		'}'
 #define API_SECONDARY_INPUT		'('
@@ -1609,7 +1612,7 @@ GMT_LOCAL char ** gmtapi_process_keys (void *V_API, const char *string, char typ
 					change_type = false;
 					for (kk = 3; s[k][kk]; kk++) {	/* Examine characters in the modifier string */
 						if (strchr ("-+", s[k][kk])) {	/* Start of all (+) versus at least one (-) */
-							kase = (s[k][kk] == '-') ? 0 : 1;	/* Set kase and go to next letter */
+							kase = (s[k][kk] == '-') ? K_OR : K_AND;	/* Set kase and go to next letter */
 							continue;
 						}
 						count[kase]++;	/* How many AND and how many OR modifiers (depending on kase) */
@@ -1617,7 +1620,7 @@ GMT_LOCAL char ** gmtapi_process_keys (void *V_API, const char *string, char typ
 						if (strstr (opt->arg, modifier)) given[kase]++;	/* Match found with given option */
 					}
 					/* Only change the key if we found all the AND modifiers and at least one of the OR modifiers (if any were given) */
-					if ((count[0] == 0 || (count[0] && given[0])) && count[1] == given[1]) change_type = true;
+					if ((count[K_OR] == 0 || (count[K_OR] && given[K_OR])) && count[K_AND] == given[K_AND]) change_type = true;
 				}
 				else	/* true since we found the option and no modifiers were given */
 					change_type = true;
@@ -1664,10 +1667,10 @@ GMT_LOCAL char ** gmtapi_process_keys (void *V_API, const char *string, char typ
 	}
 	n = kk;	/* May have lost some NULLs.  Make a revised string for debug output */
 	for (k = 0; k < n; k++) {
-		strcat (revised, ",");
+		if (k) strcat (revised, ",");
 		strncat (revised, s[k], GMT_LEN64-1);
 	}
-	if (revised[0]) GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_process_keys: Revised keys string is %s\n", &revised[1]);
+	if (revised[0]) GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_process_keys: Revised keys string is %s\n", revised);
 	*n_items = (unsigned int)n;	/* Total number of remaining keys for this module */
 	gmt_M_str_free (tmp);
 	return s;	/* The array of remaining keys */
