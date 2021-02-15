@@ -56,7 +56,7 @@
 #define THIS_MODULE_MODERN_NAME	"coast"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot continents, countries, shorelines, rivers, and borders"
-#define THIS_MODULE_KEYS	">?}"
+#define THIS_MODULE_KEYS	">?},}DE-lL"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdptxy" GMT_OPT("Zc")
 
