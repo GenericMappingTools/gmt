@@ -838,7 +838,15 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	gmt_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
 	if (Ctrl->W.active) {	/* Want to delete the entire work directory */
 		gmt_set_comment (fp, Ctrl->In.mode, "Cleanup script removes working directory with job files");
-		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], workdir);	/* Delete the entire working directory with batch jobs and tmp files */
+		/* Delete the entire working directory with batch jobs and tmp files */
+		if (Ctrl->In.mode == GMT_DOS_MODE) {	/* Since we are issuing a command with possible directory structure */
+			char dospath[PATH_MAX] = {""};
+			strncpy (dospath, workdir, PATH_MAX);
+			gmt_strrepc (dospath, '/', '\\');
+			fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], dospath);
+		}
+		else
+			fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], workdir);
 	}
 	else {	/* Just delete the remaining script files */
 #ifdef WIN32		/* On Windows to do remove a file in a subdir one need to use back slashes */
@@ -846,13 +854,16 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 #else
 		char dir_sep_ = '/';
 #endif
+		char tmppath[PATH_MAX] = {""};
+		if (Ctrl->In.mode == GMT_DOS_MODE)
+			gmt_strrepc (tmppath, '/', '\\');
 		GMT_Report (API, GMT_MSG_INFORMATION, "%u job product sets saved in directory: %s\n", n_jobs, workdir);
 		if (Ctrl->S[BATCH_PREFLIGHT].active)	/* Remove the preflight script */
-			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, pre_file);
+			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmppath, dir_sep_, pre_file);
 		if (Ctrl->S[BATCH_POSTFLIGHT].active)	/* Remove the postflight script */
-			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, post_file);
-		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, init_file);	/* Delete the init script */
-		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, main_file);	/* Delete the main script */
+			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmppath, dir_sep_, post_file);
+		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmppath, dir_sep_, init_file);	/* Delete the init script */
+		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmppath, dir_sep_, main_file);	/* Delete the main script */
 	}
 	fclose (fp);
 #ifndef _WIN32
