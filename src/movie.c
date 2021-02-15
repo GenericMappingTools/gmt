@@ -1228,7 +1228,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	static char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	static char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
 	static char *mvfile[3] = {"mv -f", "mv -f", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"}, var_token[4] = "$$%";
-	static char *cpconf[3] = {"cp -f %s .", "cp -f %s .", "copy %s ."};
+	static char *cpconf[3] = {"cp -f %s .\n", "cp -f %s .\n", "copy %s .\n"};
 
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
@@ -1422,6 +1422,9 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		has_conf = true;
 		sprintf (conf_file, "%s/gmt.conf", topdir);
 		gmt_replace_backslash_in_path (conf_file);
+#ifdef WIN32	/* Make it suitable for DOS command line copying */
+		gmt_strrepc (conf_file, '/', '\\');
+#endif
 	}
 
 	/* Create a working directory which will house every local file and all subdirectories created */
