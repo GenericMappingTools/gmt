@@ -1605,8 +1605,9 @@ GMT_LOCAL char ** gmtapi_process_keys (void *V_API, const char *string, char typ
 				if (strlen (s[k]) > 3) {	/* Not enough to just find option, must examine the modifiers */
 					/* Full syntax: XYZ+abc...-def...: We do the substitution of output type to Y only if
 					 * 1. -Z is given
-					 * 2. -Z contains ALL the modifiers +a, +b, +c, ...
-					 * 3. -Z contains AT LEAST ONE of the modifiers +d, +e, +f.
+					 * 2. -Z contains ALL the modifiers +a, +b, +c, ... (if any "+"-list is given)
+					 * 3. -Z contains AT LEAST ONE of the modifiers +d, +e, +f, ... (if any "-"=list is given)
+					 * At least one item from 2 or 3 must be given.
 					 */
 					unsigned int kase = 0, count[2] = {0, 0}, given[2] = {0, 0};
 					change_type = false;
@@ -12416,14 +12417,17 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	 *   A few modules will specify Z as some letter not in {|(|}|)|-, which means that normally these modules
 	 *   will expect/produce whatever input/output is specified by the primary setting, but if the "-Z" option is given the primary
 	 *   input/output will be changed to the given type Y.  Also, modifiers may be involved. The full syntax for this is
-	 *   XYZ+abc...-def...: We do the substitution of output type to Y only if
-	 *      1. -Z is given
-	 *      2. -Z contains ALL the modifiers +a, +b, +c, ...
-	 *      3. -Z contains AT LEAST ONE of the modifiers +d, +e, +f.
-	 *   The Z magic is a bit confusing so here is an example:
+	 *   XYZ[+abc...][-def...]: We do the substitution of output type to Y only if
+	 *      1. -Z is given on the command line
+	 *      2. -Z contains ALL the modifiers from the first "+"-list: +a, +b, +c, ... [optional]
+	 *      3. -Z contains AT LEAST ONE of the modifiers from the second "-"-list: +d, +e, +f. [optional]
+	 *   At least on case from 2 or 3 must be specified.
+	 *   The Z magic is a bit confusing so here is some examples:
 	 *   1. grdcontour normally writes PostScript but grdcontour -D will instead export data to std (or a file set by -D), so its key
 	 *      contains the entry "DDD": When -D is active then the PostScript key ">X}" morphs into "DD}" and
 	 *      thus allows for a data set export instead.
+	 *   2. pscoast normally plots PostSCript but pscoast -E+l only want to return a text listing of countries.  We allow for this
+	 *      switch by using the key >DE-lL so that if -E with either +l or +L are used we change primary output to D.
 	 *
 	 *   After processing, all magic key sequences are set to "---" to render them inactive.
 	 *
