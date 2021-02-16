@@ -342,9 +342,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		}
 	}
 
-	if (Ctrl->C.mode == SHAPE_POLY && Ctrl->Q.disc) {	/* A few things area not yet implemented */
-		n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active, "The -Q..+d for polynomial seamounts is not implemented yet\n");
-	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == SHAPE_DISC && Ctrl->F.active, "Cannot specify -F for discs; ignored\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->N.active || Ctrl->Z.active || Ctrl->L.active || Ctrl->T.active), "Option -A: Cannot use -L, -N, -T or -Z with -A\n");
 	if (!Ctrl->L.active) {	/* Just a listing, cannot use -R -I -r -G -M -Z */
@@ -518,9 +515,13 @@ GMT_LOCAL double grdseamount_gauss_solver (double in[], double f, double v, bool
 
 GMT_LOCAL double grdseamount_poly_solver (double in[], double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction from a polynomial seamount is not yet implemented */
-	gmt_M_unused (in), gmt_M_unused (f), gmt_M_unused (elliptical);
-	/* NOT IMPLEMENTED YET */
-	return (v);
+	double A, V0, phi, r02, h0, beta = (poly_smt_vol (1.0) - poly_smt_vol (f)) / poly_smt_func (f);
+	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
+	h0 = (elliptical) ? in[5] : in[3];
+	A = r02 * h0 * (beta - M_PI);
+	V0 = r02 * h0 * (beta + M_PI * f * f);
+	phi = pow (1.0 - V0 * (1.0 - v)/A, 1.0/3.0);
+	return (phi);
 }
 
 GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double **data, char **text, uint64_t rec, uint64_t n_expected, bool map, double inv_scale, double *in, char *code) {
@@ -873,7 +874,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								case SHAPE_CONE:  h_curr = h0 * (1 - phi_curr) / (1 - f); h_prev = h0 * (1 - phi_prev) / (1 - f); break;
 								case SHAPE_PARA:  h_curr = h0 * (1 - phi_curr * phi_curr) / (1 - f * f); h_prev = h0 * (1 - phi_prev * phi_prev) / (1 - f * f); break;
 								case SHAPE_GAUS:  h_curr = h0 * exp (4.5 * (f*f - phi_curr * phi_curr)); h_prev = h0 * exp (4.5 * (f*f - phi_prev * phi_prev)); break;
-								case SHAPE_POLY:  h_curr = h0; break;	/* NOT IMPLEMENTED YET for -F */
+								case SHAPE_POLY:  h_curr = h0 * phi_curr; h_prev = h0 * phi_prev;	break;
 							}
 							h_mean = fabs (h_curr - h_prev);	/* This is our disc layer thickness */
 							r_mean = sqrt (dV / (M_PI * h_mean));	/* Radius given by volume and height */
