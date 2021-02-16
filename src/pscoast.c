@@ -605,7 +605,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 	                                 "Cannot do clipping AND draw coastlines, rivers, or borders\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->E.active || Ctrl->W.active ||
 	                                 Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active),
-	                                 "Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
+	                                 "Must specify at least one of -C, -G, -S, -E, -I, -N, -Q and -W\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && (Ctrl->E.active + Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1,
 	                                 "Option -M: Must specify one of -E, -I, -N, and -W\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !(Ctrl->L.active || Ctrl->T.active),
