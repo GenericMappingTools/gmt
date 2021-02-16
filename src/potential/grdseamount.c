@@ -445,25 +445,24 @@ GMT_LOCAL double poly_smt_rc (double hc) {
 }
 
 GMT_LOCAL double poly_smt_vol (double r) {
-	/* Volume of polynomial seamount of unit amplitude */
-	double r2 = r * r, r3 = r2 * r, r5 = r2 * r3, V;
-	V = sqrt (3.0) * atan (sqrt (3.0) * (2.0 * r - 1.0) / 3.0) - 0.5 * (3.0 * log (r2 - r + 1.0)) - 3.0 * r + 0.5 * r2 + r3 - 0.2 * r5;
+	/* Volume of polynomial seamount of unit amplitude from normalized r' = 0 to r */
+	double r2 = r * r, r3 = r2 * r, r5 = r2 * r3, V, root3 = sqrt (3.0);
+	V = TWO_PI * (root3 * atan (root3 * (2.0 * r - 1.0) / 3.0) - 1.5 * log (r2 - r + 1.0) - 3.0 * r + 0.5 * r2 + r3 - 0.2 * r5);
 	return (V);
 }
 
 GMT_LOCAL void grdseamount_poly_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical parabolic seamounts. */
 	bool circular = doubleAlmostEqual (a, b);
-	double hstar, r2, r, rc = (hc > 0.0) ? poly_smt_rc (hc / h) : 1.0;	/* Fraction of normalized radius */
+	double r2, r, rc = (hc > 0.0) ? poly_smt_rc (hc / h) : 1.0;	/* Fraction of normalized radius */
 	a *= rc;	b *= rc;	h -= hc;	/* Now just remove the noise floor and shrink a, b, h */
 	r2 = (circular) ? a * a : a * b;
 	r = sqrt (r2);	/* Mean radius */
-	hstar = h / poly_smt_func (f);	/* This is h* in the notes */
 	*A = M_PI * r2;
 	if (fabs (f) > 0.0)	/* Truncated */
-		*V = hstar * poly_smt_vol (r) - (hstar - h) * poly_smt_vol (f*r);
+		*V = r2 * h * ((poly_smt_vol (1.0) - poly_smt_vol (f)) / poly_smt_func (f) + M_PI * f * f);
 	else
-		*V = h * poly_smt_vol (r);
+		*V = r2 * h * poly_smt_vol (1.0);
 	*z = (*V) / (*A);
 }
 
