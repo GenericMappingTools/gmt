@@ -452,17 +452,14 @@ GMT_LOCAL double poly_smt_vol (double r) {
 }
 
 GMT_LOCAL void grdseamount_poly_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
-	/* Compute area and volume of circular or elliptical parabolic seamounts. */
+	/* Compute area and volume of circular or elliptical polynomial seamounts. */
 	bool circular = doubleAlmostEqual (a, b);
-	double r2, r, rc = (hc > 0.0) ? poly_smt_rc (hc / h) : 1.0;	/* Fraction of normalized radius */
-	a *= rc;	b *= rc;	h -= hc;	/* Now just remove the noise floor and shrink a, b, h */
+	double r2, r, rc = (hc > 0.0) ? poly_smt_rc (hc / h) : 1.0;	/* Fraction of normalized radius at noise floor */
+	double beta = (poly_smt_vol (rc) - poly_smt_vol (f)) / poly_smt_func (f);
 	r2 = (circular) ? a * a : a * b;
 	r = sqrt (r2);	/* Mean radius */
 	*A = M_PI * r2;
-	if (fabs (f) > 0.0)	/* Truncated */
-		*V = r2 * h * ((poly_smt_vol (1.0) - poly_smt_vol (f)) / poly_smt_func (f) + M_PI * f * f);
-	else
-		*V = r2 * h * poly_smt_vol (1.0);
+	*V = r2 * h * (beta + M_PI * f * f) - M_PI * pow (rc * r, 2.0) * hc;
 	*z = (*V) / (*A);
 }
 
