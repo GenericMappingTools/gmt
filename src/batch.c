@@ -402,7 +402,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	static char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
 	static char *mvfile[3] = {"mv -f", "mv -f", "move /Y"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
 	static char *createfile[3] = {"touch", "touch", "copy /b NUL"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
-	static char *cpconf[3] = {"cp -f %s .", "cp -f %s .", "copy %s ."};
+	static char *cpconf[3] = {"cp -f %s .\n", "cp -f %s .\n", "copy %s .\n"};
 
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, tmpwpath[PATH_MAX] = {""};
@@ -488,6 +488,9 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		has_conf = true;
 		sprintf (conf_file, "%s/gmt.conf", topdir);
 		gmt_replace_backslash_in_path (conf_file);
+#ifdef WIN32	/* Make it suitable for DOS command line copying */
+		gmt_strrepc (conf_file, '/', '\\');
+#endif
 	}
 
 	/* Create a working directory which will house every local file and all subdirectories created */
@@ -689,6 +692,9 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		fclose (fp);	/* Done writing the init script */
 	}
 
+#ifdef WIN32
+	gmt_strrepc (topdir, '/', '\\');	/* Temporarily make DOS compatible */
+#endif		
 	n_to_run = (Ctrl->M.active) ? 1 : n_jobs;
 	GMT_Report (API, GMT_MSG_INFORMATION, "Number of main processing jobs: %d\n", n_to_run);
 	if (Ctrl->T.precision)	/* Precision was prescribed */
@@ -825,6 +831,9 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	if (Ctrl->In.mode == GMT_DOS_MODE)	/* This is crucial to the "start /B ..." statement below to ensure the DOS process terminates */
 		fprintf (fp, "exit\n");
 	fclose (fp);	/* Done writing loop script */
+#ifdef WIN32
+	gmt_strrepc (topdir, '\\', '/');	/* Revert */
+#endif		
 
 #ifndef WIN32
 	/* Set executable bit if not Windows */
