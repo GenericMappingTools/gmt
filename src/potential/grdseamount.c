@@ -884,7 +884,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								case SHAPE_CONE:  h_curr = h0 * (1 - phi_curr) / (1 - f); h_prev = h0 * (1 - phi_prev) / (1 - f); break;
 								case SHAPE_PARA:  h_curr = h0 * (1 - phi_curr * phi_curr) / (1 - f * f); h_prev = h0 * (1 - phi_prev * phi_prev) / (1 - f * f); break;
 								case SHAPE_GAUS:  h_curr = h0 * exp (4.5 * (f*f - phi_curr * phi_curr)); h_prev = h0 * exp (4.5 * (f*f - phi_prev * phi_prev)); break;
-								case SHAPE_POLY:  h_curr = h0 * phi_curr; h_prev = h0 * phi_prev;	break;
+								case SHAPE_POLY:  pf = poly_smt_func (f); h_curr = h0 * poly_smt_func (phi_curr) / pf; h_prev = h0 * poly_smt_func (phi_prev) / pf;	break;
 							}
 							h_mean = fabs (h_curr - h_prev);	/* This is our disc layer thickness */
 							r_mean = sqrt (dV / (M_PI * h_mean));	/* Radius given by volume and height */
