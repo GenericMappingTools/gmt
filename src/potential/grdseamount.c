@@ -352,6 +352,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Q.bmode == SMT_INCREMENTAL, "Option -Z: Cannot be used with -Qi\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Option -M: Requires time information via -T\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode == TRUNC_ARG && (Ctrl->F.value < 0.0 || Ctrl->F.value >= 1.0), "Option -F: Flattening must be in 0-1 range\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->F.value > 0.0 && Ctrl->C.mode == SHAPE_POLY, "Option -Q: -Co and flattening not yet working\n");
 	}
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time */
@@ -895,7 +896,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							r_mean = sqrt (dV / (M_PI * h_mean));	/* Radius given by volume and height */
 							h_sum[n_smts] += h_mean;		/* Keep track of height sum so we can compare with truth later */
 
-							if (rec == 0) GMT_Report (API, GMT_MSG_NOTICE, "r_mean = %.1f h_mean = %.1f v_prev = %.3f v_curr = %.3f phi_prev = %.3f phi_curr = %.3f h_prev = %.1f h_curr = %.1f V_sum = %g h_sum = %g\n",
+							GMT_Report (API, GMT_MSG_DEBUG, "r_mean = %.1f h_mean = %.1f v_prev = %.3f v_curr = %.3f phi_prev = %.3f phi_curr = %.3f h_prev = %.1f h_curr = %.1f V_sum = %g h_sum = %g\n",
 								r_mean, h_mean, v_prev, v_curr, phi_prev, phi_curr, h_prev, h_curr, V_sum[n_smts], h_sum[n_smts]);
 							/* Replace the values in the in array with these incremental values instead */
 							if (Ctrl->E.active) {	/* Elliptical parameters */
