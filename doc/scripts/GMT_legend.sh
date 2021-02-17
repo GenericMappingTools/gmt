@@ -89,7 +89,7 @@ T Many of these cities have hosted World Cup Soccer (WC) and some
 T have hosted the Olympics (OL).  The rest is just some basic information
 T about each city, such as climate and population.  Of course, this is all
 T an excuse to demonstrate variable-width tables and row coloring.
-#G 0.1i
+G 0.15i
 EOF
 cat << EOF > t.cpt
 1	red
