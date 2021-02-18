@@ -9965,6 +9965,13 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_HEADING_OFFSET] = true;
 	}
 
+	/* Must first do map_frae_width since it may be used below */
+
+	if (gmt_M_is_dnan (GMT->current.setting.map_frame_width)) {
+		GMT->current.setting.map_frame_width = 3 * pt * scale; /* 3p */
+		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_FRAME_WIDTH] = true;
+	}
+
 	/* Tick lengths */
 
 	if (gmt_M_is_dnan (GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER])) {
@@ -9994,10 +10001,6 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 
 	/* Frame, tick and gridline pens */
 
-	if (gmt_M_is_dnan (GMT->current.setting.map_frame_width)) {
-		GMT->current.setting.map_frame_width = 3 * pt * scale; /* 3p */
-		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_FRAME_WIDTH] = true;
-	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_frame_pen.width)) {
 		GMT->current.setting.map_frame_pen.width = 1.5 * scale; /* 1.5p (thicker) */
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_FRAME_PEN] = true;
