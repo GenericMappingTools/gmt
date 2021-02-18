@@ -702,7 +702,7 @@ code, available from the repository gmt-custom, obtainable via
 
 .. code-block:: bash
 
-   git clone https://github.com/GenericMappingTools/gmt-custom.git
+   git clone https://github.com/GenericMappingTools/custom-supplements.git
 
 
 List of API functions
