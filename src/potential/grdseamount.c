@@ -352,7 +352,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Q.bmode == SMT_INCREMENTAL, "Option -Z: Cannot be used with -Qi\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Option -M: Requires time information via -T\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode == TRUNC_ARG && (Ctrl->F.value < 0.0 || Ctrl->F.value >= 1.0), "Option -F: Flattening must be in 0-1 range\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->F.value > 0.0 && Ctrl->C.mode == SHAPE_POLY, "Option -Q: -Co and flattening not yet working\n");
 	}
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time */
@@ -516,7 +515,7 @@ GMT_LOCAL double grdseamount_gauss_solver (double in[], double f, double v, bool
 GMT_LOCAL double grdseamount_poly_solver (double in[], double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction from a polynomial seamount */
 	double I1 = TWO_PI * (M_PI * sqrt(3.0) / 3.0 - 1.7);	/* I(1) definite integral */
-	double b = (1.0 - v) * (I1 - poly_smt_vol (f) + M_PI * f * f * poly_smt_func (f)) - I1 * poly_smt_func (f);
+	double b = (1.0 - v) * (I1 - poly_smt_vol (f) + M_PI * f * f * poly_smt_func (f)) - I1;
 	double t = 0.0, phi = 0.0, lhs = 0.0, last_lhs;
 	while (lhs >= b) {
     	t += DELTA_PHI;
