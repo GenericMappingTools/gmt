@@ -131,22 +131,22 @@
     coordinates (i.e., to make the y-axis positive down). |br|
     For log10 axes: Annotations can be specified in one of three ways:
 
-    1. *stride* can be 1, 2, 3, or -*n*. Annotations will then occur at 1,
+    1. The *stride* can be 1, 2, 3, or -*n*. Annotations will then occur at 1,
        1-2-5, or 1-2-3-4-...-9, respectively; for -*n* we annotate every
        *n*\ 't magnitude. This option can also be used for the frame and
        grid intervals.
 
-    2. An **l** is appended to the *tickinfo* string. Then, log10 of the
+    2. An **l** is appended to the annotation *stride*. Then, log10 of the
        tick value is plotted at every integer log10 value.
 
-    3. A **p** is appended to the *tickinfo* string. Then,
+    3. A **p** is appended to the annotation *stride*. Then,
        annotations appear as 10 raised to log10 of the tick value.
 
     For power axes: Annotations can be specified in one of two ways:
 
     1. *stride* sets the regular annotation interval.
 
-    2. A **p** is appended to the *tickinfo* string. Then, the annotation interval is
+    2. A **p** is appended to the *stride*. Then, the annotation interval is
        expected to be in transformed units, but the annotation value will
        be plotted as untransformed units. E.g., if *stride* = 1 and *power*
        = 0.5 (i.e., sqrt), then equidistant annotations labeled 1-4-9...  will appear.
