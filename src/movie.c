@@ -1292,10 +1292,12 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			sy = (srow == 2) ? -1 : 1;
 			I->x += sx * I->off[GMT_X];
 			I->y += sy * I->off[GMT_Y];
-			if (I->mode == MOVIE_LABEL_IS_COL_T && !strchr (I->format, 's')) {
-				GMT_Report (API, GMT_MSG_ERROR, "Option -%c: Using +f<format> with word variables requires a \'%%s\'-style format.\n", which[k]);
-				movie_close_files (Ctrl);
-				Return (GMT_PARSE_ERROR);
+			if (I->mode == MOVIE_LABEL_IS_COL_T) {
+				if (!strchr (I->format, 's')) {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -%c: Using +f<format> with word variables requires a \'%%s\'-style format.\n", which[k]);
+					movie_close_files (Ctrl);
+					Return (GMT_PARSE_ERROR);
+				}
 			}
 			else if (I->mode != MOVIE_LABEL_IS_STRING && I->format[0] && !(strchr (I->format, 'd') || strchr (I->format, 'e') || strchr (I->format, 'f') || strchr (I->format, 'g'))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Option -%c: Using +f<format> with frame or data variables requires a \'%%d\', \'%%e\', \'%%f\', or \'%%g\'-style format.\n", which[k]);
