@@ -402,10 +402,10 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	static char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
 	static char *mvfile[3] = {"mv -f", "mv -f", "move /Y"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
 	static char *createfile[3] = {"touch", "touch", "copy /b NUL"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
-	static char *cpconf[3] = {"cp -f %s .", "cp -f %s .", "copy %s ."};
+	static char *cpconf[3] = {"\tcp -f %s .\n", "\tcp -f %s .\n", "\tcopy %s .\n"};
 
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""};
-	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""};
+	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, tmpwpath[PATH_MAX] = {""};
 	char string[GMT_LEN128] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""}, conf_file[PATH_MAX];
 	char completion_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""};
 
@@ -488,6 +488,9 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		has_conf = true;
 		sprintf (conf_file, "%s/gmt.conf", topdir);
 		gmt_replace_backslash_in_path (conf_file);
+#ifdef WIN32	/* Make it suitable for DOS command line copying */
+		gmt_strrepc (conf_file, '/', '\\');
+#endif
 	}
 
 	/* Create a working directory which will house every local file and all subdirectories created */
@@ -519,6 +522,12 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	gmt_replace_backslash_in_path (datadir);	/* Since we will be fprintf-ing the path we must use // for a slash */
 	gmt_replace_backslash_in_path (workdir);
+
+	/* Make a path to workdir that works on current architecture (for command line calls) */
+	strncpy (tmpwpath, workdir, PATH_MAX);
+#ifdef WIN32		/* On Windows to do remove a file in a subdir one need to use back slashes */
+	gmt_strrepc (tmpwpath, '/', '\\');
+#endif
 
 	/* Create the initialization file with settings common to all jobs */
 
@@ -683,6 +692,9 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		fclose (fp);	/* Done writing the init script */
 	}
 
+#ifdef WIN32
+	gmt_strrepc (topdir, '/', '\\');	/* Temporarily make DOS compatible */
+#endif		
 	n_to_run = (Ctrl->M.active) ? 1 : n_jobs;
 	GMT_Report (API, GMT_MSG_INFORMATION, "Number of main processing jobs: %d\n", n_to_run);
 	if (Ctrl->T.precision)	/* Precision was prescribed */
@@ -718,7 +730,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
 		}
-		fprintf (fp, "cd %s\n", workdir);		/* cd back to the working directory */
+		fprintf (fp, "cd %s\n", tmpwpath);		/* cd back to the working directory */
 		fclose (Ctrl->S[BATCH_POSTFLIGHT].fp);	/* Done reading the postflight script */
 		fclose (fp);	/* Done writing the postflight script */
 #ifndef WIN32
@@ -819,6 +831,9 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	if (Ctrl->In.mode == GMT_DOS_MODE)	/* This is crucial to the "start /B ..." statement below to ensure the DOS process terminates */
 		fprintf (fp, "exit\n");
 	fclose (fp);	/* Done writing loop script */
+#ifdef WIN32
+	gmt_strrepc (topdir, '\\', '/');	/* Revert */
+#endif		
 
 #ifndef WIN32
 	/* Set executable bit if not Windows */
@@ -838,7 +853,8 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	gmt_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
 	if (Ctrl->W.active) {	/* Want to delete the entire work directory */
 		gmt_set_comment (fp, Ctrl->In.mode, "Cleanup script removes working directory with job files");
-		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], workdir);	/* Delete the entire working directory with batch jobs and tmp files */
+		/* Delete the entire working directory with batch jobs and tmp files */
+		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], tmpwpath);
 	}
 	else {	/* Just delete the remaining script files */
 #ifdef WIN32		/* On Windows to do remove a file in a subdir one need to use back slashes */
@@ -848,11 +864,11 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 #endif
 		GMT_Report (API, GMT_MSG_INFORMATION, "%u job product sets saved in directory: %s\n", n_jobs, workdir);
 		if (Ctrl->S[BATCH_PREFLIGHT].active)	/* Remove the preflight script */
-			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, pre_file);
+			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep_, pre_file);
 		if (Ctrl->S[BATCH_POSTFLIGHT].active)	/* Remove the postflight script */
-			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, post_file);
-		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, init_file);	/* Delete the init script */
-		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, main_file);	/* Delete the main script */
+			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep_, post_file);
+		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep_, init_file);	/* Delete the init script */
+		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep_, main_file);	/* Delete the main script */
 	}
 	fclose (fp);
 #ifndef _WIN32

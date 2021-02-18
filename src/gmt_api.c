@@ -1422,6 +1422,9 @@ GMT_LOCAL unsigned int gmtapi_add_existing (struct GMTAPI_CTRL *API, enum GMT_en
 #define K_PRIMARY			0
 #define K_SECONDARY			1
 
+#define K_OR			0
+#define K_AND			1
+
 #define API_PRIMARY_INPUT		'{'
 #define API_PRIMARY_OUTPUT		'}'
 #define API_SECONDARY_INPUT		'('
@@ -1602,14 +1605,15 @@ GMT_LOCAL char ** gmtapi_process_keys (void *V_API, const char *string, char typ
 				if (strlen (s[k]) > 3) {	/* Not enough to just find option, must examine the modifiers */
 					/* Full syntax: XYZ+abc...-def...: We do the substitution of output type to Y only if
 					 * 1. -Z is given
-					 * 2. -Z contains ALL the modifiers +a, +b, +c, ...
-					 * 3. -Z contains AT LEAST ONE of the modifiers +d, +e, +f.
+					 * 2. -Z contains ALL the modifiers +a, +b, +c, ... (if any "+"-list is given)
+					 * 3. -Z contains AT LEAST ONE of the modifiers +d, +e, +f, ... (if any "-"=list is given)
+					 * At least one item from 2 or 3 must be given.
 					 */
 					unsigned int kase = 0, count[2] = {0, 0}, given[2] = {0, 0};
 					change_type = false;
 					for (kk = 3; s[k][kk]; kk++) {	/* Examine characters in the modifier string */
 						if (strchr ("-+", s[k][kk])) {	/* Start of all (+) versus at least one (-) */
-							kase = (s[k][kk] == '-') ? 0 : 1;	/* Set kase and go to next letter */
+							kase = (s[k][kk] == '-') ? K_OR : K_AND;	/* Set kase and go to next letter */
 							continue;
 						}
 						count[kase]++;	/* How many AND and how many OR modifiers (depending on kase) */
@@ -1617,7 +1621,7 @@ GMT_LOCAL char ** gmtapi_process_keys (void *V_API, const char *string, char typ
 						if (strstr (opt->arg, modifier)) given[kase]++;	/* Match found with given option */
 					}
 					/* Only change the key if we found all the AND modifiers and at least one of the OR modifiers (if any were given) */
-					if ((count[0] == 0 || (count[0] && given[0])) && count[1] == given[1]) change_type = true;
+					if ((count[K_OR] == 0 || (count[K_OR] && given[K_OR])) && count[K_AND] == given[K_AND]) change_type = true;
 				}
 				else	/* true since we found the option and no modifiers were given */
 					change_type = true;
@@ -1664,10 +1668,10 @@ GMT_LOCAL char ** gmtapi_process_keys (void *V_API, const char *string, char typ
 	}
 	n = kk;	/* May have lost some NULLs.  Make a revised string for debug output */
 	for (k = 0; k < n; k++) {
-		strcat (revised, ",");
+		if (k) strcat (revised, ",");
 		strncat (revised, s[k], GMT_LEN64-1);
 	}
-	if (revised[0]) GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_process_keys: Revised keys string is %s\n", &revised[1]);
+	if (revised[0]) GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_process_keys: Revised keys string is %s\n", revised);
 	*n_items = (unsigned int)n;	/* Total number of remaining keys for this module */
 	gmt_M_str_free (tmp);
 	return s;	/* The array of remaining keys */
@@ -12413,14 +12417,17 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	 *   A few modules will specify Z as some letter not in {|(|}|)|-, which means that normally these modules
 	 *   will expect/produce whatever input/output is specified by the primary setting, but if the "-Z" option is given the primary
 	 *   input/output will be changed to the given type Y.  Also, modifiers may be involved. The full syntax for this is
-	 *   XYZ+abc...-def...: We do the substitution of output type to Y only if
-	 *      1. -Z is given
-	 *      2. -Z contains ALL the modifiers +a, +b, +c, ...
-	 *      3. -Z contains AT LEAST ONE of the modifiers +d, +e, +f.
-	 *   The Z magic is a bit confusing so here is an example:
+	 *   XYZ[+abc...][-def...]: We do the substitution of output type to Y only if
+	 *      1. -Z is given on the command line
+	 *      2. -Z contains ALL the modifiers from the first "+"-list: +a, +b, +c, ... [optional]
+	 *      3. -Z contains AT LEAST ONE of the modifiers from the second "-"-list: +d, +e, +f. [optional]
+	 *   At least on case from 2 or 3 must be specified.
+	 *   The Z magic is a bit confusing so here is some examples:
 	 *   1. grdcontour normally writes PostScript but grdcontour -D will instead export data to std (or a file set by -D), so its key
 	 *      contains the entry "DDD": When -D is active then the PostScript key ">X}" morphs into "DD}" and
 	 *      thus allows for a data set export instead.
+	 *   2. pscoast normally plots PostSCript but pscoast -E+l only want to return a text listing of countries.  We allow for this
+	 *      switch by using the key >DE-lL so that if -E with either +l or +L are used we change primary output to D.
 	 *
 	 *   After processing, all magic key sequences are set to "---" to render them inactive.
 	 *
@@ -12470,6 +12477,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		if (GMT_Find_Option (API, 'M', *head)) type = 'D';	/* -M means dataset dump */
 		else if (GMT_Find_Option (API, 'C', *head) || GMT_Find_Option (API, 'G', *head) || GMT_Find_Option (API, 'I', *head) || GMT_Find_Option (API, 'N', *head) || GMT_Find_Option (API, 'W', *head)) type = 'X';	/* Clearly plotting GSHHG */
 		else if ((opt = GMT_Find_Option (API, 'E', *head)) && (strstr (opt->arg, "+g") || strstr (opt->arg, "+p"))) type = 'X';	/* Clearly plotting DCW polygons */
+		else if ((opt = GMT_Find_Option (API, 'E', *head)) && (strstr (opt->arg, "+l") || strstr (opt->arg, "+L"))) type = 'D';	/* Clearly requesting listing of DCW countries/states */
 		else if (!GMT_Find_Option (API, 'J', *head)) type = 'D';	/* No -M and no -J means -Rstring as dataset */
 		else type = 'X';	/* Otherwise we are still most likely plotting PostScript */
 	}
@@ -14630,17 +14638,16 @@ int GMT_Put_Strings (void *V_API, unsigned int family, void *object, char **arra
 	}
 	else if (family & GMT_IS_REFERENCE)	/* This is the default action, just remove the mode */
 		family -= GMT_IS_REFERENCE;
-	if (family & GMT_IS_PALETTE) {	/* This is specific to CPTs */
-		if (family & GMT_IS_PALETTE_KEY) {
-			family -= GMT_IS_PALETTE_KEY;
-			code = GMT_IS_PALETTE_KEY;
-		}
-		else if (family & GMT_IS_PALETTE_LABEL) {
-			family -= GMT_IS_PALETTE_LABEL;
-			code = GMT_IS_PALETTE_LABEL;
-		}
-		else
-			return_error (V_API, GMT_VALUE_NOT_SET);
+	if (family & GMT_IS_PALETTE_KEY) {
+		family -= GMT_IS_PALETTE_KEY;
+		code = GMT_IS_PALETTE_KEY;
+	}
+	else if (family & GMT_IS_PALETTE_LABEL) {
+		family -= GMT_IS_PALETTE_LABEL;
+		code = GMT_IS_PALETTE_LABEL;
+	}
+	if (family == GMT_IS_PALETTE && code == 0) {	/* This is specific to CPTs */
+		return_error (V_API, GMT_VALUE_NOT_SET);
 	}
 	if (!(family == GMT_IS_VECTOR || family == GMT_IS_MATRIX || family == GMT_IS_PALETTE)) return_error (V_API, GMT_NOT_A_VALID_FAMILY);
 
