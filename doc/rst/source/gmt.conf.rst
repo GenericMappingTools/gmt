@@ -12,12 +12,12 @@ Description
 The following is a list of the parameters that are user-definable in
 GMT. The parameter names are always given in **UPPER CASE**. The
 parameter values are case-insensitive unless otherwise noted. The system
-defaults are given in brackets [ ], with units specified for dimensional
+defaults are given in brackets [*default is <value>*], with units specified for dimensional
 quantities. Most parameters can be changed by using :doc:`gmtset`, editing a
 **gmt.conf** file that can be acquired using :doc:`gmtdefaults`, or setting
 parameters on-the-fly via the **--PARAMETER**\ =\ *VALUE* option to any GMT
 program. However, a few are static and are only read via the **gmt.conf** file;
-these are labeled (static). Several parameters take only **true** or **false**.
+these are labeled (*static*). Several parameters take only **true** or **false**.
 It is recommended that users specify the units for distances and lengths by
 appending **c** (cm), **i** (inch), or **p** (points) when changing parameters
 using any of these methods. By default, when no unit is specified the value will
@@ -57,26 +57,26 @@ COLOR Parameters
 
     **COLOR_BACKGROUND**
         Color used for the background of images (i.e., when z < lowest color
-        table entry) [black].
+        table entry) [*default is <black>*].
 
     **COLOR_FOREGROUND**
         Color used for the foreground of images (i.e., when z > highest
-        color table entry) [white].
+        color table entry) [*default is <white>*].
 
     **COLOR_CPT**
-        Default CPT table when none is selected [turbo].
+        Default CPT table when none is selected [*default is <turbo>*].
 
     **COLOR_HSV_MAX_S**
-        Maximum saturation (0-1) assigned for most positive intensity value [0.1].
+        Maximum saturation (0-1) assigned for most positive intensity value [*default is <0.1>*].
 
     **COLOR_HSV_MIN_S**
-        Minimum saturation (0-1) assigned for most negative intensity value [1.0].
+        Minimum saturation (0-1) assigned for most negative intensity value [*default is <1.0>*].
 
     **COLOR_HSV_MAX_V**
-        Maximum value (0-1) assigned for most positive intensity value [1.0].
+        Maximum value (0-1) assigned for most positive intensity value [*default is <1.0>*].
 
     **COLOR_HSV_MIN_V**
-        Minimum value (0-1) assigned for most negative intensity value [0.3].
+        Minimum value (0-1) assigned for most negative intensity value [*default is <0.3>*].
 
     **COLOR_MODEL**
         Selects in which color space a CPT should be interpolated.
@@ -89,11 +89,11 @@ COLOR Parameters
         in CMYK but interpolates in RGB).
 
     **COLOR_NAN**
-        Color used for the non-defined areas of images (i.e., where z = NaN) [128].
+        Color used for the non-defined areas of images (i.e., where z = NaN) [*default is <128>*].
 
     **COLOR_SET**
         Default comma-separated list of colors (or a *categorical* CPT name) for automatic,
-        sequential color assignments [*default*, which is #0072BD,#D95319,#EDB120,#7E2F8E,#77AC30,#4DBEEE,#A2142F].
+        sequential color assignments [*default is <#0072BD,#D95319,#EDB120,#7E2F8E,#77AC30,#4DBEEE,#A2142F>*].
 
 .. _DIR Parameters:
 
@@ -103,7 +103,7 @@ DIR Parameters
 .. glossary::
 
     **DIR_CACHE**
-        Cache directory where we save remote filenames starting in **@** (e.g., @hotspots.txt) [~/.gmt/cache].
+        Cache directory where we save remote filenames starting in **@** (e.g., @hotspots.txt) [*default is <~/.gmt/cache>*].
 
     **DIR_DATA**
         Session data directory. Overrides the value of the environment variable **$GMT_DATADIR**
@@ -131,33 +131,33 @@ FONT Parameters
         This setting is not included in the **gmt.conf** file.
 
     **FONT_ANNOT_PRIMARY**
-        Font used for primary annotations, etc. [12p,Helvetica,black]. When
+        Font used for primary annotations, etc. [*default is <12p,Helvetica,black>*]. When
         **+** is prepended, scale fonts, offsets and tick-lengths relative
         to :term:`FONT_ANNOT_PRIMARY`.
 
     **FONT_ANNOT_SECONDARY**
         Font to use for time axis secondary annotations
-        [14p,Helvetica,black].
+        [*default is <14p,Helvetica,black>*].
 
     **FONT_HEADING**
-        Font to use when plotting headings above subplots [32p,Helvetica,black].
+        Font to use when plotting headings above subplots [*default is <32p,Helvetica,black>*].
 
     **FONT_LABEL**
-        Font to use when plotting labels below axes [16p,Helvetica,black].
+        Font to use when plotting labels below axes [*default is <16p,Helvetica,black>*].
 
     **FONT_LOGO**
         Font to use for text plotted as part of the GMT time logo
-        [8p,Helvetica,black].
+        [*default is <8p,Helvetica,black>*].
 
     **FONT_SUBTITLE**
-        Font to use when plotting titles over graphs that involve a subtitle [18p,Helvetica,black].
+        Font to use when plotting titles over graphs that involve a subtitle [*default is <18p,Helvetica,black>*].
 
     **FONT_TAG**
         Font to use for subplot panel tags such as a), ii)
-        [20p,Helvetica,black].
+        [*default is <20p,Helvetica,black>*].
 
     **FONT_TITLE**
-        Font to use when plotting titles over graphs [24p,Helvetica,black].
+        Font to use when plotting titles over graphs [*default is <24p,Helvetica,black>*].
 
 .. _FORMAT Parameters:
 
@@ -169,29 +169,29 @@ FORMAT Parameters
     **FORMAT_CLOCK_IN**
         Formatting template that indicates how an input clock string is
         formatted. This template is then used to guide the reading of clock
-        strings in data fields. To properly decode 12-hour clocks, append am
-        or pm (or upper case) to match your data records. As examples, try
-        hh:mm, hh:mm:ssAM, etc. [hh:mm:ss].
+        strings in data fields. To properly decode 12-hour clocks, append **am**
+        or **pm** (or upper case) to match your data records. As examples, try
+        hh:mm, hh:mm:ssAM, etc. [*default is <hh:mm:ss>*].
 
     **FORMAT_CLOCK_MAP**
         Formatting template that indicates how an output clock string is to
         be plotted. This template is then used to guide the formatting of
         clock strings in plot annotations. See :term:`FORMAT_CLOCK_OUT` for
-        details. [hh:mm:ss].
+        details. [*default is <hh:mm:ss>*].
 
     **FORMAT_CLOCK_OUT**
         Formatting template that indicates how an output clock string is to
         be formatted. This template is then used to guide the writing of
         clock strings in data fields. To use a floating point format for the
-        smallest unit (e.g., seconds), append .xxx, where the number of x
+        smallest unit (e.g., seconds), append **.xxx**, where the number of x
         indicates the desired precision. If no floating point is indicated
         then the smallest specified unit will be rounded off to nearest
-        integer. For 12-hour clocks, append am, AM, a.m., or A.M. (GMT
+        integer. For 12-hour clocks, append **am**, **AM**, **a.m.**, or **A.M.** (GMT
         will replace a\|A with p\|P for pm). If your template starts with a
-        leading hyphen (-) then each integer item (y,m,d) will be printed
+        leading hyphen (**-**) then each integer item (y,m,d) will be printed
         without leading zeros (default uses fixed width formats). As
         examples, try hh:mm, hh.mm.ss, hh:mm:ss.xxxx, hha.m., etc.
-        [hh:mm:ss]. If the format is simply - then no clock is output and
+        [*default is <hh:mm:ss>*]. If the format is simply **-** then no clock is output and
         the ISO T divider between date and clock is omitted.  **Note**: When
         high-precision time-series are written to ASCII output the default
         format may not be adequate.  Many modules automatically handle
@@ -203,43 +203,43 @@ FORMAT Parameters
         formatted. This template is then used to guide the reading of date
         strings in data fields. You may specify either Gregorian calendar
         format or ISO week calendar format. Gregorian calendar: Use any
-        combination of yyyy (or yy for 2-digit years; if so see
-        :term:`TIME_Y2K_OFFSET_YEAR`), mm (or o for abbreviated month name in
-        the current time language), and dd, with or without delimiters. For
-        day-of-year data, use jjj instead of mm and/or dd. Examples can be
+        combination of **yyyy** (or **yy** for 2-digit years; if so see
+        :term:`TIME_Y2K_OFFSET_YEAR`), **mm** (or **o** for abbreviated month name in
+        the current time language), and **dd**, with or without delimiters. For
+        day-of-year data, use **jjj** instead of mm and/or dd. Examples can be
         ddmmyyyy, yy-mm-dd, dd-o-yyyy, yyyy/dd/mm, yyyy-jjj, etc. ISO
-        Calendar: Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO
+        Calendar: Expected template is **yyyy[-]W[-]ww[-]d**, where ww is ISO
         week and d is ISO week day. Either template must be consistent,
         e.g., you cannot specify months if you do not specify years.
-        Examples are yyyyWwwd, yyyy-Www, etc. [yyyy-mm-dd].
+        Examples are yyyyWwwd, yyyy-Www, etc. [*default is <yyyy-mm-dd>*].
 
     **FORMAT_DATE_MAP**
         Formatting template that indicates how an output date string is to
         be plotted. This template is then used to guide the plotting of date
         strings in data fields. See :term:`FORMAT_DATE_OUT` for details. In
-        addition, you may use a single o instead of mm (to plot month name)
-        and u instead of W[-]ww to plot "Week ##". Both of these text
+        addition, you may use a single **o** instead of **mm** (to plot month name)
+        and **u** instead of W[-]ww to plot "Week ##". Both of these text
         strings will be affected by the :term:`GMT_LANGUAGE`,
         :term:`FORMAT_TIME_PRIMARY_MAP` and :term:`FORMAT_TIME_SECONDARY_MAP`
-        setting. [yyyy-mm-dd].
+        setting. [*default is <yyyy-mm-dd>*].
 
     **FORMAT_DATE_OUT**
         Formatting template that indicates how an output date string is to
         be formatted. This template is then used to guide the writing of
         date strings in data fields. You may specify either Gregorian
         calendar format or ISO week calendar format. Gregorian calendar: Use
-        any combination of yyyy (or yy for 2-digit years; if so see
-        :term:`TIME_Y2K_OFFSET_YEAR`), mm (or o for abbreviated month name in
-        the current time language), and dd, with or without delimiters. For
-        day-of-year data, use jjj instead of mm and/or dd. As examples, try
+        any combination of **yyyy** (or **yy** for 2-digit years; if so see
+        :term:`TIME_Y2K_OFFSET_YEAR`), **mm** (or **o** for abbreviated month name in
+        the current time language), and **dd**, with or without delimiters. For
+        day-of-year data, use **jjj** instead of mm and/or dd. As examples, try
         yy/mm/dd, yyyy=jjj, dd-o-yyyy, dd-mm-yy, yy-mm, etc. ISO Calendar:
-        Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d
+        Expected template is **yyyy[-]W[-]ww[-]d**, where ww is ISO week and d
         is ISO week day. Either template must be consistent, e.g., you
         cannot specify months if you do not specify years. As examples, try
         yyyyWww, yy-W-ww-d, etc. If your template starts with a leading
-        hyphen (-) then each integer item (y,m,d) will be printed without
-        leading zeros (default uses fixed width formats) [yyyy-mm-dd]. If
-        the format is simply - then no date is output and the ISO T divider
+        hyphen (**-**) then each integer item (y,m,d) will be printed without
+        leading zeros (default uses fixed width formats) [*default is <yyyy-mm-dd>*]. If
+        the format is simply **-** then no date is output and the ISO T divider
         between date and clock is omitted.
 
     **FORMAT_GEO_MAP**
@@ -247,15 +247,14 @@ FORMAT Parameters
         coordinate is to be plotted. This template is then used to guide the
         plotting of geographical coordinates in data fields. See
         :term:`FORMAT_GEO_OUT` for details. In addition, you can append A
-        which plots the absolute value of the coordinate. The default is
-        ddd:mm:ss. Not all items may be plotted as this depends on the
+        which plots the absolute value of the coordinate [*default is <ddd:mm:ss>*]. Not all items may be plotted as this depends on the
         annotation interval.
 
     **FORMAT_GEO_OUT**
         Formatting template that indicates how an output geographical
         coordinate is to be formatted. This template is then used to guide
         the writing of geographical coordinates in data fields. The template
-        is in general of the form [±]D or [±]ddd[:mm[:ss]][.xxx][F].
+        is in general of the form **[±]D** or **[±]ddd[:mm[:ss]][.xxx]**[*default is <F>*].
         By default, longitudes will be reported in the range [-180,180]. The
         various terms have the following purpose:
 
@@ -277,12 +276,12 @@ FORMAT Parameters
     **FORMAT_FLOAT_MAP**
         Format (C language printf syntax) to be used when plotting double
         precision floating point numbers along plot frames and contours.
-        For geographic coordinates, see :term:`FORMAT_GEO_MAP`. [%.12lg].
+        For geographic coordinates, see :term:`FORMAT_GEO_MAP`. [*default is <%.12lg>*].
 
     **FORMAT_FLOAT_OUT**
         Format (C language printf syntax) to be used when printing double
         precision floating point numbers to output files. For geographic
-        coordinates, see :term:`FORMAT_GEO_OUT`. [%.12lg]. To give some
+        coordinates, see :term:`FORMAT_GEO_OUT`. [*default is <%.12lg>*]. To give some
         columns a separate format, supply one or more comma-separated
         *cols*:*format* specifications, where *cols* can be specific columns
         (e.g., 5 for 6th since 0 is the first) or a range of columns (e.g.,
@@ -299,19 +298,19 @@ FORMAT Parameters
         Controls how primary month-, week-, and weekday-names are formatted.
         Choose among **full**, **abbreviated**, and **character**. If the
         leading **f**, **a**, or **c** are replaced with **F**, **A**, and
-        **C** the entire annotation will be in upper case [full].
+        **C** the entire annotation will be in upper case [*default is <full>*].
 
     **FORMAT_TIME_SECONDARY_MAP**
         Controls how secondary month-, week-, and weekday-names are
         formatted. Choose among **full**, **abbreviated**, and
         **character**. If the leading **f**, **a**, or **c** are replaced
-        with **F**, **A**, and **C** the entire annotation will be in upper case [full].
+        with **F**, **A**, and **C** the entire annotation will be in upper case [*default is <full>*].
 
     **FORMAT_TIME_STAMP**
         Defines the format of the time information in the UNIX time stamp.
         This format is parsed by the C function **strftime**, so that
         virtually any text can be used (even not containing any time
-        information) [%Y %b %d %H:%M:%S].
+        information) [*default is <%Y %b %d %H:%M:%S>*].
 
 .. _GMT Miscellaneous Parameters:
 
@@ -334,38 +333,38 @@ GMT Miscellaneous Parameters
         for a list of the currently available mirrors.
 
     **GMT_DATA_SERVER_LIMIT**
-        Upper limit on the size of remote file to download [unlimited].  Give
-        the maximum file size in bytes, or append k, m, or g for kilo-, mega-,
+        Upper limit on the size of remote file to download [*default is <unlimited>*].  Give
+        the maximum file size in bytes, or append **k**, **m**, or **g** for kilo-, mega-,
         or giga-bytes.
 
     **GMT_DATA_UPDATE_INTERVAL**
         Specifies how often we update the local catalog of data available on
-        the remote server and pruning expired data sets [1d].  Allowable time
+        the remote server and pruning expired data sets [*default is <1d>*].  Allowable time
         units are **d** (days), **w** (week), **o** (month, here 30 days).
-        To turn off periodic updates entirely, specify interval as "off", "never",
-        "infinity", or just 0.
+        To turn off periodic updates entirely, specify interval as **off**, **never**,
+        **infinity**, or just **0**.
 
     **GMT_EXPORT_TYPE**
         This setting is only used by external interfaces and controls the
-        data type used for table entries.  Choose from double,
-        single, [u]long, [u]int, [u]short, and [u]char [Default is double].
+        data type used for table entries.  Choose from **double**,
+        **single**, **[u]long**, **[u]int**, **[u]short**, and **[u]char** [*default is <double>*].
 
     **GMT_EXTRAPOLATE_VAL**
         Determines what to do if extrapolating beyond the data domain.
-        Choose among 'NaN', 'extrap' or 'extrapval,val' (without quotes). In
-        the first case return NaN for any element of x that is outside range
-        [Default]. Second case lets the selected algorithm compute the
+        Choose among **NaN**, **extrap** or **extrapval,<value>** (without brackets). In
+        the first case return NaN for any element of x that is outside range.
+        Second case lets the selected algorithm compute the
         extrapolation values. Third case sets the extrapolation values to
         the constant value passed in 'val' (this value must off course be
-        numeric).
+        numeric) [*default is <NaN>*].
 
     **GMT_CUSTOM_LIBS**
         Comma-separated list of GMT-compliant shared libraries that extend
-        the capability of GMT with additional custom modules [none]. Alternatively,
+        the capability of GMT with additional custom modules [*default is <none>]. Alternatively,
         provide a directory name, that MUST end with a slash (or back slash),
         to use all shared libraries in that directory. On Windows, if the dir
         name is made up only of a single slash ('/') search inside a subdirectory
-        called 'gmt_plugins' of the directory that contains the 'gmt' executable.
+        called **gmt_plugins** of the directory that contains the **gmt** executable.
         See the API documentation for how to build your own shared modules.
 
     **GMT_FFT**
@@ -376,33 +375,33 @@ GMT Miscellaneous Parameters
         Transform in the West), **accelerate** (Use the Accelerate Framework
         under OS X; Note, that the number of samples to be processed must be
         a base 2 exponent), **kiss**, (Kiss FFT), **brenner** Brenner Legacy
-        FFT [auto].
+        FFT [*default is <auto>*].
         FFTW can "learn" how to optimally compute Fourier transforms on the
         current hardware and OS by computing several FFTs and measuring
         their execution time. This so gained "Wisdom" will be stored in and
         reloaded from the file fftw_wisdom_<hostname> in **$GMT_USERDIR** or, if
         **$GMT_USERDIR** is not writable, in the current directory. To use this
-        feature append *planner_flag*, which can be one of *measure*,
-        *patient*, and *exhaustive*; see FFTW reference for details. The
-        default FFTW planner flag is *estimate*, i.e., pick a (probably
-        sub-optimal) plan quickly. **Note**: If you need a single transform of a
+        feature append *planner_flag*, which can be one of **measure**,
+        **patient**, **exhaustive** and **estimate** which pick a (probably
+        sub-optimal) plan quickly [*default is <estimate>*]. See FFTW reference for details.
+        **Note**: If you need a single transform of a
         given size only, the one-time cost of the smart planner becomes
         significant. In that case, stick to the default planner, *estimate*,
         based on heuristics.
 
     **GMT_GRAPHICS_FORMAT**
-        Default graphics format in modern mode [pdf].
+        Default graphics format in modern mode [*default is <pdf>*].
 
     **GMT_HISTORY**
         Passes the history of past common command options via the
         gmt.history file. The different values for this setting are:
         **true**, **readonly**, **false**, to either read and write to the
-        gmt.history file, only read, or not use the file at all [true].
+        gmt.history file, only read, or not use the file at all [*default is <true>*].
 
     **GMT_INTERPOLANT**
-        Determines if linear (linear), Akima's spline (akima), natural cubic
-        spline (cubic) or no interpolation (none) should be used for 1-D
-        interpolations in various programs [akima].
+        Determines if linear (**linear**), Akima's spline (**akima**), natural cubic
+        spline (**cubic**) or no interpolation (**none**) should be used for 1-D
+        interpolations in various programs [*default is <akima>*].
 
     **GMT_LANGUAGE**
         Language to use when plotting calendar and map items such as months and
@@ -449,20 +448,20 @@ GMT Miscellaneous Parameters
 
     **GMT_MAX_CORES**
         Sets the upper limit on the number of cores any multi-threaded module might
-        use (whether **-x** is selected or not) [0, i.e., as many as are available].
+        use (whether **-x** is selected or not) [*default is <0> (unlimited)*].
 
     **GMT_TRIANGULATE**
-        Determines if we use the **Watson** [Default] or **Shewchuk**
+        Determines if we use the **Watson** or **Shewchuk**
         algorithm (if configured during installation) for triangulation.
         Note that Shewchuk is required for operations involving Voronoi
-        constructions.
+        constructions [*default is <Watson>*].
 
     **GMT_VERBOSE**
         (**-V**) Determines the level of verbosity used by GMT
         programs. Choose among 7 levels; each level adds to the verbosity of
         the lower levels: **q**\ uiet, **e**\ rrors, **w**\ arnings,
         **t**\ imings (for slow algorithms only), **i**\ nformation,
-        **c**\ ompatibility warnings, and **d**\ ebugging messages [**w**].
+        **c**\ ompatibility warnings, and **d**\ ebugging messages [*default is <w>*].
 
 .. _I/O Parameters:
 
@@ -473,14 +472,14 @@ I/O Parameters
 
     **IO_COL_SEPARATOR**
         This setting determines what character will separate ASCII output
-        data columns written by GMT. Choose from tab, space, comma, and
-        none [tab].
+        data columns written by GMT. Choose from **tab**, **space**, **comma**, and
+        **none** [*default is <tab>*].
 
     **IO_FIRST_HEADER**
         This setting determines if the first segment header is written when
         there is only a single segment (for multiple segment it must be written).
         By default, such single-segment headers are only written if the header
-        has contents. Choose from always, never, or maybe [maybe].
+        has contents. Choose from **always**, **never**, or **maybe** [*default is <maybe>*].
 
     **IO_GRIDFILE_FORMAT**
         Default file format for grids, with optional scale, offset and
@@ -488,22 +487,22 @@ I/O Parameters
         2-letter format indicator can be one of [**abcegnrs**][**bsifd**]. See
         :doc:`grdconvert` and Section :ref:`grid-file-format` of the
         GMT Technical Reference and Cookbook for more information.
-        You may the scale as *a* for auto-adjusting the scale and/or offset of
+        You may the scale as **a** for auto-adjusting the scale and/or offset of
         packed integer grids (=\ *ID*\ **+s**\ *a* is a shorthand for
-        =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).  When *invalid* is omitted
-        the appropriate value for the given format is used (NaN or largest negative). [nf].
+        =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).  When **invalid** is omitted
+        the appropriate value for the given format is used (NaN or largest negative). [*default is <nf>*].
 
     **IO_GRIDFILE_SHORTHAND**
-        If true, all grid file names are examined to see if they use the
+        If **true**, all grid file names are examined to see if they use the
         file extension shorthand discussed in Section :ref:`grid-file-format` of the GMT
-        Technical Reference and Cookbook. If false, no filename expansion is done [false].
+        Technical Reference and Cookbook. If **false**, no filename expansion is done [*default is <false>*].
 
     **IO_HEADER**
-        (**-h**) Specifies whether input/output ASCII files have header record(s) or not [false].
+        (**-h**) Specifies whether input/output ASCII files have header record(s) or not [*default is <false>*].
 
     **IO_HEADER_MARKER**
         Give a string from which any character will indicate a header record in
-        an incoming ASCII data table if found in the first position [#%!;"']. If another marker
+        an incoming ASCII data table if found in the first position [*default is <#%!;"'>*]. If another marker
         should be used for output than the first character in the list, then append a single
         character for the output header record marker. The two sets must be separated by a comma.
         **Note**: A maximum of 7 input markers can be specified.
@@ -512,13 +511,13 @@ I/O Parameters
         (**-:**) Set if the first two columns of input and output files
         contain (latitude,longitude) or (y,x) rather than the expected
         (longitude,latitude) or (x,y). false means we have (x,y) both on
-        input and output. true means both input and output should be (y,x).
-        IN means only input has (y,x), while OUT means only output should be (y,x). [false].
+        input and output. **true** means both input and output should be (y,x).
+        **IN** means only input has (y,x), while **OUT** means only output should be (y,x). [*default is <false>*].
 
     **IO_N_HEADER_RECS**
-        Specifies how many header records to expect if **-h** is used [0].
+        Specifies how many header records to expect if **-h** is used [*default is <0>*].
         **Note**: This will skip the specified number of records regardless of
-        what they are.  Since any records starting with # is automatically
+        what they are.  Since any records starting with **#** is automatically
         considered a header you will only specify a non-zero number in order
         to skip headers that do not conform to that convention.
 
@@ -527,9 +526,9 @@ I/O Parameters
         or *y* (and in some cases *z*) are read. This may happen, for instance,
         when there is text or other junk present instead of data coordinates, and
         the conversion to a data value fails and yields a NaN.  Choose between **skip**,
-        which will report how many bad records were skipped, and **pass** [Default],
+        which will report how many bad records were skipped, and **pass**,
         which will quietly pass these records on to the calling
-        programs. For most programs this will result in output records with
+        programs [*default is <pass>*]. For most programs this will result in output records with
         NaNs as well, but some will interpret these NaN records to indicate
         gaps in a series; programs may then use that information to detect
         segmentation (if applicable).
@@ -546,27 +545,27 @@ I/O Parameters
         [128,256). Setting :term:`IO_NC4_CHUNK_SIZE` will produce netCDF version 4
         files, which can only be read with the netCDF 4 library, unless all
         dimensions are less than 128 or **c**\ lassic is specified for
-        classic netCDF. [auto]
+        classic netCDF. [*default is <auto>*]
 
     **IO_NC4_DEFLATION_LEVEL**
         Sets the compression level for netCDF4 files upon output. Values
-        allowed are integers from 0 (no compression) to 9 (maximum
+        allowed are integers from **0** (no compression) to **9** (maximum
         compression). Enabling a low compression level can dramatically
         improve performance and reduce the size of certain data. While
         higher compression levels further reduce the data size, they do so
         at the cost of extra processing time. This parameter does not
-        apply to classic netCDF files. [3]
+        apply to classic netCDF files. [*default is <3>*]
 
     **IO_SEGMENT_BINARY**
         Determines how binary data records with all values set to NaN are
         interpreted.  Such records are considered to be encoded segment
         headers in binary files provided the number of columns equals or
-        exceeds the current setting of IO_SEGMENT_BINARY [2].  Specify 0
-        or "off" to deactivate the segment header determination.
+        exceeds the current setting of IO_SEGMENT_BINARY [2].  Specify **0**
+        or **off** to deactivate the segment header determination.
 
     **IO_SEGMENT_MARKER**
         This holds the character we expect to indicate a segment header in
-        an incoming ASCII data or text table [>]. If this marker should be
+        an incoming ASCII data or text table [*default is >*]. If this marker should be
         different for output then append another character for the output
         segment marker. The two characters must be separated by a comma. Two
         marker characters have special meaning: B means "blank line" and
