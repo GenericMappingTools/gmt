@@ -246,7 +246,7 @@ FORMAT Parameters
         Formatting template that indicates how an output geographical
         coordinate is to be plotted. This template is then used to guide the
         plotting of geographical coordinates in data fields. See
-        :term:`FORMAT_GEO_OUT` for details. In addition, you can append A
+        :term:`FORMAT_GEO_OUT` for details. In addition, you can append **A**
         which plots the absolute value of the coordinate [*default is* **ddd:mm:ss**]. Not all items may be plotted as this depends on the
         annotation interval.
 
