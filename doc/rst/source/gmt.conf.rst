@@ -351,7 +351,7 @@ GMT Miscellaneous Parameters
 
     **GMT_EXTRAPOLATE_VAL**
         Determines what to do if extrapolating beyond the data domain.
-        Choose among **NaN**, **extrap** or **extrapval,<value>** (without brackets). In
+        Choose among **NaN**, **extrap** or **extrapval**,\ *value*. In
         the first case return NaN for any element of x that is outside range.
         Second case lets the selected algorithm compute the
         extrapolation values. Third case sets the extrapolation values to
