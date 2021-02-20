@@ -360,7 +360,7 @@ GMT Miscellaneous Parameters
 
     **GMT_CUSTOM_LIBS**
         Comma-separated list of GMT-compliant shared libraries that extend
-        the capability of GMT with additional custom modules [*default is* **none>]. Alternatively,
+        the capability of GMT with additional custom modules [*default is* **none**]. Alternatively,
         provide a directory name, that MUST end with a slash (or back slash),
         to use all shared libraries in that directory. On Windows, if the dir
         name is made up only of a single slash ('/') search inside a subdirectory
