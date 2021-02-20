@@ -448,7 +448,7 @@ GMT Miscellaneous Parameters
 
     **GMT_MAX_CORES**
         Sets the upper limit on the number of cores any multi-threaded module might
-        use (whether **-x** is selected or not) [*default is* **0> (unlimited)*].
+        use (whether **-x** is selected or not) [*default is* **0** (i.e., unlimited)].
 
     **GMT_TRIANGULATE**
         Determines if we use the **Watson** or **Shewchuk**
