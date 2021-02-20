@@ -254,7 +254,7 @@ FORMAT Parameters
         Formatting template that indicates how an output geographical
         coordinate is to be formatted. This template is then used to guide
         the writing of geographical coordinates in data fields. The template
-        is in general of the form **[±]D** or **[±]ddd[:mm[:ss]][.xxx]**[*default is* **F**].
+        is in general of the form **[±]D** or **[±]ddd[:mm[:ss]][.xxx]** [*default is* **F**].
         By default, longitudes will be reported in the range [-180,180]. The
         various terms have the following purpose:
 
