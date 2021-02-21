@@ -1930,7 +1930,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (got_z_grid) {	/* If memory grid was passed in we must restore the header */
 		if (mem_G && Grid_orig && header_G) {
-			gmt_copy_gridheader (GMT, Grid_orig->header, header_G);
+			if (GMT->parent->object[0]->alloc_mode != GMT_ALLOC_EXTERNALLY)	/* Because it would call gmt_M_str_free(to->ProjRefWKT) */
+				gmt_copy_gridheader (GMT, Grid_orig->header, header_G);
 			gmt_free_header (API->GMT, &header_G);
 		}
 	}
