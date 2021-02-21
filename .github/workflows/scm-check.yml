@@ -80,10 +80,12 @@ jobs:
             - [ ] Download latest ScientificColourMaps release from https://doi.org/10.5281/zenodo.1243862
               - Unzip the ScientificColourMapsV.zip file to a folder, e.g. ~/Downloads/ScientificColourMapsV,
                 where V is the version number (e.g. 7).
-            - [ ] Run `./admin/build_scientific_colors_cpt.sh ~/Downloads/ScientificColourMapsV/` to update CPTs
-              - Make sure to update the VERSION number (e.g. 7.0.0) before running the script
-            - [ ] Copy/Move the generated CPTs to `share/cpt` directory
-              - `mv ~/Downloads/ScientificColourMapsV/gmt_cpts/* share/cpt/`
             - [ ] Update the version number in `admin/build_scientific_colors_cpt.sh`
+            - [ ] Run `./admin/build_scientific_colors_cpt.sh ~/Downloads/ScientificColourMapsV/` to update CPTs
+              - If there are new CPTs (check using `ls ~/Downloads/ScientificColourMaps`),
+                update the `admin/build_scientific_colors_cpt.sh` script and rerun it
+            - [ ] Copy/Move the generated CPTs to `share/cpt` directory
+              - Use `mv ~/Downloads/ScientificColourMapsV/gmt_cpts/* share/cpt/`
+            - [ ] Update src/gmt_cpt_masters.h
             - [ ] Update the version number in `.github/workflows/scm-check.yml`
             - [ ] Commit all changes and open a PR
