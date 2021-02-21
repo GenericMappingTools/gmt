@@ -92,7 +92,7 @@ EOF
 here=`pwd`
 cd $DIR
 # Make formatted list of lines suitable for copying into gmt_cpt_masters.h
-awk -F'|' '{printf "\"%-10s : %s\",\n", $1, $2}' /tmp/cpt.info > /tmp/cpt_strings.txt
+awk -F'|' '{printf "\"%-10s  : %s\",\n", $1, $2}' /tmp/cpt.info > /tmp/cpt_strings.txt
 # Make list of CPTs with a hinge of some soft since these need to insert a true z = 0 slice
 grep "\[H," /tmp/cpt.info | awk -F'|' '{print $1}' > /tmp/hinge.lis
 grep "\[S," /tmp/cpt.info | awk -F'|' '{print $1}' >> /tmp/hinge.lis

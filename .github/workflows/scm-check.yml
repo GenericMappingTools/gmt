@@ -86,6 +86,7 @@ jobs:
                 update the `admin/build_scientific_colors_cpt.sh` script and rerun it
             - [ ] Copy/Move the generated CPTs to `share/cpt` directory
               - Use `mv ~/Downloads/ScientificColourMapsV/gmt_cpts/* share/cpt/`
-            - [ ] Update src/gmt_cpt_masters.h
+            - [ ] Update src/gmt_cpt_masters.h using the lines in `/tmp/cpt_strings.txt`
             - [ ] Update the version number in `.github/workflows/scm-check.yml`
+            - [ ] Update `doc/scripts/GMT_App_M_1*.sh` and associated `doc/scripts/GMT_App_M_1*.ps` file(s)
             - [ ] Commit all changes and open a PR
