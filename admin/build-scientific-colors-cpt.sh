@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 #
 # This script takes the downloaded zip content from
-# Crameri, Fabio. (2020, January 6). Scientific colour maps
-# (Version 6.0.4). Zenodo. http://doi.org/10.5281/zenodo.4153113
+# Crameri, Fabio. (2021, February 2). Scientific colour maps
+# (Version 7.0.0). Zenodo. http://doi.org/10.5281/zenodo.4491293
 # and converts the *.cpt files into proper GMT master
 # CPT files with correct attribution and hinge info
-# Run from the ScientificColourMapsX directory (X is version) after the
+# Run from the ScientificColourMapsV directory (V is version) after the
 # zip has downloaded and been expanded.  But first you need to manually
 # update the /tmp/cpt.info entries below with one line per CPT subdir in the
 # downloaded directory.  It will create a gmt subdirectory with all the CPTs.
 # You also need to edit gmt_cpt_masters.h after adding the CPTs to share/cpt
 #
-# Last setup and run for ScientificColourMaps6 on 11/08/2020 for GMT 6.2 (master)
-# Gave 44 CPTS: The original 24 plus 4 cyclical versions and 16 categorical versions
+# Last setup and run for ScientificColourMaps7 on 21/02/2021 for GMT 6.2 (master)
+# Gave 51 CPTS: The original 28 plus 5 cyclical versions and 18 categorical versions
 #
 
 if [ $# -eq 0 ]; then
@@ -21,7 +21,7 @@ if [ $# -eq 0 ]; then
 
 	Will create the GMT CPT versions of Crameri's scientific colour maps.
 	Give the full path to the expanded zip file top directory, such as
-	~/Download/ScientificColourMaps6.
+	~/Download/ScientificColourMaps7.
 	Before running you must update this script with:
 	  1. Any new CPT entries since the last release to /tmp/cpt.info
 	  2. Flag those with a soft hinge as S and a hard hinge as H
