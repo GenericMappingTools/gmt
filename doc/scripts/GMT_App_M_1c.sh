@@ -5,9 +5,9 @@
 #
 # We have four sets of CPT figures to make:
 # 1a) Our regular, traditional GMT CPTs [44]
-# 1b) The regular Scientific Color Maps* [24]
-# 1c) Categorical CPTs (ours and SCM*)  [18]
-# 1d) Cyclic CPTs form SCM* [4]
+# 1b) The regular Scientific Color Maps* [28]
+# 1c) Categorical CPTs (ours and SCM*)  [20]
+# 1d) Cyclic CPTs from SCM* [5]
 #
 # *from Fabio [www.fabiocrameri.ch/visualisation]
 
@@ -16,7 +16,9 @@ GMT_SHAREDIR=$(gmt --show-sharedir)
 cat << EOF > tt.lis
 actonS
 bamakoS
+batlowK
 batlowS
+batlowW
 bilbaoS
 budaS
 categorical
