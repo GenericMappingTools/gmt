@@ -20,7 +20,7 @@ jobs:
         id: scm
         run: |
           scm_output=scm_version_string.txt
-          scm_version_in_gmt=6.0.4
+          scm_version_in_gmt=7.0.0
 
           # Crawl the version string for parsing
           echo "Crawling the official site: http://www.fabiocrameri.ch/colourmaps.php"
@@ -62,14 +62,14 @@ jobs:
 
             Please manually check it and fix the workflow.
 
-      - name: Create a update request
+      - name: Create an update request
         if: ${{ steps.scm.outputs.error_code == 2 }}
         uses: nashmaniac/create-issue-action@v1.1
         with:
-          title: New ScientificColourMaps release found
+          title: New ScientificColourMaps version ${{ steps.scm.outputs.scm_version }} found
           token: ${{secrets.GITHUB_TOKEN}}
           body: |
-            New Scientific Colour Maps release found.
+            A new Scientific Colour Maps release was found.
 
             - website: http://www.fabiocrameri.ch/colourmaps.php
             - version: ${{ steps.scm.outputs.scm_version }}
