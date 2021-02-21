@@ -18,16 +18,16 @@
 if [ $# -eq 0 ]; then
 	cat <<- EOF  >&2
 	Usage: build-scientific-colors-cpt.sh <SCM-directory>
-	
+
 	Will create the GMT CPT versions of Crameri's scientific colour maps.
 	Give the full path to the expanded zip file top directory, such as
 	~/Download/ScientificColourMaps6.
 	Before running you must update this script with:
-	  1. Any new CPT entries since his last release to /tmp/cpt.info
+	  1. Any new CPT entries since the last release to /tmp/cpt.info
 	  2. Flag those with a soft hinge as S and a hard hinge as H
 	  3. Manually set the current version number/doi (see the zip PDF docs)
 	Afterwards you must:
-	  1. Update gmt_cpt_masters.h with any new entries (copy lines from /tmp/cpt_strings.txt)
+	  1. Update src/gmt_cpt_masters.h with any new entries (copy lines from /tmp/cpt_strings.txt)
 	  2. Adding the CPTs to share/cpt (overwriting the previous versions)
 	  3. Probably mess with doc/scripts/GMT_App_M*.sh for new layouts
 	EOF
@@ -35,7 +35,7 @@ if [ $# -eq 0 ]; then
 fi
 
 DIR=$1
-VERSION=6.0.4
+VERSION=7.0.0
 cat << EOF > /tmp/cpt.info
 acton|Perceptually uniform sequential colormap, by Fabio Crameri [C=RGB]
 actonS|Perceptually uniform sequential categorical colormap, by Fabio Crameri [C=RGB]
@@ -131,21 +131,21 @@ while read line; do
 	if [ "X${last_char}" = "XS" ]; then
 		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
-		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{if (NR == 1) { printf "%d\t%s/%s/%s\n%d\t%s/%s/%s\n", 0, $2, $3, $4, 1, $6, $7, $8} else {printf "%d\t%s/%s/%s\n", NR+1, $6, $7, $8}}' > /tmp/tmp.cpt 
+		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{if (NR == 1) { printf "%d\t%s/%s/%s\n%d\t%s/%s/%s\n", 0, $2, $3, $4, 1, $6, $7, $8} else {printf "%d\t%s/%s/%s\n", NR+1, $6, $7, $8}}' > /tmp/tmp.cpt
 	elif [ "X$hinge" = "X" ]; then
 		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		if [ "X${last_char}" = "XO" ]; then
 			echo "# CYCLIC" >> gmt_cpts/$cpt.cpt
 		fi
 		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
-		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", $1, $2, $3, $4, $5, $6, $7, $8}' > /tmp/tmp.cpt 
+		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", $1, $2, $3, $4, $5, $6, $7, $8}' > /tmp/tmp.cpt
 	else
 		echo "# Note: Range changed from 0-1 to -1/+1 to place hinge at zero." >> gmt_cpts/$cpt.cpt
 		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		echo "# $hinge" >> gmt_cpts/$cpt.cpt
 		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
 		# Convert to -1/1 range
-		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", 2*($1-0.5), $2, $3, $4, 2*($5-0.5), $6, $7, $8}' > /tmp/tmp.cpt 
+		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", 2*($1-0.5), $2, $3, $4, 2*($5-0.5), $6, $7, $8}' > /tmp/tmp.cpt
 	fi
 	cat /tmp/tmp.cpt >> gmt_cpts/$cpt.cpt
 	if [ "X${last_char}" = "XS" ] || [ "X${last_char}" = "XO" ]; then	# Categorical or cyclical CPTS have no F or B, only NaN
