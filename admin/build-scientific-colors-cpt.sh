@@ -122,7 +122,7 @@ while read line; do
 	#	www.fabiocrameri.ch/visualisation
 	#
 	# License: MIT License
-	# Copyright (c) 2021, Fabio Crameri. All rights reserved.
+	# Copyright (c) 2021, Fabio Crameri.
 	# Crameri, F., (2021). Scientific colour maps. Zenodo. https://zenodo.org/record/4491293
 	# This is Scientific Colour Maps version $VERSION
 	# Note: Original file converted to GMT version >= 5 CPT format.
