@@ -59,7 +59,7 @@ do
 	fi
 	gmt colorbar -Dx${x}i/${y}i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
 	gmt colorbar -Dx${x}i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
-	echo ${x} $y ${right} | gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -Vi
+	echo ${x} $y ${right} | gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC
 	i=$(expr $i + 2)
 	y=$(gmt math -Q $y $dy ADD =)
 	y2=$(gmt math -Q $y2 $dy ADD =)
