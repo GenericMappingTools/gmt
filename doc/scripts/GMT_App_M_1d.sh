@@ -52,9 +52,14 @@ do
 	  gmt colorbar -Dx1.55i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
 		echo 1.55 $y ${left} | gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC
 	fi
-	gmt colorbar -Dx4.50i/${y}i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
-	gmt colorbar -Dx4.50i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
-	echo 4.50 $y ${right} | gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -Vi
+	if [ ${i} == ${n2} ] && [ $((i % 2)) != 0 ]; then
+		x=3.05
+	else
+		x=4.50
+	fi
+	gmt colorbar -Dx${x}i/${y}i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
+	gmt colorbar -Dx${x}i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
+	echo ${x} $y ${right} | gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -Vi
 	i=$(expr $i + 2)
 	y=$(gmt math -Q $y $dy ADD =)
 	y2=$(gmt math -Q $y2 $dy ADD =)
