@@ -5,8 +5,8 @@
 #
 # We have four sets of CPT figures to make:
 # 1a) Our regular, traditional GMT CPTs [44]
-# 1b) The regular Scientific Color Maps* [28]
-# 1c) Categorical CPTs (ours and SCM*)  [20]
+# 1b) The regular Scientific Color Maps* [30]
+# 1c) Categorical CPTs (ours and SCM*)  [18]
 # 1d) Cyclic CPTs from SCM* [5]
 #
 # *from Fabio [www.fabiocrameri.ch/visualisation]
@@ -19,6 +19,8 @@ acton
 bam
 bamako
 batlow
+batlowK
+batlowW
 berlin
 bilbao
 broc

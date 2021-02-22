@@ -34,7 +34,7 @@ Default ranges, if available, are indicated on the top-right of the scales.
    :width: 500 px
    :align: center
 
-   The 28 scientific color maps by Fabio Crameri supported by GMT.
+   The 30 scientific color maps by Fabio Crameri supported by GMT.
 
 .. _CPT_files_c:
 
@@ -42,7 +42,7 @@ Default ranges, if available, are indicated on the top-right of the scales.
    :width: 500 px
    :align: center
 
-   The 20 categorical CPTs (those ending in "S" are the categorical
+   The 18 categorical CPTs (those ending in "S" are the categorical
    scientific color maps by Fabio Crameri) supported by GMT.
 
 

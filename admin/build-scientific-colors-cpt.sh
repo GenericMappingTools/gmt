@@ -12,7 +12,7 @@
 # You also need to edit gmt_cpt_masters.h after adding the CPTs to share/cpt
 #
 # Last setup and run for ScientificColourMaps7 on 21/02/2021 for GMT 6.2 (master)
-# Gave 51 CPTS: The original 28 plus 5 cyclical versions and 18 categorical versions
+# Gave 51 CPTS: The original 30 plus 5 cyclical versions and 16 categorical versions
 #
 
 if [ $# -eq 0 ]; then
@@ -44,9 +44,9 @@ bamO|Perceptually uniform bimodal cyclic colormap, light, by Fabio Crameri [C=RG
 bamako|Perceptually uniform, low-lightness gradient colormap by Fabio Crameri [C=RGB]
 bamakoS|Perceptually uniform, low-lightness gradient categorical colormap by Fabio Crameri [C=RGB]
 batlow|Perceptually uniform 'rainbow' colormap by Fabio Crameri [C=RGB]
-batlowK|Perceptually uniform 'rainbow' categorical colormap with black ending by Fabio Crameri [C=RGB]
+batlowK|Perceptually uniform 'rainbow' colormap with black ending by Fabio Crameri [C=RGB]
 batlowS|Perceptually uniform 'rainbow' categorical colormap by Fabio Crameri [C=RGB]
-batlowW|Perceptually uniform 'rainbow' categorical colormap with white ending by Fabio Crameri [C=RGB]
+batlowW|Perceptually uniform 'rainbow' colormap with white ending by Fabio Crameri [C=RGB]
 berlin|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
 bilbao|Perceptually uniform colormap by Fabio Crameri [C=RGB]
 bilbaoS|Perceptually uniform categorical colormap by Fabio Crameri [C=RGB]
