@@ -41,28 +41,20 @@ do
 	j=$(expr $i + 1)
 	left=$(sed -n ${j}p tt.lis)
 	right=$(sed -n ${i}p tt.lis)
-	gmt makecpt -H -C$left -T-1/1 > tt.left.cpt
-	gmt makecpt -H -C$left -T-1/1/0.25 > tt.left2.cpt
+	if [ -n "$left" ]; then
+	  gmt makecpt -H -C$left -T-1/1 > tt.left.cpt
+	  gmt makecpt -H -C$left -T-1/1/0.25 > tt.left2.cpt
+  fi
 	gmt makecpt -H -C$right -T-1/1 > tt.right.cpt
 	gmt makecpt -H -C$right -T-1/1/0.25 > tt.right2.cpt
-	gmt colorbar -Dx1.55i/${y}i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
+	if [ -n "$left" ]; then
+	  gmt colorbar -Dx1.55i/${y}i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
+	  gmt colorbar -Dx1.55i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
+		echo 1.55 $y ${left} | gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC
+	fi
 	gmt colorbar -Dx4.50i/${y}i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
-	gmt colorbar -Dx1.55i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
 	gmt colorbar -Dx4.50i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
-	gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC <<- END
-	1.55 $y ${left}
-	4.50 $y ${right}
-	END
-	if [ $(grep -c HARD_HINGE ${GMT_SHAREDIR}/cpt/${left}.cpt) -eq 1 ]; then # Plot hard hinge symbol for left CPT
-		echo 1.55 $y | gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i
-	elif [ $(grep -c SOFT_HINGE ${GMT_SHAREDIR}/cpt/${left}.cpt) -eq 1 ]; then # Plot soft hinge symbol for left CPT
-		echo 1.55 $y | gmt plot -St0.2c -Gwhite -Wfaint -D0/-0.29i
-	fi
-	if [ $(grep -c HARD_HINGE ${GMT_SHAREDIR}/cpt/${right}.cpt) -eq 1 ]; then # Plot hard hinge symbol for right CPT
-		echo 4.50 $y | gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i
-	elif [ $(grep -c SOFT_HINGE ${GMT_SHAREDIR}/cpt/${right}.cpt) -eq 1 ]; then # Plot soft hinge symbol for right CPT
-		echo 4.50 $y | gmt plot -St0.2c -Gwhite -Wfaint -D0/-0.29i
-	fi
+	echo 4.50 $y ${right} | gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC -Vi
 	i=$(expr $i + 2)
 	y=$(gmt math -Q $y $dy ADD =)
 	y2=$(gmt math -Q $y2 $dy ADD =)
