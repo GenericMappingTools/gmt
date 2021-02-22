@@ -27,7 +27,7 @@ let n2=n/2
 let n2=n
 # dy is line spacing and y0 is total box height
 dy=0.6
-y0=$(gmt math -Q $n2 $dy MUL 0.5 MUL 0.1 ADD =)
+y0=$(gmt math -Q $n2 $dy MUL 0.5 MUL 0.25 ADD =)
 
 gmt begin GMT_App_M_1d
 gmt set MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
@@ -44,7 +44,7 @@ do
 	if [ -n "$left" ]; then
 	  gmt makecpt -H -C$left -T-1/1 > tt.left.cpt
 	  gmt makecpt -H -C$left -T-1/1/0.25 > tt.left2.cpt
-  fi
+	fi
 	gmt makecpt -H -C$right -T-1/1 > tt.right.cpt
 	gmt makecpt -H -C$right -T-1/1/0.25 > tt.right2.cpt
 	if [ -n "$left" ]; then
