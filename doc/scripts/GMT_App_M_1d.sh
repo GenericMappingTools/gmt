@@ -15,7 +15,7 @@ GMT_SHAREDIR=$(gmt --show-sharedir)
 
 # Here we list all the cyclic cpts from the SCM:
 cat << EOF > tt.lis
-bam0
+bamO
 brocO
 corkO
 romaO
