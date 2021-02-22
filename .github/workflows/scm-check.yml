@@ -77,16 +77,17 @@ jobs:
 
             Todo list:
 
-            - [ ] Download latest ScientificColourMaps release from https://doi.org/10.5281/zenodo.1243862
-              - Unzip the ScientificColourMapsV.zip file to a folder, e.g. ~/Downloads/ScientificColourMapsV,
-                where V is the version number (e.g. 7).
-            - [ ] Update the version number in `admin/build_scientific_colors_cpt.sh`
-            - [ ] Run `./admin/build_scientific_colors_cpt.sh ~/Downloads/ScientificColourMapsV/` to update CPTs
-              - If there are new CPTs (check using `ls ~/Downloads/ScientificColourMaps`),
-                update the `admin/build_scientific_colors_cpt.sh` script and rerun it
-            - [ ] Copy/Move the generated CPTs to `share/cpt` directory
-              - Use `mv ~/Downloads/ScientificColourMapsV/gmt_cpts/* share/cpt/`
-            - [ ] Update src/gmt_cpt_masters.h using the lines in `/tmp/cpt_strings.txt`
-            - [ ] Update the version number in `.github/workflows/scm-check.yml`
-            - [ ] Update `doc/scripts/GMT_App_M_1*.sh` and associated `doc/scripts/GMT_App_M_1*.ps` file(s)
+            - [ ] Download latest ScientificColourMapsV.zip file from https://doi.org/10.5281/zenodo.1243862
+                  to a folder, e.g. ~/Downloads/ScientificColourMapsV, where V is the version number (e.g. 7).
+            - [ ] Run `./admin/build-scientific-colors-cpt.sh ~/Downloads/ScientificColourMapsV/` to update CPTs.
+            - [ ] Move newly generated CPTs to `share/cpt` using `mv ~/Downloads/ScientificColourMapsV/gmt_cpts/* share/cpt/`
+            - [ ] Make sure to update the following files:
+              - [ ] Version number in `admin/build-scientific-colors-cpt.sh` and `.github/workflows/scm-check.yml`
+              - [ ] List of colour maps in `src/gmt_cpt_masters.h` using lines in `/tmp/cpt_strings.txt` (only if new colour maps were added)
+              - [ ] Counts of colour maps in `doc/rst/source/cookbook/cpts.rst` (only if new colour maps were added)
+              - [ ] List of colour maps and counts in `doc/scripts/GMT_App_M_1*.sh` (only if new colour maps were added)
+            - [ ] Update the associated `doc/scripts/GMT_App_M_1*.ps` file(s)
             - [ ] Commit all changes and open a PR
+
+            **Note**: If new CPTs were added (check using `ls ~/Downloads/ScientificColourMaps`), update the
+            `admin/build-scientific-colors-cpt.sh` script first to include the new CPTs, and then rerun it again.
