@@ -668,7 +668,7 @@ MAP Parameters
         geotiffs), chose **inside**.  Finally, for Cartesian plots you can
         also choose **graph**\ , which adds a vector to the end of each axis.
         This works best when you reduce the number of axes plotted to one
-        per dimension. *By default, the vector tip extends the length of each axis by* **7.5%**. 
+        per dimension. By default, the vector tip extends the length of each axis by 7.5%. 
         Alternatively, append ,\ *length*, where the optional *unit*
         may be **%** (then *length* is the alternate extension in percent) or one
         of **c**, **i**, or **p** (then *length* is the absolute extension
