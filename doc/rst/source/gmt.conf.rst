@@ -206,7 +206,7 @@ FORMAT Parameters
         combination of **yyyy** (or **yy** for 2-digit years; if so see
         :term:`TIME_Y2K_OFFSET_YEAR`), **mm** (or **o** for abbreviated month name in
         the current time language), and **dd**, with or without delimiters. For
-        day-of-year data, use **jjj** instead of mm and/or dd. Examples can be
+        day-of-year data, use **jjj** instead of **mm** and/or **dd**. Examples can be
         ddmmyyyy, yy-mm-dd, dd-o-yyyy, yyyy/dd/mm, yyyy-jjj, etc. ISO
         Calendar: Expected template is **yyyy[-]W[-]ww[-]d**, where ww is ISO
         week and d is ISO week day. Either template must be consistent,
