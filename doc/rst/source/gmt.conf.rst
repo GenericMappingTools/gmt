@@ -381,9 +381,9 @@ GMT Miscellaneous Parameters
         their execution time. This so gained "Wisdom" will be stored in and
         reloaded from the file fftw_wisdom_<hostname> in **$GMT_USERDIR** or, if
         **$GMT_USERDIR** is not writable, in the current directory. To use this
-        feature append *planner_flag*, which can be one of **measure**,
-        **patient**, **exhaustive** and **estimate** which pick a (probably
-        sub-optimal) plan quickly [default is **estimate**]. See FFTW reference for details.
+        feature append *planner_flag*, which can be one of *measure*,
+        *patient*, *exhaustive* and *estimate* which pick a (probably
+        sub-optimal) plan quickly [default is *estimate*]. See FFTW reference for details.
         **Note**: If you need a single transform of a
         given size only, the one-time cost of the smart planner becomes
         significant. In that case, stick to the default planner, *estimate*,
