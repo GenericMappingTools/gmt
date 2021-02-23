@@ -86,7 +86,7 @@ COLOR Parameters
         are: **none** (default: use whatever the **COLOR_MODEL** setting in the
         CPT demands), **rgb** (force interpolation in RGB),
         **hsv** (force interpolation in HSV), **cmyk** (assumes colors are
-        in CMYK but interpolates in RGB).
+        in CMYK but interpolates in RGB) [default is **none**].
 
     **COLOR_NAN**
         Color used for the non-defined areas of images (i.e., where z = NaN) [default is **128**].
