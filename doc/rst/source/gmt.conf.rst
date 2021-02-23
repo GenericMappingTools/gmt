@@ -1042,7 +1042,7 @@ PostScript Parameters
         Sets the threshold angle in degrees (integer in range [0,180]) used
         for mitered joins only. When the angle between joining line segments
         is smaller than the threshold the corner will be bevelled instead of
-        mitered. The default threshold is **35 degrees**. Setting the threshold
+        mitered. [default is **35**]. Setting the threshold
         angle to **0** implies the PostScript default of about 11 degrees.
         Setting the threshold angle to **180** causes all joins to be beveled.
 
