@@ -5,9 +5,9 @@
 #
 # We have four sets of CPT figures to make:
 # 1a) Our regular, traditional GMT CPTs [44]
-# 1b) The regular Scientific Color Maps* [24]
+# 1b) The regular Scientific Color Maps* [30]
 # 1c) Categorical CPTs (ours and SCM*)  [18]
-# 1d) Cyclic CPTs form SCM* [4]
+# 1d) Cyclic CPTs from SCM* [5]
 #
 # *from Fabio [www.fabiocrameri.ch/visualisation]
 
@@ -16,15 +16,20 @@ GMT_SHAREDIR=$(gmt --show-sharedir)
 # Make a skip list - note we don't need to add those with an O or S added since the will be grepped out as well
 cat << EOF > skip.lis
 acton
+bam
 bamako
 batlow
+batlowK
+batlowW
 berlin
 bilbao
 broc
 buda
+bukavu
 cork
 davos
 devon
+fes
 grayC
 hawaii
 imola
@@ -38,6 +43,7 @@ roma
 tofino
 tokyo
 turku
+vanimo
 vik
 srtm
 categorical

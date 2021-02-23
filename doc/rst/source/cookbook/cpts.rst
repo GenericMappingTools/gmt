@@ -34,7 +34,7 @@ Default ranges, if available, are indicated on the top-right of the scales.
    :width: 500 px
    :align: center
 
-   The 24 scientific color maps by Fabio Crameri supported by GMT.
+   The 30 scientific color maps by Fabio Crameri supported by GMT.
 
 .. _CPT_files_c:
 
@@ -52,7 +52,7 @@ Default ranges, if available, are indicated on the top-right of the scales.
    :width: 500 px
    :align: center
 
-   The 4 cyclic scientific color maps by Fabio Crameri supported by GMT.
+   The 5 cyclic scientific color maps by Fabio Crameri supported by GMT.
    **Note**: Any GMT CPT can be made cyclic by running :doc:`/makecpt`
    with the **-Ww** option (wrapped = cyclic).
 

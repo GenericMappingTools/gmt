@@ -20,7 +20,7 @@ jobs:
         id: scm
         run: |
           scm_output=scm_version_string.txt
-          scm_version_in_gmt=6.0.4
+          scm_version_in_gmt=7.0.0
 
           # Crawl the version string for parsing
           echo "Crawling the official site: http://www.fabiocrameri.ch/colourmaps.php"
@@ -62,14 +62,14 @@ jobs:
 
             Please manually check it and fix the workflow.
 
-      - name: Create a update request
+      - name: Create an update request
         if: ${{ steps.scm.outputs.error_code == 2 }}
         uses: nashmaniac/create-issue-action@v1.1
         with:
-          title: New ScientificColourMaps release found
+          title: New ScientificColourMaps version ${{ steps.scm.outputs.scm_version }} found
           token: ${{secrets.GITHUB_TOKEN}}
           body: |
-            New Scientific Colour Maps release found.
+            A new Scientific Colour Maps release was found.
 
             - website: http://www.fabiocrameri.ch/colourmaps.php
             - version: ${{ steps.scm.outputs.scm_version }}
@@ -77,9 +77,17 @@ jobs:
 
             Todo list:
 
-            - [ ] Download the latest ScientificColourMaps release
-            - [ ] Run `admin/build_scientific_colors_cpt.sh` to update CPTs for the new release
-            - [ ] Copy the generated CPTs to `share/cpt` directory
-            - [ ] Update the version number in `admin/build_scientific_colors_cpt.sh`
-            - [ ] Update the version number in `.github/workflows/scm-check.yml`
+            - [ ] Download latest ScientificColourMapsV.zip file from https://doi.org/10.5281/zenodo.1243862
+                  to a folder, e.g. ~/Downloads/ScientificColourMapsV, where V is the version number (e.g. 7).
+            - [ ] Run `./admin/build-scientific-colors-cpt.sh ~/Downloads/ScientificColourMapsV/` to update CPTs.
+            - [ ] Move newly generated CPTs to `share/cpt` using `mv ~/Downloads/ScientificColourMapsV/gmt_cpts/* share/cpt/`
+            - [ ] Make sure to update the following files:
+              - [ ] Version number in `admin/build-scientific-colors-cpt.sh` and `.github/workflows/scm-check.yml`
+              - [ ] List of colour maps in `src/gmt_cpt_masters.h` using lines in `/tmp/cpt_strings.txt` (only if new colour maps were added)
+              - [ ] Counts of colour maps in `doc/rst/source/cookbook/cpts.rst` (only if new colour maps were added)
+              - [ ] List of colour maps and counts in `doc/scripts/GMT_App_M_1*.sh` (only if new colour maps were added)
+            - [ ] Update the associated `doc/scripts/GMT_App_M_1*.ps` file(s)
             - [ ] Commit all changes and open a PR
+
+            **Note**: If new CPTs were added (check using `ls ~/Downloads/ScientificColourMaps`), update the
+            `admin/build-scientific-colors-cpt.sh` script first to include the new CPTs, and then rerun it again.
