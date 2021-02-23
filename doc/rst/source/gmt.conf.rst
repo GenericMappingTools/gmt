@@ -489,7 +489,7 @@ I/O Parameters
         GMT Technical Reference and Cookbook for more information.
         You may the scale as **a** for auto-adjusting the scale and/or offset of
         packed integer grids (=\ *ID*\ **+s**\ *a* is a shorthand for
-        =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).  When **invalid** is omitted
+        =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).  When *invalid* is omitted
         the appropriate value for the given format is used (NaN or largest negative). [default is **nf**].
 
     **IO_GRIDFILE_SHORTHAND**
