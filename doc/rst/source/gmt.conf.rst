@@ -753,7 +753,7 @@ MAP Parameters
         domains are separated by a small circle drawn at the *pc_lat*
         latitude [default is **85/90**]. Note for r-theta (polar) projection where r = 0 is
         at the center of the plot the meaning of the cap is reversed, i.e.,
-        the default 85/90 will draw a **r = 5** radius circle at the center of
+        the default 85/90 will draw a r = 5 radius circle at the center of
         the map with less frequent radial lines there.
 
     **MAP_SCALE_HEIGHT**
