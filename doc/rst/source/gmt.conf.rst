@@ -1102,7 +1102,7 @@ Calendar/Time Parameters
         the previous interval [default is **off**].
         For example, with **TIME_IS_INTERVAL** =+1o, an input data string 
         like 1999-12 will be interpreted to mean 1999-12-15T12:00:00.0 (exactly middle of December), 
-        while if **TIME_IS_INTERVAL** = off then that date is interpreted to mean
+        while if **TIME_IS_INTERVAL** = **off** then that date is interpreted to mean
         1999-12-01T00:00:00.0 (start of December).
 
     **TIME_REPORT**
