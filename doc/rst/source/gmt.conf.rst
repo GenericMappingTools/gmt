@@ -979,7 +979,7 @@ PostScript Parameters
     **PS_IMAGE_COMPRESS**
         Determines if PostScript images are compressed using the Run-Length
         Encoding scheme (**rle**), Lempel-Ziv-Welch compression (**lzw**), DEFLATE
-        compression (**deflate[,level]**), or not at all (**none**) [default is **deflate,5**]. When
+        compression (**deflate**\ [,\ *level*]), or not at all (**none**) [default is **deflate,5**]. When
         specifying **deflate**, the compression level (1–9) may optionally be
         appended.
 
