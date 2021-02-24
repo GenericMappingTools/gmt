@@ -8,6 +8,16 @@
     font-weight: normal;
 }
 
+body {
+	font-family: "Atkinson Hyperlegible", sans-serif;
+    font-size: 1.05em;
+}
+
+h1, h2, h3, h4 {
+    font-weight: normal;
+    font-family: "Atkinson Hyperlegible", sans-serif;
+}
+
 /* style for example gallery */
 .gmtgallary li {
     list-style: none;
@@ -79,3 +89,35 @@
 	box-shadow: 1px 1px 3px #000;
 }
 .close:hover { background: #00d9ff; }
+
+/* Atkinson Hyperlegible regular */
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    src: url("./fonts/Atkinson-Hyperlegible-Regular-102a.woff2") format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Atkinson Hyperlegible bold */
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    src: url("./fonts/Atkinson-Hyperlegible-Bold-102a.woff2") format('woff2');
+    font-weight: bold;
+    font-style: normal;
+}
+
+/* Atkinson Hyperlegible italic */
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    src: url("./fonts/Atkinson-Hyperlegible-Italic-102a.woff2") format('woff2');
+    font-weight: normal;
+    font-style: italic;
+}
+
+/* Atkinson Hyperlegible bold italic */
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    src: url("./fonts/Atkinson-Hyperlegible-BoldItalic-102a.woff2") format('woff2');
+    font-weight: bold;
+    font-style: italic;
+}
