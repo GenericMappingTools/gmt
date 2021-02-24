@@ -14512,7 +14512,7 @@ int GMT_Put_Vector (void *V_API, struct GMT_VECTOR *V, unsigned int col, unsigne
 	/* Hooks a users custom vector onto V's column array and sets the type.
 	 * It is the user's responsibility to pass correct type for the given vector.
 	 * We also check that the number of rows have been set earlier.
-	 * We also allow special text-based arrays for longitude, latitdue, and datetime to be passed
+	 * We also allow special text-based arrays for longitude, latitude, datetime or Cartesian data to be passed
 	 * which may be logically OR'ed with desired array type (e.g., GMT_LONG|GMT_DATETIME.
 	 * Note: We do not check for data loss in the conversion (e..g, GMT_UCHAR|GMT_TEXTLON) */
 	unsigned int special_type;
