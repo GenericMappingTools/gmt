@@ -16,7 +16,7 @@ Synopsis
 |-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
 [ |-A| ]
 [ |SYN_OPT-B| ]
-[ |-C|\ *cpt* ]
+[ |-C|\ *cpt*\ [**+b**] ]
 [ |-D|\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**] ]
 [ |-E|\ *width*\ [**+o**\ *offset*] ]
 [ |-F| ]
