@@ -14585,6 +14585,7 @@ int GMT_Put_Vector (void *V_API, struct GMT_VECTOR *V, unsigned int col, unsigne
 			api_put_val (&(V->data[col]), row, value);	/* Place value in vector of selected type */
 		}
 		V->type[col] = type;	/* Flag as the new type after conversion */
+		if (L_type == GMT_IS_UNKNOWN) L_type = GMT_IS_FLOAT;	/* We held out this long but now must default to it */
 		gmt_set_column_type (API->GMT, GMT_IO, col, L_type);
 		if (n_bad) {	/* Report on values that could not be converted */
 			if (L_type == GMT_IS_LON)
