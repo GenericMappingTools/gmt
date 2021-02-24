@@ -388,7 +388,7 @@ the Dateline:
 
    ::
 
-    basemap -Rg -JW180/25c -Bafg -B+tMollweide -pdf mollweide
+    gmt basemap -Rg -JW180/25c -Bafg -B+tMollweide -pdf mollweide
 
 Van der Grinten
 ~~~~~~~~~~~~~~~

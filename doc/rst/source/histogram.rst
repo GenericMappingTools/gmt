@@ -55,7 +55,7 @@ Examples
 
 .. include:: oneliner_info.rst_
 
-To draw a histogram of the remote data v3206_06.t containing seafloor depths,
+To draw a histogram of the remote data v3206_06.txt containing seafloor depths,
 using a 250 meter bin width, center bars, and draw bar outline, use:
 
    ::
