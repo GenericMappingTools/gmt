@@ -1363,13 +1363,12 @@ For vectors the same principles apply:
 where ``V`` is the :ref:`GMT_VECTOR <struct-vector>` created by GMT_Create_Data_,
 ``col`` is the vector column in question, ``type`` is one of the recognized data
 :ref:`types <tbl-types>` used for this vector, and ``vector`` is a pointer to the
-user's read-only custom vector.  In addition, ``type`` may also be one of **GMT_TEXT**,
-**GMT_TEXTLON**, **GMT_TEXTLAT**, or **GMT_DATETIME**, in which case we expect an
-array of strings with numbers, longitudes, latitudes, or ISO datetime strings,
-respectively, and we do the conversion to internal numerical values and allocate
-a vector to hold the result in the given ``col``.  By default that vector will be
-assigned to type **GMT_DOUBLE** but you can add another primary data type for the
-conversion if you prefer (e.g., **GMT_LONG**\|\ **GMT_DATETIME** to get final 
+user's read-only custom vector.  In addition, ``type`` may also be  **GMT_TEXT**,
+in which case we expect an array of strings with numbers, longitudes, latitudes,
+or ISO datetime strings and we do the conversion to internal numerical values and
+allocate a vector to hold the result in the given ``col``.  By default that vector
+will be assigned to type **GMT_DOUBLE** but you can add another primary data type
+for the conversion if you prefer (e.g., **GMT_TEXT**\|\ **GMT_LONG** to get final 
 internal absolute time in integer seconds). For these four special data types GMT
 allocates internal memory to hold the concerted data and ``vector`` is not used
 any further.
