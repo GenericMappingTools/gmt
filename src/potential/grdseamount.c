@@ -342,9 +342,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		}
 	}
 
-	if (Ctrl->C.mode == SHAPE_POLY && Ctrl->Q.disc) {	/* A few things area not yet implemented */
-		n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active, "The -Q..+d for polynomial seamounts is not implemented yet\n");
-	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == SHAPE_DISC && Ctrl->F.active, "Cannot specify -F for discs; ignored\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->N.active || Ctrl->Z.active || Ctrl->L.active || Ctrl->T.active), "Option -A: Cannot use -L, -N, -T or -Z with -A\n");
 	if (!Ctrl->L.active) {	/* Just a listing, cannot use -R -I -r -G -M -Z */
@@ -354,6 +351,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'), "Option -G: Filename template must contain format specifier when -T is used\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Q.bmode == SMT_INCREMENTAL, "Option -Z: Cannot be used with -Qi\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Option -M: Requires time information via -T\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode == TRUNC_ARG && (Ctrl->F.value < 0.0 || Ctrl->F.value >= 1.0), "Option -F: Flattening must be in 0-1 range\n");
 	}
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time */
@@ -448,36 +446,33 @@ GMT_LOCAL double poly_smt_rc (double hc) {
 }
 
 GMT_LOCAL double poly_smt_vol (double r) {
-	/* Volume of polynomial seamount of unit amplitude */
-	double r2 = r * r, r3 = r2 * r, r5 = r2 * r3, V;
-	V = sqrt (3.0) * atan (sqrt (3.0) * (2.0 * r - 1.0) / 3.0) - 0.5 * (3.0 * log (r2 - r + 1.0)) - 3.0 * r + 0.5 * r2 + r3 - 0.2 * r5;
+	/* Volume of polynomial seamount of unit amplitude from normalized r' = 0 to r */
+	double r2 = r * r, r3 = r2 * r, r5 = r2 * r3, V, root3 = sqrt (3.0);
+	V = TWO_PI * (root3 * (M_PI / 6.0 + atan (root3 * (2.0 * r - 1.0) / 3.0)) - 1.5 * log (r2 - r + 1.0) - 3.0 * r + 0.5 * r2 + r3 - 0.2 * r5);
 	return (V);
 }
 
 GMT_LOCAL void grdseamount_poly_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
-	/* Compute area and volume of circular or elliptical parabolic seamounts. */
+	/* Compute area and volume of circular or elliptical polynomial seamounts. */
 	bool circular = doubleAlmostEqual (a, b);
-	double hstar, r2, r, rc = (hc > 0.0) ? poly_smt_rc (hc / h) : 1.0;	/* Fraction of normalized radius */
-	a *= rc;	b *= rc;	h -= hc;	/* Now just remove the noise floor and shrink a, b, h */
+	double r2, r, rc = (hc > 0.0) ? poly_smt_rc (hc / h) : 1.0;	/* Fraction of normalized radius at noise floor */
+	double beta = (poly_smt_vol (rc) - poly_smt_vol (f)) / poly_smt_func (f);
 	r2 = (circular) ? a * a : a * b;
 	r = sqrt (r2);	/* Mean radius */
-	hstar = h / poly_smt_func (f);	/* This is h* in the notes */
 	*A = M_PI * r2;
-	if (fabs (f) > 0.0)	/* Truncated */
-		*V = hstar * poly_smt_vol (r) - (hstar - h) * poly_smt_vol (f*r);
-	else
-		*V = h * poly_smt_vol (r);
+	*V = r2 * h * (beta + M_PI * f * f) - M_PI * pow (rc * r, 2.0) * hc;
 	*z = (*V) / (*A);
 }
 
+/* Below, phi is a factor that we scale with r (or a,b) for a seamount matching the volume fraction */
 GMT_LOCAL double grdseamount_cone_solver (double in[], double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction */
 	double A, V0, phi, r02, h0;
 	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
-	h0 = (elliptical) ? in[5] : in[3];
+	h0  = (elliptical) ? in[5] : in[3];
 	A = M_PI * r02 * h0 / (3.0 * (1 - f));
 	V0 = M_PI * r02 * h0  * (1 + f + f*f) / 3.0;
-	phi = pow (1.0 - V0 * (1.0 - v) / A, (1.0/3.0));
+	phi = pow (1.0 - V0 * (1.0 - v) / A, ONETHIRD);
 	return (phi);
 }
 
@@ -491,7 +486,7 @@ GMT_LOCAL double grdseamount_para_solver (double in[], double f, double v, bool 
 	/* Return effective phi given volume fraction */
 	double A, V0, phi, r02, h0;
 	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
-	h0 = (elliptical) ? in[5] : in[3];
+	h0  = (elliptical) ? in[5] : in[3];
 	A = M_PI * r02 * h0 / (2.0 * (1 - f*f));
 	V0 = M_PI * r02 * h0  * (1 + f*f) / 2.0;
 	phi = pow (1.0 - V0 * (1.0 - v)/A, 0.25);
@@ -503,7 +498,7 @@ GMT_LOCAL double grdseamount_gauss_solver (double in[], double f, double v, bool
 	int n = 0;
 	double A, B, V0, phi, phi0, r02, h0;
 	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
-	h0 = (elliptical) ? in[5] : in[3];
+	h0  = (elliptical) ? in[5] : in[3];
 	A = 2.0 * M_PI * r02 * h0 * exp (9.0 * f * f / 2.0) / 9.0;
 	V0 = 2.0 * M_PI * r02 * h0 * (1.0 + 9.0 * f * f / 2.0) / 9.0;
 	B = V0 * (1.0 - v) / A;
@@ -516,11 +511,20 @@ GMT_LOCAL double grdseamount_gauss_solver (double in[], double f, double v, bool
 	return (phi);
 }
 
+#define DELTA_PHI 0.01
 GMT_LOCAL double grdseamount_poly_solver (double in[], double f, double v, bool elliptical) {
-	/* Return effective phi given volume fraction from a polynomial seamount is not yet implemented */
-	gmt_M_unused (in), gmt_M_unused (f), gmt_M_unused (elliptical);
-	/* NOT IMPLEMENTED YET */
-	return (v);
+	/* Return effective phi given volume fraction from a polynomial seamount */
+	double I1 = TWO_PI * (M_PI * sqrt(3.0) / 3.0 - 1.7);	/* I(1) definite integral */
+	double b = (1.0 - v) * (M_PI * f * f * poly_smt_func (f) - poly_smt_vol (f)) - v * I1;
+	double t = 0.0, phi = 0.0, lhs = 0.0, last_lhs;
+	while (lhs >= b) {
+    	t += DELTA_PHI;
+    	last_lhs = lhs;
+    	lhs = M_PI * t * t * poly_smt_func (t) - poly_smt_vol (t);
+    }
+	if (lhs < 0.0)
+		phi = (t - DELTA_PHI) + DELTA_PHI * (b - last_lhs) / (lhs - last_lhs);	/* Linear interpolation */
+	return (phi);
 }
 
 GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double **data, char **text, uint64_t rec, uint64_t n_expected, bool map, double inv_scale, double *in, char *code) {
@@ -582,7 +586,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	double x, y, r, c, in[9], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV, scale = 1.0;
 	double add, f, max, r_km, amplitude, h_scale = 0.0, z_assign, noise = 0.0, this_user_time = 0.0, life_span, t_mid;
 	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM = 0.0, v_curr, v_prev, *V = NULL;
-	double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch, prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0;
+	double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch, prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf;
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL, g_noise = exp (-4.5), g_scl = 1.0 / (1.0 - g_noise), phi_prev, phi_curr;
 	void (*shape_func[N_SHAPES]) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
 	double (*phi_solver[N_SHAPES]) (double in[], double f, double v, bool elliptical);
@@ -744,6 +748,11 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					amplitude = in[3];	/* Seamount max height from base */
 					if (Ctrl->F.mode == TRUNC_FILE) Ctrl->F.value = in[4];	/* Flattening given via input file */
 				}
+				if (Ctrl->F.mode == TRUNC_FILE && (Ctrl->F.value < 0.0 || Ctrl->F.value >= 1.0)) {
+					GMT_Report (API, GMT_MSG_ERROR, "Flattening outside valid range 0-1 (%g)!\n", Ctrl->F.value);
+					API->error = GMT_RUNTIME_ERROR;
+					goto wrap_up;					
+				}
 				c = (map) ? cosd (in[GMT_Y]) : 1.0;	/* Flat Earth scaling factor */
 				/* Compute area, volume, mean amplitude */
 				shape_func[build_mode] (a, b, amplitude, Ctrl->L.value, Ctrl->F.value, &area, &volume, &height);
@@ -861,8 +870,14 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						/* When v_curr == v_prev after a volcano has stopped growing the incremental change will be zero */
 						dV = V[n_smts] * (v_curr - v_prev);	/* Incremental volume produced */
 						V_sum[n_smts] += dV;			/* Keep track of volume sum so we can compare with truth later */
-						if (Ctrl->F.mode == TRUNC_FILE)
+						if (Ctrl->F.mode == TRUNC_FILE) {
 							f = (Ctrl->E.active) ? in[6] : in[4];
+							if (Ctrl->F.mode == TRUNC_FILE && (f < 0.0 || f >= 1.0)) {
+								GMT_Report (API, GMT_MSG_ERROR, "Flattening outside valid range 0-1 (%g)!\n", f);
+								API->error = GMT_RUNTIME_ERROR;
+								goto wrap_up;					
+							}
+						}
 						else
 							f = Ctrl->F.value;
 						if (Ctrl->Q.disc) {	/* Obtain the equivalent disc parameters given the volumes found */
@@ -873,7 +888,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								case SHAPE_CONE:  h_curr = h0 * (1 - phi_curr) / (1 - f); h_prev = h0 * (1 - phi_prev) / (1 - f); break;
 								case SHAPE_PARA:  h_curr = h0 * (1 - phi_curr * phi_curr) / (1 - f * f); h_prev = h0 * (1 - phi_prev * phi_prev) / (1 - f * f); break;
 								case SHAPE_GAUS:  h_curr = h0 * exp (4.5 * (f*f - phi_curr * phi_curr)); h_prev = h0 * exp (4.5 * (f*f - phi_prev * phi_prev)); break;
-								case SHAPE_POLY:  h_curr = h0; break;	/* NOT IMPLEMENTED YET for -F */
+								case SHAPE_POLY:  pf = poly_smt_func (f); h_curr = h0 * poly_smt_func (phi_curr) / pf; h_prev = h0 * poly_smt_func (phi_prev) / pf;	break;
+								//case SHAPE_POLY:  pf = poly_smt_func (f); h_curr = MIN (h0, h0 * poly_smt_func (phi_curr) / pf); h_prev = MIN (h0, h0 * poly_smt_func (phi_prev) / pf);	break;
 							}
 							h_mean = fabs (h_curr - h_prev);	/* This is our disc layer thickness */
 							r_mean = sqrt (dV / (M_PI * h_mean));	/* Radius given by volume and height */
@@ -942,7 +958,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						case SHAPE_CONE:  h_scale = 1.0 / (1.0 - Ctrl->F.value); break;
 						case SHAPE_DISC:  h_scale = 1.0; break;
 						case SHAPE_PARA:  h_scale = 1.0 / (1.0 - Ctrl->F.value * Ctrl->F.value); break;
-						case SHAPE_POLY:  h_scale = 1.0; break;	/* NOT IMPLEMENTED YET for -F */
+						case SHAPE_POLY:  h_scale = 1.0 / poly_smt_func (Ctrl->F.value); break;
 						case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * Ctrl->F.value * Ctrl->F.value); break;
 					}
 					if (inc_mode == SHAPE_GAUS) h_scale *= g_scl;	/* Adjust for the fact we only go to -/+ 3 sigma and not infinity */
@@ -993,7 +1009,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								else if (inc_mode == SHAPE_PARA)	/* Elliptical parabolic case */
 									add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr*rr) * h_scale;
 								else if (inc_mode == SHAPE_POLY)	/* Elliptical parabolic case */
-									add = (rr < Ctrl->F.value) ? 1.0 : poly_smt_func (rr);
+									add = (rr < Ctrl->F.value) ? 1.0 : poly_smt_func (rr) * h_scale;
 								else	/* Elliptical Gaussian case */
 									add = (rr < Ctrl->F.value) ? 1.0 : exp (this_r) * h_scale - noise;
 							}
@@ -1006,7 +1022,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								else if (inc_mode == SHAPE_PARA)	/* Circular parabolic case */
 									add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr*rr) * h_scale;
 								else if (inc_mode == SHAPE_POLY)	/* Circular parabolic case */
-									add = (rr < Ctrl->F.value) ? 1.0 : poly_smt_func (rr);
+									add = (rr < Ctrl->F.value) ? 1.0 : poly_smt_func (rr) * h_scale;
 								else	/* Circular Gaussian case */
 									add = (rr < Ctrl->F.value) ? 1.0 : exp (f * this_r * this_r) * h_scale - noise;
 							}
