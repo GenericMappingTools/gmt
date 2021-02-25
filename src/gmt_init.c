@@ -10002,9 +10002,10 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 	}
 
 	if (gmt_M_is_dnan (GMT->current.setting.map_polar_cap[0])) {
-		double f = 1.0, p_range = MIN (90.0 - GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI] + 90.0);
-		double reach = MIN (5.0, 0.25 * p_range); /* Max 5 degrees from pole */
-		if (reach < 1.0) reach *= 60.0, f *= 60.0;
+		/* Must estimate a suitable parallel for a polar cap given area */
+		double p_range = MIN (90.0 - GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI] + 90.0);	/* SHortest distance from far latitude to pole */
+		double f = 1.0, reach = MIN (5.0, 0.25 * p_range); /* Max 5 degrees from pole, but aim for 25% of that range */
+		if (reach < 1.0) reach *= 60.0, f *= 60.0;	/* Deal with sub-degree estimates and at least make them integer units */
 		if (reach < 1.0) reach *= 60.0, f *= 60.0;
 		reach = rint (reach) / f;	/* Integer degrees, minutes or seconds */
 		GMT->current.setting.map_polar_cap[0] = 90.0 - reach; /* Max 5 degrees from pole */
