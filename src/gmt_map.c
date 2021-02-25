@@ -9887,7 +9887,10 @@ struct GMT_DATASEGMENT * gmt_get_geo_ellipse (struct GMT_CTRL *GMT, double lon, 
 
 	/* Explicitly close the polygon */
 	px[N] = px[0], py[N] = py[0];
-	snprintf (header, GMT_LEN256, "Ellipse around %g/%g with major/minor axes %g/%g km and major axis azimuth %g approximated by %" PRIu64 " points", lon, lat, major_km, minor_km, azimuth, N);
+	if (doubleAlmostEqual (major_km, minor_km))
+		snprintf (header, GMT_LEN256, "Circle around %g/%g with diameter %g km approximated by %" PRIu64 " points", lon, lat, major_km, N);
+	else
+		snprintf (header, GMT_LEN256, "Ellipse around %g/%g with major/minor axes %g/%g km and major axis azimuth %g approximated by %" PRIu64 " points", lon, lat, major_km, minor_km, azimuth, N);
 	S->header = strdup (header);
 	return (S);
 }
