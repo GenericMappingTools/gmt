@@ -95,10 +95,10 @@ alias bndnp=buildnewdnopull # delete and recreate dbuild
 alias bnxnp=buildnewxnopull # delete and recreate xbuild
 
 # See test results
-alias vpngdbuild='pushd .; gtop; cd dbuild; $pngview */*/*/*.png; popd'
-alias vpdfdbuild='pushd .; gtop; cd dbuild; $pdfview */*/*/*.pdf; popd'
-alias vpngrbuild='pushd .; gtop; cd rbuild; $pngview */*/*/*.png; popd'
-alias vpdfrbuild='pushd .; gtop; cd rbuild; $pdfview */*/*/*.pdf; popd'
+alias vpngdbuild='pushd .; gtop; cd dbuild; $pngview */*/*/*.png; $pngview */*/*/*/*.png; popd'
+alias vpdfdbuild='pushd .; gtop; cd dbuild; $pdfview */*/*/*.pdf; $pdfview */*/*/*/*.pdf; popd'
+alias vpngrbuild='pushd .; gtop; cd rbuild; $pngview */*/*/*.png; $pngview */*/*/*/*.png; popd'
+alias vpdfrbuild='pushd .; gtop; cd rbuild; $pdfview */*/*/*.pdf; $pdfview */*/*/*/*.pdf; popd'
 
 # Very short shortnamds for seeing test results
 alias vgd=vpngdbuild
