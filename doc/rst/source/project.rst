@@ -248,6 +248,8 @@ Optional Arguments
 
 .. include:: explain_colon.rst_
 
+.. include:: explain_distunits.rst_
+
 .. include:: explain_help.rst_
 
 .. include:: explain_precision.rst_
