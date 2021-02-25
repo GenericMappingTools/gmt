@@ -2044,7 +2044,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 									col++;
 							}
 							if (word == NULL) {
-								GMT_Report (API, GMT_MSG_ERROR, "Requested word number %d for label is NULL\n", I->col);
+								GMT_Report (API, GMT_MSG_ERROR, "Requested word number %d for label was not found - label skippedL\n", I->col);
 								continue;
 							}
 							strcpy (L_txt, word);
