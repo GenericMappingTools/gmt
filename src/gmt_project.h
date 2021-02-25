@@ -268,6 +268,7 @@ struct GMT_PROJ {
 	bool search;		/* true if we are allowed to search along oblique boundary for min/max lon/lats */
 	bool units_pr_degree;	/* true if scale is given as inch (or cm)/degree.  false for 1:xxxxx */
 	bool north_pole;		/* true if projection is on northern hemisphere, false on southern */
+	bool pole_in_map[2];		/* true if S and N poles are inside the domain of an oblique projection */
 	bool edge[4];		/* true if the edge is a map boundary */
 	bool three_D;		/* Parameters for 3-D projections */
 	bool JZ_set;		/* true if -Jz|Z was set */

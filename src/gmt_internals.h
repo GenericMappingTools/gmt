@@ -42,6 +42,7 @@
  *--------------------------------------------------------------------*/
 
 struct GMT_XINGS {
+        double lon[2], lat[2];    /* Geographic coordinates of intersection with map boundary */
         double xx[2], yy[2];    /* Cartesian coordinates of intersection with map boundary */
         double angle[2];        /* Angles of intersection */
         unsigned int sides[2];	/* Side id of intersection */

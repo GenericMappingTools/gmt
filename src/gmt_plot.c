@@ -1716,14 +1716,35 @@ GMT_LOCAL double gmtplot_get_annot_offset (struct GMT_CTRL *GMT, bool *flip, uns
 	return (a);
 }
 
+GMT_LOCAL double gmtplot_curved_boundary_offset (struct GMT_CTRL *GMT, double lon, double lat, int type, unsigned int level) {
+	/* For global curved maps like Mollweide etc, the parallel labeling occurs against an increasingly
+	 * sloping map border as we approach the poles.  Here we try to compensate for that by adding a bit
+	 * of extra annotation offset boost that depends on the latitude and size of annotation font */
+	double lat1, lat2, dlat, x1, x2, y1, y2, h, boost;
+	if (type == 0) return 0.0;	/* No boost for any longitude annotations at top/bottom of these global projections */
+	if (!gmt_M_is_misc (GMT)) return 0.0;	/* Not one of the global misc projections */
+	if (GMT->common.R.oblique) return 0.0;	/* Not a w/e/s/n curved frame */
 
-GMT_LOCAL void gmtplot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, unsigned int *sides, double *line_angles, char *label, unsigned int nx, unsigned int type, bool annot, unsigned int level, unsigned int form) {
+	/* OK, here we have Hammer, Robinson, etc. */
+
+	dlat = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / 180.0;	/* So 1 degree for a global map */
+	if (doubleAlmostEqual (lat, -90)) lat1 = lat, lat2 = lat + dlat;	/* South pole point */
+	else if (doubleAlmostEqual (lat, 90)) lat1 = lat - dlat, lat2 = lat;	/* North pole point */
+	else lat1 = lat - dlat,	lat2 = lat + dlat;
+	gmt_geo_to_xy (GMT, lon, lat1, &x1, &y1);
+	gmt_geo_to_xy (GMT, lon, lat2, &x2, &y2);
+	h = GMT->current.setting.font_annot[level].size * GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_LET_HEIGHT;	/* Approximate height of annotations */
+	boost = 0.375 * h * fabs (x2 - x1) / (y2 - y1);	/* Started with 0.5, 0.25 was too small so split the difference */
+	return boost;
+}
+
+GMT_LOCAL void gmtplot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_XINGS *xings, char *label, unsigned int type, bool annot, unsigned int level, unsigned int form) {
 	/* type = 0 for lon and 1 for lat */
 
-	double line_angle, text_angle, div, tick_length, o_len, len, ca, sa;
-	unsigned int i, annot_type, justify;
+	double line_angle, text_angle, div, tick_length, o_len, len, ca, sa, boost;
+	double *xx = xings->xx, *yy = xings->yy, *line_angles = xings->angle;
+	unsigned int i, annot_type, justify, *sides = xings->sides, nx = xings->nx;
 	bool flip;
-
 	len = gmtplot_get_annot_offset (GMT, &flip, level);	/* Get annotation offset, and flip justification if "inside" */
 	annot_type = 2 << type;		/* 2 = NS, 4 = EW */
 
@@ -1732,6 +1753,7 @@ GMT_LOCAL void gmtplot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 
 		if (gmtlib_prepare_label (GMT, line_angles[i], sides[i], xx[i], yy[i], type, &line_angle, &text_angle, &justify)) continue;
 
+		boost = gmtplot_curved_boundary_offset (GMT, xings->lon[i], xings->lat[i], type, level);
 		sincosd (line_angle, &sa, &ca);
 		tick_length = GMT->current.setting.map_tick_length[GMT_PRIMARY];
 		o_len = len;
@@ -1740,6 +1762,8 @@ GMT_LOCAL void gmtplot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 			div = ((sides[i] % 2) ? fabs (ca) : fabs (sa));
 			o_len /= div;
 		}
+		else
+			o_len += copysign (boost, o_len);
 		xx[i] += o_len * ca;
 		yy[i] += o_len * sa;
 		if (!flip && (GMT->current.setting.map_annot_oblique & annot_type) && GMT->current.setting.map_annot_offset[level] > 0.0) {
@@ -1768,7 +1792,8 @@ GMT_LOCAL void gmtplot_map_symbol_ew (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 
 	nc = gmtlib_map_latcross (GMT, lat, west, east, &xings);
 	for (i = 0; i < nc; i++)
-		gmtplot_map_symbol (GMT, PSL, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, label, xings[i].nx, 1, annot, level, form);
+		//gmtplot_map_symbol (GMT, PSL, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, label, xings[i].nx, 1, annot, level, form);
+		gmtplot_map_symbol (GMT, PSL, &(xings[i]), label, 1, annot, level, form);
 	if (nc) gmt_M_free (GMT, xings);
 }
 
@@ -1782,7 +1807,8 @@ GMT_LOCAL void gmtplot_map_symbol_ns (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 		if (flip) for (k = 0; k < xings[i].nx; k++) {	/* Must turn sides 0 and 2 into sides 2 and 0 */
 			if ((xings[i].sides[k] % 2) == 0) xings[i].sides[k] = 2 - xings[i].sides[k];	/* Flip up and down sides */
 		}
-		gmtplot_map_symbol (GMT, PSL, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, label, xings[i].nx, 0, annot, level, form);
+		//gmtplot_map_symbol (GMT, PSL, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, label, xings[i].nx, 0, annot, level, form);
+		gmtplot_map_symbol (GMT, PSL, &(xings[i]), label, 0, annot, level, form);
 	}
 	if (nc) gmt_M_free (GMT, xings);
 }
