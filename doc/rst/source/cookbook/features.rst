@@ -291,6 +291,7 @@ Automatic scaling is supported for the following parameters:
 :term:`FONT_SUBTITLE`              Plot subtitle font [19.80p]
 :term:`FONT_TAG`                   Tag/labeling font [17.60p]
 :term:`FONT_TITLE`                 Plot title font [24.20p]
+:term:`MAP_ANNOT_MIN_SPACING`      Minimum space between annotations [11.00p]
 :term:`MAP_ANNOT_OFFSET_PRIMARY`   Primary annotation offset from axis [3.30p]
 :term:`MAP_ANNOT_OFFSET_SECONDARY` Secondary annotation offset from axis [3.30p]
 :term:`MAP_FRAME_PEN`              Pen width of plain frame [1.65p]

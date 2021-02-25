@@ -629,7 +629,9 @@ MAP Parameters
     **MAP_ANNOT_MIN_SPACING**
         If an annotation would be plotted less than this minimum distance
         from its closest neighbor, the annotation is not plotted (this may
-        occur for certain oblique or polar projections.) [default is **0p**]
+        occur for certain oblique or polar projections.) [default is
+        :doc:`theme dependent <theme-settings>`]. Choose **auto** for
+        :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_ANNOT_OBLIQUE**
         This argument is a comma-separated list of up to seven keywords:

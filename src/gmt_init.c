@@ -6473,6 +6473,9 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 
 	/* MAP group */
 
+	/* MAP_ANNOT_MIN_SPACING */
+	GMT->current.setting.map_annot_min_spacing = GMT->session.d_NaN; /* 12p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_MIN_SPACING] = 'p';
 	/* MAP_ANNOT_OFFSET_PRIMARY, MAP_ANNOT_OFFSET_SECONDARY */
 	GMT->current.setting.map_annot_offset[GMT_PRIMARY] = GMT->current.setting.map_annot_offset[GMT_SECONDARY] = GMT->session.d_NaN; /* 3p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = 'p';
@@ -9963,6 +9966,10 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 	if (gmt_M_is_dnan (GMT->current.setting.map_heading_offset)) {
 		GMT->current.setting.map_heading_offset = 16 * pt * scale;	/* 16p */
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_HEADING_OFFSET] = true;
+	}
+	if (gmt_M_is_dnan (GMT->current.setting.map_annot_min_spacing)) {
+		GMT->current.setting.map_annot_min_spacing = 12 * pt * scale; /* 12p */
+		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_ANNOT_MIN_SPACING] = true;
 	}
 
 	/* Must first do map_frae_width since it may be used below */
