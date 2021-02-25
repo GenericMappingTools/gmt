@@ -1723,6 +1723,7 @@ GMT_LOCAL double gmtplot_curved_boundary_offset (struct GMT_CTRL *GMT, double lo
 	double lat1, lat2, dlat, x1, x2, y1, y2, h, boost;
 	if (type == 0) return 0.0;	/* No boost for any longitude annotations at top/bottom of these global projections */
 	if (!gmt_M_is_misc (GMT)) return 0.0;	/* Not one of the global misc projections */
+	if (GMT->common.R.oblique) return 0.0;	/* Not a w/e/s/n curved frame */
 
 	/* OK, here we have Hammer, Robinson, etc. */
 
