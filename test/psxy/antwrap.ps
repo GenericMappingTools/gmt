@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.2.0_7cac10a-dirty_2020.10.08 [64-bit] Document from psxy
+%%Title: GMT v6.2.0_0594375-dirty_2021.02.24 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Oct  8 16:17:41 2020
+%%CreationDate: Wed Feb 24 16:57:17 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -112,9 +112,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -253,9 +255,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -279,6 +288,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -326,8 +338,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -554,6 +568,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -568,7 +585,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -638,6 +663,20 @@ end
     psl_label dup sd neg 0 exch G show
     U
 } def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
+    U
+} def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
@@ -677,6 +716,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 8 W
+0 A
 N 2859 0 M -3 -83 D S
 N 2900 3845 M 0 84 D S
 N 3716 0 M -32 -77 D S
@@ -792,6 +832,7 @@ V 88.1448677457 R (î150è) mr Z U
 -167 2308 M (î30è) mr Z
 7367 3845 M (0è) ml Z
 -167 3845 M (0è) mr Z
+V
 4 W
 clipsave
 0 0 M
@@ -801,6 +842,7 @@ clipsave
 P
 PSL_clip N
 {1 0 0 C} FS
+O0
 /FO {P}!
 7200 277 M
 -22 -3 D
@@ -2898,6 +2940,9 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
+4 W
+0 A
 2859 0 M
 9 343 D
 9 448 D
@@ -3124,7 +3169,6 @@ S
 1545 3845 M
 0 0 D
 S
-0 A [] 0 B
 25 W
 2 setlinecap
 N 0 0 M 0 3845 D S
@@ -3146,6 +3190,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 8 W
+0 A
 N 3000 6000 M 0 83 D S
 N 5598 4500 M 72 42 D S
 N 5598 1500 M 72 -42 D S
@@ -3161,6 +3206,7 @@ N 3000 6000 M 0 83 D S
 3000 -167 M (180è) tc Z
 258 1417 M V -60 R (î120è) tc Z U
 258 4583 M V 60 R (î60è) bc Z U
+V
 4 W
 clipsave
 3000 3000 M
@@ -3353,6 +3399,7 @@ clipsave
 P
 PSL_clip N
 {1 0 0 C} FS
+O0
 /FO {P}!
 3000 4769 M
 -13 -4 D
@@ -4573,6 +4620,9 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+U
+4 W
+0 A
 3000 3436 M
 0 2564 D
 S
@@ -4701,6 +4751,335 @@ S
 46 21 D
 43 14 D
 62 12 D
+P S
+3000 3870 M
+57 -1 D
+56 -6 D
+56 -9 D
+78 -19 D
+75 -26 D
+62 -28 D
+31 -16 D
+49 -28 D
+56 -39 D
+44 -35 D
+34 -31 D
+48 -48 D
+44 -53 D
+20 -27 D
+37 -57 D
+38 -70 D
+27 -63 D
+22 -65 D
+12 -43 D
+17 -90 D
+5 -56 D
+2 -34 D
+-1 -80 D
+-7 -68 D
+-15 -78 D
+-11 -44 D
+-26 -75 D
+-18 -42 D
+-36 -71 D
+-36 -58 D
+-41 -55 D
+-37 -43 D
+-65 -64 D
+-44 -36 D
+-36 -27 D
+-29 -19 D
+-19 -12 D
+-20 -11 D
+-19 -11 D
+-11 -5 D
+-20 -11 D
+-10 -4 D
+-21 -10 D
+-10 -4 D
+-11 -5 D
+-10 -4 D
+-11 -4 D
+-11 -4 D
+-10 -4 D
+-11 -3 D
+-11 -4 D
+-11 -3 D
+-11 -3 D
+-11 -3 D
+-11 -3 D
+-11 -3 D
+-11 -3 D
+-11 -2 D
+-11 -3 D
+-11 -2 D
+-11 -2 D
+-12 -2 D
+-11 -2 D
+-11 -1 D
+-11 -2 D
+-12 -1 D
+-11 -1 D
+-11 -1 D
+-12 -1 D
+-11 -1 D
+-11 -1 D
+-12 0 D
+-11 0 D
+-11 0 D
+-12 0 D
+-11 0 D
+-11 0 D
+-80 6 D
+-67 11 D
+-88 23 D
+-64 23 D
+-52 23 D
+-41 21 D
+-48 29 D
+-47 32 D
+-54 43 D
+-33 31 D
+-48 49 D
+-43 52 D
+-27 37 D
+-36 58 D
+-41 81 D
+-25 64 D
+-20 65 D
+-12 55 D
+-11 68 D
+-5 68 D
+1 79 D
+2 34 D
+8 57 D
+13 67 D
+19 65 D
+19 54 D
+33 72 D
+28 50 D
+24 38 D
+40 55 D
+37 44 D
+65 64 D
+34 29 D
+36 28 D
+57 38 D
+49 28 D
+41 20 D
+74 30 D
+76 23 D
+78 16 D
+79 9 D
+P S
+3000 4734 M
+102 -3 D
+124 -12 D
+100 -16 D
+78 -17 D
+87 -23 D
+97 -32 D
+64 -24 D
+113 -51 D
+51 -26 D
+39 -22 D
+59 -35 D
+76 -49 D
+73 -54 D
+44 -35 D
+17 -15 D
+51 -45 D
+16 -16 D
+17 -15 D
+48 -48 D
+15 -17 D
+60 -68 D
+76 -98 D
+45 -66 D
+48 -77 D
+48 -89 D
+25 -51 D
+40 -94 D
+31 -85 D
+23 -76 D
+23 -88 D
+18 -88 D
+13 -90 D
+9 -90 D
+3 -79 D
+1 -57 D
+-4 -102 D
+-10 -101 D
+-16 -101 D
+-22 -99 D
+-24 -88 D
+-29 -86 D
+-33 -84 D
+-33 -72 D
+-41 -81 D
+-40 -68 D
+-49 -77 D
+-39 -55 D
+-70 -89 D
+-53 -59 D
+-31 -33 D
+-40 -40 D
+-17 -15 D
+-16 -16 D
+-43 -37 D
+-35 -29 D
+-44 -35 D
+-28 -20 D
+-27 -20 D
+-29 -19 D
+-19 -12 D
+-19 -12 D
+-19 -12 D
+-19 -12 D
+-20 -11 D
+-19 -12 D
+-20 -10 D
+-20 -11 D
+-20 -11 D
+-11 -5 D
+-20 -10 D
+-10 -5 D
+-10 -4 D
+-11 -5 D
+-10 -5 D
+-10 -4 D
+-11 -5 D
+-10 -4 D
+-10 -5 D
+-11 -4 D
+-10 -5 D
+-11 -4 D
+-10 -4 D
+-11 -4 D
+-11 -4 D
+-10 -4 D
+-11 -4 D
+-10 -4 D
+-11 -3 D
+-11 -4 D
+-11 -4 D
+-10 -3 D
+-11 -4 D
+-11 -3 D
+-11 -3 D
+-11 -4 D
+-10 -3 D
+-11 -3 D
+-11 -3 D
+-11 -3 D
+-11 -3 D
+-11 -3 D
+-11 -2 D
+-11 -3 D
+-11 -3 D
+-11 -2 D
+-11 -3 D
+-11 -2 D
+-11 -2 D
+-11 -3 D
+-12 -2 D
+-11 -2 D
+-11 -2 D
+-11 -2 D
+-11 -2 D
+-11 -1 D
+-12 -2 D
+-11 -2 D
+-11 -1 D
+-11 -2 D
+-11 -1 D
+-12 -2 D
+-11 -1 D
+-11 -1 D
+-11 -1 D
+-12 -1 D
+-11 -1 D
+-11 -1 D
+-12 -1 D
+-11 -1 D
+-11 -1 D
+-11 0 D
+-12 -1 D
+-11 0 D
+-11 -1 D
+-12 0 D
+-11 0 D
+-11 -1 D
+-12 0 D
+-11 0 D
+-11 0 D
+-102 4 D
+-113 11 D
+-100 16 D
+-78 17 D
+-87 23 D
+-97 32 D
+-64 24 D
+-113 51 D
+-51 26 D
+-39 22 D
+-59 35 D
+-76 49 D
+-73 54 D
+-44 35 D
+-17 15 D
+-51 45 D
+-16 16 D
+-17 15 D
+-48 48 D
+-15 17 D
+-60 68 D
+-76 98 D
+-45 66 D
+-48 77 D
+-48 89 D
+-25 51 D
+-40 94 D
+-31 85 D
+-23 76 D
+-23 88 D
+-18 88 D
+-13 90 D
+-9 90 D
+-3 79 D
+-1 57 D
+4 102 D
+10 101 D
+16 101 D
+22 99 D
+24 88 D
+29 86 D
+33 84 D
+33 72 D
+41 81 D
+40 68 D
+49 77 D
+39 55 D
+70 89 D
+53 59 D
+31 33 D
+40 40 D
+17 15 D
+16 16 D
+43 37 D
+35 29 D
+54 42 D
+45 33 D
+115 73 D
+39 22 D
+71 37 D
+92 42 D
+95 37 D
+97 31 D
+88 23 D
+89 18 D
+101 15 D
+124 10 D
 P S
 3000 5583 M
 76 -1 D
@@ -5013,9 +5392,24 @@ P S
 109 12 D
 126 7 D
 P S
-0 A [] 0 B
 25 W
 83 W
+1 A
+0 A
+1 A
+0 A
+1 A
+0 A
+1 A
+0 A
+1 A
+0 A
+1 A
+0 A
+1 A
+0 A
+1 A
+0 A
 1 A
 0 A
 N 3000 3000 3042 75 90 arc S
