@@ -802,7 +802,8 @@ MAP Parameters
         gridlines are only drawn between the latitudes -*pc_lat*/+\ *pc_lat*, and
         above those latitudes the gridlines are spaced at the (presumably coarser)
         *pc_dlon* interval; the two domains are separated by a small circle drawn
-        at the *pc_lat* latitude [default is **85/90**]. Note for r-theta (polar)
+        at the *pc_lat* latitude [default is **85/90**]. Alternatively, give **auto**
+        to determine a *pc_lat* suitable for your region.  Note for r-theta (polar)
         projection where r = 0 is at the center of the plot the meaning of the
         cap is reversed, i.e., the default 85/90 will draw a r = 5 radius circle
         at the center of the map with less frequent radial lines there.

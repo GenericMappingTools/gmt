@@ -10004,15 +10004,9 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 	if (gmt_M_is_dnan (GMT->current.setting.map_polar_cap[0])) {
 		double f = 1.0, p_range = MIN (90.0 - GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI] + 90.0);
 		double reach = MIN (5.0, 0.25 * p_range); /* Max 5 degrees from pole */
-		if (reach < 1.0) {
-			reach *= 60.0;
-			f *= 60.0;
-		}
-		if (reach < 1.0) {
-			reach *= 60.0;
-			f *= 60.0;
-		}
-		reach = rint (reach) / f;
+		if (reach < 1.0) reach *= 60.0, f *= 60.0;
+		if (reach < 1.0) reach *= 60.0, f *= 60.0;
+		reach = rint (reach) / f;	/* Integer degrees, minutes or seconds */
 		GMT->current.setting.map_polar_cap[0] = 90.0 - reach; /* Max 5 degrees from pole */
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_POLAR_CAP] = true;
 	}
