@@ -6490,6 +6490,8 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	/* MAP_LABEL_OFFSET */
 	GMT->current.setting.map_label_offset = GMT->session.d_NaN;	/* 6p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_LABEL_OFFSET] = 'p';
+	/* MAP_POLAR_CAP */
+	GMT->current.setting.map_polar_cap[0] = GMT->session.d_NaN;	/* 85 */
 	/* MAP_TICK_LENGTH_PRIMARY */
 	GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = GMT->session.d_NaN;	/* 4p */
 	GMT->current.setting.map_tick_length[GMT_TICK_UPPER] = GMT->session.d_NaN;	/* 2p */
@@ -9999,6 +10001,22 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_TICK_LENGTH_SECONDARY] = true;
 	}
 
+	if (gmt_M_is_dnan (GMT->current.setting.map_polar_cap[0])) {
+		double f = 1.0, p_range = MIN (90.0 - GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI] + 90.0);
+		double reach = MIN (5.0, 0.25 * p_range); /* Max 5 degrees from pole */
+		if (reach < 1.0) {
+			reach *= 60.0;
+			f *= 60.0;
+		}
+		if (reach < 1.0) {
+			reach *= 60.0;
+			f *= 60.0;
+		}
+		reach = rint (reach) / f;
+		GMT->current.setting.map_polar_cap[0] = 90.0 - reach; /* Max 5 degrees from pole */
+		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_POLAR_CAP] = true;
+	}
+
 	/* Frame, tick and gridline pens */
 
 	if (gmt_M_is_dnan (GMT->current.setting.map_frame_pen.width)) {
@@ -10603,6 +10621,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			if (!strcmp (lower_value, "none")) {	/* Means reset to no cap -> lat = 90, dlon = 0 */
 				GMT->current.setting.map_polar_cap[0] = 90.0;
 				GMT->current.setting.map_polar_cap[1] = 0.0;
+			}
+			else if (!strcmp (lower_value, "auto")) {	/* Means reset cap pending region */
+				GMT->current.setting.map_polar_cap[0] = GMT->session.d_NaN;
+				GMT->current.setting.map_polar_cap[1] = 90.0;
 			}
 			else {
 				double inc[2];
@@ -12135,7 +12157,9 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
 		case GMTCASE_MAP_POLAR_CAP:
-			if (doubleAlmostEqual (GMT->current.setting.map_polar_cap[0], 90.0))
+			if (gmt_M_is_dnan (GMT->current.setting.map_polar_cap[0]))
+				snprintf (value, GMT_LEN256, "auto");
+			else if (doubleAlmostEqual (GMT->current.setting.map_polar_cap[0], 90.0))
 				snprintf (value, GMT_LEN256, "none");
 			else
 				snprintf (value, GMT_LEN256, "%g/%g", GMT->current.setting.map_polar_cap[0], GMT->current.setting.map_polar_cap[1]);
