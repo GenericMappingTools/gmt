@@ -1733,7 +1733,7 @@ GMT_LOCAL double gmtplot_curved_boundary_offset (struct GMT_CTRL *GMT, double lo
 	gmt_geo_to_xy (GMT, lon, lat1, &x1, &y1);
 	gmt_geo_to_xy (GMT, lon, lat2, &x2, &y2);
 	h = GMT->current.setting.font_annot[level].size * GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_LET_HEIGHT;	/* Approximate height of annotations */
-	boost = 0.5 * h * fabs (x2 - x1) / (y2 - y1);
+	boost = 0.375 * h * fabs (x2 - x1) / (y2 - y1);	/* Started with 0.5, 0.25 was too small so split the difference */
 	return boost;
 }
 
@@ -1762,7 +1762,7 @@ GMT_LOCAL void gmtplot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 			o_len /= div;
 		}
 		else
-			o_len += boost;
+			o_len += copysign (boost, o_len);
 		xx[i] += o_len * ca;
 		yy[i] += o_len * sa;
 		if (!flip && (GMT->current.setting.map_annot_oblique & annot_type) && GMT->current.setting.map_annot_offset[level] > 0.0) {
