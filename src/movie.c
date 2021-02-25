@@ -2039,9 +2039,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 						else if (I->mode == MOVIE_LABEL_IS_COL_T) {	/* Place a word label */
 							char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[use_frame]);
 							col = 0;	trail = orig;
-							while (col != I->col && (word = strsep (&trail, " \t")) != NULL) {
+							while ((word = strsep (&trail, " \t")) != NULL && col != I->col) {
 								if (*word != '\0')	/* Skip empty strings */
 									col++;
+							}
+							if (word == NULL) {
+								GMT_Report (API, GMT_MSG_ERROR, "Requested word number %d for label is NULL\n", I->col);
+								continue;
 							}
 							strcpy (L_txt, word);
 							gmt_M_str_free (orig);
