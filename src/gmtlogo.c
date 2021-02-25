@@ -152,6 +152,12 @@ static float gmt_letters[GMT_N_LETTERS][2] = {	/* The G, M, T polygons */
 	{ 110.32, -41.8 }
 };
 
+enum gmtlogo_label {
+	GMTLOGO_LABEL_NAME	= 0,
+	GMTLOGO_LABEL_URL,
+	GMTLOGO_LABEL_NONE
+};
+
 /* Specific colors for fonts, land, water, text etc */
 
 #define c_font		"51/51/51"
@@ -269,10 +275,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OP
 			case 'S':
 				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
-					case 'l': Ctrl->S.mode = 0;	break;	/* Label */
-					case 'u': Ctrl->S.mode = 1;	break;	/* URL */
-					case 'n': Ctrl->S.mode = 2;	break;	/* URL */
-					default:  Ctrl->S.mode = 0;	break;	/* Label */
+					case 'l': Ctrl->S.mode = GMTLOGO_LABEL_NAME;	break;	/* Label */
+					case 'u': Ctrl->S.mode = GMTLOGO_LABEL_URL;		break;	/* url */
+					case 'n': Ctrl->S.mode = GMTLOGO_LABEL_NONE;	break;	/* no label */
+					default:  Ctrl->S.mode = GMTLOGO_LABEL_NAME;	break;	/* Label */
 				}
 				break;
 			case 'W':	/* Scale for the logo */
@@ -349,7 +355,7 @@ EXTERN_MSC int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	/* The following is needed to have gmtlogo work correctly in perspective */
 
 	gmt_M_memset (wesn, 4, double);
-	dim[GMT_X] = Ctrl->D.width, dim[GMT_Y] = (Ctrl->S.mode == 2) ? 1.55 * 0.25 * Ctrl->D.width : 0.5 * Ctrl->D.width; /* Height is 0.5 * width unless when text is deactivated */
+	dim[GMT_X] = Ctrl->D.width, dim[GMT_Y] = (Ctrl->S.mode == GMTLOGO_LABEL_NONE) ? 1.55 * 0.25 * Ctrl->D.width : 0.5 * Ctrl->D.width; /* Height is 0.5 * width unless when text is deactivated */
 	if (!(GMT->common.R.active[RSET] && GMT->common.J.active)) {	/* When no projection specified, use fake linear projection */
 		GMT->common.R.active[RSET] = true;
 		GMT->common.J.active = false;
@@ -387,7 +393,7 @@ EXTERN_MSC int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	/* Plot the title beneath the map with 1.5 vertical stretching */
 
-	if (Ctrl->S.mode == 2)
+	if (Ctrl->S.mode == GMTLOGO_LABEL_NONE)
 		y = 0.0;
 	else {
 		sprintf (cmd, "%g,AvantGarde-Demi,%s", scale * 9.5, c_font);	/* Create required font */
@@ -395,9 +401,9 @@ EXTERN_MSC int GMT_gmtlogo (void *V_API, int mode, void *args) {
 		fmode = gmt_setfont (GMT, &F);
 		PSL_setfont (PSL, F.id);
 		PSL_command (PSL, "V 1 1.5 scale\n");
-		if (Ctrl->S.mode == 0)
+		if (Ctrl->S.mode == GMTLOGO_LABEL_NAME)
 			PSL_plottext (PSL, 0.5 * dim[GMT_X], 0.027 * scale, F.size, "@#THE@# G@#ENERIC@# M@#APPING@# T@#OOLS@#", 0.0, PSL_BC, fmode);
-		else
+		else if (Ctrl->S.mode == GMTLOGO_LABEL_URL)
 			PSL_plottext (PSL, 0.5 * dim[GMT_X], 0.027 * scale, F.size, "G@#ENERIC@#-M@#APPING@#-T@#OOLS@#.@#ORG@#", 0.0, PSL_BC, fmode);
 		PSL_command (PSL, "U\n");
 		y = scale * 0.220;
