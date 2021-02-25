@@ -43,12 +43,13 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *cpt*
-    Give a CPT. The bar-value for each bar is used to
-    look-up the bar color.  If modern mode and no argument is given
-    then we select the current CPT.  **Note**: We use the *count* in
-    each bin as the look-up value, unless **-Z** involves percentages,
-    in which case the look-up value is the *percentage* computed.
+**-C**\ *cpt*\ [**+b**]
+    Give a CPT. The mid-coordinate for each bar is used to look up
+    the bar color.  Alternatively, append **+b** to use the *bin* value
+    as the look-up value, unless **-Z** involves percentages,
+    in which case the look-up value is the *percentage* computed. If
+    we are in modern mode and no *cpt* is given then we select the
+    current CPT.
 
 .. _-D:
 

@@ -282,7 +282,7 @@ shaded relief map like this:
     gmt begin
       gmt grdimage merc_grav_2.nc -Iillum.nc -Cgrav.cpt -Jx0.1i
       gmt basemap -R-40/40/-70.023256525/-29.9368261101 -Jm0.1i -Ba10
-    gmtend
+    gmt end
 
 Suppose you want to obtain only the constrained data values from an img
 file, in lat/lon coordinates. Then run **img2grd** with the **-T**\ 2
