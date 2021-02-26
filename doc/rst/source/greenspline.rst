@@ -78,7 +78,7 @@ Finally, away from the data constraints the Green's function must satisfy
 
 
 where :math:`\nabla^2` is the Laplacian operator, :math:`\delta` is the
-Dirac Delta function, and *p* is the tension (if desired). This
+Dirac Delta function, and :math:`p` is the tension (if desired). This
 solution yields an exact interpolation of the supplied data points.
 Alternatively, you may choose to perform a singular value decomposition
 (SVD) and eliminate the contribution from the smallest eigenvalues; this
