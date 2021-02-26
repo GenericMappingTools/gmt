@@ -100,7 +100,7 @@ Optional Arguments
 
 **-A**\ *gradfile*\ **+f**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5**
     The solution will partly be constrained by surface gradients
-    :math:`\mathbf{v} = v \hat{\mathbf{n}}`, where *v* is the gradient
+    :math:`\mathbf{v} = v \hat{\mathbf{n}}`, where :math:`v` is the gradient
     magnitude and :math:`\hat{\mathbf{n}}` its unit vector direction.
     The gradient direction may be specified either by Cartesian components
     (either unit vector :math:`\hat{\mathbf{n}}` and magnitude *v* separately
