@@ -893,7 +893,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	F.extremes = Ctrl->L.mode;
 	F.weights = Ctrl->Z.weights;
 	F.T = &(Ctrl->T.T);
-	if (!Ctrl->I.active && !GMT->common.R.active[RSET]) automatic = true;
+	if (!Ctrl->I.active && !GMT->common.R.active[RSET] || GMT->common.R.wesn[YLO] == GMT->common.R.wesn[YHI]) automatic = true;
 	if (GMT->common.R.active[RSET]) {	/* Gave -R which initially defines the bins also */
 		gmt_M_memcpy (F.wesn, GMT->common.R.wesn, 4, double);
 		Ctrl->T.T.min = F.wesn[XLO]; Ctrl->T.T.max = F.wesn[XHI];
