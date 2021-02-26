@@ -116,7 +116,7 @@ Optional Arguments
     clockwise from the vertical (north)). Options 3-5 are for either 2-D
     or 3-D data: **3**: records contain **x**, *direction(s)*, *v*
     (*direction(s)* in degrees are measured counter-clockwise from the
-    horizontal (and for 3-D the vertical axis). **4**: records contain
+    horizontal (and for 3-D the vertical axis)). **4**: records contain
     **x**, **v**. **5**: records contain **x**, :math:`\hat{\mathbf{n}}`, :math:`v`.
 
 .. _-C:
