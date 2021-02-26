@@ -55,7 +55,7 @@ Cartesian coordinates or spherical surface coordinates. Mathematically, the solu
 
     w(\mathbf{x}) = T(\mathbf{x}) + \sum_{j=1}^{n} \alpha_j g(\mathbf{x}; \mathbf{x}'),
 
-where :math:`\mathbf{x}` is the output location, *n* is the number of points,
+where :math:`\mathbf{x}` is the output location, :math:`n` is the number of points,
 :math:`T(\mathbf{x})` is a trend function, and :math:`\alpha_j` are the *n*
 unknown weights we must solve for. Typically, :math:`T(\mathbf{x})` is a linear
 or planar trend (Cartesian geometries) or mean value (spherical surface) and a
