@@ -425,7 +425,7 @@ Considerations
    may also control the size of *n*. For information, if *n* = 1024 then
    only 8 Mb memory is needed, but for *n* = 10240 we need 800 Mb. Note
    that **greenspline** is fully 64-bit compliant if compiled as such.
-   For spherical data you may consider decimating using ;doc:`gmtspatial`
+   For spherical data you may consider decimating using :doc:`gmtspatial`
    nearest neighbor reduction.
 
 #. The inversion for coefficients can become numerically unstable when
