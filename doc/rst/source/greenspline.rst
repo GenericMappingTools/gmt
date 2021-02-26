@@ -108,16 +108,16 @@ Optional Arguments
     angles w.r.t. the coordinate axes. Append name of ASCII file with
     the surface gradients.  Use **+f** to select one of five input
     formats: **0**: For 1-D data there is no direction, just gradient
-    magnitude (slope) so the input format is *x*, *gradient*. Options
+    magnitude (slope) so the input format is *x*, :math:`v`. Options
     1-2 are for 2-D data sets: **1**: records contain *x*, *y*,
-    *azimuth*, *gradient* (*azimuth* in degrees is measured clockwise
+    *azimuth*, :math:`v` (*azimuth* in degrees is measured clockwise
     from the vertical (north) [Default]). **2**: records contain *x*,
-    *y*, *gradient*, *azimuth* (*azimuth* in degrees is measured
+    *y*, :math:`v`, *azimuth* (*azimuth* in degrees is measured
     clockwise from the vertical (north)). Options 3-5 are for either 2-D
-    or 3-D data: **3**: records contain **x**, *direction(s)*, *v*
+    or 3-D data: **3**: records contain **x**, *direction(s)*, :math:`v`
     (*direction(s)* in degrees are measured counter-clockwise from the
     horizontal (and for 3-D the vertical axis)). **4**: records contain
-    **x**, **v**. **5**: records contain **x**, :math:`\hat{\mathbf{n}}`, :math:`v`.
+    **x**, :math:`\mathbf{v}`. **5**: records contain **x**, :math:`\hat{\mathbf{n}}`, :math:`v`.
 
 .. _-C:
 
