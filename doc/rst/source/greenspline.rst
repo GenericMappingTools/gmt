@@ -60,7 +60,7 @@ where :math:`\mathbf{x}` is the output location, *n* is the number of points,
 unknown weights we must solve for. Typically, :math:`T(\mathbf{x})` is a linear
 or planar trend (Cartesian geometries) or mean value (spherical surface) and a
 least-squares solution is determined and removed from the data, yielding data
-residuals (:math:`\Delta w_i = w_i - T(\mathbf{x}_i)`; these are then
+residuals (:math:`\Delta w_i = w_i - T(\mathbf{x}_i)`); these are then
 normalized for numerical stability. The unknown coefficients :math:`\alpha_j`
 are determined by requiring the solution to fit the observed residual data exactly:
 
