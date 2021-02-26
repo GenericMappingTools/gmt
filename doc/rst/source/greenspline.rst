@@ -103,7 +103,7 @@ Optional Arguments
     :math:`\mathbf{v} = v \hat{\mathbf{n}}`, where :math:`v` is the gradient
     magnitude and :math:`\hat{\mathbf{n}}` its unit vector direction.
     The gradient direction may be specified either by Cartesian components
-    (either unit vector :math:`\hat{\mathbf{n}}` and magnitude *v* separately
+    (either unit vector :math:`\hat{\mathbf{n}}` and magnitude :math:`v` separately
     or gradient components :math:`\mathbf{v}` directly) or
     angles w.r.t. the coordinate axes. Append name of ASCII file with
     the surface gradients.  Use **+f** to select one of five input
