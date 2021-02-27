@@ -73,6 +73,12 @@ Optional Arguments
 
 .. include:: ../../explain_-B.rst_
 
+.. _-C:
+
+**-C**\ *cpt*
+    Give a CPT and let compressive part color be
+    determined by the z-value in the third column.
+
 .. _-E:
 
 **-E**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
@@ -190,12 +196,6 @@ Optional Arguments
 .. _-X:
 
 .. include:: ../../explain_-XY.rst_
-
-.. _-Z:
-
-**-Z**\ *cpt*
-    Give a CPT and let compressive part color be
-    determined by the z-value in the third column.
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_
