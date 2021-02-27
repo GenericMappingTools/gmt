@@ -8319,10 +8319,13 @@ unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char 
 	return (n_errors);
 }
 
-/*! If region is given then we must have w < e and s < n */
+/*! If region is given then we must have w < e and s <= n */
 bool gmt_check_region (struct GMT_CTRL *GMT, double wesn[]) {
 	gmt_M_unused(GMT);
-	return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]));
+	if (!strncmp (GMT->init.module_name, "pshistogram", 11U))
+		return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] > wesn[YHI]));
+	else
+		return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]));
 }
 
 /*! . */
