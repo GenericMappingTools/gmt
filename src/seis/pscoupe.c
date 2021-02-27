@@ -162,7 +162,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->Z.file);
+	gmt_M_str_free (C->C.file);
 	gmt_M_free (GMT, C);
 }
 
@@ -565,7 +565,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 
 			case 'Z':	/* Backwards compatibility */
 				if (gmt_M_compat_check (GMT, 6))
-					GMT_Report (API, GMT_MSG_COMPAT, "-Z<cpt> is deprecated; use -C<cpt> instead.\n");
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-Z<cpt> is deprecated; use -C<cpt> instead.\n");
 				else {	/* Hard error */
 					n_errors += gmt_default_error (GMT, opt->option);
 					continue;
