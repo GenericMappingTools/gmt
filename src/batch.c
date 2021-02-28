@@ -400,9 +400,10 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	static char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, var_token[4] = "$$%";
 	static char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
-	static char *mvfile[3] = {"mv -f", "mv -f", "move /Y"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
+	static char *mvfile[3] = {"mv -f", "mv -f", "move /Y"};
 	static char *createfile[3] = {"touch", "touch", "copy /b NUL"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	static char *cpconf[3] = {"\tcp -f %s .\n", "\tcp -f %s .\n", "\tcopy %s .\n"};
+	static char *sys_cmd_nowait[3] = {"bash", "csh", "start /B"}, *sys_cmd_wait[3] = {"bash", "csh", "cmd /C"};
 
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, tmpwpath[PATH_MAX] = {""};
@@ -601,10 +602,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		}
 #endif
 		/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as needed data files */
-		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
-			sprintf (cmd, "cmd /C %s", pre_file);
-		else
-			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], pre_file);
+		sprintf (cmd, "%s %s", sys_cmd_wait[Ctrl->In.mode], pre_file);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running preflight script %s returned error %d - exiting.\n", pre_file, error);
 			fclose (Ctrl->In.fp);
@@ -874,10 +872,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->M.active) {	/* Just run that one job */
-		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
-			sprintf (cmd, "cmd /C %s %s", main_file, state_tag);
-		else
-			sprintf (cmd, "%s %s %s", sc_call[Ctrl->In.mode], main_file, state_tag);
+		sprintf (cmd, "%s %s %s", sys_cmd_wait[Ctrl->In.mode], main_file, state_tag);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Run master script %s %s\n", main_file, state_tag);
 		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running master script %s for argument %s returned error %d - exiting.\n", main_file, state_tag, error);
@@ -900,11 +895,11 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		while (n_jobs_not_started && n_cores_unused) {	/* Launch new jobs if possible */
 #ifdef WIN32
 			if (Ctrl->In.mode < GMT_DOS_MODE)	/* A bash or csh run from Windows. Need to call via "start" to get parallel */
-				sprintf (cmd, "start /B %s %s %*.*d", sc_call[Ctrl->In.mode], main_file, precision, precision, job);
+				sprintf (cmd, "start /B %s %s %*.*d", sys_cmd_nowait[Ctrl->In.mode], main_file, precision, precision, job);
 			else						/* Running batch, so no need for the above trick */
-				sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], main_file, precision, precision, job);
+				sprintf (cmd, "%s %s %*.*d &", sys_cmd_nowait[Ctrl->In.mode], main_file, precision, precision, job);
 #else
-			sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], main_file, precision, precision, job);
+			sprintf (cmd, "%s %s %*.*d &", sys_cmd_nowait[Ctrl->In.mode], main_file, precision, precision, job);
 #endif
 
 			GMT_Report (API, GMT_MSG_DEBUG, "Launch script for job %*.*d\n", precision, precision, job);
@@ -942,10 +937,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S[BATCH_POSTFLIGHT].active) {
 		/* Run post-flight now since all processing has completed */
-		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
-			sprintf (cmd, "cmd /C %s", post_file);
-		else
-			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], post_file);
+		sprintf (cmd, "%s %s", sys_cmd_wait[Ctrl->In.mode], post_file);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Run postflight script %s\n", post_file);
 		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running postflight script %s returned error %d - exiting.\n", post_file, error);
@@ -959,7 +951,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		if (Ctrl->In.mode == GMT_DOS_MODE)
 			error = system (cleanup_file);
 		else {
-			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], cleanup_file);
+			sprintf (cmd, "%s %s", sys_cmd_nowait[Ctrl->In.mode], cleanup_file);
 			error = system (cmd);
 		}
 		if (error) {

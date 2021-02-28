@@ -1224,11 +1224,11 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	bool done = false, layers = false, one_frame = false, upper_case[2] = {false, false}, has_conf = false;
 	bool n_written = false, has_text = false, is_classic = false, place_background = false;
 
-	static char *movie_raster_format[2] = {"png", "PNG"}, *img_type[2] = {"opaque", "transparent"};
+	static char *movie_raster_format[2] = {"png", "PNG"}, *img_type[2] = {"opaque", "transparent"}, var_token[4] = "$$%";
 	static char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	static char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
-	static char *mvfile[3] = {"mv -f", "mv -f", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"}, var_token[4] = "$$%";
-	static char *cpconf[3] = {"\tcp -f %s .\n", "\tcp -f %s .\n", "\tcopy %s .\n"};
+	static char *mvfile[3] = {"mv -f", "mv -f", "move"}, *cpconf[3] = {"\tcp -f %s .\n", "\tcp -f %s .\n", "\tcopy %s .\n"};
+	static *sys_cmd_nowait[3] = {"bash", "csh", "start /B"}, *sys_cmd_wait[3] = {"bash", "csh", "cmd /C"};
 
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
@@ -1551,10 +1551,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			}
 #endif
 			/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as a background plot */
-			if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
-				sprintf (cmd, "cmd /C %s", pre_file);
-			else
-				sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], pre_file);
+			sprintf (cmd, "%s %s", sys_cmd_wait[Ctrl->In.mode], pre_file);
 			if ((error = system (cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Running preflight script %s returned error %d - exiting.\n", pre_file, error);
 				fclose (Ctrl->In.fp);
@@ -1705,10 +1702,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				}
 #endif
 			/* Run post-flight now before dealing with the loop so the overlay exists */
-			if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
-				sprintf (cmd, "cmd /C %s", post_file);
-			else
-				sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], post_file);
+			sprintf (cmd, "%s %s", sys_cmd_wait[Ctrl->In.mode], post_file);
 			if ((error = run_script (cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Running postflight script %s returned error %d - exiting.\n", post_file, error);
 				fclose (Ctrl->In.fp);
@@ -2209,7 +2203,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 #endif
-		sprintf (cmd, "%s %s %*.*d", sc_call[Ctrl->In.mode], master_file, precision, precision, Ctrl->M.frame);
+		sprintf (cmd, "%s %s %*.*d", sys_cmd_nowait[Ctrl->In.mode], master_file, precision, precision, Ctrl->M.frame);
 		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running script %s returned error %d - exiting.\n", cmd, error);
 			fclose (Ctrl->In.fp);
@@ -2357,11 +2351,11 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		while (n_frames_not_started && n_cores_unused) {	/* Launch new jobs if possible */
 #ifdef WIN32
 			if (Ctrl->In.mode < 2)		/* A bash or csh run from Windows. Need to call via "start" to get parallel */
-				sprintf (cmd, "start /B %s %s %*.*d", sc_call[Ctrl->In.mode], script_file, precision, precision, frame);
+				sprintf (cmd, "start /B %s %s %*.*d", sys_cmd_nowait[Ctrl->In.mode], script_file, precision, precision, frame);
 			else						/* Running batch, so no need for the above trick */
-				sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], script_file, precision, precision, frame);
+				sprintf (cmd, "%s %s %*.*d &", sys_cmd_nowait[Ctrl->In.mode], script_file, precision, precision, frame);
 #else		/* Regular Linux/macOS shell behavior */
-			sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], script_file, precision, precision, frame);
+			sprintf (cmd, "%s %s %*.*d &", sys_cmd_nowait[Ctrl->In.mode], script_file, precision, precision, frame);
 #endif
 
 			GMT_Report (API, GMT_MSG_DEBUG, "Launch script for frame %*.*d\n", precision, precision, frame);
@@ -2514,7 +2508,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if (Ctrl->In.mode == GMT_DOS_MODE)
 			error = system (cleanup_file);
 		else {
-			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], cleanup_file);
+			sprintf (cmd, "%s %s", sys_cmd_nowait[Ctrl->In.mode], cleanup_file);
 			error = system (cmd);
 		}
 		if (error) {
