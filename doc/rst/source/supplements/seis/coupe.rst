@@ -20,7 +20,7 @@ Synopsis
 [ |-E|\ *fill* ]
 [ |-F|\ *mode*\ [*args*] ]
 [ |-G|\ *fill* ]
-[ |-L|\ *[pen]* ]
+[ |-L|\ [*pen*] ]
 [ |-M| ] [ |-N| ]
 [ |-Q| ]
 [ |-T|\ *nplane*\ [/*pen*] ]
