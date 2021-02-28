@@ -29,19 +29,26 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
+**-A**\ [**+p**\ *pen*][**+s**\ *size*]
+    Offsets focal mechanisms to the alternate longitudes, latitudes given
+    in the last two columns of the input file before the (optional) text
+    string. We will draw a line connecting the original and relocated
+    beachball positions and place a small circle at the original location.
+    Use **+s**\ *size* to change the diameter of the circle [0.1c]. The
+    line pen defaults to the pen given via **-W** but can be overridden
+    by using **+p**\ *pen* [0.25p].
+
 .. _-B:
 
 .. include:: ../../explain_-B.rst_
 
 .. _-C:
 
-**-C**\ [*pen*][**+s**\ *size*]
-    Offsets focal mechanisms to the longitude, latitude specified in the
-    last two columns of the input file before the (optional) text
-    string. A small circle is plotted at the initial location and a line
-    connects the beachball to the circle. Specify *pen* and optionally append
-    **+s**\ *size* to change the line style and/or size of the circle.
-    [Defaults: *pen* as given by **-W**; *size* is 0].
+**-C**\ *cpt*
+    Give a CPT and let compressive part color be
+    determined by the z-value in the third column.
 
 .. _-D:
 
@@ -145,12 +152,6 @@ Optional Arguments
 .. _-X:
 
 .. include:: ../../explain_-XY.rst_
-
-.. _-Z:
-
-**-Z**\ *cpt*
-    Give a CPT and let compressive part color be
-    determined by the z-value in the third column.
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_
