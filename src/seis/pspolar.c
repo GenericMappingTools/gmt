@@ -37,7 +37,7 @@
 
 struct PSPOLAR_CTRL {
 	/* Leave -C available for future cpt use */
-	struct PSPOLAR_D {	/* -D<lon>/<lat>[+z<lon/lat>][+p<pen>][+s<size>] */
+	struct PSPOLAR_D {	/* -D<lon>/<lat>[+z<lon/lat>[+p<pen>][+s<size>]] */
 		bool active;
 		bool relocate;
 		double lon, lat;
@@ -134,7 +134,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -D<lon>/<lat>[+z<lon>/<lat>[+p<pen>][+s<size>]]\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -D<lon>/<lat>[+z<lon>/<lat>[+p<pen>][+s<size>]] %s %s\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-M<size>[c|i|p][+m<mag>] -S<symbol><size>[c|i|p] [%s] [-E<fill>] [-F<fill>] [-G<fill>]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[-N] %s%s[-Qe[<pen>]] [-Qf[<pen>]] [-Qg[<pen>]] [-Qh] [-Qs<half-size>[+v<size>[+<specs>]] [-Qt<pen>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[+a<angle>][+j<justify>][+f<font>][+o<dx>[/<dy>]]] [%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
@@ -142,13 +142,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Option (API, "J-,R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set longitude/latitude of where to place the focal sphere on the map.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z<lon>/<lat> to select an alternative location to place the hemisphere.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z<lon>/<lat> to select an alternative location to place the focal sphere.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   We then draw a line between the two positions and place a circle at the original point\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +p<pen> to change pen [%s] and +s<size> to change circle diameter [0.5p].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
+	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Set size of beachball in %s. Append +m<mag> to specify its magnitude, and beachball size is <mag> / 5.0 * <size>.\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and symbol size (in %s).  Choose between:\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   st(a)r, (c)ircle, (d)iamond, (h)exagon, (i)nvtriangle\n");
@@ -305,26 +306,26 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 					sscanf (opt->arg, "%lf/%lf", &Ctrl->D.lon2, &Ctrl->D.lat2);
 				}
 				break;
-			case 'D':	/* Location for hemisphere plot placement, with optional alternate location */
+			case 'D':	/* Location for focal sphere placement, with optional alternate location */
 				Ctrl->D.active = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "psz"))) {	/* Want to draw line to shifted point */
 					unsigned int pos = 0;
 					char p[GMT_BUFSIZ] = {""};
 					while (gmt_getmodopt (GMT, 'D', c, "psz", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
-							case 'p':
+							case 'p':	/* Gave an specific pen to use */
 								if (p[1] == '\0' || gmt_getpen (GMT, &p[1], &Ctrl->D.pen)) {
 									gmt_pen_syntax (GMT, 'D', NULL, "Line connecting new and old point [Default pen]", 0);
 									n_errors++;
 								}
 								break;
-							case 's':
+							case 's':	/* Specified an alternative circle diameter */
 								if ((Ctrl->D.size = gmt_M_to_inch (GMT, &p[1])) <= 0.0) {
 									GMT_Report (API, GMT_MSG_ERROR, "Option -D: Could not decode circle diameter %s\n", &p[1]);
 									n_errors++;
 								}
 								break;
-							case 'z':
+							case 'z':	/* Gave the alternative location for the focal sphere */
 								if (sscanf (&p[1], "%[^/]/%s", txt_a, txt_b) != 2) {
 									GMT_Report (API, GMT_MSG_ERROR, "Option -D: Could not extract lon/lat coordinates from alternate location %s\n", &p[1]);
 									n_errors++;
@@ -338,7 +339,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 					}
 					c[0] = '\0';	/* Chop off all modifiers so range can be determined */
 				}
-				/* Now get map location to place the hemisphere plot */
+				/* Now get map location to place the focal sphere plot */
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Could not extract lon/lat coordinates from location %s\n", opt->arg);
 					n_errors++;

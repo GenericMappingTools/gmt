@@ -9,7 +9,8 @@ will plot stations on focal mechanisms on a map.
 Parameters are expected to be in the following columns:
 
     **1**,\ **2**,\ **3**:
-        station\_code, azimuth, take-off angle
+        *station-code azimuth take-off-angle*
+        (must all be numerical values)
     **4**:
         polarity:
 
@@ -25,23 +26,18 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
+.. _-D:
+
+**-D**\ *lon/lat*\ [**+z**\ *lon*/*lat*\ [**+p**\ *pen*][**+s**\ *size*]]
+    Places the focal sphere at given longitude and latitude point on the map.  Alternatively,
+    offset the hemisphere plot to the location specified via **+z**, place a
+    small circle at the original point, and connect the two points via a line.
+    Optionally, change the pen via **+p** [0.25p] and the circle diameter via **+s** [0.5p]
+
 .. _-J:
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
-
-.. _-R:
-
-.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-Rgeo.rst_
-
-.. _-D:
-
-**-D**\ *lon/lat*\ [**+z**\ *lon*/*lat*\ [**+p**\ *pen*][**+s**\ *size*]]
-    Places the focal sphere at given longitude and latitude point.  Alternatively,
-    offset the hemisphere plot to the location specified via **+z**, place a
-    small circle at the original point, and connect the two points via a line.
-    Optionally, change the pen via **+p** [0.25p] and the circle diameter via **+s**..
 
 .. _-M:
 
@@ -50,6 +46,11 @@ Required Arguments
     default units (unless **c**, **i**, or **p** is appended).
     Optionally append **+m**\ *mag* to specify its magnitude,
     then beachball size is *mag* / 5.0 * *size*.
+
+.. _-R:
+
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-Rgeo.rst_
 
 .. _-S:
 
