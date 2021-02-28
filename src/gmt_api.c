@@ -14516,7 +14516,7 @@ int GMT_Put_Vector (void *V_API, struct GMT_VECTOR *V, unsigned int col, unsigne
 	 * We also check that the number of rows have been set earlier.
 	 * We also allow special text-based arrays for longitude, latitude, datetime or Cartesian data to be passed
 	 * which may be logically OR'ed with desired array type (e.g., GMT_LONG|GMT_TEXT).
-	 * Note: We do not check for data loss in the conversion (e..g, GMT_UCHAR|GMT_TEXT) */
+	 * Note: We do not check for data loss in the conversion (e.g., GMT_UCHAR|GMT_TEXT) */
 	unsigned int special_type;
 	enum GMT_enum_alloc alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Default is to pass vectors in read-only */
 	struct GMTAPI_CTRL *API = NULL;
