@@ -593,14 +593,12 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		}
 		fclose (Ctrl->S[BATCH_PREFLIGHT].fp);	/* Done reading the preflight script */
 		fclose (fp);	/* Done writing the temporary preflight script */
-#ifndef WIN32
-		/* Set executable bit if not on Windows */
-		if (chmod (pre_file, S_IRWXU)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to make preflight script %s executable - exiting.\n", pre_file);
-			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+		if (Ctrl->In.mode != GMT_DOS_MODE) {	/* Set executable bit if not Windows */
+			if (chmod (pre_file, S_IRWXU)) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to make preflight script %s executable - exiting.\n", pre_file);
+				fclose (Ctrl->In.fp);
+				Return (GMT_RUNTIME_ERROR);
 		}
-#endif
 		/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as needed data files */
 		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
 			sprintf (cmd, "cmd /C %s", pre_file);
@@ -729,14 +727,13 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		fprintf (fp, "cd %s\n", tmpwpath);		/* cd back to the working directory */
 		fclose (Ctrl->S[BATCH_POSTFLIGHT].fp);	/* Done reading the postflight script */
 		fclose (fp);	/* Done writing the postflight script */
-#ifndef WIN32
-		/* Set executable bit if not Windows */
-		if (chmod (post_file, S_IRWXU)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to make postflight script %s executable - exiting\n", post_file);
-			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+		if (Ctrl->In.mode != GMT_DOS_MODE) {	/* Set executable bit if not Windows */
+			if (chmod (post_file, S_IRWXU)) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to make postflight script %s executable - exiting\n", post_file);
+				fclose (Ctrl->In.fp);
+				Return (GMT_RUNTIME_ERROR);
+			}
 		}
-#endif
 	}
 
 	/* Create parameter include files, one for each job */
