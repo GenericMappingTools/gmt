@@ -147,7 +147,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   We then draw a line between the two positions and place a circle at the original point\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +p<pen> to change pen [%s] and +s<size> to change circle diameter [0.5p].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "J-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Set size of beachball in %s. Append +m<mag> to specify its magnitude, and beachball size is <mag> / 5.0 * <size>.\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Set size of focal sphere in %s. Append +m<mag> to specify a magnitude, and focal sphere size is <mag> / 5.0 * <size>.\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and symbol size (in %s).  Choose between:\n",
@@ -160,7 +160,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Fill can be either <r/g/b> (each 0-255) for color \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or <gray> (0-255) for gray-shade [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is light gray.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify background color of beach ball. It can be\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify background color of focal sphere. It can be\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is no fill].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify color symbol for station in compressive part.\n");
@@ -172,7 +172,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Sets various attributes of symbols depending on <mode>:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e Outline of station symbol in extensive part [Default is current pen].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f Outline beach ball.  Add <pen attributes> [Default is current pen].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f Outline focal sphere.  Add <pen attributes> [Default is current pen].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   g Outline of station symbol in compressive part.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Add <pen attributes> if not current pen.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   h Use special format derived from HYPO71 output.\n");
@@ -355,7 +355,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 				}
 				break;
-			case 'F':	/* Set background color of beach ball */
+			case 'F':	/* Set background color of focal sphere */
 				Ctrl->F.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->F.fill)) {
 					gmt_fill_syntax (GMT, 'F', NULL, " ");
@@ -379,10 +379,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 							n_errors++;
 						}
 						break;
-					case 'f':	/* Outline beach ball */
+					case 'f':	/* Outline focal sphere */
 						Ctrl->F.active = true;
 						if (strlen (&opt->arg[1]) && gmt_getpen (GMT, &opt->arg[1], &Ctrl->F.pen)) {
-							gmt_pen_syntax (GMT, ' ', "Qf", "Outline beach ball [Default current pen]", 0);
+							gmt_pen_syntax (GMT, ' ', "Qf", "Outline focal sphere [Default current pen]", 0);
 							n_errors++;
 						}
 						break;

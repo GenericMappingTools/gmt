@@ -42,10 +42,10 @@ Required Arguments
 .. _-M:
 
 **-M**\ *size*\ [**+m**\ *mag*]
-    Sets the size of the beach ball to plot polarities in. *size* is in
+    Sets the size of the focal sphere to plot polarities in. *size* is in
     default units (unless **c**, **i**, or **p** is appended).
     Optionally append **+m**\ *mag* to specify its magnitude,
-    then beachball size is *mag* / 5.0 * *size*.
+    then focal sphere size is *mag* / 5.0 * *size*.
 
 .. _-R:
 
@@ -77,7 +77,7 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
-    Sets background color of the beach ball. Default is no fill.
+    Sets background color of the focal sphere. Default is no fill.
 
 .. _-G:
 
@@ -99,7 +99,7 @@ Optional Arguments
         Outline symbols in extensive quadrants using *pen* or the default pen (see |-W|).
 
     **-Qf**\ [pen]
-        Outline the beach ball using *pen* or the default pen (see |-W|).
+        Outline the focal sphere using *pen* or the default pen (see |-W|).
 
     **-Qg**\ [pen]
         Outline symbols in compressional quadrants using *pen* or the default pen (see |-W|).
