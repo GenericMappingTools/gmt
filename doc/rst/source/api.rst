@@ -1369,8 +1369,8 @@ or ISO datetime strings and we do the conversion to internal numerical values an
 allocate a vector to hold the result in the given ``col``.  By default that vector
 will be assigned to type **GMT_DOUBLE** but you can add another primary data type
 for the conversion if you prefer (e.g., **GMT_TEXT**\|\ **GMT_LONG** to get final 
-internal absolute time in integer seconds). For these four special data types GMT
-allocates internal memory to hold the concerted data and ``vector`` is not used
+internal absolute time in integer seconds). For the special data type **GMT_TEXT** GMT
+allocates internal memory to hold the converted data and ``vector`` is not used
 any further.
 
 To extract a custom vector from an output :ref:`GMT_VECTOR <struct-vector>` you can use
