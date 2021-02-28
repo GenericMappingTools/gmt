@@ -4000,7 +4000,7 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
  * all the relevant information in the GMT->current.io struct (ncid, ndim, nrec, varid, add_offset,
  * scale_factor, missing_value). Some of these are allocated here, and have to be
  * deallocated upon gmt_fclose.
- * Also asigns GMT->current.io.col_type[GMT_IN] based on the variable attributes.
+ * Also assigns GMT->current.io.col_type[GMT_IN] based on the variable attributes.
  */
 
 	char file[PATH_MAX] = {""}, path[PATH_MAX] = {""};
