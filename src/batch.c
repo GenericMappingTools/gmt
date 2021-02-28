@@ -598,6 +598,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to make preflight script %s executable - exiting.\n", pre_file);
 				fclose (Ctrl->In.fp);
 				Return (GMT_RUNTIME_ERROR);
+			}
 		}
 		/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as needed data files */
 		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
