@@ -1543,13 +1543,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			}
 			fclose (Ctrl->S[MOVIE_PREFLIGHT].fp);	/* Done reading the foreground script */
 			fclose (fp);	/* Done writing the preflight script */
-			if (Ctrl->In.mode != GMT_DOS_MODE) {	/* Set executable bit if not Windows cmd */
-				if (chmod (pre_file, S_IRWXU)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Unable to make preflight script %s executable - exiting.\n", pre_file);
-					fclose (Ctrl->In.fp);
-					Return (GMT_RUNTIME_ERROR);
-				}
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
+			if (chmod (pre_file, S_IRWXU)) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to make preflight script %s executable - exiting.\n", pre_file);
+				fclose (Ctrl->In.fp);
+				Return (GMT_RUNTIME_ERROR);
 			}
+#endif
 			/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as a background plot */
 			if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
 				sprintf (cmd, "cmd /C %s", pre_file);
@@ -1697,13 +1697,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			}
 			fclose (Ctrl->S[MOVIE_POSTFLIGHT].fp);	/* Done reading the foreground script */
 			fclose (fp);	/* Done writing the postflight script */
-			if (Ctrl->In.mode != GMT_DOS_MODE) {	/* Set executable bit if not Windows cmd */
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
 				if (chmod (post_file, S_IRWXU)) {
 					GMT_Report (API, GMT_MSG_ERROR, "Unable to make postflight script %s executable - exiting\n", post_file);
 					fclose (Ctrl->In.fp);
 					Return (GMT_RUNTIME_ERROR);
 				}
-			}
+#endif
 			/* Run post-flight now before dealing with the loop so the overlay exists */
 			if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
 				sprintf (cmd, "cmd /C %s", post_file);
@@ -1867,12 +1867,12 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "exit\n");
 		fclose (fp);	/* Done writing loop script */
 
-		if (Ctrl->In.mode != GMT_DOS_MODE) {	/* Set executable bit if not Windows cmd */
-			if (chmod (intro_file, S_IRWXU)) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", intro_file);
-				Return (GMT_RUNTIME_ERROR);
-			}
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
+		if (chmod (intro_file, S_IRWXU)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", intro_file);
+			Return (GMT_RUNTIME_ERROR);
 		}
+#endif
 	}
 
 	/* Create parameter include files, one for each frame */
@@ -2202,13 +2202,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		fclose (fp);	/* Done writing loop script */
 
-		if (Ctrl->In.mode != GMT_DOS_MODE) {	/* Set executable bit if not Windows cmd */
-			if (chmod (master_file, S_IRWXU)) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", master_file);
-				fclose (Ctrl->In.fp);
-				Return (GMT_RUNTIME_ERROR);
-			}
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
+		if (chmod (master_file, S_IRWXU)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", master_file);
+			fclose (Ctrl->In.fp);
+			Return (GMT_RUNTIME_ERROR);
 		}
+#endif
 		sprintf (cmd, "%s %s %*.*d", sc_call[Ctrl->In.mode], master_file, precision, precision, Ctrl->M.frame);
 		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running script %s returned error %d - exiting.\n", cmd, error);
@@ -2329,12 +2329,12 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		fprintf (fp, "exit\n");
 	fclose (fp);	/* Done writing loop script */
 
-	if (Ctrl->In.mode != GMT_DOS_MODE) {	/* Set executable bit if not Windows */
-		if (chmod (main_file, S_IRWXU)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", main_file);
-			Return (GMT_RUNTIME_ERROR);
-		}
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
+	if (chmod (main_file, S_IRWXU)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", main_file);
+		Return (GMT_RUNTIME_ERROR);
 	}
+#endif
 
 	n_frames += Ctrl->E.duration;	/* THis is the total set of frames to process */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Total frames to process: %u\n", n_frames);
@@ -2503,12 +2503,12 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "%s %s%c*.ps\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep);	/* Delete any PostScript layers */
 	}
 	fclose (fp);
-	if (Ctrl->In.mode != GMT_DOS_MODE) {	/* Set executable bit if not Windows cmd */
-		if (chmod (cleanup_file, S_IRWXU)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to make cleanup script %s executable - exiting\n", cleanup_file);
-			Return (GMT_RUNTIME_ERROR);
-		}
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
+	if (chmod (cleanup_file, S_IRWXU)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to make cleanup script %s executable - exiting\n", cleanup_file);
+		Return (GMT_RUNTIME_ERROR);
 	}
+#endif
 	if (!Ctrl->Q.active) {
 		/* Run cleanup script at the end */
 		if (Ctrl->In.mode == GMT_DOS_MODE)
