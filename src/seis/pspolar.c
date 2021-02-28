@@ -37,12 +37,14 @@
 
 struct PSPOLAR_CTRL {
 	/* Leave -C available for future cpt use */
-	struct PSPOLAR_D {	/* -D<lon>/<lat>[+z<lon/lat>[+p<pen>][+s<size>]] */
+	struct PSPOLAR_OLD_C {	/* -C<lon>/<lat>[+p<pen>][+s<size>] */
 		bool active;
-		bool relocate;
-		double lon, lat;
 		double lon2, lat2, size;
 		struct GMT_PEN pen;
+	} OLD_C;
+	struct PSPOLAR_D {	/* -D<lon>/<lat> */
+		bool active;
+		double lon, lat;
 	} D;
  	struct PSPOLAR_E {	/* -E<fill> */
 		bool active;
@@ -112,9 +114,11 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
-	C->D.pen = C->E.pen = C->F.pen = C->G.pen = GMT->current.setting.map_default_pen;
+	C->OLD_C.size = 0.1 / 2.54;	/* Let -C original point circle be 0.1 cm */
+	C->OLD_C.pen = GMT->current.setting.map_default_pen;
 
-	C->D.size = 0.5 / 72.0;	/* Let -D circle be 0.5 point */
+	C->E.pen = C->F.pen = C->G.pen = GMT->current.setting.map_default_pen;
+
 	gmt_init_fill (GMT, &C->E.fill, gmt_M_is255(250), gmt_M_is255(250), gmt_M_is255(250));
 	gmt_init_fill (GMT, &C->F.fill, -1.0, -1.0, -1.0);
 	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
@@ -134,7 +138,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -D<lon>/<lat>[+z<lon>/<lat>[+p<pen>][+s<size>]] %s %s\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -D<lon>/<lat> %s %s\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-M<size>[c|i|p][+m<mag>] -S<symbol><size>[c|i|p] [%s] [-E<fill>] [-F<fill>] [-G<fill>]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[-N] %s%s[-Qe[<pen>]] [-Qf[<pen>]] [-Qg[<pen>]] [-Qh] [-Qs<half-size>[+v<size>[+<specs>]] [-Qt<pen>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[+a<angle>][+j<justify>][+f<font>][+o<dx>[/<dy>]]] [%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
@@ -143,9 +147,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set longitude/latitude of where to place the focal sphere on the map.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z<lon>/<lat> to select an alternative location to place the focal sphere.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   We then draw a line between the two positions and place a circle at the original point\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +p<pen> to change pen [%s] and +s<size> to change circle diameter [0.5p].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Set size of focal sphere in %s. Append +m<mag> to specify a magnitude, and focal sphere size is <mag> / 5.0 * <size>.\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
@@ -266,35 +267,35 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 						n_errors += gmt_default_error (GMT, opt->option);
 						continue;
 					}
-					sscanf (opt->arg, "%lf/%lf", &Ctrl->D.lon2, &Ctrl->D.lat2);
+					sscanf (opt->arg, "%lf/%lf", &Ctrl->OLD_C.lon2, &Ctrl->OLD_C.lat2);
 					/* Slightly more modern modifiers, now deprecated */
 					if ((p = strstr (opt->arg, "+p"))) {
 						char *q = strstr (p, "+s");
 						if (q) q[0] = '\0';	/* Chop off the +s modifier */
-						if (gmt_getpen (GMT, &p[2], &Ctrl->D.pen)) {
+						if (gmt_getpen (GMT, &p[2], &Ctrl->OLD_C.pen)) {
 							gmt_pen_syntax (GMT, 'C', NULL, "Line connecting new and old point [Default current pen]", 0);
 							n_errors++;
 						}
 						if (q) q[0] = '+';	/* Restore the +s modifier */
 					}
-					else if ((p = strchr (opt->arg, 'W')) && gmt_getpen (GMT, &p[1], &Ctrl->D.pen)) {	/* Old syntax */
+					else if ((p = strchr (opt->arg, 'W')) && gmt_getpen (GMT, &p[1], &Ctrl->OLD_C.pen)) {	/* Old syntax */
 						gmt_pen_syntax (GMT, 'C', NULL, "Line connecting new and old point [Default current pen]", 0);
 						n_errors++;
 					}
 					if ((p = strstr (opt->arg, "+s"))) {	/* Found +s<size> */
 						char *q = strstr (p, "+p");
 						if (q) q[0] = '\0';	/* Chop off the +p modifier */
-						if ((Ctrl->D.size = gmt_M_to_inch (GMT, &p[2]))) {
+						if ((Ctrl->OLD_C.size = gmt_M_to_inch (GMT, &p[2]))) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -C: Could not decode diameter %s\n", &p[1]);
 							n_errors++;
 						}
 						if (q) q[0] = '+';	/* Restore the +p modifier */
 					}
-					else if ((p = strchr (opt->arg, 'P')) && sscanf (&p[1], "%lf", &Ctrl->D.size)) {	/* Old syntax */
+					else if ((p = strchr (opt->arg, 'P')) && sscanf (&p[1], "%lf", &Ctrl->OLD_C.size)) {	/* Old syntax */
 						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Could not decode diameter %s\n", &p[1]);
 						n_errors++;
 					}
-					Ctrl->D.relocate = true;
+					Ctrl->OLD_C.active = true;
 				}
 				else if (gmt_count_char (GMT, opt->arg, '/') == 1 && strstr (opt->arg, ".cpt") == NULL) {	/* Just old-style coordinates without modifiers */
 					if (gmt_M_compat_check (GMT, 6))
@@ -303,42 +304,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 						n_errors += gmt_default_error (GMT, opt->option);
 						continue;
 					}
-					sscanf (opt->arg, "%lf/%lf", &Ctrl->D.lon2, &Ctrl->D.lat2);
+					sscanf (opt->arg, "%lf/%lf", &Ctrl->OLD_C.lon2, &Ctrl->OLD_C.lat2);
+					Ctrl->OLD_C.active = true;
 				}
 				break;
 			case 'D':	/* Location for focal sphere placement, with optional alternate location */
 				Ctrl->D.active = true;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "psz"))) {	/* Want to draw line to shifted point */
-					unsigned int pos = 0;
-					char p[GMT_BUFSIZ] = {""};
-					while (gmt_getmodopt (GMT, 'D', c, "psz", &pos, p, &n_errors) && n_errors == 0) {
-						switch (p[0]) {
-							case 'p':	/* Gave an specific pen to use */
-								if (p[1] == '\0' || gmt_getpen (GMT, &p[1], &Ctrl->D.pen)) {
-									gmt_pen_syntax (GMT, 'D', NULL, "Line connecting new and old point [Default pen]", 0);
-									n_errors++;
-								}
-								break;
-							case 's':	/* Specified an alternative circle diameter */
-								if ((Ctrl->D.size = gmt_M_to_inch (GMT, &p[1])) <= 0.0) {
-									GMT_Report (API, GMT_MSG_ERROR, "Option -D: Could not decode circle diameter %s\n", &p[1]);
-									n_errors++;
-								}
-								break;
-							case 'z':	/* Gave the alternative location for the focal sphere */
-								if (sscanf (&p[1], "%[^/]/%s", txt_a, txt_b) != 2) {
-									GMT_Report (API, GMT_MSG_ERROR, "Option -D: Could not extract lon/lat coordinates from alternate location %s\n", &p[1]);
-									n_errors++;
-								}
-								n_errors += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &Ctrl->D.lon2), txt_a);
-								n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &Ctrl->D.lat2), txt_b);
-								Ctrl->D.relocate = true;
-								break;
-							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
-						}
-					}
-					c[0] = '\0';	/* Chop off all modifiers so range can be determined */
-				}
 				/* Now get map location to place the focal sphere plot */
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Could not extract lon/lat coordinates from location %s\n", opt->arg);
@@ -346,7 +317,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				}
 				n_errors += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &Ctrl->D.lon), txt_a);
 				n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &Ctrl->D.lat), txt_b);
-				if (c) c[0] = '+';	/* Restore the plus */
 				break;
 			case 'E':	/* Set color for station in extensive part */
 				Ctrl->E.active = true;
@@ -565,10 +535,10 @@ EXTERN_MSC int GMT_pspolar (void *V_API, int mode, void *args) {
 	GMT->current.map.is_world = true;
 
 	gmt_geo_to_xy (GMT, Ctrl->D.lon, Ctrl->D.lat, &plot_x0, &plot_y0);
-	if (Ctrl->D.relocate) {
-		gmt_setpen (GMT, &Ctrl->D.pen);
-		gmt_geo_to_xy (GMT, Ctrl->D.lon2, Ctrl->D.lat2, &new_plot_x0, &new_plot_y0);
-		PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->D.size), PSL_CIRCLE);
+	if (Ctrl->OLD_C.active) {	/* This is deprecated but honored in a backwards compatible way */
+		gmt_setpen (GMT, &Ctrl->OLD_C.pen);
+		gmt_geo_to_xy (GMT, Ctrl->OLD_C.lon2, Ctrl->OLD_C.lat2, &new_plot_x0, &new_plot_y0);
+		PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->OLD_C.size), PSL_CIRCLE);
 		PSL_plotsegment (PSL, plot_x0, plot_y0, new_plot_x0, new_plot_y0);
 		plot_x0 = new_plot_x0;
 		plot_y0 = new_plot_y0;

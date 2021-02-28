@@ -14,7 +14,7 @@ Synopsis
 
 **gmt polar**
 [ *table* ]
-|-D|\ *lon/lat*\ [**+z**\ *lon*/*lat*\ [**+p**\ *pen*][**+s**\ *size*]]
+|-D|\ *lon/lat*
 |-J|\ *parameters*
 |SYN_OPT-R|
 |-M|\ *size*\ [**+m**\ *mag*]

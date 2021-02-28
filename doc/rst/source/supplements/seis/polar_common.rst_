@@ -28,11 +28,8 @@ Required Arguments
 
 .. _-D:
 
-**-D**\ *lon/lat*\ [**+z**\ *lon*/*lat*\ [**+p**\ *pen*][**+s**\ *size*]]
-    Places the focal sphere at given longitude and latitude point on the map.  Alternatively,
-    offset the hemisphere plot to the location specified via **+z**, place a
-    small circle at the original point, and connect the two points via a line.
-    Optionally, change the pen via **+p** [0.25p] and the circle diameter via **+s** [0.5p]
+**-D**\ *lon/lat*
+    Centers the focal sphere at given longitude and latitude point on the map.
 
 .. _-J:
 
