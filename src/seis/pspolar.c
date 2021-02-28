@@ -17,7 +17,11 @@
  * Date:	19-OCT-1995 (psprojstations)
  * Version:	5
  * Roots:	heavily based on psxy.c; ported to GMT5 by P. Wessel
- *
+ * Updated March 1, 2021: No longer support the relocation of the
+ *   focal sphere and the optional line/point plotting since that is
+ *   better handled by meca.  However, it remains backwards supported
+ *   via the old -C option, just no longer documented.  The -D option
+ *   is used to place the focal sphere wherever you want.
  */
 
 #include "gmt_dev.h"
@@ -114,6 +118,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
+	/* Deprecated -C option */
 	C->OLD_C.size = 0.1 / 2.54;	/* Let -C original point circle be 0.1 cm */
 	C->OLD_C.pen = GMT->current.setting.map_default_pen;
 
@@ -146,7 +151,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set longitude/latitude of where to place the focal sphere on the map.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Set longitude/latitude of where to center the focal sphere on the map.\n");
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Set size of focal sphere in %s. Append +m<mag> to specify a magnitude, and focal sphere size is <mag> / 5.0 * <size>.\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);

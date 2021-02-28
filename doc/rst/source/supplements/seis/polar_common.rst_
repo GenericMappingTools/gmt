@@ -3,14 +3,16 @@
 Description
 -----------
 
-Reads data values from *files* [or standard input] and
-will plot stations on focal mechanisms on a map.
+Plot observations from a single earthquake observed at various stations
+at different azimuths and distances on the lower hemisphere of the focal
+sphere.  The focal sphere is typically plotted at the location of the earthquake,
+specified via **-D**. Reads data values from *files* [or standard input].
 
 Parameters are expected to be in the following columns:
 
     **1**,\ **2**,\ **3**:
         *station-code azimuth take-off-angle*
-        (must all be numerical values)
+        (all three columns must contain numerical values)
     **4**:
         polarity:
 
