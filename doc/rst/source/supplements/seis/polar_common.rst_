@@ -4,8 +4,7 @@ Description
 -----------
 
 Reads data values from *files* [or standard input] and
-will plot stations on focal mechanisms
-on a map.
+will plot stations on focal mechanisms on a map.
 
 Parameters are expected to be in the following columns:
 
@@ -38,8 +37,11 @@ Required Arguments
 
 .. _-D:
 
-**-D**\ *longitude/latitude*
-    Maps the bubble at given longitude and latitude point.
+**-D**\ *lon/lat*\ [**+z**\ *lon*/*lat*\ [**+p**\ *pen*][**+s**\ *size*]]
+    Places the focal sphere at given longitude and latitude point.  Alternatively,
+    offset the hemisphere plot to the location specified via **+z**, place a
+    small circle at the original point, and connect the two points via a line.
+    Optionally, change the pen via **+p** [0.25p] and the circle diameter via **+s**..
 
 .. _-M:
 
@@ -63,13 +65,6 @@ Optional Arguments
 .. _-B:
 
 .. include:: ../../explain_-B.rst_
-
-.. _-C:
-
-**-C**\ *lon*/*lat*\ [**+p**\ *pen*][**+s**\ *pointsize*]
-    Offsets focal mechanisms to the latitude and longitude specified in
-    the last two columns of the input file.  Optionally set the pen and
-    symbol point size.
 
 .. _-E:
 
