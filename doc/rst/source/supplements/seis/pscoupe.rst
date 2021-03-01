@@ -21,6 +21,7 @@ Synopsis
 [ |-F|\ *mode*\ [*args*] ]
 [ |-G|\ *fill* ]
 [ |-K| ]
+[ |-I|\ [*intens*] ]
 [ |-L|\ *[pen]* ]
 [ |-M| ] [ |-N| ]
 [ |-O| ]
