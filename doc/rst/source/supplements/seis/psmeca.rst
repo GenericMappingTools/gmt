@@ -12,21 +12,29 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt psmeca** [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
+**gmt psmeca** [ *table* ]
+|-J|\ *parameters*
+|SYN_OPT-R|
 |-S|\ *<format><scale>*\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+[ |-A|\ [**+p**\ *pen*][**+s**\ *size*] ]
 [ |SYN_OPT-B| ]
-[ |-C|\ [*pen*][**+s**\ *size*] ] [ |-D|\ *depmin*/*depmax* ]
+[ |-C|\ *cpt*]
+[ |-D|\ *depmin*/*depmax* ]
 [ |-E|\ *fill*]
-[ |-F|\ *mode*\ [*args*] ] [ |-G|\ *fill*] [ |-K| ] [ |-L|\ [*pen*] ]
+[ |-F|\ *mode*\ [*args*] ]
+[ |-G|\ *fill*]
+[ |-K| ]
+[ |-L|\ [*pen*] ]
 [ |-M| ]
-[ |-N| ] [ |-O| ] [ |-P| ]
+[ |-N| ]
+[ |-O| ]
+[ |-P| ]
 [ |-T|\ *nplane*\ [*pen*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ *cpt*]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
