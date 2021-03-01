@@ -50,16 +50,16 @@ Optional Arguments
     parameters for just that panel [default uses the same panel parameters for all selected map features].
     The following modifiers can be appended to |-F|:
 
-    * **+p**\ *pen* to specify a different pen width
-    * **+g**\ *fill* to fill the box [default is no fill]
-    * **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*, or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\
+    - **+p**\ *pen* to specify a different pen width
+    - **+g**\ *fill* to fill the box [default is no fill]
+    - **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*, or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\
       *tgap* where these items are uniform, separate in x- and y-direction, or individual side spacings between map
       inset/scale/rose and border respectively.
-    * **+i** to draw a secondary, inner border as well. We use a uniform *gap* between borders of 2\ **p** and the
+    - **+i** to draw a secondary, inner border as well. We use a uniform *gap* between borders of 2\ **p** and the
       :term:`MAP_DEFAULT_PEN` unless other values are specified.
-    * **+r** to draw rounded rectangular borders instead, with a 6\ **p** corner radius. You can override this radius by
+    - **+r** to draw rounded rectangular borders instead, with a 6\ **p** corner radius. You can override this radius by
       appending another value.
-    * **+s** to draw an offset background shaded region. Here, *dx*/*dy* indicates the shift relative to the foreground
+    - **+s** to draw an offset background shaded region. Here, *dx*/*dy* indicates the shift relative to the foreground
       frame [default is 4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [default is gray50].
 
 .. _-L:
