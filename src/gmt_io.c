@@ -4613,7 +4613,7 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 					case GMT_IS_DIMENSION:	/* Convert to internal inches */
 						GMT->current.io.curr_rec[col_no] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 						break;
-					case GMT_IS_ABSTIME: GMT_IS_RELTIME:	/* Possibly convert to periodic time */
+					case GMT_IS_ABSTIME: case GMT_IS_RELTIME:	/* Possibly convert to periodic time */
 						if (GMT->current.io.cycle_operator && GMT->current.io.cycle_col == col_no)
 							gmtlib_modulo_time_calculator (GMT, &(GMT->current.io.curr_rec[col_no]));
 					default:	/* Nothing to do unless periodic */
