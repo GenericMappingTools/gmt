@@ -3618,6 +3618,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 }
 
 void gmtlib_set_case_and_kind (struct GMT_CTRL *GMT, char *format, bool *upper_case, unsigned int *flavor) {
+	gmt_M_unused (GMT);
 	/* Examine the format string and determine if we want upper/lower case and what type of abbreviation, if any */
 	*upper_case = false;	*flavor = 0;	/* Initialize */
 	switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */

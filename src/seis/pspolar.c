@@ -250,7 +250,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 	 */
 
 	unsigned int n_errors = 0, n;
-	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, *p = NULL, *c = NULL;
+	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
