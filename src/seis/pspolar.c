@@ -119,7 +119,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	/* Deprecated -C option */
-	C->OLD_C.size = 0.1 / 2.54;	/* Let -C original point circle be 0.1 cm */
+	C->OLD_C.size = 0.0;	/* Default is to plot no circle */
 	C->OLD_C.pen = GMT->current.setting.map_default_pen;
 
 	C->E.pen = C->F.pen = C->G.pen = GMT->current.setting.map_default_pen;
@@ -543,7 +543,7 @@ EXTERN_MSC int GMT_pspolar (void *V_API, int mode, void *args) {
 	if (Ctrl->OLD_C.active) {	/* This is deprecated but honored in a backwards compatible way */
 		gmt_setpen (GMT, &Ctrl->OLD_C.pen);
 		gmt_geo_to_xy (GMT, Ctrl->OLD_C.lon2, Ctrl->OLD_C.lat2, &new_plot_x0, &new_plot_y0);
-		PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->OLD_C.size), PSL_CIRCLE);
+		if (Ctrl->OLD_C.size > 0.0) PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->OLD_C.size), PSL_CIRCLE);
 		PSL_plotsegment (PSL, plot_x0, plot_y0, new_plot_x0, new_plot_y0);
 		plot_x0 = new_plot_x0;
 		plot_y0 = new_plot_y0;
