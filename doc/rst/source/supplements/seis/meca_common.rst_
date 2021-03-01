@@ -35,9 +35,9 @@ Optional Arguments
     Offsets focal mechanisms to the alternate longitudes, latitudes given
     in the last two columns of the input file before the (optional) text
     string. We will draw a line connecting the original and relocated
-    beachball positions and place a small circle at the original location.
-    Use **+s**\ *size* to change the diameter of the circle [0.1c]. The
-    line pen defaults to the pen given via **-W** but can be overridden
+    beachball positions and optionally place a small circle at the original
+    location.  Use **+s**\ *size* to set the diameter of the circle [no circle].
+    The line pen defaults to that given via **-W** but can be overridden
     by using **+p**\ *pen* [0.25p].
 
 .. _-B:

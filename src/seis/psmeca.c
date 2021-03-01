@@ -142,7 +142,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
-	C->A.size = 0.1 / 2.54;	/* 0.1 cm size */
+	C->A.size = 0.0;	/* No circle will be plotted */
 	C->A.pen = C->L.pen = C->T.pen = C->T2.pen = C->P2.pen = C->Z2.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	/* Set width temporarily to -1. This will indicate later that we need to replace by W.pen */
 	C->A.pen.width = C->L.pen.width = C->T.pen.width = C->T2.pen.width = C->P2.pen.width = C->Z2.pen.width = -1.0;
@@ -210,8 +210,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Offset focal mechanisms to the alternate positions given in the last two columns of the input file before label.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   A line is plotted between both positions; see -W for pen used or specify via +p [0.25p].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   A small circle is plotted at the original location. Append +s<size> to change its diameter [0.1c].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   A line is drawn between both positions; see -W for pen used or specify it separately via +p [0.25p].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, a small circle is plotted at the original location. Append +s<size> to set its diameter [no circle].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign colors based on depth-value in 3rd column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Plot events between <depmin> and <depmax> deep.\n");
 	gmt_fill_syntax (API->GMT, 'E', NULL, "Set filling of extensive quadrants [Default is white].");
@@ -247,6 +247,7 @@ GMT_LOCAL bool psmeca_is_old_C_option (struct GMT_CTRL *GMT, char *arg) {
 	if (strstr (arg, ".cpt")) return false;	/* Clearly a CPT file given */
 	if (strstr (arg, "+s") || strchr (arg, 'P')) return true;	/* Clearly setting the circle diameter in old -C */
 	if (GMT->current.setting.run_mode == GMT_CLASSIC && arg[0] == '\0') return true;	/* A blank -C in classic mode is clearly the old -C with no settings */
+	if (arg[0]) return true;	/* Whatever this is, it is for -A to deal with */
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Option -C: Must assume under modern mode that -C here means use current CPT\n");
 	return false;	/* This assumes nobody would use just -C in modern mode but actually mean the old -C */
 }
