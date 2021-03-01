@@ -831,7 +831,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 				gmt_setpen (GMT, &Ctrl->A.pen);
 				gmt_geo_to_xy (GMT, xynew[GMT_X], xynew[GMT_Y], &plot_xnew, &plot_ynew);
 				gmt_setfill (GMT, &Ctrl->G.fill, 1);
-				PSL_plotsymbol (PSL, plot_x, plot_y, &Ctrl->A.size, PSL_CIRCLE);
+				if (Ctrl->A.size > 0.0) PSL_plotsymbol (PSL, plot_x, plot_y, &(Ctrl->A.size), PSL_CIRCLE);
 				PSL_plotsegment (PSL, plot_x, plot_y, plot_xnew, plot_ynew);
 				plot_x = plot_xnew;
 				plot_y = plot_ynew;
