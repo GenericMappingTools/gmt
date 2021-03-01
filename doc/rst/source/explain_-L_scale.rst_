@@ -9,22 +9,22 @@
     The following modifiers can be appended to |-L| (**+w** is required). For Cartesian projectsion, the modifiers
     **+c** and **+f** are not allowed, and no units should be appended in **+w**):
 
-    * **+w** to set scale *length* in km, or append unit from **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.
-    * **+c** modifier is use to control where on a geographic map the scale applies. Map scale is calculated for
+    - **+w** to set scale *length* in km, or append unit from **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.
+    - **+c** modifier is use to control where on a geographic map the scale applies. Map scale is calculated for
       latitude *slat* (optionally supply longitude *slon* for oblique projections [default is central meridian]). If
       **+c** is not given we default to the location of the *refpoint*. If **+c** is given with no arguments then we
       select the scale origin to be the middle of the map.
-    * **+a**\ *align* to change the label alignment (choose among **l**\ (eft), **r**\ (ight), **t**\ (op), and
+    - **+a**\ *align* to change the label alignment (choose among **l**\ (eft), **r**\ (ight), **t**\ (op), and
       **b**\ (ottom)).
-    * **+f** to get a "fancy" scale [default is plain].
-    * **+j** followed by a 2-char justification code *justify* to change the anchor point on the map scale. See
+    - **+f** to get a "fancy" scale [default is plain].
+    - **+j** followed by a 2-char justification code *justify* to change the anchor point on the map scale. See
       :doc:`text` for list and explanation of codes) [default is MC].
-    * **+l** to select the default label, which equals the distance unit (meter, foot, km, mile, nautical mile, US
+    - **+l** to select the default label, which equals the distance unit (meter, foot, km, mile, nautical mile, US
       survey foot) and is justified on top of the scale [default is t]. Change this by giving your own label (append
       **+l**\ *label*). Cartesian data units can be indicated using the *label* in **+l**.
-    * **+u** to append the unit to all distance annotations along the scale (for the plain scale, **+u** will instead
+    - **+u** to append the unit to all distance annotations along the scale (for the plain scale, **+u** will instead
       select the unit to be appended to the distance length).
-    * **+v** to get a vertical rather than a horizontal Cartesian scale.
+    - **+v** to get a vertical rather than a horizontal Cartesian scale.
 
     **Note**: Use :term:`FONT_LABEL` to change the label font and :term:`FONT_ANNOT_PRIMARY` to change the annotation
     font. The height of the map scale is controlled by :term:`MAP_SCALE_HEIGHT`, and the pen thickness is set by
