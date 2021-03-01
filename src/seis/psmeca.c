@@ -70,6 +70,11 @@ struct PSMECA_CTRL {
 		bool active;
 		struct GMT_FILL fill;
 	} G;
+	struct PSMECA_I {	/* -I[<intensity>] */
+		bool active;
+		unsigned int mode;	/* 0 if constant, 1 if read from file */
+		double value;
+	} I;
 	struct PSMECA_L {	/* -L<pen> */
 		bool active;
 		struct GMT_PEN pen;
@@ -173,7 +178,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] [-A[+p<pen>][+s<size>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] %s[-L<pen>] [-M]\n", GMT_B_OPT, API->K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] [-I[<intens>]] %s[-L<pen>] [-M]\n", GMT_B_OPT, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fa[<size>[/<Psymbol>[<Tsymbol>]]] [-Fe<fill>] [-Fg<fill>] [-Fo] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] [-Fz[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] %s%s[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>]\n", API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT);
@@ -225,6 +230,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   r Draw box behind labels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   z Overlay zero trace moment tensor using default pen (see -W) or append outline pen.\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Set filling of compressive quadrants [Default is black].");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the compressive fill color (requires -C or -G).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no intensity is given we expect it to follow symbol size in the data record.\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Sets pen attribute for outline other than the default set by -W.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Same size for any magnitude. Size is given with -S.\n");
@@ -430,6 +437,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 					n_errors++;
 				}
 				break;
+			case 'I':	/* Adjust symbol color via intensity */
+				Ctrl->I.active = true;
+				if (opt->arg[0])
+					Ctrl->I.value = atof (opt->arg);
+				else
+					Ctrl->I.mode = 1;
+				break;
 			case 'L':	/* Draw outline [set outline attributes] */
 				Ctrl->L.active = true;
 				if (opt->arg[0] && gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
@@ -578,6 +592,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 	int i, n, form = 0, new_fmt;
 	int n_rec = 0, n_plane_old = 0, error;
 	int n_scanned = 0;
+	unsigned int icol;
 	bool transparence_old = false, not_defined = false;
 
 	double plot_x, plot_y, plot_xnew, plot_ynew, delaz, *in = NULL;
@@ -627,6 +642,9 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
+	else if (Ctrl->I.active && Ctrl->I.mode == 0) {
+		gmt_illuminate (GMT, Ctrl->I.value, Ctrl->G.fill.rgb);
+	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
@@ -639,6 +657,12 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 	if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	if (Ctrl->O2.active) Ctrl->S.n_cols--;	/* No depth */
+
+	if (Ctrl->I.mode) {	/* Read intensity from data file */
+		Ctrl->S.n_cols++;
+		icol = Ctrl->S.n_cols - 1;
+		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_FLOAT);
+	}
 
 	GMT_Set_Columns (API, GMT_IN, Ctrl->S.n_cols, GMT_COL_FIX);
 
@@ -682,7 +706,15 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 		if (new_fmt) {
 			depth = in[GMT_Z];
 			if (depth < Ctrl->D.depmin || depth > Ctrl->D.depmax) continue;
-			if (Ctrl->C.active) gmt_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
+			if (Ctrl->C.active) {
+				gmt_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
+				if (Ctrl->I.active) {
+					if (Ctrl->I.mode == 0)
+						gmt_illuminate (GMT, Ctrl->I.value, Ctrl->G.fill.rgb);
+					else
+						gmt_illuminate (GMT, in[icol], Ctrl->G.fill.rgb);
+				}
+			}
 		}
 
 		/* Must examine the trailing text for optional columns: newX, newY and title */
