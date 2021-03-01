@@ -23,6 +23,7 @@ Synopsis
 [ |-E|\ *fill*]
 [ |-F|\ *mode*\ [*args*] ]
 [ |-G|\ *fill*]
+[ |-I|\ [*intens*] ]
 [ |-K| ]
 [ |-L|\ [*pen*] ]
 [ |-M| ]
