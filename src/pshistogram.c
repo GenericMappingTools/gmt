@@ -1185,7 +1185,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	if (automatic) {	/* Set up s/n based on 'clever' rounding up of the minmax values */
 		GMT->common.R.active[RSET] = true;
-		F.wesn[YLO] = 0.0;
+		F.wesn[YLO] = (F.hist_type >= PSHISTOGRAM_LOG_COUNTS || GMT->current.proj.xyz_projection[GMT_Y] == GMT_LOG10) ? 1.0 : 0.0;
 		if (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval == 0.0) {
 			tmp = pow (10.0, floor (d_log10 (GMT, F.yy1)));
 			if ((F.yy1 / tmp) < 3.0) tmp *= 0.5;
