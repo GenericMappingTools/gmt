@@ -13,9 +13,9 @@ body {
     font-size: 1.05em;
 }
 
-h1, h2, h3, h4 {
-    font-weight: normal;
-    font-family: "Atkinson Hyperlegible", sans-serif;
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Atkinson Hyperlegible";
+	font-weight: "normal"
 }
 
 /* style for example gallery */
@@ -42,7 +42,7 @@ h1, h2, h3, h4 {
 /* Revert the old behavior of popups */
 .modalDialog {
 	position: fixed;
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: "Atkinson Hyperlegible", Arial, Helvetica, sans-serif;
 	top: 0;
 	right: 0;
 	bottom: 0;
