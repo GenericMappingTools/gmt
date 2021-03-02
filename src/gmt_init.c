@@ -2404,6 +2404,16 @@ bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 	return (false);
 }
 
+bool gmtinit_var_t_module (struct GMT_CTRL *GMT) {
+	/* Only modules psxy, psxyz, pstext, psmeca, and pscoupe can do variable transparency */
+	if (!strncmp (GMT->init.module_name, "psxyz",   5U)) return true;
+	if (!strncmp (GMT->init.module_name, "psxy",    4U)) return true;
+	if (!strncmp (GMT->init.module_name, "pstext",  6U)) return true;
+	if (!strncmp (GMT->init.module_name, "psmeca",  6U)) return true;
+	if (!strncmp (GMT->init.module_name, "pscoupe", 7U)) return true;
+	return false;	/* Anything else */
+}
+
 bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 	/* Parse -t[<filltransparency>[/<stroketransparency>]][+f][+s]
 	 * Note: The transparency is optional (read from file) only for plot, plot3d, and text */
@@ -2458,7 +2468,7 @@ bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 		}
 		GMT->common.t.active = true;
 	}
-	else if (!strncmp (GMT->init.module_name, "psxy", 4U) || !strncmp (GMT->init.module_name, "pstext", 6U)) {	/* Only modules psxy, psxyz, and pstext can do variable transparency */
+	else if (gmtinit_var_t_module (GMT)) {	/* Only some modules can do variable transparency */
 		GMT->common.t.active = GMT->common.t.variable = true;
 		GMT->common.t.n_transparencies = (nt) ? nt : 1;	/* If we gave -t+f+s then we need to read two transparencies, else just 1 */
 		if (GMT->common.t.mode== 0) GMT->common.t.mode = GMT_SET_FILL_TRANSP;	/* For these modules, plain -t means -t+f */
@@ -7402,6 +7412,16 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t-t Set the layer transparency from 0-100 [Default is 0; opaque].\n");
 			gmt_message (GMT, "\t   Requires conversion to PDF or raster formats.\n");
+			break;
+
+		case 'T':	/* Same -t but with extension for variable fill/stroke transparency option  */
+
+			gmt_message (GMT, "\t-t Set the layer transparency from 0-100 [Default is 0; opaque].\n");
+			gmt_message (GMT, "\t   Requires conversion to PDF or raster formats.\n");
+			gmt_message (GMT, "\t   For separate transparency for fill and stroke, append /<transp2> as well.\n");
+			gmt_message (GMT, "\t   For plotting symbols with variable transparency read from file, append no value\n");
+			gmt_message (GMT, "\t   and give the transparency as the last numerical value in the data record.\n");
+			gmt_message (GMT, "\t   Use the +f and +s modifiers to indicate which one or if we expect one or two transparencies.\n");
 			break;
 
 		case ':':	/* lon/lat [x/y] or lat/lon [y/x] */
