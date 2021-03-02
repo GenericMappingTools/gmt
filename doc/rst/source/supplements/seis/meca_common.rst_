@@ -29,19 +29,26 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
+**-A**\ [**+p**\ *pen*][**+s**\ *size*]
+    Offsets focal mechanisms to the alternate longitudes, latitudes given
+    in the last two columns of the input file before the (optional) text
+    string. We will draw a line connecting the original and relocated
+    beachball positions and optionally place a small circle at the original
+    location.  Use **+s**\ *size* to set the diameter of the circle [no circle].
+    The line pen defaults to that given via **-W** but can be overridden
+    by using **+p**\ *pen* [0.25p].
+
 .. _-B:
 
 .. include:: ../../explain_-B.rst_
 
 .. _-C:
 
-**-C**\ [*pen*][**+s**\ *size*]
-    Offsets focal mechanisms to the longitude, latitude specified in the
-    last two columns of the input file before the (optional) text
-    string. A small circle is plotted at the initial location and a line
-    connects the beachball to the circle. Specify *pen* and optionally append
-    **+s**\ *size* to change the line style and/or size of the circle.
-    [Defaults: *pen* as given by **-W**; *size* is 0].
+**-C**\ *cpt*
+    Give a CPT and let compressive part color be
+    determined by the z-value in the third column.
 
 .. _-D:
 
@@ -88,6 +95,14 @@ Optional Arguments
     Selects filling of focal mechanisms. By convention, the
     compressional quadrants of the focal mechanism beach balls are
     shaded. [Default is black].
+
+.. _-I:
+
+**-I**\ *intens*
+    Use the supplied *intens* value (nominally in the -1 to +1 range) to
+    modulate the compressional fill color by simulating illumination [none].
+    If no intensity is provided we will instead read *intens* from an extra
+    data column after the required input columns determined by **-S**.
 
 .. _-L:
 
@@ -139,18 +154,12 @@ Optional Arguments
 **-W**\ *pen*
     Set pen attributes for all lines and the outline of symbols
     [Defaults: default,black,solid]. This
-    setting applies to **-C**, **-L**, **-T**, **-Fp**, **-Ft**, and
+    setting applies to **-A**, **-L**, **-T**, **-Fp**, **-Ft**, and
     **-Fz**, unless overruled by options to those arguments.
 
 .. _-X:
 
 .. include:: ../../explain_-XY.rst_
-
-.. _-Z:
-
-**-Z**\ *cpt*
-    Give a CPT and let compressive part color be
-    determined by the z-value in the third column.
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_
@@ -166,7 +175,7 @@ Optional Arguments
 .. include:: ../../explain_perspective.rst_
 
 .. include:: ../../explain_-qi.rst_
-.. include:: ../../explain_-t.rst_
+.. include:: ../../explain_-tv_full.rst_
 .. include:: ../../explain_colon.rst_
 
 .. include:: ../../explain_help.rst_

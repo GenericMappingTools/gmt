@@ -44,24 +44,45 @@ Synopsis
 Description
 -----------
 
-**greenspline** uses the Green's function G(\ **x**; **x'**) for the
+**greenspline** uses the Green's function :math:`g(\mathbf{x}; \mathbf{x}')` for the
 chosen spline and geometry to interpolate data at regular [or arbitrary]
-output locations. Mathematically, the solution is composed as
-*w*\ (**x**) = sum {*c*\ (*i*) G(\ **x'**; **x**\ (*i*))}, for *i* = 1,
-*n*, the number of data points {**x**\ (*i*), *w*\ (*i*)}. Once the *n*
-coefficients *c*\ (*i*) have been found the sum can be evaluated at any
-output point **x**. Choose between minimum curvature, regularized, or
+output locations. Choose between minimum curvature, regularized, or
 continuous curvature splines in tension for either 1-D, 2-D, or 3-D
-Cartesian coordinates or spherical surface coordinates. After first
-removing a linear or planar trend (Cartesian geometries) or mean value
-(spherical surface) and normalizing these residuals, the least-squares
-matrix solution for the spline coefficients *c*\ (*i*) is found by
-solving the *n* by *n* linear system *w*\ (*j*) = sum-over-*i*
-{*c*\ (*i*) G(\ **x**\ (*j*); **x**\ (*i*))}, for *j* = 1, *n*; this
+Cartesian coordinates or spherical surface coordinates. Mathematically, the solution is composed as
+
+
+.. math::
+
+    w(\mathbf{x}) = T(\mathbf{x}) + \sum_{j=1}^{n} \alpha_j g(\mathbf{x}; \mathbf{x}'),
+
+where :math:`\mathbf{x}` is the output location, :math:`n` is the number of points,
+:math:`T(\mathbf{x})` is a trend function, and :math:`\alpha_j` are the *n*
+unknown weights we must solve for. Typically, :math:`T(\mathbf{x})` is a linear
+or planar trend (Cartesian geometries) or mean value (spherical surface) and a
+least-squares solution is determined and removed from the data, yielding data
+residuals (:math:`\Delta w_i = w_i - T(\mathbf{x}_i)`); these are then
+normalized for numerical stability. The unknown coefficients :math:`\alpha_j`
+are determined by requiring the solution to fit the observed residual data exactly:
+
+.. math::
+
+    \Delta w(\mathbf{x}_i) = \sum_{j=1}^{n} \alpha_j g(\mathbf{x}_i; \mathbf{x}_j), \quad i = 1,n
+
+
+yielding a :math:`n \times n` linear system to be solved for the coefficients.
+Finally, away from the data constraints the Green's function must satisfy
+
+.. math::
+
+    \nabla^2  \left [ \nabla^2 - p^2 \right ] g(\mathbf{x}; \mathbf{x}') = \delta (\mathbf{x} - \mathbf{x}'),
+
+
+where :math:`\nabla^2` is the Laplacian operator, :math:`\delta` is the
+Dirac Delta function, and :math:`p` is the tension (if desired). This
 solution yields an exact interpolation of the supplied data points.
 Alternatively, you may choose to perform a singular value decomposition
 (SVD) and eliminate the contribution from the smallest eigenvalues; this
-approach yields an approximate solution. Trends and scales are restored
+approach yields an approximate solution. Trends and normalization scales are restored
 when evaluating the output.
 
 Required Arguments
@@ -78,24 +99,25 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *gradfile*\ **+f**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5**
-    The solution will partly be constrained by surface gradients **v** =
-    *v*\ \*\ **n**, where *v* is the gradient magnitude and **n** its
-    unit vector direction. The gradient direction may be specified
-    either by Cartesian components (either unit vector **n** and
-    magnitude *v* separately or gradient components **v** directly) or
+    The solution will partly be constrained by surface gradients
+    :math:`\mathbf{v} = v \hat{\mathbf{n}}`, where :math:`v` is the gradient
+    magnitude and :math:`\hat{\mathbf{n}}` its unit vector direction.
+    The gradient direction may be specified either by Cartesian components
+    (either unit vector :math:`\hat{\mathbf{n}}` and magnitude :math:`v` separately
+    or gradient components :math:`\mathbf{v}` directly) or
     angles w.r.t. the coordinate axes. Append name of ASCII file with
     the surface gradients.  Use **+f** to select one of five input
     formats: **0**: For 1-D data there is no direction, just gradient
-    magnitude (slope) so the input format is *x*, *gradient*. Options
+    magnitude (slope) so the input format is *x*, :math:`v`. Options
     1-2 are for 2-D data sets: **1**: records contain *x*, *y*,
-    *azimuth*, *gradient* (*azimuth* in degrees is measured clockwise
+    *azimuth*, :math:`v` (*azimuth* in degrees is measured clockwise
     from the vertical (north) [Default]). **2**: records contain *x*,
-    *y*, *gradient*, *azimuth* (*azimuth* in degrees is measured
+    *y*, :math:`v`, *azimuth* (*azimuth* in degrees is measured
     clockwise from the vertical (north)). Options 3-5 are for either 2-D
-    or 3-D data: **3**: records contain **x**, *direction(s)*, *v*
+    or 3-D data: **3**: records contain **x**, *direction(s)*, :math:`v`
     (*direction(s)* in degrees are measured counter-clockwise from the
-    horizontal (and for 3-D the vertical axis). **4**: records contain
-    **x**, **v**. **5**: records contain **x**, **n**, *v*.
+    horizontal (and for 3-D the vertical axis)). **4**: records contain
+    **x**, :math:`\mathbf{v}`. **5**: records contain **x**, :math:`\hat{\mathbf{n}}`, :math:`v`.
 
 .. _-C:
 
@@ -220,7 +242,7 @@ Optional Arguments
     surface splines and both imply **-Z**\ 4: (**p**) Minimum
     curvature spline [*Parker*, 1994], (**q**) Continuous curvature
     spline in tension [*Wessel and Becker*, 2008]; append *tension*. The
-    G(\ **x'**; **x'**) for the last method is slower to compute (a series solution) so we
+    :math:`g(\mathbf{x}; \mathbf{x}')` for the last method is slower to compute (a series solution) so we
     pre-calculate values and use cubic spline interpolation lookup instead.
     Optionally append **+n**\ *N* (an odd integer) to change how many
     points to use in the spline setup [10001].  The finite Legendre sum has
@@ -398,12 +420,12 @@ Considerations
    double precision matrix for the Green function coefficients, where *n*
    is the number of data constraints. Hence, your computer's memory may
    place restrictions on how large data sets you can process with
-   **greenspline**. Pre-processing your data with doc:`blockmean`,
-   doc:`blockmedian`, or doc:`blockmode` is recommended to avoid aliasing and
+   **greenspline**. Pre-processing your data with :doc:`blockmean`,
+   :doc:`blockmedian`, or :doc:`blockmode` is recommended to avoid aliasing and
    may also control the size of *n*. For information, if *n* = 1024 then
    only 8 Mb memory is needed, but for *n* = 10240 we need 800 Mb. Note
    that **greenspline** is fully 64-bit compliant if compiled as such.
-   For spherical data you may consider decimating using doc:`gmtspatial`
+   For spherical data you may consider decimating using :doc:`gmtspatial`
    nearest neighbor reduction.
 
 #. The inversion for coefficients can become numerically unstable when

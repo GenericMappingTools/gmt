@@ -400,9 +400,10 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	static char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, var_token[4] = "$$%";
 	static char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
-	static char *mvfile[3] = {"mv -f", "mv -f", "move /Y"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
+	static char *mvfile[3] = {"mv -f", "mv -f", "move /Y"};
 	static char *createfile[3] = {"touch", "touch", "copy /b NUL"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	static char *cpconf[3] = {"\tcp -f %s .\n", "\tcp -f %s .\n", "\tcopy %s .\n"};
+	static char *sys_cmd_nowait[3] = {"bash", "csh", "start /B"}, *sys_cmd_wait[3] = {"bash", "csh", "cmd /C"};
 
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, tmpwpath[PATH_MAX] = {""};
@@ -488,9 +489,8 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		has_conf = true;
 		sprintf (conf_file, "%s/gmt.conf", topdir);
 		gmt_replace_backslash_in_path (conf_file);
-#ifdef WIN32	/* Make it suitable for DOS command line copying */
-		gmt_strrepc (conf_file, '/', '\\');
-#endif
+		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Make it suitable for DOS command line copying */
+			gmt_strrepc (conf_file, '/', '\\');
 	}
 
 	/* Create a working directory which will house every local file and all subdirectories created */
@@ -525,9 +525,8 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	/* Make a path to workdir that works on current architecture (for command line calls) */
 	strncpy (tmpwpath, workdir, PATH_MAX);
-#ifdef WIN32		/* On Windows to do remove a file in a subdir one need to use back slashes */
-	gmt_strrepc (tmpwpath, '/', '\\');
-#endif
+	if (Ctrl->In.mode == GMT_DOS_MODE)	/* On Windows to do remove a file in a subdir one need to use back slashes */
+		gmt_strrepc (tmpwpath, '/', '\\');
 
 	/* Create the initialization file with settings common to all jobs */
 
@@ -595,8 +594,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		}
 		fclose (Ctrl->S[BATCH_PREFLIGHT].fp);	/* Done reading the preflight script */
 		fclose (fp);	/* Done writing the temporary preflight script */
-#ifndef WIN32
-		/* Set executable bit if not on Windows */
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
 		if (chmod (pre_file, S_IRWXU)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to make preflight script %s executable - exiting.\n", pre_file);
 			fclose (Ctrl->In.fp);
@@ -604,10 +602,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		}
 #endif
 		/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as needed data files */
-		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
-			sprintf (cmd, "cmd /C %s", pre_file);
-		else
-			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], pre_file);
+		sprintf (cmd, "%s %s", sys_cmd_wait[Ctrl->In.mode], pre_file);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running preflight script %s returned error %d - exiting.\n", pre_file, error);
 			fclose (Ctrl->In.fp);
@@ -691,10 +686,8 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		}
 		fclose (fp);	/* Done writing the init script */
 	}
-
-#ifdef WIN32
-	gmt_strrepc (topdir, '/', '\\');	/* Temporarily make DOS compatible */
-#endif		
+	if (Ctrl->In.mode == GMT_DOS_MODE)
+		gmt_strrepc (topdir, '/', '\\');	/* Temporarily make DOS compatible */
 	n_to_run = (Ctrl->M.active) ? 1 : n_jobs;
 	GMT_Report (API, GMT_MSG_INFORMATION, "Number of main processing jobs: %d\n", n_to_run);
 	if (Ctrl->T.precision)	/* Precision was prescribed */
@@ -733,8 +726,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		fprintf (fp, "cd %s\n", tmpwpath);		/* cd back to the working directory */
 		fclose (Ctrl->S[BATCH_POSTFLIGHT].fp);	/* Done reading the postflight script */
 		fclose (fp);	/* Done writing the postflight script */
-#ifndef WIN32
-		/* Set executable bit if not Windows */
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
 		if (chmod (post_file, S_IRWXU)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to make postflight script %s executable - exiting\n", post_file);
 			fclose (Ctrl->In.fp);
@@ -831,12 +823,10 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	if (Ctrl->In.mode == GMT_DOS_MODE)	/* This is crucial to the "start /B ..." statement below to ensure the DOS process terminates */
 		fprintf (fp, "exit\n");
 	fclose (fp);	/* Done writing loop script */
-#ifdef WIN32
-	gmt_strrepc (topdir, '\\', '/');	/* Revert */
-#endif		
+	if (Ctrl->In.mode == GMT_DOS_MODE)
+		gmt_strrepc (topdir, '\\', '/');	/* Revert */
 
-#ifndef WIN32
-	/* Set executable bit if not Windows */
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
 	if (chmod (main_file, S_IRWXU)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", main_file);
 		Return (GMT_RUNTIME_ERROR);
@@ -857,11 +847,8 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], tmpwpath);
 	}
 	else {	/* Just delete the remaining script files */
-#ifdef WIN32		/* On Windows to do remove a file in a subdir one need to use back slashes */
-		char dir_sep_ = '\\';
-#else
-		char dir_sep_ = '/';
-#endif
+		/* On Windows to do remove a file in a subdir one need to use back slashes */
+		char dir_sep_ = (Ctrl->In.mode == GMT_DOS_MODE) ? '\\' : '/';
 		GMT_Report (API, GMT_MSG_INFORMATION, "%u job product sets saved in directory: %s\n", n_jobs, workdir);
 		if (Ctrl->S[BATCH_PREFLIGHT].active)	/* Remove the preflight script */
 			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep_, pre_file);
@@ -871,8 +858,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep_, main_file);	/* Delete the main script */
 	}
 	fclose (fp);
-#ifndef _WIN32
-	/* Set executable bit if not on Windows */
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
 	if (chmod (cleanup_file, S_IRWXU)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to make cleanup script %s executable - exiting\n", cleanup_file);
 		Return (GMT_RUNTIME_ERROR);
@@ -886,10 +872,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->M.active) {	/* Just run that one job */
-		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
-			sprintf (cmd, "cmd /C %s %s", main_file, state_tag);
-		else
-			sprintf (cmd, "%s %s %s", sc_call[Ctrl->In.mode], main_file, state_tag);
+		sprintf (cmd, "%s %s %s", sys_cmd_wait[Ctrl->In.mode], main_file, state_tag);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Run master script %s %s\n", main_file, state_tag);
 		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running master script %s for argument %s returned error %d - exiting.\n", main_file, state_tag, error);
@@ -911,12 +894,12 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	while (!done) {	/* Keep running jobs until all jobs have completed */
 		while (n_jobs_not_started && n_cores_unused) {	/* Launch new jobs if possible */
 #ifdef WIN32
-			if (Ctrl->In.mode < 2)	/* A bash or sh run from Windows. Need to call via "start" to get parallel */
-				sprintf (cmd, "start /B %s %s %*.*d", sc_call[Ctrl->In.mode], main_file, precision, precision, job);
+			if (Ctrl->In.mode < GMT_DOS_MODE)	/* A bash or csh run from Windows. Need to call via "start" to get parallel */
+				sprintf (cmd, "start /B %s %s %*.*d", sys_cmd_nowait[Ctrl->In.mode], main_file, precision, precision, job);
 			else						/* Running batch, so no need for the above trick */
-				sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], main_file, precision, precision, job);
+				sprintf (cmd, "%s %s %*.*d &", sys_cmd_nowait[Ctrl->In.mode], main_file, precision, precision, job);
 #else
-			sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], main_file, precision, precision, job);
+			sprintf (cmd, "%s %s %*.*d &", sys_cmd_nowait[Ctrl->In.mode], main_file, precision, precision, job);
 #endif
 
 			GMT_Report (API, GMT_MSG_DEBUG, "Launch script for job %*.*d\n", precision, precision, job);
@@ -954,10 +937,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S[BATCH_POSTFLIGHT].active) {
 		/* Run post-flight now since all processing has completed */
-		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
-			sprintf (cmd, "cmd /C %s", post_file);
-		else
-			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], post_file);
+		sprintf (cmd, "%s %s", sys_cmd_wait[Ctrl->In.mode], post_file);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Run postflight script %s\n", post_file);
 		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running postflight script %s returned error %d - exiting.\n", post_file, error);
@@ -971,7 +951,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		if (Ctrl->In.mode == GMT_DOS_MODE)
 			error = system (cleanup_file);
 		else {
-			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], cleanup_file);
+			sprintf (cmd, "%s %s", sys_cmd_nowait[Ctrl->In.mode], cleanup_file);
 			error = system (cmd);
 		}
 		if (error) {

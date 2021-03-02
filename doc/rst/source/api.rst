@@ -685,7 +685,7 @@ grid junk.nc in the current directory.  Plot it to see if it makes sense, e.g.
 
 .. code-block:: bash
 
-   gmt grdimage junk.nc > junk.ps
+   gmt grdimage junk.nc -Jx1:50 -Bafg > junk.ps
 
 If you intend to write applications that take any number of data files
 via the command line then there will be more book-keeping to deal with,
@@ -1360,12 +1360,19 @@ For vectors the same principles apply:
     int GMT_Put_Vector (void *API, struct GMT_VECTOR *V, unsigned int col,
 	unsigned int type, void *vector);
 
-where ``V`` is the :ref:`GMT_VECTOR <struct-vector>` created by GMT_Create_Data_, ``col`` is the vector
-column in question, ``type`` is one of the
-recognized data :ref:`types <tbl-types>` used for this vector, and ``vector`` is
-a pointer to this custom vector.  In addition, ``type`` may be also **GMT_DATETIME**, in which case
-we expect an array of strings with ISO datetime strings and we do the conversion to internal
-GMT time and allocate a vector to hold the result in the given ``col``.
+where ``V`` is the :ref:`GMT_VECTOR <struct-vector>` created by GMT_Create_Data_,
+``col`` is the vector column in question, ``type`` is one of the recognized data
+:ref:`types <tbl-types>` used for this vector, and ``vector`` is a pointer to the
+user's read-only custom vector.  In addition, ``type`` may also be  **GMT_TEXT**,
+in which case we expect an array of strings with numbers, longitudes, latitudes,
+or ISO datetime strings and we do the conversion to internal numerical values and
+allocate a vector to hold the result in the given ``col``.  By default that vector
+will be assigned to type **GMT_DOUBLE** but you can add another primary data type
+for the conversion if you prefer (e.g., **GMT_TEXT**\|\ **GMT_LONG** to get final 
+internal absolute time in integer seconds). For the special data type **GMT_TEXT** GMT
+allocates internal memory to hold the converted data and ``vector`` is not used
+any further.
+
 To extract a custom vector from an output :ref:`GMT_VECTOR <struct-vector>` you can use
 
 .. _GMT_Get_Vector:

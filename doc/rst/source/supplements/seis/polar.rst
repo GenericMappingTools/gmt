@@ -12,12 +12,14 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt polar** [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
+**gmt polar**
+[ *table* ]
+|-D|\ *lon/lat*
+|-J|\ *parameters*
 |SYN_OPT-R|
 |-M|\ *size*\ [**+m**\ *mag*]
 |-S|\ *<symbol><size>*
 [ |SYN_OPT-B| ]
-[ |-C|\ *lon*/*lat*\ [**+p**\ *pen*][**+s**\ *pointsize*] ]
 [ |-E|\ *fill* ]
 [ |-F|\ *fill* ]
 [ |-G|\ *fill* ]
@@ -58,7 +60,7 @@ Examples
 
 Use special format derived from HYPO71 output::
 
-    gmt polar -R239/240/34/35.2 -JM8c -N -Sc0.4 -D239.5/34.5 -M5 -Qh -pdf test <<END
+    gmt polar -R239/240/34/35.2 -JM8c -N -Sc0.4 -D239:30E/34:30N -M5 -Qh -pdf test <<END
     #Date Or. time stat azim ih
     910223 1 22 0481 11 147 ipu0
     910223 1 22 6185 247 120 ipd0

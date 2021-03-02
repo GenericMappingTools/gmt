@@ -517,6 +517,7 @@ GMT_LOCAL double grdseamount_poly_solver (double in[], double f, double v, bool 
 	double I1 = TWO_PI * (M_PI * sqrt(3.0) / 3.0 - 1.7);	/* I(1) definite integral */
 	double b = (1.0 - v) * (M_PI * f * f * poly_smt_func (f) - poly_smt_vol (f)) - v * I1;
 	double t = 0.0, phi = 0.0, lhs = 0.0, last_lhs;
+	gmt_M_unused (in);
 	while (lhs >= b) {
     	t += DELTA_PHI;
     	last_lhs = lhs;

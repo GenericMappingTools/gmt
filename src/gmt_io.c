@@ -925,12 +925,20 @@ GMT_LOCAL unsigned int gmtio_assign_aspatial_cols (struct GMT_CTRL *GMT) {
 	return (n);	/* Only numerical columns add to the count */
 }
 
+GMT_LOCAL unsigned int gmtio_type_index (unsigned int type) {
+	if (type == GMT_TEXT) return GMT_N_TYPES-2;
+	if (type == GMT_DATETIME) return GMT_N_TYPES-1;
+	return type;
+}
+
 /*! Fill a string with the aspatial columns */
 void gmt_list_aspatials (struct GMT_CTRL *GMT, char buffer[]) {
 	char item[GMT_LEN64] = {""};
+	unsigned int type;
 	sprintf (buffer, "Aspatial columns:");
 	for (unsigned int k = 0; k < GMT->common.a.n_aspatial; k++) {
-		sprintf (item, " %s[%s]", GMT->common.a.name[k], GMT_type[GMT->common.a.type[k]]);
+		type = gmtio_type_index (GMT->common.a.type[k]);
+		sprintf (item, " %s[%s]", GMT->common.a.name[k], GMT_type[type]);
 		strcat (buffer, item);
 	}
 }
@@ -3992,7 +4000,7 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
  * all the relevant information in the GMT->current.io struct (ncid, ndim, nrec, varid, add_offset,
  * scale_factor, missing_value). Some of these are allocated here, and have to be
  * deallocated upon gmt_fclose.
- * Also asigns GMT->current.io.col_type[GMT_IN] based on the variable attributes.
+ * Also assigns GMT->current.io.col_type[GMT_IN] based on the variable attributes.
  */
 
 	char file[PATH_MAX] = {""}, path[PATH_MAX] = {""};
@@ -4320,7 +4328,7 @@ int gmtlib_append_ogr_item (struct GMT_CTRL *GMT, char *name, enum GMT_enum_type
 //*! . */
 void gmtlib_write_ogr_header (FILE *fp, struct GMT_OGR *G) {
 	/* Write out table-level OGR/GMT header metadata */
-	unsigned int k, col;
+	unsigned int k, col, type;
 	char *flavor = "egpw";
 
 	fprintf (fp, "# @VGMT1.0 @G");
@@ -4335,8 +4343,12 @@ void gmtlib_write_ogr_header (FILE *fp, struct GMT_OGR *G) {
 	if (G->n_aspatial) {
 		fprintf (fp, "# @N%s", G->name[0]);
 		for (col = 1; col < G->n_aspatial; col++) fprintf (fp, "|%s", G->name[col]);
-		fprintf (fp, "\n# @T%s", GMT_type[G->type[0]]);
-		for (col = 1; col < G->n_aspatial; col++) fprintf (fp, "|%s", GMT_type[G->type[col]]);
+		type = gmtio_type_index (G->type[0]);
+		fprintf (fp, "\n# @T%s", GMT_type[type]);
+		for (col = 1; col < G->n_aspatial; col++) {
+			type = gmtio_type_index (G->type[col]);
+			fprintf (fp, "|%s", GMT_type[type]);
+		}
 		fprintf (fp, "\n");
 	}
 	fprintf (fp, "# FEATURE_DATA\n");
@@ -4601,7 +4613,7 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 					case GMT_IS_DIMENSION:	/* Convert to internal inches */
 						GMT->current.io.curr_rec[col_no] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 						break;
-					case GMT_IS_ABSTIME: GMT_IS_RELTIME:	/* Possibly convert to periodic time */
+					case GMT_IS_ABSTIME: case GMT_IS_RELTIME:	/* Possibly convert to periodic time */
 						if (GMT->current.io.cycle_operator && GMT->current.io.cycle_col == col_no)
 							gmtlib_modulo_time_calculator (GMT, &(GMT->current.io.curr_rec[col_no]));
 					default:	/* Nothing to do unless periodic */

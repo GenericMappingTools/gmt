@@ -239,8 +239,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	 */
 
 	unsigned int n_errors = 0, pos, n_col = 3, k = 0, id = 0;
-	char *c = NULL,*t_string = NULL;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
+	char *c = NULL, *t_string = NULL, txt_a[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
