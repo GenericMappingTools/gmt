@@ -439,7 +439,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fs<symbol><size>+f<font>+o<dx>/<dy>+j<justify>] [-G<fill>] [-I[<intens>]] %s[-L<pen>] [-M] [-N] %s%s\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q] [-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] \n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s]\n\t[%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s]\n\t[%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -506,8 +506,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If moment tensor is required, nodal planes overlay moment tensor.\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s]\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
-
-	GMT_Option (API, "X,c,di,e,h,i,p,qi,t,:,.");
+	GMT_Option (API, "X,c,di,e,h,i,p,qi,T,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -872,7 +871,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 	int n_rec = 0, n_plane_old = 0, form = 0, error;
 	int i, transparence_old = 0, not_defined = 0;
 	int n_scanned = 0;
-	unsigned int scol = 0, icol;
+	unsigned int scol = 0, icol = 0, tcol_f = 0, tcol_s = 0;
 	FILE *pnew = NULL, *pext = NULL;
 
 	double size, xy[2], xynew[2] = {0.0}, plot_x, plot_y, n_dep, distance, fault, depth;
@@ -955,6 +954,18 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 		Ctrl->S.n_cols++;
 		icol = Ctrl->S.n_cols - 1;
 		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_FLOAT);
+	}
+	if (GMT->common.t.variable) {	/* Need one or two transparencies from file */
+		if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {
+			Ctrl->S.n_cols++;	/* Read fill transparencies from data file */
+			tcol_f = Ctrl->S.n_cols - 1;
+			gmt_set_column_type (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
+		}
+		if (GMT->common.t.mode & GMT_SET_PEN_TRANSP) {
+			Ctrl->S.n_cols++;	/* Read stroke transparencies from data file */
+			tcol_s = Ctrl->S.n_cols - 1;
+			gmt_set_column_type (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
+		}
 	}
 
 	GMT_Set_Columns (API, GMT_IN, Ctrl->S.n_cols, GMT_COL_FIX);
@@ -1047,6 +1058,22 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 				else
 					gmt_illuminate (GMT, in[icol], Ctrl->G.fill.rgb);
 			}
+		}
+		if (GMT->common.t.variable) {	/* Update the transparency for current symbol (or -t was given) */
+			double transp[2] = {0.0, 0.0};	/* None selected */
+			if (GMT->common.t.n_transparencies == 2) {	/* Requested two separate values to be read from file */
+				transp[GMT_FILL_TRANSP] = 0.01 * in[tcol_f];
+				transp[GMT_PEN_TRANSP]  = 0.01 * in[tcol_s];
+			}
+			else if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {	/* Gave fill transparency */
+				transp[GMT_FILL_TRANSP] = 0.01 * in[tcol_f];
+				if (GMT->common.t.n_transparencies == 0) transp[GMT_PEN_TRANSP] = transp[GMT_FILL_TRANSP];	/* Implied to be used for stroke also */
+			}
+			else {	/* Gave stroke transparency */
+				transp[GMT_PEN_TRANSP] = 0.01 * in[tcol_s];
+				if (GMT->common.t.n_transparencies == 0) transp[GMT_FILL_TRANSP] = transp[GMT_PEN_TRANSP];	/* Implied to be used for fill also */
+			}
+			PSL_settransparencies (PSL, transp);
 		}
 
 		gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &plot_x, &plot_y);
@@ -1266,6 +1293,11 @@ Definition of scalar moment.
 			PSL_plottext (PSL, label_x, label_y, Ctrl->S.font.size, event_title, Ctrl->S.angle, label_justify, form);
 		}
 	} while (true);
+
+	if (GMT->common.t.variable) {	/* Reset the transparencies */
+		double transp[2] = {0.0, 0.0};	/* None selected */
+		PSL_settransparencies (PSL, transp);
+	}
 
 	if (!Ctrl->Q.active) {
 		fclose (pnew);
