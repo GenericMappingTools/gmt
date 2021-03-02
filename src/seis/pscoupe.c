@@ -92,10 +92,11 @@ struct PSCOUPE_CTRL {
 	struct PSCOUPE_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct PSCOUPE_S {	/* -S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] and -Fs */
+	struct PSCOUPE_S {	/* -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] and -Fs */
 		bool active;
 		bool zerotrace;
 		bool no_label;
+		bool read;	/* True if no scale given; must be first column after the required ones */
 		unsigned int readmode;
 		unsigned int plotmode;
 		unsigned int n_cols;
@@ -433,7 +434,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -A<params> %s %s -S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]]\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -A<params> %s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]]\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-E<fill>] [-Fa[<size>][/<Psymbol>[<Tsymbol>]] [-Fe<fill>] [-Fg<fill>] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fs<symbol><size>+f<font>+o<dx>/<dy>+j<justify>] [-G<fill>] [-I[<intens>]] %s[-L<pen>] [-M] [-N] %s%s\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q] [-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] \n", GMT_U_OPT, GMT_V_OPT);
@@ -471,6 +472,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth T_value T_azim T_plunge N_value N_azim N_plunge P_value P_azim P_plunge exp [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   z  Deviatoric part of the moment tensor (zero trace):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp [newX newY] [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <scale> is not given then it is read from the first column after the required columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add +a<angle>+f<font>+j<justify>+o<dx>[/<dy>] to change the label angle, font (size,fontname,color), justification and offset.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written; offset is from the limit of the beach ball.\n");
 	GMT_Option (API, "J-,R");
@@ -642,7 +644,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 						Ctrl->S.active = true;
 						Ctrl->S.symbol = opt->arg[1];
 						if ((strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) {
-							/* New syntax: -Fs<symbol><size>+f<font>+o<dx>/<dy>+j<justify> */
+							/* New syntax: -Fs<symbol>[<size>]+f<font>+o<dx>/<dy>+j<justify> */
 							char word[GMT_LEN256] = {""}, *c = NULL;
 
 							/* parse beachball size */
@@ -681,10 +683,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 							if (Ctrl->S.font.size < 0.0) Ctrl->S.no_label = true;
 							if (p) p[0] = '+';	/* Restore modifier */
 						}
-						if (gmt_M_is_zero (Ctrl->S.scale))
-							Ctrl->S.n_cols = 4;
-						else
-							Ctrl->S.n_cols = 3;
+						if (gmt_M_is_zero (Ctrl->S.scale)) Ctrl->S.read = true;	/* Must get size from input file */
 						break;
 					case 't':	/* Draw outline of T axis symbol [set outline attributes] */
 						Ctrl->T2.active = true;
@@ -815,6 +814,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 					if (Ctrl->S.font.size < 0.0) Ctrl->S.no_label = true;
 					if (p) p[0] = '+';	/* Restore modifier */
 				}
+				if (gmt_M_is_zero (Ctrl->S.scale)) Ctrl->S.read = true;	/* Must get size from input file */
 				break;
 
 			case 'T':
@@ -871,11 +871,11 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 	int n_rec = 0, n_plane_old = 0, form = 0, error;
 	int i, transparence_old = 0, not_defined = 0;
 	int n_scanned = 0;
-	unsigned int icol = 0, tcol_f = 0, tcol_s = 0;
+	unsigned int scol = 0, icol = 0, tcol_f = 0, tcol_s = 0;
 	FILE *pnew = NULL, *pext = NULL;
 
 	double size, xy[2], xynew[2] = {0.0}, plot_x, plot_y, n_dep, distance, fault, depth;
-	double P_x, P_y, T_x, T_y, *in = NULL;
+	double scale, P_x, P_y, T_x, T_y, *in = NULL;
 
 	char event_title[GMT_BUFSIZ] = {""}, Xstring[GMT_BUFSIZ] = {""}, Ystring[GMT_BUFSIZ] = {""};
 
@@ -942,6 +942,14 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 	gmt_setpen (GMT, &Ctrl->W.pen);
 	if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
+	if (Ctrl->S.read) {	/* Read symbol size from file */
+		Ctrl->S.n_cols++;
+		scol = Ctrl->S.n_cols - 1;
+		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_DIMENSION);
+	}
+	else	/* Fixed scale */
+		scale = Ctrl->S.scale;
+
 	if (Ctrl->I.mode) {	/* Read intensity from data file */
 		Ctrl->S.n_cols++;
 		icol = Ctrl->S.n_cols - 1;
@@ -996,7 +1004,8 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 		in = In->data;
 		n_rec++;
-		size = Ctrl->S.scale;
+		if (Ctrl->S.read) scale = in[scol];
+		size = scale;
 
 		/* Must examine the trailing text for optional columns: newX, newY and title */
 		/* newX and newY are not used in pscoupe, but we promised psmeca and pscoupe can use the same input file */
@@ -1192,7 +1201,7 @@ Definition of scalar moment.
 				moment.exponent = 23;
 			}
 
-			size = (meca_computed_mw (moment, meca.magms) / 5.0) * Ctrl->S.scale;
+			size = (meca_computed_mw (moment, meca.magms) / 5.0) * scale;
 
 			if (!Ctrl->Q.active) fprintf (pext, "%s\n", In->text);
 			if (Ctrl->S.readmode == READ_AXIS) {
