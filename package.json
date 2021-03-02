@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "build:docs": "curl https://raw.githubusercontent.com/GenericMappingTools/gmt/vercel-deployment/ci/vercel-docs.sh | bash",
+    "build": "npm run build:docs"
+  }
+}
