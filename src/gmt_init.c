@@ -7414,6 +7414,16 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   Requires conversion to PDF or raster formats.\n");
 			break;
 
+		case 'T':	/* Same -t but with extension for variable fill/stroke transparency option  */
+
+			gmt_message (GMT, "\t-t Set the layer transparency from 0-100 [Default is 0; opaque].\n");
+			gmt_message (GMT, "\t   Requires conversion to PDF or raster formats.\n");
+			gmt_message (GMT, "\t   For separate transparency for fill and stroke, append /<transp2> as well.\n");
+			gmt_message (GMT, "\t   For plotting symbols with variable transparency read from file, append no value\n");
+			gmt_message (GMT, "\t   and give the transparency as the last numerical value in the data record.\n");
+			gmt_message (GMT, "\t   Use the +f and +s modifiers to indicate which one or if we expect one or two transparencies.\n");
+			break;
+
 		case ':':	/* lon/lat [x/y] or lat/lon [y/x] */
 
 			gmt_message (GMT, "\t-: Swap 1st and 2nd column on input and/or output [%s/%s].\n",

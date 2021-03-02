@@ -245,12 +245,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If moment tensor is required, nodal planes overlay moment tensor.\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
-	GMT_Option (API, "X,c,di,e,h,i,p,qi,t");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For separate transparency for fill and stroke, append /<transp2> as well.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For plotting symbols with variable transparency read from file, append no value\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and give the transparency as the last numerical value in the data record.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use the +f and +s modifiers to indicate which one or if we expect one or two transparencies.\n");
-	GMT_Option (API, ":,.");
+	GMT_Option (API, "X,c,di,e,h,i,p,qi,T,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
