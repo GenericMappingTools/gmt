@@ -685,7 +685,7 @@ grid junk.nc in the current directory.  Plot it to see if it makes sense, e.g.
 
 .. code-block:: bash
 
-   gmt grdimage junk.nc > junk.ps
+   gmt grdimage junk.nc -Jx1:50 -Bafg > junk.ps
 
 If you intend to write applications that take any number of data files
 via the command line then there will be more book-keeping to deal with,

@@ -70,6 +70,11 @@ struct PSMECA_CTRL {
 		bool active;
 		struct GMT_FILL fill;
 	} G;
+	struct PSMECA_I {	/* -I[<intensity>] */
+		bool active;
+		unsigned int mode;	/* 0 if constant, 1 if read from file */
+		double value;
+	} I;
 	struct PSMECA_L {	/* -L<pen> */
 		bool active;
 		struct GMT_PEN pen;
@@ -80,9 +85,10 @@ struct PSMECA_CTRL {
 	struct PSMECA_N {	/* -N */
 		bool active;
 	} N;
-	struct PSMECA_S {	/* -S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] */
+	struct PSMECA_S {	/* -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] */
 		bool active;
 		bool no_label;
+		bool read;	/* True if no scale given; must be first column after the required ones */
 		unsigned int readmode;
 		unsigned int plotmode;
 		unsigned int n_cols;
@@ -173,11 +179,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] [-A[+p<pen>][+s<size>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] %s[-L<pen>] [-M]\n", GMT_B_OPT, API->K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] [-I[<intens>]] %s[-L<pen>] [-M]\n", GMT_B_OPT, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fa[<size>[/<Psymbol>[<Tsymbol>]]] [-Fe<fill>] [-Fg<fill>] [-Fo] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] [-Fz[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] %s%s[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>]\n", API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s]\n\t[%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s]\n\t[%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -205,6 +211,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   z  Deviatoric part of the moment tensor (zero trace):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Fo option for old (psvelomeca) format (no depth in third column).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <scale> is not given then it is read from the first column after the required columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add +a<angle>+f<font>+j<justify>+o<dx>[/<dy>] to change the label angle, font (size,fontname,color), justification and offset.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written; offset is from the limit of the beach ball.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -225,6 +232,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   r Draw box behind labels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   z Overlay zero trace moment tensor using default pen (see -W) or append outline pen.\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Set filling of compressive quadrants [Default is black].");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the compressive fill color (requires -C or -G).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no intensity is given we expect it to follow the required columns in the data record.\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Sets pen attribute for outline other than the default set by -W.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Same size for any magnitude. Size is given with -S.\n");
@@ -238,7 +247,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If moment tensor is required, nodal planes overlay moment tensor.\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
-	GMT_Option (API, "X,c,di,e,h,i,p,qi,t,:,.");
+	GMT_Option (API, "X,c,di,e,h,i,p,qi,T,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -430,6 +439,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 					n_errors++;
 				}
 				break;
+			case 'I':	/* Adjust symbol color via intensity */
+				Ctrl->I.active = true;
+				if (opt->arg[0])
+					Ctrl->I.value = atof (opt->arg);
+				else
+					Ctrl->I.mode = 1;
+				break;
 			case 'L':	/* Draw outline [set outline attributes] */
 				Ctrl->L.active = true;
 				if (opt->arg[0] && gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
@@ -523,6 +539,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 					if (Ctrl->S.font.size < 0.0) Ctrl->S.no_label = true;
 					if (p) p[0] = '+';	/* Restore modifier */
 				}
+				if (gmt_M_is_zero (Ctrl->S.scale)) Ctrl->S.read = true;	/* Must get size from input file */
 				break;
 			case 'T':
 				Ctrl->T.active = true;
@@ -550,7 +567,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 	/* Check that the options selected are mutually consistent */
 	n_errors += gmt_M_check_condition(GMT, !Ctrl->S.active, "Must specify -S option\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.scale <= 0.0, "Option -S: must specify scale\n");
+	//n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.scale <= 0.0, "Option -S: must specify scale\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->O2.active, "Option -Z cannot be combined with -Fo\n");
 
 	/* Set to default pen where needed */
@@ -578,11 +595,12 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 	int i, n, form = 0, new_fmt;
 	int n_rec = 0, n_plane_old = 0, error;
 	int n_scanned = 0;
+	unsigned int scol = 0, icol = 0, tcol_f = 0, tcol_s = 0;
 	bool transparence_old = false, not_defined = false;
 
 	double plot_x, plot_y, plot_xnew, plot_ynew, delaz, *in = NULL;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, xynew[2] = {0.0};
-	double fault, depth, size, P_x, P_y, T_x, T_y;
+	double scale, fault, depth, size, P_x, P_y, T_x, T_y;
 
 	char string[GMT_BUFSIZ] = {""}, Xstring[GMT_BUFSIZ] = {""}, Ystring[GMT_BUFSIZ] = {""}, event_title[GMT_BUFSIZ] = {""};
 
@@ -627,6 +645,9 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
+	else if (Ctrl->I.active && Ctrl->I.mode == 0) {
+		gmt_illuminate (GMT, Ctrl->I.value, Ctrl->G.fill.rgb);
+	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
@@ -639,6 +660,31 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 	if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	if (Ctrl->O2.active) Ctrl->S.n_cols--;	/* No depth */
+
+	if (Ctrl->S.read) {	/* Read symbol size from file */
+		Ctrl->S.n_cols++;
+		scol = Ctrl->S.n_cols - 1;
+		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_DIMENSION);
+	}
+	else	/* Fixed scale */
+		scale = Ctrl->S.scale;
+	if (Ctrl->I.mode) {	/* Read intensity from data file */
+		Ctrl->S.n_cols++;
+		icol = Ctrl->S.n_cols - 1;
+		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_FLOAT);
+	}
+	if (GMT->common.t.variable) {	/* Need one or two transparencies from file */
+		if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {
+			Ctrl->S.n_cols++;	/* Read fill transparencies from data file */
+			tcol_f = Ctrl->S.n_cols - 1;
+			gmt_set_column_type (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
+		}
+		if (GMT->common.t.mode & GMT_SET_PEN_TRANSP) {
+			Ctrl->S.n_cols++;	/* Read stroke transparencies from data file */
+			tcol_s = Ctrl->S.n_cols - 1;
+			gmt_set_column_type (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
+		}
+	}
 
 	GMT_Set_Columns (API, GMT_IN, Ctrl->S.n_cols, GMT_COL_FIX);
 
@@ -682,7 +728,31 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 		if (new_fmt) {
 			depth = in[GMT_Z];
 			if (depth < Ctrl->D.depmin || depth > Ctrl->D.depmax) continue;
-			if (Ctrl->C.active) gmt_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
+			if (Ctrl->C.active) {
+				gmt_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
+				if (Ctrl->I.active) {
+					if (Ctrl->I.mode == 0)
+						gmt_illuminate (GMT, Ctrl->I.value, Ctrl->G.fill.rgb);
+					else
+						gmt_illuminate (GMT, in[icol], Ctrl->G.fill.rgb);
+				}
+			}
+		}
+		if (GMT->common.t.variable) {	/* Update the transparency for current symbol (or -t was given) */
+			double transp[2] = {0.0, 0.0};	/* None selected */
+			if (GMT->common.t.n_transparencies == 2) {	/* Requested two separate values to be read from file */
+				transp[GMT_FILL_TRANSP] = 0.01 * in[tcol_f];
+				transp[GMT_PEN_TRANSP]  = 0.01 * in[tcol_s];
+			}
+			else if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {	/* Gave fill transparency */
+				transp[GMT_FILL_TRANSP] = 0.01 * in[tcol_f];
+				if (GMT->common.t.n_transparencies == 0) transp[GMT_PEN_TRANSP] = transp[GMT_FILL_TRANSP];	/* Implied to be used for stroke also */
+			}
+			else {	/* Gave stroke transparency */
+				transp[GMT_PEN_TRANSP] = 0.01 * in[tcol_s];
+				if (GMT->common.t.n_transparencies == 0) transp[GMT_FILL_TRANSP] = transp[GMT_PEN_TRANSP];	/* Implied to be used for fill also */
+			}
+			PSL_settransparencies (PSL, transp);
 		}
 
 		/* Must examine the trailing text for optional columns: newX, newY and title */
@@ -843,9 +913,10 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 			meca.moment.exponent = 23;
 		}
 
+		if (Ctrl->S.read) scale = in[scol];
 		moment.mant = meca.moment.mant;
 		moment.exponent = meca.moment.exponent;
-		size = (meca_computed_mw(moment, meca.magms) / 5.0) * Ctrl->S.scale;
+		size = (meca_computed_mw(moment, meca.magms) / 5.0) * scale;
 
 		if (size < 0.0) {	/* Addressing Bug #1171 */
 			GMT_Report (API, GMT_MSG_WARNING, "Skipping negative symbol size %g for record # %d.\n", size, n_rec);
@@ -936,6 +1007,11 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
+	}
+
+	if (GMT->common.t.variable) {	/* Reset the transparencies */
+		double transp[2] = {0.0, 0.0};	/* None selected */
+		PSL_settransparencies (PSL, transp);
 	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Number of records read: %li\n", n_rec);

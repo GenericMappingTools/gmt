@@ -96,6 +96,14 @@ Optional Arguments
     compressional quadrants of the focal mechanism beach balls are
     shaded. [Default is black].
 
+.. _-I:
+
+**-I**\ *intens*
+    Use the supplied *intens* value (nominally in the -1 to +1 range) to
+    modulate the compressional fill color by simulating illumination [none].
+    If no intensity is provided we will instead read *intens* from an extra
+    data column after the required input columns determined by **-S**.
+
 .. _-L:
 
 **-L**\ [*pen*]
@@ -146,7 +154,7 @@ Optional Arguments
 **-W**\ *pen*
     Set pen attributes for all lines and the outline of symbols
     [Defaults: default,black,solid]. This
-    setting applies to **-C**, **-L**, **-T**, **-Fp**, **-Ft**, and
+    setting applies to **-A**, **-L**, **-T**, **-Fp**, **-Ft**, and
     **-Fz**, unless overruled by options to those arguments.
 
 .. _-X:
@@ -167,7 +175,7 @@ Optional Arguments
 .. include:: ../../explain_perspective.rst_
 
 .. include:: ../../explain_-qi.rst_
-.. include:: ../../explain_-t.rst_
+.. include:: ../../explain_-tv_full.rst_
 .. include:: ../../explain_colon.rst_
 
 .. include:: ../../explain_help.rst_

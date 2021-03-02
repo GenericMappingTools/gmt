@@ -63,7 +63,11 @@ EOF
 # 5. Build and install GMT
 mkdir build
 cd build
-cmake ..
+if command -v ninja >/dev/null 2>&1 ; then
+	cmake .. -G Ninja
+else
+	cmake ..
+fi
 cmake --build .
 cmake --build . --target install
 

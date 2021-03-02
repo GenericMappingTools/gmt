@@ -15,7 +15,7 @@ Synopsis
 **gmt psmeca** [ *table* ]
 |-J|\ *parameters*
 |SYN_OPT-R|
-|-S|\ *<format><scale>*\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+|-S|\ *format*\ [*scale*]\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 [ |-A|\ [**+p**\ *pen*][**+s**\ *size*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt*]
@@ -23,6 +23,7 @@ Synopsis
 [ |-E|\ *fill*]
 [ |-F|\ *mode*\ [*args*] ]
 [ |-G|\ *fill*]
+[ |-I|\ [*intens*] ]
 [ |-K| ]
 [ |-L|\ [*pen*] ]
 [ |-M| ]
@@ -41,7 +42,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
-[ |SYN_OPT-t| ]
+[ |SYN_OPT-tv| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
