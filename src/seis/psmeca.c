@@ -85,9 +85,10 @@ struct PSMECA_CTRL {
 	struct PSMECA_N {	/* -N */
 		bool active;
 	} N;
-	struct PSMECA_S {	/* -S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] */
+	struct PSMECA_S {	/* -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] */
 		bool active;
 		bool no_label;
+		bool read;	/* True if no scale given; must be first column after the required ones */
 		unsigned int readmode;
 		unsigned int plotmode;
 		unsigned int n_cols;
@@ -210,6 +211,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   z  Deviatoric part of the moment tensor (zero trace):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp [newX newY] [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Fo option for old (psvelomeca) format (no depth in third column).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <scale> is not given then it is read from the first column after the required columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add +a<angle>+f<font>+j<justify>+o<dx>[/<dy>] to change the label angle, font (size,fontname,color), justification and offset.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written; offset is from the limit of the beach ball.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -537,6 +539,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 					if (Ctrl->S.font.size < 0.0) Ctrl->S.no_label = true;
 					if (p) p[0] = '+';	/* Restore modifier */
 				}
+				if (gmt_M_is_zero (Ctrl->S.scale)) Ctrl->S.read = true;	/* Must get size from input file */
 				break;
 			case 'T':
 				Ctrl->T.active = true;
@@ -564,7 +567,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 	/* Check that the options selected are mutually consistent */
 	n_errors += gmt_M_check_condition(GMT, !Ctrl->S.active, "Must specify -S option\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.scale <= 0.0, "Option -S: must specify scale\n");
+	//n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.scale <= 0.0, "Option -S: must specify scale\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->O2.active, "Option -Z cannot be combined with -Fo\n");
 
 	/* Set to default pen where needed */
@@ -592,12 +595,12 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 	int i, n, form = 0, new_fmt;
 	int n_rec = 0, n_plane_old = 0, error;
 	int n_scanned = 0;
-	unsigned int icol = 0, tcol_f = 0, tcol_s = 0;
+	unsigned int scol = 0, icol = 0, tcol_f = 0, tcol_s = 0;
 	bool transparence_old = false, not_defined = false;
 
 	double plot_x, plot_y, plot_xnew, plot_ynew, delaz, *in = NULL;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, xynew[2] = {0.0};
-	double fault, depth, size, P_x, P_y, T_x, T_y;
+	double scale, fault, depth, size, P_x, P_y, T_x, T_y;
 
 	char string[GMT_BUFSIZ] = {""}, Xstring[GMT_BUFSIZ] = {""}, Ystring[GMT_BUFSIZ] = {""}, event_title[GMT_BUFSIZ] = {""};
 
@@ -658,6 +661,13 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	if (Ctrl->O2.active) Ctrl->S.n_cols--;	/* No depth */
 
+	if (Ctrl->S.read) {	/* Read symbol size from file */
+		Ctrl->S.n_cols++;
+		scol = Ctrl->S.n_cols - 1;
+		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_DIMENSION);
+	}
+	else	/* Fixed scale */
+		scale = Ctrl->S.scale;
 	if (Ctrl->I.mode) {	/* Read intensity from data file */
 		Ctrl->S.n_cols++;
 		icol = Ctrl->S.n_cols - 1;
@@ -903,9 +913,10 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 			meca.moment.exponent = 23;
 		}
 
+		if (Ctrl->S.read) scale = in[scol];
 		moment.mant = meca.moment.mant;
 		moment.exponent = meca.moment.exponent;
-		size = (meca_computed_mw(moment, meca.magms) / 5.0) * Ctrl->S.scale;
+		size = (meca_computed_mw(moment, meca.magms) / 5.0) * scale;
 
 		if (size < 0.0) {	/* Addressing Bug #1171 */
 			GMT_Report (API, GMT_MSG_WARNING, "Skipping negative symbol size %g for record # %d.\n", size, n_rec);

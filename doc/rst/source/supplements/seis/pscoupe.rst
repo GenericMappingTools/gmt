@@ -14,7 +14,7 @@ Synopsis
 
 **gmt pscoupe** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-R| |-A|\ *parameters*
-|-S|\ *<format><scale>*\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+|-S|\ *format*\ [*scale*]\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-E|\ *fill* ]
