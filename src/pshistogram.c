@@ -1016,6 +1016,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			tmp = GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval;
 		F.wesn[XLO] = floor (x_min / tmp) * tmp;
 		F.wesn[XHI] = ceil  (x_max / tmp) * tmp;
+		if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10) F.wesn[XLO] = 1.0;	/* To avoid any log10 of zero issues */
 		if (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval == 0.0) {
 			GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval = GMT->current.map.frame.axis[GMT_X].item[GMT_TICK_UPPER].interval = tmp;
 			GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].parent = 0;
