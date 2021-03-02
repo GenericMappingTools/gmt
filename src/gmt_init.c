@@ -2405,7 +2405,7 @@ bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 }
 
 bool gmtinit_var_t_module (struct GMT_CTRL *GMT) {
-	/* Only modules psxy, psxyz, pstext, meca, and coupe can do variable transparency */
+	/* Only modules psxy, psxyz, pstext, psmeca, and pscoupe can do variable transparency */
 	if (!strncmp (GMT->init.module_name, "psxyz",   5U)) return true;
 	if (!strncmp (GMT->init.module_name, "psxy",    4U)) return true;
 	if (!strncmp (GMT->init.module_name, "pstext",  6U)) return true;
