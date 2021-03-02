@@ -247,14 +247,14 @@ FORMAT Parameters
         coordinate is to be plotted. This template is then used to guide the
         plotting of geographical coordinates in data fields. See
         :term:`FORMAT_GEO_OUT` for details. In addition, you can append **A**
-        which plots the absolute value of the coordinate [default is **ddd:mm:ss**]. Not all items may be plotted as this depends on the
-        annotation interval.
+        which plots the absolute value of the coordinate [default is **ddd:mm:ss**]. 
+        Not all items may be plotted as this depends on the annotation interval.
 
     **FORMAT_GEO_OUT**
         Formatting template that indicates how an output geographical
         coordinate is to be formatted. This template is then used to guide
         the writing of geographical coordinates in data fields. The template
-        is in general of the form **[±]D** or **[±]ddd[:mm[:ss]][.xxx]** [default is **F**].
+        is in general of the form **[±]D** or **[±]ddd[:mm[:ss]][.xxx]** [default is **D**].
         By default, longitudes will be reported in the range [-180,180]. The
         various terms have the following purpose:
 
@@ -276,12 +276,12 @@ FORMAT Parameters
     **FORMAT_FLOAT_MAP**
         Format (C language printf syntax) to be used when plotting double
         precision floating point numbers along plot frames and contours.
-        For geographic coordinates, see :term:`FORMAT_GEO_MAP`. [default is **%.12lg**].
+        For geographic coordinates, see :term:`FORMAT_GEO_MAP`. [default is **%.12g**].
 
     **FORMAT_FLOAT_OUT**
         Format (C language printf syntax) to be used when printing double
         precision floating point numbers to output files. For geographic
-        coordinates, see :term:`FORMAT_GEO_OUT`. [default is **%.12lg**]. To give some
+        coordinates, see :term:`FORMAT_GEO_OUT`. [default is **%.12g**]. To give some
         columns a separate format, supply one or more comma-separated
         *cols*:*format* specifications, where *cols* can be specific columns
         (e.g., 5 for 6th since 0 is the first) or a range of columns (e.g.,
@@ -647,7 +647,7 @@ MAP Parameters
         to draw the axis only, but not annotate.   To *just* draw an axis
         without annotation and ticks you can use the **l**\ (eft), **r**\ (ight),
         **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes. Add an
-        optional **+b** to draw a cube of axes in perspective view. [default is **WESN**].
+        optional **+b** to draw a cube of axes in perspective view. [default is **WESNZ**].
 
     **MAP_FRAME_PEN**
         Pen attributes used to draw plain map frame [default is **thicker,black**].

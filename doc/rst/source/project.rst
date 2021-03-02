@@ -20,7 +20,7 @@ Synopsis
 [ |-T|\ *px*/*py* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *w\_min*/*w\_max* ]
-[ |-Z|\ *major*/*minor*/*azimuth*\ [**+e**] ]
+[ |-Z|\ *major*/*minor*/*azimuth*\ [**+e**\|\ **n**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -203,15 +203,18 @@ Optional Arguments
     Width controls. Project only those points whose *q* coordinate is
     within *w\_min* < *q* < *w\_max*.
 
-**-Z**\ *major*/*minor*/*azimuth*\ [**+e**]
+**-Z**\ *major*/*minor*/*azimuth*\ [**+e**\|\ **n**]
     Used in conjunction with **-C** (sets its center) and **-G** (sets the
     distance increment) to create the coordinates of an ellipse
     with *major* and *minor* axes given in km (unless **-N** is given for a
     Cartesian ellipse) and the *azimuth* of the major axis in degrees.
     Append **+e** to adjust the increment set via **-G** so that the the ellipse
     has equal distance increments [Default uses the given increment and closes
-    the ellipse].  For degenerate ellipses you can just supply a single *diameter*
-    instead.  **Note**: For the Cartesian ellipse (which requires **-N**), we
+    the ellipse].  Instead, append **+n** to set a specific number of unique equidistant
+    points via **-G**. For degenerate ellipses you can just supply a single *diameter*
+    instead.  A geographic diameter may be specified in any desired unit other than km [Default]
+    by appending the unit (e.g., 3d for degrees); if so we assume the increment is also given in
+    the same unit (see `Units`_).  **Note**: For the Cartesian ellipse (which requires **-N**), we
     expect *direction* counter-clockwise from the horizontal instead of an *azimuth*.
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
@@ -244,6 +247,8 @@ Optional Arguments
 .. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
+
+.. include:: explain_distunits.rst_
 
 .. include:: explain_help.rst_
 

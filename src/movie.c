@@ -1224,22 +1224,17 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	bool done = false, layers = false, one_frame = false, upper_case[2] = {false, false}, has_conf = false;
 	bool n_written = false, has_text = false, is_classic = false, place_background = false;
 
-	static char *movie_raster_format[2] = {"png", "PNG"}, *img_type[2] = {"opaque", "transparent"};
+	static char *movie_raster_format[2] = {"png", "PNG"}, *img_type[2] = {"opaque", "transparent"}, var_token[4] = "$$%";
 	static char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	static char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
-	static char *mvfile[3] = {"mv -f", "mv -f", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"}, var_token[4] = "$$%";
-	static char *cpconf[3] = {"\tcp -f %s .\n", "\tcp -f %s .\n", "\tcopy %s .\n"};
+	static char *mvfile[3] = {"mv -f", "mv -f", "move"}, *cpconf[3] = {"\tcp -f %s .\n", "\tcp -f %s .\n", "\tcopy %s .\n"};
+	static char *sys_cmd_nowait[3] = {"bash", "csh", "start /B"}, *sys_cmd_wait[3] = {"bash", "csh", "cmd /C"};
 
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
 	char string[GMT_LEN128] = {""}, extra[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
 	char png_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {""};
-	char intro_file[PATH_MAX] = {""}, conf_file[PATH_MAX], tmpwpath[PATH_MAX] = {""}, *script_file =  NULL, which[2] = {"LP"}, spacer;
-#ifdef WIN32		/* On Windows to do remove a file in a subdir one need to use back slashes */
-	char dir_sep = '\\';
-#else
-	char dir_sep = '/';
-#endif
+	char intro_file[PATH_MAX] = {""}, conf_file[PATH_MAX], tmpwpath[PATH_MAX] = {""}, *script_file =  NULL, which[2] = {"LP"}, spacer, dir_sep;
 
 	double percent = 0.0, L_col = 0, sx, sy, fade_level = 0.0;
 
@@ -1269,6 +1264,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the movie main code ----------------------------*/
+
+	dir_sep = (Ctrl->In.mode == GMT_DOS_MODE) ? '\\' : '/';		/* On Windows to do remove a file in a subdir one need to use back slashes */
 
 	if (Ctrl->F.transparent) GMT_Report (API, GMT_MSG_WARNING, "Building transparent PNG images is an experimental feature\n");
 	/* Determine pixel dimensions of individual images */
@@ -1429,9 +1426,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		has_conf = true;
 		sprintf (conf_file, "%s/gmt.conf", topdir);
 		gmt_replace_backslash_in_path (conf_file);
-#ifdef WIN32	/* Make it suitable for DOS command line copying */
-		gmt_strrepc (conf_file, '/', '\\');
-#endif
+		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Make it suitable for DOS command line copying */
+			gmt_strrepc (conf_file, '/', '\\');
 	}
 
 	/* Create a working directory which will house every local file and all subdirectories created */
@@ -1466,9 +1462,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	/* Make a path to workdir that works on current architecture (for command line calls) */
 	strncpy (tmpwpath, workdir, PATH_MAX);
-#ifdef WIN32		/* On Windows to do remove a file in a subdir one need to use back slashes */
-	gmt_strrepc (tmpwpath, '/', '\\');
-#endif
+	if (Ctrl->In.mode == GMT_DOS_MODE)		/* On Windows to do remove a file in a subdir one need to use back slashes */
+		gmt_strrepc (tmpwpath, '/', '\\');
 
 	/* Create the initialization file with settings common to all frames */
 
@@ -1548,19 +1543,15 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			}
 			fclose (Ctrl->S[MOVIE_PREFLIGHT].fp);	/* Done reading the foreground script */
 			fclose (fp);	/* Done writing the preflight script */
-	#ifndef WIN32
-			/* Set executable bit if not on Windows */
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
 			if (chmod (pre_file, S_IRWXU)) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to make preflight script %s executable - exiting.\n", pre_file);
 				fclose (Ctrl->In.fp);
 				Return (GMT_RUNTIME_ERROR);
 			}
-	#endif
+#endif
 			/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as a background plot */
-			if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
-				sprintf (cmd, "cmd /C %s", pre_file);
-			else
-				sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], pre_file);
+			sprintf (cmd, "%s %s", sys_cmd_wait[Ctrl->In.mode], pre_file);
 			if ((error = system (cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Running preflight script %s returned error %d - exiting.\n", pre_file, error);
 				fclose (Ctrl->In.fp);
@@ -1703,19 +1694,15 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			}
 			fclose (Ctrl->S[MOVIE_POSTFLIGHT].fp);	/* Done reading the foreground script */
 			fclose (fp);	/* Done writing the postflight script */
-	#ifndef WIN32
-			/* Set executable bit if not Windows */
-			if (chmod (post_file, S_IRWXU)) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to make postflight script %s executable - exiting\n", post_file);
-				fclose (Ctrl->In.fp);
-				Return (GMT_RUNTIME_ERROR);
-			}
-	#endif
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
+				if (chmod (post_file, S_IRWXU)) {
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to make postflight script %s executable - exiting\n", post_file);
+					fclose (Ctrl->In.fp);
+					Return (GMT_RUNTIME_ERROR);
+				}
+#endif
 			/* Run post-flight now before dealing with the loop so the overlay exists */
-			if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
-				sprintf (cmd, "cmd /C %s", post_file);
-			else
-				sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], post_file);
+			sprintf (cmd, "%s %s", sys_cmd_wait[Ctrl->In.mode], post_file);
 			if ((error = run_script (cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Running postflight script %s returned error %d - exiting.\n", post_file, error);
 				fclose (Ctrl->In.fp);
@@ -1874,8 +1861,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "exit\n");
 		fclose (fp);	/* Done writing loop script */
 
-#ifndef WIN32
-		/* Set executable bit if not Windows */
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
 		if (chmod (intro_file, S_IRWXU)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", intro_file);
 			Return (GMT_RUNTIME_ERROR);
@@ -2039,9 +2025,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 						else if (I->mode == MOVIE_LABEL_IS_COL_T) {	/* Place a word label */
 							char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[use_frame]);
 							col = 0;	trail = orig;
-							while (col != I->col && (word = strsep (&trail, " \t")) != NULL) {
+							while ((word = strsep (&trail, " \t")) != NULL && col != I->col) {
 								if (*word != '\0')	/* Skip empty strings */
 									col++;
+							}
+							if (word == NULL) {
+								GMT_Report (API, GMT_MSG_ERROR, "Requested word number %d for label was not found - label skippedL\n", I->col);
+								continue;
 							}
 							strcpy (L_txt, word);
 							gmt_M_str_free (orig);
@@ -2194,13 +2184,11 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			rewind (Ctrl->In.fp);	/* Get ready for main_frame reading */
 		}
 		gmt_set_comment (fp, Ctrl->In.mode, "Move master file up to top directory and cd up one level");
-#ifdef WIN32
-		gmt_strrepc (topdir, '/', '\\');	/* Temporarily make DOS compatible */
-#endif		
+		if (Ctrl->In.mode == GMT_DOS_MODE)
+			gmt_strrepc (topdir, '/', '\\');	/* Temporarily make DOS compatible */
 		fprintf (fp, "%s %s.%s %s\n", mvfile[Ctrl->In.mode], Ctrl->N.prefix, Ctrl->M.format, topdir);	/* Move master plot up to top dir */
-#ifdef WIN32
-		gmt_strrepc (topdir, '\\', '/');	/* Revert */
-#endif		
+		if (Ctrl->In.mode == GMT_DOS_MODE)
+			gmt_strrepc (topdir, '\\', '/');	/* Revert */
 		fprintf (fp, "cd ..\n");	/* cd up to workdir */
 		if (!Ctrl->Q.active) {	/* Remove the work dir and any files in it */
 			gmt_set_comment (fp, Ctrl->In.mode, "Remove frame directory");
@@ -2208,15 +2196,14 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		fclose (fp);	/* Done writing loop script */
 
-#ifndef WIN32
-		/* Set executable bit if not Windows */
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
 		if (chmod (master_file, S_IRWXU)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", master_file);
 			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
 		}
 #endif
-		sprintf (cmd, "%s %s %*.*d", sc_call[Ctrl->In.mode], master_file, precision, precision, Ctrl->M.frame);
+		sprintf (cmd, "%s %s %*.*d", sys_cmd_nowait[Ctrl->In.mode], master_file, precision, precision, Ctrl->M.frame);
 		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running script %s returned error %d - exiting.\n", cmd, error);
 			fclose (Ctrl->In.fp);
@@ -2336,8 +2323,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		fprintf (fp, "exit\n");
 	fclose (fp);	/* Done writing loop script */
 
-#ifndef WIN32
-	/* Set executable bit if not Windows */
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
 	if (chmod (main_file, S_IRWXU)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", main_file);
 		Return (GMT_RUNTIME_ERROR);
@@ -2364,12 +2350,12 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	while (!done) {	/* Keep running jobs until all frames have completed */
 		while (n_frames_not_started && n_cores_unused) {	/* Launch new jobs if possible */
 #ifdef WIN32
-			if (Ctrl->In.mode < 2)		/* A bash or sh run from Windows. Need to call via "start" to get parallel */
-				sprintf (cmd, "start /B %s %s %*.*d", sc_call[Ctrl->In.mode], script_file, precision, precision, frame);
+			if (Ctrl->In.mode < 2)		/* A bash or csh run from Windows. Need to call via "start" to get parallel */
+				sprintf (cmd, "start /B %s %s %*.*d", sys_cmd_nowait[Ctrl->In.mode], script_file, precision, precision, frame);
 			else						/* Running batch, so no need for the above trick */
-				sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], script_file, precision, precision, frame);
-#else
-			sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], script_file, precision, precision, frame);
+				sprintf (cmd, "%s %s %*.*d &", sys_cmd_nowait[Ctrl->In.mode], script_file, precision, precision, frame);
+#else		/* Regular Linux/macOS shell behavior */
+			sprintf (cmd, "%s %s %*.*d &", sys_cmd_nowait[Ctrl->In.mode], script_file, precision, precision, frame);
 #endif
 
 			GMT_Report (API, GMT_MSG_DEBUG, "Launch script for frame %*.*d\n", precision, precision, frame);
@@ -2511,8 +2497,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "%s %s%c*.ps\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep);	/* Delete any PostScript layers */
 	}
 	fclose (fp);
-#ifndef _WIN32
-	/* Set executable bit if not on Windows */
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
 	if (chmod (cleanup_file, S_IRWXU)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to make cleanup script %s executable - exiting\n", cleanup_file);
 		Return (GMT_RUNTIME_ERROR);
@@ -2523,7 +2508,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if (Ctrl->In.mode == GMT_DOS_MODE)
 			error = system (cleanup_file);
 		else {
-			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], cleanup_file);
+			sprintf (cmd, "%s %s", sys_cmd_nowait[Ctrl->In.mode], cleanup_file);
 			error = system (cmd);
 		}
 		if (error) {
