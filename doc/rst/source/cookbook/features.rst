@@ -1627,6 +1627,7 @@ Similarly, **+jBR** will align the bottom right corner of the map feature, and *
 and 1 cm up. When using middle (**M**) or center (**C**) justifications, to offset works the same way as bottom (**B**) or left (**L**),
 respectively, i.e., moving the map feature up or to the right.
 
+.. _Background-panel:
 
 The background panel
 ~~~~~~~~~~~~~~~~~~~~
@@ -1676,6 +1677,8 @@ the attributes that are under your control:
    rectangle was specified with **-F+g**\ lightgreen\ **+r**, while the white panel on the
    lower right was set with **-F+p**\ 1p\ **+i+s+g**\ white\ **+c**\ 0.1i (we added a light
    dashed box to indicate the effect of the clearance setting).
+
+.. _Placing-map-scales:
 
 Placing map scales
 ~~~~~~~~~~~~~~~~~~

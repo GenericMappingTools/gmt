@@ -4,8 +4,9 @@ Description
 -----------
 
 Creates a basic or fancy basemap with axes, fill, and titles. Several map projections are available, and the user may
-specify separat tick-mark intervals for boundary annotation, ticking, and [optionally] gridlines. A simple map scale or
-directional rose may also be plotted. At least one of the options |-B|, |-L|, or |-T| must be specified.
+specify separate tick-mark intervals for boundary annotation, ticking, and (optionally) gridlines. A simple map scale
+(|-L|) or directional rose (|-T|) may also be plotted. At least one of the options |-B|, |-L|, or |-T| must be
+specified.
 
 Required Arguments
 ------------------
@@ -29,11 +30,10 @@ Optional Arguments
 .. _-A:
 
 **-A**\ [*file*]
-    No plotting is performed.  Instead, we determine the geographical coordinates of the polygon outline
-    for the (possibly oblique) rectangular map domain.  The plot domain must be given via
-    |-R| and |-J|, with no other options allowed. The sampling interval is controlled via
-    :term:`MAP_LINE_STEP` parameter. The coordinates are written to *file* or to standard output if no file
-    is specified.
+    No plotting is performed.  Instead, we determine the geographical coordinates of the polygon outline for the
+    (possibly oblique) rectangular map domain.  The plot domain must be given via |-R| and |-J|, with no other options
+    allowed. The sampling interval is controlled via :term:`MAP_LINE_STEP` parameter. The coordinates are written to
+    *file* or to standard output if no file is specified.
 
 .. _-B:
 
@@ -44,11 +44,12 @@ Optional Arguments
 **-F**\ [**d**\|\ **l**\|\ **t**][**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]]\
 [**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]]
 
-    Without further options, draws a rectangular border around any map inset (|-D|; classic mode only), map scale
-    (|-L|) or map rose (|-T|) using :term:`MAP_FRAME_PEN`. Used in combination with |-D|, |-L| or |-T|.  To
-    specify separate parameters for the various map features, append  **d**\|\ **l**\|\ **t** to |-F| to specify panel
-    parameters for just that panel [default uses the same panel parameters for all selected map features].
-    The following modifiers can be appended to |-F|:
+    Without further options, draws a rectangular border around any map inset (|-D|; classic mode only), map scale (|-L|)
+    or map rose (|-T|) using :term:`MAP_FRAME_PEN`. Used in combination with |-D|, |-L| or |-T|.  To specify separate
+    parameters for the various map embellishments, append **d** for map inset, **l** for map scale, or **t** for map
+    rose to |-F| to specify panel parameters for just that panel [default uses the same panel parameters for all
+    selected map embellishments]. The following modifiers can be appended to |-F|, with additional explanation and
+    examples provided in the :ref:`background panel cookbook section <Background-panel>`:
 
     - **+p**\ *pen* to specify a different pen width
     - **+g**\ *fill* to fill the box [default is no fill]

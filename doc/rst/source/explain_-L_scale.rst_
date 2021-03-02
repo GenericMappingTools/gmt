@@ -6,8 +6,9 @@
 
     .. include:: explain_refpoint.rst_
 
-    The following modifiers can be appended to |-L| (**+w** is required). For Cartesian projectsion, the modifiers
-    **+c** and **+f** are not allowed, and no units should be appended in **+w**):
+    The following modifiers can be appended to |-L| (**+w** is required), with additional explanation and examples
+    provided in the `placing map scales cookbook section <Placing-map-scales>`. For Cartesian projectsion, the modifiers
+    **+c** and **+f** are not allowed, and no units should be appended in **+w**.
 
     - **+w** to set scale *length* in km, or append unit from **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.
     - **+c** modifier is use to control where on a geographic map the scale applies. Map scale is calculated for
