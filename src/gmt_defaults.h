@@ -95,7 +95,7 @@ struct GMT_DEFAULTS {
 	size_t url_size_limit;
 	unsigned int refresh_time; /* Only refresh server catalog when the local copy is this old in days) */
 	unsigned int compatibility; /* Choose between 4 (GMT4) and up to latest version (5 for now) */
-	unsigned int auto_download;   /* 0 (GMT_NO_DOWNLOAD) or 1 (GMT_YES_DOWNLOAD): For auto-downlaod of known files */
+	unsigned int auto_download;   /* 0 (GMT_NO_DOWNLOAD) or 1 (GMT_YES_DOWNLOAD): For auto-download of known files */
 	unsigned int interpolant; /* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
 	unsigned int triangulate; /* 0 for Watson [Default], 1 for Shewchuk (if configured) */
 	unsigned int verbose;     /* Level of verbosity 0-4 [1] */
@@ -130,6 +130,7 @@ struct GMT_DEFAULTS {
 	char io_head_marker_in[GMT_LEN32];  /* Characters used to recognize input header records [#%!;"'] */
 	char io_head_marker_out;            /* Character used to recognize and write header records [#,#] */
 	/* MAP group */
+	char map_annot_min_spacing_txt[GMT_LEN16];	/* Text version of this setting */
 	double map_annot_offset[2];		/* Distance between primary or secondary annotation and tickmarks [5p/5p] */
 	double map_annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
 	double map_annot_min_spacing;	/* If an annotation is closer that this to an older annotation, the annotation is skipped [0.0] */
