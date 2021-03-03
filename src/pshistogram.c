@@ -1231,7 +1231,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			else F.wesn[YHI] = pow (10.0, p + LOG10_2);
 		}
 		else {
-			F.wesn[YLO] = (F.hist_type >= PSHISTOGRAM_LOG_COUNTS) ? 1.0 : 0.0;
+			F.wesn[YLO] = 0.0;
 			F.wesn[YHI] = ceil (F.yy1 / tmp) * tmp;
 		}
 		if (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval == 0.0) {	/* Tickmarks not set */
