@@ -6099,7 +6099,8 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = 'p';
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = 'p';
 	/* MAP_ANNOT_OBLIQUE */
-	GMT->current.setting.map_annot_oblique = GMT_OBL_ANNOT_ANYWHERE;
+	//GMT->current.setting.map_annot_oblique = GMT_OBL_ANNOT_ANYWHERE;
+	GMT->current.setting.map_annot_oblique = GMT_OBL_ANNOT_LON_HORIZONTAL | GMT_OBL_ANNOT_LAT_HORIZONTAL | GMT_OBL_ANNOT_EXTEND_TICKS;
 	/* MAP_ANNOT_MIN_ANGLE */
 	GMT->current.setting.map_annot_min_angle = 20;
 	/* MAP_ANNOT_MIN_SPACING */
@@ -6474,7 +6475,7 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	/* MAP group */
 
 	/* MAP_ANNOT_MIN_SPACING */
-	GMT->current.setting.map_annot_min_spacing = GMT->session.d_NaN; /* 12p */
+	GMT->current.setting.map_annot_min_spacing = GMT->session.d_NaN; /* 28p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_MIN_SPACING] = 'p';
 	/* MAP_ANNOT_OFFSET_PRIMARY, MAP_ANNOT_OFFSET_SECONDARY */
 	GMT->current.setting.map_annot_offset[GMT_PRIMARY] = GMT->current.setting.map_annot_offset[GMT_SECONDARY] = GMT->session.d_NaN; /* 3p */
@@ -9970,7 +9971,7 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_HEADING_OFFSET] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_annot_min_spacing)) {
-		GMT->current.setting.map_annot_min_spacing = 12 * pt * scale; /* 12p */
+		GMT->current.setting.map_annot_min_spacing = 28 * pt * scale; /* 28p */
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_ANNOT_MIN_SPACING] = true;
 	}
 
@@ -10385,8 +10386,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_MAP_ANNOT_OBLIQUE:
 			ival = gmtinit_parse_map_annot_oblique (GMT, value);
-			if (ival >= GMT_OBL_ANNOT_LON_X_LAT_Y && ival < GMT_OBL_ANNOT_FLAG_LIMIT)
+			if (ival >= GMT_OBL_ANNOT_LON_X_LAT_Y && ival < GMT_OBL_ANNOT_FLAG_LIMIT)  {
 				GMT->current.setting.map_annot_oblique = ival;
+				GMT->current.setting.map_annot_oblique_set = 1;
+			}
 			else
 				error = true;
 			break;
