@@ -6552,6 +6552,7 @@ void gmt_conf_SI (struct GMT_CTRL *GMT) {
 		gmtinit_conf_modern (GMT);
 	else
 		gmtinit_conf_classic (GMT);
+	//GMT->current.setting.map_annot_oblique_set = false;
 }
 
 /*! . */
@@ -18734,7 +18735,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			if (error) return (error);		/* Bail at this point */
 			gmt_reset_history (API->GMT);	/* No old classic history shall affect a new modern mode session */
 
-			gmt_conf_SI (API->GMT);				/* Get the original system defaults */
+			gmt_conf_SI (API->GMT);			/* Get the original system defaults */
 			if (!clean_start) {
 				/*  Overload any user-supplied defaults via a gmt.conf file but reset PS_MEDIA to the original system default */
 				if (gmt_getdefaults (API->GMT, NULL) == GMT_NOERROR)	/* Ingested a gmt.conf file */
