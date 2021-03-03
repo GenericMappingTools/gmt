@@ -58,6 +58,10 @@ struct PSVELO_CTRL {
 		bool active;
 		struct GMT_SYMBOL S;
 	} A;
+	struct PSVELO_C {	/* -C<cpt> */
+		bool active;
+		char *file;
+	} C;
 	struct PSVELO_D {	/* -D */
 		bool active;
 		double scale;
@@ -622,7 +626,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A<vecpar>] [%s] [-D<sigscale>]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A<vecpar>] [%s] [-C<cpt>] [-D<sigscale>]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] %s[-L] [-N] %s%s[-S<symbol><args>[+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_Y_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -635,6 +639,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify arrow head attributes:\n");
 	gmt_vector_syntax (API->GMT, 15);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign colors based on vector magnitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Multiply uncertainties by <sigscale>. (Se and Sw only)i\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set color used for uncertainty wedges in -Sw option.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify color (for symbols/polygons) or pattern (for polygons). fill can be either\n");
@@ -706,6 +711,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 					}
 					Ctrl->A.S.symbol = PSL_VECTOR;
 				}
+				break;
+			case 'C':	/* Select CPT for coloring */
+				Ctrl->C.active = true;
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Rescale Sigmas */
 				Ctrl->D.active = true;
@@ -793,6 +802,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 		}
 	}
 
+	gmt_consider_current_cpt (GMT->parent, &Ctrl->C.active, &(Ctrl->C.file));
+
 	no_size_needed = (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE || Ctrl->S.readmode == READ_ANISOTROPY || Ctrl->S.readmode == READ_CROSS || Ctrl->S.readmode == READ_WEDGE );
         /* Only one allowed */
 	n_set = (Ctrl->S.readmode == READ_ELLIPSE) + (Ctrl->S.readmode == READ_ROTELLIPSE) + (Ctrl->S.readmode == READ_ANISOTROPY) + (Ctrl->S.readmode == READ_CROSS) + (Ctrl->S.readmode == READ_WEDGE);
@@ -813,7 +824,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	int ix = 0, iy = 1, n_rec = 0, justify;
 	int des_ellipse = true, des_arrow = true, error = false;
 
-	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, length, s, dim[PSL_MAX_DIMS];
+	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, length, s, magnitude, dim[PSL_MAX_DIMS];
 	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0, *in = NULL;
 	double direction = 0, small_axis = 0, great_axis = 0, sigma_x, sigma_y, corr_xy;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize, headpen_width = 0.0;
@@ -821,6 +832,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	char *station_name = NULL;
 
 	struct GMT_RECORD *In = NULL;
+	struct GMT_PALETTE *CPT = NULL;
 	struct PSVELO_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -843,6 +855,12 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the psvelo main code ----------------------------*/
+
+	if (Ctrl->C.active) {
+		if ((CPT = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+			Return (API->error);
+		}
+	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
@@ -964,7 +982,9 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 
 		switch (Ctrl->S.symbol) {
 			case CINE:
-				des_arrow = hypot (vxy[0], vxy[1]) < 1.e-8 ? false : true;
+				magnitude = hypot (vxy[0], vxy[1]);
+				fprintf (stderr, "Magnitude = %g\n", magnitude);
+				des_arrow = (magnitude < 1.e-8) ? false : true;
 				psvelo_trace_arrow (GMT, in[GMT_X], in[GMT_Y], vxy[0], vxy[1], Ctrl->S.scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
 				psvelo_get_trans (GMT, in[GMT_X], in[GMT_Y], &t11, &t12, &t21, &t22);
 				if (des_ellipse) {
@@ -1003,6 +1023,10 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 						dim[11] = (headpen_width > 0.0) ? headpen_width : 0.5 * Ctrl->W.pen.width;
 						if (Ctrl->A.S.v.status & PSL_VEC_FILL2)
 							gmt_setfill (GMT, &Ctrl->A.S.v.fill, Ctrl->L.active);
+						else if (Ctrl->C.active) {
+							gmt_get_fill_from_z (GMT, CPT, magnitude, &Ctrl->G.fill);
+							gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
+						}
 						else if (Ctrl->G.active)
 							gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
 						PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
