@@ -133,7 +133,7 @@ function view_pdf_failures_r {
 		w=$1
 	fi
 	pushd .; gtop; cd rbuild;
-	ls */*/*/*.png */*/*/*/*.png > /tmp/vpf
+	ls */*/*/*.pdf */*/*/*/*.pdf > /tmp/vpf
 	while read pdf; do
 		$pdfview $pdf
 		sleep $w
