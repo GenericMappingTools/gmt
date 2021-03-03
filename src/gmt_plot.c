@@ -6248,7 +6248,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 		}
 		if (GMT_n_annotations_skip[side]) {
 			static char *name[4] = {"bottom", "right", "top", "left"};
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "%d annotations along the %s border were skipped due to crowding\n", GMT_n_annotations_skip[side], name[side]);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "%d annotations along the %s border were skipped due to crowding.\n", GMT_n_annotations_skip[side], name[side]);
 			too_crowded = true;
 			GMT_n_annotations_skip[side] = 0;
 		}
