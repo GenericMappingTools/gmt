@@ -73,6 +73,12 @@ Optional Arguments
 
 .. include:: ../../explain_-B.rst_
 
+.. _-C:
+
+**-C**\ *cpt*
+    Give a CPT and let compressive part color be
+    determined by the z-value in the third column.
+
 .. _-E:
 
 **-E**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
@@ -131,6 +137,14 @@ Optional Arguments
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Sets color or fill pattern for compressional quadrants [Default is black].
+
+.. _-I:
+
+**-I**\ *intens*
+    Use the supplied *intens* value (nominally in the -1 to +1 range) to
+    modulate the compressional fill color by simulating illumination [none].
+    If no intensity is provided we will instead read *intens* from an extra
+    data column after the required input columns determined by **-S**.
 
 .. _-L:
 
@@ -191,12 +205,6 @@ Optional Arguments
 
 .. include:: ../../explain_-XY.rst_
 
-.. _-Z:
-
-**-Z**\ *cpt*
-    Give a CPT and let compressive part color be
-    determined by the z-value in the third column.
-
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_
 
@@ -213,7 +221,7 @@ Optional Arguments
 
 .. include:: ../../explain_-qi.rst_
 
-.. include:: ../../explain_-t.rst_
+.. include:: ../../explain_-tv_full.rst_
 
 .. include:: ../../explain_colon.rst_
 

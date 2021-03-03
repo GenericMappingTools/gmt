@@ -3,14 +3,16 @@
 Description
 -----------
 
-Reads data values from *files* [or standard input] and
-will plot stations on focal mechanisms
-on a map.
+Plot observations from a single earthquake observed at various stations
+at different azimuths and distances on the lower hemisphere of the focal
+sphere.  The focal sphere is typically plotted at the location of the earthquake,
+specified via **-D**. Reads data values from *files* [or standard input].
 
 Parameters are expected to be in the following columns:
 
     **1**,\ **2**,\ **3**:
-        station\_code, azimuth, take-off angle
+        *station-code azimuth take-off-angle*
+        (all three columns must contain numerical values)
     **4**:
         polarity:
 
@@ -26,28 +28,28 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
+.. _-D:
+
+**-D**\ *lon/lat*
+    Centers the focal sphere at given longitude and latitude point on the map.
+
 .. _-J:
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
 
+.. _-M:
+
+**-M**\ *size*\ [**+m**\ *mag*]
+    Sets the size of the focal sphere to plot polarities in. *size* is in
+    default units (unless **c**, **i**, or **p** is appended).
+    Optionally append **+m**\ *mag* to specify its magnitude,
+    then focal sphere size is *mag* / 5.0 * *size*.
+
 .. _-R:
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
-
-.. _-D:
-
-**-D**\ *longitude/latitude*
-    Maps the bubble at given longitude and latitude point.
-
-.. _-M:
-
-**-M**\ *size*\ [**+m**\ *mag*]
-    Sets the size of the beach ball to plot polarities in. *size* is in
-    default units (unless **c**, **i**, or **p** is appended).
-    Optionally append **+m**\ *mag* to specify its magnitude,
-    then beachball size is *mag* / 5.0 * *size*.
 
 .. _-S:
 
@@ -64,13 +66,6 @@ Optional Arguments
 
 .. include:: ../../explain_-B.rst_
 
-.. _-C:
-
-**-C**\ *lon*/*lat*\ [**+p**\ *pen*][**+s**\ *pointsize*]
-    Offsets focal mechanisms to the latitude and longitude specified in
-    the last two columns of the input file.  Optionally set the pen and
-    symbol point size.
-
 .. _-E:
 
 **-E**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
@@ -81,7 +76,7 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
-    Sets background color of the beach ball. Default is no fill.
+    Sets background color of the focal sphere. Default is no fill.
 
 .. _-G:
 
@@ -103,7 +98,7 @@ Optional Arguments
         Outline symbols in extensive quadrants using *pen* or the default pen (see |-W|).
 
     **-Qf**\ [pen]
-        Outline the beach ball using *pen* or the default pen (see |-W|).
+        Outline the focal sphere using *pen* or the default pen (see |-W|).
 
     **-Qg**\ [pen]
         Outline symbols in compressional quadrants using *pen* or the default pen (see |-W|).

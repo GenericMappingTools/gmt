@@ -90,8 +90,8 @@ enum GMT_enum_type {
 	GMT_ULONG	=    7,  /* uint64_t, 8-byte unsigned integer type */
 	GMT_FLOAT	=    8,  /* 4-byte data float type */
 	GMT_DOUBLE	=    9,  /* 8-byte data float type */
-	GMT_TEXT	=   10,  /* Arbitrarily long text string [OGR/GMT use only] */
-	GMT_DATETIME	=   11,  /* string with date/time info [OGR/GMT use only] */
+	GMT_TEXT	=   16,  /* Arbitrarily long text string [OGR/GMT use only and GMT_Put_Vector only] */
+	GMT_DATETIME	=   32,  /* string with date/time info [OGR/GMT use and GMT_Put_Vector only] */
 	GMT_N_TYPES	=   12,  /* The number of supported data types above */
 	GMT_VIA_CHAR	=  100,  /* int8_t, 1-byte signed integer type */
 	GMT_VIA_UCHAR	=  200,  /* uint8_t, 1-byte unsigned integer type */

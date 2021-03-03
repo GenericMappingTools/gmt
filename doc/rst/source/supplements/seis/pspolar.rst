@@ -12,12 +12,14 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt pspolar** [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
+**gmt pspolar**
+[ *table* ]
+|-D|\ *lon/lat*
+|-J|\ *parameters*
 |SYN_OPT-R|
 |-M|\ *size*\ [**+m**\ *mag*]
 |-S|\ *<symbol><size>*
 [ |SYN_OPT-B| ]
-[ |-C|\ *lon*/*lat*\ [**+p**\ *pen*][**+s**\ *pointsize*] ]
 [ |-E|\ *fill* ]
 [ |-F|\ *fill* ]
 [ |-G|\ *fill* ]

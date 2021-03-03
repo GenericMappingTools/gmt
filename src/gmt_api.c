@@ -252,6 +252,8 @@ static const char *GMT_geometry[] = {"Not Set", "Point", "Line", "Polygon", "Poi
 static const char *GMT_class[] = {"QUIET", "NOTICE", "ERROR", "WARNING", "TIMING", "INFORMATION", "COMPATIBILITY", "DEBUG"};
 static unsigned int GMT_no_pad[4] = {0, 0, 0, 0};
 static const char *GMT_family_abbrev[] = {"D", "G", "I", "C", "X", "M", "V", "U", "-"};
+static const char *GMT_type[GMT_N_TYPES] = {"byte", "byte", "integer", "integer", "integer", "integer",
+                                            "integer", "integer", "double", "double", "string", "datetime"};
 
 /*! Two different i/o mode: GMT_Put|Get_Data vs GMT_Put|Get_Record */
 enum GMT_enum_iomode {
@@ -6683,10 +6685,10 @@ GMT_LOCAL int gmtapi_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned in
 		if (gmtapi_bin_input_memory (GMT, V->n_columns, V->n_columns) < 0)	/* Segment header found, finish the segment we worked on and goto next */
 			gmt_write_segmentheader (GMT, fp, V->n_columns);
 		else {	/* Format an ASCII record for output */
-			fprintf (fp, GMT->current.setting.format_float_out, GMT->current.io.curr_rec[0]);
+			gmt_ascii_output_col (GMT, fp, GMT->current.io.curr_rec[0], 0);
 			for (col = 1; col < V->n_columns; col++) {
 				fprintf (fp, "%s", GMT->current.setting.io_col_separator);
-				fprintf (fp, GMT->current.setting.format_float_out, GMT->current.io.curr_rec[col]);
+				gmt_ascii_output_col (GMT, fp, GMT->current.io.curr_rec[col], col);
 			}
 			if (V->text && V->text[row])
 				fprintf (fp, "%s%s", GMT->current.setting.io_col_separator, V->text[row]);
@@ -14466,56 +14468,139 @@ int GMT_Change_Layout_ (unsigned int *family, char *code, unsigned int *mode, vo
 
 /* Deal with assignments of custom vectors and matrices to GMT containers */
 
+GMT_LOCAL int gmtapi_insert_vector (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *V, unsigned int type, void *vector) {
+	/* Hook a vector to the correct union member given data type */
+	gmt_M_unused (API);
+	switch (type) {
+		case GMT_DOUBLE:	V->f8  = vector;	break;
+		case GMT_FLOAT:		V->f4  = vector;	break;
+		case GMT_ULONG:		V->ui8 = vector;	break;
+		case GMT_LONG:		V->si8 = vector;	break;
+		case GMT_UINT:		V->ui4 = vector;	break;
+		case GMT_INT:		V->si4 = vector;	break;
+		case GMT_USHORT:	V->ui2 = vector;	break;
+		case GMT_SHORT:		V->si2 = vector;	break;
+		case GMT_UCHAR:		V->uc1 = vector;	break;
+		case GMT_CHAR:		V->sc1 = vector;	break;
+		default:
+			return (GMT_NOT_A_VALID_TYPE);
+			break;
+	}
+	return (GMT_NOERROR);
+}
+
+GMT_LOCAL void * gmtapi_retrieve_vector (void *API, union GMT_UNIVECTOR *V, unsigned int type) {
+	void *vector = NULL;
+	gmt_M_unused (API);
+	switch (type) {
+		case GMT_DOUBLE:	vector = V->f8;	break;
+		case GMT_FLOAT:		vector = V->f4;	break;
+		case GMT_ULONG:		vector = V->ui8;	break;
+		case GMT_LONG:		vector = V->si8;	break;
+		case GMT_UINT:		vector = V->ui4;	break;
+		case GMT_INT:		vector = V->si4;	break;
+		case GMT_USHORT:	vector = V->ui2;	break;
+		case GMT_SHORT:		vector = V->si2;	break;
+		case GMT_UCHAR:		vector = V->uc1;	break;
+		case GMT_CHAR:		vector = V->sc1;	break;
+		default:
+			return NULL;
+			break;
+	}
+	return vector;
+}
+
 int GMT_Put_Vector (void *V_API, struct GMT_VECTOR *V, unsigned int col, unsigned int type, void *vector) {
 	/* Hooks a users custom vector onto V's column array and sets the type.
 	 * It is the user's responsibility to pass correct type for the given vector.
-	 * We also check that the number of rows have been set earlier. */
+	 * We also check that the number of rows have been set earlier.
+	 * We also allow special text-based arrays for longitude, latitude, datetime or Cartesian data to be passed
+	 * which may be logically OR'ed with desired array type (e.g., GMT_LONG|GMT_TEXT).
+	 * Note: We do not check for data loss in the conversion (e.g., GMT_UCHAR|GMT_TEXT) */
+	unsigned int special_type;
+	enum GMT_enum_alloc alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Default is to pass vectors in read-only */
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_VECTOR_HIDDEN *VH = NULL;
-	char **dt = NULL;
-	double *t_vector = NULL;
-	uint64_t row, n_bad = 0;
 
 	API = gmtapi_get_api_ptr (V_API);
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (V == NULL) return_error (API, GMT_PTR_IS_NULL);
 	if (V->n_rows == 0) return_error (API, GMT_DIM_TOO_SMALL);
 	if (col >= V->n_columns) return_error (API, GMT_DIM_TOO_LARGE);
-	switch (type) {
-		case GMT_DOUBLE:	V->type[col] = GMT_DOUBLE;	V->data[col].f8  = vector;	break;
-		case GMT_FLOAT:		V->type[col] = GMT_FLOAT;	V->data[col].f4  = vector;	break;
-		case GMT_ULONG:		V->type[col] = GMT_ULONG;	V->data[col].ui8 = vector;	break;
-		case GMT_LONG:		V->type[col] = GMT_LONG;	V->data[col].si8 = vector;	break;
-		case GMT_UINT:		V->type[col] = GMT_UINT;	V->data[col].ui4 = vector;	break;
-		case GMT_INT:		V->type[col] = GMT_INT;		V->data[col].si4 = vector;	break;
-		case GMT_USHORT:	V->type[col] = GMT_USHORT;	V->data[col].ui2 = vector;	break;
-		case GMT_SHORT:		V->type[col] = GMT_SHORT;	V->data[col].si2 = vector;	break;
-		case GMT_UCHAR:		V->type[col] = GMT_UCHAR;	V->data[col].uc1 = vector;	break;
-		case GMT_CHAR:		V->type[col] = GMT_CHAR;	V->data[col].sc1 = vector;	break;
-		case GMT_DATETIME:	/* Must convert from string-time to double */
-			if ((dt = gmtapi_get_char_char_ptr (vector)) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Datetime string array is NULL\n");
-				return GMT_MEMORY_ERROR;
-			}
-			if ((t_vector = malloc (V->n_rows * sizeof(double))) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate array of %" PRIu64 " doubles for converted datetime strings\n", V->n_rows);
-				return GMT_MEMORY_ERROR;
-			}
-			for (row = 0; row < V->n_rows; row++) {
-				if (gmt_scanf (API->GMT, dt[row], GMT_IS_ABSTIME, &(t_vector[row])) == GMT_IS_NAN) {
-					n_bad++;
-					t_vector[row] = API->GMT->session.d_NaN;
-				}
-			}
-			V->type[col] = GMT_DOUBLE;	V->data[col].f8 = t_vector;
-			if (n_bad) GMT_Report (API, GMT_MSG_WARNING, "Unable to parse %" PRIu64 " datetime strings (ISO datetime format required)\n", n_bad);
-			break;
-		default:
+
+	special_type = type & (GMT_TEXT | GMT_DATETIME);	/* Backwards compatible with just GMT_DATETIME */
+	if (special_type == 0) {	/* Just passing in a numerical array directly via read-only pointer; hook it up */
+		if (gmtapi_insert_vector (API, &(V->data[col]), type, vector))
 			return_error (API, GMT_NOT_A_VALID_TYPE);
-			break;
+		V->type[col] = type;	/* Set column type */
 	}
+	else {	/* Convert text to something else */
+		bool no_T = false;
+		unsigned L_type = GMT_IS_UNKNOWN, got;
+		double value;
+		uint64_t row, n_bad = 0, L;
+		char **dt = NULL;
+		char text[GMT_LEN64] = {""};
+		GMT_putfunction api_put_val = NULL;
+
+		if (gmtapi_retrieve_vector (API, &(V->data[col]), type)) {	/* Refuse to overwrite existing pointer unless NULL */
+			GMT_Report (API, GMT_MSG_ERROR, "Array already exist for column %d\n", col);
+			return_error (API, GMT_PTR_NOT_NULL);
+		}
+		type -= special_type;	/* Remove the higher bit flag(s) */
+		if (type == 0) type = GMT_DOUBLE;	/* Default is double precision if a type was not specified */
+		if ((dt = gmtapi_get_char_char_ptr (vector)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Given string array is NULL\n");
+			return_error (API, GMT_MEMORY_ERROR);
+		}
+		strncpy (text, dt[0], GMT_LEN64);	/* Since gmt_scanf may try to temporarily change the string... */
+		if ((L = strlen (text)) == 0) {
+			GMT_Report (API, GMT_MSG_ERROR, "Given blank string in array\n");
+			return_error (API, GMT_MEMORY_ERROR);
+		}
+		if (special_type == GMT_DATETIME || gmtlib_maybe_abstime (API->GMT, text, &no_T))	/* Honor backwards compatibility for GMT_DATETIME */
+			L_type = GMT_IS_ABSTIME;
+		else if (strchr ("WE", text[L]))
+			L_type = GMT_IS_LON;
+		else if (strchr ("SN", text[L]))
+			L_type = GMT_IS_LAT;
+		else if (strchr (text, ':'))
+			L_type = GMT_IS_GEO;
+		if ((api_put_val = gmtapi_select_put_function (API, type)) == NULL)
+			return_error (API, GMT_NOT_A_VALID_TYPE);
+		/* Here we know the type is valid */
+		if (gmtlib_alloc_univector (API->GMT, &V->data[col], type, V->n_rows) != GMT_NOERROR) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate array of %" PRIu64 " %s-values for converted strings\n", V->n_rows, GMT_type[type]);
+			return_error (API, GMT_MEMORY_ERROR);
+		}
+		/* Do the conversion to double precision */
+		for (row = 0; row < V->n_rows; row++) {
+			strncpy (text, dt[row], GMT_LEN64);
+			if ((got = gmt_scanf (API->GMT, text, L_type, &value)) == GMT_IS_NAN) {
+				n_bad++;	/* Check for bad conversions */
+				value = API->GMT->session.d_NaN;
+			}
+			else if (got != GMT_IS_FLOAT && L_type == GMT_IS_UNKNOWN)	/* Got something other than plain float, use that from now on */
+				L_type = got;
+			api_put_val (&(V->data[col]), row, value);	/* Place value in vector of selected type */
+		}
+		V->type[col] = type;	/* Flag as the new type after conversion */
+		if (L_type == GMT_IS_UNKNOWN) L_type = GMT_IS_FLOAT;	/* We held out this long but now must default to it */
+		gmt_set_column_type (API->GMT, GMT_IO, col, L_type);
+		if (n_bad) {	/* Report on values that could not be converted */
+			if (L_type == GMT_IS_LON)
+				GMT_Report (API, GMT_MSG_WARNING, "Unable to parse %" PRIu64 " longitude strings\n", n_bad);
+			else if (L_type == GMT_IS_LAT)
+				GMT_Report (API, GMT_MSG_WARNING, "Unable to parse %" PRIu64 " latitude strings\n", n_bad);
+			else if (L_type == GMT_IS_ABSTIME)
+				GMT_Report (API, GMT_MSG_WARNING, "Unable to parse %" PRIu64 " datetime strings (ISO datetime format required)\n", n_bad);
+		}
+		alloc_mode = GMT_ALLOC_INTERNALLY;
+	}
+
 	VH = gmt_get_V_hidden (V);
-	VH->alloc_mode[col] = (type == GMT_DATETIME) ? GMT_ALLOC_INTERNALLY : GMT_ALLOC_EXTERNALLY;
+	VH->alloc_mode[col] = alloc_mode;
+
 	return GMT_NOERROR;
 }
 
@@ -14533,21 +14618,8 @@ void * GMT_Get_Vector (void *API, struct GMT_VECTOR *V, unsigned int col) {
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
 	if (V == NULL) return_null (API, GMT_PTR_IS_NULL);
 	if (col >= V->n_columns) return_null (API, GMT_DIM_TOO_LARGE);
-	switch (V->type[col]) {
-		case GMT_DOUBLE:	vector = V->data[col].f8;	break;
-		case GMT_FLOAT:		vector = V->data[col].f4;	break;
-		case GMT_ULONG:		vector = V->data[col].ui8;	break;
-		case GMT_LONG:		vector = V->data[col].si8;	break;
-		case GMT_UINT:		vector = V->data[col].ui4;	break;
-		case GMT_INT:		vector = V->data[col].si4;	break;
-		case GMT_USHORT:	vector = V->data[col].ui2;	break;
-		case GMT_SHORT:		vector = V->data[col].si2;	break;
-		case GMT_UCHAR:		vector = V->data[col].uc1;	break;
-		case GMT_CHAR:		vector = V->data[col].sc1;	break;
-		default:
-			return_null (API, GMT_NOT_A_VALID_TYPE);
-			break;
-	}
+	if ((vector = gmtapi_retrieve_vector (API, &(V->data[col]), V->type[col])) == NULL)
+		return_null (API, GMT_NOT_A_VALID_TYPE);
 	return vector;
 }
 
@@ -14566,21 +14638,9 @@ int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, int pad,
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (M == NULL) return_error (API, GMT_PTR_IS_NULL);
 	if (M->n_columns == 0 || M->n_rows == 0) return_error (API, GMT_DIM_TOO_SMALL);
-	switch (type) {
-		case GMT_DOUBLE:	M->type = GMT_DOUBLE;	M->data.f8  = matrix;	break;
-		case GMT_FLOAT:		M->type = GMT_FLOAT;	M->data.f4  = matrix;	break;
-		case GMT_ULONG:		M->type = GMT_ULONG;	M->data.ui8 = matrix;	break;
-		case GMT_LONG:		M->type = GMT_LONG;	M->data.si8 = matrix;	break;
-		case GMT_UINT:		M->type = GMT_UINT;	M->data.ui4 = matrix;	break;
-		case GMT_INT:		M->type = GMT_INT;	M->data.si4 = matrix;	break;
-		case GMT_USHORT:	M->type = GMT_USHORT;	M->data.ui2 = matrix;	break;
-		case GMT_SHORT:		M->type = GMT_SHORT;	M->data.si2 = matrix;	break;
-		case GMT_UCHAR:		M->type = GMT_UCHAR;	M->data.uc1 = matrix;	break;
-		case GMT_CHAR:		M->type = GMT_CHAR;	M->data.sc1 = matrix;	break;
-		default:
-			return_error (API, GMT_NOT_A_VALID_TYPE);
-			break;
-	}
+	if (gmtapi_insert_vector (API, &(M->data), type, matrix))
+		return_error (API, GMT_NOT_A_VALID_TYPE);
+	M->type = type;
 	MH = gmt_get_M_hidden (M);
 	MH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since it clearly is a user array */
 	MH->pad = pad;	/* Placing the pad argument here */
@@ -14600,21 +14660,8 @@ void * GMT_Get_Matrix (void *API, struct GMT_MATRIX *M) {
 	void *matrix = NULL;
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
 	if (M == NULL) return_null (API, GMT_PTR_IS_NULL);
-	switch (M->type) {
-		case GMT_DOUBLE:	matrix = M->data.f8;	break;
-		case GMT_FLOAT:		matrix = M->data.f4;	break;
-		case GMT_ULONG:		matrix = M->data.ui8;	break;
-		case GMT_LONG:		matrix = M->data.si8;	break;
-		case GMT_UINT:		matrix = M->data.ui4;	break;
-		case GMT_INT:		matrix = M->data.si4;	break;
-		case GMT_USHORT:	matrix = M->data.ui2;	break;
-		case GMT_SHORT:		matrix = M->data.si2;	break;
-		case GMT_UCHAR:		matrix = M->data.uc1;	break;
-		case GMT_CHAR:		matrix = M->data.sc1;	break;
-		default:
-			return_null (API, GMT_NOT_A_VALID_TYPE);
-			break;
-	}
+	if ((matrix = gmtapi_retrieve_vector (API, &(M->data), M->type)) == NULL)
+		return_null (API, GMT_NOT_A_VALID_TYPE);
 	return matrix;
 }
 

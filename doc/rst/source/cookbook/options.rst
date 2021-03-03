@@ -11,64 +11,65 @@ importance (some are used a lot more than others).
 
 .. _tbl-switches:
 
-+----------+--------------------------------------------------------------------+
-+==========+====================================================================+
-| **-B**   | Define tick marks, annotations, and labels for basemaps and axes   |
-+----------+--------------------------------------------------------------------+
-| **-J**   | Select a map projection or coordinate transformation               |
-+----------+--------------------------------------------------------------------+
-| **-R**   | Define the extent of the map/plot region                           |
-+----------+--------------------------------------------------------------------+
-| **-U**   | Plot a time-stamp, by default in the lower left corner of page     |
-+----------+--------------------------------------------------------------------+
-| **-V**   | Select verbose operation; reporting on progress                    |
-+----------+--------------------------------------------------------------------+
-| **-X**   | Set the *x*-coordinate for the plot origin on the page             |
-+----------+--------------------------------------------------------------------+
-| **-Y**   | Set the *y*-coordinate for the plot origin on the page             |
-+----------+--------------------------------------------------------------------+
-| **-a**   | Associate aspatial data from OGR/GMT files with data columns       |
-+----------+--------------------------------------------------------------------+
-| **-b**   | Select binary input and/or output                                  |
-+----------+--------------------------------------------------------------------+
-| **-c**   | Advance plot focus to selected (or next) subplot panel             |
-+----------+--------------------------------------------------------------------+
-| **-d**   | Replace user *nodata* values with IEEE NaNs                        |
-+----------+--------------------------------------------------------------------+
-| **-e**   | Only process data records that match a *pattern*                   |
-+----------+--------------------------------------------------------------------+
-| **-f**   | Specify the data format on a per column basis                      |
-+----------+--------------------------------------------------------------------+
-| **-g**   | Identify data gaps based on supplied criteria                      |
-+----------+--------------------------------------------------------------------+
-| **-h**   | Specify that input/output tables have header record(s)             |
-+----------+--------------------------------------------------------------------+
-| **-i**   | Specify which input columns to read                                |
-+----------+--------------------------------------------------------------------+
-| **-j**   | Specify how spherical distances should be computed                 |
-+----------+--------------------------------------------------------------------+
-| **-l**   | Add a legend entry for the symbol or line being plotted            |
-+----------+--------------------------------------------------------------------+
-| **-n**   | Specify grid interpolation settings                                |
-+----------+--------------------------------------------------------------------+
-| **-o**   | Specify which output columns to write                              |
-+----------+--------------------------------------------------------------------+
-| **-p**   | Control perspective views for plots                                |
-+----------+--------------------------------------------------------------------+
-| **-q**   | Specify which input rows to read or output rows to write           |
-+----------+--------------------------------------------------------------------+
-| **-r**   | Set grid registration [Default is gridline]                        |
-+----------+--------------------------------------------------------------------+
-| **-s**   | Control output of records containing one or more NaNs              |
-+----------+--------------------------------------------------------------------+
-| **-t**   | Change layer transparency                                          |
-+----------+--------------------------------------------------------------------+
-| **-w**   | Convert selected coordinate to repeating cycles                    |
-+----------+--------------------------------------------------------------------+
-| **-x**   | Set number of cores to be used in multi-threaded applications      |
-+----------+--------------------------------------------------------------------+
-| **-:**   | Assume input geographic data are (*lat,lon*) and not (*lon,lat*)   |
-+----------+--------------------------------------------------------------------+
++--------------------------------+--------------------------------------------------------------------+
+| Standard option                | Description                                                        |
++================================+====================================================================+
+| :ref:`-B <option_-B>`          | Define tick marks, annotations, and labels for basemaps and axes   |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-J <option_-J>`          | Select a map projection or coordinate transformation               |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-R <option_-R>`          | Define the extent of the map/plot region                           |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-U <option_-U>`          | Plot a time-stamp, by default in the lower left corner of page     |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-V <option_-V>`          | Select verbose operation; reporting on progress                    |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-X <option_-X>`          | Set the *x*-coordinate for the plot origin on the page             |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-Y <option_-Y>`          | Set the *y*-coordinate for the plot origin on the page             |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-a <option_-a>`          | Associate aspatial data from OGR/GMT files with data columns       |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-b <option_-binary>`     | Select binary input and/or output                                  |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-c <option_-c>`          | Advance plot focus to selected (or next) subplot panel             |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-d <option_-d>`          | Replace user *nodata* values with IEEE NaNs                        |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-e <option_-e>`          | Only process data records that match a *pattern*                   |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-f <option_-f>`          | Specify the data format on a per column basis                      |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-g <option_-g>`          | Identify data gaps based on supplied criteria                      |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-h <option_-h>`          | Specify that input/output tables have header record(s)             |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-i <option_-i>`          | Specify which input columns to read                                |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-j <option_-j_distcalc>` | Specify how spherical distances should be computed                 |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-l <option_-l>`          | Add a legend entry for the symbol or line being plotted            |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-n <option_-n>`          | Specify grid interpolation settings                                |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-o <option_-o>`          | Specify which output columns to write                              |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-p <option_-p>`          | Control perspective views for plots                                |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-q <option_-q>`          | Specify which input rows to read or output rows to write           |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-r <option_nodereg>`     | Set grid registration [Default is gridline]                        |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-s <option_-s>`          | Control output of records containing one or more NaNs              |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-t <option_-t>`          | Change layer transparency                                          |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-w <option_-w>`          | Convert selected coordinate to repeating cycles                    |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-x <option_-x_core>`     | Set number of cores to be used in multi-threaded applications      |
++--------------------------------+--------------------------------------------------------------------+
+| :ref:`-: <option_colon>`       | Assume input geographic data are (*lat,lon*) and not (*lon,lat*)   |
++--------------------------------+--------------------------------------------------------------------+
 
 .. _option_-R:
 
@@ -1463,7 +1464,7 @@ We accomplish this feature via **-wy** and use the prescribed 0–1 year range.
 
 .. literalinclude:: /_verbatim/GMT_cycle_2.txt
 
-These commands result in Figure :ref:`Mississippi annual discharge <gmt_cycle_2>` 
+These commands result in Figure :ref:`Mississippi annual discharge <gmt_cycle_2>`
 
 .. _gmt_cycle_2:
 
@@ -1618,7 +1619,7 @@ Footnotes
 
 .. [14]
    Ensures that boundary annotations do not fall off the page.
-   
+
 .. [15]
-   Marks, K. M., and W. H. F. Smith, 2007, Some remarks on resolving seamounts in satellite gravity, Geophys. Res. Lett., 34 (L03307), 
+   Marks, K. M., and W. H. F. Smith, 2007, Some remarks on resolving seamounts in satellite gravity, Geophys. Res. Lett., 34 (L03307),
    http://doi.org/10.1029/2006GL028857.

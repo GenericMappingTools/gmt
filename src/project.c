@@ -85,9 +85,12 @@ struct PROJECT_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		double min, max;
 	} W;
-	struct PROJECT_Z {	/* -Z<major/minor/azimuth>[+e] */
+	struct PROJECT_Z {	/* -Z<major/minor/azimuth>[+e][+n] */
 		bool active;
 		bool exact;
+		bool number;
+		char unit;
+		int mode;	/* Could be negative */
 		double major, minor, azimuth;
 	} Z;
 };
@@ -320,7 +323,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[/<colat>][+c|h]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L[w|<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>] [-Z<major>/<minor>/<azimuth>[+e]]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L[w|<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>] [-Z<major>/<minor>/<azimuth>[+e|n]]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -375,7 +378,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that q is positive to your LEFT as you walk from C toward E in the <azimuth> direction.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z With -G and -C, generate an ellipse of given major and minor axes (in km if geographic) and azimuth\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of major axis. Append +e for adjusting increment to fix perimeter exactly [use increment as given in -G].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a degenerate ellipse, just append the single argument the <diameter> instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +n instead if -G specifies the number of unique perimeter points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a degenerate ellipse, i.e., circle, just append the single argument the <diameter> instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot), d (arc degree),\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m (arc minute), or s (arc second) [k]; we assume -G is in the same units (unless +n is used).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian ellipses, add -N and provide <direction> (CCW from horizontal) instead of <azimuth>.\n");
 	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,o,q,s,:,.");
 
@@ -528,22 +534,35 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 					Ctrl->Z.exact = true;
 					ce[0] = '\0';	/* Chop off +e */
 				}
-				k = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Z.major, &Ctrl->Z.minor, &Ctrl->Z.azimuth);
-				if (k == 1)	/* Just got a degenerate diameter */
-					Ctrl->Z.minor = Ctrl->Z.major;
-				else if (k == 3) {	/* Ellipse, check that major >= minor */
-					if (Ctrl->Z.major < Ctrl->Z.minor) {
-						GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Major axis must be equal to or larger than the minor axis\n");
+				else if ((ce = strstr (opt->arg, "+n"))) {
+					Ctrl->Z.number = true;
+					ce[0] = '\0';	/* Chop off +n */
+				}
+				if (strchr (opt->arg, '/')) {	/* Ellipse setting */
+					k = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Z.major, &Ctrl->Z.minor, &Ctrl->Z.azimuth);
+					if (k == 3) {	/* Ellipse, check that major >= minor */
+						if (Ctrl->Z.major < Ctrl->Z.minor) {
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Major axis must be equal to or larger than the minor axis\n");
+							n_errors++;
+						}
+					}
+					else {	/* Bad number of arguments */
+						if (Ctrl->N.active)
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major/minor/direction>[+e|n] or -Z<diameter>[+e|n]\n");
+						else
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major/minor/azimuth>[+e|n] or -Z<diameter>[+e|n]\n");
 						n_errors++;
 					}
 				}
-				else {	/* Bad number of arguments */
+				else {	/* Circle as degenerated ellipse */
 					if (Ctrl->N.active)
-						GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major/minor/direction>[+e] or -Z<diameter>[+e]\n");
-					else
-						GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major/minor/azimuth>[+e] or -Z<diameter>[+e]\n");
-					n_errors++;
+						Ctrl->Z.minor = Ctrl->Z.major = atof (opt->arg);
+					else {
+						Ctrl->Z.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->Z.minor), &(Ctrl->Z.unit));
+						Ctrl->Z.major = Ctrl->Z.minor;
+					}
 				}
+
 				if (ce) ce[0] = '+';	/* Restore the plus-sign */
 				if (Ctrl->N.active) {	/* Convert to semi-axis or radius and azimuth since that is now the Cartesian code operates */
 					Ctrl->Z.minor /= 2.0;
@@ -704,6 +723,20 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 	else {	/* Make sure we set -fg */
 		gmt_set_geographic (GMT, GMT_IN);
 		gmt_set_geographic (GMT, GMT_OUT);
+		if (Ctrl->Z.mode && Ctrl->Z.unit != 'k') {	/* Degenerate ellipse with diameter given in units */
+			if (gmt_init_distaz (GMT, Ctrl->Z.unit, Ctrl->Z.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+				Return (GMT_NOT_A_VALID_TYPE);
+			if (GMT->current.map.dist[GMT_MAP_DIST].arc) {	/* Got angular measures, convert to km */
+				Ctrl->Z.minor *= (GMT->current.proj.KM_PR_DEG / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Now in km */
+				Ctrl->Z.major *= (GMT->current.proj.KM_PR_DEG / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Now in km */
+				if (!Ctrl->Z.number) Ctrl->G.inc *= (GMT->current.proj.KM_PR_DEG / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Now in km */
+			}
+			else {
+				Ctrl->Z.minor /= (GMT->current.map.dist[GMT_MAP_DIST].scale * METERS_IN_A_KM);	/* Now in km */
+				Ctrl->Z.major /= (GMT->current.map.dist[GMT_MAP_DIST].scale * METERS_IN_A_KM);	/* Now in km */
+				if (!Ctrl->Z.number) Ctrl->G.inc /= (GMT->current.map.dist[GMT_MAP_DIST].scale * METERS_IN_A_KM);	/* Now in km */
+			}
+		}
 	}
 
 	/* Convert user's -F choices to internal parameters */
@@ -872,7 +905,9 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 			double h = pow (Ctrl->Z.major - Ctrl->Z.minor, 2.0) / pow (Ctrl->Z.major + Ctrl->Z.minor, 2.0);
 			Ctrl->L.min = 0.0;
 			Ctrl->L.max = M_PI * (Ctrl->Z.major + Ctrl->Z.minor) * (1.0 + (3.0 * h)/(10.0 + sqrt (4.0 - 3.0 * h)));	/* Ramanujan approximation of ellipse circumference */
-			if (Ctrl->Z.exact) {	/* Adjust inc to fit the ellipse perimeter exactly */
+			if (Ctrl->Z.number)	/* Want a specific number of points */
+				Ctrl->G.inc = Ctrl->L.max / rint (Ctrl->G.inc);
+			else if (Ctrl->Z.exact) {	/* Adjust inc to fit the ellipse perimeter exactly */
 				double f = rint (Ctrl->L.max / Ctrl->G.inc);
 				Ctrl->G.inc = Ctrl->L.max / f;
 			}
@@ -1005,7 +1040,10 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 				sprintf (GMT->current.io.segment_header, "%s-circle Pole at %g %g", type[kind], P.plon, P.plat);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Write segment header */
 		}
-		if (Ctrl->Z.active) gmt_M_str_free (z_header);
+		if (Ctrl->Z.active) {
+			gmt_M_str_free (z_header);
+			if (Ctrl->Z.number) P.n_used--;	/* To avoid repeated point if +n is used */
+		}
 		for (rec = 0; rec < P.n_used; rec++) {
 			for (col = 0; col < P.n_outputs; col++) out[col] = p_data[rec].a[P.output_choice[col]];
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
