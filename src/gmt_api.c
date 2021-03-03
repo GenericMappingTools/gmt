@@ -13039,6 +13039,7 @@ int GMT_Get_Default (void *V_API, const char *keyword, char *value) {
 		gmt_M_memcpy (value, API->GMT->current.gdal_read_in.O.mem_layout, 4, char);
 #else
 		GMT_Report (API, GMT_MSG_ERROR, "API_IMAGE_LAYOUT only available when GMT is linked with GDAL; request ignored");
+		value[0] = '\0';
 		error = GMT_NOT_A_VALID_ARG;
 #endif
 	}
