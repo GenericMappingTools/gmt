@@ -9331,8 +9331,8 @@ void gmtmap_reset_oblique_settings (struct GMT_CTRL *GMT) {
 	 * THus, if the current projection is not like that then we reset the default to a more benign default setting.  However, if
 	 * the user has actively changed the MAP_ANNOT_OBLIQUE value then we do nothing. */
 
-	if (GMT->current.setting.map_annot_oblique_set) return;	/* User touched MAP_ANNOT_OBLIQUE so we cannot reset anything */
-	if (GMT->common.R.oblique) return;	/* These are the appropriate defaults */
+	if (GMT->current.setting.map_annot_oblique_set) return;	/* User changed MAP_ANNOT_OBLIQUE so we cannot reset anything */
+	if (GMT->common.R.oblique) return;	/* These are the appropriate defaults for oblique projections with rectangular borders */
 
 	GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Reset MAP_ANNOT_OBLIQUE to anywhere\n");
 

@@ -10388,7 +10388,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			ival = gmtinit_parse_map_annot_oblique (GMT, value);
 			if (ival >= GMT_OBL_ANNOT_LON_X_LAT_Y && ival < GMT_OBL_ANNOT_FLAG_LIMIT)  {
 				GMT->current.setting.map_annot_oblique = ival;
-				GMT->current.setting.map_annot_oblique_set = 1;
+				GMT->current.setting.map_annot_oblique_set = true;
 			}
 			else
 				error = true;
