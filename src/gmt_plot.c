@@ -83,6 +83,7 @@
 /* Local variables to this file */
 
 static size_t GMT_n_annotations[4] = {0, 0, 0, 0};
+static size_t GMT_n_annotations_skip[4] = {0, 0, 0, 0};
 static size_t GMT_alloc_annotations[4] = {0, 0, 0, 0};
 static double *GMT_x_annotation[4] = {NULL, NULL, NULL, NULL}, *GMT_y_annotation[4] = {NULL, NULL, NULL, NULL};
 
@@ -1680,7 +1681,10 @@ GMT_LOCAL bool gmtplot_annot_too_crowded (struct GMT_CTRL *GMT, double x, double
 
 	for (i = 0, d_min = DBL_MAX; i < GMT_n_annotations[side]; i++)
 		d_min = MIN (d_min, hypot (GMT_x_annotation[side][i] - x, GMT_y_annotation[side][i] - y));
-	if (d_min < GMT->current.setting.map_annot_min_spacing) return (true);
+	if (d_min < GMT->current.setting.map_annot_min_spacing) {
+		GMT_n_annotations_skip[side]++;
+		return (true);
+	}
 
 	/* OK to plot and add to list */
 
@@ -6162,7 +6166,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	 */
 
 	unsigned int side;
-	bool clip_on = false;
+	bool clip_on = false, too_crowded = false;
 	char *order[2] = {"before", "after"};
 	struct PSL_CTRL *PSL= GMT->PSL;
 
@@ -6242,8 +6246,16 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 			gmt_M_free (GMT, GMT_y_annotation[side]);
 			GMT_n_annotations[side] = GMT_alloc_annotations[side] = 0;
 		}
+		if (GMT_n_annotations_skip[side]) {
+			static char *name[4] = {"bottom", "right", "top", "left"};
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "%d annotations on the %s border skipped due to crowding\n", GMT_n_annotations_skip[side], name[side]);
+			too_crowded = true;
+		}
 	}
+	if (too_crowded) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Crowding decisions depends on the value of MAP_ANNOT_MIN_SPACING, currently set to %g\n", GMT->current.setting.map_annot_min_spacing);
 
+	}
 	PSL_setcolor (PSL, GMT->current.setting.map_default_pen.rgb, PSL_IS_STROKE);
 
 	if (GMT->current.map.frame.order == GMT_BASEMAP_AFTER) {	/* Undo at end in case of multi processes */
