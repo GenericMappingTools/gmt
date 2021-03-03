@@ -9998,6 +9998,7 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 	if (gmt_M_is_dnan (GMT->current.setting.map_annot_min_spacing)) {
 		GMT->current.setting.map_annot_min_spacing = 28 * pt * scale; /* 28p */
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_ANNOT_MIN_SPACING] = true;
+		snprintf (GMT->current.setting.map_annot_min_spacing_txt, GMT_LEN16, "%.6gp", GMT->current.setting.map_annot_min_spacing / pt);
 	}
 
 	/* Must first do map_frae_width since it may be used below */
