@@ -664,7 +664,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 	if (Ctrl->S.read) {	/* Read symbol size from file */
 		Ctrl->S.n_cols++;
 		scol = Ctrl->S.n_cols - 1;
-		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_DIMENSION);
+		gmt_set_column_type (GMT, GMT_IN, scol, GMT_IS_DIMENSION);
 	}
 	else	/* Fixed scale */
 		scale = Ctrl->S.scale;

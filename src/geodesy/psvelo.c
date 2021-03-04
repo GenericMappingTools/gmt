@@ -80,6 +80,11 @@ struct PSVELO_CTRL {
 		bool active;
 		struct GMT_FILL fill;
 	} G;
+	struct SVELO_I {	/* -I[<intensity>] */
+		bool active;
+		unsigned int mode;	/* 0 if constant, 1 if read from file */
+		double value;
+	} I;
 	struct PSVELO_L {	/* -L[<pen>] */
 		bool active;
 		bool error_pen;
@@ -650,7 +655,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A<vecpar>] [%s]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-D<sigscale>] [-G<fill>] %s[-L[<pen>][+c[f|l]]] [-N] %s%s[-S<symbol><args>[+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-D<sigscale>] [-G<fill>] [-I[<intens>]] %s[-L[<pen>][+c[f|l]]] [-N] %s%s[-S<symbol><args>[+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-V] [-W[<pen>][+c[f|l]]] [%s] [%s]\n", GMT_U_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Z[m|e|n|u][+e] %s[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -668,6 +673,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set color used for uncertainty ellipses and wedges [no fill].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For other coloring options, see -L and -Z.\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern for symbol fill [no fill].");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the symbol fill color (requires -C or -G).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no intensity is given we expect it to follow the required columns in the data record.\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Draw line or symbol outline using the current pen (see -W).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append separate pen for error outlines [Same as -W].\n");
@@ -764,6 +771,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
 				}
+				break;
+			case 'I':	/* Adjust symbol color via intensity */
+				Ctrl->I.active = true;
+				if (opt->arg[0])
+					Ctrl->I.value = atof (opt->arg);
+				else
+					Ctrl->I.mode = 1;
 				break;
 			case 'L':	/* Draw the outline */
 				Ctrl->L.active = true;
@@ -882,10 +896,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LOCAL void psvelo_set_colorfill (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_PALETTE *P, double value) {
+GMT_LOCAL void psvelo_set_colorfill (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_PALETTE *P, double value, double ival) {
 	/* Called if -C was given.  Selects and updates color fills and possibly pen colors */
 	struct GMT_FILL *F = (Ctrl->Z.item == PSVELO_G_FILL) ? &Ctrl->G.fill : &Ctrl->E.fill;
 	gmt_get_fill_from_z (GMT, P, value, F);
+	if (Ctrl->I.active)
+			gmt_illuminate (GMT, ival, F->rgb);
 	if (Ctrl->L.pen.cptmode & 1) {	/* Also change error pen color via CPT */
 		gmt_M_rgb_copy (Ctrl->L.pen.rgb, F->rgb);
 		gmt_setpen (GMT, &Ctrl->L.pen);
@@ -901,13 +917,14 @@ GMT_LOCAL void psvelo_set_colorfill (struct GMT_CTRL *GMT, struct PSVELO_CTRL *C
 EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	int ix = 0, iy = 1, n_rec = 0, justify;
 	int plot_ellipse = true, plot_vector = true, error = false;
+	unsigned int icol = 0;
 	bool set_g_fill, set_e_fill;
 
 	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, length, s, dim[PSL_MAX_DIMS];
 	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0, *in = NULL;
 	double direction = 0, small_axis = 0, great_axis = 0, sigma_x, sigma_y, corr_xy;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize, headpen_width = 0.0;
-	double z_val, e_val, value;
+	double z_val, e_val, value, i_value;
 
 	char *station_name = NULL;
 
@@ -944,6 +961,11 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.item == PSVELO_G_FILL) set_g_fill = true;	/* Since we will set it via CPT lookup */
 		if (Ctrl->Z.item == PSVELO_E_FILL) set_e_fill = true;	/* Since we will set it via CPT lookup */
 	}
+	else if (Ctrl->I.active && Ctrl->I.mode == 0) {
+		gmt_illuminate (GMT, Ctrl->I.value, Ctrl->E.fill.rgb);
+		gmt_illuminate (GMT, Ctrl->I.value, Ctrl->G.fill.rgb);
+	}
+	i_value = Ctrl->I.value;
 	if (!Ctrl->L.error_pen)	/* Duplicate -W to -L */
 		gmt_M_memcpy (&Ctrl->L.pen, &Ctrl->W.pen, 1, struct GMT_PEN);
 
@@ -966,6 +988,11 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;
 
+	if (Ctrl->I.mode) {	/* Read intensity from data file */
+		Ctrl->S.n_cols++;
+		icol = Ctrl->S.n_cols - 1;
+		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_FLOAT);
+	}
 	if (Ctrl->Z.mode == PSVELO_V_USER) Ctrl->S.n_cols++;	/* Need to read one extra column */
 
 	GMT_Set_Columns (API, GMT_IN, Ctrl->S.n_cols, GMT_COL_FIX);
@@ -1026,7 +1053,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 					case PSVELO_V_MAG:   z_val = hypot (vxy[0], vxy[1]);	e_val = hypot (sigma_x, sigma_y); break;
 					case PSVELO_V_EAST:  z_val = vxy[0]; e_val = sigma_x;	break;
 					case PSVELO_V_NORTH: z_val = vxy[1]; e_val = sigma_y;	break;
-					case PSVELO_V_USER:  z_val = e_val = in[7];	break;
+					case PSVELO_V_USER:  z_val = e_val = in[Ctrl->S.n_cols-1];	break;
 				}
 			}
 			/* rescale uncertainties if necessary */
@@ -1055,7 +1082,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 					case PSVELO_V_MAG:   z_val = hypot (vxy[0], vxy[1]);	e_val = hypot (great_axis, small_axis); break;
 					case PSVELO_V_EAST:  z_val = vxy[0]; e_val = great_axis;	break;
 					case PSVELO_V_NORTH: z_val = vxy[1]; e_val = small_axis;	break;
-					case PSVELO_V_USER:  z_val = e_val = in[7];	break;
+					case PSVELO_V_USER:  z_val = e_val = in[Ctrl->S.n_cols-1];	break;
 				}
 			}
 			if (fabs (great_axis) < EPSIL && fabs (small_axis) < EPSIL)
@@ -1078,7 +1105,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 			if (Ctrl->C.active) {
 				switch (Ctrl->Z.mode) {
 					case PSVELO_V_MAG:  z_val = spin;	e_val = spinsig; break;
-					case PSVELO_V_USER: z_val = e_val = in[4];	break;
+					case PSVELO_V_USER: z_val = e_val = in[Ctrl->S.n_cols-1];	break;
 				}
 			}
 			if (Ctrl->D.active) spinsig = spinsig * Ctrl->D.scale;
@@ -1092,8 +1119,9 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 
 		value = (Ctrl->Z.item == PSVELO_E_FILL) ? e_val : z_val;	/* Select which value for color lookup - if active */
+		if (Ctrl->I.mode) i_value = in[icol];
 		if (Ctrl->C.active) {	/* Possibly update E or G fills based on value, then set in PS */
-			psvelo_set_colorfill (GMT, Ctrl, CPT, value);
+			psvelo_set_colorfill (GMT, Ctrl, CPT, value, i_value);
 			gmt_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
 		}
 

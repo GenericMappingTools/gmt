@@ -159,6 +159,14 @@ Optional Arguments
     **Note**: Using **-C** (and optionally **-Z**) will update the symbol fill
     color based on the selected measure in **-Z** [magnitude].
 
+.. _-I:
+
+**-I**\ *intens*
+    Use the supplied *intens* value (nominally in the -1 to +1 range) to
+    modulate the symbol fill color by simulating illumination [none].
+    If no intensity is provided we will instead read *intens* from an extra
+    data column after the required input columns determined by **-S**.
+
 .. _-L:
 
 **-L**\ [*pen*\ [**+c**\ [**f**\|\ **l**]]]
