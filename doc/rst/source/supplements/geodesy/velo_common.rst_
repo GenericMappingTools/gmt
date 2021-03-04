@@ -4,8 +4,11 @@ Description
 -----------
 
 Reads data values from *files* [or standard input] and
-will plot velocity arrows on a map.
-Most options are the same as for :doc:`plot </plot>`, except **-S**.
+will plot the selected geodesy symbol on a map.
+You may choose from velocity vectors and their uncertainties,
+rotational wedges and their uncertainties, anisotropy bars,
+or strain crosses.  Symbol fills or their outlines may be colored
+based on constant parameters or via color lookup tables.
 
 Required Arguments
 ------------------
@@ -36,9 +39,9 @@ Required Arguments
         velocity arrows. The *confidence* sets the 2-dimensional confidence
         limit for the ellipse, e.g., 0.95 for 95% confidence ellipse. *font*
         sets the font and size of the text [9p,Helvetica,black]. The ellipse will be filled with the
-        color or shade specified by the |-G| option [default transparent]. The
+        color or shade specified by the |-E| option [default is transparent]. The
         arrow and the circumference of the ellipse will be drawn with the pen
-        attributes specified by the |-W| option. Parameters are expected to be
+        attributes specified by the |-W| option and arrow-head can be colored via |-G|. Parameters are expected to be
         in the following columns:
 
             **1**,\ **2**:
@@ -49,7 +52,7 @@ Required Arguments
             uncertainty of eastward, northward velocities (1-sigma) (**-:** option interchanges order)
             **7**:
             correlation between eastward and northward components
-            **8**:
+            **Trailing text**:
             name of station (optional).
 
     **-Sn**\ *barscale*
@@ -68,9 +71,9 @@ Required Arguments
         the velocity arrows. The *confidence* sets the 2-dimensional
         confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
         *font* sets the font and size of the text [9p,Helvetica,black]. The ellipse will be
-        filled with the color or shade specified by the |-G| option [default
+        filled with the color or shade specified by the |-E| option [default
         transparent]. The arrow and the circumference of the ellipse will be
-        drawn with the pen attributes specified by the |-W| option. Parameters
+        drawn with the pen attributes specified by the |-W| option and arrow-head can be colored via |-G|. Parameters
         are expected to be in the following columns:
 
             **1**,\ **2**:
@@ -81,16 +84,16 @@ Required Arguments
             semi-major, semi-minor axes
             **7**:
             counter-clockwise angle, in degrees, from horizontal axis to major axis of ellipse.
-            **8**:
+            **Trailing text**:
             name of station (optional)
 
     **-Sw**\ *wedgescale/wedgemag*
 
-        Rotational wedges. *wedgescale* sets the size of the wedges. Values are
+        Rotational wedges. *wedgescale* sets the size of the wedges. Rotation values are
         multiplied by *wedgemag* before plotting. For example, setting
         *wedgemag* to 1.e7 works well for rotations of the order of 100
-        nanoradians/yr. Use **-G** to set the fill color or shade for the wedge,
-        and **-E** to set the color or shade for the uncertainty. Parameters are
+        nanoradians/yr. Use |-G| to set the fill color or shade for the wedge,
+        and |-E| to set the color or shade for the uncertainty. Parameters are
         expected to be in the following columns:
 
             **1**,\ **2**:
@@ -131,8 +134,8 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *cpt*
-    Give a CPT and let symbol color be
-    determined by the magnitude.  See **-Z** for other selections.
+    Give a CPT and let symbol color normally set by |-G| be
+    determined from the magnitude.  See **-Z** for other selections.
 
 .. _-D:
 
@@ -152,7 +155,9 @@ Optional Arguments
 .. _-G:
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
-    Select color or pattern for filling of symbols or polygons [Default is no fill].
+    Select color or pattern for filling of symbols [Default is no fill].
+    **Note**: Using **-C** (and optionally **-Z**) will update the symbol fill
+    color based on the selected measure in **-Z** [magnitude].
 
 .. _-L:
 
