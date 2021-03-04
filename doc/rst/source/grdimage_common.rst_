@@ -61,6 +61,8 @@ Optional Arguments
     then we will write a GeoTiff image if the GMT projection syntax translates into a PROJ syntax,
     otherwise a plain tiff file is produced. (2) Any vector elements will be lost.
 
+.. _-B:
+
 .. include:: explain_-B.rst_
 
 .. _-C:
