@@ -24,7 +24,7 @@ Synopsis
 [ |-S|\ *<format><args>*\ [**+f**\ *font*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ *pen* ]
+[ |-W|\ [*pen*][**+c**\ [**f**\|\ **l**]] ]
 [ |-Z|\ [**m**\|\ **e**\|\ **n**\|\ **u**\ ][**+e**] ]
 |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]

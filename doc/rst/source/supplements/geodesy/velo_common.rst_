@@ -175,9 +175,13 @@ Optional Arguments
 
 .. _-W:
 
-**-W**
+**-W**\ [*pen*][**+c**\ [**f**\|\ **l**]]
     Set pen attributes for velocity arrows, ellipse circumference and
     fault plane edges. [Defaults: width = default, color = black, style = solid].
+    If the modifier **+cl** is appended then the color of the pen are updated from the CPT (see
+    **-C**). If instead modifier **+cf** is appended then the color from the cpt
+    file is applied to symbol fill only [Default].  Use just **+c** to set both
+    pen and fill color.
 
 .. _-X:
 
@@ -190,8 +194,9 @@ Optional Arguments
     set the fill color.  Choose from **m**\ agnitude (vector magnitude or
     rotation magnitude), **e**\ ast-west velocity, **n**\ orth-south velocity,
     or **u**\ ser-supplied data column (supplied after the required columns).
-    To instead use the corresponding error estimates to lookup the color and
-    paint the error ellipse or wedge instead, append **+e**.
+    To instead use the corresponding error estimates (i.e., vector or rotation
+    uncertainty) to lookup the color and paint the error ellipse or wedge
+    instead, append **+e**.
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_
