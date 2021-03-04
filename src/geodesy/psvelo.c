@@ -1,28 +1,34 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 1996-2012 by G. Patau
- *    Copyright (c) 2013-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- *    Donated to the GMT project by G. Patau upon her retirement from IGPG
- *    Distributed under the Lesser GNU Public Licence
- *    See README file for copying and redistribution conditions.
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
-
-psvelo will read <x,y> pairs (or <lon,lat>) from inputfile and
-plot symbols on a map. Velocity ellipses, strain
-crosses, or strain wedges, may be specified, some of which require
-additional columns of data.  Only one symbol may be plotted at a time.
-PostScript code is written to stdout.
-
-
- Author:	Kurt Feigl
- Date:		7 July 1998
- Version:	5
- Roots:		based on psxy.c
- Adapted to version 3.3 by Genevieve Patau (25 June 1999)
- Last modified : 18 February 2000.  Ported to GMT 5 by P. Wessel
-
-*/
+ * Author:	G. Patau, IGPG, w/ Kurt Feigl
+ * Date:	1-JAN-2010
+ * Version:	6 API
+ *    Copyright (c) 1996-2012 by G. Patau, then donated to the GMT project
+ *    by G. Patau upon her retirement from IGPG
+ *
+ * Roots:		based on psxy.c
+ * Adapted to version 3.3 by Genevieve Patau (25 June 1999)
+ * Last modified : 18 February 2000.  Ported to GMT 5 by P. Wessel in 2013.
+ * Updated 3 March 2021 to add color enhancements by P. Wessel
+ *
+ * Brief synopsis: psvelo will read coordinates and plot geodetic symbols
+ * such as velocity ellipses, strain crosses, or strain wedges on maps.
+ */
 
 #include "gmt_dev.h"
 
@@ -74,8 +80,10 @@ struct PSVELO_CTRL {
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct PSVELO_L {	/* -L */
+	struct PSVELO_L {	/* -L[<pen>] */
 		bool active;
+		bool error_pen;
+		struct GMT_PEN pen;
 	} L;
 	struct PSVELO_N {	/* -N */
 		bool active;
@@ -642,8 +650,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A<vecpar>] [%s]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-D<sigscale>] [-G<fill>] %s[-L] [-N] %s%s[-S<symbol><args>[+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-V] [-W<pen>] [%s] [%s]\n", GMT_U_OPT, GMT_X_OPT, GMT_Y_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-D<sigscale>] [-G<fill>] %s[-L[<pen>][+c[f|l]]] [-N] %s%s[-S<symbol><args>[+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-V] [-W[<pen>][+c[f|l]]] [%s] [%s]\n", GMT_U_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Z[m|e|n|u][+e] %s[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -655,13 +663,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_vector_syntax (API->GMT, 15);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign colors based on vector magnitude.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Multiply uncertainties by <sigscale>. (Se and Sw only)i\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Set color used for uncertainty wedges in -Sw option.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify color (for symbols/polygons) or pattern (for polygons). fill can be either\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1) <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   2) p[or P]<iconsize>/<pattern> for predefined patterns (0-90).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For other coloring options, see -W and -Z.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Multiply uncertainties by <sigscale> (Se and Sw only).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Set color used for uncertainty ellipses and wedges [no fill].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For other coloring options, see -L and -Z.\n");
+	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern for symbol fill [no fill].");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Draw line or symbol outline using the current pen (see -W).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append separate pen for error outlines [Same as -W].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and scale (plus optional font; see documentation). Choose between:\n");
@@ -678,7 +687,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   e: East velocity component.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   n: North velocity component.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   u: User column (given after required columns).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Color selected will replace act as -G.  Append +e to instead act as -E.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Color selected will replace -G<fill>.  Append +e to instead act as -E<fill>.\n");
 	GMT_Option (API, "c,di,e,h,i,p,qi,t,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -758,6 +767,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'L':	/* Draw the outline */
 				Ctrl->L.active = true;
+				if (opt->arg) {
+					Ctrl->L.error_pen = true;
+					if (gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
+						gmt_pen_syntax (GMT, 'L', NULL, " ", 0);
+						n_errors++;
+					}
+				}
 				break;
 			case 'N':	/* Do not skip points outside border */
 				Ctrl->N.active = true;
@@ -864,11 +880,16 @@ GMT_LOCAL void psvelo_set_colorfill (struct GMT_CTRL *GMT, struct PSVELO_CTRL *C
 	/* Called if -C was given.  Selects and updates color fills */
 	struct GMT_FILL *F = (Ctrl->Z.item == PSVELO_V_FILL) ? &Ctrl->G.fill : &Ctrl->E.fill;
 	gmt_get_fill_from_z (GMT, P, value, F);
-
-	if (Ctrl->W.pen.cptmode & 1)	/* Change pen color via CPT */
+	if (Ctrl->L.pen.cptmode & 1) {	/* Also change error pen color via CPT */
+		gmt_M_rgb_copy (Ctrl->L.pen.rgb, F->rgb);
+		gmt_setpen (GMT, &Ctrl->L.pen);
+	}
+	if (Ctrl->W.pen.cptmode & 1) {	/* Also change pen color via CPT */
 		gmt_M_rgb_copy (Ctrl->W.pen.rgb, F->rgb);
-	if ((Ctrl->W.pen.cptmode & 2) == 0 && !Ctrl->G.active)	/* Turn off CPT fill */
-		gmt_M_rgb_copy (Ctrl->G.fill.rgb, GMT->session.no_rgb);
+		gmt_setpen (GMT, &Ctrl->W.pen);
+		if (!Ctrl->L.error_pen)
+			gmt_M_rgb_copy (Ctrl->L.pen.rgb, Ctrl->W.pen.rgb);
+	}
 }
 
 EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
@@ -876,7 +897,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	int des_ellipse = true, des_arrow = true, error = false;
 	bool set_g_fill, set_e_fill;
 
-	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, length, s, magnitude, dim[PSL_MAX_DIMS];
+	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, length, s, dim[PSL_MAX_DIMS];
 	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0, *in = NULL;
 	double direction = 0, small_axis = 0, great_axis = 0, sigma_x, sigma_y, corr_xy;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize, headpen_width = 0.0;
@@ -917,6 +938,8 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.item == PSVELO_V_FILL) set_g_fill = true;	/* Since we will set it via CPT lookup */
 		if (Ctrl->Z.item == PSVELO_E_FILL) set_e_fill = true;	/* Since we will set it via CPT lookup */
 	}
+	if (!Ctrl->L.error_pen)	/* Duplicate -W to -L */
+		gmt_M_memcpy (&Ctrl->L.pen, &Ctrl->W.pen, 1, struct GMT_PEN);
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
@@ -1060,16 +1083,18 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 
 		value = (Ctrl->Z.item == PSVELO_E_FILL) ? e_val : z_val;	/* Select which value for color lookup - if active */
-		if (Ctrl->C.active)	/* Possibly update E or G fills based on value, then set in PS */
+		if (Ctrl->C.active) {	/* Possibly update E or G fills based on value, then set in PS */
 			psvelo_set_colorfill (GMT, Ctrl, CPT, value);
+			gmt_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
+		}
 
 		switch (Ctrl->S.symbol) {
 			case CINE:
-				magnitude = hypot (vxy[0], vxy[1]);
-				des_arrow = (magnitude < 1.e-8) ? false : true;
+				des_arrow = (hypot (vxy[0], vxy[1]) < 1.e-8) ? false : true;
 				psvelo_trace_arrow (GMT, in[GMT_X], in[GMT_Y], vxy[0], vxy[1], Ctrl->S.scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
 				psvelo_get_trans (GMT, in[GMT_X], in[GMT_Y], &t11, &t12, &t21, &t22);
 				if (des_ellipse) {
+					if (Ctrl->L.error_pen) gmt_setpen (GMT, &Ctrl->L.pen);
 					if (Ctrl->E.active)
 						psvelo_paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, Ctrl->S.scale,
 							t11,t12,t21,t22, Ctrl->E.active, &Ctrl->E.fill, Ctrl->L.active);
@@ -1100,6 +1125,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 						psl_vector_v4 (PSL, plot_x, plot_y, dim, this_rgb, Ctrl->L.active);
 					}
 					else {
+						if (Ctrl->L.active) gmt_setpen (GMT, &Ctrl->W.pen);
 						dim[6] = (double)Ctrl->A.S.v.status;
 						dim[7] = (double)Ctrl->A.S.v.v_kind[0];	dim[8] = (double)Ctrl->A.S.v.v_kind[1];
 						dim[11] = (headpen_width > 0.0) ? headpen_width : 0.5 * Ctrl->W.pen.width;

@@ -144,8 +144,10 @@ Optional Arguments
 
 **-E**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Sets the color or shade used for filling uncertainty wedges
-    (**-Sw**) or velocity error ellipses (**-Se** or **-Sr**). [If
-    **-E** is not specified, the uncertainty regions will be transparent.]
+    (**-Sw**) or velocity error ellipses (**-Se** or **-Sr**). If
+    **-E** is not specified, the uncertainty regions will be transparent.
+    **Note**: Using **-C** and **-Z+e** will update the uncertainty fill
+    color based on the selected measure in **-Z** [magnitude error].
 
 .. _-G:
 
@@ -154,9 +156,14 @@ Optional Arguments
 
 .. _-L:
 
-**-L**
-    Draw lines. Ellipses and fault planes will have their outlines drawn
-    using current pen (see **-W**).
+**-L**\ [*pen*\ [**+c**\ [**f**\|\ **l**]]]
+    Draw lines. Ellipses and rotational wedges will have their outlines drawn
+    using current pen (see **-W**).  Alternatively, append a separate pen to
+    use for the error outlines.
+    If the modifier **+cl** is appended then the color of the pen are updated from the CPT (see
+    **-C**). If instead modifier **+cf** is appended then the color from the cpt
+    file is applied to error fill only [Default].  Use just **+c** to set both
+    pen and fill color.
 
 .. _-N:
 

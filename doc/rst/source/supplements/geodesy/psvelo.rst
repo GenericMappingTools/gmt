@@ -20,7 +20,7 @@ Synopsis
 [ |-E|\ *fill* ]
 [ |-G|\ *fill* ]
 [ |-K| ]
-[ |-L| ]
+[ |-L|\ [*pen*[**+c**\ [**f**\|\ **l**]]] ]
 [ |-N| ] [ |-O| ] [ |-P| ]
 [ |-S|\ *<format><args>*\ [**+f**\ *font*] ]
 [ |SYN_OPT-U| ]
