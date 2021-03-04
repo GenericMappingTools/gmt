@@ -641,10 +641,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A<vecpar>] [%s] [-C<cpt>] [-D<sigscale>]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] %s[-L] [-N] %s%s[-S<symbol><args>[+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_Y_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A<vecpar>] [%s]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-D<sigscale>] [-G<fill>] %s[-L] [-N] %s%s[-S<symbol><args>[+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-V] [-W<pen>] [%s] [%s]\n", GMT_U_OPT, GMT_X_OPT, GMT_Y_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Z[m|e|n|u][+e] %s[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -672,7 +672,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     x  Strain crosses : in X,Y,Eps1,Eps2,Theta.\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
-	GMT_Option (API, "X,c,di,e,h,i,p,qi,t,:,.");
+	GMT_Option (API, "X");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Select quantity to use with -C to look-up colors.  Choose among:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m: Magnitude of vector or rotation [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   e: East velocity component.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n: North velocity component.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   u: User column (given after required columns).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Color selected will replace act as -G.  Append +e to instead act as -E.\n");
+	GMT_Option (API, "c,di,e,h,i,p,qi,t,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
