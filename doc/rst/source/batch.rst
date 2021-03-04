@@ -18,8 +18,8 @@ Synopsis
 [ |-I|\ *includefile* ]
 [ |-M|\ [*job*] ]
 [ |-Q|\ [**s**] ]
-[ |-S|\ **b**\ *preflight* ]
-[ |-S|\ **f**\ *postflight* ]
+[ |-Sb|\ *preflight* ]
+[ |-Sf|\ *postflight* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*workdir*] ]
 [ |-Z| ]
@@ -101,12 +101,14 @@ Optional Arguments
     *preflight* script derived from **-Sb** which is always executed since it may produce data needed when
     building the main batch (or master) scripts.
 
-.. _-S:
+.. _-Sb:
 
 **-Sb**\ *preflight*
     The optional GMT modern mode *preflight* (written in the same scripting language as *mainscript*) can be
     used to download or copy data files or create files (such as *timefile*) that will be needed by *mainscript*.
     It is always run **b**\ efore the main sequence of batch scripts.
+
+.. _-Sf:
 
 **-Sf**\ *postflight*
     The optional *postflight* (written in the same scripting language as *mainscript*) can be
