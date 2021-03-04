@@ -151,6 +151,8 @@ Optional Arguments
     is gravity anomalies in mGal and output should be geoid heights in
     meters. [Default is no scale].
 
+.. _-N:
+
 .. include:: explain_fft.rst_
 
 .. _-Q:

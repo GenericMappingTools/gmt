@@ -6055,6 +6055,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	/* MAP_ANNOT_MIN_SPACING */
 	GMT->current.setting.map_annot_min_spacing = 0; /* 0p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_MIN_SPACING] = 'p';
+	strncpy (GMT->current.setting.map_annot_min_spacing_txt, "0p", GMT_LEN16);
 	/* MAP_ANNOT_ORTHO */
 	strcpy (GMT->current.setting.map_annot_ortho, "we");
 	/* MAP_DEGREE_SYMBOL (degree) */
@@ -10026,8 +10027,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_MAP_ANNOT_MIN_SPACING:
 			if (value[0] == '-')	/* Negative */
 				error = true;
-			else
+			else {
 				GMT->current.setting.map_annot_min_spacing = gmt_M_to_inch (GMT, value);
+				strncpy (GMT->current.setting.map_annot_min_spacing_txt, value, GMT_LEN16);
+			}
 			break;
 		case GMTCASE_Y_AXIS_TYPE:
 			if (gmt_M_compat_check (GMT, 4)) {

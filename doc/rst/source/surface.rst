@@ -19,7 +19,7 @@ Synopsis
 [ |-C|\ *convergence_limit*\ [%] ]
 [ |-J|\ *parameters* ]
 [ |-D|\ *breakline_file*\ [**+z**\ [*level*]] ]
-[ |-L|\ **l**\ *lower* ] [ **-Lu**\ *upper* ]
+[ |-L|\ **l**\ *lower* ] [ |-L|\ **u**\ *upper* ]
 [ |-M|\ *max_radius* ]
 [ |-N|\ *max_iterations* ]
 [ |-Q| ]
@@ -117,8 +117,6 @@ Optional Arguments
     by the grid spacing multiplier.
 
 .. _-J:
-
-**-J**\ *parameters*
 
 .. |Add_-J| replace::
     Select the data map projection. This projection is only used to add a referencing info

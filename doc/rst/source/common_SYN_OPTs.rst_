@@ -74,7 +74,7 @@
 
 .. |SYN_OPT--| replace:: **--PAR**\ =\ *value*
 
-.. |SYN_OPT-Area| replace:: **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][**+a**\ [**g**\|\ **i**][**s**\|\ **S**]][**+l**\|\ **r**][**+p**\ *percent*]
+.. |SYN_OPT-Area| replace:: |-A|\ *min\_area*\ [/*min\_level*/*max\_level*][**+a**\ [**g**\|\ **i**][**s**\|\ **S**]][**+l**\|\ **r**][**+p**\ *percent*]
 
 
 .. |br| raw:: html
@@ -146,6 +146,12 @@
 
    <a class="reference internal" href="#j"><span>
 
+.. |-Jz| replace:: |h-Jz|\ **-Jz**\ |h-x|
+
+.. |h-Jz| raw:: html
+
+   <a class="reference internal" href="#jz"><span>
+
 .. |-K| replace:: |h-K|\ **-K**\ |h-x|
 
 .. |h-K| raw:: html
@@ -199,6 +205,18 @@
 .. |h-S| raw:: html
 
    <a class="reference internal" href="#s"><span>
+
+.. |-Sb| replace:: |h-Sb|\ **-Sb**\ |h-x|
+
+.. |h-Sb| raw:: html
+
+   <a class="reference internal" href="#sb"><span>
+
+.. |-Sf| replace:: |h-Sf|\ **-Sf**\ |h-x|
+
+.. |h-Sf| raw:: html
+
+   <a class="reference internal" href="#sf"><span>
 
 .. |-T| replace:: |h-T|\ **-T**\ |h-x|
 

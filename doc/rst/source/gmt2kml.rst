@@ -18,10 +18,11 @@ Synopsis
 [ |-E|\ [**+e**][**+s**] ]
 [ |-F|\ **e**\|\ **s**\|\ **t**\|\ **l**\|\ **p**\|\ **w** ]
 [ |-G|\ [*color*]\ [**+f**\|\ **n**] ]
-[ |-I|\ *icon* ] [ **-K**]
+[ |-I|\ *icon* ]
+[ |-K| ]
 [ |-L|\ *col1:name1*,\ *col2:name2*,... ]
 [ |-N|\ [**t**\|\ *col*\|\ *name\_template*\|\ *name*] ]
-[ **-O**]
+[ |-O| ]
 [ |-Q|\ **a**\|\ **i**\ *az* ]
 [ |-Q|\ **s**\ *scale* ]
 [ |-R|\ **e**\|\ *w/e/s/n* ]
@@ -156,6 +157,8 @@ Optional Arguments
 
 **-K**
     Allow more KML code to be appended to the output later [finalize the KML file].
+
+.. _-L:
 
 **-L**\ *name1*,\ *name2*,...
     Extended data given. Append one or more column names separated by

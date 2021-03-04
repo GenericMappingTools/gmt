@@ -137,6 +137,9 @@ struct PSHISTOGRAM_INFO {	/* Control structure for pshistogram */
 	struct GMT_ARRAY *T;
 };
 
+#define LOG10_2 0.301029995664
+#define LOG10_5 0.698970004336
+
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	unsigned int k;
 	struct PSHISTOGRAM_CTRL *C = NULL;
@@ -1008,14 +1011,31 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	}
 
 	if (F.wesn[XHI] == F.wesn[XLO]) {	/* Set automatic x range [and tickmarks] when -R -T missing */
-		if (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval == 0.0) {
-			tmp = pow (10.0, floor (d_log10 (GMT, x_max-x_min)));
-			if (((x_max-x_min) / tmp) < 3.0) tmp *= 0.5;
+		if (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval == 0.0) {	/* No tick info set, pick something */
+			if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10)
+				tmp = 1.0;	/* Do powers of 10 only */
+			else {	/* Linear */
+				tmp = pow (10.0, floor (d_log10 (GMT, x_max-x_min)));
+				if (((x_max-x_min) / tmp) < 3.0) tmp *= 0.5;
+			}
 		}
 		else
 			tmp = GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval;
-		F.wesn[XLO] = floor (x_min / tmp) * tmp;
-		F.wesn[XHI] = ceil  (x_max / tmp) * tmp;
+		if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10) {	/* Round to nearest multiples of 1,2,5 * 10^p only */
+			double f = log10 (x_min), p = floor (f), df = f - p;
+			if (df > LOG10_5) F.wesn[XLO] = pow (10.0, p + LOG10_5);
+			else if (df > LOG10_2) F.wesn[XLO] = pow (10.0, p + LOG10_2);
+			else F.wesn[XLO] = pow (10.0, p);
+			f = log10 (x_max), p = floor (f), df = f - p;
+			if (df > LOG10_5) F.wesn[XHI] = pow (10.0, p + 1.0);
+			else if (df > LOG10_2) F.wesn[XHI] = pow (10.0, p + LOG10_5);
+			else F.wesn[XHI] = pow (10.0, p + LOG10_2);
+		}
+		else {	/* Linear */
+			F.wesn[XLO] = floor (x_min / tmp) * tmp;
+			F.wesn[XHI] = ceil  (x_max / tmp) * tmp;
+		}
+		if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10 && F.wesn[XLO] == 0.0) F.wesn[XLO] = 1.0;	/* To avoid any log10 of zero issues */
 		if (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval == 0.0) {
 			GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval = GMT->current.map.frame.axis[GMT_X].item[GMT_TICK_UPPER].interval = tmp;
 			GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].parent = 0;
@@ -1185,14 +1205,35 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	if (automatic) {	/* Set up s/n based on 'clever' rounding up of the minmax values */
 		GMT->common.R.active[RSET] = true;
-		F.wesn[YLO] = 0.0;
 		if (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval == 0.0) {
-			tmp = pow (10.0, floor (d_log10 (GMT, F.yy1)));
-			if ((F.yy1 / tmp) < 3.0) tmp *= 0.5;
+			if (GMT->current.proj.xyz_projection[GMT_Y] == GMT_LOG10)
+				tmp = 1.0;	/* Do powers of 10 only for annotations */
+			else {	/* Linear */
+				tmp = pow (10.0, floor (d_log10 (GMT, F.yy1)));
+				if ((F.yy1 / tmp) < 3.0) tmp *= 0.5;
+			}
 		}
 		else
 			tmp = GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval;
-		F.wesn[YHI] = ceil (F.yy1 / tmp) * tmp;
+		if (GMT->current.proj.xyz_projection[GMT_Y] == GMT_LOG10) {	/* Round to nearest multiples of 1,2,5 * 10^p only */
+			double f, p, df;
+			if (F.yy0 > 0) {
+				f = log10 (F.yy0), p = floor (f), df = f - p;
+				if (df > LOG10_5) F.wesn[YLO] = pow (10.0, p + LOG10_5);
+				else if (df > LOG10_2) F.wesn[YLO] = pow (10.0, p + LOG10_2);
+				else F.wesn[YLO] = pow (10.0, p);
+			}
+			else	/* Safety valve for log 0 */
+				F.wesn[YLO] = 1.0;
+			f = log10 (F.yy1), p = floor (f), df = f - p;
+			if (df > LOG10_5) F.wesn[YHI] = pow (10.0, p + 1.0);
+			else if (df > LOG10_2) F.wesn[YHI] = pow (10.0, p + LOG10_5);
+			else F.wesn[YHI] = pow (10.0, p + LOG10_2);
+		}
+		else {
+			F.wesn[YLO] = 0.0;
+			F.wesn[YHI] = ceil (F.yy1 / tmp) * tmp;
+		}
 		if (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval == 0.0) {	/* Tickmarks not set */
 			GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval = GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_UPPER].interval = tmp;
 			GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].parent = 1;

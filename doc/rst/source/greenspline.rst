@@ -22,7 +22,7 @@ Synopsis
 [ |-L| ]
 [ |-N|\ *nodefile* ]
 [ |-Q|\ *az*\|\ *x/y/z* ]
-[ **-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*]] ]
+[ |-R|\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*]] ]
 [ |-S|\ **c\|t\|l\|r\|p\|q**\ [*pars*] ] [ |-T|\ *maskgrid* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**]]
