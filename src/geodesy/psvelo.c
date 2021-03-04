@@ -767,7 +767,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'L':	/* Draw the outline */
 				Ctrl->L.active = true;
-				if (opt->arg) {
+				if (opt->arg[0]) {
 					Ctrl->L.error_pen = true;
 					if (gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
 						gmt_pen_syntax (GMT, 'L', NULL, " ", 0);
@@ -831,14 +831,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
-				if (opt->arg && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
+				if (opt->arg[0] && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
 					n_errors++;
 				}
 				break;
 			case 'Z':	/* Set items to control CPT coloring */
 				Ctrl->Z.active = true;
-				if ((c = strstr (opt->arg, "+e"))) {	/* Paint error part of symbol instead (-E) */
+				if (opt->arg[0] && (c = strstr (opt->arg, "+e"))) {	/* Paint error part of symbol instead (-E) */
 					Ctrl->Z.item = PSVELO_E_FILL;
 					c[0] = '\0';	/* Temporarily chop off the modifier */
 				}
