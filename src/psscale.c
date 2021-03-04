@@ -107,9 +107,10 @@ struct PSSCALE_CTRL {
 	struct PSSCALE_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct PSSCALE_S {	/* -S[+c|n][+s] */
+	struct PSSCALE_S {	/* -S[+c|n][+s][+a<angle>] */
 		bool active;
 		bool skip;
+		double angle;
 		unsigned int mode;
 	} S;
 	struct PSSCALE_W {	/* -W<scale> */
@@ -364,6 +365,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 			case 'S':
 				Ctrl->S.active = true;
 				if (opt->arg[0]) {	/* Modern syntax with modifiers */
+					if ((c = strstr (opt->arg, "+a"))) {
+						Ctrl->S.mode = 2;
+						Ctrl->S.angle = atof (&c[2]);
+					}
 					if (strstr (opt->arg, "+c"))
 						Ctrl->S.mode = 1;
 					if (strstr (opt->arg, "+n"))	/* Default, but just in case */
@@ -1074,7 +1079,12 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 
 		annot_off = ((len > 0.0 && !center) ? len : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
 		label_off = annot_off + GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH] + GMT->current.setting.map_label_offset;
-		y_annot = y_base + dir * annot_off;
+		if (no_B_mode & 2) {
+			y_annot = y_base + dir * annot_off * fabs (sind (Ctrl->S.angle));
+			l_justify = PSL_ML;
+		}
+		else
+			y_annot = y_base + dir * annot_off;
 		if ((flip & PSSCALE_FLIP_ANNOT) == (flip & PSSCALE_FLIP_LABEL) / 2) y_label = y_base + dir * label_off;
 
 		PSL_setlinecap (PSL, PSL_BUTT_CAP);	/* Butt cap required for outline of triangle */
@@ -1208,7 +1218,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					}
 					else
 						gmt_sprintf_float (GMT, text, format, P->data[i].z_low);
-					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, -this_just, form);
+					if (do_annot) {
+						if (no_B_mode & 2)
+							xx += annot_off * cosd (Ctrl->S.angle);
+						PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, -this_just, form);
+					}
 				}
 				x1 += z_width[i];
 			}
