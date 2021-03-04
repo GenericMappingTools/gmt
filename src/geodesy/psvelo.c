@@ -1099,7 +1099,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 				psvelo_trace_arrow (GMT, in[GMT_X], in[GMT_Y], vxy[0], vxy[1], Ctrl->S.scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
 				psvelo_get_trans (GMT, in[GMT_X], in[GMT_Y], &t11, &t12, &t21, &t22);
 				if (plot_ellipse) {
-					if (Ctrl->L.error_pen) gmt_setpen (GMT, &Ctrl->L.pen);
+					if (Ctrl->L.active) gmt_setpen (GMT, &Ctrl->L.pen);
 					if (Ctrl->E.active)
 						psvelo_paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, Ctrl->S.scale,
 							t11,t12,t21,t22, Ctrl->E.active, &Ctrl->E.fill, Ctrl->L.active);
