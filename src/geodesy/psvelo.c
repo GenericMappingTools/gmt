@@ -110,7 +110,7 @@ struct PSVELO_CTRL {
 };
 
 enum psvelo_types {
-	PSVELO_V_FILL = 0,
+	PSVELO_G_FILL = 0,
 	PSVELO_E_FILL = 1,
 	PSVELO_V_MAG	= 0,
 	PSVELO_V_EAST,
@@ -870,6 +870,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, n_set > 1, "Only one -S setting is allowed.\n");
 	n_errors += gmt_M_check_condition (GMT, !no_size_needed && (Ctrl->S.symbol > 1 && Ctrl->S.scale <= 0.0), "Option -S: Must specify symbol size.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && ! (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_WEDGE), "Option -D requires -Se|w.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->C.active, "Option -Z requires -C.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->Z.item == PSVELO_E_FILL && Ctrl->E.active, "Options -C -Z+e cannot be combined with -E.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->Z.item == PSVELO_G_FILL && Ctrl->G.active, "Options -C -Z cannot be combined with -G.\n");
 
 	if (!got_A && Ctrl->W.active) Ctrl->A.S.v.pen = Ctrl->W.pen;	/* Set vector pen to that given by -W  */
 	if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2 && Ctrl->W.active) gmt_M_rgb_copy (Ctrl->A.S.v.pen.rgb, Ctrl->W.pen.rgb);	/* Set vector pen color from -W but not thickness */
@@ -881,7 +884,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 
 GMT_LOCAL void psvelo_set_colorfill (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_PALETTE *P, double value) {
 	/* Called if -C was given.  Selects and updates color fills and possibly pen colors */
-	struct GMT_FILL *F = (Ctrl->Z.item == PSVELO_V_FILL) ? &Ctrl->G.fill : &Ctrl->E.fill;
+	struct GMT_FILL *F = (Ctrl->Z.item == PSVELO_G_FILL) ? &Ctrl->G.fill : &Ctrl->E.fill;
 	gmt_get_fill_from_z (GMT, P, value, F);
 	if (Ctrl->L.pen.cptmode & 1) {	/* Also change error pen color via CPT */
 		gmt_M_rgb_copy (Ctrl->L.pen.rgb, F->rgb);
@@ -938,7 +941,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		if ((CPT = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		if (Ctrl->Z.item == PSVELO_V_FILL) set_g_fill = true;	/* Since we will set it via CPT lookup */
+		if (Ctrl->Z.item == PSVELO_G_FILL) set_g_fill = true;	/* Since we will set it via CPT lookup */
 		if (Ctrl->Z.item == PSVELO_E_FILL) set_e_fill = true;	/* Since we will set it via CPT lookup */
 	}
 	if (!Ctrl->L.error_pen)	/* Duplicate -W to -L */
