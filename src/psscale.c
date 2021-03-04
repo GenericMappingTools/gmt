@@ -1231,7 +1231,6 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					else
 						gmt_sprintf_float (GMT, text, format, P->data[i].z_low);
 					if (do_annot) {
-						fprintf (stderr, "A = %g\n", Ctrl->S.angle);
 						if (no_B_mode & PSSCALE_ANNOT_ANGLED)	/* Adjust x-position due to the slanting */
 							xx += GMT->current.setting.map_annot_offset[GMT_PRIMARY] * cosd (t_angle);
 						PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, dir * Ctrl->S.angle, -this_just, form);
