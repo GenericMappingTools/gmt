@@ -105,3 +105,39 @@ alias vgd=vpngdbuild
 alias vpd=vpdfdbuild
 alias vgr=vpngrbuild
 alias vpr=vpdfrbuild
+
+# View large sets of failures one at the time with gap in time between launch:
+
+# View all release PNG failures one at the time with given sleep gap [3s]
+function view_png_failures_r {
+	if [ "X$1" == "X" ]; then
+		w=3
+	else
+		w=$1
+	fi
+	pushd .; gtop; cd rbuild;
+	ls */*/*/*.png */*/*/*/*.png > /tmp/vpf
+	while read png; do
+		$pngview $png
+		sleep $w
+	done < /tmp/vpf
+	rm -f /tmp/vpf
+	popd
+}
+
+# View all release PDF failures one at the time with given sleep gap [3s]
+function view_pdf_failures_r {
+	if [ "X$1" == "X" ]; then
+		w=3
+	else
+		w=$1
+	fi
+	pushd .; gtop; cd rbuild;
+	ls */*/*/*.pdf */*/*/*/*.pdf > /tmp/vpf
+	while read pdf; do
+		$pdfview $pdf
+		sleep $w
+	done < /tmp/vpf
+	rm -f /tmp/vpf
+	popd
+}

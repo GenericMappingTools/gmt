@@ -104,6 +104,8 @@ Optional Arguments
     use **+R** for uppercase Roman numerals [Arabic numerals].
     Append **+v** to increase tag numbers vertically down columns [horizontally across rows].
 
+.. _-B:
+
 .. include:: explain_-B.rst_
 
 .. _-C:

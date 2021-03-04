@@ -68,6 +68,8 @@ Required Arguments
 
 .. include:: explain_-I.rst_
 
+.. _-R:
+
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 

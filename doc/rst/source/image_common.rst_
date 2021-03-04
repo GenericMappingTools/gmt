@@ -31,6 +31,10 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-B:
+
+.. include:: explain_-B.rst_
+
 .. _-D:
 
 **-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+r**\ *dpi*\ **+w**\ [**-**]\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+n**\ *nx*\ [/*ny*] ]\ [**+o**\ *dx*\ [/*dy*]]

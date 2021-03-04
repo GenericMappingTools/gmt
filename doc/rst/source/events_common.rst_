@@ -190,6 +190,8 @@ Optional Arguments
 
 .. _-:
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
@@ -197,6 +199,10 @@ Optional Arguments
 
 **-W**\ *pen*
     Specify symbol outline pen attributes [Default is no outline].
+
+.. _-X:
+
+.. include:: explain_-XY.rst_
 
 .. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_
