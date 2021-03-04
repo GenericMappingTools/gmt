@@ -128,6 +128,12 @@ Optional Arguments
 
 .. include:: ../../explain_-B.rst_
 
+.. _-C:
+
+**-C**\ *cpt*
+    Give a CPT and let symbol color be
+    determined by the magnitude.  See **-Z** for other selections.
+
 .. _-D:
 
 **-D**\ *Sigma\_scale*
@@ -176,6 +182,16 @@ Optional Arguments
 .. _-X:
 
 .. include:: ../../explain_-XY.rst_
+
+.. _-Z:
+
+**Z**\ [**m**\|\ **e**\|\ **n**\|\ **u**\ ][**+e**]
+    Select the quantity that will be used with the CPT given via **-C** to
+    set the fill color.  Choose from **m**\ agnitude (vector magnitude or
+    rotation magnitude), **e**\ ast-west velocity, **n**\ orth-south velocity,
+    or **u**\ ser-supplied data column (supplied after the required columns).
+    To instead use the corresponding error estimates to lookup the color and
+    paint the error ellipse or wedge instead, append **+e**.
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_

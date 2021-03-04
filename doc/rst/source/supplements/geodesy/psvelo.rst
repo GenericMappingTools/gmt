@@ -16,6 +16,7 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *parameters* ]
 [ |SYN_OPT-B| ]
+[ |-C|\ *cpt*]
 [ |-E|\ *fill* ]
 [ |-G|\ *fill* ]
 [ |-K| ]
@@ -27,6 +28,7 @@ Synopsis
 [ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
+[ |-Z|\ [**m**\|\ **e**\|\ **n**\|\ **u**\ ][**+e**] ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
