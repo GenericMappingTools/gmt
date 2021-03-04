@@ -57,6 +57,11 @@ Optional Arguments
     indicates the shift relative to the foreground frame
     [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
 
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-J.rst_
+
 .. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code

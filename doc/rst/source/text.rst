@@ -15,7 +15,7 @@ Synopsis
 **gmt text** [ *textfiles* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A| ]
-|SYN_OPT-B|
+[ |SYN_OPT-B| ]
 [ |-C|\ [*dx/dy*][**+to**\|\ **O**\|\ **c**\|\ **C**] ]
 [ |-D|\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]] ]
 [ |-F|\ [**+a**\ [*angle*]][**+c**\ [*justify*]][**+f**\ [*font*]][**+j**\ [*justify*]][**+h**\|\ **l**\|\ **r**\ [*first*] \|\ **t**\ *text*\|\ **z**\ [*format*]] ]

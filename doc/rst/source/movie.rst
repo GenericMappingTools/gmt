@@ -28,11 +28,11 @@ Synopsis
 [ |-M|\ [*frame*],[*format*] ]
 [ |-P|\ *progress* ]
 [ |-Q|\ [**s**] ]
-[ **-Sb**\ *background* ]
-[ **-Sf**\ *foreground* ]
+[ |-Sb|\ *background* ]
+[ |-Sf|\ *foreground* ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ [**s**] ]
 [ |-W|\ [*workdir*] ]
+[ |-Z|\ [**s**] ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
@@ -263,7 +263,7 @@ Optional Arguments
     positioning (i.e., **-X -Y**) as the main script so that the layers will stack correctly.  Alternatively,
     *foreground* can be a *PostScript* plot layer of dimensions exactly matching the canvas size.
 
-.. _movie-V:
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

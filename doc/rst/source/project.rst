@@ -203,6 +203,8 @@ Optional Arguments
     Width controls. Project only those points whose *q* coordinate is
     within *w\_min* < *q* < *w\_max*.
 
+.. _-Z:
+
 **-Z**\ *major*/*minor*/*azimuth*\ [**+e**\|\ **n**]
     Used in conjunction with **-C** (sets its center) and **-G** (sets the
     distance increment) to create the coordinates of an ellipse
