@@ -3537,7 +3537,7 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 	if (must_be_image && from_gdalread->band_field_names != NULL) {
 		if (!strcmp(from_gdalread->band_field_names[0].DataType, "Byte"))
 			I->type = GMT_UCHAR;
-		else if (!strcmp(from_gdalread->band_field_names[0].DataType, "Unt16"))
+		else if (!strcmp(from_gdalread->band_field_names[0].DataType, "Int16"))
 			I->type = GMT_SHORT;
 		else if (!strcmp(from_gdalread->band_field_names[0].DataType, "UInt16"))
 			I->type = GMT_USHORT;
