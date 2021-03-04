@@ -964,6 +964,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;
 
 	if (Ctrl->Z.mode == PSVELO_V_USER) Ctrl->S.n_cols++;	/* Need to read one extra column */
+
 	GMT_Set_Columns (API, GMT_IN, Ctrl->S.n_cols, GMT_COL_FIX);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
@@ -1137,8 +1138,8 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 					}
 					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen);
 
-					justify = plot_vx - plot_x > 0. ? PSL_MR : PSL_ML;
-					if (Ctrl->S.font.size > 0.0 && station_name)	/* 1 inch = 2.54 cm */
+					justify = ((plot_vx - plot_x) > 0.0) ? PSL_MR : PSL_ML;
+					if (Ctrl->S.font.size > 0.0 && station_name && station_name[0])	/* 1 inch = 2.54 cm */
 						PSL_plottext (PSL, plot_x + (PSL_MC - justify) / 25.4 , plot_y, Ctrl->S.font.size, station_name, ANGLE, justify, FORM);
 				}
 				else {	/* vector too small, just place an circle there instead */
@@ -1147,7 +1148,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 					ssize = GMT_DOT_SIZE;
 					PSL_plotsymbol (PSL, plot_x, plot_y, &ssize, PSL_CIRCLE);
 					justify = PSL_TC;
-					if (Ctrl->S.font.size > 0.0 && station_name)	/* Place station name */
+					if (Ctrl->S.font.size > 0.0 && station_name && station_name[0])	/* Place station name */
 						PSL_plottext (PSL, plot_x, plot_y - 1. / 25.4, Ctrl->S.font.size, station_name, ANGLE, justify, FORM);
 				}
 				break;
