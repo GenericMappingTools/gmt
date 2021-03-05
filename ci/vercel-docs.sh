@@ -32,7 +32,7 @@ EOF
 mkdir build
 cd build
 cmake3 .. -G Ninja
-cmake3 --build . &> /dev/null
+cmake3 --build .
 cmake3 --build . --target docs_depends
 #cmake3 --build . --target optimize_images
 cmake3 --build . --target docs_html
