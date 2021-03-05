@@ -4,8 +4,8 @@ Data Column Order
 The **-S** option determines how many data columns are required to generate
 the selected symbol.  In addition, your use of options **-I** and **-t** will
 require extra columns, as will a **-S** option without the *scale*.  The
-order of the data record is fixed, even if not all items may be activated.
-We expect data columns to come in the following order::
+order of the data record is fixed regardless of option order, even if not all
+items may be activated. We expect data columns to come in the following order::
 
     lon lat depth symbol-columns [scale] [intens] [transp [transp2]] [trailing-text]
 

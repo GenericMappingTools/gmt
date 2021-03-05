@@ -241,3 +241,20 @@ Optional Arguments
 .. include:: ../../explain_help.rst_
 
 .. include:: ../../explain_vectors.rst_
+
+Data Column Order
+-----------------
+
+The **-S** option determines how many data columns are required to generate
+the selected symbol.  In addition, your use of options **-I** and **-t** will
+require extra columns, as will a **-S** option without the *scale* or a user-column
+selected via **-Zu** for color lookup purposes.  The order of the data record
+is fixed regardless of option order, even if not all items may be activated.
+We expect data columns to come in the following order::
+
+    lon lat symbol-columns [usercol] [scale] [intens] [transp [transp2]] [trailing-text]
+
+where *symbol-columns* represent the normally required data columns, and items
+given in brackets are optional and under the control of the stated options
+(the trailing text is always optional).  **Note**:  You can use **-i** to
+rearrange your data record to match the expected format.
