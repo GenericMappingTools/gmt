@@ -91,25 +91,16 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**l**\|\ **t**][**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]]
-    Without further options, draws a rectangular border around the map scale or rose using
-    :term:`MAP_FRAME_PEN`; specify a different pen with **+p**\ *pen*.
-    Add **+g**\ *fill* to fill the box [no fill].
-    Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
-    or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
-    x- and y-direction, or individual side spacings between map scale/rose and border.
-    Append **+i** to draw a secondary, inner border as well. We use a uniform
-    *gap* between borders of 2\ **p** and the :term:`MAP_DEFAULT_PEN`
-    unless other values are specified. Append **+r** to draw rounded
-    rectangular borders instead, with a 6\ **p** corner radius. You can
-    override this radius by appending another value. Finally, append
-    **+s** to draw an offset background shaded region. Here, *dx*/*dy*
-    indicates the shift relative to the foreground frame
-    [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
-    Requires **-L** or **-T**.  To specify separate parameters if both **-L** are **-T**
-    are selected, append  **l**\|\ **t** to **-F**
-    to specify panel parameters for just that panel [Default uses the same panel
-    parameters for all selected map features].
+**-F**\ [**l**\|\ **t**][**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]]\
+[**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]]
+
+    Without further options, draws a rectangular border around any map scale (|-L|) or map rose (|-T|) using
+    :term:`MAP_FRAME_PEN`. Used in combination with |-L| or |-T|.  Append **l** for map scale or **t** for map rose to
+    specify which plot embellisment the |-F| parameters should be applied to [default uses the same panel parameters for
+    all selected map embellishments]. The following modifiers can be appended to |-F|, with additional explanation and
+    examples provided in the :ref:`Background-panel` cookbook section:
+
+    .. include:: explain_-F_box.rst_
 
 .. _-G:
 
