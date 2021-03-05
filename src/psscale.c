@@ -163,7 +163,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s]\n", GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>] [%s] %s[-L[i][<gap>]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, API->K_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q] [%s] [-S[+c|n][+s]] [%s] [%s] [-W<scale>]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q] [%s] [-S[+a<angle>][+c|n][+s]] [%s] [%s] [-W<scale>]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<zfile>]\n\t%s[%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -211,6 +211,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Plot colorbar using logarithmic scale and annotate powers of 10 [Default is linear].\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Controls annotation and gridlines when -B is not used:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a<angle> to place annotations at an angle [no slanting].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to use any custom labels in the CPT for annotations, if available.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to use numerical values for annotations [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to skip drawing gridlines between different color sections [Default draws lines].\n");
