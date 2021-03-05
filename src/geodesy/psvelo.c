@@ -93,8 +93,9 @@ struct PSVELO_CTRL {
 	struct PSVELO_N {	/* -N */
 		bool active;
 	} N;
-	struct PSVELO_S {	/* -r<fill> */
+	struct PSVELO_S {	/* -S<symbol> */
 		bool active;
+		bool read;	/* True if no scale given; must be first column after the required ones */
 		int symbol;
 		unsigned int readmode;
 		unsigned int n_cols;
@@ -655,7 +656,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A<vecpar>] [%s]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-D<sigscale>] [-G<fill>] [-I[<intens>]] %s[-L[<pen>][+c[f|l]]] [-N] %s%s[-S<symbol><args>[+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-D<sigscale>] [-G<fill>] [-I[<intens>]] %s[-L[<pen>][+c[f|l]]] [-N] %s%s[-S<symbol>[<scale>][</args>][+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-V] [-W[<pen>][+c[f|l]]] [%s] [%s]\n", GMT_U_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Z[m|e|n|u][+e] %s[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -680,11 +681,16 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append separate pen for error outlines [Same as -W].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].\n");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and scale (plus optional font; see documentation). Choose between:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and <scale> (plus optional font; see documentation).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <scale> is not given then it is read from the first column after the required columns.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Choose from the following geodetic symbols:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     e  Velocity ellipses: in X,Y,Vx,Vy,SigX,SigY,CorXY,name format.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append <confidence> value (0-1) for error ellipse or give 0 to not draw the ellipse.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     r  Velocity ellipses: in X,Y,Vx,Vy,a,b,theta,name format.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append <confidence> value (0-1) for error ellipse or give 0 to not draw the ellipse.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     n  Anisotropy : in X,Y,Vx,Vy.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     w  Rotational wedges: in X,Y,Spin,Spinsig.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append <wedgemag> value to scale the the Spin values [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     x  Strain crosses : in X,Y,Eps1,Eps2,Theta.\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
@@ -710,7 +716,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 
 	unsigned int n_errors = 0, n_set;
 	int n;
-	bool no_size_needed, got_A = false;
+	bool got_A = false;
 	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, symbol, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 
@@ -794,27 +800,37 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'S':	/* Get symbol [and size] */
  				txt_b[0] = '\0';
-				if ((c = strstr (opt->arg, "+f"))) {	/* Gave font directly */
-					n_errors += gmt_getfont (GMT, &c[2], &(Ctrl->S.font));
+				if ((c = strstr (opt->arg, "+f"))) {	/* Gave font directly so handle that first */
+ 					if (c[2] == '0')
+ 						Ctrl->S.font.size = 0;
+					else
+						n_errors += gmt_getfont (GMT, &c[2], &(Ctrl->S.font));
 					c[0] = '\0';	/* Temporarily chop off the font specification */
 				}
- 				if (opt->arg[0] == 'e' || opt->arg[0] == 'r') {
-					strncpy (txt, &opt->arg[1], GMT_LEN256);
-					n = 0; while (txt[n] && txt[n] != '/') n++; txt[n] = 0;	/* Hide the /confidence part */
-					Ctrl->S.scale = gmt_M_to_inch (GMT, txt);	/* Get symbol size */
-					sscanf (strchr (&opt->arg[1],'/')+1, "%lf/%s", &Ctrl->S.confidence, txt_b);
+ 				if (strchr ("er", opt->arg[0])) {	/* Error ellipse with vector symbol for -Se and -Sr */
+					strncpy (txt, &opt->arg[1], GMT_LEN256);	/* Copy of the args after -Se|r */
+					n = 0;
+					if (strchr (txt, '/')) {	/* We clearly have scale/confidence and possibly /fontsize (deprecated) */
+						while (txt[n] && txt[n] != '/') n++; txt[n++] = 0;	/* Hide the /confidence part */
+						Ctrl->S.scale = gmt_M_to_inch (GMT, txt);	/* Get symbol size */
+					}
+					sscanf (&txt[n], "%lf/%s", &Ctrl->S.confidence, txt_b);
 					/* confidence scaling */
 					Ctrl->S.conrad = sqrt (-2.0 * log (1.0 - Ctrl->S.confidence));
 					/* Check for deprecated font syntax */
 					if (txt_b[0]) Ctrl->S.font.size = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
 				}
-				if (opt->arg[0] == 'n' || opt->arg[0] == 'x')	/* Simple one-parameter argument */
-					Ctrl->S.scale = gmt_M_to_inch (GMT, &opt->arg[1]);
-				if (opt->arg[0] == 'w' && strlen(opt->arg) > 3) {
+				else if (strchr ("nx", opt->arg[0])) {	/* Simple one-parameter argument for -Sn and -Sx */
+					if (opt->arg[1]) Ctrl->S.scale = gmt_M_to_inch (GMT, &opt->arg[1]);
+				}
+				else if (opt->arg[0] == 'w') {	/* Rotational wedge */
 					strncpy (txt, &opt->arg[1], GMT_LEN256);
-					n = 0; while (txt[n] && txt[n] != '/') n++; txt[n] = 0;	/* Hide the /wedgemag part */
-					Ctrl->S.scale = gmt_M_to_inch (GMT, txt);	/* Get symbol size */
-					sscanf (strchr (&opt->arg[1],'/')+1, "%lf", &Ctrl->S.wedge_amp);
+					n = 0;
+					if (strchr (txt, '/')) {	/* We clearly have scale/wedgemag  */
+						while (txt[n] && txt[n] != '/') n++; txt[n++] = 0;	/* Hide the /wedgemag part */
+						Ctrl->S.scale = gmt_M_to_inch (GMT, txt);	/* Get symbol size */
+					}
+					Ctrl->S.wedge_amp = (txt[n]) ? atof (&txt[n]) : 1.0;
 				}
 				switch (opt->arg[0]) {	/* Set modes and expected input columns */
 					case 'e':
@@ -838,10 +854,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 						Ctrl->S.readmode = READ_CROSS;
 						break;
 					default:
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Unrecognized symbol code %s\n", opt->arg);
 						n_errors++;
 						break;
 				}
 				if (c) c[0] = '+';	/* Restore font specification */
+				if (gmt_M_is_zero (Ctrl->S.scale)) Ctrl->S.read = true;	/* Must get size from input file */
 				break;
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
@@ -863,7 +881,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 					case 'r':	Ctrl->Z.mode = PSVELO_R_MAG;	break;
 					case 'u':	Ctrl->Z.mode = PSVELO_V_USER;	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Unrecognized mode %s\n", opt->arg[0]);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Unrecognized mode %s\n", opt->arg);
 						n_errors++;
 						break;
 				}
@@ -877,12 +895,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 
 	gmt_consider_current_cpt (GMT->parent, &Ctrl->C.active, &(Ctrl->C.file));
 
-	no_size_needed = (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE || Ctrl->S.readmode == READ_ANISOTROPY || Ctrl->S.readmode == READ_CROSS || Ctrl->S.readmode == READ_WEDGE );
         /* Only one allowed */
 	n_set = (Ctrl->S.readmode == READ_ELLIPSE) + (Ctrl->S.readmode == READ_ROTELLIPSE) + (Ctrl->S.readmode == READ_ANISOTROPY) + (Ctrl->S.readmode == READ_CROSS) + (Ctrl->S.readmode == READ_WEDGE);
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, n_set > 1, "Only one -S setting is allowed.\n");
-	n_errors += gmt_M_check_condition (GMT, !no_size_needed && (Ctrl->S.symbol > 1 && Ctrl->S.scale <= 0.0), "Option -S: Must specify symbol size.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && ! (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_WEDGE), "Option -D requires -Se|w.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->C.active, "Option -Z requires -C.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->Z.item == PSVELO_E_FILL && Ctrl->E.active, "Options -C -Z+e cannot be combined with -E.\n");
@@ -919,14 +935,14 @@ GMT_LOCAL void psvelo_set_colorfill (struct GMT_CTRL *GMT, struct PSVELO_CTRL *C
 EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	int ix = 0, iy = 1, n_rec = 0, justify;
 	int plot_ellipse = true, plot_vector = true, error = false;
-	unsigned int icol = 0;
+	unsigned int scol = 0, icol = 0;
 	bool set_g_fill, set_e_fill;
 
 	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, length, s, dim[PSL_MAX_DIMS];
 	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0, *in = NULL;
 	double direction = 0, small_axis = 0, great_axis = 0, sigma_x, sigma_y, corr_xy;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize, headpen_width = 0.0;
-	double z_val, e_val, value, i_value;
+	double z_val, e_val, value, scale, i_value;
 
 	char *station_name = NULL;
 
@@ -988,7 +1004,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	gmt_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
 	if (Ctrl->A.S.symbol == PSL_VECTOR) Ctrl->A.S.v.v_width = (float)(Ctrl->A.S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 
-	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;
+	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;	/* Deal with -: */
 
 	if (Ctrl->I.mode) {	/* Read intensity from data file */
 		Ctrl->S.n_cols++;	/* One more data column required */
@@ -996,6 +1012,14 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_FLOAT);
 	}
 	if (Ctrl->Z.mode == PSVELO_V_USER) Ctrl->S.n_cols++;	/* Need to read one extra column */
+
+	if (Ctrl->S.read) {	/* Read symbol size from file */
+		Ctrl->S.n_cols++;	/* Must read an extra column */
+		scol = Ctrl->S.n_cols - 1;	/* Column ID with scales */
+		gmt_set_column_type (GMT, GMT_IN, scol, GMT_IS_DIMENSION);
+	}
+	else	/* Fixed symbol scale */
+		scale = Ctrl->S.scale;
 
 	GMT_Set_Columns (API, GMT_IN, Ctrl->S.n_cols, GMT_COL_FIX);
 
@@ -1045,12 +1069,10 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		n_rec++;
 
 		if (Ctrl->S.readmode == READ_ELLIPSE) {
-			vxy[ix] = in[2];
-			vxy[iy] = in[3];
-			sigma_x = in[4];
-			sigma_y = in[5];
+			vxy[ix] = in[2];	vxy[iy] = in[3];
+			sigma_x = in[4];	sigma_y = in[5];
 			corr_xy = in[6];
-			if (Ctrl->C.active) {
+			if (Ctrl->C.active) {	/* Compute/select the value parameters */
 				switch (Ctrl->Z.mode) {
 					case PSVELO_V_MAG:   z_val = hypot (vxy[0], vxy[1]);	e_val = hypot (sigma_x, sigma_y); break;
 					case PSVELO_V_EAST:  z_val = vxy[0]; e_val = sigma_x;	break;
@@ -1074,12 +1096,11 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 			}
 		}
 		else if (Ctrl->S.readmode == READ_ROTELLIPSE) {
-			vxy[ix] = in[2];
-			vxy[iy] = in[3];
+			vxy[ix] = in[2];	vxy[iy] = in[3];
 			great_axis = Ctrl->S.conrad*in[4];
 			small_axis = Ctrl->S.conrad*in[5];
 			direction = in[6];
-			if (Ctrl->C.active) {
+			if (Ctrl->C.active) {	/* Compute/select the value parameters */
 				switch (Ctrl->Z.mode) {
 					case PSVELO_V_MAG:   z_val = hypot (vxy[0], vxy[1]);	e_val = hypot (great_axis, small_axis); break;
 					case PSVELO_V_EAST:  z_val = vxy[0]; e_val = great_axis;	break;
@@ -1112,6 +1133,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->D.active) spinsig = spinsig * Ctrl->D.scale;
 		}
+		if (Ctrl->S.read) scale = in[scol];
 
 		if (!Ctrl->N.active) {
 			gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
@@ -1130,15 +1152,15 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		switch (Ctrl->S.symbol) {
 			case CINE:
 				plot_vector = (hypot (vxy[0], vxy[1]) < 1.e-8) ? false : true;
-				psvelo_trace_arrow (GMT, in[GMT_X], in[GMT_Y], vxy[0], vxy[1], Ctrl->S.scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
+				psvelo_trace_arrow (GMT, in[GMT_X], in[GMT_Y], vxy[0], vxy[1], scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
 				psvelo_get_trans (GMT, in[GMT_X], in[GMT_Y], &t11, &t12, &t21, &t22);
 				if (plot_ellipse) {
 					if (Ctrl->L.active) gmt_setpen (GMT, &Ctrl->L.pen);
 					if (Ctrl->E.active)
-						psvelo_paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, Ctrl->S.scale,
+						psvelo_paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, scale,
 							t11,t12,t21,t22, Ctrl->E.active, &Ctrl->E.fill, Ctrl->L.active);
 					else
-						psvelo_paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, Ctrl->S.scale,
+						psvelo_paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, scale,
 							t11,t12,t21,t22, Ctrl->E.active, &Ctrl->G.fill, Ctrl->L.active);
 				}
 				if (plot_vector) {	/* verify that vector length is not ridiculously small */
@@ -1186,20 +1208,20 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 				}
 				break;
 			case ANISO:
-				psvelo_trace_arrow (GMT, in[GMT_X], in[GMT_Y], vxy[0], vxy[1], Ctrl->S.scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
+				psvelo_trace_arrow (GMT, in[GMT_X], in[GMT_Y], vxy[0], vxy[1], scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
 				gmt_setpen (GMT, &Ctrl->W.pen);
 				PSL_plotsegment (PSL, plot_x, plot_y, plot_vx, plot_vy);
 				break;
 			case CROSS:
 				/* triangular arrowheads */
-				psvelo_trace_cross (GMT, in[GMT_X],in[GMT_Y],eps1,eps2,theta,Ctrl->S.scale,Ctrl->A.S.v.v_width,Ctrl->A.S.v.h_length,
+				psvelo_trace_cross (GMT, in[GMT_X],in[GMT_Y],eps1,eps2,theta,scale,Ctrl->A.S.v.v_width,Ctrl->A.S.v.h_length,
 					Ctrl->A.S.v.h_width,0.1,Ctrl->L.active,&(Ctrl->W.pen));
 				break;
 			case WEDGE:
 				PSL_comment (PSL, "begin wedge number %li", n_rec);
 				gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 				psvelo_get_trans (GMT, in[GMT_X], in[GMT_Y], &t11, &t12, &t21, &t22);
-				psvelo_paint_wedge (PSL, plot_x, plot_y, spin, spinsig, Ctrl->S.scale, Ctrl->S.wedge_amp, t11, t12, t21, t22,
+				psvelo_paint_wedge (PSL, plot_x, plot_y, spin, spinsig, scale, Ctrl->S.wedge_amp, t11, t12, t21, t22,
 					set_g_fill, Ctrl->G.fill.rgb, set_e_fill, Ctrl->E.fill.rgb, Ctrl->L.active);
 				break;
 		}
