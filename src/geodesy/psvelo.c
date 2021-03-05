@@ -791,10 +791,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 					strncpy (txt, &opt->arg[1], GMT_LEN256);	/* Copy of the args after -Se|r */
 					n = 0;
 					if (strchr (txt, '/')) {	/* We clearly have scale/confidence and possibly /fontsize (deprecated) */
-						while (txt[n] && txt[n] != '/') n++; txt[n] = 0;	/* Hide the /confidence part */
+						while (txt[n] && txt[n] != '/') n++; txt[n++] = 0;	/* Hide the /confidence part */
 						Ctrl->S.scale = gmt_M_to_inch (GMT, txt);	/* Get symbol size */
 					}
-					sscanf (&opt->arg[n], "%lf/%s", &Ctrl->S.confidence, txt_b);
+					sscanf (&txt[n], "%lf/%s", &Ctrl->S.confidence, txt_b);
 					/* confidence scaling */
 					Ctrl->S.conrad = sqrt (-2.0 * log (1.0 - Ctrl->S.confidence));
 					/* Check for deprecated font syntax */
@@ -807,10 +807,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 					strncpy (txt, &opt->arg[1], GMT_LEN256);
 					n = 0;
 					if (strchr (txt, '/')) {	/* We clearly have scale/wedgemag  */
-						while (txt[n] && txt[n] != '/') n++; txt[n] = 0;	/* Hide the /wedgemag part */
+						while (txt[n] && txt[n] != '/') n++; txt[n++] = 0;	/* Hide the /wedgemag part */
 						Ctrl->S.scale = gmt_M_to_inch (GMT, txt);	/* Get symbol size */
 					}
-					sscanf (&opt->arg[n], "%lf", &Ctrl->S.wedge_amp);
+					sscanf (&txt[n], "%lf", &Ctrl->S.wedge_amp);
 				}
 				switch (opt->arg[0]) {	/* Set modes and expected input columns */
 					case 'e':
