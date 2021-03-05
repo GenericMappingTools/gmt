@@ -128,6 +128,10 @@ struct PSEVENTS_CTRL {
 		bool active;
 		char *pen;
 	} W;
+	struct PSEVENTS_Z {	/* 	-Z<cmd> */
+		bool active;
+		char *cmd;
+	} Z;
 };
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -152,6 +156,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *C) {	/* Deall
 	gmt_M_str_free (C->Q.file);
 	gmt_M_str_free (C->S.symbol);
 	gmt_M_str_free (C->W.pen);
+	gmt_M_str_free (C->Z.cmd);
 	gmt_M_free (GMT, C);
 }
 
@@ -489,6 +494,16 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				if (opt->arg[0]) Ctrl->W.pen = strdup (opt->arg);
 				break;
 
+			case 'Z':	/* Select advanced seismologic/geodetic symbols */
+				Ctrl->Z.active = true;
+				if (opt->arg[0] && strstr (opt, arg, "-S"))
+					Ctrl->W.cmd = strdup (opt->arg);
+				else {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Requires a core coupe, meca, or velo command with -S option\n");
+					n_errors++;
+				}
+				break;
+
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -763,7 +778,11 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 	/* Now we are ready to take on some input values */
 
-	if (Ctrl->S.active || !Ctrl->A.active) {	/* We read points for symbols OR we are in fact just doing labels */
+	if (Ctrl->Z.active) {	/* We read points for symbols */
+		n_cols_needed += psevents_determine_columns (GMT, Ctrl->Z.cmd);	/* Must allow for number of columns needed by the selected module */
+		if (Ctrl->L.mode == PSEVENTS_VAR_DURATION || Ctrl->L.mode == PSEVENTS_VAR_ENDTIME) n_cols_needed++;	/* Must allow for length/time in input */
+	}
+	else if (Ctrl->S.active || Ctrl->Z.active || !Ctrl->A.active) {	/* We read points for symbols OR we are in fact just doing labels */
 		if (Ctrl->C.active) n_cols_needed++;	/* Must allow for z in input */
 		if (Ctrl->S.mode) n_cols_needed++;	/* Must allow for size in input */
 		if (Ctrl->L.mode == PSEVENTS_VAR_DURATION || Ctrl->L.mode == PSEVENTS_VAR_ENDTIME) n_cols_needed++;	/* Must allow for length/time in input */
