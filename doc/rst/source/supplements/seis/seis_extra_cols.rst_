@@ -1,0 +1,13 @@
+Data Column Order
+-----------------
+
+The **-S** option determines how many data columns are required to generate
+the selected symbol.  In addition, your use of options **-I** and **-t** will
+require extra columns, as will a **-S** option without the *scale*.  The
+order of the data record is fixed, even if not all items may be activated.
+We expect data columns to come in the following order::
+
+    lon lat [symbol-columns] [scale] [intens] [trans_f [transp_l]] [trailing-text]
+
+**Note**: You can use **i** to rearrange your data record to match the expected
+format.
