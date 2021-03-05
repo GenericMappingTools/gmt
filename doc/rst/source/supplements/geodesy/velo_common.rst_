@@ -33,16 +33,16 @@ Required Arguments
     cases, the scales are in data units per length unit and sizes are in length units (default length
     unit is controlled by :term:`PROJ_LENGTH_UNIT` unless **c**, **i**, or **p** is appended).
 
-    **-Se**\ *velscale/confidence*\ [**+f**\ *font*]
+    **-Se**\ [*velscale*/]\ *confidence*\ [**+f**\ *font*]
 
-        Velocity ellipses in (N,E) convention. *velscale* sets the scaling of the
-        velocity arrows. The *confidence* sets the 2-dimensional confidence
-        limit for the ellipse, e.g., 0.95 for 95% confidence ellipse. *font*
-        sets the font and size of the text [9p,Helvetica,black]. The ellipse will be filled with the
-        color or shade specified by the |-E| option [default is transparent]. The
-        arrow and the circumference of the ellipse will be drawn with the pen
-        attributes specified by the |-W| option and arrow-head can be colored via |-G|. Parameters are expected to be
-        in the following columns:
+        Velocity ellipses in (N,E) convention. The *velscale* sets the scaling of the velocity arrows.
+        If *velscale* is not given the we read it from the data file as an extra column.
+        The *confidence* sets the 2-dimensional confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
+        Use **+f** to set the font and size of the text [9p,Helvetica,black]; give **+f**\ 0 to deactivate labeling.
+        The arrow will be drawn with the pen attributes specified by the |-W| option and arrow-head can be colored via |-G|.
+        The ellipse will be filled with the color or shade specified by the |-E| option [default is transparent],
+        and its outline will be drawn if |-L| is selected using the pen selected (by |-W| if not given by |-L|).
+        Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
             longitude, latitude of station (**-:** option interchanges order)
@@ -55,9 +55,10 @@ Required Arguments
             **Trailing text**:
             name of station (optional).
 
-    **-Sn**\ *barscale*
+    **-Sn**\ [*barscale*]
 
-        Anisotropy bars. *barscale* sets the scaling of the bars.
+        Anisotropy bars. The *barscale* sets the scaling of the bars.
+        If *barscale* is not given the we read it from the data file as an extra column.
         Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
@@ -65,16 +66,16 @@ Required Arguments
             **3**,\ **4**:
             eastward, northward components of anisotropy vector (**-:** option interchanges order)
 
-    **-Sr**\ *velscale/confidence*\ [**+f**\ *font*]
+    **-Sr**\ [*velscale*/]\ *confidence*\ [**+f**\ *font*]
 
-        Velocity ellipses in rotated convention. *velscale* sets the scaling of
-        the velocity arrows. The *confidence* sets the 2-dimensional
-        confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
-        *font* sets the font and size of the text [9p,Helvetica,black]. The ellipse will be
-        filled with the color or shade specified by the |-E| option [default
-        transparent]. The arrow and the circumference of the ellipse will be
-        drawn with the pen attributes specified by the |-W| option and arrow-head can be colored via |-G|. Parameters
-        are expected to be in the following columns:
+        Velocity ellipses in rotated convention. The *velscale* sets the scaling of the velocity arrows.
+        If *velscale* is not given the we read it from the data file as an extra column.
+        The *confidence* sets the 2-dimensional confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
+        Use **+f** to set the font and size of the text [9p,Helvetica,black]; give **+f**\ 0 to deactivate labeling.
+        The arrow will be drawn with the pen attributes specified by the |-W| option and arrow-head can be colored via |-G|.
+        The ellipse will be filled with the color or shade specified by the |-E| option [default is transparent],
+        and its outline will be drawn if |-L| is selected using the pen selected (by |-W| if not given by |-L|).
+        Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
             longitude, latitude, of station (**-:** option interchanges order)
@@ -87,10 +88,11 @@ Required Arguments
             **Trailing text**:
             name of station (optional)
 
-    **-Sw**\ *wedgescale/wedgemag*
+    **-Sw**\ [*wedgescale*/]\ *wedgemag*
 
-        Rotational wedges. *wedgescale* sets the size of the wedges. Rotation values are
-        multiplied by *wedgemag* before plotting. For example, setting
+        Rotational wedges. The *wedgescale* sets the size of the wedges.
+        If *wedgescale* is not given the we read it from the data file as an extra column.
+        Rotation values are multiplied by *wedgemag* before plotting. For example, setting
         *wedgemag* to 1.e7 works well for rotations of the order of 100
         nanoradians/yr. Use |-G| to set the fill color or shade for the wedge,
         and |-E| to set the color or shade for the uncertainty. Parameters are
@@ -103,10 +105,11 @@ Required Arguments
             **4**:
             rotation uncertainty in radians
 
-    **-Sx**\ *cross_scale*
+    **-Sx**\ [*cross_scale*]
 
-        gives Strain crosses. *cross_scale* sets the size of the cross. Parameters
-        are expected to be in the following columns:
+        gives Strain crosses. The *cross_scale* sets the size of the cross.
+        If *cross_scale* is not given the we read it from the data file as an extra column.
+        Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
             longitude, latitude, of station (**-:** option interchanges order)
@@ -158,6 +161,14 @@ Optional Arguments
     Select color or pattern for filling of symbols [Default is no fill].
     **Note**: Using **-C** (and optionally **-Z**) will update the symbol fill
     color based on the selected measure in **-Z** [magnitude].
+
+.. _-I:
+
+**-I**\ *intens*
+    Use the supplied *intens* value (nominally in the -1 to +1 range) to
+    modulate the symbol fill color by simulating illumination [none].
+    If no intensity is provided we will instead read *intens* from an extra
+    data column after the required input columns determined by **-S**.
 
 .. _-L:
 
@@ -230,3 +241,20 @@ Optional Arguments
 .. include:: ../../explain_help.rst_
 
 .. include:: ../../explain_vectors.rst_
+
+Data Column Order
+-----------------
+
+The **-S** option determines how many data columns are required to generate
+the selected symbol.  In addition, your use of options **-I** and **-t** will
+require extra columns, as will a **-S** option without the *scale* or a user-column
+selected via **-Zu** for color lookup purposes.  The order of the data record
+is fixed regardless of option order, even if not all items may be activated.
+We expect data columns to come in the following order::
+
+    lon lat symbol-columns [usercol] [scale] [intens] [transp [transp2]] [trailing-text]
+
+where *symbol-columns* represent the normally required data columns, and items
+given in brackets are optional and under the control of the stated options
+(the trailing text is always optional).  **Note**:  You can use **-i** to
+rearrange your data record to match the expected format.
