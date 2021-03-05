@@ -195,7 +195,7 @@ Here are the steps for setting up `bashrc_for_gmt` after copying it to a new loc
 Here are some of the shortcuts included in `bashrc_for_gmt`:
 
 - `gmt6` and `gtop` can be used to quickly `cd` to the top of the GMT source directory and repository base respectively.
-- `gmtfind` can be used to list all source, docs, scripts, and text files where a string appears in the file.
+- `gmtfind` can be used to list all source, docs, scripts, and text files where a string appears in the file
   (e.g., `gmtfind "Grid increment is"` returns all files that contain the string 'Grid increment is'). This includes all
   files recursively from the current working directory; `gtop` or `gmt6` can be used prior to this command to get
   to the source directory or repository base.
