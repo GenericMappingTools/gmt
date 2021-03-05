@@ -652,7 +652,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A<vecpar>] [%s]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-D<sigscale>] [-G<fill>] %s[-L[<pen>][+c[f|l]]] [-N] %s%s[-S<symbol><args>[+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-V] [-W[<pen>][+c[f|l]]] [%s] [%s]\n", GMT_U_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Z[m|e|n|u][+e] %s[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Z[m|e|n|u][+e] %s[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -688,7 +688,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   n: North velocity component.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   u: User column (given after required columns).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Color selected will replace -G<fill>.  Append +e to instead act as -E<fill>.\n");
-	GMT_Option (API, "c,di,e,h,i,p,qi,t,:,.");
+	GMT_Option (API, "c,di,e,h,i,p,qi,T,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -901,6 +901,7 @@ GMT_LOCAL void psvelo_set_colorfill (struct GMT_CTRL *GMT, struct PSVELO_CTRL *C
 EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	int ix = 0, iy = 1, n_rec = 0, justify;
 	int plot_ellipse = true, plot_vector = true, error = false;
+	unsigned int tcol_f = 0, tcol_s = 0;
 	bool set_g_fill, set_e_fill;
 
 	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, length, s, dim[PSL_MAX_DIMS];
@@ -967,6 +968,19 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;
 
 	if (Ctrl->Z.mode == PSVELO_V_USER) Ctrl->S.n_cols++;	/* Need to read one extra column */
+
+	if (GMT->common.t.variable) {	/* Need one or two transparencies from file */
+		if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {
+			Ctrl->S.n_cols++;	/* Read fill transparencies from data file */
+			tcol_f = Ctrl->S.n_cols - 1;
+			gmt_set_column_type (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
+		}
+		if (GMT->common.t.mode & GMT_SET_PEN_TRANSP) {
+			Ctrl->S.n_cols++;	/* Read stroke transparencies from data file */
+			tcol_s = Ctrl->S.n_cols - 1;
+			gmt_set_column_type (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
+		}
+	}
 
 	GMT_Set_Columns (API, GMT_IN, Ctrl->S.n_cols, GMT_COL_FIX);
 
@@ -1097,6 +1111,23 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 			gmt_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
 		}
 
+		if (GMT->common.t.variable) {	/* Update the transparency for current symbol (or -t was given) */
+			double transp[2] = {0.0, 0.0};	/* None selected */
+			if (GMT->common.t.n_transparencies == 2) {	/* Requested two separate values to be read from file */
+				transp[GMT_FILL_TRANSP] = 0.01 * in[tcol_f];
+				transp[GMT_PEN_TRANSP]  = 0.01 * in[tcol_s];
+			}
+			else if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {	/* Gave fill transparency */
+				transp[GMT_FILL_TRANSP] = 0.01 * in[tcol_f];
+				if (GMT->common.t.n_transparencies == 0) transp[GMT_PEN_TRANSP] = transp[GMT_FILL_TRANSP];	/* Implied to be used for stroke also */
+			}
+			else {	/* Gave stroke transparency */
+				transp[GMT_PEN_TRANSP] = 0.01 * in[tcol_s];
+				if (GMT->common.t.n_transparencies == 0) transp[GMT_FILL_TRANSP] = transp[GMT_PEN_TRANSP];	/* Implied to be used for fill also */
+			}
+			PSL_settransparencies (PSL, transp);
+		}
+
 		switch (Ctrl->S.symbol) {
 			case CINE:
 				plot_vector = (hypot (vxy[0], vxy[1]) < 1.e-8) ? false : true;
@@ -1177,6 +1208,11 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
+	}
+
+	if (GMT->common.t.variable) {	/* Reset the transparencies */
+		double transp[2] = {0.0, 0.0};	/* None selected */
+		PSL_settransparencies (PSL, transp);
 	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Number of records read: %li\n", n_rec);
