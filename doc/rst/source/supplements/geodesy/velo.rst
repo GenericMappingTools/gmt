@@ -19,6 +19,7 @@ Synopsis
 [ |-C|\ *cpt*]
 [ |-E|\ *fill* ]
 [ |-G|\ *fill* ]
+[ |-I|\ [*intens*] ]
 [ |-L|\ [*pen*\ [**+c**\ [**f**\|\ **l**]]] ]
 [ |-N| ]
 [ |-S|\ *<format><args>*\ [**+f**\ *font*] ]
