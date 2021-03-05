@@ -9,8 +9,8 @@ We expect data columns to come in the following order::
 
     lon lat symbol-columns [scale] [intens] [transp [transp2]] [trailing-text]
 
-where *symbol-columns* is likely several data columns, and items given in
-brackets are optional and under the control of the stated options
+where *symbol-columns* represent the normally required data columns, and items
+given in brackets are optional and under the control of the stated options
 (the trailing text is always optional).
 **Note**: You can use **-i** to rearrange your data record to match the expected
 format.
