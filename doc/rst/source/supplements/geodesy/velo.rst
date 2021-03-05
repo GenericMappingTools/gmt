@@ -20,6 +20,7 @@ Synopsis
 [ |-C|\ *cpt*]
 [ |-E|\ *fill* ]
 [ |-G|\ *fill* ]
+[ |-I|\ [*intens*] ]
 [ |-L|\ [*pen*\ [**+c**\ [**f**\|\ **l**]]] ]
 [ |-N| ]
 [ |SYN_OPT-U| ]
