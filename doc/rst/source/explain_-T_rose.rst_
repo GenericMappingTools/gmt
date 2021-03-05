@@ -2,8 +2,8 @@
 [**+j**\ *justify*]\ [**+l**\ [*w,e,s,n*]][**+o**\ *dx*\ [/*dy*]]
 
     Draw a map directional rose on the map at the location defined by the reference (*refpoint*) and anchor point
-    (set by **+o**\ *dx* and/or **+j**\ *justify*). Give the reference point on the map for the rose using one of four
-    coordinate systems:
+    (set by **+o**\ *dx*\ [/*dy*] and/or **+j**\ *justify*). Give the reference point on the map for the rose using one
+    of four coordinate systems:
 
     .. include:: explain_refpoint.rst_
 
@@ -29,8 +29,8 @@
 [**+i**\ *pen*]\ [**+j**\ *justify*][**+l**\ [*w,e,s,n*]][**+p**\ *pen*]\ [**+t**\ *ints*][**+o**\ *dx*\ [/*dy*]]
 
     Draw a map magnetic rose on the map at the location defined by the reference (*refpoint*) and anchor point
-    (set by **+o**\ *dx* and/or **+j**\ *justify*). Give the reference point on the map for the rose using one of four
-    coordinate systems:
+    (set by **+o**\ *dx*\ [/*dy*] and/or **+j**\ *justify*). Give the reference point on the map for the rose using one
+    of four coordinate systems:
 
     .. include:: explain_refpoint.rst_
 

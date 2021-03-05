@@ -3,7 +3,7 @@
 [*label*]\ ]\ [**+o**\ *dx*\ [/*dy*]]\ [**+u**][**+v**]
 
     Draw a simple map scale at the location defined by the reference (*refpoint*) and anchor point (set by
-    **+o**\ *dx* and/or **+j**\ *justify*). Give the reference point on the map for the rose using one of four
+    **+o**\ *dx*\ [/*dy*] and/or **+j**\ *justify*). Give the reference point on the map for the rose using one of four
     coordinate systems:
 
     .. include:: explain_refpoint.rst_
