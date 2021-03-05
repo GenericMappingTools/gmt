@@ -7,7 +7,10 @@ require extra columns, as will a **-S** option without the *scale*.  The
 order of the data record is fixed, even if not all items may be activated.
 We expect data columns to come in the following order::
 
-    lon lat [symbol-columns] [scale] [intens] [trans_f [transp_l]] [trailing-text]
+    lon lat symbol-columns [scale] [intens] [transp [transp2]] [trailing-text]
 
-**Note**: You can use **i** to rearrange your data record to match the expected
+where *symbol-columns* is likely several data columns, and items given in
+brackets are optional and under the control of the stated options
+(the trailing text is always optional).
+**Note**: You can use **-i** to rearrange your data record to match the expected
 format.
