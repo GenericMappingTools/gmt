@@ -963,11 +963,11 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.item == PSVELO_G_FILL) set_g_fill = true;	/* Since we will set it via CPT lookup */
 		if (Ctrl->Z.item == PSVELO_E_FILL) set_e_fill = true;	/* Since we will set it via CPT lookup */
 	}
-	else if (Ctrl->I.active && Ctrl->I.mode == 0) {
+	else if (Ctrl->I.active && Ctrl->I.mode == 0) {	/* Constant illumination with constant intensity can be done before data loop */
 		gmt_illuminate (GMT, Ctrl->I.value, Ctrl->E.fill.rgb);
 		gmt_illuminate (GMT, Ctrl->I.value, Ctrl->G.fill.rgb);
 	}
-	i_value = Ctrl->I.value;
+	i_value = Ctrl->I.value;	/* May be replaced in the loop if no intensity was given */
 	if (!Ctrl->L.error_pen)	/* Duplicate -W to -L */
 		gmt_M_memcpy (&Ctrl->L.pen, &Ctrl->W.pen, 1, struct GMT_PEN);
 
@@ -991,8 +991,8 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;
 
 	if (Ctrl->I.mode) {	/* Read intensity from data file */
-		Ctrl->S.n_cols++;
-		icol = Ctrl->S.n_cols - 1;
+		Ctrl->S.n_cols++;	/* One more data column required */
+		icol = Ctrl->S.n_cols - 1;	/* Column id for intensity */
 		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_FLOAT);
 	}
 	if (Ctrl->Z.mode == PSVELO_V_USER) Ctrl->S.n_cols++;	/* Need to read one extra column */
