@@ -678,9 +678,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <scale> is not given then it is read from the first column after the required columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Choose from the following geodetic symbols:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     e  Velocity ellipses: in X,Y,Vx,Vy,SigX,SigY,CorXY,name format.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append <confidence> value (0-1) for error ellipse or give 0 to not draw the ellipse.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     r  Velocity ellipses: in X,Y,Vx,Vy,a,b,theta,name format.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append <confidence> value (0-1) for error ellipse or give 0 to not draw the ellipse.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     n  Anisotropy : in X,Y,Vx,Vy.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     w  Rotational wedges: in X,Y,Spin,Spinsig.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append <wedgemag> value to scale the the Spin values [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     x  Strain crosses : in X,Y,Eps1,Eps2,Theta.\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
@@ -784,7 +787,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 			case 'S':	/* Get symbol [and size] */
  				txt_b[0] = '\0';
 				if ((c = strstr (opt->arg, "+f"))) {	/* Gave font directly so handle that first */
-					n_errors += gmt_getfont (GMT, &c[2], &(Ctrl->S.font));
+ 					if (c[2] == '0')
+ 						Ctrl->S.font.size = 0;
+					else
+						n_errors += gmt_getfont (GMT, &c[2], &(Ctrl->S.font));
 					c[0] = '\0';	/* Temporarily chop off the font specification */
 				}
  				if (strchr ("er", opt->arg[0])) {	/* Error ellipse with vector symbol for -Se and -Sr */
@@ -810,7 +816,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 						while (txt[n] && txt[n] != '/') n++; txt[n++] = 0;	/* Hide the /wedgemag part */
 						Ctrl->S.scale = gmt_M_to_inch (GMT, txt);	/* Get symbol size */
 					}
-					sscanf (&txt[n], "%lf", &Ctrl->S.wedge_amp);
+					Ctrl->S.wedge_amp = (txt[n]) ? atof (&txt[n]) : 1.0;
 				}
 				switch (opt->arg[0]) {	/* Set modes and expected input columns */
 					case 'e':

@@ -37,13 +37,12 @@ Required Arguments
 
         Velocity ellipses in (N,E) convention. *velscale* sets the scaling of the velocity arrows.
         If *velscale* is not given the we read it from the data file as an extra column.
-        The *confidence* sets the 2-dimensional confidence
-        limit for the ellipse, e.g., 0.95 for 95% confidence ellipse. *font*
-        sets the font and size of the text [9p,Helvetica,black]. The ellipse will be filled with the
-        color or shade specified by the |-E| option [default is transparent]. The
-        arrow and the circumference of the ellipse will be drawn with the pen
-        attributes specified by the |-W| option and arrow-head can be colored via |-G|. Parameters are expected to be
-        in the following columns:
+        The *confidence* sets the 2-dimensional confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
+        Use **+f** to set the font and size of the text [9p,Helvetica,black]; give **+f**\ 0 to deactivate labeling.
+        The ellipse will be filled with the color or shade specified by the |-E| option [default is transparent].
+        The arrow and the circumference of the ellipse will be drawn with the pen
+        attributes specified by the |-W| option and arrow-head can be colored via |-G|.
+        Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
             longitude, latitude of station (**-:** option interchanges order)
@@ -71,13 +70,12 @@ Required Arguments
 
         Velocity ellipses in rotated convention. *velscale* sets the scaling of the velocity arrows.
         If *velscale* is not given the we read it from the data file as an extra column.
-        The *confidence* sets the 2-dimensional
-        confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
-        *font* sets the font and size of the text [9p,Helvetica,black]. The ellipse will be
-        filled with the color or shade specified by the |-E| option [default
-        transparent]. The arrow and the circumference of the ellipse will be
-        drawn with the pen attributes specified by the |-W| option and arrow-head can be colored via |-G|. Parameters
-        are expected to be in the following columns:
+        The *confidence* sets the 2-dimensional confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
+        Use **+f** to set the font and size of the text [9p,Helvetica,black]; give **+f**\ 0 to deactivate labeling.
+        The ellipse will be filled with the color or shade specified by the |-E| option [default is transparent].
+        The arrow and the circumference of the ellipse will be drawn with the pen
+        attributes specified by the |-W| option and arrow-head can be colored via |-G|.
+        Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
             longitude, latitude, of station (**-:** option interchanges order)
