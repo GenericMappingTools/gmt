@@ -900,8 +900,10 @@ GMT_LOCAL void psvelo_set_colorfill (struct GMT_CTRL *GMT, struct PSVELO_CTRL *C
 	/* Called if -C was given.  Selects and updates color fills and possibly pen colors */
 	struct GMT_FILL *F = (Ctrl->Z.item == PSVELO_G_FILL) ? &Ctrl->G.fill : &Ctrl->E.fill;
 	gmt_get_fill_from_z (GMT, P, value, F);
-	if (Ctrl->I.active)
-			gmt_illuminate (GMT, ival, F->rgb);
+	if (Ctrl->I.active) {
+		gmt_illuminate (GMT, ival, F->rgb);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Illumination value used is %h\n", ival);
+	}
 	if (Ctrl->L.pen.cptmode & 1) {	/* Also change error pen color via CPT */
 		gmt_M_rgb_copy (Ctrl->L.pen.rgb, F->rgb);
 		gmt_setpen (GMT, &Ctrl->L.pen);
