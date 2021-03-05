@@ -1,4 +1,6 @@
 **-X**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*xshift*]
 
+.. _-Y:
+
 **-Y**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*yshift*] :ref:`(more ...) <-XY_full>`
     Shift plot origin.

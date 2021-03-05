@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdvector** *compx.nc* *compy.nc* **-J**\ *parameters* [ |-A| ]
+**gmt grdvector** *compx.nc* *compy.nc* |-J|\ *parameters*
+[ |-A| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-G|\ *fill* ]
