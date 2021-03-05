@@ -182,8 +182,9 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**+c**\|\ **n**\ ][**+s**]
+**-S**\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+s**]
     Control various aspects of color bar appearance when **-B** is *not* used.
+    Append **+a** to place annotations at the given *angle* [default is no slanting].
     Append **+c** to use custom labels if given in the CPT as annotations.
     Append **+n** to use numerical labels [Default].
     Append **+s** to skip drawing gridlines separating different color intervals [Default draws gridlines].
