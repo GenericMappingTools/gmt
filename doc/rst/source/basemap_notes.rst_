@@ -1,11 +1,11 @@
 Custom Labels or Intervals
 --------------------------
 
-The **-B** option sets up a regular annotation interval and the
+The |-B| option sets up a regular annotation interval and the
 annotations derive from the corresponding *x*, *y*, or *z* coordinates.
 However, some applications requires special control on which annotations
 to plot and even replace the annotation with other labels. This is
-achieved by using **c**\ *intfile* in the **-B** option, where *intfile*
+achieved by using **c**\ *intfile* in the |-B| option, where *intfile*
 contains all the information about annotations, ticks, and even
 gridlines. Each record is of the form *coord* *type* [*label*], where
 *coord* is the coordinate for this annotation (or tick or gridline),
@@ -20,10 +20,10 @@ Restrictions
 ------------
 
 For some projections, a spherical earth is implicitly assumed. A warning
-will notify the user if **-V** is set.
+will notify the user if |-V| is set.
 
 Bugs
 ----
 
-The **-B** option is somewhat complicated to explain and comprehend.
+The |-B| option is somewhat complicated to explain and comprehend.
 However, it is fairly simple for most applications (see examples).
