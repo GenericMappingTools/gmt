@@ -179,3 +179,5 @@ Optional Arguments
 .. include:: ../../explain_colon.rst_
 
 .. include:: ../../explain_help.rst_
+
+.. include:: seis_extra_cols.rst_
