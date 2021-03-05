@@ -176,7 +176,7 @@ cd <path-to-gmt>
 cp admin/bashrc_for_gmt ~/bashrc_for_gmt
 ```
 
-Here are the steps for setting up bashrc_for_gmt after copying it to a new location:
+Here are the steps for setting up `bashrc_for_gmt` after copying it to a new location:
 
 - If you do not have [ninja](https://ninja-build.org/) installed, you will need to change `builder=ninja` to
   `builder=make` and `Bname="Ninja"` to `Bname="Unix Makefiles"`. It is recommended that you use ninja.
@@ -185,10 +185,10 @@ Here are the steps for setting up bashrc_for_gmt after copying it to a new locat
 - Change `MATLAB=/Applications/MATLAB_R2019a.app` to the path for your version of the MATLAB app.
 - Set `REPO_DIR` to the path that contains the GMT repository.
 - Set `DATA_DIR` to the path that contains the folders `dcw-gmt-1.1.4/` and `gshhg-gmt-2.3.7/` for the dcw and gshhg
-  dataset respectively. If these folders are not located in the same path, you can instead delete L25
+  datasets respectively. If these folders are not located in the same path, you can instead delete L25
   (`DATA_DIR=<path to directory containing GSHHG and DCW>`) and set the individual paths to the GSHHG and DCW source
   in L30 (`export GMT_GSHHG_SOURCE=${DATA_DIR}/gshhg-gmt-2.3.7`) and
-  L31(`export GMT_DCW_SOURCE=${DATA_DIR}/dcw-gmt-1.1.4`).
+  L31 (`export GMT_DCW_SOURCE=${DATA_DIR}/dcw-gmt-1.1.4`).
 - Edit the file `~/.bashrc` to include the line `source <path>/bashrc_for_gmt`. If you set up `bashrc_for_gmt` in your
   home directory, this line should be `source ~/bashrc_for_gmt`.
 
@@ -206,4 +206,4 @@ Here are some of the shortcuts included in `bashrc_for_gmt`:
 - `checkdbuild` and `checkrbuild` can be used to run the tests for the debug and release builds respectively.
 - `vpngdbuild` and `vpdfdbuild` can be used to open the results from all failing image-based tests.
 - `view_png_failures_r` and `view_pdf_failures_r` can be used for view failures of the release build with a lag between
-  opening each failures.
+  opening each file.
