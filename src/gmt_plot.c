@@ -5319,7 +5319,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	if (A->type != GMT_TIME)						/* Set the annotation format template */
 		gmt_get_format (GMT, gmtlib_get_map_interval (GMT, A->type, &A->item[GMT_ANNOT_UPPER]), A->unit, A->prefix, format);
 	text_angle = (ortho == horizontal) ? 90.0 : 0.0;
-	justify = (ortho) ? PSL_MR : PSL_BC;
+	justify = (ortho && axis == GMT_X) ? PSL_MR : PSL_BC;
 	if (A->use_angle && !skip) {	/* User override annotation angle */
 		text_angle = A->angle;
 		angled = true;
@@ -5330,7 +5330,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		if (axis == GMT_Y) ortho = true;
 		if (axis == GMT_X) {
 			cos_a = 0.5 * cosd (text_angle);	/* Half-height of text at an angle */
-			sin_a = 0.5 * fabs (sind (text_angle));	/* Fraction of y offset due to slanted annotation */
+			sin_a = fabs (sind (text_angle));	/* Fraction of y offset due to slanted annotation */
 		}
 		else {
 			cos_a = cosd (text_angle);	/* Full-height of text at an angle */
@@ -5485,9 +5485,11 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 					gmtlib_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[nx1-1]);	/* Get annotation string */
 				PSL_deftextdim (PSL, "-w", font.size, string);	/* Compute the width */
 				PSL_command (PSL, " %.12g mul def\n", sin_a);	/* Multiply this width by sine of the angle to get the y-component */
+				//PSL_command (PSL, " %.12g mul %g add def\n", sin_a, PSL_IZ (PSL, 72.0 * GMT->current.setting.font_annot[GMT_PRIMARY].size));	/* Multiply this width by sine of the angle to get the y-component */
 			}
 			else if (angled && axis == GMT_Y) {	/* Need a slant in x and reset PSL_AH? to 0 */
-				PSL_command (PSL, "/PSL_slant_x PSL_AH%d %.12g mul def\n", annot_pos, cos_a);	/* Largest annotation width (or height) so far */
+				//PSL_command (PSL, "/PSL_slant_x PSL_AH%d %.12g mul %g add def\n", annot_pos, cos_a, PSL_IZ (PSL, 72.0 * GMT->current.setting.font_annot[GMT_PRIMARY].size));	/* Largest annotation width (or height) so far */
+				PSL_command (PSL, "/PSL_slant_x PSL_AH%d %.12g mul  def\n", annot_pos, cos_a);	/* Largest annotation width (or height) so far */
 				PSL_command (PSL, "/PSL_AH%d 0 def\n", annot_pos);	/* Largest annotation width (or height) so far */
 			}
 
