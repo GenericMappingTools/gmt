@@ -57,7 +57,8 @@ For viewing documentation under Linux via `gmt docs`, your need `xdg-open`:
 
 Install for building GMT documentation and running tests (not required for general use):
 
-- [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the manpage and HTML documentation)
+- [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the documentation)
+- [Sphinx-panels](https://sphinx-panels.readthedocs.io/en/latest/) (for building the documentation)
 - [GraphicsMagick](http://www.graphicsmagick.org/) (for running the tests)
 
 ### Required support data
