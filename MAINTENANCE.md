@@ -5,7 +5,7 @@ Below are instructions for developers and advanced users.
 ## Contents
 
 - [Building the source code](#building-the-source-code)
-- [Building documentation](#building-documentation)
+- [Building the documentation](#building-the-documentation)
 - [Testing GMT](#testing-gmt)
 - [Creating source packages](#creating-source-packages)
 - [Packaging](#packaging)
@@ -18,11 +18,12 @@ Below are instructions for developers and advanced users.
 Refer to the [building guide](BUILDING.md) for instructions on building GMT from source. Several sections include a
 `Note for developers` that provides helpful or necessary information for running tests and building the documentation.
 
-## Building documentation
+## Building the documentation
 
-To build the GMT documentation you need to install the [Sphinx](http://www.sphinx-doc.org/)
-documentation builder. After configuring and building GMT (see the [building guide](BUILDING.md)), you can build GMT
-documentation using the following commands within the build directory:
+To build the GMT documentation you need to install the [Sphinx](http://www.sphinx-doc.org/) documentation builder and
+the [Sphinx-panels](https://sphinx-panels.readthedocs.io/en/latest/) extension. After configuring and building GMT
+(see the [building guide](BUILDING.md)), you can build GMT documentation using the following commands within the build
+directory:
 
 ```
 cmake --build . --target docs_depends     # Generate images included in the documentation
@@ -190,7 +191,7 @@ Here are the steps for setting up [`bashrc_for_gmt`](/admin/bashrc_for_gmt) afte
   (`DATA_DIR=<path to directory containing GSHHG and DCW>`) and set the individual paths to the GSHHG and DCW source
   by changing (`export GMT_GSHHG_SOURCE=${DATA_DIR}/gshhg-gmt-2.3.7`) and
   (`export GMT_DCW_SOURCE=${DATA_DIR}/dcw-gmt-1.1.4`).
-- Edit the file `~/.bashrc` to include the line `source <path>/bashrc_for_gmt`. If you set up `bashrc_for_gmt` as a 
+- Edit the file `~/.bashrc` to include the line `source <path>/bashrc_for_gmt`. If you set up `bashrc_for_gmt` as a
   hidden file in your home directory, this line should be `source ~/.bashrc_for_gmt`.
 
 Here are some of the shortcuts included in [`bashrc_for_gmt`](/admin/bashrc_for_gmt):

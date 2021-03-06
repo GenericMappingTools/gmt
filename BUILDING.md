@@ -27,7 +27,8 @@ To build GMT, you have to install:
 - [netCDF](https://www.unidata.ucar.edu/software/netcdf/) (>=4.0, netCDF-4/HDF5 support mandatory)
 - [curl](https://curl.haxx.se/)
 
-> Note for developers: It is recommended that you install the optional dependencies. [Sphinx](http://www.sphinx-doc.org)
+> Note for developers: It is recommended that you install the optional dependencies.
+> [Sphinx](http://www.sphinx-doc.org), [Sphinx-panels](https://sphinx-panels.readthedocs.io/en/latest/),
 > and [GraphicsMagick](http://www.graphicsmagick.org/) are required for building the documentation and running the
 > tests.
 
@@ -160,7 +161,6 @@ For advanced users, you can append the option `-G Ninja` to use the
 build tool [Ninja](https://ninja-build.org/), which is a small build system
 with a focus on speed.
 
-> Note for developers: Refer to the file `admin/bashrc_for_gmt` for useful aliases for configuring and building GMT.
 
 ## Building GMT source codes
 
@@ -174,10 +174,15 @@ cmake --build .
 cmake --build . --config Release
 ```
 
-which will compile all the programs. You can also append ``--parallel [jobs]``
-to enable parallel build, in which ``jobs`` is the maximum number of concurrent
-processes to use when building. If ``jobs`` is omitted the native build tool's
-default number is used.
+which will compile all the programs. You can also append ``--parallel [jobs]`` to enable parallel build, in which
+``jobs`` is the maximum number of concurrent processes to use when building. If ``jobs`` is omitted the native build
+tool's default number is used.
+
+> Note: These instructions build the source code for GMT. Optionally, follow the instructions for
+> [building the documentation](MAINTENANCE.md#building-the-documentation) in the [maintenance guide](MAINTENANCE.md) to
+> build the documentation (for example, to develop the documentation or to use `gmt docs` without the GMT server).
+
+> Note for developers: Refer to the file `admin/bashrc_for_gmt` for useful aliases for configuring and building GMT.
 
 ## Installing
 
