@@ -4462,12 +4462,14 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 								GMT->current.map.frame.axis[no].angle = 0.0;
 							else if (p[1] == 'p')	/* +ap is code for normal to y/z-axis; this triggers ortho=false later */
 								GMT->current.map.frame.axis[no].angle = 90.0;
-							else if (!implicit) {	/* Means user gave -By...+a<angle> which is no good */
-								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Only modifiers +an|p is allowed for the %c-axis\n", the_axes[no]);
+							else	/* Assume a variable angle */
+								GMT->current.map.frame.axis[no].angle = atof (&p[1]);
+							if (GMT->current.map.frame.axis[no].angle < -90.0 || GMT->current.map.frame.axis[no].angle > 90.0) {
+								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: +a<angle> must be in the -90 to +90 range\n");
 								error++;
 							}
 							else	/* Probably did -Baf+a30 and only meant that to apply to the x-axis */
-								GMT->current.map.frame.axis[no].use_angle = false;
+								GMT->current.map.frame.axis[no].use_angle = true;
 						}
 						break;
 					case 'f':	/* Select fancy annotations with trailing W|E|S|N */
