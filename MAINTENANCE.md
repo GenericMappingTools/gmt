@@ -168,22 +168,23 @@ Guides for debugging GMT are provided in the
 ## Using build and test aliases
 
 The file [admin/bashrc_for_gmt](/admin/bashrc_for_gmt) contains useful aliases for building and testing GMT that some
-developers chose to use. New pull requests with other aliases that you find helpful are welcome. This file is version controlled, so you should copy the file to a different location in order to edit and use it. For example, use these
-commands to copy it to your home directory:
+developers chose to use. New pull requests with other aliases that you find helpful are welcome.
+This file is version controlled, so you should copy the file to a different location in order to edit and use it.
+For example, use these commands to copy it to your home directory:
 
 ```
 cd <path-to-gmt>
-cp admin/bashrc_for_gmt ~/bashrc_for_gmt
+cp admin/bashrc_for_gmt ~/.bashrc_for_gmt
 ```
 
-Here are the steps for setting up `bashrc_for_gmt` after copying it to a new location:
+Here are the steps for setting up [`bashrc_for_gmt`](/admin/bashrc_for_gmt) after copying it to a new location:
 
 - If you do not have [ninja](https://ninja-build.org/) installed, you will need to change `builder=ninja` to
-  `builder=make` and `Bname="Ninja"` to `Bname="Unix Makefiles"`. It is recommended that you use ninja.
+  `builder=make` and `Bname="Ninja"` to `Bname="Unix Makefiles"`. Ninja is recommended for speeding up build times.
 - You may need to update `pngview=open` and `pngview=open` depending on your preferred program for viewing files.
 - Optionally, change `ncores=4` to the number of cores to use for building and running tests.
 - Change `MATLAB=/Applications/MATLAB_R2019a.app` to the path for your version of the MATLAB app.
-- Set `REPO_DIR` to the path that contains the GMT repository.
+- Set `REPO_DIR` to the path that contains the local `git clone` copy of the GMT repository.
 - Set `DATA_DIR` to the path that contains the folders `dcw-gmt-1.1.4/` and `gshhg-gmt-2.3.7/` for the dcw and gshhg
   datasets respectively. If these folders are not located in the same path, you can instead delete L25
   (`DATA_DIR=<path to directory containing GSHHG and DCW>`) and set the individual paths to the GSHHG and DCW source
@@ -192,7 +193,7 @@ Here are the steps for setting up `bashrc_for_gmt` after copying it to a new loc
 - Edit the file `~/.bashrc` to include the line `source <path>/bashrc_for_gmt`. If you set up `bashrc_for_gmt` in your
   home directory, this line should be `source ~/bashrc_for_gmt`.
 
-Here are some of the shortcuts included in `bashrc_for_gmt`:
+Here are some of the shortcuts included in [`bashrc_for_gmt`](/admin/bashrc_for_gmt):
 
 - `gmt6` and `gtop` can be used to quickly `cd` to the top of the GMT source directory and repository base respectively.
 - `gmtfind` can be used to list all source, docs, scripts, and text files where a string appears in the file
