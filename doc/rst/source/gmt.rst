@@ -208,7 +208,12 @@ modules. No space between the option flag and the associated arguments.
 
 .. include:: explain_-Jproj_full.rst_
 
-.. include:: explain_-R_full.rst_
+.. _-R:
+.. _-R_full:
+
+|SYN_OPT-Rz|
+
+    .. include:: explain_-R_full.rst_
 
 .. include:: explain_-Rz_full.rst_
 

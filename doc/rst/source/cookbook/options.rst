@@ -76,49 +76,7 @@ importance (some are used a lot more than others).
 Data domain or map region: The **-R** option
 --------------------------------------------
 
-The **-R** option defines the map region or data domain of interest. It
-may be specified in one of five ways, two of which are shown in Figure
-:ref:`Map region <gmt_region>`:
-
-#. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*. This is the standard way to
-   specify Cartesian data domains and geographical regions when using
-   map projections where meridians and parallels are rectilinear.
-
-#. **-R**\ *xlleft*/*ylleft*/*xuright*/*yuright*\ **+r**. This form is
-   used with map projections that are oblique, making meridians and
-   parallels poor choices for map boundaries. Here, we instead specify
-   the lower left corner and upper right corner geographic coordinates,
-   followed by the modifier **+r**. This form guarantees a rectangular map
-   even though lines of equal longitude and latitude are not straight lines.
-
-#. **-R**\ *gridfile*. This will copy the domain settings found for the
-   grid in specified file. Note that depending on the nature of the
-   calling program, this mechanism will also set grid spacing and
-   possibly the grid registration (see
-   Section `Grid registration: The -r option`_).
-
-#. **-R**\ *code1,code2,...*\ [**+e**\|\ **r**\|\ **R**\ [*incs*]]. This indirectly supplies
-   the region by consulting the DCW (Digital Chart of the World) database and derives
-   the bounding regions for one or more countries given by the codes.
-   Simply append one or more comma-separated countries using the two-character
-   ISO 3166-1 alpha-2 convention (e.g., https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
-   To select a state within a country (if available), append .state, e.g, US.TX for Texas.
-   To specify a whole continent, prepend = to any of the continent codes AF (Africa),
-   AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania), NA (North America), or SA
-   (South America).  Append **+r** to modify exact bounding box coordinates obtained from
-   the polygon(s): Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
-   final region boundaries to be multiples of these steps [default is no adjustment].
-   Alternatively, use **+R** to extend the region outward by adding these increments
-   instead, or **+e** which is like **+r** but it ensures that the bounding box extends
-   by at least 0.25 times the increment [no extension]. As an example, **-R**\ *FR*\ **+r**\ 1 will select
-   the national bounding box of France rounded to nearest integer degree.
-
-#. **-R**\ *code*\ *x0*/*y0*/*nx*/*ny*.  This method can be used when creating
-   grids.  Here, *code* is a 2-character combination of **L**\ , **C**\ , **R** (for left, center,
-   or right) and **T**\ , **M**\ , **B** for top, middle, or bottom. e.g., **BL** for lower left.  This
-   indicates which point on a rectangular grid region the *x0*/*y0* coordinates
-   refer to, and the grid dimensions *nx* and *ny* are used with grid spacings given
-   via **-I** to create the corresponding region.
+.. include :: ../explain_-R_full.rst_
 
 .. _gmt_region:
 
