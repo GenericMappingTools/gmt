@@ -186,12 +186,12 @@ Here are the steps for setting up [`bashrc_for_gmt`](/admin/bashrc_for_gmt) afte
 - Change `MATLAB=/Applications/MATLAB_R2019a.app` to the path for your version of the MATLAB app.
 - Set `REPO_DIR` to the path that contains the local `git clone` copy of the GMT repository.
 - Set `DATA_DIR` to the path that contains the folders `dcw-gmt-1.1.4/` and `gshhg-gmt-2.3.7/` for the dcw and gshhg
-  datasets respectively. If these folders are not located in the same path, you can instead delete L25
+  datasets respectively. If these folders are not located in the same path, you can instead delete the line
   (`DATA_DIR=<path to directory containing GSHHG and DCW>`) and set the individual paths to the GSHHG and DCW source
-  in L30 (`export GMT_GSHHG_SOURCE=${DATA_DIR}/gshhg-gmt-2.3.7`) and
-  L31 (`export GMT_DCW_SOURCE=${DATA_DIR}/dcw-gmt-1.1.4`).
-- Edit the file `~/.bashrc` to include the line `source <path>/bashrc_for_gmt`. If you set up `bashrc_for_gmt` in your
-  home directory, this line should be `source ~/bashrc_for_gmt`.
+  by changing (`export GMT_GSHHG_SOURCE=${DATA_DIR}/gshhg-gmt-2.3.7`) and
+  (`export GMT_DCW_SOURCE=${DATA_DIR}/dcw-gmt-1.1.4`).
+- Edit the file `~/.bashrc` to include the line `source <path>/bashrc_for_gmt`. If you set up `bashrc_for_gmt` as a 
+  hidden file in your home directory, this line should be `source ~/.bashrc_for_gmt`.
 
 Here are some of the shortcuts included in [`bashrc_for_gmt`](/admin/bashrc_for_gmt):
 
