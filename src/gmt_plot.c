@@ -5278,7 +5278,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	bool flip = false;		/* true if annotations are inside axes */
 	bool MM_set = false;		/* true after we define the MM PS macro for label offsets */
 	bool angled = false;		/* True if user used +angle to select a slanted annotation */
-	bool skip = false;
+	bool skip = false, just_set = false;
 	bool save_pi = GMT->current.plot.substitute_pi;
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
 	double x, t_use, text_angle, cos_a = 0.0, sin_a = 0.0;	/* Misc. variables */
@@ -5308,8 +5308,8 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	xyz_fwd = ((axis == GMT_X) ? &gmt_x_to_xx : (axis == GMT_Y) ? &gmt_y_to_yy : &gmt_z_to_zz);
 	primary = gmtplot_get_primary_annot (A);			/* Find primary axis items */
 	if (A->use_angle) {	/* Must honor the +a modifier */
-		if (axis != GMT_X && doubleAlmostEqualZero (A->angle, 90.0)) ortho = false;	/* Y/Z-Annotations are parallel */
-		else if (axis != GMT_X && doubleAlmostEqualZero (A->angle, 0.0)) ortho = true;	/* Y/Z-Annotations are normal */
+		if (axis != GMT_X && doubleAlmostEqualZero (A->angle, 90.0)) ortho = false, just_set = true;	/* Y/Z-Annotations are parallel */
+		else if (axis != GMT_X && doubleAlmostEqualZero (A->angle, 0.0)) ortho = true, just_set = true;	/* Y/Z-Annotations are normal */
 		if (doubleAlmostEqualZero (A->angle, 0.0)) skip = true;	/* Annotations are parallel so do nothing */
 	}
 	else if (strchr (GMT->current.setting.map_annot_ortho, axis_chr[axis][below]))
@@ -5319,15 +5319,20 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	if (A->type != GMT_TIME)						/* Set the annotation format template */
 		gmt_get_format (GMT, gmtlib_get_map_interval (GMT, A->type, &A->item[GMT_ANNOT_UPPER]), A->unit, A->prefix, format);
 	text_angle = (ortho == horizontal) ? 90.0 : 0.0;
-	justify = (ortho && axis == GMT_X) ? PSL_MR : PSL_BC;
+	justify = (ortho) ? PSL_MR : PSL_BC;
 	if (A->use_angle && !skip) {	/* User override annotation angle */
 		text_angle = A->angle;
 		angled = true;
-		if (text_angle > 0.0)
-			justify = (below) ? PSL_MR : PSL_ML;
-		else
-			justify = (below) ? PSL_ML : PSL_MR;
-		if (axis == GMT_Y) ortho = true;
+		if (!just_set) {
+			if (text_angle > 0.0)
+				justify = (below) ? PSL_MR : PSL_ML;
+			else
+				justify = (below) ? PSL_ML : PSL_MR;
+		}
+		if (axis == GMT_Y) {
+			ortho = true;
+			if (just_set && !below) justify = PSL_TC;
+		}
 		if (axis == GMT_X) {
 			cos_a = 0.5 * cosd (text_angle);	/* Half-height of text at an angle */
 			sin_a = fabs (sind (text_angle));	/* Fraction of y offset due to slanted annotation */
