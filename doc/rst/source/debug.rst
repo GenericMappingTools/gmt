@@ -169,7 +169,7 @@ done you can proceed to installing the master GMT.jl:
     ]
     add GMT#master
 
-#. When done, end package install mode by hitting backspace.
+#. When done, end package install mode by hitting backspace.  Then, load and precompile GMT by typing "using GMT".
 
 #. Open Xcode, select scheme "libgmt", navigate to gmt_api.c in the source listing, and set a stop point in the editor,
    say in *GMT_Call_Module* or *GMT_Create_Session* and Xcode will stop at the breakpoint when it is reached.
