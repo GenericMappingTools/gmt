@@ -21,6 +21,10 @@ smartquotes_action = 'qe'
 highlight_language = 'bash'
 pygments_style = 'sphinx'
 
+# Disable sphinx_panels extension for manpage build
+if tags.has("nosphinxpanels"):
+    extensions.remove("sphinx_panels")
+
 # -- Project configuration ------------------------------------------------
 project = 'GMT'
 copyright = "@GMT_VERSION_YEAR@, The GMT Team."
