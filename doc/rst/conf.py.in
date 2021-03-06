@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath('_extensions'))
 
 # -- General configuration -----------------------------------------------------
 needs_sphinx = '1.8'
-extensions = ['sphinx.ext.mathjax', 'jinja', 'youtube']
+extensions = ['sphinx.ext.mathjax', 'jinja', 'youtube', 'sphinx_panels']
 source_encoding = 'utf-8-sig'
 source_suffix = '.rst'
 master_doc = 'index'
@@ -20,6 +20,10 @@ smartquotes_action = 'qe'
 # default language to highlight source code
 highlight_language = 'bash'
 pygments_style = 'sphinx'
+
+# Disable sphinx_panels extension for manpage build
+if tags.has("nosphinxpanels"):
+    extensions.remove("sphinx_panels")
 
 # -- Project configuration ------------------------------------------------
 project = 'GMT'

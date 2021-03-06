@@ -14,14 +14,15 @@ Synopsis
 
 **gmt velo** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-R|
+|-S|\ *format*\ [*scale*][/*args*][**+f**\ *font*]
 [ |-A|\ *parameters* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt*]
 [ |-E|\ *fill* ]
 [ |-G|\ *fill* ]
+[ |-I|\ [*intens*] ]
 [ |-L|\ [*pen*\ [**+c**\ [**f**\|\ **l**]]] ]
 [ |-N| ]
-[ |-S|\ *<format><args>*\ [**+f**\ *font*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][**+c**\ [**f**\|\ **l**]] ]
@@ -34,7 +35,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
-[ |SYN_OPT-t| ]
+[ |SYN_OPT-tv| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 

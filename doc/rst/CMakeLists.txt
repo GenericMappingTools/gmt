@@ -83,6 +83,7 @@ if (SPHINX_FOUND)
 			-c "${CMAKE_CURRENT_BINARY_DIR}"
 			-d "${SPHINX_CACHE_DIR}"
 			-w "${CMAKE_CURRENT_BINARY_DIR}/man.log"
+			-t nosphinxpanels
 			${CMAKE_CURRENT_BINARY_DIR}/source
 			${CMAKE_CURRENT_BINARY_DIR}/man
 			COMMAND ${GZIP} -9 -n -f ${CMAKE_CURRENT_BINARY_DIR}/man/*.?
