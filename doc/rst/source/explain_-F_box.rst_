@@ -1,0 +1,14 @@
+- **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*, or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\
+  *tgap* and *gap* gives a uniform :ref:`clearance <plt-units>`, *xgap*\ /\ *ygap* gives separate
+  :ref:`clearances <plt-units>` in the x- and y- directions, and *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* gives
+  individual :ref:`clearances <plt-units>` between the map embellishment and the border for each side.
+- **+g**\ *fill* to fill the box with a color specified by :doc:`fill <gmtcolors>` [default is no fill].
+- **+i**\ [[*gap*/]\ *pen*] to draw a secondary, inner border as well. Optionally, specify the
+  :ref:`gap <plt-units>` between the inner and outer border and the :ref:`pen <-Wpen_attrib>` for the inner border
+  [default is a uniform *gap* between borders of **2p** and the :term:`MAP_DEFAULT_PEN`].
+- **+p**\ *pen* to specify different :ref:`pen <-Wpen_attrib>` attributes.
+- **+r**\ [*radius*] to draw rounded rectangular borders instead with a corner radius set by *radius* (append
+  :ref:`units <plt-units>`) [defaults is **6p**].
+- **+s**\ [[*dx*/*dy*/][*shade*]] to draw an offset background shaded region. Here, *dx*/*dy* indicates the
+  :ref:`shift <plt-units>` relative to the foreground frame [default is **4p**\ /**-4p**] and *shade* sets the
+  :doc:`fill <gmtcolors>` style to use for shading [default is **gray50**].
