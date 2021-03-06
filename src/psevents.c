@@ -498,24 +498,29 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 
 			case 'Z':	/* Select advanced seismologic/geodetic symbols */
 				Ctrl->Z.active = true;
-				if (opt->arg[0] && strstr (opt->arg, "-S")) {
-					if ((c = strchr (opt->arg, ' '))) {	/* First space ends the module name */
+				if (opt->arg[0] && strstr (opt->arg, "-S")) {	/* Got a required -S option as part of the command */
+					if ((c = strchr (opt->arg, ' '))) {	/* First space in the string ends the module name */
 						char *q;
-						c[0] = '\0';	/* Temporarily hide the test of the command */
-						Ctrl->Z.module = strdup (opt->arg);
+						c[0] = '\0';	/* Temporarily hide the rest of the command so we can isolate the module name */
+						Ctrl->Z.module = strdup (opt->arg);	/* Make a copy of the module name */
 						c[0] = ' ';	/* Restore space */
-						while (c[0] == ' ') c++;
-						strncpy (txt_a, c, GMT_LEN256);
-						c = q = strstr (txt_a, "-S") + 3;	/* Start of size */
-						Ctrl->S.size = atof (c);			/* Get the fixed symbol size */
-						while (strchr ("/+", c[0])) c++;	/* Skip the size */
-						while (c[0]) *q++ = *c++;
-						*q = '\0';
-						Ctrl->Z.cmd = strdup (txt_a);
+						while (c[0] == ' ') c++;	/* Move to first word after the module */
+						strncpy (txt_a, c, GMT_LEN256);	/* Copy the remaining text into a buffer */
+						c = q = strstr (txt_a, "-S") + 3;	/* Determine the start position of symbol size in the command */
+						Ctrl->S.size = atof (c);			/* Get the fixed symbol size specified */
+						while (!strchr ("/+", c[0])) c++;	/* Skip the size until we hit a slash or a modifier */
+						if (c[0] == '/') c++;	/* Then skip the slash since not needed when size is not given */
+						while (c[0]) *q++ = *c++;	/* Copy over the remaining text from the command */
+						*q = '\0';	/* And truncate since we shuffled characters forward */
+						Ctrl->Z.cmd = strdup (txt_a);	/* Keep a copy of the final command that has no symbol-size specified */
 					}
 				}
 				if (Ctrl->Z.cmd == NULL || Ctrl->Z.module == NULL) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Requires a core coupe, meca, or velo command with -S option\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Requires a core coupe, meca, or velo command with valid -S option\n");
+					n_errors++;
+				}
+				if (gmt_M_is_zero (Ctrl->S.size)) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Requires a valid -S option with specified nonzero symbol size\n");
 					n_errors++;
 				}
 				break;
@@ -555,6 +560,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 		n_errors += gmt_M_check_condition (GMT, Ctrl->M.active[1], "Option -Ms: Not allowed with -Ar<dpu>.\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->M.active[2], "Option -Mt: Not allowed with -Ar<dpu>.\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.active, "Option -S: Not allowed with -Ar<dpu>.\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active, "Option -Z: Not allowed with -Ar<dpu>.\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active, "Option -T: Not allowed with -Ar<dpu>.\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active, "Option -W: Not allowed with -Ar<dpu>.\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->current.setting.proj_length_unit == GMT_PT, "PROJ_LENGTH_UNIT: Must be either cm or inch for -Ar<dpu> to work.\n");
@@ -565,11 +571,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->F.string == NULL, "Option -F: No argument given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->G.fill == NULL, "Option -G: No argument given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Q.file == NULL, "Option -Q: No file name given\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (!Ctrl->C.active && !Ctrl->G.active && !Ctrl->W.active), "Must specify at least one of -C, -G, -W to plot visible symbols.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (!Ctrl->C.active && !Ctrl->G.active && !Ctrl->W.active), "Option -S: Must specify at least one of -C, -G, -W to plot visible symbols.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && (!Ctrl->C.active && !Ctrl->G.active && !Ctrl->W.active), "Option -Z: Must specify at least one of -C, -G, -W to plot visible symbols.\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && (strncmp (Ctrl->Z.cmd, "coupe", 5U) && strncmp (Ctrl->Z.cmd, "meca", 4U) && strncmp (Ctrl->Z.cmd, "velo", 4U)),
-		"Option Z: Module command must include one of coupe, meca or velo\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && (strncmp (Ctrl->Z.module, "coupe", 5U) && strncmp (Ctrl->Z.module, "meca", 4U) && strncmp (Ctrl->Z.module, "velo", 4U)),
+		"Option Z: Module command must begin with one of coupe, meca or velo\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
