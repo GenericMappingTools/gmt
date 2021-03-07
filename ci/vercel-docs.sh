@@ -10,6 +10,7 @@ set -x -e
 yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install cmake3 ninja-build libcurl-devel netcdf-devel
 # Install Python packages
+python --version
 pip install sphinx
 
 # Install latest gs
