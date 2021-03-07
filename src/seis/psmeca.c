@@ -504,7 +504,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 
 					/* parse beachball size */
 					if ((c = strchr (opt->arg, '+'))) c[0] = '\0';	/* Chop off modifiers for now */
-					Ctrl->S.scale = gmt_M_to_inch (GMT, &opt->arg[1]);
+					if (opt->arg[1]) Ctrl->S.scale = gmt_M_to_inch (GMT, &opt->arg[1]);
 					if (c) c[0] = '+';	/* Restore modifiers */
 
 					if (gmt_get_modifier (opt->arg, 'a', word))
