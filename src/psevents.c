@@ -507,9 +507,15 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 						while (c[0] == ' ') c++;	/* Move to first word after the module */
 						strncpy (txt_a, c, GMT_LEN256);	/* Copy the remaining text into a buffer */
 						c = q = strstr (txt_a, "-S") + 3;	/* Determine the start position of symbol size in the command */
-						Ctrl->S.size = gmt_M_to_inch (GMT, c);	/* Get the fixed symbol size specified */
 						while (!strchr ("/+", c[0])) c++;	/* Skip the size until we hit a slash or a modifier */
 						if (c[0] == '/') c++;	/* Then skip the slash since not needed when size is not given */
+						if (c[0] == '+') {
+							c[0] = '\0';	/* Then skip the slash since not needed when size is not given */
+							Ctrl->S.size = gmt_M_to_inch (GMT, q);	/* Get the fixed symbol size specified */
+							c[0] = '+';	/* Then skip the slash since not needed when size is not given */
+						}
+						else
+							Ctrl->S.size = gmt_M_to_inch (GMT, q);	/* Get the fixed symbol size specified */
 						while (c[0]) *q++ = *c++;	/* Copy over the remaining text from the command */
 						*q = '\0';	/* And truncate since we shuffled characters forward */
 						Ctrl->Z.cmd = strdup (txt_a);	/* Keep a copy of the final command that has no symbol-size specified */

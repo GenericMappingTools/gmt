@@ -511,8 +511,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 						Ctrl->S.angle = atof(word);
 					if (gmt_get_modifier (opt->arg, 'j', word) && strchr ("LCRBMT", word[0]) && strchr ("LCRBMT", word[1]))
 						Ctrl->S.justify = gmt_just_decode (GMT, word, Ctrl->S.justify);
-					if (gmt_get_modifier (opt->arg, 'f', word))
-						n_errors += gmt_getfont (GMT, word, &(Ctrl->S.font));
+					if (gmt_get_modifier (opt->arg, 'f', word)) {
+						if (strcmp (word, "0"))
+							n_errors += gmt_getfont (GMT, word, &(Ctrl->S.font));
+						else
+							Ctrl->S.font.size = 0.0;
+					}
 					if (gmt_get_modifier (opt->arg, 'o', word)) {
 						if (gmt_get_pair (GMT, word, GMT_PAIR_DIM_DUP, Ctrl->S.offset) < 0) n_errors++;
 					} else {	/* Set default offset */
@@ -521,7 +525,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 						if (Ctrl->S.justify/4 != 1) /* Not middle aligned */
 							Ctrl->S.offset[1] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 					}
-					if (Ctrl->S.font.size <= 0.0) Ctrl->S.no_label = true;
 				} else {	/* Old syntax: -S<format><scale>[/fontsize[/offset]][+u] */
 					Ctrl->S.offset[1] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Set default offset */
 					if ((p = strstr (opt->arg, "+u"))) {
@@ -536,9 +539,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 					if (txt[0]) Ctrl->S.scale = gmt_M_to_inch (GMT, txt);
 					if (txt_b[0]) Ctrl->S.font.size = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
 					if (txt_c[0]) Ctrl->S.offset[1] = gmt_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
-					if (Ctrl->S.font.size < 0.0) Ctrl->S.no_label = true;
 					if (p) p[0] = '+';	/* Restore modifier */
 				}
+				if (Ctrl->S.font.size <= 0.0) Ctrl->S.no_label = true;
 				if (gmt_M_is_zero (Ctrl->S.scale)) Ctrl->S.read = true;	/* Must get size from input file */
 				break;
 			case 'T':
