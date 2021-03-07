@@ -297,7 +297,8 @@ The Frame settings are specified by
    **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+s**\ *subtitle*]\
    [**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
 
-The following modifiers can be appended to **-B** to control the Frame settings:
+The frame setting is optional but can be invoked once to override the defaults. The following modifiers can be appended
+to **-B** to control the Frame settings:
 
 - *axes* to set which of the axes should be drawn and possibly annotated using a combination of the codes listed
   below [default is **WESN**]. Borders omitted from the set of codes will not be drawn. For example, **WSn**
@@ -351,7 +352,8 @@ The following modifiers can be appended to **-B** to control the Frame settings:
 
 **Note**: Both **+t**\ *title* and **+s**\ *subtitle* may be set over multiple lines by breaking them up using the
 markers '@^' or '<break>'.  To include LaTeX code as part of a single-line title or subtitle, enclose the expression
-with @[ markers (or alternatively <math> ... </math>) (requires ``latex`` and ``dvips`` to be installed).
+with @[ markers (or alternatively <math> ... </math>) (requires ``latex`` and ``dvips`` to be installed). See the
+:doc:`/cookbook/gmt-latex` cookbook chapter for more details.
 
 .. _option_-B_axes:
 
@@ -360,26 +362,27 @@ Axes settings
 
 The Axes settings are specified by
 
-   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [**+a**\ *angle*\|\ **n**\|\ **p**][**+l**\ *label*]\
-   [**+p**\ *prefix*][**+u**\ *unit*]
+   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [**+a**\ *angle*\|\ **n**\|\ **p**][**+f**]\
+   [**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
 
 but you may also split this into two separate invocations for clarity, i.e.,
 
-   | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*\|\ **n**\|\ **p**][**+l**\|\ **L**\ *label*]\
-     [**+p**\ *prefix*][**+s**\|\ **S**\ *seclabel*][**+u**\ *unit*]
+   | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*\|\ **n**\|\ **p**][**+f**]\
+     [**+l**\|\ **L**\ *label*][**+p**\ *prefix*][**+s**\|\ **S**\ *seclabel*][**+u**\ *unit*]
    | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
 The following modifiers can be appended to **-B** to control the Axes settings:
 
-- **p**\|\ **s** to set whether the modifiers apply to the **p**\ (rimary) or **s**\ (econdary) axes. These settings
-  are mostly used for time axes annotations but are available for geographic axes as well. **Note**: primary refers
-  to annotations closest to the axis and secondary to annotations further away.  Hence, primary annotation-, tick-,
-  and gridline-intervals must be shorter than their secondary counterparts). The terms "primary" and "secondary" do not
-  reflect any hierarchical order of units: the "primary" annotation interval is usually smaller (e.g., days) while the
-  "secondary" annotation interval typically is larger (e.g., months).
+- **p**\|\ **s** to set whether the modifiers apply to the **p**\ (rimary) or **s**\ (econdary) axes [Default is **p**].
+  These settings are mostly used for time axes annotations but are available for geographic axes as well. **Note**:
+  Primary refers to annotations closest to the axis and secondary to annotations further away.  Hence, primary
+  annotation-, tick-, and gridline-intervals must be shorter than their secondary counterparts). The terms "primary" and
+  "secondary" do not reflect any hierarchical order of units: the "primary" annotation interval is usually smaller
+  (e.g., days) while the "secondary" annotation interval typically is larger (e.g., months).
 - **x**\|\ **y**\|\ **z** to set which axes the modifiers apply to [default is **xy**]. If you wish to give different
   annotation intervals or labels for the various axes then you must repeat the **B** option for each axis. For a
   3-D plot with the **-p** and **-Jz** options used, **-Bz** can be used to provide settings for the verical axis.
+- **+f** (for geographic axes only) to give fancy annotations with W\|\ E\|\ S\|\ N suffices encoding the sign.
 - **+l**\|\ **+L**\ *label* (for Cartesian plots only) to add a label to an axis. **+l** uses the default
   label orientation; **+L** forces a horizontal label for *y*-axes, which is useful for very short labels.
 - **+s**\|\ **S**\ *seclabel* (for Cartesion plots only) to specify an alternate label for the right or upper axes.
@@ -398,10 +401,19 @@ The following modifiers can be appended to **-B** to control the Axes settings:
   spacing. See :ref:`Intervals Specification <option_-B_int>` for the formatting associated with this modifier.
 
 **NOTE**: To include LaTeX code as part of a label, enclose the expression with @[ markers (or alternatively <math>
-... </math>). (requires ``latex`` and ``dvips`` to be installed).
+... </math>). (requires ``latex`` and ``dvips`` to be installed). See the :doc:`/cookbook/gmt-latex` cookbook chapter
+for more details.
 
 **NOTE**: If any labels, prefixes, or units contain spaces or special characters you will need to enclose them in
 quotes.
+
+**NOTE**: Text items such as *title*, *subtitle*, *label* and *seclabel* are seen by GMT as part of a long string
+containing everything passed to **-B**. Therefore, they cannot contain substrings that looks like other modifiers. If
+you need to embed such sequences (e.g., **+t**\ "Solving a+b=c") you need to replace those + symbols with their octal
+equivalent \\053, (e.g., **+t**\ "Solving a\\053b=c").
+
+**NOTE**: For non-geographical projections: Give negative scale (in **-Jx**) or axis length (in **-JX**) to change the
+direction of increasing coordinates (i.e., to make the y-axis positive down)
 
 .. _option_-B_int:
 
@@ -411,9 +423,11 @@ quotes.
    [**a**\|\ **f**\|\ **g**]\ [*stride*][*phase*][*unit*].
 
 The choice of **a**\|\ **f**\|\ **g** sets the axis item of interest, which are detailed in the Table
-:ref:`interval types <tbl-inttype>`. Normally, equidistant annotations occur at multiples of *stride*; you can
-phase-shift this by appending *phase*, which can be a positive or negative number. Optionally, append *unit* to specify
-the units of *stride*, where *unit* is one of the 18 supported :ref:`unit codes <tbl-units>`.
+:ref:`interval types <tbl-inttype>`. Optionally, append *phase* to shift the annotations by that amount (positive or
+negative, and the sign is *required*).Optionally, append *unit* to specify the units of *stride*, where *unit* is one
+of the 18 supported :ref:`unit codes <tbl-units>`. Fof custom annotations and intervals, *intervals* can be given as
+**c**\ *intfile*, where *intfile* contains any number of records with *coord* *type* [*label*]. See the section
+:ref:`Custom axes <custom_axes>` for more details.
 
 .. _tbl-inttype:
 
@@ -442,8 +456,8 @@ spacing; unless **g** is used in consort with **a**, then the grid lines are spa
 
 *Stride units*:
 The *unit* flag can take on one of 18 codes; these are listed in Table :ref:`Units <tbl-units>`. Almost all of these
-units are time-axis specific. However, the **m** and **s** units will be interpreted as arc minutes and arc seconds,
-respectively, when a map projection is in effect.
+units are time-axis specific. However, the **d**, **m**, and **s** units will be interpreted as arc degrees, minutes,
+and arc seconds, respectively, when a map projection is in effect.
 
 .. _tbl-units:
 
@@ -486,6 +500,9 @@ respectively, when a map projection is in effect.
 +------------+------------------+----------------------------------------------------------------------------------+
 | **s**      | seconds          | Plot as 2-digit integer (0–60)                                                   |
 +------------+------------------+----------------------------------------------------------------------------------+
+
+**NOTE**: If your axis is in radians you can use multiples or fractions of **pi** to set such annotation intervals. The
+format is [*s*]\ **pi**\ [*f*], for an optional integer scale *s* and optional integer fraction *f*.
 
 Geographic basemaps
 ^^^^^^^^^^^^^^^^^^^
