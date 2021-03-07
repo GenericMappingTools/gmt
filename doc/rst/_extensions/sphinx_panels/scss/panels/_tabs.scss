@@ -1,0 +1,111 @@
+// ---------------------------------------------------------------------------------
+// Adapted from https://squidfunk.github.io/mkdocs-material/reference/content-tabs/
+/// Copyright (c) 2016-2020 Martin Donath <martin.donath@squidfunk.com>
+// ---------------------------------------------------------------------------------
+///
+/// Convert font size in px to rem
+///
+@function px2rem($size, $base: 16px) {
+  @if unit($size) == px {
+    @if unit($base) == px {
+      @return ($size / $base) * 1rem;
+    } @else {
+      @error "Invalid base: #{$base} - unit must be 'px'";
+    }
+  } @else {
+    @error "Invalid size: #{$size} - unit must be 'px'";
+  }
+}
+
+///
+/// Convert font size in px to em
+///
+@function px2em($size, $base: 16px) {
+  @if unit($size) == px {
+    @if unit($base) == px {
+      @return ($size / $base) * 1em;
+    } @else {
+      @error "Invalid base: #{$base} - unit must be 'px'";
+    }
+  } @else {
+    @error "Invalid size: #{$size} - unit must be 'px'";
+  }
+}
+
+// Tabbed block content
+.tabbed-content {
+  box-shadow: 0 px2rem(-1px) var(--tabs-color-overline), 0 px2rem(1px) var(--tabs-color-underline);
+  display: none;
+  order: 99;
+  padding-bottom: px2rem(12px);
+  padding-top: px2rem(12px);
+  width: 100%;
+
+  >:first-child {
+    margin-top: 0 !important;
+  }
+
+  >:last-child {
+    margin-bottom: 0 !important;
+  }
+
+  // Nested tabs
+  >.tabbed-set {
+    margin: 0;
+  }
+}
+
+// Tabbed block container
+.tabbed-set {
+  border-radius: px2rem(2px);
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1em 0;
+  position: relative;
+
+  // Hide radio buttons
+  >input {
+    opacity: 0;
+    position: absolute;
+
+    // Active tab label
+    &:checked+label {
+      border-color: var(--tabs-color-label-active);
+      color: var(--tabs-color-label-active);
+
+      // Show tabbed block content
+      +.tabbed-content {
+        display: block;
+      }
+    }
+
+    // Focused tab label
+    &:focus+label {
+      outline-style: auto;
+    }
+
+    // Disable focus indicator for pointer devices
+    &:not(.focus-visible)+label {
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+  }
+
+  // Tab label
+  >label {
+    border-bottom: px2rem(2px) solid transparent;
+    color: var(--tabs-color-label-inactive);
+    cursor: pointer;
+    font-size: var(--tabs-size-label);
+    font-weight: 700;
+    padding: px2em(20px, 20px) 1.25em px2em(10px, 20px);
+    transition: color 250ms;
+    width: auto;
+    z-index: 1;
+
+    // Hovered label
+    html &:hover {
+      color: var(--tabs-color-label-active);
+    }
+  }
+}
