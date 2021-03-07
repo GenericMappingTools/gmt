@@ -28,8 +28,8 @@ To build GMT, you have to install:
 - [curl](https://curl.haxx.se/)
 
 > Note for developers: It is recommended that you install the optional dependencies.
-> [GraphicsMagick](http://www.graphicsmagick.org/) is  required for building the documentation
-> and running the tests.
+> [Sphinx](http://www.sphinx-doc.org) and [GraphicsMagick](http://www.graphicsmagick.org/)
+> are required for building the documentation and running the tests.
 
 ### Optional dependencies
 
