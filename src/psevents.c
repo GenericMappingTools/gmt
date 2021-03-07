@@ -1057,6 +1057,8 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			if (Ctrl->Z.active) {	/* A variable set of coordinates */
 				for (col = GMT_Z; col <= t_col; col++)
 					fprintf (fp_symbols, "\t%g", out[col]);	/* Write out all required and extra columns */
+				if (In->text && In->text[0])	/* Also output the trailing text */
+					fprintf (fp_symbols, "\t%s", In->text);
 				fprintf (fp_symbols, "\n");
 			}
 			else if (Ctrl->A.active)	/* Just needed the line coordinates */
