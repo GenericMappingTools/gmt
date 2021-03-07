@@ -18,8 +18,8 @@ Synopsis
 [ |-I|\ *includefile* ]
 [ |-M|\ [*job*] ]
 [ |-Q|\ [**s**] ]
-[ **-Sb**\ *preflight* ]
-[ **-Sf**\ *postflight* ]
+[ |-Sb|\ *preflight* ]
+[ |-Sf|\ *postflight* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*workdir*] ]
 [ |-Z| ]
@@ -117,7 +117,7 @@ Optional Arguments
     using the products or stacked data after the main processing is completed. It does not have to be a GMT
     script.
 
-.. _batch-V:
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

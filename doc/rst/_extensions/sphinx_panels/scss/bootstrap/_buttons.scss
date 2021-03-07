@@ -1,0 +1,214 @@
+// Bootstrap v4.4.1 (https://getbootstrap.com/)
+// Copyright 2011-2019 The Bootstrap Authors
+// Copyright 2011-2019 Twitter, Inc.
+// Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+
+.btn {
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: .25rem;
+  color: $gray-900;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  padding: .375rem .75rem;
+  text-align: center;
+  transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  vertical-align: middle;
+
+  &:hover {
+    color: $gray-900;
+    text-decoration: none;
+  }
+
+  &:visited {
+    color: $gray-900;
+  }
+
+  &.focus,
+  &:focus {
+    box-shadow: 0 0 0 $btn-focus-width rgba(mix($blue, $blue, 15%), .25);
+    outline: 0;
+  }
+
+  &.disabled,
+  &:disabled {
+    opacity: .65;
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .btn {
+    transition: none;
+  }
+}
+
+a.btn.disabled,
+fieldset:disabled a.btn {
+  pointer-events: none;
+}
+
+@each $name, $color in $semantic-colors {
+  .btn-#{$name} {
+    background-color: $color;
+    border-color: $color;
+    color: text-color($name);
+
+    &:visited {
+      color: text-color($name);
+    }
+
+    &:hover {
+      background-color: darken($color, 7.5%);
+      border-color: darken($color, 10%);
+      color: text-color($name);
+    }
+
+    &.focus,
+    &:focus {
+      background-color: darken($color, 7.5%);
+      border-color: darken($color, 10%);
+      box-shadow: 0 0 0 $btn-focus-width rgba(mix($color, $color, 15%), .5);
+      color: text-color($name);
+    }
+
+    &.disabled,
+    &:disabled {
+      background-color: $color;
+      border-color: $color;
+      color: text-color($name);
+    }
+
+    &:not(:disabled):not(.disabled).active,
+    &:not(:disabled):not(.disabled):active,
+    .show>&.dropdown-toggle {
+      background-color: darken($color, 10%);
+      border-color: darken($color, 12.5%);
+      color: text-color($name);
+    }
+
+    &:not(:disabled):not(.disabled).active:focus,
+    &:not(:disabled):not(.disabled):active:focus,
+    .show>&.dropdown-toggle:focus {
+      box-shadow: 0 0 0 $btn-focus-width rgba(mix($color, $color, 15%), .5);
+    }
+  }
+}
+
+@each $name, $color in $semantic-colors {
+  .btn-outline-#{$name} {
+    border-color: $color;
+    color: $color;
+
+    &:visited {
+      color: $color;
+    }
+
+    &:hover {
+      background-color: $color;
+      border-color: $color;
+      color: text-color($name);
+    }
+
+    &.focus,
+    &:focus {
+      box-shadow: 0 0 0 $btn-focus-width rgba(mix($color, $color, 15%), .5);
+    }
+
+    &.disabled,
+    &:disabled {
+      background-color: transparent;
+      color: $color;
+    }
+
+    &:not(:disabled):not(.disabled).active,
+    &:not(:disabled):not(.disabled):active,
+    .show>&.dropdown-toggle {
+      background-color: $color;
+      border-color: $color;
+      color: text-color($name);
+    }
+
+    &:not(:disabled):not(.disabled).active:focus,
+    &:not(:disabled):not(.disabled):active:focus,
+    .show>&.dropdown-toggle:focus {
+      box-shadow: 0 0 0 $btn-focus-width rgba(mix($color, $color, 15%), .5);
+    }
+  }
+}
+
+.btn-link {
+  color: $blue;
+  font-weight: 400;
+  text-decoration: none;
+
+  &:hover {
+    color: darken($blue, 15%);
+    text-decoration: underline;
+  }
+
+  &.focus,
+  &:focus {
+    box-shadow: none;
+    text-decoration: underline;
+  }
+
+  &.disabled,
+  &:disabled {
+    color: $gray-600;
+    pointer-events: none;
+  }
+}
+
+.btn-group-lg>.btn,
+.btn-lg {
+  border-radius: .3rem;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  padding: .5rem 1rem;
+}
+
+.btn-group-sm>.btn,
+.btn-sm {
+  border-radius: .2rem;
+  font-size: .875rem;
+  line-height: 1.5;
+  padding: .25rem .5rem;
+}
+
+.btn-block {
+  display: block;
+  width: 100%;
+}
+
+.btn-block+.btn-block {
+  margin-top: .5rem;
+}
+
+input[type=button].btn-block,
+input[type=reset].btn-block,
+input[type=submit].btn-block {
+  width: 100%;
+}
+
+.stretched-link::after {
+  background-color: $black-0;
+  bottom: 0;
+  content: '';
+  left: 0;
+  pointer-events: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+
+.text-wrap {
+  white-space: normal !important;
+}

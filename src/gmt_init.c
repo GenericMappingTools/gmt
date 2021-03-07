@@ -2404,6 +2404,16 @@ bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 	return (false);
 }
 
+bool gmtinit_var_t_module (struct GMT_CTRL *GMT) {
+	/* Only modules psxy, psxyz, pstext, psmeca, and pscoupe can do variable transparency */
+	if (!strncmp (GMT->init.module_name, "psxyz",   5U)) return true;
+	if (!strncmp (GMT->init.module_name, "psxy",    4U)) return true;
+	if (!strncmp (GMT->init.module_name, "pstext",  6U)) return true;
+	if (!strncmp (GMT->init.module_name, "psmeca",  6U)) return true;
+	if (!strncmp (GMT->init.module_name, "pscoupe", 7U)) return true;
+	return false;	/* Anything else */
+}
+
 bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 	/* Parse -t[<filltransparency>[/<stroketransparency>]][+f][+s]
 	 * Note: The transparency is optional (read from file) only for plot, plot3d, and text */
@@ -2458,7 +2468,7 @@ bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 		}
 		GMT->common.t.active = true;
 	}
-	else if (!strncmp (GMT->init.module_name, "psxy", 4U) || !strncmp (GMT->init.module_name, "pstext", 6U)) {	/* Only modules psxy, psxyz, and pstext can do variable transparency */
+	else if (gmtinit_var_t_module (GMT)) {	/* Only some modules can do variable transparency */
 		GMT->common.t.active = GMT->common.t.variable = true;
 		GMT->common.t.n_transparencies = (nt) ? nt : 1;	/* If we gave -t+f+s then we need to read two transparencies, else just 1 */
 		if (GMT->common.t.mode== 0) GMT->common.t.mode = GMT_SET_FILL_TRANSP;	/* For these modules, plain -t means -t+f */
@@ -3618,6 +3628,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 }
 
 void gmtlib_set_case_and_kind (struct GMT_CTRL *GMT, char *format, bool *upper_case, unsigned int *flavor) {
+	gmt_M_unused (GMT);
 	/* Examine the format string and determine if we want upper/lower case and what type of abbreviation, if any */
 	*upper_case = false;	*flavor = 0;	/* Initialize */
 	switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
@@ -4430,34 +4441,31 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 						if (gmt_M_is_geographic (GMT, GMT_IN)) {
 							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Cannot use +a for geographic basemaps\n");
 							error++;
+							continue;
 						}
-						else if (no == GMT_X) {	/* Variable angles are only allowed for the x-axis */
+						if (no == GMT_X) {	/* Variable angles for the x-axis */
 							if (p[1] == 'n')	/* +an is short for +a90 or normal to x-axis */
 								GMT->current.map.frame.axis[no].angle = 90.0;
 							else if (p[1] == 'p')	/* +ap is short for +a0 or parallel to x-axis */
 								GMT->current.map.frame.axis[no].angle = 0.0;
 							else	/* Assume a variable angle */
 								GMT->current.map.frame.axis[no].angle = atof (&p[1]);
-							if (GMT->current.map.frame.axis[no].angle < -90.0 || GMT->current.map.frame.axis[no].angle > 90.0) {
-								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: +a<angle> must be in the -90 to +90 range\n");
-								error++;
-							}
-							else
-								GMT->current.map.frame.axis[no].use_angle = true;
 						}
-						else {	/* Only +an|p is allowed for y/z-axis */
+						else {	/* Variable angles for the y/z-axis */
 							GMT->current.map.frame.axis[no].use_angle = true;
 							if (p[1] == 'n')	/* +an is code for normal to y/z-axis;*/
 								GMT->current.map.frame.axis[no].angle = 0.0;
 							else if (p[1] == 'p')	/* +ap is code for normal to y/z-axis; this triggers ortho=false later */
 								GMT->current.map.frame.axis[no].angle = 90.0;
-							else if (!implicit) {	/* Means user gave -By...+a<angle> which is no good */
-								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Only modifiers +an|p is allowed for the %c-axis\n", the_axes[no]);
-								error++;
-							}
-							else	/* Probably did -Baf+a30 and only meant that to apply to the x-axis */
-								GMT->current.map.frame.axis[no].use_angle = false;
+							else	/* Assume a variable angle */
+								GMT->current.map.frame.axis[no].angle = atof (&p[1]);
 						}
+						if (GMT->current.map.frame.axis[no].angle < -90.0 || GMT->current.map.frame.axis[no].angle > 90.0) {
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: +a<angle> must be in the -90 to +90 range\n");
+							error++;
+						}
+						else
+							GMT->current.map.frame.axis[no].use_angle = true;
 						break;
 					case 'f':	/* Select fancy annotations with trailing W|E|S|N */
 						if (gmt_M_x_is_lon(GMT,GMT_IN) || gmt_M_y_is_lat(GMT,GMT_IN))
@@ -5407,11 +5415,14 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			}
 			GMT->current.proj.N_hemi = (strchr ("AB", GMT->common.J.string[1]) == NULL) ? true : false;	/* Upper case -JoA, -JoB allows S pole views */
 			if (n_slashes == 3) {
+				double distance = 10.0;	/* Default spherical length for gmt_translate_point */
 				n = sscanf (args, "%[^/]/%[^/]/%lf/%s", txt_a, txt_b, &az, txt_e);
 				error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
 				error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
-				/* compute point 10 degrees from origin along azimuth */
-				gmt_translate_point (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], az, 10.0, &GMT->current.proj.pars[2], &GMT->current.proj.pars[3], NULL);
+				if ((90.0 - fabs (GMT->current.proj.pars[1])) < distance)
+					distance = 90.0 - fabs (GMT->current.proj.pars[1]) - GMT_CONV4_LIMIT;
+				/* compute point <distance> degrees from origin along azimuth */
+				gmt_translate_point (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], az, distance, &GMT->current.proj.pars[2], &GMT->current.proj.pars[3], NULL);
 			}
 			else if (n_slashes == 4) {
 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
@@ -6041,6 +6052,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	/* MAP_ANNOT_MIN_SPACING */
 	GMT->current.setting.map_annot_min_spacing = 0; /* 0p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_MIN_SPACING] = 'p';
+	strncpy (GMT->current.setting.map_annot_min_spacing_txt, "0p", GMT_LEN16);
 	/* MAP_ANNOT_ORTHO */
 	strcpy (GMT->current.setting.map_annot_ortho, "we");
 	/* MAP_DEGREE_SYMBOL (degree) */
@@ -6782,7 +6794,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     To prepend a prefix to each annotation (e.g., $ 10, $ 20 ...), add +p<prefix>.\n");
 			gmt_message (GMT, "\t     To append a unit to each annotation (e.g., 5 km, 10 km ...), add +u<unit>.\n");
 			gmt_message (GMT, "\t     Cartesian x-axis takes optional +a<angle> for slanted or +an for orthogonal annotations [+ap].\n");
-			gmt_message (GMT, "\t     Cartesian y- and z-axes take optional +ap for parallel annotations [+an].\n");
+			gmt_message (GMT, "\t     Cartesian y- and z-axes take optional +a<angle> for slanted or +ap for parallel annotations [+an].\n");
 			gmt_message (GMT, "\t     Geographic axes take optional +f for \"fancy\" annotations with W|E|S|N suffices.\n");
 			gmt_message (GMT, "\t     To label an axis, add +l<label>.  Use +L to enforce horizontal labels for y-axes.\n");
 			gmt_message (GMT, "\t     For another axis label on the opposite axis, use +s|S as well.\n");
@@ -7398,6 +7410,16 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t-t Set the layer transparency from 0-100 [Default is 0; opaque].\n");
 			gmt_message (GMT, "\t   Requires conversion to PDF or raster formats.\n");
+			break;
+
+		case 'T':	/* Same -t but with extension for variable fill/stroke transparency option  */
+
+			gmt_message (GMT, "\t-t Set the layer transparency from 0-100 [Default is 0; opaque].\n");
+			gmt_message (GMT, "\t   Requires conversion to PDF or raster formats.\n");
+			gmt_message (GMT, "\t   For separate transparency for fill and stroke, append /<transp2> as well.\n");
+			gmt_message (GMT, "\t   For plotting symbols with variable transparency read from file, append no value\n");
+			gmt_message (GMT, "\t   and give the transparency as the last numerical value in the data record.\n");
+			gmt_message (GMT, "\t   Use the +f and +s modifiers to indicate which one or if we expect one or two transparencies.\n");
 			break;
 
 		case ':':	/* lon/lat [x/y] or lat/lon [y/x] */
@@ -8316,10 +8338,13 @@ unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char 
 	return (n_errors);
 }
 
-/*! If region is given then we must have w < e and s < n */
+/*! If region is given then we must have w < e and s <= n */
 bool gmt_check_region (struct GMT_CTRL *GMT, double wesn[]) {
 	gmt_M_unused(GMT);
-	return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]));
+	if (!strncmp (GMT->init.module_name, "pshistogram", 11U))
+		return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] > wesn[YHI]));
+	else
+		return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]));
 }
 
 /*! . */
@@ -8449,7 +8474,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		if ((G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, &item[first], NULL)) == NULL) {	/* Read header */
 			return (GMT->parent->error);
 		}
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Handle round-off in actual_range for latitudes */
+		if (gmt_M_y_is_lat (GMT, GMT_IN)) {	/* Handle round-off in actual_range for latitudes */
 			if (gmt_M_is_Npole (G->header->wesn[YHI])) G->header->wesn[YHI] = +90.0;
 			if (gmt_M_is_Spole (G->header->wesn[YLO])) G->header->wesn[YLO] = -90.0;
 		}
@@ -8631,7 +8656,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_LON);
 		gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
 	}
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Arrange so geographic region always has w < e */
+	if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Arrange so geographic region always has w < e */
 		double w = p[0], e = p[1];
 		if (p[0] <= -360.0 || p[1] > 360.0) {	/* Arrange so geographic region always has |w,e| <= 360 */
 			double shift = (p[0] <= -360.0) ? 360.0 : -360.0;
@@ -9999,8 +10024,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_MAP_ANNOT_MIN_SPACING:
 			if (value[0] == '-')	/* Negative */
 				error = true;
-			else
+			else {
 				GMT->current.setting.map_annot_min_spacing = gmt_M_to_inch (GMT, value);
+				strncpy (GMT->current.setting.map_annot_min_spacing_txt, value, GMT_LEN16);
+			}
 			break;
 		case GMTCASE_Y_AXIS_TYPE:
 			if (gmt_M_compat_check (GMT, 4)) {

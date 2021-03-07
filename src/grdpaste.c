@@ -208,7 +208,7 @@ EXTERN_MSC int GMT_grdpaste (void *V_API, int mode, void *args) {
 
 	common_y = (fabs (A->header->wesn[YLO] - B->header->wesn[YLO]) < y_noise && fabs (A->header->wesn[YHI] - B->header->wesn[YHI]) < y_noise);
 
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must be careful in determining a match since grids may differ by +/-360 in x */
+	if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must be careful in determining a match since grids may differ by +/-360 in x */
 		double del;
 		if (common_y) {	/* A and B are side-by-side, may differ by +-360 +- 1 pixel width */
 			del = A->header->wesn[XLO] - B->header->wesn[XHI];	/* Test if B left of A */
@@ -323,7 +323,7 @@ EXTERN_MSC int GMT_grdpaste (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Grids do not share a common edge!\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
-	if (gmt_M_is_geographic (GMT, GMT_IN) && C->header->wesn[XHI] > 360.0) {	/* Take out 360 */
+	if (gmt_M_x_is_lon (GMT, GMT_IN) && C->header->wesn[XHI] > 360.0) {	/* Take out 360 */
 		C->header->wesn[XLO] -= 360.0;
 		C->header->wesn[XHI] -= 360.0;
 	}

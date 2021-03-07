@@ -375,7 +375,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 		grd_y0 = Grid->y;
 	}
 
-	periodic = gmt_M_is_geographic (GMT, GMT_IN);	/* Dealing with geographic coordinates */
+	periodic = gmt_M_x_is_lon (GMT, GMT_IN);	/* Dealing with geographic coordinates */
 	gmt_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
 
 	/* Initialize all nodes (including pad) to the 'outside' value */
@@ -438,7 +438,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 		gmt_set_inside_mode (GMT, D, GMT_IOO_UNKNOWN);
 
 	if (Ctrl->S.mode == GRDMASK_N_CART_MASK) radius = 1;	/* radius not used in this case and this avoids another if test */
-	worry_about_jumps = (gmt_M_is_geographic (GMT, GMT_IN) && !gmt_grd_is_global (GMT, Grid->header));
+	worry_about_jumps = (gmt_M_x_is_lon (GMT, GMT_IN) && !gmt_grd_is_global (GMT, Grid->header));
 
 	for (tbl = n_pol = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++, n_pol++) {	/* For each segment in the table */
@@ -450,7 +450,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 					if (gmt_x_is_outside (GMT, &xtmp, Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */
 
 					if (Ctrl->S.variable_radius) radius = S->data[GMT_Z][k];
-					if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Make special checks for N and S poles */
+					if (gmt_M_y_is_lat (GMT, GMT_IN)) {	/* Make special checks for N and S poles */
 						if (gmt_M_is_Npole (S->data[GMT_Y][k])) {	/* N pole */
 							if (radius == 0.0) {	/* Only set the N pole row */
 								gmt_M_col_loop (GMT, Grid, 0, col, ij)	/* Set this entire N row */

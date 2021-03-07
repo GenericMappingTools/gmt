@@ -95,13 +95,49 @@ alias bndnp=buildnewdnopull # delete and recreate dbuild
 alias bnxnp=buildnewxnopull # delete and recreate xbuild
 
 # See test results
-alias vpngdbuild='pushd .; gtop; cd dbuild; $pngview */*/*/*.png; popd'
-alias vpdfdbuild='pushd .; gtop; cd dbuild; $pdfview */*/*/*.pdf; popd'
-alias vpngrbuild='pushd .; gtop; cd rbuild; $pngview */*/*/*.png; popd'
-alias vpdfrbuild='pushd .; gtop; cd rbuild; $pdfview */*/*/*.pdf; popd'
+alias vpngdbuild='pushd .; gtop; cd dbuild; $pngview */*/*/*.png; $pngview */*/*/*/*.png; popd'
+alias vpdfdbuild='pushd .; gtop; cd dbuild; $pdfview */*/*/*.pdf; $pdfview */*/*/*/*.pdf; popd'
+alias vpngrbuild='pushd .; gtop; cd rbuild; $pngview */*/*/*.png; $pngview */*/*/*/*.png; popd'
+alias vpdfrbuild='pushd .; gtop; cd rbuild; $pdfview */*/*/*.pdf; $pdfview */*/*/*/*.pdf; popd'
 
 # Very short shortnamds for seeing test results
 alias vgd=vpngdbuild
 alias vpd=vpdfdbuild
 alias vgr=vpngrbuild
 alias vpr=vpdfrbuild
+
+# View large sets of failures one at the time with gap in time between launch:
+
+# View all release PNG failures one at the time with given sleep gap [3s]
+function view_png_failures_r {
+	if [ "X$1" == "X" ]; then
+		w=3
+	else
+		w=$1
+	fi
+	pushd .; gtop; cd rbuild;
+	ls */*/*/*.png */*/*/*/*.png > /tmp/vpf
+	while read png; do
+		$pngview $png
+		sleep $w
+	done < /tmp/vpf
+	rm -f /tmp/vpf
+	popd
+}
+
+# View all release PDF failures one at the time with given sleep gap [3s]
+function view_pdf_failures_r {
+	if [ "X$1" == "X" ]; then
+		w=3
+	else
+		w=$1
+	fi
+	pushd .; gtop; cd rbuild;
+	ls */*/*/*.pdf */*/*/*/*.pdf > /tmp/vpf
+	while read pdf; do
+		$pdfview $pdf
+		sleep $w
+	done < /tmp/vpf
+	rm -f /tmp/vpf
+	popd
+}

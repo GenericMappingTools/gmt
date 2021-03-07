@@ -33,7 +33,7 @@
 #define THIS_MODULE_PURPOSE	"Extract subregion from a grid"
 #define THIS_MODULE_KEYS	"<G{,GG}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-JRV"
+#define THIS_MODULE_OPTIONS "-JRVf"
 
 /* Control structure for grdcut */
 
@@ -572,20 +572,21 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Requested subset is entirely below or above the current grid region\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Geographic data required more trickery */
+	if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Geographic data required more trickery */
 		double we[2] = {wesn_new[XLO], wesn_new[XHI]};
-		gmt_set_geographic (GMT, GMT_OUT);	/* Out same as in */
+		gmt_set_column_type (GMT, GMT_OUT, GMT_X, GMT_IS_LON);
 		while (we[XHI] > G->header->wesn[XLO]) we[XLO] -= 360.0, we[XHI] -= 360.0;	/* Wind past on the left */
 		we[XLO] += 360.0, we[XHI] += 360.0;	/* Now we either overlap or we are past on the right */
 		if (we[XLO] >= G->header->wesn[XHI])
 			bail = true;	/* Outside original w/e extent */
-		if (wesn_new[YLO] < -90.0 || wesn_new[YHI] > 90.0) {
-			gmt_grd_set_cartesian (GMT, G->header, 2);
-			geo_to_cart = true;
-		}
 	}
 	else if (wesn_new[XLO] >= G->header->wesn[XHI] || wesn_new[XHI] <= G->header->wesn[XLO])	/* Cartesian x-check is simple */
 		bail = true;
+	if (gmt_M_y_is_lat (GMT, GMT_IN) && (wesn_new[YLO] < -90.0 || wesn_new[YHI] > 90.0)) {
+		gmt_set_column_type (GMT, GMT_OUT, GMT_Y, GMT_IS_FLOAT);
+		gmt_grd_set_cartesian (GMT, G->header, 2);
+		geo_to_cart = true;
+	}
 
 	if (bail) {
 		GMT_Report (API, GMT_MSG_ERROR, "Requested subset is entirely to the left or to the right of the current grid region\n");
@@ -596,7 +597,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	if (wesn_new[YHI] > G->header->wesn[YHI]) wesn_new[YHI] = G->header->wesn[YHI], outside[YHI] = true;
 	HH = gmt_get_H_hidden (G->header);
 
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Geographic data */
+	if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Geographic longitude */
 		if (wesn_new[XLO] < G->header->wesn[XLO] && wesn_new[XHI] < G->header->wesn[XLO]) {
 			G->header->wesn[XLO] -= 360.0;
 			G->header->wesn[XHI] -= 360.0;

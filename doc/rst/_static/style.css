@@ -1,38 +1,48 @@
 /* Set max width of the content */
 .wy-nav-content {
-    max-width: 1000px;
+	max-width: 1000px;
 }
 
 /* See https://github.com/GenericMappingTools/gmt/pull/1605 */
 .rst-content dl dt {
-    font-weight: normal;
+	font-weight: normal;
+}
+
+body {
+	font-family: "Atkinson Hyperlegible", sans-serif;
+	font-size: 1.05em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Atkinson Hyperlegible", sans-serif;
+	font-weight: "normal"
 }
 
 /* style for example gallery */
 .gmtgallary li {
-    list-style: none;
-    width: 180px;
-    display: inline-grid;
-    margin-right: 15px;
+	list-style: none;
+	width: 180px;
+	display: inline-grid;
+	margin-right: 15px;
 }
 
 /* style for gmt movies */
 .gmtmovie li {
-    list-style: none;
-    width: 45%;
-    display: inline-grid;
-    margin: 10px;
+	list-style: none;
+	width: 45%;
+	display: inline-grid;
+	margin: 10px;
 }
 
 /* Set tab-width to 2 spaces */
 .highlight {
-    tab-size: 2;
+	tab-size: 2;
 }
 
 /* Revert the old behavior of popups */
 .modalDialog {
 	position: fixed;
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: "Atkinson Hyperlegible", Arial, Helvetica, sans-serif;
 	top: 0;
 	right: 0;
 	bottom: 0;
@@ -79,3 +89,35 @@
 	box-shadow: 1px 1px 3px #000;
 }
 .close:hover { background: #00d9ff; }
+
+/* Atkinson Hyperlegible regular */
+@font-face {
+	font-family: "Atkinson Hyperlegible";
+	src: url("./fonts/Atkinson-Hyperlegible-Regular-102a.woff2") format('woff2');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* Atkinson Hyperlegible bold */
+@font-face {
+	font-family: "Atkinson Hyperlegible";
+	src: url("./fonts/Atkinson-Hyperlegible-Bold-102a.woff2") format('woff2');
+	font-weight: bold;
+	font-style: normal;
+}
+
+/* Atkinson Hyperlegible italic */
+@font-face {
+	font-family: "Atkinson Hyperlegible";
+	src: url("./fonts/Atkinson-Hyperlegible-Italic-102a.woff2") format('woff2');
+	font-weight: normal;
+	font-style: italic;
+}
+
+/* Atkinson Hyperlegible bold italic */
+@font-face {
+	font-family: "Atkinson Hyperlegible";
+	src: url("./fonts/Atkinson-Hyperlegible-BoldItalic-102a.woff2") format('woff2');
+	font-weight: bold;
+	font-style: italic;
+}

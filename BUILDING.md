@@ -19,11 +19,19 @@ GMT is dependent on some software and libraries to run.
 Please refer to the [GMT wiki page](https://github.com/GenericMappingTools/gmt/wiki)
 for instructions to install these dependencies on various operation systems.
 
+### Required dependencies
+
 To build GMT, you have to install:
 
 - [CMake](https://cmake.org/) (>=2.8.12)
 - [netCDF](https://www.unidata.ucar.edu/software/netcdf/) (>=4.0, netCDF-4/HDF5 support mandatory)
 - [curl](https://curl.haxx.se/)
+
+> Note for developers: It is recommended that you install the optional dependencies.
+> [Sphinx](http://www.sphinx-doc.org) and [GraphicsMagick](http://www.graphicsmagick.org/)
+> are required for building the documentation and running the tests.
+
+### Optional dependencies
 
 Optionally install these for more capabilities within GMT:
 
@@ -34,6 +42,7 @@ Optionally install these for more capabilities within GMT:
 - [GLib](https://developer.gnome.org/glib/) GTHREAD support (>=2.32)
 - LAPACK (Fast matrix inversion [not needed under macOS])
 - BLAS (Fast matrix multiplications [not needed under macOS])
+- [Ninja](https://ninja-build.org/) (Small build system focused on speed)
 
 For movie-making capabilities these executables are needed:
 
@@ -44,30 +53,40 @@ For viewing documentation under Linux via `gmt docs`, your need `xdg-open`:
 
 - xdg-open (Unified open for a variety of files)
 
-Optionally install for building GMT documentations and running tests:
+### Development dependencies
 
-- [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the manpage and HTML documentation)
+Install for building GMT documentation and running tests (not required for general use):
+
+- [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the documentation)
 - [GraphicsMagick](http://www.graphicsmagick.org/) (for running the tests)
+
+### Required support data
 
 You also need to download support data:
 
-- [GSHHG](https://github.com/GenericMappingTools/gshhg-gmt): A Global Self-consistent, Hierarchical, High-resolution Geography Database (>=2.2.0)
+- [GSHHG](https://github.com/GenericMappingTools/gshhg-gmt): A Global Self-consistent, Hierarchical, High-resolution
+  Geography Database (>=2.2.0)
 - [DCW](https://github.com/GenericMappingTools/dcw-gmt): The Digital Chart of the World (optional, >=1.0.5)
 
 ## Getting GMT source codes
 
 The latest stable release of the GMT source codes (filename: gmt-x.x.x-src.tar.gz)
-are available from the [GMT main site](https://www.generic-mapping-tools.org).
+are available from [GMT repository on GitHub](https://github.com/GenericMappingTools/gmt/releases).
 
-If you want to build/use the latest developing/unstable GMT, you can get the source codes from GitHub.
-*Here we use `--depth 50` option for a shallow clone which can reduce the repository size to download.*
+If you want to build/use the latest developing/unstable GMT, you can get the source codes by cloning the
+[GMT repository on GitHub](https://github.com/GenericMappingTools/gmt). *Here we use `--depth 50` option for a shallow
+clone which can reduce the repository size to download.*
 
     git clone --depth 50 https://github.com/GenericMappingTools/gmt
 
 You can also get supporting data GSHHG and DCW (filename: gshhg-gmt-x.x.x.tar.gz and dcw-gmt-x.x.x.tar.gz)
-from the [GMT main site](https://www.generic-mapping-tools.org).
+from the [GMT main site](https://www.generic-mapping-tools.org/download/#support-data).
 
 Extract the files and put them in a separate directory (need not be where you eventually want to install GMT).
+
+> Note for developers: Refer to the [git workflow tutorial](http://www.asmeurer.com/git-workflow/) for more detailed
+> instructions on cloning and forking the repository. It is recommended that you use a full clone rather than a shallow
+> clone.
 
 ## Configuring
 
@@ -75,21 +94,25 @@ GMT can be built on any platform supported by CMake. CMake is a cross-platform,
 open-source system for managing the build process. The building process is
 controlled by three configuration files in the `cmake` directory:
 
--   *ConfigDefault.cmake* is version controlled and used to add new default
+-   `ConfigDefault.cmake` is version controlled and used to add new default
     variables and set defaults for everyone. **You should NOT edit this file.**
--   *ConfigUser.cmake* is not version controlled and is used to override basic
+-   `ConfigUser.cmake` is not version controlled and is used to override basic
     default settings on a per-user basis.
--   *ConfigUserAdvanced.cmake* is not version controlled and is used to override
+-   `ConfigUserAdvanced.cmake` is not version controlled and is used to override
     more advanced default settings on a per-user basis.
 
-GMT provides two template files, *ConfigUserTemplate.cmake* and *ConfigUserAdvancedTemplate.cmake*.
-You may copy *ConfigUserTemplate.cmake* to *ConfigUser.cmake* and edit to change
-basic installation parameters. For more advanced parameters, you may copy
-*ConfigUserAdvancedTemplate.cmake* to *ConfigUserAdvanced.cmake* and edit.
+GMT provides two template files, `ConfigUserTemplate.cmake` and `ConfigUserAdvancedTemplate.cmake` in the `cmake`
+directory. In that directory, you may copy `ConfigUserTemplate.cmake` to `ConfigUser.cmake` and edit to change basic
+installation parameters. For more advanced parameters, you may copy `ConfigUserAdvancedTemplate.cmake` to
+`ConfigUserAdvanced.cmake` and edit.
 
-In the source tree, copy the template settings file
-`cmake/ConfigUserTemplate.cmake` to`cmake/ConfigUser.cmake`,
-and edit the file according to your demands. This is an example:
+> Note for developers: It is necessary to create both `ConfigUser.cmake` and `ConfigUserAdvanced.cmake` in the `cmake`
+> directory using the templates provided in order to enable testing. Refer to the section
+> [Configuring CMake for testing GMT](MAINTENANCE.md#configuring-cmake-for-testing-gmt) in the
+> [maintenance guide](MAINTENANCE.md) for instructions on setting up `cmake/ConfigUserAdvanced.cmake`.
+
+Here is an example of settings you may want to change after copying `cmake/ConfigUserTemplate.cmake` to
+`cmake/ConfigUser.cmake`.
 
 ```
 set (CMAKE_INSTALL_PREFIX "/opt/gmt")
@@ -121,7 +144,7 @@ cmake ..
 For Windows users, you need to open a command prompt and run:
 
 **NOTE:** Commands below are valid only if you have GMT's dependency libraries installed
-via vcpkg following [this instructions](https://github.com/GenericMappingTools/gmt/wiki/Install-dependencies-on-Windows-via-vcpkg).
+via vcpkg following [these instructions](https://github.com/GenericMappingTools/gmt/wiki/Install-dependencies-on-Windows-via-vcpkg).
 
 ```
 mkdir build
@@ -136,6 +159,7 @@ For advanced users, you can append the option `-G Ninja` to use the
 build tool [Ninja](https://ninja-build.org/), which is a small build system
 with a focus on speed.
 
+
 ## Building GMT source codes
 
 In the build directory, type
@@ -148,10 +172,15 @@ cmake --build .
 cmake --build . --config Release
 ```
 
-which will compile all the programs. You can also append **--parallel** [*jobs*]
-to enable parallel build, in which *jobs* is the maximum number of concurrent
-processes to use when building. If *jobs* is omitted the native build tool's
-default number is used.
+which will compile all the programs. You can also append ``--parallel [jobs]`` to enable parallel build, in which
+``jobs`` is the maximum number of concurrent processes to use when building. If ``jobs`` is omitted the native build
+tool's default number is used.
+
+> Note: These instructions build the source code for GMT. Optionally, follow the instructions for
+> [building the documentation](MAINTENANCE.md#building-the-documentation) in the [maintenance guide](MAINTENANCE.md) to
+> build the documentation (for example, to develop the documentation or to use `gmt docs` without the GMT server).
+
+> Note for developers: Refer to the file `admin/bashrc_for_gmt` for useful aliases for configuring and building GMT.
 
 ## Installing
 
@@ -171,6 +200,11 @@ UNIX manpages, and HTML documentations.
 Depending on where GMT is being installed, you might need
 write permission for this step so you can copy files to system directories.
 Using `sudo` will often do the trick.
+
+> Note for developers: Refer to the section
+> [Updating the development source codes](MAINTENANCE.md#updating-the-development-source-codes) in the
+> [maintenance guide](MAINTENANCE.md) for instructions on how to update the development version of GMT. Also refer to
+> the file `admin/bashrc_for_gmt` for useful aliases for updating the development source code.
 
 ## Setting path
 

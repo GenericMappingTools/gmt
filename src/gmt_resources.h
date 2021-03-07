@@ -90,8 +90,8 @@ enum GMT_enum_type {
 	GMT_ULONG	=    7,  /* uint64_t, 8-byte unsigned integer type */
 	GMT_FLOAT	=    8,  /* 4-byte data float type */
 	GMT_DOUBLE	=    9,  /* 8-byte data float type */
-	GMT_TEXT	=   10,  /* Arbitrarily long text string [OGR/GMT use only] */
-	GMT_DATETIME	=   11,  /* string with date/time info [OGR/GMT use only] */
+	GMT_TEXT	=   16,  /* Arbitrarily long text string [OGR/GMT use only and GMT_Put_Vector only] */
+	GMT_DATETIME	=   32,  /* string with date/time info [OGR/GMT use and GMT_Put_Vector only] */
 	GMT_N_TYPES	=   12,  /* The number of supported data types above */
 	GMT_VIA_CHAR	=  100,  /* int8_t, 1-byte signed integer type */
 	GMT_VIA_UCHAR	=  200,  /* uint8_t, 1-byte unsigned integer type */
@@ -153,6 +153,11 @@ enum GMT_enum_family {
 	GMT_IS_CUBE	  = 7,	/* Entity is set of user vectors */
 	GMT_IS_COORD	  = 8,	/* Entity is a double coordinate array */
 	GMT_N_FAMILIES	  = 9	/* Total number of families [API Developers only]  */
+};
+
+enum GMT_enum_CPT {
+	GMT_IS_PALETTE_KEY    = 1024,	/* Strings to GMT_Put_Strings are keys */
+	GMT_IS_PALETTE_LABEL  = 2048	/* Strings to GMT_Put_Strings are labels */
 };
 
 #define GMT_IS_CPT	GMT_IS_PALETTE		/* Backwards compatibility for < 5.3.3; */

@@ -1312,7 +1312,7 @@ GMT_LOCAL void surface_suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, 
 			m = sug[k].n_rows - (G->header->n_rows - 1);	/* Additional nodes needed in y to give more factors */
 			s = G->header->wesn[YLO] - (m/2)*G->header->inc[GMT_Y];	/* Potential revised s/n extent */
 			n = G->header->wesn[YHI] + (m/2)*G->header->inc[GMT_Y];
-			if (!lat_bad && gmt_M_is_geographic (GMT, GMT_IN) && (s < -90.0 || n > 90.0))
+			if (!lat_bad && gmt_M_y_is_lat (GMT, GMT_IN) && (s < -90.0 || n > 90.0))
 				lat_bad = true;
 			if (m%2) n += G->header->inc[GMT_Y];
 			if (pixel) {	/* Since we already added 1/2 pixel we need to undo that here so the report matches original phase */
@@ -1902,7 +1902,7 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 
 	gmt_M_memcpy (C.wesn_orig, GMT->common.R.wesn, 4, double);	/* Save original region in case user specified -r */
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);		/* Save specified region */
-	C.periodic = (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_360_range (wesn[XLO], wesn[XHI]));
+	C.periodic = (gmt_M_x_is_lon (GMT, GMT_IN) && gmt_M_360_range (wesn[XLO], wesn[XHI]));
 	if (C.periodic && gmt_M_180_range (wesn[YLO], wesn[YHI])) {
 		/* Trying to grid global geographic data - this is not something surface can do */
 		GMT_Report (API, GMT_MSG_ERROR, "You are attempting to grid a global geographic data set, but surface cannot handle poles.\n");

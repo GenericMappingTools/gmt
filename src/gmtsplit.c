@@ -464,7 +464,7 @@ EXTERN_MSC int GMT_gmtsplit (void *V_API, int mode, void *args) {
 			for (row = 1; row < S->n_rows; row++) {
 				if (!Ctrl->S.active) {	/* Must extend table with 2 cols to hold d and az */
 					dy = S->data[GMT_Y][row] - S->data[GMT_Y][row-1];
-					if (gmt_M_is_geographic (GMT, GMT_IN)) {
+					if (gmt_M_x_is_lon (GMT, GMT_IN)) {
 						gmt_M_set_delta_lon (S->data[GMT_X][row-1], S->data[GMT_X][row], dx);
 						dy *= GMT->current.proj.DIST_KM_PR_DEG;
 						dx *= (GMT->current.proj.DIST_KM_PR_DEG * cosd (0.5 * (S->data[GMT_Y][row] + S->data[GMT_Y][row-1])));

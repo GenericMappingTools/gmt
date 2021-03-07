@@ -69,7 +69,7 @@ gmt pstext -R -J -O -K -F+f16p,Times-Italic+j -N << EOF >> $ps
 2.59	-0.05	TC	r@-c@-
 -0.2	1	RM	h@-0@-
 EOF
-echo "@%1%o@%% (Polynomial)" | gmt pstext -R -J -O -K -F+f18p+cTL -Dj0.1i >> $ps
+echo "@%1%o@%% (polynomial)" | gmt pstext -R -J -O -K -F+f18p+cTL -Dj0.1i >> $ps
 # 3. Conical seamount
 cat << EOF > tmp
 0	1

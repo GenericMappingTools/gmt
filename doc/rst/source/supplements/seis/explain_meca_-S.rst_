@@ -1,4 +1,4 @@
-**-S**\ *<format><scale>*\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-S**\ *format*\ [*scale*]\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
     Selects the meaning of the columns in the data file.
     *scale* adjusts the scaling of the radius of the "beach ball", which will be proportional to
     the magnitude. *scale* is the size for magnitude = 5 (i.e. scalar seismic moment M0 = 4.0E23 dynes-cm).
@@ -9,13 +9,15 @@
     Append **+a**\ *angle* to change the angle of the text string;
     append **+f**\ *font* to change its font (size,fontname,color); append **+j**\ *justify* to change
     the text location relative to the beachball (default is above the beachball);
-    append **+o** to offset the text string by *dx/dy*.
+    append **+o** to offset the text string by *dx/dy*.  **Note**: If *scale* is missing then
+    we expect to read this value from the data record via the first column after the
+    required columns for the symbol type.
 
     In order to use the same file to plot cross-sections, depth is in third column.
     Nevertheless, it is possible to use "old style" **psvelomeca** input
     files without depth in third column using the **-Fo** option.
 
-**-Sa**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-Sa**\ [*scale*]\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
     Focal mechanisms in Aki and Richards convention.
     Parameters are expected to be in the following columns:
 
@@ -32,7 +34,7 @@
     magnitude
 
     **8**,\ **9**:
-    longitude, latitude at which to place beachball if **-C** is used (optional).
+    longitude, latitude at which to place beachball if **-A** is used (optional).
     Using 0,0 in columns 8 and 9 will plot the beach ball at the longitude,
     latitude given in columns 1 and 2. The **-:** option will interchange the order of
     columns (1,2) and (8,9).
@@ -40,7 +42,7 @@
     **10**:
     Text string to appear near the beach ball (optional).
 
-**-Sc**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-Sc**\ [*scale*]\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
     Focal mechanisms in Global CMT convention.
     Parameters are expected to be in the following columns:
 
@@ -60,7 +62,7 @@
     mantissa and exponent of moment in dyne-cm
 
     **12**,\ **13**:
-    longitude, latitude at which to place beachball if **-C** is used (optional).
+    longitude, latitude at which to place beachball if **-A** is used (optional).
     Using 0,0 in columns 12 and 13 will plot the beach ball at the longitude,
     latitude given in columns 1 and 2. The **-:** option will interchange the order of
     columns (1,2) and (12,13).
@@ -68,7 +70,7 @@
     **14**:
     Text string to appear near the beach ball (optional).
 
-**-Sm\|d\|z**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-Sm\|d\|z**\ [*scale*]\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
     Seismic moment tensor.
     **-Sm** plots the full seismic moment tensor.
     **-Sz** plots the deviatoric part of the moment tensor (zero trace).
@@ -90,7 +92,7 @@
     exponent
 
     **11**,\ **12**:
-    longitude, latitude at which to place beachball if **-C** is used (optional).
+    longitude, latitude at which to place beachball if **-A** is used (optional).
     Using 0,0 in columns 11 and 12 will plot the beach ball at the longitude,
     latitude given in columns 1 and 2. The **-:** option will interchange the order of
     columns (1,2) and (11,12).
@@ -98,7 +100,7 @@
     **13**:
     Text string to appear near the beach ball (optional).
 
-**-Sp**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-Sp**\ [*scale*]\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
     Focal mechanisms given with partial data on both planes.
     Parameters are expected to be in the following columns:
 
@@ -121,7 +123,7 @@
     magnitude
 
     **9**,\ **10**:
-    longitude, latitude at which to place beachball if **-C** is used (optional).
+    longitude, latitude at which to place beachball if **-A** is used (optional).
     Using 0,0 in columns 9 and 10 will plot the beach ball at the longitude,
     latitude given in columns 1 and 2. The **-:** option will interchange the order of
     columns (1,2) and (9,10).
@@ -129,7 +131,7 @@
     **11**:
     Text string to appear near the beach ball (optional).
 
-**-Sx\|y\|t**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-Sx\|y\|t**\ [*scale*]\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
     Principal axis.
     Use **-Sx** to plot full seismic moment tensor.
     Use **-Sy** to plot the closest double couple defined from the moment tensor (zero trace and zero determinant).
@@ -149,7 +151,7 @@
     exponent
 
     **14**,\ **15**:
-    longitude, latitude at which to place beachball if **-C** is used (optional).
+    longitude, latitude at which to place beachball if **-A** is used (optional).
     Using 0,0 in columns 14 and 15 will plot the beach ball at the longitude,
     latitude given in columns 1 and 2. The **-:** option will interchange the order of
     columns (1,2) and (14,15).

@@ -4,8 +4,7 @@
 
 GMT is available on Windows, macOS, Linux, FreeBSD and OpenBSD.
 Source and binary packages are provided for the latest release,
-and can be downloaded from the [GMT main site](https://www.generic-mapping-tools.org)
-and [the GitHub repository](https://github.com/GenericMappingTools/gmt/releases).
+and can be downloaded from the [GitHub repository](https://github.com/GenericMappingTools/gmt/releases).
 
 This file provides instructions for installing GMT binary packages on
 different operating systems. Please refer to the [Building Instructions](BUILDING.md)
@@ -33,7 +32,7 @@ for compiling GMT source package (either stable release or development version).
 ## Windows
 
 We provide 32 and 64 bit standalone installers (e.g., gmt-6.x.x-win64.exe)
-on the [GMT main site](https://www.generic-mapping-tools.org).
+in the [GitHub repository](https://github.com/GenericMappingTools/gmt/releases).
 The installers come with GDAL, FFmpeg, and Ghostscript pre-installed.
 
 In addition to the GMT installer, you also need to download and install
@@ -45,18 +44,18 @@ At the installation step, you may get the warning message:
 
 > Warning! Failed to add GMT to PATH. Please add the GMT bin path to PATH manually.
 
-Usually it means your system variable **PATH** is already too long and the GMT
+Usually it means your system variable `PATH` is already too long and the GMT
 installer can't add its path to the variable. As it says, you need to ignore
 the warning message, and then manually add the GMT bin path
-(e.g., `C:\programs\gmt6`) to **PATH** after finishing the installation.
-If you don't know how to manually modify **PATH**, just search Google for
+(e.g., `C:\programs\gmt6`) to `PATH` after finishing the installation.
+If you don't know how to manually modify `PATH`, just search Google for
 "How to change windows path variable".
 
 ## macOS
 
 ### Application Bundle
 
-We provide macOS application bundle on the [GMT main site](https://www.generic-mapping-tools.org).
+We provide macOS application bundle in the [GitHub repository](https://github.com/GenericMappingTools/gmt/releases).
 The bundle comes with GDAL, FFmpeg, Ghostscript and GraphicsMagick pre-installed.
 
 Download the application bundle (gmt-6.x.x-darwin-x86_64.dmg), double-click to mount it
@@ -113,7 +112,7 @@ Optional FFTW-3 support and experimental OpenMP parallel acceleration can be
 enabled with the `+fftw3` and `+openmp` flags.
 
 GMT is installed in `/opt/local/lib/gmt6`. To use GMT in command line or scripts, 
-you need to add `/opt/local/lib/gmt6/bin` to your PATH. 
+you need to add `/opt/local/lib/gmt6/bin` to your `PATH`. 
 
 You also need to install other GMT run-time dependencies separately:
 
@@ -196,7 +195,7 @@ You can follow the [Install latest GMT on ArchLinux](https://github.com/GenericM
 You can use the [conda package manager](https://conda.io/) that comes with the
 [Anaconda Python Distribution](https://www.anaconda.com/distribution/) to install GMT.
 
-1. Download and install the [Python **3.7** **64-bit** version of Miniconda](https://conda.io/en/latest/miniconda.html).
+1. Download and install the [Python **3.8** **64-bit** version of Miniconda](https://conda.io/en/latest/miniconda.html).
    This will give you access to the conda package manager. **Make sure you select to
    have conda added to your `PATH` when asked by the installer**. If you have
    the Anaconda Python distribution installed, you won't need to do this step.

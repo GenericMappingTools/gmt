@@ -3398,6 +3398,7 @@ GMT_LOCAL int gmtmap_init_oblique (struct GMT_CTRL *GMT, bool *search) {
 	o_x = GMT->current.proj.pars[0];	o_y = GMT->current.proj.pars[1];
 
 	if (lrint (GMT->current.proj.pars[6]) == 1) {	/* Must get correct origin, then get second point */
+		double distance = 10.0;	/* Default spherical length for gmt_translate_point */
 		p_x = GMT->current.proj.pars[2];	p_y = GMT->current.proj.pars[3];
 
 		GMT->current.proj.o_pole_lon = p_x;
@@ -3409,8 +3410,10 @@ GMT_LOCAL int gmtmap_init_oblique (struct GMT_CTRL *GMT, bool *search) {
 
 		gmtmap_get_origin (GMT, o_x, o_y, p_x, p_y, &o_x, &o_y);
 		az = atand (cosd (p_y) * sind (p_x - o_x) / (cosd (o_y) * sind (p_y) - sind (o_y) * cosd (p_y) * cosd (p_x - o_x))) + 90.0;
-		/* compute point 10 degrees from origin along azimuth */
-		gmt_translate_point (GMT, o_x, o_y, az, 10.0, &b_x, &b_y, NULL);
+		if ((90.0 - fabs (o_y)) < distance)
+			distance = 90.0 - fabs (o_y) - GMT_CONV4_LIMIT;
+		/* compute point <distance> degrees from origin along azimuth */
+		gmt_translate_point (GMT, o_x, o_y, az, distance, &b_x, &b_y, NULL);
 
 		GMT->current.proj.pars[0] = o_x;	GMT->current.proj.pars[1] = o_y;
 		GMT->current.proj.pars[2] = b_x;	GMT->current.proj.pars[3] = b_y;
@@ -5103,7 +5106,6 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymin, double ymax, double *west, double *east, double *south, double *north) {
 	double dx, dy, w, e, s, n, x, y, lat, *lon = NULL;
 	unsigned int i, j, k;
-	bool test_pole[2] = {true, true};
 
 	/* Search for extreme lon/lat coordinates by matching along the rectangular boundary */
 
@@ -5138,14 +5140,8 @@ void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymi
 
 	/* Then check if one or both poles are inside map; then the above won't be correct */
 
-	if (GMT->current.proj.projection_GMT == GMT_AZ_EQDIST) {	/* Must be careful since if a pole equals an antipode we get NaNs as coordinates */
-		gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, -90.0, &x, &y);
-		if (gmt_M_is_dnan (x) && gmt_M_is_dnan (y)) test_pole[0] = false;
-		gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, +90.0, &x, &y);
-		if (gmt_M_is_dnan (x) && gmt_M_is_dnan (y)) test_pole[1] = false;
-	}
-	if (test_pole[0] && !gmt_map_outside (GMT, GMT->current.proj.central_meridian, -90.0)) { s = -90.0; w = 0.0; e = 360.0; }
-	if (test_pole[1] && !gmt_map_outside (GMT, GMT->current.proj.central_meridian, +90.0)) { n = +90.0; w = 0.0; e = 360.0; }
+	if (GMT->current.proj.pole_in_map[0]) { s = -90.0; w = 0.0; e = 360.0; }
+	if (GMT->current.proj.pole_in_map[1]) { n = +90.0; w = 0.0; e = 360.0; }
 
 	s -= 0.1;	if (s < -90.0) s = -90.0;	/* Make sure point is not inside area, 0.1 is just a small arbitrary number */
 	n += 0.1;	if (n > 90.0) n = 90.0;		/* But don't go crazy beyond the pole */
@@ -7651,7 +7647,7 @@ uint64_t gmtlib_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double l
 		do {
 			n_try++;
 			tlat[n] = tlat[n-1] + dlat;
-			if (gmt_M_is_geographic (GMT, GMT_IN) && fabs (tlat[n]) > 90.0) tlat[n] = copysign (90.0, tlat[n]);
+			if (gmt_M_y_is_lat (GMT, GMT_IN) && fabs (tlat[n]) > 90.0) tlat[n] = copysign (90.0, tlat[n]);
 			gmt_geo_to_xy (GMT, tlon[n], tlat[n], &x1, &y1);
 			if ((*GMT->current.map.jump) (GMT, x0, y0, x1, y1) || (y0 < GMT->current.proj.rect[YLO] || y0 > GMT->current.proj.rect[YHI]))
 				keep_trying = false;
@@ -9222,6 +9218,8 @@ unsigned int gmtlib_map_latcross (struct GMT_CTRL *GMT, double lat, double west,
 				if (GMT->current.proj.got_azimuths) X[nc].sides[0] = (X[nc].sides[0] + 2) % 4;
 				GMT->current.map.corner = 0;
 			}
+			gmt_M_memcpy (X[nc].lon, xlon, 2U, double);
+			gmt_M_memcpy (X[nc].lat, xlat, 2U, double);
 		}
 		else if (GMT->current.map.is_world)	/* Deal with possibility of wrapping around 360 */
 			nx = (*GMT->current.map.wrap_around_check) (GMT, X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides);
@@ -9281,6 +9279,8 @@ unsigned int gmtlib_map_loncross (struct GMT_CTRL *GMT, double lon, double south
 				X[nc].sides[0] = (GMT->current.map.corner < 3) ? 0 : 2;
 				GMT->current.map.corner = 0;
 			}
+			gmt_M_memcpy (X[nc].lon, xlon, 2U, double);
+			gmt_M_memcpy (X[nc].lat, xlat, 2U, double);
 		}
 		else if (GMT->current.map.is_world)	/* Deal with possibility of wrapping around 360 */
 			nx = (*GMT->current.map.wrap_around_check) (GMT, X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides);
@@ -9567,6 +9567,7 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	unsigned int i;
 	int error;
 	bool search, double_auto[6];
+	bool test_pole[2] = {true, true}, separate_intervals = false;
 	double scale, i_scale;
 
 	if ((error = gmt_proj_setup (GMT, wesn)) != GMT_NOERROR) goto gmt_map_setup_end;
@@ -9587,9 +9588,26 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	gmt_auto_frame_interval (GMT, GMT_Y, GMT_ANNOT_LOWER);
 	gmt_auto_frame_interval (GMT, GMT_Z, GMT_ANNOT_LOWER);
 
-	/* Now set the pairs of automatically set intervals to be the same in both x- and y-direction */
+	/* Then check if one or both poles are inside map.  If they are then the longitude range will be 360
+	 * and depending on the latitude extent it may not make sense to use the coarse longitude-spacing determined
+	 * also for the latitude spacing.  We check this and if a pole is inside and if the latitude range is < 1/4
+	 * of that of the longitude (e.g., 90 degrees for a 0-360 global map) we go separate. */
+
+	if (GMT->current.proj.projection_GMT == GMT_AZ_EQDIST) {	/* Must be careful since if a pole equals an antipode we get NaNs as coordinates */
+		double x, y;
+		gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, -90.0, &x, &y);
+		if (gmt_M_is_dnan (x) && gmt_M_is_dnan (y)) test_pole[0] = false;
+		gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, +90.0, &x, &y);
+		if (gmt_M_is_dnan (x) && gmt_M_is_dnan (y)) test_pole[1] = false;
+	}
+	if (test_pole[0] && !gmt_map_outside (GMT, GMT->current.proj.central_meridian, -90.0)) GMT->current.proj.pole_in_map[0] = separate_intervals = true;
+	if (test_pole[1] && !gmt_map_outside (GMT, GMT->current.proj.central_meridian, +90.0)) GMT->current.proj.pole_in_map[1] = separate_intervals = true;
+	if (separate_intervals && (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) > 0.25)
+		separate_intervals = false;	/* E.g, for a whole global hemisphere we keep them the same, else we adjust individually */
+
+	/* Now set the pairs of automatically set intervals to be the same in both x- and y-direction, except when a geographic pole is inside an oblique map frame */
 	for (i = 0; i < 6; i++) {
-		if (double_auto[i]) GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval =
+		if (double_auto[i] && !separate_intervals) GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval =
 		MAX (GMT->current.map.frame.axis[GMT_X].item[i].interval, GMT->current.map.frame.axis[GMT_Y].item[i].interval);
 	}
 
@@ -9869,7 +9887,10 @@ struct GMT_DATASEGMENT * gmt_get_geo_ellipse (struct GMT_CTRL *GMT, double lon, 
 
 	/* Explicitly close the polygon */
 	px[N] = px[0], py[N] = py[0];
-	snprintf (header, GMT_LEN256, "Ellipse around %g/%g with major/minor axes %g/%g km and major axis azimuth %g approximated by %" PRIu64 " points", lon, lat, major_km, minor_km, azimuth, N);
+	if (doubleAlmostEqual (major_km, minor_km))
+		snprintf (header, GMT_LEN256, "Circle around %g/%g with diameter %g km approximated by %" PRIu64 " points", lon, lat, major_km, N);
+	else
+		snprintf (header, GMT_LEN256, "Ellipse around %g/%g with major/minor axes %g/%g km and major axis azimuth %g approximated by %" PRIu64 " points", lon, lat, major_km, minor_km, azimuth, N);
 	S->header = strdup (header);
 	return (S);
 }
@@ -9882,7 +9903,7 @@ bool gmt_segment_BB_outside_map_BB (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT
 	/* First check latitude or y-coordinates since they are straightforward to check */
 	if (S->min[GMT_Y] > GMT->common.R.wesn[YHI]) return true;	/* BB is above of our max region */
 	if (S->max[GMT_Y] < GMT->common.R.wesn[YLO]) return true;	/* BB is below of our max region */
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must take periodicity of longitudes into account when checking if we are outside */
+	if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must take periodicity of longitudes into account when checking if we are outside */
 		if ((S->min[GMT_X] > GMT->common.R.wesn[XHI]) && ((S->max[GMT_X] - 360.0) < GMT->common.R.wesn[XLO])) return true;	/* BB is to the right of our max region */
 		if ((S->max[GMT_X] < GMT->common.R.wesn[XLO]) && ((S->min[GMT_X] + 360.0) > GMT->common.R.wesn[XHI])) return true;	/* BB is to the left of our max region */
 	}
