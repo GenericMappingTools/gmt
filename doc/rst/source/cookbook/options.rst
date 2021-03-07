@@ -279,53 +279,77 @@ syntax is listed in :doc:`/proj-codes`.
 Map frame and axes annotations: The **-B** option
 -------------------------------------------------
 
-This is potentially the most complicated option in GMT,
-but most examples of its usage are actually quite simple. We distinguish
-between two sets of information: Frame settings and Axes parameters.  These
-are set separately by their own **-B** invocations; hence multiple **-B**
-specifications may be specified. The frame settings covers things such
-as which axes should be plotted, canvas fill, plot title (and subtitle), and what type
-of gridlines be drawn, whereas the Axes settings deal with annotation,
+This is potentially the most complicated option in GMT, but most examples of its usage are actually quite simple. We
+distinguish between two sets of information: :ref:`Frame settings <option_-B_frame>` and
+:ref:`Axes parameters <option_-B_axes>`.  These are set separately by their own **-B** invocations; hence multiple
+**-B** specifications may be specified. The frame settings covers things such as which axes should be plotted, canvas
+fill, plot title (and subtitle), and what type of gridlines be drawn, whereas the Axes settings deal with annotation,
 tick, and gridline intervals, axes labels, and annotation units.
+
+.. _option_-B_frame:
 
 The Frame settings are specified by
 
--  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+s**\ *subtitle*][**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
+   **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+s**\ *subtitle*]\
+   [**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
 
-Here, the optional *axes* dictates which of the axes should be drawn
-and possibly annotated.  By default, all four map boundaries (or plot axes)
-are plotted (denoted **W**, **E**, **S**, **N**). To change this selection,
-append the codes for those you want (e.g., **WSn**). In this example,
-the lower case **n** denotes to draw the axis and (major and minor) tick
-marks on the "northern" (top) edge of the plot. The upper case **WS** will
-annotate the "western" and "southern" axes with numerals and plot the
-any axis labels in addition to draw axis/tick-marks.  For 3-D plots you can
-also specify **Z** or **z**.  To *just* draw an axis without annotation and
-ticks you can use the **l**\ (eft), **r**\ (ight), **b**\ (ottom), **t**\ (op)
-and (for 3-D) **u**\ (p) codes. By default, a single vertical axes will then be
-plotted at the most suitable map corner.  You can override this by appending
-any combination of corner ids **1234**, where **1** represents the lower left
-corner and the order goes counter-clockwise.  Use **+w** to draw the outlines of
-the x-z and y-z planes [no outlines] and optionally append the *pen* to use
-[:term:`MAP_GRID_PEN_PRIMARY`]. Alternatively, append **+b** to also draw the front lines
-of the 3-D cube defined by **-R**.  You can paint the interior of the canvas with
-**+g**\ *fill* (this also sets fill for the two back-walls in 3-D).
-Use **+x**, **+y**, and **+z** to control the painting of planes *yz*, *xz* and *xy*, respectively [Default is no fill].
-Use **+i** to annotate an internal meridian or parallel when the axis that normally
-would be drawn and annotated does not exist (e.g., azimuthal map with 360-degree range
-has no latitude axis, and a global Hammer map has no longitude axis);
-optionally append the parallel or meridian [0].
-If gridlines are specified via the Axes parameters (discussed below) then
-by default these are referenced to the North pole.  If, however, you wish
-to produce oblique gridlines about another pole you can append **+o**\ *lon/lat*
-to change this behavior (the modifier is ignored if no gridlines are requested).
-Append **+n** to have no frame and annotations at all [Default is controlled by the codes].
-Finally, you may optionally add **+t**\ *title* to place a title that
-will appear centered above the plot frame; optionally also add a *subtitle* via **+s**.
-**Note**: Both *title* and *subtitle* may be set over multiple lines by breaking them up
-using the markers '@^' or '<break>'.  To include LaTeX code as part of a single-line title or subtitle,
-enclose the expression with @[ markers (or alternatively <math> ... </math>).
-(**Note**: Requires ``latex`` and ``dvips`` to be installed).
+   The following modifiers can be appended to **-B** to control the Frame settings:
+
+   - *axes* to set which of the axes should be drawn and possibly annotated using a combination of the codes listed
+     below [default is **WESN**]. Borders omitted from the set of codes will not be drawn. As an example, **WSn**
+     denotes that the "western" (left) and "southern" (bottom) axes should be drawn with tick-marks and annotations by
+     using **W** and **S** and that the "northern" (top) edge of the plot should be drawn with tick-marks and without
+     annotations by using **n** and that the "eastern"/right axes should not be drawn by not including one of **E**\ \|\
+     **e**\ \|\ **r**.
+
+      - **W**\ est, **E**\ ast, **S**\ outh, **N**\ orth, and/or (for 3-D plots) **Z** indicate axes that should be
+        drawn with both tick-marks and annotations.
+      - **w**\ est, **e**\ ast, **s**\ outh, **n**\ orth, and/or (for 3-D plots) **z** indicate axes that should be
+        drawn with tick-marks but without annotations.
+      - **l**\ (eft), **r**\ (ight), **b**\ (ottom), **t**\ (op) and/or (for 3-D plots) **u**\ (p) indicate axes that
+        should be drawn without tick-marks or annotations.
+
+   - *axes*\ **code** (for 3-D plots) where **code** is any combination of the corder ids **1**, **2**, **3**, **4**. By
+     default, a single vertical axes will be plotted for 3-D plots at the most suitable map corner. **code** can be used
+     to override this, where **1** represents the south-western/lower-left corner, **2** the south-eastern/lower-right,
+     **3** the north-eastern/upper-right, and **4** the north-western/upper-left corner.
+
+   - **+w**\ [*pen*] (for 3-D plots) to draw the outlines of the x-z and y-z planes [default is no outlines]. Optionally,
+     append *pen* to specify different :ref:`pen <-Wpen_attrib>` attributes [default is :term:`MAP_GRID_PEN_PRIMARY`].
+
+   - **+b** (for 3-D plots) to draw the foreground lines of the 3-D cube defined by :ref:`-R <option_-R>`.
+
+   - **+g**\ *fill* to paint the interior of the canvas with a color specified by :doc:`fill <../gmtcolors>` [default is
+     *no fill*]. This also sets fill for the two back-walls in 3-D plots.
+
+   - **+x**\ *fill* to paint the **yz** plane with a color specified by :doc:`fill <../gmtcolors>` [default is
+     *no fill*].
+
+   - **+y**\ *fill* to paint the **xz** plane with a color specified by :doc:`fill <../gmtcolors>` [default is
+     *no fill*].
+
+   - **+z**\ *fill* to paint the **xy** plane with a color specified by :doc:`fill <../gmtcolors>` [default is
+     *no fill*].
+
+   - **+i**\ [*val*] to annotate an internal meridian or parallel when the axis that normally would be drawn and
+     annotated does not exist (e.g., for an azimuthal map with 360-degree range that has no latitude axis or a global
+     Hammer map that has no longitude axis). *val* gives the meridian or parallel that should be annotated [default is
+     **0**].
+
+   - **+o**\ *lon/lat* to produce oblique gridlines about another pole specified by *lon/lat* [default references to the
+     North pole]. **+o** is ignored if no gridlines are requested.
+
+   - **+n** to have no frame and annotations at all [default is contolled by *axes*].
+
+   - **+t**\ *title* place a title will appear centered above the plot frame.
+
+   - **+s**\ *subtitle* (requires **+t**\ *title*) to place a subtitle beneath the title.
+
+   **Note**: Both **+t**\ *title* and **+s**\ *subtitle* may be set over multiple lines by breaking them up using the
+   markers '@^' or '<break>'.  To include LaTeX code as part of a single-line title or subtitle, enclose the expression
+   with @[ markers (or alternatively <math> ... </math>). (**Note**: Requires ``latex`` and ``dvips`` to be installed).
+
+.. _option_-B_axes:
 
 The Axes settings are specified by
 
