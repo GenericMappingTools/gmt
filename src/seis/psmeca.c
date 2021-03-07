@@ -645,8 +645,10 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else if (Ctrl->I.active && Ctrl->I.mode == 0)	/* No CPT and fixed intensity means we can do the constant change once */
+	else if (Ctrl->I.active && Ctrl->I.mode == 0) {	/* No CPT and fixed intensity means we can do the constant change once */
 		gmt_illuminate (GMT, Ctrl->I.value, Ctrl->G.fill.rgb);
+		Ctrl->I.active = false;	/* So we don't do this again */
+	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
