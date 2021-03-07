@@ -507,7 +507,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 						while (c[0] == ' ') c++;	/* Move to first word after the module */
 						strncpy (txt_a, c, GMT_LEN256);	/* Copy the remaining text into a buffer */
 						c = q = strstr (txt_a, "-S") + 3;	/* Determine the start position of symbol size in the command */
-						Ctrl->S.size = atof (c);			/* Get the fixed symbol size specified */
+						Ctrl->S.size = gmt_M_to_inch (GMT, c);	/* Get the fixed symbol size specified */
 						while (!strchr ("/+", c[0])) c++;	/* Skip the size until we hit a slash or a modifier */
 						if (c[0] == '/') c++;	/* Then skip the slash since not needed when size is not given */
 						while (c[0]) *q++ = *c++;	/* Copy over the remaining text from the command */
@@ -545,7 +545,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	}
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_col;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_col, "Binary input data (-bi) must have at least %u columns.\n", n_col);
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.active + Ctrl->S.active) != 1 && Ctrl->E.active[PSEVENTS_SYMBOL], "Must specify either -A or -S unless just plotting labels.\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.active + Ctrl->S.active + Ctrl->Z.active) != 1 && Ctrl->E.active[PSEVENTS_SYMBOL], "Must specify either -A, -S or -Z unless just plotting labels.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Cannot specify both -C and -G.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == PSEVENTS_LINE_REC && Ctrl->G.active, "Option -G: Cannot be used with lines (-Ar).\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == PSEVENTS_LINE_REC && Ctrl->C.active, "Option -C: Cannot be used with lines (-Ar).\n");
@@ -575,8 +575,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && (!Ctrl->C.active && !Ctrl->G.active && !Ctrl->W.active), "Option -Z: Must specify at least one of -C, -G, -W to plot visible symbols.\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && (strncmp (Ctrl->Z.module, "coupe", 5U) && strncmp (Ctrl->Z.module, "meca", 4U) && strncmp (Ctrl->Z.module, "velo", 4U)),
-		"Option Z: Module command must begin with one of coupe, meca or velo\n");
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Use classic mode names */
+		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && (strncmp (Ctrl->Z.module, "pscoupe", 7U) && strncmp (Ctrl->Z.module, "psmeca", 6U) && strncmp (Ctrl->Z.module, "psvelo", 6U)),
+			"Option Z: Module command must begin with one of pscoupe, psmeca or psvelo\n");
+	}
+	else {	/* Modern mode names */
+		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && (strncmp (Ctrl->Z.module, "coupe", 5U) && strncmp (Ctrl->Z.module, "meca", 4U) && strncmp (Ctrl->Z.module, "velo", 4U)),
+			"Option Z: Module command must begin with one of coupe, meca or velo\n");
+}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -595,11 +601,11 @@ GMT_LOCAL void psevents_set_XY (struct GMT_CTRL *GMT, unsigned int x_type, unsig
 
 GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *module, char *cmd) {
 	/* Return how many data columns are needed for the selected symbol */
-	unsigned int n;
+	unsigned int n, k = (GMT->current.setting.run_mode == GMT_CLASSIC) ? 0 : 2;
 	char *S = strstr (cmd, "-S");	/* Pointer to selected symbol */
 	S += 2;	/* Now at format designation */
 
-	if (!strncmp (module, "coupe", 5U)) {	/* Using coupe */
+	if (!strncmp (&module[k], "pscoupe", 7U-k)) {	/* Using coupe */
 		switch (S[0]) {
 			case 'a': n = 7; break;
 			case 'c': n = 11; break;
@@ -609,7 +615,7 @@ GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *m
 			default: n = 0; break;
 		}
 	}
-	else if (!strncmp (module, "meca", 4U)) {	/* Using meca */
+	else if (!strncmp (&module[k], "psmeca", 6U-k)) {	/* Using meca */
 		switch (S[0]) {
 			case 'a': n = 7; break;
 			case 'c': n = 11; break;
@@ -620,7 +626,7 @@ GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *m
 		}
 		if (strstr (cmd, "-Fo")) n--;	/* No depth column */
 	}
-	else if (!strncmp (module, "velo", 4U)) {	/* Using velo */
+	else if (!strncmp (&module[k], "psvelo", 6U-k)) {	/* Using velo */
 		switch (S[0]) {
 			case 'e': case 'r': n = 7; break;
 			case 'n': case 'w': n = 4; break;
@@ -648,11 +654,11 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 	enum gmt_col_enum time_type, end_type;
 
-	unsigned int n_cols_needed, n_copy_to_out, s_in = 2, t_in = 2, d_in = 3, s_col = 2, i_col = 3, t_col = 4, x_type, y_type;
+	unsigned int n_cols_needed, n_copy_to_out, col, s_in = 2, t_in = 2, d_in = 3, s_col = 2, i_col = 3, t_col = 4, x_type, y_type;
 
 	uint64_t n_total_read = 0, n_symbols_plotted = 0, n_labels_plotted = 0;
 
-	double out[6] = {0, 0, 0, 0, 0, 0}, t_end = DBL_MAX, *in = NULL;
+	double out[20], t_end = DBL_MAX, *in = NULL;
 	double t_event, t_rise, t_plateau, t_decay, t_fade, x, size, t_event_seg, t_end_seg;
 
 	FILE *fp_symbols = NULL, *fp_labels = NULL;
@@ -681,6 +687,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psevents main code ----------------------------*/
 
+	gmt_M_memset (out, 20, double);	/* Initialize the out vector */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
 	if (Ctrl->A.mode == PSEVENTS_LINE_TO_POINTS) {
@@ -845,10 +852,12 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	n_cols_needed = 3;	/* We always will need lon, lat and time */
 	if (Ctrl->Z.active) {	/* We read points for symbols */
 		unsigned int n_cols = psevents_determine_columns (GMT, Ctrl->Z.module, Ctrl->Z.cmd);	/* Must allow for number of columns needed by the selected module */
-		n_cols_needed += n_cols;
-		n_copy_to_out = 2 + n_cols;
-		t_in = n_cols_needed, d_in = t_in + 1, s_col = t_in + 2, i_col = t_in + 3, t_col = t_in + 4;	/* Update output cols for extras */
-		if (Ctrl->L.mode == PSEVENTS_VAR_DURATION || Ctrl->L.mode == PSEVENTS_VAR_ENDTIME) n_cols_needed++;	/* Must allow for length/time in input */
+		n_cols_needed = 1;	/* Since the lon, lat is included in n_cols for -Z */
+		n_cols_needed += n_cols;	/* One more for time so far */
+		n_copy_to_out = n_cols;	/* lon, lat, and all required cols, no time */
+		t_in = n_cols, d_in = t_in + 1;	/* These are the 1-2 extra columns needed by event */
+		s_col = n_cols, i_col = n_cols + 1, t_col = n_cols + 2;	/* Update output cols for the 3 extras */
+		if (Ctrl->L.mode == PSEVENTS_VAR_DURATION || Ctrl->L.mode == PSEVENTS_VAR_ENDTIME) n_cols_needed++;	/* Must allow for length/time column in input */
 	}
 	else if (Ctrl->S.active || !Ctrl->A.active) {	/* We read points for symbols OR we are in fact just doing labels */
 		if (Ctrl->C.active) n_cols_needed++;	/* Must allow for z in input */
@@ -1044,12 +1053,18 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			}
 			psevents_set_XY (GMT, x_type, y_type, out, X, Y);
 
-			if (Ctrl->A.active)	/* Just the line coordinates */
-				fprintf (fp_symbols, "%s\t%s\n", X, Y);
-			else if (Ctrl->C.active)	/* Need to pass on the z-value for cpt lookup in plot */
-				fprintf (fp_symbols, "%s\t%s\t%.16g\t%g\t%g\t%g\n", X, Y, out[GMT_Z], out[s_col], out[i_col], out[t_col]);
+			fprintf (fp_symbols, "%s\t%s", X, Y);	/* All need the map coordinates */
+			if (Ctrl->Z.active) {	/* A variable set of coordinates */
+				for (col = GMT_Z; col <= t_col; col++)
+					fprintf (fp_symbols, "\t%g", out[col]);	/* Write out all required and extra columns */
+				fprintf (fp_symbols, "\n");
+			}
+			else if (Ctrl->A.active)	/* Just needed the line coordinates */
+				fprintf (fp_symbols, "\n");
+			else if (Ctrl->C.active)	/* For -S symbols, need to pass on the z-value for cpt lookup in plot */
+				fprintf (fp_symbols, "\t%.16g\t%g\t%g\t%g\n", out[GMT_Z], out[s_col], out[i_col], out[t_col]);
 			else
-				fprintf (fp_symbols, "%s\t%s\t%g\t%g\t%g\n", X, Y, out[s_col], out[i_col], out[t_col]);
+				fprintf (fp_symbols, "\t%g\t%g\t%g\n", out[s_col], out[i_col], out[t_col]);
 			n_symbols_plotted++;	/* Count output symbols */
 		}
 
