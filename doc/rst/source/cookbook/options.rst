@@ -281,124 +281,139 @@ Map frame and axes annotations: The **-B** option
 
 This is potentially the most complicated option in GMT, but most examples of its usage are actually quite simple. We
 distinguish between two sets of information: :ref:`Frame settings <option_-B_frame>` and
-:ref:`Axes parameters <option_-B_axes>`.  These are set separately by their own **-B** invocations; hence multiple
-**-B** specifications may be specified. The frame settings covers things such as which axes should be plotted, canvas
-fill, plot title (and subtitle), and what type of gridlines be drawn, whereas the Axes settings deal with annotation,
-tick, and gridline intervals, axes labels, and annotation units.
+:ref:`Axes settings <option_-B_axes>`.  These are set separately by their own **-B** invocations; hence multiple
+**-B** specifications may be specified. The :ref:`Frame settings <option_-B_frame>` covers things such as which axes
+should be plotted, canvas fill, plot title (and subtitle), and what type of gridlines be drawn, whereas the
+:ref:`Axes settings <option_-B_axes>` deal with annotation, tick, and gridline intervals, axes labels, and annotation
+units.
 
 .. _option_-B_frame:
+
+Frame settings
+^^^^^^^^^^^^^^
 
 The Frame settings are specified by
 
    **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+s**\ *subtitle*]\
    [**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
 
-   The following modifiers can be appended to **-B** to control the Frame settings:
+The following modifiers can be appended to **-B** to control the Frame settings:
 
-   - *axes* to set which of the axes should be drawn and possibly annotated using a combination of the codes listed
-     below [default is **WESN**]. Borders omitted from the set of codes will not be drawn. As an example, **WSn**
-     denotes that the "western" (left) and "southern" (bottom) axes should be drawn with tick-marks and annotations by
-     using **W** and **S** and that the "northern" (top) edge of the plot should be drawn with tick-marks and without
-     annotations by using **n** and that the "eastern"/right axes should not be drawn by not including one of **E**\ \|\
-     **e**\ \|\ **r**.
+- *axes* to set which of the axes should be drawn and possibly annotated using a combination of the codes listed
+  below [default is **WESN**]. Borders omitted from the set of codes will not be drawn. For example, **WSn**
+  denotes that the "western" (left) and "southern" (bottom) axes should be drawn with tick-marks and annotations by
+  using **W** and **S**, that the "northern" (top) edge of the plot should be drawn with tick-marks and without
+  annotations by using **n**, and that the "eastern" (right) axes should not be drawn by not including one of **E**\ \|\
+  **e**\ \|\ **r**.
 
-      - **W**\ est, **E**\ ast, **S**\ outh, **N**\ orth, and/or (for 3-D plots) **Z** indicate axes that should be
-        drawn with both tick-marks and annotations.
-      - **w**\ est, **e**\ ast, **s**\ outh, **n**\ orth, and/or (for 3-D plots) **z** indicate axes that should be
-        drawn with tick-marks but without annotations.
-      - **l**\ (eft), **r**\ (ight), **b**\ (ottom), **t**\ (op) and/or (for 3-D plots) **u**\ (p) indicate axes that
-        should be drawn without tick-marks or annotations.
+   - **W**\ est, **E**\ ast, **S**\ outh, **N**\ orth, and/or (for 3-D plots) **Z** indicate axes that should be
+     drawn with both tick-marks and annotations.
+   - **w**\ est, **e**\ ast, **s**\ outh, **n**\ orth, and/or (for 3-D plots) **z** indicate axes that should be
+     drawn with tick-marks but without annotations.
+   - **l**\ (eft), **r**\ (ight), **b**\ (ottom), **t**\ (op) and/or (for 3-D plots) **u**\ (p) indicate axes that
+     should be drawn without tick-marks or annotations.
 
-   - *axes*\ **code** (for 3-D plots) where **code** is any combination of the corder ids **1**, **2**, **3**, **4**. By
-     default, a single vertical axes will be plotted for 3-D plots at the most suitable map corner. **code** can be used
-     to override this, where **1** represents the south-western/lower-left corner, **2** the south-eastern/lower-right,
-     **3** the north-eastern/upper-right, and **4** the north-western/upper-left corner.
+- *axes*\ **code** (for 3-D plots) where **code** is any combination of the corder ids **1**, **2**, **3**, **4**. By
+  default, a single vertical axes will be plotted for 3-D plots at the most suitable map corner. **code** can be used
+  to override this, where **1** represents the south-western/lower-left corner, **2** the south-eastern/lower-right,
+  **3** the north-eastern/upper-right, and **4** the north-western/upper-left corner.
 
-   - **+w**\ [*pen*] (for 3-D plots) to draw the outlines of the x-z and y-z planes [default is no outlines]. Optionally,
-     append *pen* to specify different :ref:`pen <-Wpen_attrib>` attributes [default is :term:`MAP_GRID_PEN_PRIMARY`].
+- **+w**\ [*pen*] (for 3-D plots) to draw the outlines of the x-z and y-z planes [default is no outlines]. Optionally,
+  append *pen* to specify different :ref:`pen <-Wpen_attrib>` attributes [default is :term:`MAP_GRID_PEN_PRIMARY`].
 
-   - **+b** (for 3-D plots) to draw the foreground lines of the 3-D cube defined by :ref:`-R <option_-R>`.
+- **+b** (for 3-D plots) to draw the foreground lines of the 3-D cube defined by :ref:`-R <option_-R>`.
 
-   - **+g**\ *fill* to paint the interior of the canvas with a color specified by :doc:`fill <../gmtcolors>` [default is
-     *no fill*]. This also sets fill for the two back-walls in 3-D plots.
+- **+g**\ *fill* to paint the interior of the canvas with a color specified by :doc:`fill <../gmtcolors>` [default is
+  *no fill*]. This also sets fill for the two back-walls in 3-D plots.
 
-   - **+x**\ *fill* to paint the **yz** plane with a color specified by :doc:`fill <../gmtcolors>` [default is
-     *no fill*].
+- **+x**\ *fill* to paint the **yz** plane with a color specified by :doc:`fill <../gmtcolors>` [default is
+  *no fill*].
 
-   - **+y**\ *fill* to paint the **xz** plane with a color specified by :doc:`fill <../gmtcolors>` [default is
-     *no fill*].
+- **+y**\ *fill* to paint the **xz** plane with a color specified by :doc:`fill <../gmtcolors>` [default is
+  *no fill*].
 
-   - **+z**\ *fill* to paint the **xy** plane with a color specified by :doc:`fill <../gmtcolors>` [default is
-     *no fill*].
+- **+z**\ *fill* to paint the **xy** plane with a color specified by :doc:`fill <../gmtcolors>` [default is
+  *no fill*].
 
-   - **+i**\ [*val*] to annotate an internal meridian or parallel when the axis that normally would be drawn and
-     annotated does not exist (e.g., for an azimuthal map with 360-degree range that has no latitude axis or a global
-     Hammer map that has no longitude axis). *val* gives the meridian or parallel that should be annotated [default is
-     **0**].
+- **+i**\ [*val*] to annotate an internal meridian or parallel when the axis that normally would be drawn and
+  annotated does not exist (e.g., for an azimuthal map with 360-degree range that has no latitude axis or a global
+  Hammer map that has no longitude axis). *val* gives the meridian or parallel that should be annotated [default is
+  **0**].
 
-   - **+o**\ *lon/lat* to produce oblique gridlines about another pole specified by *lon/lat* [default references to the
-     North pole]. **+o** is ignored if no gridlines are requested.
+- **+o**\ *lon/lat* to produce oblique gridlines about another pole specified by *lon/lat* [default references to the
+  North pole]. **+o** is ignored if no gridlines are requested.
 
-   - **+n** to have no frame and annotations at all [default is contolled by *axes*].
+- **+n** to have no frame and annotations at all [default is contolled by *axes*].
 
-   - **+t**\ *title* place a title will appear centered above the plot frame.
+- **+t**\ *title* to place a title will appear centered above the plot frame [default is no title].
 
-   - **+s**\ *subtitle* (requires **+t**\ *title*) to place a subtitle beneath the title.
+- **+s**\ *subtitle* (requires **+t**\ *title*) to place a subtitle beneath the title [default is no subtitle].
 
-   **Note**: Both **+t**\ *title* and **+s**\ *subtitle* may be set over multiple lines by breaking them up using the
-   markers '@^' or '<break>'.  To include LaTeX code as part of a single-line title or subtitle, enclose the expression
-   with @[ markers (or alternatively <math> ... </math>). (**Note**: Requires ``latex`` and ``dvips`` to be installed).
+**Note**: Both **+t**\ *title* and **+s**\ *subtitle* may be set over multiple lines by breaking them up using the
+markers '@^' or '<break>'.  To include LaTeX code as part of a single-line title or subtitle, enclose the expression
+with @[ markers (or alternatively <math> ... </math>) (requires ``latex`` and ``dvips`` to be installed).
 
 .. _option_-B_axes:
 
+Axes settings
+^^^^^^^^^^^^^
+
 The Axes settings are specified by
 
--  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [**+a**\ *angle*\|\ **n**\|\ **p**][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [**+a**\ *angle*\|\ **n**\|\ **p**][**+l**\ *label*]\
+   [**+p**\ *prefix*][**+u**\ *unit*]
 
 but you may also split this into two separate invocations for clarity, i.e.,
 
--   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*\|\ **n**\|\ **p**][**+l**\|\ **L**\ *label*][**+p**\ *prefix*][**+s**\|\ **S**\ *seclabel*][**+u**\ *unit*]
--   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
+   | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*\|\ **n**\|\ **p**][**+l**\|\ **L**\ *label*]\
+     [**+p**\ *prefix*][**+s**\|\ **S**\ *seclabel*][**+u**\ *unit*]
+   | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
-    The first optional flag following **-B** selects **p** (rimary) [Default] or
-    **s** (econdary) axes information (mostly used for time axes annotations but
-    is available for geographic axes as well. **Note**: primary refers to annotations
-    closest to the axis and secondary to annotations further away.  Hence, primary
-    annotation-, tick-, and gridline-intervals must be shorter than their secondary counterparts).
-    The [**x**\|\ **y**\|\ **z**] flags specify which axes you are providing information for.
-    If none are given then we default to **xy**.  If you wish to give different annotation intervals
-    or labels for the various axes then you must repeat the **B** option for
-    each axis (If a 3-D basemap is selected with **-p** and **-Jz**, use **-Bz**
-    to give settings for the vertical axis.).  To add a label to an axis,
-    just append **+l**\ *label* (Cartesian projections only). Use **+L** to
-    force a horizontal label for *y*-axes (useful for very short labels).
-    For Cartesian axes you may specify an alternate via **+s** which is used for
-    right or upper axis axis label (with any **+l** label used for left and bottom axes).
-    To include LaTeX code as part of a label, enclose the expression with @[ markers
-    (or alternatively <math> ... </math>)
-    (**Note**: Requires ``latex`` and ``dvips`` to be installed).
-    If the axis annotation should have a leading text prefix (e.g., dollar sign for those
-    plots of your net worth) you can append **+p**\ *prefix*. For geographic maps
-    the addition of degree symbols, etc. is automatic (and controlled by the GMT
-    default setting :term:`FORMAT_GEO_MAP`). However, for other plots you can add
-    specific units by adding **+u**\ *unit*.  If any of these text strings contain
-    spaces or special characters you will need to enclose them in quotes.
-    Cartesian axes also allow for the optional **+a**\ *angle*, which
-    will plot slanted annotations; *angle* is measured with respect to the horizontal
-    and must be in the -90 <= *angle* <= 90 range only.  Also, **+an** is a shorthand
-    for normal (i.e., **+a**\ 90) [Default for y-axis] and **+ap** for parallel (i.e.,
-    **+a**\ 0) annotations [Default for x-axis]. Note that these defaults can be changed
-    via :term:`MAP_ANNOT_ORTHO`.
+The following modifiers can be appended to **-B** to control the Axes settings:
 
-The *intervals* specification is a concatenated string made up of substrings of the form
+- **p**\|\ **s** to set whether the modifiers apply to the **p**\ (rimary) or **s**\ (econdary) axes. These settings
+  are mostly used for time axes annotations but are available for geographic axes as well. **Note**: primary refers
+  to annotations closest to the axis and secondary to annotations further away.  Hence, primary annotation-, tick-,
+  and gridline-intervals must be shorter than their secondary counterparts). The terms "primary" and "secondary" do not
+  reflect any hierarchical order of units: the "primary" annotation interval is usually smaller (e.g., days) while the
+  "secondary" annotation interval typically is larger (e.g., months).
+- **x**\|\ **y**\|\ **z** to set which axes the modifiers apply to [default is **xy**]. If you wish to give different
+  annotation intervals or labels for the various axes then you must repeat the **B** option for each axis. For a
+  3-D plot with the **-p** and **-Jz** options used, **-Bz** can be used to provide settings for the verical axis.
+- **+l**\|\ **+L**\ *label* (for Cartesian plots only) to add a label to an axis. **+l** uses the default
+  label orientation; **+L** forces a horizontal label for *y*-axes, which is useful for very short labels.
+- **+s**\|\ **S**\ *seclabel* (for Cartesion plots only) to specify an alternate label for the right or upper axes.
+  **+s** uses the default label orientation; **+S** forces a horizontal label for *y*-axes, which is useful for very
+  short labels.
+- **+p**\ *prefix* to define a leading text prefix for the axis annotation (e.g., dollar sign for plots related to
+  money). For geographic maps the addition of degree symbols, etc. is automatic and controlled by
+  :term:`FORMAT_GEO_MAP`.
+- **+u**\ *unit* (for Cartesion plots only) to append specific units to the annotations. For geographic maps the
+  addition of degree symbols, etc. is automatic and controlled by :term:`FORMAT_GEO_MAP`.
+- **+a**\ *angle* (for Cartesion plots only) to plot slanted annotations, where *angle* is measured with respect to
+  the horizontal and must be in the -90 <= *angle* <= 90 range. **+an** can be used as a shorthand for normal
+  (i.e., **+a**\ 90) [Default for y-axis] and **+ap** for parallel (i.e., **+a**\ 0) annotations [Default fo
+  x-axis] These defaults can be changed via :term:`MAP_ANNOT_ORTHO`.
+- *intervals* to define the intervals for annotations and major tick spacing, minor tick spacing, and/or grid line
+  spacing. See :ref:`Intervals Specification <option_-B_int>` for the formatting associated with this modifier.
 
-[**t**]\ *stride*\ [*phase*][*unit*].
+**NOTE**: To include LaTeX code as part of a label, enclose the expression with @[ markers (or alternatively <math>
+... </math>). (requires ``latex`` and ``dvips`` to be installed).
 
-The **t** flag sets the axis
-item of interest; the available items are listed in Table :ref:`inttype <tbl-inttype>`.
-Normally, equidistant annotations occur at multiples of *stride*; you
-can phase-shift this by appending *phase*, which can be a positive or
-negative number.
+**NOTE**: If any labels, prefixes, or units contain spaces or special characters you will need to enclose them in
+quotes.
+
+.. _option_-B_int:
+
+| **Intevals specification**
+| The *intervals* specification is a concatenated string made up of substrings of the form
+
+   [**a**\|\ **f**\|\ **g**]\ [*stride*][*phase*][*unit*].
+
+The choice of **a**\|\ **f**\|\ **g** sets the axis item of interest, which are detailed in the Table
+:ref:`interval types <tbl-inttype>`. Normally, equidistant annotations occur at multiples of *stride*; you can
+phase-shift this by appending *phase*, which can be a positive or negative number. Optionally, append *unit* to specify
+the units of *stride*, where *unit* is one of the 18 supported :ref:`unit codes <tbl-units>`.
 
 .. _tbl-inttype:
 
@@ -412,31 +427,23 @@ negative number.
 | **g**      | Grid line spacing                   |
 +------------+-------------------------------------+
 
-Note that the appearance of certain time annotations (month-, week-, and
-day-names) may be affected by the :term:`GMT_LANGUAGE`,
-:term:`FORMAT_TIME_PRIMARY_MAP`, and
-:term:`FORMAT_TIME_SECONDARY_MAP` settings.
+**NOTE**: The appearance of certain time annotations (month-, week-, and day-names) may be affected by the
+:term:`GMT_LANGUAGE`, :term:`FORMAT_TIME_PRIMARY_MAP`, and :term:`FORMAT_TIME_SECONDARY_MAP` settings.
 
-For automated plots the region may not always be the same and thus it
-can be difficult to determine the appropriate *stride* in advance. Here
-GMT provides the opportunity to auto-select the spacing between the
-major and minor ticks and the grid lines, by not specifying the *stride*
-value. For example, **-Bafg** will select all three spacings
-automatically for both axes. In case of longitude–latitude plots, this
-will keep the spacing the same on both axes. You can also use
-**-Bxafg -Byafg** to auto-select them separately. Also note that given the
-myriad ways of specifying time-axis annotations, the automatic selections
-may have to be overridden with manual settings to active exactly what you need.
+*Automatic intervals*:
+GMT will auto-select the spacing between the annotations and major ticks, minor ticks, and grid lines if *stride* is
+not provided after **a**\|\ **f**\|\ **g**. This can be useful for automated plots where the region may not always be
+the same, making it difficult to determine the appropriate *stride* in advance. For example, **-Bafg** will select all
+three spacings automatically for both axes. In case of longitude–latitude plots, this will keep the spacing the same on
+both axes. You can also use **-Bxafg -Byafg** to auto-select them separately. Also note that given the myriad ways of
+specifying time-axis annotations, the automatic selections may need to be overridden with manual settings to active
+exactly what you need. When *stride* is omitted after **g**, the grid line spacing is chosen the same as the minor tick
+spacing; unless **g** is used in consort with **a**, then the grid lines are spaced the same as the annotations.
 
-In the case of automatic spacing, when the *stride* argument is omitted
-after **g**, the grid line spacing is chosen the same as the minor tick
-spacing; unless **g** is used in consort with **a**, then the grid lines
-are spaced the same as the annotations.
-
-The unit flag **u** can take on one of 18 codes; these are listed in
-Table :ref:`units <tbl-units>`. Almost all of these units are time-axis specific.
-However, the **m** and **s** units will be interpreted as arc minutes
-and arc seconds, respectively, when a map projection is in effect.
+*Stride units*:
+The *unit* flag can take on one of 18 codes; these are listed in Table :ref:`Units <tbl-units>`. Almost all of these
+units are time-axis specific. However, the **m** and **s** units will be interpreted as arc minutes and arc seconds,
+respectively, when a map projection is in effect.
 
 .. _tbl-units:
 
@@ -479,15 +486,6 @@ and arc seconds, respectively, when a map projection is in effect.
 +------------+------------------+----------------------------------------------------------------------------------+
 | **s**      | seconds          | Plot as 2-digit integer (0–60)                                                   |
 +------------+------------------+----------------------------------------------------------------------------------+
-
-As mentioned, there may be two levels of annotations. Here, "primary" refers to the
-annotation that is closest to the axis (this is the primary annotation),
-while "secondary" refers to the secondary annotation that is plotted
-further from the axis. The examples below will clarify what is meant.
-Note that the terms "primary" and "secondary" do not reflect any
-hierarchical order of units: The "primary" annotation interval is
-usually smaller (e.g., days) while the "secondary" annotation interval
-typically is larger (e.g., months).
 
 Geographic basemaps
 ^^^^^^^^^^^^^^^^^^^
