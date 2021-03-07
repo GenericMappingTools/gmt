@@ -915,8 +915,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 GMT_LOCAL void psvelo_set_colorfill (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_PALETTE *P, double value, double ival) {
 	/* Called if -C was given.  Selects and updates color fills and possibly pen colors */
 	struct GMT_FILL *F = (Ctrl->Z.item == PSVELO_G_FILL) ? &Ctrl->G.fill : &Ctrl->E.fill;
-	gmt_get_fill_from_z (GMT, P, value, F);
-	if (Ctrl->I.active) {
+	if (P) gmt_get_fill_from_z (GMT, P, value, F);	/* Update color based on value and CPT */
+	if (Ctrl->I.active) {	/* Modulate color based on intensity ival */
 		gmt_illuminate (GMT, ival, F->rgb);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Illumination value used is %h\n", ival);
 	}
@@ -979,11 +979,12 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.item == PSVELO_G_FILL) set_g_fill = true;	/* Since we will set it via CPT lookup */
 		if (Ctrl->Z.item == PSVELO_E_FILL) set_e_fill = true;	/* Since we will set it via CPT lookup */
 	}
-	else if (Ctrl->I.active && Ctrl->I.mode == 0) {	/* Constant illumination with constant intensity can be done before data loop */
+	else if (Ctrl->I.active && Ctrl->I.mode == 0) {	/* Constant illumination with constant intensity can be done once before data loop */
 		gmt_illuminate (GMT, Ctrl->I.value, Ctrl->E.fill.rgb);
 		gmt_illuminate (GMT, Ctrl->I.value, Ctrl->G.fill.rgb);
+		Ctrl->I.active = false;	/* So we don't do this again */
 	}
-	i_value = Ctrl->I.value;	/* May be replaced in the loop if no intensity was given */
+	i_value = Ctrl->I.value;	/* May be replaced in the loop if variable intensity was given */
 	if (!Ctrl->L.error_pen)	/* Duplicate -W to -L */
 		gmt_M_memcpy (&Ctrl->L.pen, &Ctrl->W.pen, 1, struct GMT_PEN);
 
@@ -1159,10 +1160,9 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 
 		value = (Ctrl->Z.item == PSVELO_E_FILL) ? e_val : z_val;	/* Select which value for color lookup - if active */
 		if (Ctrl->I.mode) i_value = in[icol];
-		if (Ctrl->C.active) {	/* Possibly update E or G fills based on value, then set in PS */
-			psvelo_set_colorfill (GMT, Ctrl, CPT, value, i_value);
-			gmt_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
-		}
+		/* Possibly update E or G fills based on value and/ore intensities, then set updated colors in PS */
+		psvelo_set_colorfill (GMT, Ctrl, CPT, value, i_value);
+		gmt_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
 
 		if (GMT->common.t.variable) {	/* Update the transparency for current symbol (or -t was given) */
 			double transp[2] = {0.0, 0.0};	/* None selected */

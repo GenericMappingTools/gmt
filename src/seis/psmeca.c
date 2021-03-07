@@ -645,9 +645,8 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else if (Ctrl->I.active && Ctrl->I.mode == 0) {
+	else if (Ctrl->I.active && Ctrl->I.mode == 0)	/* No CPT and fixed intensity means we can do the constant change once */
 		gmt_illuminate (GMT, Ctrl->I.value, Ctrl->G.fill.rgb);
-	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
@@ -725,18 +724,17 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 		/* In new (psmeca) input format, third column is depth.
 		   Skip record when depth is out of range. Also read an extra column. */
 		new_fmt = Ctrl->O2.active ? 0 : 1;
-		if (new_fmt) {
+		if (new_fmt) {	/* Not -Fo so we have a depth column */
 			depth = in[GMT_Z];
 			if (depth < Ctrl->D.depmin || depth > Ctrl->D.depmax) continue;
-			if (Ctrl->C.active) {
+			if (Ctrl->C.active)	/* Update color based on depth */
 				gmt_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
-				if (Ctrl->I.active) {
-					if (Ctrl->I.mode == 0)
-						gmt_illuminate (GMT, Ctrl->I.value, Ctrl->G.fill.rgb);
-					else
-						gmt_illuminate (GMT, in[icol], Ctrl->G.fill.rgb);
-				}
-			}
+		}
+		if (Ctrl->I.active) {	/* Modify color based on intensity */
+			if (Ctrl->I.mode == 0)
+				gmt_illuminate (GMT, Ctrl->I.value, Ctrl->G.fill.rgb);
+			else
+				gmt_illuminate (GMT, in[icol], Ctrl->G.fill.rgb);
 		}
 		if (GMT->common.t.variable) {	/* Update the transparency for current symbol (or -t was given) */
 			double transp[2] = {0.0, 0.0};	/* None selected */
