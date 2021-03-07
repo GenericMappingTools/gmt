@@ -679,7 +679,7 @@ MAP Parameters
 
         .. toggle::
 
-            Here is an example showing the apperance of different **MAP_FRAME_TYPE** settings.
+            Here is an example showing the appearance of different **MAP_FRAME_TYPE** settings.
 
             .. literalinclude:: /_verbatim/GMT_map_frame_type.txt
 
@@ -687,7 +687,7 @@ MAP Parameters
                :width: 100%
                :align: center
 
-               Apperance of different **MAP_FRAME_TYPE** settings
+               Appearance of different **MAP_FRAME_TYPE** settings
 
     **MAP_FRAME_WIDTH**
         Width (> 0) of map borders for fancy map frame [default is **5p**]. **Note**: For fancy
