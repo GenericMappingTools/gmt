@@ -28,9 +28,8 @@ To build GMT, you have to install:
 - [curl](https://curl.haxx.se/)
 
 > Note for developers: It is recommended that you install the optional dependencies.
-> [Sphinx](http://www.sphinx-doc.org), [Sphinx-panels](https://sphinx-panels.readthedocs.io/en/latest/),
-> and [GraphicsMagick](http://www.graphicsmagick.org/) are required for building the documentation and running the
-> tests.
+> [Sphinx](http://www.sphinx-doc.org) and [GraphicsMagick](http://www.graphicsmagick.org/)
+> are required for building the documentation and running the tests.
 
 ### Optional dependencies
 
@@ -59,7 +58,6 @@ For viewing documentation under Linux via `gmt docs`, your need `xdg-open`:
 Install for building GMT documentation and running tests (not required for general use):
 
 - [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the documentation)
-- [Sphinx-panels](https://sphinx-panels.readthedocs.io/en/latest/) (for building the documentation)
 - [GraphicsMagick](http://www.graphicsmagick.org/) (for running the tests)
 
 ### Required support data

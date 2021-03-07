@@ -20,10 +20,9 @@ Refer to the [building guide](BUILDING.md) for instructions on building GMT from
 
 ## Building the documentation
 
-To build the GMT documentation you need to install the [Sphinx](http://www.sphinx-doc.org/) documentation builder and
-the [Sphinx-panels](https://sphinx-panels.readthedocs.io/en/latest/) extension. After configuring and building GMT
-(see the [building guide](BUILDING.md)), you can build GMT documentation using the following commands within the build
-directory:
+To build the GMT documentation you need to install the [Sphinx](http://www.sphinx-doc.org/) documentation builder.
+After configuring and building GMT (see the [building guide](BUILDING.md)), you can build GMT documentation using
+the following commands within the build directory:
 
 ```
 cmake --build . --target docs_depends     # Generate images included in the documentation
