@@ -113,11 +113,11 @@ and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region 
      *winc*/*einc*/*sinc*/*ninc*, while ensuring that the bounding box extends by at least 0.25 times the increment
      [default is no adjustment].
 
-#. **-R**\ *code*\ *x0*/*y0*/*nx*/*ny*.  This method can be used when creating grids. Here, *code* is a 2-character
-   combination of **L**\ , **C**\ , **R** (for left, center, or right) and **T**\ , **M**\ , **B** (for top, middle, or
-   bottom). e.g., **BL** for lower left.  This indicates which point on a rectangular grid region the *x0*/*y0*
-   coordinates refer to, and the grid dimensions *nx* and *ny* are used with grid spacings given via **-I** to create
-   the corresponding region.
+#. **-R**\ **J**\ *x0*/*y0*/*nx*/*ny*, where **J** is a 2-character combination of **L**\|\ **C**\|\ **R** (for left,
+   center, or right) and **T**\|\ **M**\|\ **B** (for top, middle, or bottom) (e.g., **BL** for lower left). The two
+   character code indicates which point on a rectangular grid region the *x0*/*y0* coordinates refer to and the grid
+   dimensions *nx* and *ny* are used with grid spacings given via **-I** to create the corresponding region. This method
+   can be used when creating grids. 
 
 #. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*/*zmin*/*zmax*. This method can be used for perspective views with the **-Jz**
    and the :ref:`-p <option_-p>` option, where the z-range (*zmin*/*zmax*) is appended to the first method to indicate
