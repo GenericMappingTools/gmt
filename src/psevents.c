@@ -498,34 +498,39 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 
 			case 'Z':	/* Select advanced seismologic/geodetic symbols */
 				Ctrl->Z.active = true;
-				if (opt->arg[0] && strstr (opt->arg, "-S")) {	/* Got a required -S option as part of the command */
-					if ((c = strchr (opt->arg, ' '))) {	/* First space in the string ends the module name */
+				if (opt->arg[0] && strstr (opt->arg, "-S")) {	/* Got the required -S option as part of the command */
+					if ((c = strchr (opt->arg, ' '))) {	/* First space in the command ends the module name */
 						char *q;
 						c[0] = '\0';	/* Temporarily hide the rest of the command so we can isolate the module name */
 						Ctrl->Z.module = strdup (opt->arg);	/* Make a copy of the module name */
 						c[0] = ' ';	/* Restore space */
-						while (c[0] == ' ') c++;	/* Move to first word after the module */
-						strncpy (txt_a, c, GMT_LEN256);	/* Copy the remaining text into a buffer */
-						c = q = strstr (txt_a, "-S") + 3;	/* Determine the start position of symbol size in the command */
-						while (!strchr ("/+", c[0])) c++;	/* Skip the size until we hit a slash or a modifier */
-						if (c[0] == '/') c++;	/* Then skip the slash since not needed when size is not given */
-						if (c[0] == '+') {
-							c[0] = '\0';	/* Then skip the slash since not needed when size is not given */
+						while (c[0] == ' ' || c[0] == '\t') c++;	/* Move to first word after the module (user may have more than one space...) */
+						strncpy (txt_a, c, GMT_LEN256);	/* Copy the remaining text into a temporary buffer */
+						c = q = strstr (txt_a, "-S") + 3;	/* Determine the start position of the required symbol size in the command */
+						while (c[0] && !strchr ("/+", c[0])) c++;	/* Skip the size until we hit a slash or a modifier or the end of string */
+						if (c[0] == '/') c++;	/* Then skip the slash since it will not be needed when size is not given via the new -S */
+						if (c[0] == '+') {	/* Found a modifier that we need to hide when getting the symbol size */
+							c[0] = '\0';	/* Hide modifier */
 							Ctrl->S.size = gmt_M_to_inch (GMT, q);	/* Get the fixed symbol size specified */
-							c[0] = '+';	/* Then skip the slash since not needed when size is not given */
+							c[0] = '+';	/* Restore modifier */
 						}
-						else
+						else	/* No modifier, so OK to convert */
 							Ctrl->S.size = gmt_M_to_inch (GMT, q);	/* Get the fixed symbol size specified */
-						while (c[0]) *q++ = *c++;	/* Copy over the remaining text from the command */
+						while (c[0]) *q++ = *c++;	/* Shuffle down the remaining text from the command to fill the void left by size */
 						*q = '\0';	/* And truncate since we shuffled characters forward */
-						Ctrl->Z.cmd = strdup (txt_a);	/* Keep a copy of the final command that has no symbol-size specified */
+						if (strstr (txt_a, "-I") || strstr (txt_a, "-t")) {	/* Sanity check */
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Cannot include options like -I, -t in the command\n");
+							n_errors++;							
+						}
+						else	/* Keep a copy of the final command that has -S with no symbol-size specified */
+							Ctrl->Z.cmd = strdup (txt_a);
 					}
 				}
-				if (Ctrl->Z.cmd == NULL || Ctrl->Z.module == NULL) {
+				if (Ctrl->Z.cmd == NULL || Ctrl->Z.module == NULL) {	/* Sanity checks */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Requires a core coupe, meca, or velo command with valid -S option\n");
 					n_errors++;
 				}
-				if (gmt_M_is_zero (Ctrl->S.size)) {
+				if (gmt_M_is_zero (Ctrl->S.size)) {	/* Sanity check */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Requires a valid -S option with specified nonzero symbol size\n");
 					n_errors++;
 				}
@@ -583,11 +588,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Use classic mode names */
 		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && (strncmp (Ctrl->Z.module, "pscoupe", 7U) && strncmp (Ctrl->Z.module, "psmeca", 6U) && strncmp (Ctrl->Z.module, "psvelo", 6U)),
-			"Option Z: Module command must begin with one of pscoupe, psmeca or psvelo\n");
+			"Option Z: Classic module command must begin with one of pscoupe, psmeca or psvelo\n");
 	}
 	else {	/* Modern mode names */
 		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && (strncmp (Ctrl->Z.module, "coupe", 5U) && strncmp (Ctrl->Z.module, "meca", 4U) && strncmp (Ctrl->Z.module, "velo", 4U)),
-			"Option Z: Module command must begin with one of coupe, meca or velo\n");
+			"Option Z: Modern module command must begin with one of coupe, meca or velo\n");
 }
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -606,12 +611,13 @@ GMT_LOCAL void psevents_set_XY (struct GMT_CTRL *GMT, unsigned int x_type, unsig
 }
 
 GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *module, char *cmd) {
-	/* Return how many data columns are needed for the selected symbol */
+	/* Return how many data columns are needed for the selected seismo/geodetic symbol */
 	unsigned int n, k = (GMT->current.setting.run_mode == GMT_CLASSIC) ? 0 : 2;
-	char *S = strstr (cmd, "-S");	/* Pointer to selected symbol */
+	char *coupe = "pscoupe", *meca = "psmeca", *velo = "psvelo";
+	char *S = strstr (cmd, "-S");	/* Pointer to start of symbol option */
 	S += 2;	/* Now at format designation */
 
-	if (!strncmp (&module[k], "pscoupe", 7U-k)) {	/* Using coupe */
+	if (!strncmp (&module[k], &coupe[k], 7U-k)) {	/* Using coupe/pscoupe */
 		switch (S[0]) {
 			case 'a': n = 7; break;
 			case 'c': n = 11; break;
@@ -621,7 +627,7 @@ GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *m
 			default: n = 0; break;
 		}
 	}
-	else if (!strncmp (&module[k], "psmeca", 6U-k)) {	/* Using meca */
+	else if (!strncmp (&module[k], &meca[k], 6U-k)) {	/* Using meca/psmeca */
 		switch (S[0]) {
 			case 'a': n = 7; break;
 			case 'c': n = 11; break;
@@ -630,16 +636,16 @@ GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *m
 			case 'x': case 'y': case 't': n = 13; break;
 			default: n = 0; break;
 		}
-		if (strstr (cmd, "-Fo")) n--;	/* No depth column */
+		if (strstr (cmd, "-Fo")) n--;	/* No depth column in this deprecated format */
 	}
-	else if (!strncmp (&module[k], "psvelo", 6U-k)) {	/* Using velo */
+	else if (!strncmp (&module[k], &velo[k], 6U-k)) {	/* Using velo/psvelo */
 		switch (S[0]) {
 			case 'e': case 'r': n = 7; break;
 			case 'n': case 'w': n = 4; break;
 			case 'x': n = 5; break;
 			default: n = 0; break;
 		}
-		if (strstr (cmd, "+Zu")) n++;	/* Get user column for coloring */
+		if (strstr (cmd, "+Zu")) n++;	/* Add in user column for coloring symbols via CPT lookup */
 	}
 	return n;
 }
@@ -651,8 +657,8 @@ EXTERN_MSC int gmtlib_clock_C_format (struct GMT_CTRL *GMT, char *form, struct G
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
-	char tmp_file_symbols[PATH_MAX] = {""}, tmp_file_labels[PATH_MAX] = {""}, cmd[BUFSIZ] = {""};
-	char string[GMT_LEN128] = {""}, header[GMT_BUFSIZ] = {""}, X[GMT_LEN32] = {""}, Y[GMT_LEN32] = {""},find, *c = NULL;
+	char tmp_file_symbols[PATH_MAX] = {""}, tmp_file_labels[PATH_MAX] = {""}, cmd[BUFSIZ] = {""}, *c = NULL;
+	char string[GMT_LEN128] = {""}, header[GMT_BUFSIZ] = {""}, X[GMT_LEN32] = {""}, Y[GMT_LEN32] = {""},find;
 
 	bool do_coda, finite_duration, out_segment = false;
 
@@ -935,7 +941,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 						}
 					}
 					else {	/* We require the -Tstring option in the header for segments */
-						GMT_Report (API, GMT_MSG_ERROR, "Segment header missing required -Ttime option!\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Segment header missing required -T<time> option!\n");
 						if (fp_labels) fclose (fp_labels);
 						if (fp_symbols) fclose (fp_symbols);
 						Return (GMT_RUNTIME_ERROR);
@@ -1005,7 +1011,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			if (n_symbols_plotted == 0) {	/* Open output events file the first time */
 				if (Ctrl->Q.active)	/* We want a persistent file to survive this process */
 					sprintf (tmp_file_symbols, "%s_symbols.txt", Ctrl->Q.file);
-				else	/* Temporariy file to be deleted after use */
+				else	/* Temporary file to be deleted after use */
 					sprintf (tmp_file_symbols, "%s/GMT_psevents_symbols_%d.txt", API->tmp_dir, (int)getpid());
 				if ((fp_symbols = fopen (tmp_file_symbols, "w")) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "Unable to create file %s\n", tmp_file_symbols);
