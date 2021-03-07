@@ -612,12 +612,12 @@ GMT_LOCAL void psevents_set_XY (struct GMT_CTRL *GMT, unsigned int x_type, unsig
 
 GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *module, char *cmd) {
 	/* Return how many data columns are needed for the selected seismo/geodetic symbol */
-	unsigned int n, k = (GMT->current.setting.run_mode == GMT_CLASSIC) ? 0 : 2;
+	unsigned int n = 0, k = (GMT->current.setting.run_mode == GMT_CLASSIC) ? 0 : 2;
 	char *coupe = "pscoupe", *meca = "psmeca", *velo = "psvelo";
 	char *S = strstr (cmd, "-S");	/* Pointer to start of symbol option */
 	S += 2;	/* Now at format designation */
 
-	if (!strncmp (&module[k], &coupe[k], 7U-k)) {	/* Using coupe/pscoupe */
+	if (!strncmp (module, &coupe[k], 7U-k)) {	/* Using coupe/pscoupe */
 		switch (S[0]) {
 			case 'a': n = 7; break;
 			case 'c': n = 11; break;
@@ -627,7 +627,7 @@ GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *m
 			default: n = 0; break;
 		}
 	}
-	else if (!strncmp (&module[k], &meca[k], 6U-k)) {	/* Using meca/psmeca */
+	else if (!strncmp (module, &meca[k], 6U-k)) {	/* Using meca/psmeca */
 		switch (S[0]) {
 			case 'a': n = 7; break;
 			case 'c': n = 11; break;
@@ -638,7 +638,7 @@ GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *m
 		}
 		if (strstr (cmd, "-Fo")) n--;	/* No depth column in this deprecated format */
 	}
-	else if (!strncmp (&module[k], &velo[k], 6U-k)) {	/* Using velo/psvelo */
+	else if (!strncmp (module, &velo[k], 6U-k)) {	/* Using velo/psvelo */
 		switch (S[0]) {
 			case 'e': case 'r': n = 7; break;
 			case 'n': case 'w': n = 4; break;
@@ -864,6 +864,10 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	n_cols_needed = 3;	/* We always will need lon, lat and time */
 	if (Ctrl->Z.active) {	/* We read points for symbols */
 		unsigned int n_cols = psevents_determine_columns (GMT, Ctrl->Z.module, Ctrl->Z.cmd);	/* Must allow for number of columns needed by the selected module */
+		if (n_cols == 0) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to determine columns.  Bad module %s?\n", Ctrl->Z.module);
+			Return (GMT_RUNTIME_ERROR);
+		}
 		n_cols_needed = 1;	/* Since the lon, lat is included in n_cols for -Z */
 		n_cols_needed += n_cols;	/* One more for time so far */
 		n_copy_to_out = n_cols;	/* lon, lat, and all required cols, no time */
