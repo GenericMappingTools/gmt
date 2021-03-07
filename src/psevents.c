@@ -1152,7 +1152,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 	gmt_map_basemap (GMT);	/* Plot basemap if requested */
 
 	if (fp_symbols) { /* Here we have event symbols to plot as an overlay via a call to plot */
-		char *module = "plot";	/* Default module to use */
+		char *module = (GMT->current.setting.run_mode == GMT_CLASSIC) ? "psxy" : "plot";	/* Default module to use */
 		fclose (fp_symbols);	/* First close the file so symbol output is flushed */
 		/* Build plot command with fixed options and those that depend on -C -G -W.
 		 * We must set symbol unit as inch since we are passing sizes in inches directly (dimensions are in inches internally in GMT).  */
@@ -1189,6 +1189,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 		}
 	}
 	if (fp_labels) { /* Here we have event labels to plot as an overlay via a call to pstext */
+		char *module = (GMT->current.setting.run_mode == GMT_CLASSIC) ? "pstext" : "text";
 		fclose (fp_labels);	/* First close the file so label output is flushed */
 		/* Build pstext command with fixed options and those that depend on -D -F -H */
 		sprintf (cmd, "%s -R -J -O -K -t --GMT_HISTORY=readonly", tmp_file_labels);
@@ -1206,9 +1207,9 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 			}
 			if (Ctrl->H.boxoutline) {strcat (cmd, " -W"); strcat (cmd, Ctrl->H.pen);}
 		}
-		GMT_Report (API, GMT_MSG_DEBUG, "cmd: gmt pstext %s\n", cmd);
+		GMT_Report (API, GMT_MSG_DEBUG, "cmd: gmt %s %s\n", module, cmd);
 
-		if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Plot the labels */
+		if (GMT_Call_Module (API, module, GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Plot the labels */
 			Return (API->error);
 		}
 		if (!Ctrl->Q.active && gmt_remove_file (GMT, tmp_file_labels)) {
