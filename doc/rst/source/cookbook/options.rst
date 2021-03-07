@@ -167,7 +167,7 @@ Projected coordinates:
 
 Calendar time coordinates:
     These are absolute time coordinates referring to a Gregorian or ISO calendar. The general format is
-    [*date*]\ **T**\ [*clock*], where *date* must be in the [-]*yyyy*\ [*-mm*\ [*-dd*]] (year, month, day-of-month) or
+    [*date*]\ **T**\ [*clock*], where *date* must be in the [-]\ *yyyy*\ [*-mm*\ [*-dd*]] (year, month, day-of-month) or
     *yyyy*\ [*-jjj*] (year and day-of-year) for Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*]] (year,
     week, and day-of-week) for the ISO calendar. **Note**: This format requirement only applies to command-line
     arguments and not time coordinates given via data files.  If no *date* is given we assume the current day. The
@@ -191,7 +191,7 @@ Relative time coordinates:
 
 Radians:
     For angular regions (and increments) specified in radians you may use a set of forms indicating multiples or
-    fractions of :math:`\pi`.  Valid forms are [±][*s*]**pi**[*f*], where *s* and *f* are any integer or floating point
+    fractions of :math:`\pi`.  Valid forms are [±][*s*]\ **pi**\ [*f*], where *s* and *f* are any integer or floating point
     numbers, e.g., -2pi/2pi3 goes from -360 to 120 degrees (but in radians).  When GMT parses one of these forms we
     alert the labeling machinery to look for certain combinations of pi, limited to *n*\ pi, 1.5pi, and fractions 3/4,
     2/3, 1/2, 1/3, and 1/4 pi.  When an annotated value is within roundoff-error of these combinations we typeset the
