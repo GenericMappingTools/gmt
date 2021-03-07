@@ -359,13 +359,12 @@ but you may also split this into two separate invocations for clarity, i.e.,
     default setting :term:`FORMAT_GEO_MAP`). However, for other plots you can add
     specific units by adding **+u**\ *unit*.  If any of these text strings contain
     spaces or special characters you will need to enclose them in quotes.
-    Cartesian x-axes also allow for the optional **+a**\ *angle*, which
+    Cartesian axes also allow for the optional **+a**\ *angle*, which
     will plot slanted annotations; *angle* is measured with respect to the horizontal
     and must be in the -90 <= *angle* <= 90 range only.  Also, **+an** is a shorthand
-    for normal (i.e., **+a**\ 90) and **+ap** for parallel (i.e., **+a**\ 0) annotations
-    [Default].  For the y-axis, arbitrary angles are not allowed but **+an** and **+ap**
-    specify annotations normal [Default] and parallel to the axis, respectively.  Note that
-    these defaults can be changed via :term:`MAP_ANNOT_ORTHO`.
+    for normal (i.e., **+a**\ 90) [Default for y-axis] and **+ap** for parallel (i.e.,
+    **+a**\ 0) annotations [Default for x-axis]. Note that these defaults can be changed
+    via :term:`MAP_ANNOT_ORTHO`.
 
 The *intervals* specification is a concatenated string made up of substrings of the form
 
