@@ -150,8 +150,7 @@ Geographic coordinates:
 
     -  Use **-Rg**\ *xmin*/*xmax*/*ymin*/*ymax* to indicate a limited geographic domain.
 
-    -  Add **W**, **E**, **S**, or **N** to the coordinate limits or add the generic **D** or **G**. Example:
-       **-R**\ *0*/*360G*/*-90*/*90N*.
+    -  Add **W**, **E**, **S**, or **N** to the coordinate limits (e.g., **-R**\ *0*/*360*/*-90*/*90N*).
 
     Alternatively, you may indicate geographical coordinates by supplying **-fg**; see Section
     `Data type selection: The -f option`_.
