@@ -113,11 +113,12 @@ and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region 
      *winc*/*einc*/*sinc*/*ninc*, while ensuring that the bounding box extends by at least 0.25 times the increment
      [default is no adjustment].
 
-#. **-R**\ **J**\ *x0*/*y0*/*nx*/*ny*, where **J** is a 2-character combination of **L**\|\ **C**\|\ **R** (for left,
-   center, or right) and **T**\|\ **M**\|\ **B** (for top, middle, or bottom) (e.g., **BL** for lower left). The two
-   character code indicates which point on a rectangular grid region the *x0*/*y0* coordinates refer to and the grid
-   dimensions *nx* and *ny* are used with grid spacings given via **-I** to create the corresponding region. This method
-   can be used when creating grids. 
+#. **-R**\ *justify*\ *x0*/*y0*/*nx*/*ny*, where *justify* is a 2-character combination of **L**\|\ **C**\|\ **R** (for
+   left, center, or right) and **T**\|\ **M**\|\ **B** (for top, middle, or bottom) (e.g., **BL** for lower left). The
+   two character code *justify* indicates which point on a rectangular grid region the *x0*/*y0* coordinates refer to
+   and the grid dimensions *nx* and *ny* are used with grid spacings given via **-I** to create the corresponding
+   region. This method can be used when creating grids. For example, **-RCM**\ *25*/*25*/*50*/*50* specifies a
+   *50*\ x\ *50* grid centered on *25*\ ,\ *25*.
 
 #. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*/*zmin*/*zmax*. This method can be used for perspective views with the **-Jz**
    and the :ref:`-p <option_-p>` option, where the z-range (*zmin*/*zmax*) is appended to the first method to indicate
@@ -150,7 +151,7 @@ Geographic coordinates:
 
     -  Use **-Rg**\ *xmin*/*xmax*/*ymin*/*ymax* to indicate a limited geographic domain.
 
-    -  Add **W**, **E**, **S**, or **N** to the coordinate limits (e.g., **-R**\ *0*/*360*/*-90*/*90N*).
+    -  Add **W**, **E**, **S**, or **N** to the coordinate limits (e.g., **-R**\ *15W*/*30E*/*10S*/*15N*).
 
     Alternatively, you may indicate geographical coordinates by supplying **-fg**; see Section
     `Data type selection: The -f option`_.
@@ -190,11 +191,13 @@ Relative time coordinates:
 
 Radians:
     For angular regions (and increments) specified in radians you may use a set of forms indicating multiples or
-    fractions of :math:`\pi`.  Valid forms are [±][*s*]\ **pi**\ [*f*], where *s* and *f* are any integer or floating point
-    numbers, e.g., -2pi/2pi3 goes from -360 to 120 degrees (but in radians).  When GMT parses one of these forms we
-    alert the labeling machinery to look for certain combinations of pi, limited to *n*\ pi, 1.5pi, and fractions 3/4,
-    2/3, 1/2, 1/3, and 1/4 pi.  When an annotated value is within roundoff-error of these combinations we typeset the
-    label using the Greek letter for pi and required multiples or fractions.
+    fractions of :math:`\pi`.  Valid forms are [±][*s*]\ **pi**\ [*f*], where *s* and *f* are any integer or floating
+    point numbers, e.g., -2\ **pi**\ /2\ **pi**\ 3 goes from -360 to 120 degrees (but in radians).  When GMT parses one
+    of these forms we alert the labeling machinery to look for certain combinations of **pi**, limited to *n*\ 
+    **pi**\ , 3/2 (3\ **pi**\ 2), and fractions 3/4 (3\ **pi**\ 4), 2/3 (2\ **pi**\ 3), 1/2 (1\ **pi**\ 2), 1/3
+    (1\ **pi**\ 3), and 1/4 (1\ **pi**\ 4) in the *interval* given to the **-B** axes settings.  When an annotated value
+    is within roundoff-error of these combinations we typeset the label using the Greek letter :math:`\pi` and required
+    multiples or fractions.
 
 Other coordinates:
     These are simply any coordinates that are not related to geographic or calendar time or relative time and are
