@@ -76,49 +76,53 @@ importance (some are used a lot more than others).
 Data domain or map region: The **-R** option
 --------------------------------------------
 
-The **-R** option defines the map region or data domain of interest. It
-may be specified in one of five ways, two of which are shown in Figure
-:ref:`Map region <gmt_region>`:
+The **-R** option defines the map region or data domain of interest. It may be specified in one of seven ways. Options 1
+and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region <gmt_region>`:
 
-#. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*. This is the standard way to
-   specify Cartesian data domains and geographical regions when using
-   map projections where meridians and parallels are rectilinear.
+1. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**+u**\ *unit*]. This is the standard way to specify Cartesian data domains and
+   geographic regions when using map projections where meridians and parallels are rectilinear. Optionally, append
+   **+u**\ *unit* to specify a region in projected units (e.g., UTM meters) where *xmin*/*xmax*/*ymin*/*ymax* are
+   Cartesian projected coordinates compatible with the chosen projection and *unit* is an allowable
+   :ref:`distance unit <dist-units>`.
 
-#. **-R**\ *xlleft*/*ylleft*/*xuright*/*yuright*\ **+r**. This form is
-   used with map projections that are oblique, making meridians and
-   parallels poor choices for map boundaries. Here, we instead specify
-   the lower left corner and upper right corner geographic coordinates,
-   followed by the modifier **+r**. This form guarantees a rectangular map
+#. **-R**\ *xlleft*/*ylleft*/*xuright*/*yuright*\ **+r**. This form is useful for map projections that are oblique,
+   making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner and
+   upper right corner geographic coordinates, followed by the modifier **+r**. This form guarantees a rectangular map
    even though lines of equal longitude and latitude are not straight lines.
+#. **-R**\ **g** or **-R**\ **d**. These forms can be used to quickly specify the global domain (0/360 for **-Rg** and
+   -180/+180 for **-Rd** in longitude, with -90/+90 in latitude).
 
-#. **-R**\ *gridfile*. This will copy the domain settings found for the
-   grid in specified file. Note that depending on the nature of the
-   calling program, this mechanism will also set grid spacing and
-   possibly the grid registration (see
-   Section `Grid registration: The -r option`_).
+#. **-R**\ *gridfile*. This will copy the domain settings found for the grid in specified file. Note that depending on
+   the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration (see
+   Section `Grid registration: The -r option`_\ ).
 
-#. **-R**\ *code1,code2,...*\ [**+e**\|\ **r**\|\ **R**\ [*incs*]]. This indirectly supplies
-   the region by consulting the DCW (Digital Chart of the World) database and derives
-   the bounding regions for one or more countries given by the codes.
-   Simply append one or more comma-separated countries using the two-character
-   ISO 3166-1 alpha-2 convention (e.g., https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
-   To select a state within a country (if available), append .state, e.g, US.TX for Texas.
-   To specify a whole continent, prepend = to any of the continent codes AF (Africa),
-   AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania), NA (North America), or SA
-   (South America).  Append **+r** to modify exact bounding box coordinates obtained from
-   the polygon(s): Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
-   final region boundaries to be multiples of these steps [default is no adjustment].
-   Alternatively, use **+R** to extend the region outward by adding these increments
-   instead, or **+e** which is like **+r** but it ensures that the bounding box extends
-   by at least 0.25 times the increment [no extension]. As an example, **-R**\ *FR*\ **+r**\ 1 will select
-   the national bounding box of France rounded to nearest integer degree.
+#. **-R**\ *code1,code2,...*\ [**+e**\ \|\ **r**\ \|\ **R**\ *incs*]]. This indirectly supplies the region by consulting
+   the DCW (Digital Chart of the World) database and derives the bounding regions for one or more countries given by
+   the codes. Simply append one or more comma-separated countries using the two-character
+   `ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)>`_.
+   To select a state within a country (if available), append .state, e.g, US.TX for Texas. To specify a whole continent,
+   prepend **=** to any of the continent codes **AF** (Africa), **AN** (Antarctica), **AS** (Asia), **EU** (Europe),
+   **OC** (Oceania), **NA** (North America), or **SA** (South America). The following modifiers can be appended:
 
-#. **-R**\ *code*\ *x0*/*y0*/*nx*/*ny*.  This method can be used when creating
-   grids.  Here, *code* is a 2-character combination of **L**\ , **C**\ , **R** (for left, center,
-   or right) and **T**\ , **M**\ , **B** for top, middle, or bottom. e.g., **BL** for lower left.  This
-   indicates which point on a rectangular grid region the *x0*/*y0* coordinates
-   refer to, and the grid dimensions *nx* and *ny* are used with grid spacings given
-   via **-I** to create the corresponding region.
+   - **+r** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or
+     *winc*/*einc*/*sinc*/*ninc* [default is no adjustment]. For example, **-R**\ *FR*\ **+r**\ 1 will select the
+     national bounding box of France rounded to nearest integer degree.
+   - **+R** to extend the region outward by adding the amounts specified by *inc*, *xinc*/*yinc*, or
+     *winc*/*einc*/*sinc*/*ninc* [default is no extension].
+   - **+e** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or
+     *winc*/*einc*/*sinc*/*ninc*, while ensuring that the bounding box extends by at least 0.25 times the increment
+     [default is no adjustment].
+
+#. **-R**\ *code*\ *x0*/*y0*/*nx*/*ny*.  This method can be used when creating grids. Here, *code* is a 2-character
+   combination of **L**\ , **C**\ , **R** (for left, center, or right) and **T**\ , **M**\ , **B** (for top, middle, or
+   bottom). e.g., **BL** for lower left.  This indicates which point on a rectangular grid region the *x0*/*y0*
+   coordinates refer to, and the grid dimensions *nx* and *ny* are used with grid spacings given via **-I** to create
+   the corresponding region.
+
+#. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*/*zmin*/*zmax*. This method can be used for perspective views with the **-Jz**
+   and the :ref:`-p <option_-p>` option, where the z-range (*zmin*/*zmax*) is appended to the first method to indicate
+   the third dimension. This is not used for :ref:`-p <option_-p>` without **-Jz**, in which case a perspective view of
+   the place is plotted with no third dimension.
 
 .. _gmt_region:
 
@@ -126,102 +130,79 @@ may be specified in one of five ways, two of which are shown in Figure
    :width: 500 px
    :align: center
 
-   The plot region can be specified in two different ways. (a) Extreme values
-   for each dimension, or (b) coordinates of lower left and upper right corners.
+   The plot region can be specified in two different ways. (a) Extreme values for each dimension, or (b) coordinates of
+   lower left and upper right corners.
 
-For rectilinear projections the first two forms give identical results.
-Depending on the selected map projection (or the kind of expected input
-data), the boundary coordinates may take on several different formats:
+For rectilinear projections the first two forms give identical results. Depending on the selected map projection (or
+the kind of expected input data), the boundary coordinates may take on several different formats:
 
 Geographic coordinates:
-    These are longitudes and latitudes and may be given in decimal
-    degrees (e.g., -123.45417) or in the
-    [±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][**W**\|\ **E**\|\ **S**\|\ **N**]
-    format (e.g., 123:27:15W). Note that **-Rg** and **-Rd** are
-    shorthands for "global domain" **-R**\ *0*/*360*/*-90*/*90* and
-    **-R**\ *-180*/*180*/*-90*/*90*, respectively.
+    These are longitudes and latitudes and may be given in decimal degrees (e.g., -123.45417) or in the
+    [±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][**W**\|\ **E**\|\ **S**\|\ **N**] format (e.g., 123:27:15W). **-Rg** and
+    **-Rd** are shorthands for "global domain" **-R**\ *0*/*360*/*-90*/*90* and **-R**\ *-180*/*180*/*-90*/*90*
+    respectively.
 
-    When used in conjunction with the Cartesian Linear Transformation
-    (**-Jx** or **-JX**) —which can be used to map floating point data,
-    geographical coordinates, as well as time coordinates— it is prudent
-    to indicate that you are using geographical coordinates in one of
-    the following ways:
+    When used in conjunction with the Cartesian Linear Transformation (**-Jx** or **-JX**) — which can be used to map
+    floating point data, geographical coordinates, as well as time coordinates — it is prudent to indicate that you are
+    using geographical coordinates in one of the following ways:
 
     -  Use **-Rg** or **-Rd** to indicate the global domain.
 
-    -  Use **-Rg**\ *xmin*/*xmax*/*ymin*/*ymax* to indicate a limited
-       geographic domain.
+    -  Use **-Rg**\ *xmin*/*xmax*/*ymin*/*ymax* to indicate a limited geographic domain.
 
-    -  Add **W**, **E**, **S**, or **N** to the coordinate limits or add
-       the generic **D** or **G**. Example:
+    -  Add **W**, **E**, **S**, or **N** to the coordinate limits or add the generic **D** or **G**. Example:
        **-R**\ *0*/*360G*/*-90*/*90N*.
 
-    Alternatively, you may indicate geographical coordinates by
-    supplying **-fg**; see Section `Data type selection: The -f option`_.
+    Alternatively, you may indicate geographical coordinates by supplying **-fg**; see Section
+    `Data type selection: The -f option`_.
 
 Projected coordinates:
-    These are Cartesian projected coordinates compatible with the chosen
-    projection and are given in a length *unit* set via the **+u** modifier, (e.g.,
-    -200/200/-300/300\ **+uk** for a 400 by 600 km rectangular area centered
-    on the projection center (0, 0). These coordinates are internally
-    converted to the corresponding geographic (longitude, latitude)
-    coordinates for the lower left and upper right corners. This form is
-    convenient when you want to specify a region directly in the
-    projected units (e.g., UTM meters). For allowable units, see
-    Table :ref:`distunits <tbl-distunits>`.
+    These are Cartesian projected coordinates compatible with the chosen projection and are given in a length *unit*
+    set via the **+u** modifier, (e.g., -200/200/-300/300\ **+uk** for a 400 by 600 km rectangular area centered
+    on the projection center (0, 0). These coordinates are internally converted to the corresponding geographic
+    (longitude, latitude) coordinates for the lower left and upper right corners. This form is convenient when you want
+    to specify a region directly in the projected units (e.g., UTM meters). For allowable units, see Table
+    :ref:`Distance units <tbl-distunits>`. **Note**: For the UTM, TM and Stereographic projections we will guess the
+    units in your grid to be meter if the domain exceeds the range of geographical longitude and latitude.
 
 Calendar time coordinates:
-    These are absolute time coordinates referring to a Gregorian or ISO
-    calendar. The general format is [*date*]\ **T**\ [*clock*],
-    where *date* must be in the *yyyy*\ [*-mm*\ [*-dd*]] (year, month,
-    day-of-month) or *yyyy*\ [*-jjj*] (year and day-of-year) for
-    Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*]] (year,
-    week, and day-of-week) for the ISO calendar. **Note**: This format requirement
-    only applies to command-line arguments and not time coordinates given via
-    data files.  If no *date* is given
-    we assume the current day. The **T** flag is required if a *clock* is given.
+    These are absolute time coordinates referring to a Gregorian or ISO calendar. The general format is
+    [*date*]\ **T**\ [*clock*], where *date* must be in the [-]*yyyy*\ [*-mm*\ [*-dd*]] (year, month, day-of-month) or
+    *yyyy*\ [*-jjj*] (year and day-of-year) for Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*]] (year,
+    week, and day-of-week) for the ISO calendar. **Note**: This format requirement only applies to command-line
+    arguments and not time coordinates given via data files.  If no *date* is given we assume the current day. The
+    **T** flag is required if a *clock* is given.
 
-    The optional *clock* string is a 24-hour clock in
-    *hh*\ [*:mm*\ [*:ss*\ [*.xxx*]]] format. If no *clock* is given it
-    implies 00:00:00, i.e., the start of the specified day. Note that
-    not all of the specified entities need be present in the data. All
-    calendar date-clock strings are internally represented as double
-    precision seconds since proleptic Gregorian date Monday January 1
-    00:00:00 0001. Proleptic means we assume that the modern calendar
-    can be extrapolated forward and backward; a year zero is used, and
-    Gregory's reforms [11]_ are extrapolated backward. Note that this is
-    not historical.
+    The optional *clock* string is a 24-hour clock in *hh*\ [*:mm*\ [*:ss*\ [*.xxx*]]] format. If no *clock* is given it
+    implies 00:00:00, i.e., the start of the specified day. Note that not all of the specified entities need be present
+    in the data. All calendar date-clock strings are internally represented as double precision seconds since proleptic
+    Gregorian date Monday January 1 00:00:00 0001. Proleptic means we assume that the modern calendar can be
+    extrapolated forward and backward; a year zero is used, and Gregory's reforms [11]_ are extrapolated backward. Note
+    that this is not historical. The use of delimiters and their type and positions for *date* and *clock* must be
+    exactly as indicated; however, these are customizable using :ref:`FORMAT parameters <FORMAT Parameters>`
 
 Relative time coordinates:
-    These are coordinates which count seconds, hours, days or years
-    relative to a given epoch. A combination of the parameters
-    :term:`TIME_EPOCH` and :term:`TIME_UNIT` define the epoch and time unit.
-    The parameter :term:`TIME_SYSTEM` provides a few shorthands for common
-    combinations of epoch and unit, like **j2000** for days since noon
-    of 1 Jan 2000. The default relative time coordinate is that of UNIX
-    computers: seconds since 1 Jan 1970. Denote relative time
-    coordinates by appending the optional lower case **t** after the
-    value. When it is otherwise apparent that the coordinate is relative
-    time (for example by using the **-f** switch), the **t** can be omitted.
+    These are coordinates which count seconds, hours, days or years relative to a given epoch. A combination of the
+    parameters :term:`TIME_EPOCH` and :term:`TIME_UNIT` define the epoch and time unit. The parameter
+    :term:`TIME_SYSTEM` provides a few shorthands for common combinations of epoch and unit, like **j2000** for days
+    since noon of 1 Jan 2000. The default relative time coordinate is that of UNIX computers: seconds since 1 Jan 1970.
+    Denote relative time coordinates by appending the optional lower case **t** after the value. When it is otherwise
+    apparent that the coordinate is relative time (for example by using the **-f** switch), the **t** can be omitted.
 
 Radians:
-    For angular regions (and increments) specified in radians you may use a set of
-    forms indicating multiples or fractions of :math:`\pi`.  Valid forms are
-    [±][*s*]pi[*f*], where *s* and *f* are any integer or floating point numbers,
-    e.g., -2pi/2pi3 goes from -360 to 120 degrees (but in radians).  When GMT parses one
-    of these forms we alert the labeling machinery to look for certain combinations of pi,
-    limited to *n*\ pi, 1.5pi, and fractions 3/4, 2/3, 1/2, 1/3, and 1/4 pi.  When an
-    annotated value is within roundoff-error of these combinations we typeset the label
-    using the Greek letter for pi and required multiples or fractions.
+    For angular regions (and increments) specified in radians you may use a set of forms indicating multiples or
+    fractions of :math:`\pi`.  Valid forms are [±][*s*]**pi**[*f*], where *s* and *f* are any integer or floating point
+    numbers, e.g., -2pi/2pi3 goes from -360 to 120 degrees (but in radians).  When GMT parses one of these forms we
+    alert the labeling machinery to look for certain combinations of pi, limited to *n*\ pi, 1.5pi, and fractions 3/4,
+    2/3, 1/2, 1/3, and 1/4 pi.  When an annotated value is within roundoff-error of these combinations we typeset the
+    label using the Greek letter for pi and required multiples or fractions.
 
 Other coordinates:
-    These are simply any coordinates that are not related to geographic
-    or calendar time or relative time and are expected to be simple
-    floating point values such as
+    These are simply any coordinates that are not related to geographic or calendar time or relative time and are
+    expected to be simple floating point values such as
     [±]\ *xxx.xxx*\ [**E**\|\ **e**\|\ **D**\|\ **d**\ [±]\ *xx*],
-    i.e., regular or exponential notations, with the enhancement to understand
-    FORTRAN double precision output which may use **D** instead of **E** for
-    exponents. These values are simply converted as they are to internal
+    i.e., regular or exponential notations, with the enhancement to understand FORTRAN double precision output which
+    may use **D** instead of **E** for exponents. These values are simply converted as they are to internal
     representation. [12]_
 
 .. _option_-J:
