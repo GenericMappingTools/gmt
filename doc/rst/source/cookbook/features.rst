@@ -232,6 +232,10 @@ E.g., if your ``gmt.conf`` file has *x* offset = 3\ **c** as default, the
 
 .. _gmt_defaults_a:
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_Defaults_1a.txt
+
 .. figure:: /_images/GMT_Defaults_1a.*
    :width: 500 px
    :align: center
@@ -240,6 +244,10 @@ E.g., if your ``gmt.conf`` file has *x* offset = 3\ **c** as default, the
 
 .. _gmt_defaults_b:
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_Defaults_1b.txt
+
 .. figure:: /_images/GMT_Defaults_1b.*
    :width: 500 px
    :align: center
@@ -247,6 +255,10 @@ E.g., if your ``gmt.conf`` file has *x* offset = 3\ **c** as default, the
    More GMT parameters that affect plot appearance.
 
 .. _gmt_defaults_c:
+
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_Defaults_1c.txt
 
 .. figure:: /_images/GMT_Defaults_1c.*
    :width: 500 px
